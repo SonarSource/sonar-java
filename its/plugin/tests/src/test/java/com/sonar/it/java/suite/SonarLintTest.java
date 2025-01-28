@@ -17,6 +17,22 @@
 package com.sonar.it.java.suite;
 
 import com.google.common.io.Files;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
 import org.junit.AfterClass;
@@ -26,47 +42,38 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonarsource.sonarlint.core.analysis.AnalysisEngine;
-import org.sonarsource.sonarlint.core.analysis.api.*;
+import org.sonarsource.sonarlint.core.analysis.api.ActiveRule;
+import org.sonarsource.sonarlint.core.analysis.api.AnalysisConfiguration;
+import org.sonarsource.sonarlint.core.analysis.api.AnalysisEngineConfiguration;
+import org.sonarsource.sonarlint.core.analysis.api.AnalysisResults;
+import org.sonarsource.sonarlint.core.analysis.api.ClientInputFile;
+import org.sonarsource.sonarlint.core.analysis.api.ClientModuleFileSystem;
+import org.sonarsource.sonarlint.core.analysis.api.ClientModuleInfo;
 import org.sonarsource.sonarlint.core.analysis.api.Issue;
 import org.sonarsource.sonarlint.core.analysis.command.AnalyzeCommand;
 import org.sonarsource.sonarlint.core.analysis.command.RegisterModuleCommand;
-import org.sonarsource.sonarlint.core.commons.IssueSeverity;
 import org.sonarsource.sonarlint.core.commons.api.SonarLanguage;
-import org.sonarsource.sonarlint.core.commons.api.progress.ClientProgressMonitor;
 import org.sonarsource.sonarlint.core.commons.log.LogOutput;
 import org.sonarsource.sonarlint.core.commons.log.SonarLintLogger;
 import org.sonarsource.sonarlint.core.commons.progress.ProgressMonitor;
 import org.sonarsource.sonarlint.core.plugin.commons.PluginsLoader;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 public class SonarLintTest {
+  private static final LogOutput DEFAULT_LOG_OUTPUT = new LogOutput() {
+    @Override
+    public void log(@Nullable String formattedMessage, Level level, @Nullable String stacktrace) {
+      /*Don't pollute logs*/
+    }
+  };
 
   @ClassRule
   public static TemporaryFolder temp = new TemporaryFolder();
 
   private static AnalysisEngine sonarlintEngine;
   private static File baseDir;
-
-  private static LogOutput DEFAULT_LOG_OUTPUT = new LogOutput() {
-    @Override
-    public void log(@Nullable String formattedMessage, Level level, @Nullable String stacktrace) {
-      /*Don't pollute logs*/
-    }
-  };
 
   private final ProgressMonitor progressMonitor = new ProgressMonitor(null);
 
@@ -84,6 +91,12 @@ public class SonarLintTest {
 
     sonarlintEngine = new AnalysisEngine(config, loadedPlugins, DEFAULT_LOG_OUTPUT);
     baseDir = temp.newFolder();
+  }
+
+  @AfterClass
+  public static void stop() {
+    SonarLintLogger.setTarget(null);
+    sonarlintEngine.stop();
   }
 
   @Test
@@ -109,17 +122,7 @@ public class SonarLintTest {
         new ActiveRule("java:S1481", SonarLanguage.JAVA.name())
       ).build();
 
-    ClientModuleFileSystem clientFileSystem = new ClientModuleFileSystem() {
-      @Override
-      public Stream<ClientInputFile> files(String s, InputFile.Type type) {
-        return Stream.of(inputFile);
-      }
-
-      @Override
-      public Stream<ClientInputFile> files() {
-        return Stream.of(inputFile);
-      }
-    };
+    ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
     sonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
     var command = new AnalyzeCommand("myModule", configuration, issues::add, DEFAULT_LOG_OUTPUT);
     sonarlintEngine.post(command, progressMonitor).get();
@@ -130,7 +133,6 @@ public class SonarLintTest {
       tuple("java:S1481", 3, inputFile.getPath(), Map.of())
     );
   }
-
 
   @Test
   public void simpleTestFileJava() throws Exception {
@@ -160,17 +162,7 @@ public class SonarLintTest {
         new ActiveRule("java:S1220", SonarLanguage.JAVA.name()),
         new ActiveRule("java:S2925", SonarLanguage.JAVA.name())
       ).build();
-    ClientModuleFileSystem clientFileSystem = new ClientModuleFileSystem() {
-      @Override
-      public Stream<ClientInputFile> files(String s, InputFile.Type type) {
-        return Stream.of(inputFile);
-      }
-
-      @Override
-      public Stream<ClientInputFile> files() {
-        return Stream.of(inputFile);
-      }
-    };
+    ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
 
     sonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
     var command = new AnalyzeCommand("myModule", configuration, issues::add, DEFAULT_LOG_OUTPUT);
@@ -207,17 +199,7 @@ public class SonarLintTest {
       .build();
 
 
-    ClientModuleFileSystem clientFileSystem = new ClientModuleFileSystem() {
-      @Override
-      public Stream<ClientInputFile> files(String s, InputFile.Type type) {
-        return Stream.of(inputFile);
-      }
-
-      @Override
-      public Stream<ClientInputFile> files() {
-        return Stream.of(inputFile);
-      }
-    };
+    ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
 
     sonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
     var command = new AnalyzeCommand("myModule", configuration, issues::add, DEFAULT_LOG_OUTPUT);
@@ -237,17 +219,7 @@ public class SonarLintTest {
       .addInputFile(inputFile)
       .build();
 
-    ClientModuleFileSystem clientFileSystem = new ClientModuleFileSystem() {
-      @Override
-      public Stream<ClientInputFile> files(String s, InputFile.Type type) {
-        return Stream.of(inputFile);
-      }
-
-      @Override
-      public Stream<ClientInputFile> files() {
-        return Stream.of(inputFile);
-      }
-    };
+    ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
 
     sonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
     var command = new AnalyzeCommand("myModule", configuration, issues::add, DEFAULT_LOG_OUTPUT);
@@ -268,7 +240,7 @@ public class SonarLintTest {
 
     LogOutput levelCollector = new LogOutput() {
       @Override
-      public void log(String formattedMessage, Level level) {
+      public void log(String formattedMessage, Level level, @Nullable String stacktrace) {
         logLevels.add(level);
       }
     };
@@ -305,17 +277,7 @@ public class SonarLintTest {
 
     CancellableProgressMonitor cancellableProgressMonitor = new CancellableProgressMonitor();
 
-    ClientModuleFileSystem clientFileSystem = new ClientModuleFileSystem() {
-      @Override
-      public Stream<ClientInputFile> files(String s, InputFile.Type type) {
-        return Stream.of(inputFile);
-      }
-
-      @Override
-      public Stream<ClientInputFile> files() {
-        return Stream.of(inputFile);
-      }
-    };
+    ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
 
     specificSonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
     Consumer<Issue> issueListener = issue -> {
@@ -398,9 +360,18 @@ public class SonarLintTest {
     };
   }
 
-  @AfterClass
-  public static void stop() {
-    sonarlintEngine.stop();
+  private static ClientModuleFileSystem getClientModuleFileSystem(ClientInputFile inputFile) {
+    return new ClientModuleFileSystem() {
+      @Override
+      public Stream<ClientInputFile> files(String s, InputFile.Type type) {
+        return Stream.of(inputFile);
+      }
+
+      @Override
+      public Stream<ClientInputFile> files() {
+        return Stream.of(inputFile);
+      }
+    };
   }
 
   static class MyCancelException extends RuntimeException {
