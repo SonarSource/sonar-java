@@ -26,7 +26,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,7 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 public class SonarLintTest {
-  private static final LogOutput DEFAULT_LOG_OUTPUT = new LogOutput() {
+  private static final LogOutput NOOP_LOG_OUTPUT = new LogOutput() {
     @Override
     public void log(@Nullable String formattedMessage, Level level, @Nullable String stacktrace) {
       /*Don't pollute logs*/
@@ -83,13 +82,13 @@ public class SonarLintTest {
       .setWorkDir(temp.getRoot().toPath())
       .build();
 
-    SonarLintLogger.setTarget(DEFAULT_LOG_OUTPUT);
+    SonarLintLogger.setTarget(NOOP_LOG_OUTPUT);
     var pluginJarLocation = Set.of(JavaTestSuite.JAVA_PLUGIN_LOCATION.getFile().toPath());
     var enabledLanguages = Set.of(SonarLanguage.JAVA);
     var pluginConfiguration = new PluginsLoader.Configuration(pluginJarLocation, enabledLanguages, false, Optional.empty());
     var loadedPlugins = new PluginsLoader().load(pluginConfiguration, Set.of()).getLoadedPlugins();
 
-    sonarlintEngine = new AnalysisEngine(config, loadedPlugins, DEFAULT_LOG_OUTPUT);
+    sonarlintEngine = new AnalysisEngine(config, loadedPlugins, NOOP_LOG_OUTPUT);
     baseDir = temp.newFolder();
   }
 
@@ -124,7 +123,7 @@ public class SonarLintTest {
 
     ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
     sonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
-    var command = new AnalyzeCommand("myModule", configuration, issues::add, DEFAULT_LOG_OUTPUT);
+    var command = new AnalyzeCommand("myModule", configuration, issues::add, NOOP_LOG_OUTPUT);
     sonarlintEngine.post(command, progressMonitor).get();
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "overriddenImpacts").containsExactlyInAnyOrder(
@@ -165,13 +164,13 @@ public class SonarLintTest {
     ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
 
     sonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
-    var command = new AnalyzeCommand("myModule", configuration, issues::add, DEFAULT_LOG_OUTPUT);
+    var command = new AnalyzeCommand("myModule", configuration, issues::add, NOOP_LOG_OUTPUT);
     sonarlintEngine.post(command, progressMonitor).get();
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "overriddenImpacts").containsOnly(
-      tuple("java:S2925", 7, inputFile.getPath(), Collections.emptyMap()),
+      tuple("java:S2925", 7, inputFile.getPath(), Map.of()),
       // expected issue
-      tuple("java:S1220", null, inputFile.getPath(), Collections.emptyMap()));
+      tuple("java:S1220", null, inputFile.getPath(), Map.of()));
   }
 
   @Test
@@ -202,12 +201,12 @@ public class SonarLintTest {
     ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
 
     sonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
-    var command = new AnalyzeCommand("myModule", configuration, issues::add, DEFAULT_LOG_OUTPUT);
+    var command = new AnalyzeCommand("myModule", configuration, issues::add, NOOP_LOG_OUTPUT);
     sonarlintEngine.post(command, progressMonitor).get();
 
     assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "overriddenImpacts").containsOnly(
-      tuple("java:S1220", null, inputFile.getPath(), Collections.emptyMap()),
-      tuple("java:S1481", 4, inputFile.getPath(), Collections.emptyMap()));
+      tuple("java:S1220", null, inputFile.getPath(), Map.of()),
+      tuple("java:S1481", 4, inputFile.getPath(), Map.of()));
   }
 
   @Test
@@ -222,7 +221,7 @@ public class SonarLintTest {
     ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
 
     sonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
-    var command = new AnalyzeCommand("myModule", configuration, issues::add, DEFAULT_LOG_OUTPUT);
+    var command = new AnalyzeCommand("myModule", configuration, issues::add, NOOP_LOG_OUTPUT);
     AnalysisResults analysisResults = sonarlintEngine.post(command, progressMonitor).get();
 
     assertThat(issues).isEmpty();
@@ -250,7 +249,7 @@ public class SonarLintTest {
     var pluginConfiguration = new PluginsLoader.Configuration(pluginJarLocation, enabledLanguages, false, Optional.empty());
     var loadedPlugins = new PluginsLoader().load(pluginConfiguration, Set.of()).getLoadedPlugins();
 
-    AnalysisEngine specificSonarlintEngine = new AnalysisEngine(engineConfiguration, loadedPlugins, DEFAULT_LOG_OUTPUT);
+    AnalysisEngine specificSonarlintEngine = new AnalysisEngine(engineConfiguration, loadedPlugins, NOOP_LOG_OUTPUT);
 
     ClientInputFile inputFile = prepareInputFile("Foo.java", """
         public class Foo {
