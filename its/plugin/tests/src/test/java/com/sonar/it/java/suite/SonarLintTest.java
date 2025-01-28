@@ -26,46 +26,77 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.Nullable;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonarsource.sonarlint.core.analysis.AnalysisEngine;
+import org.sonarsource.sonarlint.core.analysis.api.ActiveRule;
+import org.sonarsource.sonarlint.core.analysis.api.AnalysisConfiguration;
+import org.sonarsource.sonarlint.core.analysis.api.AnalysisEngineConfiguration;
 import org.sonarsource.sonarlint.core.analysis.api.AnalysisResults;
 import org.sonarsource.sonarlint.core.analysis.api.ClientInputFile;
-import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
-import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneAnalysisConfiguration;
-import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneGlobalConfiguration;
-import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneSonarLintEngine;
-import org.sonarsource.sonarlint.core.commons.IssueSeverity;
-import org.sonarsource.sonarlint.core.commons.Language;
-import org.sonarsource.sonarlint.core.commons.log.ClientLogOutput;
-import org.sonarsource.sonarlint.core.commons.progress.ClientProgressMonitor;
+import org.sonarsource.sonarlint.core.analysis.api.ClientModuleFileSystem;
+import org.sonarsource.sonarlint.core.analysis.api.ClientModuleInfo;
+import org.sonarsource.sonarlint.core.analysis.api.Issue;
+import org.sonarsource.sonarlint.core.analysis.command.AnalyzeCommand;
+import org.sonarsource.sonarlint.core.analysis.command.RegisterModuleCommand;
+import org.sonarsource.sonarlint.core.commons.api.SonarLanguage;
+import org.sonarsource.sonarlint.core.commons.log.LogOutput;
+import org.sonarsource.sonarlint.core.commons.log.SonarLintLogger;
+import org.sonarsource.sonarlint.core.commons.progress.ProgressMonitor;
+import org.sonarsource.sonarlint.core.plugin.commons.PluginsLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 public class SonarLintTest {
+  private static final LogOutput DEFAULT_LOG_OUTPUT = new LogOutput() {
+    @Override
+    public void log(@Nullable String formattedMessage, Level level, @Nullable String stacktrace) {
+      /*Don't pollute logs*/
+    }
+  };
 
   @ClassRule
   public static TemporaryFolder temp = new TemporaryFolder();
 
-  private static StandaloneSonarLintEngine sonarlintEngine;
+  private static AnalysisEngine sonarlintEngine;
   private static File baseDir;
+
+  private final ProgressMonitor progressMonitor = new ProgressMonitor(null);
 
   @BeforeClass
   public static void prepare() throws Exception {
-    StandaloneGlobalConfiguration config = StandaloneGlobalConfiguration.builder()
-      .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION.getFile().toPath())
-      .setSonarLintUserHome(temp.newFolder().toPath())
-      .setLogOutput((formattedMessage, level) -> { /* Don't pollute logs*/ })
-      .addEnabledLanguage(Language.JAVA)
+    AnalysisEngineConfiguration config = AnalysisEngineConfiguration.builder()
+      .setWorkDir(temp.getRoot().toPath())
       .build();
-    sonarlintEngine = new StandaloneSonarLintEngineImpl(config);
+
+    SonarLintLogger.setTarget(DEFAULT_LOG_OUTPUT);
+    var pluginJarLocation = Set.of(JavaTestSuite.JAVA_PLUGIN_LOCATION.getFile().toPath());
+    var enabledLanguages = Set.of(SonarLanguage.JAVA);
+    var pluginConfiguration = new PluginsLoader.Configuration(pluginJarLocation, enabledLanguages, false, Optional.empty());
+    var loadedPlugins = new PluginsLoader().load(pluginConfiguration, Set.of()).getLoadedPlugins();
+
+    sonarlintEngine = new AnalysisEngine(config, loadedPlugins, DEFAULT_LOG_OUTPUT);
     baseDir = temp.newFolder();
+  }
+
+  @AfterClass
+  public static void stop() {
+    SonarLintLogger.setTarget(null);
+    sonarlintEngine.stop();
   }
 
   @Test
@@ -82,16 +113,25 @@ public class SonarLintTest {
       false);
 
     final List<Issue> issues = new ArrayList<>();
-    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()
+    AnalysisConfiguration configuration = AnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
       .addInputFile(inputFile)
-      .build();
-    sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
+      .addActiveRules(
+        new ActiveRule("java:S106", SonarLanguage.JAVA.name()),
+        new ActiveRule("java:S1220", SonarLanguage.JAVA.name()),
+        new ActiveRule("java:S1481", SonarLanguage.JAVA.name())
+      ).build();
 
-    assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("java:S106", 4, inputFile.getPath(), IssueSeverity.MAJOR),
-      tuple("java:S1220", null, inputFile.getPath(), IssueSeverity.MINOR),
-      tuple("java:S1481", 3, inputFile.getPath(), IssueSeverity.MINOR));
+    ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
+    sonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
+    var command = new AnalyzeCommand("myModule", configuration, issues::add, DEFAULT_LOG_OUTPUT);
+    sonarlintEngine.post(command, progressMonitor).get();
+
+    assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "overriddenImpacts").containsExactlyInAnyOrder(
+      tuple("java:S106", 4, inputFile.getPath(), Map.of()),
+      tuple("java:S1220", null, inputFile.getPath(), Map.of()),
+      tuple("java:S1481", 3, inputFile.getPath(), Map.of())
+    );
   }
 
   @Test
@@ -115,18 +155,23 @@ public class SonarLintTest {
       true);
 
     final List<Issue> issues = new ArrayList<>();
-    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()
+    AnalysisConfiguration configuration = AnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
       .addInputFile(inputFile)
-      .build();
-    sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
+      .addActiveRules(
+        new ActiveRule("java:S1220", SonarLanguage.JAVA.name()),
+        new ActiveRule("java:S2925", SonarLanguage.JAVA.name())
+      ).build();
+    ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
 
-    // Issues reported by S1607 are no longer expected here as the check requires complete semantic to run properly.
-    assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      // tuple("squid:S2970", 6, inputFile.getPath(), "BLOCKER"),
-      tuple("java:S2925", 7, inputFile.getPath(), IssueSeverity.MAJOR),
+    sonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
+    var command = new AnalyzeCommand("myModule", configuration, issues::add, DEFAULT_LOG_OUTPUT);
+    sonarlintEngine.post(command, progressMonitor).get();
+
+    assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "overriddenImpacts").containsOnly(
+      tuple("java:S2925", 7, inputFile.getPath(), Collections.emptyMap()),
       // expected issue
-      tuple("java:S1220", null, inputFile.getPath(), IssueSeverity.MINOR));
+      tuple("java:S1220", null, inputFile.getPath(), Collections.emptyMap()));
   }
 
   @Test
@@ -144,41 +189,68 @@ public class SonarLintTest {
       false);
 
     final List<Issue> issues = new ArrayList<>();
-    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()
+    AnalysisConfiguration configuration = AnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
       .addInputFile(inputFile)
+      .addActiveRules(
+        new ActiveRule("java:S1220", SonarLanguage.JAVA.name()),
+        new ActiveRule("java:S1481", SonarLanguage.JAVA.name())
+      )
       .build();
-    sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
 
-    assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "severity").containsOnly(
-      tuple("java:S1220", null, inputFile.getPath(), IssueSeverity.MINOR),
-      tuple("java:S1481", 4, inputFile.getPath(), IssueSeverity.MINOR));
+
+    ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
+
+    sonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
+    var command = new AnalyzeCommand("myModule", configuration, issues::add, DEFAULT_LOG_OUTPUT);
+    sonarlintEngine.post(command, progressMonitor).get();
+
+    assertThat(issues).extracting("ruleKey", "startLine", "inputFile.path", "overriddenImpacts").containsOnly(
+      tuple("java:S1220", null, inputFile.getPath(), Collections.emptyMap()),
+      tuple("java:S1481", 4, inputFile.getPath(), Collections.emptyMap()));
   }
 
   @Test
   public void parse_error_should_report_analysis_error() throws Exception {
     ClientInputFile inputFile = prepareInputFile("ParseError.java", "class ParseError {", false);
     final List<Issue> issues = new ArrayList<>();
-    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()
+    AnalysisConfiguration configuration = AnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
       .addInputFile(inputFile)
       .build();
-    AnalysisResults analysisResults = sonarlintEngine.analyze(standaloneAnalysisConfiguration, issues::add, null, null);
+
+    ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
+
+    sonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
+    var command = new AnalyzeCommand("myModule", configuration, issues::add, DEFAULT_LOG_OUTPUT);
+    AnalysisResults analysisResults = sonarlintEngine.post(command, progressMonitor).get();
+
     assertThat(issues).isEmpty();
     assertThat(analysisResults.failedAnalysisFiles()).hasSize(1);
   }
 
   @Test
   public void sonarlint_cancelled_analysis_logs_but_does_not_rethrow_exception() throws Exception {
-    List<ClientLogOutput.Level> logLevels = new ArrayList<>();
+    List<LogOutput.Level> logLevels = new ArrayList<>();
     List<String> errorLogs = new ArrayList<>();
-    StandaloneGlobalConfiguration config = StandaloneGlobalConfiguration.builder()
-      .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION.getFile().toPath())
-      .setSonarLintUserHome(temp.newFolder().toPath())
-      .setLogOutput((formattedMessage, level) -> logLevels.add(level))
-      .addEnabledLanguage(Language.JAVA)
+
+    AnalysisEngineConfiguration engineConfiguration = AnalysisEngineConfiguration.builder()
+      .setWorkDir(temp.getRoot().toPath())
       .build();
-    StandaloneSonarLintEngine specificSonarlintEngine = new StandaloneSonarLintEngineImpl(config);
+
+    LogOutput levelCollector = new LogOutput() {
+      @Override
+      public void log(String formattedMessage, Level level, @Nullable String stacktrace) {
+        logLevels.add(level);
+      }
+    };
+    SonarLintLogger.setTarget(levelCollector);
+    var pluginJarLocation = Set.of(JavaTestSuite.JAVA_PLUGIN_LOCATION.getFile().toPath());
+    var enabledLanguages = Set.of(SonarLanguage.JAVA);
+    var pluginConfiguration = new PluginsLoader.Configuration(pluginJarLocation, enabledLanguages, false, Optional.empty());
+    var loadedPlugins = new PluginsLoader().load(pluginConfiguration, Set.of()).getLoadedPlugins();
+
+    AnalysisEngine specificSonarlintEngine = new AnalysisEngine(engineConfiguration, loadedPlugins, DEFAULT_LOG_OUTPUT);
 
     ClientInputFile inputFile = prepareInputFile("Foo.java", """
         public class Foo {
@@ -192,36 +264,48 @@ public class SonarLintTest {
         """,
       false);
 
-    StandaloneAnalysisConfiguration standaloneAnalysisConfiguration = StandaloneAnalysisConfiguration.builder()
+    AnalysisConfiguration analysisConfiguration = AnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
+      .addActiveRules(
+        new ActiveRule("java:S1220", SonarLanguage.JAVA.name()),
+        new ActiveRule("java:S1481", SonarLanguage.JAVA.name())
+      )
       .addInputFile(inputFile)
       .build();
+
     final List<Issue> issues = new ArrayList<>();
-    CancellableProgressMonitor progressMonitor = new CancellableProgressMonitor();
-    specificSonarlintEngine.analyze(
-      standaloneAnalysisConfiguration,
-      issue -> {
-        if (!issues.isEmpty()) {
-          progressMonitor.isCanceled = true;
-          throw new MyCancelException();
-        }
-        issues.add(issue);
-      },
-      (formattedMessage, level) -> {
-        if (level == ClientLogOutput.Level.ERROR) {
+
+    CancellableProgressMonitor cancellableProgressMonitor = new CancellableProgressMonitor();
+
+    ClientModuleFileSystem clientFileSystem = getClientModuleFileSystem(inputFile);
+
+    specificSonarlintEngine.post(new RegisterModuleCommand(new ClientModuleInfo("myModule", clientFileSystem)), progressMonitor).get();
+    Consumer<Issue> issueListener = issue -> {
+      if (!issues.isEmpty()) {
+        cancellableProgressMonitor.isCanceled = true;
+        throw new MyCancelException();
+      }
+      issues.add(issue);
+    };
+    LogOutput errorCollector = new LogOutput() {
+      @Override
+      public void log(@Nullable String formattedMessage, Level level, @Nullable String stacktrace) {
+        if (level == LogOutput.Level.ERROR) {
           errorLogs.add(formattedMessage);
         }
-      },
-      progressMonitor
+      }
+    };
+    var command = new AnalyzeCommand("myModule",
+      analysisConfiguration,
+      issueListener,
+      errorCollector
     );
+    specificSonarlintEngine.post(command, cancellableProgressMonitor).get();
 
     // Check that there were no error logs prior to the analysis, as the log levels are not collected DURING the analysis
-    assertThat(logLevels).doesNotContain(ClientLogOutput.Level.ERROR);
+    assertThat(logLevels).doesNotContain(LogOutput.Level.ERROR);
     assertThat(errorLogs)
-      .hasSize(2)
-      .allMatch(msg -> msg.equals("Error executing sensor: 'JavaSensor'") ||
-        msg.startsWith("org.sonar.java.AnalysisException: Analysis cancelled")
-      );
+      .containsOnly("Error executing sensor: 'JavaSensor'");
     assertThat(issues).hasSize(1);
   }
 
@@ -276,40 +360,33 @@ public class SonarLintTest {
     };
   }
 
-  @AfterClass
-  public static void stop() {
-    sonarlintEngine.stop();
+  private static ClientModuleFileSystem getClientModuleFileSystem(ClientInputFile inputFile) {
+    return new ClientModuleFileSystem() {
+      @Override
+      public Stream<ClientInputFile> files(String s, InputFile.Type type) {
+        return Stream.of(inputFile);
+      }
+
+      @Override
+      public Stream<ClientInputFile> files() {
+        return Stream.of(inputFile);
+      }
+    };
   }
 
   static class MyCancelException extends RuntimeException {
   }
 
-  static class CancellableProgressMonitor implements ClientProgressMonitor {
+  static class CancellableProgressMonitor extends ProgressMonitor {
     boolean isCanceled = false;
-    String message;
-    float fraction;
 
-    boolean intermediate;
+    CancellableProgressMonitor() {
+      super(null);
+    }
 
     @Override
     public boolean isCanceled() {
       return isCanceled;
     }
-
-    @Override
-    public void setMessage(String msg) {
-      message = msg;
-    }
-
-    @Override
-    public void setFraction(float fraction) {
-      this.fraction = fraction;
-    }
-
-    @Override
-    public void setIndeterminate(boolean indeterminate) {
-      intermediate = intermediate;
-    }
   }
-
 }
