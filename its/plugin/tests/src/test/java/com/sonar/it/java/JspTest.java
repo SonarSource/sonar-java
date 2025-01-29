@@ -54,6 +54,7 @@ public class JspTest {
       .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION)
       // we need html plugin to have "jsp" language
       .addPlugin(MavenLocation.of("org.sonarsource.html", "sonar-html-plugin", "DEV"))
+      .setServerProperty("sonar.telemetry.enable", "false")
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-jsp.xml"))
       .activateLicense();
     orchestratorBuilder.addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")));

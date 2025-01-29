@@ -70,6 +70,7 @@ public class JavaTestSuite {
       .addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")))
       // making sure the tutorial is still working
       .addPlugin(TUTORIAL_EXAMPLE_PLUGIN_LOCATION)
+      .setServerProperty("sonar.telemetry.enable", "false")
       // profiles for each test projects
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-extension.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-tutorial.xml"))
