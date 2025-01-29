@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -102,16 +103,14 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
    * For simplicity and to avoid surprises there is no recursion on arguments.
    */
   private static boolean isThrowableArgument(LiteralTree tree) {
-    Tree arguments = tree.parent();
-    if (arguments == null || !arguments.is(Tree.Kind.ARGUMENTS)) {
-      return false;
-    }
-    Tree newClass = arguments.parent();
-    if (newClass == null || !newClass.is(Tree.Kind.NEW_CLASS)) {
-      return false;
-    }
-    Tree throwStatement = newClass.parent();
-    return throwStatement != null && throwStatement.is(Tree.Kind.THROW_STATEMENT);
+    return
+      Optional.ofNullable(tree.parent())
+        .filter(t -> t.is(Tree.Kind.ARGUMENTS))
+        .map(Tree::parent)
+        .filter(t -> t.is(Tree.Kind.NEW_CLASS))
+        .map(Tree::parent)
+        .filter(t -> t.is(Tree.Kind.THROW_STATEMENT))
+        .isPresent();
   }
 
   private static boolean isStringLiteralFragment(ExpressionTree tree) {
