@@ -111,10 +111,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
       return false;
     }
     Tree throwStatement = newClass.parent();
-    if (throwStatement == null || !throwStatement.is(Tree.Kind.THROW_STATEMENT)) {
-      return false;
-    }
-    return true;
+    return throwStatement != null && throwStatement.is(Tree.Kind.THROW_STATEMENT);
   }
 
   private static boolean isStringLiteralFragment(ExpressionTree tree) {
