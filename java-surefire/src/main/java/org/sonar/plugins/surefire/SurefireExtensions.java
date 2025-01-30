@@ -17,8 +17,8 @@
 package org.sonar.plugins.surefire;
 
 import java.util.Arrays;
+import java.util.Set;
 import org.sonar.api.config.PropertyDefinition;
-import org.sonar.api.resources.Qualifiers;
 import org.sonar.java.JavaConstants;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
@@ -39,7 +39,7 @@ public final class SurefireExtensions {
         .name("JUnit Report Paths")
         .description("Comma-separated paths to the various directories containing the *.xml JUnit report files. "
           + "Each path may be absolute or relative to the project base directory.")
-        .onQualifiers(Qualifiers.PROJECT)
+        .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
         .multiValues(true)
         .category(JavaConstants.JAVA_CATEGORY)
         .subCategory("JUnit")

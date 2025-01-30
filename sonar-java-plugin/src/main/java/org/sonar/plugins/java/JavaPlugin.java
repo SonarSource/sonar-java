@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.sonar.api.Plugin;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
-import org.sonar.api.resources.Qualifiers;
 import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConstants;
@@ -74,7 +74,7 @@ public class JavaPlugin implements Plugin {
         .multiValues(true)
         .description("List of suffixes for Java files to analyze. To not filter, leave the list empty.")
         .subCategory("General")
-        .onQualifiers(Qualifiers.PROJECT)
+        .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
         .build(),
       JavaRulesDefinition.class,
       SonarComponents.class,
@@ -84,7 +84,7 @@ public class JavaPlugin implements Plugin {
         .description("Allow to enable JDK's preview features for analysis. Only the Java's latest supported version preview features are supported.")
         .category(JavaConstants.JAVA_CATEGORY)
         .subCategory("Language")
-        .onQualifiers(Qualifiers.PROJECT)
+        .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
         .type(PropertyType.BOOLEAN)
         .defaultValue("False")
         .build(),
@@ -104,7 +104,7 @@ public class JavaPlugin implements Plugin {
         )
         .category(JavaConstants.JAVA_CATEGORY)
         .subCategory("Language")
-        .onQualifiers(Qualifiers.PROJECT)
+        .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
         .type(PropertyType.BOOLEAN)
         .defaultValue("False")
         .build(),
