@@ -16,9 +16,9 @@
  */
 package org.sonar.plugins.java;
 
+import java.util.Set;
 import org.sonar.api.Plugin.Context;
 import org.sonar.api.config.PropertyDefinition;
-import org.sonar.api.resources.Qualifiers;
 import org.sonar.java.externalreport.CheckstyleSensor;
 import org.sonar.java.externalreport.ExternalRulesDefinition;
 import org.sonar.java.externalreport.PmdSensor;
@@ -48,7 +48,7 @@ public final class ExternalReportExtensions {
         .description("Paths (absolute or relative) to xml files with Checkstyle issues.")
         .category(EXTERNAL_ANALYZERS_CATEGORY)
         .subCategory(JAVA_SUBCATEGORY)
-        .onQualifiers(Qualifiers.PROJECT)
+        .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
         .multiValues(true)
         .build());
 
@@ -59,7 +59,7 @@ public final class ExternalReportExtensions {
         .description("Paths (absolute or relative) to xml files with PMD issues.")
         .category(EXTERNAL_ANALYZERS_CATEGORY)
         .subCategory(JAVA_SUBCATEGORY)
-        .onQualifiers(Qualifiers.PROJECT)
+        .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
         .multiValues(true)
         .build());
 
@@ -72,7 +72,7 @@ public final class ExternalReportExtensions {
         .description("Paths (absolute or relative) to xml files with SpotBugs issues.")
         .category(EXTERNAL_ANALYZERS_CATEGORY)
         .subCategory(JAVA_SUBCATEGORY)
-        .onQualifiers(Qualifiers.PROJECT)
+        .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
         .multiValues(true)
         .build());
   }
