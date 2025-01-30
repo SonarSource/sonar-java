@@ -6,9 +6,6 @@
 "com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
 223
 ],
-"com.google.guava:guava:src/com/google/common/collect/Cut.java": [
-141
-],
 "com.google.guava:guava:src/com/google/common/collect/FilteredKeyMultimap.java": [
 121
 ],
@@ -28,8 +25,5 @@
 "com.google.guava:guava:src/com/google/common/math/MathPreconditions.java": [
 32,
 53
-],
-"com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
-781
 ]
 }

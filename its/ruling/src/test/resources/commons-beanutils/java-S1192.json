@@ -14,16 +14,9 @@
 220
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java": [
-235,
 360,
 407,
 728
-],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaClass.java": [
-231
-],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java": [
-224
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java": [
 91
@@ -34,7 +27,6 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
 292,
 292,
-363,
 420,
 429,
 430,
@@ -46,9 +38,6 @@
 1625,
 1627,
 1630
-],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ResultSetIterator.java": [
-98
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/WrapDynaBean.java": [
 141,
