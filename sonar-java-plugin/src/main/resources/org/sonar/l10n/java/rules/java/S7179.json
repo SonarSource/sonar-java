@@ -12,7 +12,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-7179",
   "sqKey": "S7179",
-  "scope": "Tests",
+  "scope": "Main",
   "quickfix": "unknown",
   "code": {
     "impacts": {
