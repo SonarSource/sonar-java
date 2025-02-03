@@ -1,0 +1,23 @@
+{
+  "title": "@Cacheable and @CachePut should not be combined",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-7179",
+  "sqKey": "S7179",
+  "scope": "Tests",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  }
+}
