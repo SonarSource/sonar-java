@@ -1,6 +1,8 @@
 package checks.spring;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.repository.CrudRepository;
@@ -31,17 +33,21 @@ interface StandardInterface {
 
 class RepoImpl implements Repository<Entity, String> {
   Page<Entity> findByName(String name) { // Compliant, this is a custom implementation and will not cause issues to spring
-    return null;
+    return new PageImpl<>(List.of(new Entity(name)));
   }
 }
 
 class AClass {
   public Page<Entity> findByName(String name) { // Compliant, not a spring repository
-    return null;
+    return new PageImpl<>(List.of(new Entity(name)));
   }
 }
 
 class Entity {
+  String name;
+  public Entity(String name) {
+    this.name = name;
+  }
 }
 
 interface MyPageable extends Pageable {
