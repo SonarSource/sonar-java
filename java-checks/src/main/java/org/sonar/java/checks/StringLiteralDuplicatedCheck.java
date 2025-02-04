@@ -98,12 +98,20 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   }
 
   /**
-   * Verify that <code>tree</code> is an argument in
-   * <code>throw new SomeException(arg1, arg2, ...)</code>.
-   * For simplicity and to avoid surprises there is no recursion on arguments.
+   * Verify that <code>literalTree</code> is an argument in
+   * <code>throw new SomeException(arg1, arg2, ...)</code>,
+   * or a part of an argument (to account for concatenation), for example,
+   * <code>throw new SomeException(arg1, "literalTree" + stuff, ...)</code>,
+   * For simplicity and to avoid surprises, we do not consider more complex cases.
    */
-  private static boolean isThrowableArgument(LiteralTree tree) {
-    return Optional.ofNullable(tree.parent())
+  private static boolean isThrowableArgument(LiteralTree literalTree) {
+    Optional<Tree> tree = Optional.ofNullable(literalTree.parent());
+    // If the literal is a part of string concatenation expression, move up
+    // until the argument list.
+    while(tree.filter(t -> t.is(Tree.Kind.PLUS)).isPresent()) {
+      tree = tree.map(Tree::parent);
+    }
+    return tree
         .filter(t -> t.is(Tree.Kind.ARGUMENTS))
         .map(Tree::parent)
         .filter(t -> t.is(Tree.Kind.NEW_CLASS))

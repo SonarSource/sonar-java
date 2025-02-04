@@ -176,13 +176,13 @@ class DuplicatedExceptionArguments {
     }
   }
 
-  private void areNonCompliantWhenConcatenated(int r) {
+  private void concatenationIsAllowed(int r) {
     if (r == 1) {
-      throw new IllegalArgumentException("message concatenation" + r); // Noncompliant {{Define a constant instead of duplicating this literal "message concatenation" 3 times.}}
+      throw new IllegalArgumentException("message" + "concatenation" + r);
     } else if (r == 2) {
-      throw new IllegalArgumentException("message concatenation" + 2 * r);
+      throw new IllegalArgumentException("message" + "concatenation" + 2 * r);
     } else {
-      throw new IllegalArgumentException("message concatenation" + 3 * r);
+      throw new IllegalArgumentException("message" + "concatenation" + 3 * r);
     }
   }
 }
