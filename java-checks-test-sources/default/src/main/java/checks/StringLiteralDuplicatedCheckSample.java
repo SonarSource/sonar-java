@@ -114,8 +114,8 @@ class Coverage {
   private final String prevRightNull = 3 + "SELECT";
 }
 
-class ExceptionArguments {
-  private void simple(int r) {
+class DuplicatedExceptionArguments {
+  private void areCompliantByDefault(int r) {
     if(r == 0) {
       throw new IllegalArgumentException("simple IAE");
     } else if (r == 1) {
