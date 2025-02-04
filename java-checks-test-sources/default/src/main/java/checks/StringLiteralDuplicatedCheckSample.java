@@ -116,7 +116,7 @@ class Coverage {
 
 class DuplicatedExceptionArguments {
   private void areCompliantByDefault(int r) {
-    if(r == 0) {
+    if (r == 0) {
       throw new IllegalArgumentException("simple IAE");
     } else if (r == 1) {
       throw new IllegalArgumentException("simple IAE");
@@ -132,7 +132,7 @@ class DuplicatedExceptionArguments {
   }
 
   private void twoArgs(int r, Throwable throwable) throws MyException {
-    if(r == 0) {
+    if (r == 0) {
       throw new MyException("my exception message", throwable);
     } else if (r == 1) {
       throw new MyException("my exception message", throwable);
@@ -142,7 +142,7 @@ class DuplicatedExceptionArguments {
   }
 
   private Throwable buildButDoNotThrow(int r) {
-    if(r == 0) {
+    if (r == 0) {
       return new NullPointerException("build message"); // Noncompliant {{Define a constant instead of duplicating this literal "build message" 3 times.}}
     } else if (r == 1) {
       return new IllegalArgumentException("build message");
@@ -152,7 +152,7 @@ class DuplicatedExceptionArguments {
   }
 
   private void nestedString1(int r) {
-    if(r == 0) {
+    if (r == 0) {
       throw new IllegalArgumentException("nested string 1".toLowerCase());
     } else if (r == 1) {
       throw new IllegalArgumentException("nested string 1".toUpperCase());
@@ -165,13 +165,24 @@ class DuplicatedExceptionArguments {
     return s + suffix;
   }
 
+  // This case could be revisited if it does not complicate the implementation.
   private void areNonCompliantWhenPassedToMethod(int r) {
-    if(r == 0) {
+    if (r == 0) {
       throw new IllegalArgumentException(transform("nested string 2", "AAA")); // Noncompliant {{Define a constant instead of duplicating this literal "nested string 2" 3 times.}}
     } else if (r == 1) {
       throw new IllegalArgumentException(transform("nested string 2", "BBB"));
     } else if (r == 2) {
       throw new IllegalArgumentException(transform("nested string 2", "CCC"));
+    }
+  }
+
+  private void areNonCompliantWhenConcatenated(int r) {
+    if (r == 1) {
+      throw new IllegalArgumentException("message concatenation" + r); // Noncompliant {{Define a constant instead of duplicating this literal "message concatenation" 3 times.}}
+    } else if (r == 2) {
+      throw new IllegalArgumentException("message concatenation" + 2 * r);
+    } else {
+      throw new IllegalArgumentException("message concatenation" + 3 * r);
     }
   }
 }
