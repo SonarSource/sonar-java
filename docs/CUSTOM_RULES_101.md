@@ -686,7 +686,7 @@ Check this example: [SecurityAnnotationMandatoryRule.java](https://github.com/So
 In the `pom.xml`, define in the `Maven Dependency Plugin` part all the JARs you need to run your Unit Tests. 
 For example, if your sample code used in your Unit Tests is having a dependency on Spring, add it there.
 
-See: [pom.xml#L137-L197](./java-custom-rules-example/pom_SQ_9_9_LTS.xml#L137-L197)
+See: [pom_SQ_10_6_LATEST.xml#L168-L227](./java-custom-rules-example/pom_SQ_10_6_LATEST.xml#L168-L227)
 
 ### How to test precise issue location
 
