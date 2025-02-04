@@ -1,4 +1,4 @@
-package org.sonar.java.checks;
+package org.sonar.java.checks.spring;
 
 import java.util.List;
 import org.sonar.check.Rule;
