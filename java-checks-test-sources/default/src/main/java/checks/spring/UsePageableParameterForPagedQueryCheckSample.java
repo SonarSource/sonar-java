@@ -8,7 +8,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.Repository;
 
-public interface UsePageableParameterForPagedQueryCheckSample extends Repository<Entity, String> {
+public interface UsePageableParameterForPagedQueryCheckSample extends StandardInterface, Repository<Entity, String> {
   Page<Entity> findByName(String name); // Noncompliant {{Add a "Pageable" parameter to this method to support pagination.}}
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -19,6 +19,9 @@ public interface UsePageableParameterForPagedQueryCheckSample extends Repository
   Slice<Entity> findByLastName(String lastName, Pageable pageable); // Compliant
 
   Page<Entity> getAll(MyPageable pageable); // Compliant
+
+  void randomMethod();
+
 }
 
 interface CrudRepo extends CrudRepository<Entity, String> {

@@ -44,7 +44,7 @@ public class UsePageableParameterForPagedQueryCheck extends IssuableSubscription
   public void visitNode(Tree tree) {
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
     Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
-    if (enclosingClass == null || !enclosingClass.isInterface()) {
+    if (!enclosingClass.isInterface()) {
       return;
     }
     if (isPageableMethod(methodTree, enclosingClass.type()) && !hasPageableParameter(methodTree)) {
@@ -64,9 +64,7 @@ public class UsePageableParameterForPagedQueryCheck extends IssuableSubscription
 
   private static boolean returnsPageOrSlice(MethodTreeImpl method) {
     TypeTree returnType = method.returnType();
-    if (returnType == null) {
-      return false;
-    }
+    //Could not reproduce case where returnType is null
     return returnType.symbolType().is(SPRING_PAGE_FQN) || returnType.symbolType().is(SPRING_SLICE_FQN);
   }
 
@@ -75,7 +73,9 @@ public class UsePageableParameterForPagedQueryCheck extends IssuableSubscription
       return true;
     }
     for (Type superType : type.symbol().superTypes()) {
-      return isTypeOrDescendantOf(superType, fullyQualifiedName);
+      if (isTypeOrDescendantOf(superType, fullyQualifiedName)) {
+        return true;
+      }
     }
     return false;
   }
