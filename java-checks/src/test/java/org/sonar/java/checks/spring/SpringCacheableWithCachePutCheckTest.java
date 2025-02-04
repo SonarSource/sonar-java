@@ -18,25 +18,29 @@ package org.sonar.java.checks.spring;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.TestUtils;
+
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SpringCacheableWithCachePutCheckTest {
 
   private static final String SAMPLE_FILE = "checks/spring/SpringCacheableWithCachePutCheckSample.java";
+  private static final String FILENAME = mainCodeSourcesPath(SAMPLE_FILE);
+  private static final SpringCacheableWithCachePutCheck CHECK = new SpringCacheableWithCachePutCheck();
 
   @Test
   void test() {
+
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath(SAMPLE_FILE))
-      .withCheck(new SpringCacheableWithCachePutCheck())
+      .onFile(FILENAME)
+      .withCheck(CHECK)
       .verifyIssues();
   }
 
   @Test
   void testWithoutSemantics() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath(SAMPLE_FILE))
-      .withCheck(new SpringCacheableWithCachePutCheck())
+      .onFile(FILENAME)
+      .withCheck(CHECK)
       .withoutSemantic()
       .verifyNoIssues();
   }
