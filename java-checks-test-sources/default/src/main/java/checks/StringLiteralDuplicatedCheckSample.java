@@ -165,7 +165,7 @@ class DuplicatedExceptionArguments {
     return s + suffix;
   }
 
-  private void nestedString2(int r) {
+  private void areNonCompliantWhenPassedToMethod(int r) {
     if(r == 0) {
       throw new IllegalArgumentException(transform("nested string 2", "AAA")); // Noncompliant {{Define a constant instead of duplicating this literal "nested string 2" 3 times.}}
     } else if (r == 1) {
