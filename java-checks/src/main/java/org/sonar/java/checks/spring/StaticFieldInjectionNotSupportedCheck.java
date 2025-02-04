@@ -61,9 +61,12 @@ public class StaticFieldInjectionNotSupportedCheck extends IssuableSubscriptionV
         .forEach(anns ->
           anns.forEach(ann -> reportIssue(ann, STATIC_FIELD_MESSAGE))
         );
+      return;
 
-    } else if (ModifiersUtils.hasModifier(((MethodTree)tree).modifiers(), Modifier.STATIC)) {
-      MethodTree method = (MethodTree)tree;
+    }
+
+    MethodTree method = (MethodTree)tree;
+    if (ModifiersUtils.hasModifier(method.modifiers(), Modifier.STATIC)) {
 
       //report on method annotations
       injectionAnnotations(method.modifiers())
