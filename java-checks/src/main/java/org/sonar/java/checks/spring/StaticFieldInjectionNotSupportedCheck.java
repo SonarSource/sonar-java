@@ -53,16 +53,17 @@ public class StaticFieldInjectionNotSupportedCheck extends IssuableSubscriptionV
     if (tree instanceof ClassTree clazz) {
       Stream<VariableTree> staticFields = clazz.members().stream()
         .filter(child -> child instanceof VariableTree v && ModifiersUtils.hasModifier(v.modifiers(), Modifier.STATIC))
-        .map(field -> (VariableTree) field);
+        .map(VariableTree.class::cast);
 
       staticFields
         .map(v -> injectionAnnotations(v.modifiers()))
         .filter(anns -> !anns.isEmpty())
-        .forEach(anns -> {
-          anns.forEach(ann -> reportIssue(ann, STATIC_FIELD_MESSAGE));
-        });
+        .forEach(anns ->
+          anns.forEach(ann -> reportIssue(ann, STATIC_FIELD_MESSAGE))
+        );
 
-    } else if (tree instanceof MethodTree method && ModifiersUtils.hasModifier(method.modifiers(), Modifier.STATIC)) {
+    } else if (ModifiersUtils.hasModifier(((MethodTree)tree).modifiers(), Modifier.STATIC)) {
+      MethodTree method = (MethodTree)tree;
 
       //report on method annotations
       injectionAnnotations(method.modifiers())
