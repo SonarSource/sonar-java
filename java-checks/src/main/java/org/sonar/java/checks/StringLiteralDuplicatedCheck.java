@@ -103,8 +103,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
    * For simplicity and to avoid surprises there is no recursion on arguments.
    */
   private static boolean isThrowableArgument(LiteralTree tree) {
-    return
-      Optional.ofNullable(tree.parent())
+    return Optional.ofNullable(tree.parent())
         .filter(t -> t.is(Tree.Kind.ARGUMENTS))
         .map(Tree::parent)
         .filter(t -> t.is(Tree.Kind.NEW_CLASS))
