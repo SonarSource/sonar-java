@@ -90,8 +90,5 @@
 ],
 "com.google.guava:guava:src/com/google/common/util/concurrent/Striped.java": [
 172
-],
-"com.google.guava:guava:src/com/google/thirdparty/publicsuffix/PublicSuffixPatterns.java": [
-6
 ]
 }

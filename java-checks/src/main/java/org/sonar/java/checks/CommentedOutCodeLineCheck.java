@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
@@ -26,7 +27,9 @@ import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Position;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -43,6 +46,8 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   private static final String MESSAGE = "This block of commented-out lines of code should be removed.";
 
   private final CodeRecognizer codeRecognizer;
+  private static final Position FILE_START = Position.at(Position.FIRST_LINE, Position.FIRST_COLUMN);
+  private Position compilationUnitFirstTokenPosition = FILE_START;
 
   public CommentedOutCodeLineCheck() {
     codeRecognizer = new CodeRecognizer(THRESHOLD, new JavaFootprint());
@@ -51,6 +56,15 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.TOKEN);
+  }
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    compilationUnitFirstTokenPosition = Optional.ofNullable(context.getTree())
+      .map(Tree::firstToken)
+      .map(SyntaxToken::range)
+      .map(Range::start).orElse(FILE_START);
   }
 
   @Override
@@ -115,12 +129,12 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   }
 
   /**
-   * We assume that comment on a first line - is a header with license.
+   * We assume that comment before the first code token is a license header.
    * However possible to imagine corner case: file may contain commented-out code starting from first line.
    * But we assume that probability of this is really low.
    */
-  private static boolean isHeader(SyntaxTrivia syntaxTrivia) {
-    return LineUtils.startLine(syntaxTrivia) == 1;
+  private boolean isHeader(SyntaxTrivia syntaxTrivia) {
+    return syntaxTrivia.range().start().isBefore(compilationUnitFirstTokenPosition);
   }
 
   private static boolean isJavadocLink(String line) {
