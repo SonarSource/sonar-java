@@ -7,7 +7,8 @@
     "constantCost": "5min"
   },
   "tags": [
-    "spring"
+    "spring",
+    "tests"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-7177",
