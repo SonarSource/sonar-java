@@ -47,15 +47,15 @@ public class DirtyContextShouldUseCorrectControlModeCheck extends IssuableSubscr
   @Override
   public void visitNode(Tree tree) {
     if (tree instanceof MethodTree method) {
-      forEachDirtyContextArguments(method.modifiers(), (assign) -> {
+      forEachDirtyContextArguments(method.modifiers(), assign -> {
         IdentifierTree ident = (IdentifierTree) assign.variable();
-        if(ident.name().equals(CLASS_MODE)){
+        if (ident.name().equals(CLASS_MODE)) {
           reportIssue(ident, REPLACE_CLASS_MODE);
         }
       });
     } else {
       ClassTree clazz = (ClassTree) tree;
-      forEachDirtyContextArguments(clazz.modifiers(), (assign) -> {
+      forEachDirtyContextArguments(clazz.modifiers(), assign -> {
         IdentifierTree ident = (IdentifierTree) assign.variable();
         if (ident.name().equals(METHOD_MODE)) {
           reportIssue(ident, REPLACE_METHOD_MODE);
@@ -67,7 +67,7 @@ public class DirtyContextShouldUseCorrectControlModeCheck extends IssuableSubscr
   private static void forEachDirtyContextArguments(ModifiersTree modifiers, Consumer<AssignmentExpressionTree> f) {
     for (AnnotationTree ann : modifiers.annotations()) {
       if (ann.symbolType().is(DIRTY_CONTEXT)) {
-        for(ExpressionTree expr : ann.arguments()){
+        for (ExpressionTree expr : ann.arguments()) {
           f.accept((AssignmentExpressionTree) expr);
         }
       }
