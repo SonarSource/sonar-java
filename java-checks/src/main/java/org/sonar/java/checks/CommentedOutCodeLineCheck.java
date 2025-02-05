@@ -68,6 +68,12 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    compilationUnitFirstTokenPosition = FILE_START;
+    super.leaveFile(context);
+  }
+
+  @Override
   public void visitToken(SyntaxToken syntaxToken) {
     List<AnalyzerMessage> issues = new ArrayList<>();
     AnalyzerMessage previousRelatedIssue = null;
