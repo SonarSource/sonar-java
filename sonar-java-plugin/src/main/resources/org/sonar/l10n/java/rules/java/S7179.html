@@ -1,0 +1,31 @@
+<h2>Why is this an issue?</h2>
+<p><code>@Cacheable</code> annotation is used to store the result of a method and avoid executing it for the same inputs. <code>@CachePut</code>
+instead is used to force the execution of a method and store the result in the cache. Annotating a method with both will produce unreliable behavior,
+except for specific corner-cases when their <code>condition()</code> or <code>unless()</code> expressions are mutually exclusive. Hence this pattern
+is strongly discouraged and an issue will be raised on such cases.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Cacheable
+@CachePut
+void getBook(String isbn){ // Non compliant, methods annotated with both @Cacheable and @CachePut will not behave as intended
+    ...
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Cacheable
+void getBook(String isbn){
+    ...
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Spring Documentation - <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/annotation/CachePut.html">@CachePut</a> </li>
+  <li> Spring Documentation - <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/annotation/Cacheable.html">@Cacheable</a> </li>
+</ul>
+

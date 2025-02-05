@@ -67,6 +67,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
     MethodMatchers.create().ofAnyType().name(MutableMembersUsageCheck::containsImmutableLikeTerm).withAnyParameters().build(),
     // Java 9s
     MethodMatchers.create().ofTypes("java.util.Set", "java.util.List", "java.util.Map").names("of", "ofEntries", "copyOf").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes("java.util.stream.Stream").names("toList").addWithoutParametersMatcher().build(),
     // apache...
     MethodMatchers.create()
       // commons 3.X

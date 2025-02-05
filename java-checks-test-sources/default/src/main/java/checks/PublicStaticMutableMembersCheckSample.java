@@ -66,6 +66,8 @@ public class PublicStaticMutableMembersCheckSample {
 
   public static final List LIST = Arrays.asList("a"); // Noncompliant
 
+  public static final List<String> STREAM_TO_LIST = Stream.of("").toList(); // Compliant
+
   public static final List PROPER_LIST = Collections.unmodifiableList(Arrays.asList("a"));
 
   public static final List EMPTY_ARRAY_LIST = new ArrayList(Arrays.asList()); // Noncompliant
