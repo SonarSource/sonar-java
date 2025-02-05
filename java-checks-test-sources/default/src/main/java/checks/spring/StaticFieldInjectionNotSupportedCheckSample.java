@@ -18,7 +18,6 @@ public class StaticFieldInjectionNotSupportedCheckSample {
   @Autowired
   @interface MyAutowired {}
 
-  // we should only raise if the DI framework is spring
   @Component
   public class StaticInjectComponent {
 
