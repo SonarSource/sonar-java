@@ -42,7 +42,7 @@ public class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheckSample {
     String getData(String id){return "";}
   }
 
-  @Cacheable("aCache")
+  @Cacheable("aCache") // here we apply it on an annotation and not an interface. There is no problem.
   @interface MyAnnotation {}
 
   @CacheConfig // Noncompliant {{Move this "@CacheConfig" annotation to a concrete class.}}
