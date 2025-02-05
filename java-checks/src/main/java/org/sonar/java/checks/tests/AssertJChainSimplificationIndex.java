@@ -116,18 +116,6 @@ public class AssertJChainSimplificationIndex {
       PredicateSimplifierWithoutContext.withSingleArg(LiteralUtils::isZero, "isEmpty()")))
     .put(IS_EQUAL_TO, Collections.singletonList(
       PredicateSimplifierWithoutContext.withSingleArg(ExpressionUtils::isNullLiteral, "isNull()")))
-    .put(IS_GREATER_THAN, Arrays.asList(
-      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isNegOneIntOrLong, "isNotNegative()"),
-      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isZeroIntOrLong, "isPositive()")))
-    .put(IS_GREATER_THAN_OR_EQUAL_TO, Arrays.asList(
-      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isZeroIntOrLong, "isNotNegative()"),
-      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isOneIntOrLong, "isPositive()")))
-    .put(IS_LESS_THAN, Arrays.asList(
-      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isZeroIntOrLong, "isNegative()"),
-      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isOneIntOrLong, "isNotPositive()")))
-    .put(IS_LESS_THAN_OR_EQUAL_TO, Arrays.asList(
-      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isNegOneIntOrLong, "isNegative()"),
-      PredicateSimplifierWithoutContext.withSingleArg(AssertJChainSimplificationIndex::isZeroIntOrLong, "isNotPositive()")))
     .put(IS_NOT_EQUAL_TO, Collections.singletonList(
       PredicateSimplifierWithoutContext.withSingleArg(subject -> ExpressionUtils.isNullLiteral(subject) &&
         !UnitTestUtils.isInUnitTestRelatedToObjectMethods(subject), "isNotNull()")

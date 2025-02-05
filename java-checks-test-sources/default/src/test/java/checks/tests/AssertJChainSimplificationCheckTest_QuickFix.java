@@ -18,10 +18,6 @@ public class AssertJChainSimplificationCheckTest_QuickFix {
 //                          ^^^^^^^^^
     // fix@qf_context_free2 {{Use "isNull()"}}
     // edit@qf_context_free2 [[sc=29;ec=44]] {{isNull()}}
-    assertThat(getString().indexOf(12)).isLessThan(0); // Noncompliant {{Use isNegative() instead.}} [[quickfixes=qf_context_free3]]
-//                                      ^^^^^^^^^^
-    // fix@qf_context_free3 {{Use "isNegative()"}}
-    // edit@qf_context_free3 [[sc=41;ec=54]] {{isNegative()}}
   }
 
   void withContextQuickFixes() {
