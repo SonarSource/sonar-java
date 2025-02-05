@@ -64,7 +64,7 @@ public class UsePageableParameterForPagedQueryCheck extends IssuableSubscription
 
   private static boolean returnsPageOrSlice(MethodTreeImpl method) {
     TypeTree returnType = method.returnType();
-    //Could not reproduce case where returnType is null
+    // Could not reproduce case where returnType is null
     return returnType.symbolType().is(SPRING_PAGE_FQN) || returnType.symbolType().is(SPRING_SLICE_FQN);
   }
 

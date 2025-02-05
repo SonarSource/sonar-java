@@ -1,12 +1,13 @@
 package checks.spring;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.Repository;
+
+import java.util.List;
 
 public interface UsePageableParameterForPagedQueryCheckSample extends StandardInterface, Repository<Entity, String> {
   Page<Entity> findByName(String name); // Noncompliant {{Add a "Pageable" parameter to this method to support pagination.}}
@@ -34,24 +35,22 @@ interface StandardInterface {
   Slice<Entity> findByLastName(String lastName);
 }
 
-class RepoImpl implements Repository<Entity, String> {
+class CustomSpringRepoImplementation implements Repository<Entity, String> {
   Page<Entity> findByName(String name) { // Compliant, this is a custom implementation and will not cause issues to spring
     return new PageImpl<>(List.of(new Entity(name)));
   }
 }
 
-class AClass {
+class NotASpringRepository {
   public Page<Entity> findByName(String name) { // Compliant, not a spring repository
     return new PageImpl<>(List.of(new Entity(name)));
   }
 }
 
-class Entity {
-  String name;
-  public Entity(String name) {
-    this.name = name;
-  }
+record Entity(String name) {
+
 }
 
 interface MyPageable extends Pageable {
+
 }
