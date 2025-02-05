@@ -25,11 +25,20 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 class DirtyContextShouldUseCorrectControlModeCheckTest {
 
   @Test
-  void test() {
+  void test_compiling() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/spring/DirtyContextShouldUseCorrectControlModeCheckSample.java"))
       .withCheck(new DirtyContextShouldUseCorrectControlModeCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_without_semantic(){
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/DirtyContextShouldUseCorrectControlModeCheckSample.java"))
+      .withCheck(new DirtyContextShouldUseCorrectControlModeCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
   
 }

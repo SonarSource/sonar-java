@@ -17,23 +17,60 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
+import java.util.function.Consumer;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 
 @Rule(key = "S7177")
 public class DirtyContextShouldUseCorrectControlModeCheck extends IssuableSubscriptionVisitor {
 
+  private static final String DIRTY_CONTEXT = "org.springframework.test.annotation.DirtiesContext";
+  private static final String REPLACE_CLASS_MODE = "Replace classMode with methodMode.";
+  private static final String REPLACE_METHOD_MODE = "Replace methodMode with classMode.";
+  private static final String CLASS_MODE = "classMode";
+  private static final String METHOD_MODE = "methodMode";
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    // TODO: Specify the kind of nodes you want to be called to visit here.
-    return List.of();
+    return List.of(Tree.Kind.METHOD, Tree.Kind.CLASS, Tree.Kind.RECORD);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    if (tree instanceof MethodTree method) {
+      forEachDirtyContextArguments(method.modifiers(), (assign) -> {
+        IdentifierTree ident = (IdentifierTree) assign.variable();
+        if(ident.name().equals(CLASS_MODE)){
+          reportIssue(ident, REPLACE_CLASS_MODE);
+        }
+      });
+    } else {
+      ClassTree clazz = (ClassTree) tree;
+      forEachDirtyContextArguments(clazz.modifiers(), (assign) -> {
+        IdentifierTree ident = (IdentifierTree) assign.variable();
+        if (ident.name().equals(METHOD_MODE)) {
+          reportIssue(ident, REPLACE_METHOD_MODE);
+        }
+      });
+    }
   }
-  
+
+  private static void forEachDirtyContextArguments(ModifiersTree modifiers, Consumer<AssignmentExpressionTree> f) {
+    for (AnnotationTree ann : modifiers.annotations()) {
+      if (ann.symbolType().is(DIRTY_CONTEXT)) {
+        for(ExpressionTree expr : ann.arguments()){
+          f.accept((AssignmentExpressionTree) expr);
+        }
+      }
+    }
+  }
 }

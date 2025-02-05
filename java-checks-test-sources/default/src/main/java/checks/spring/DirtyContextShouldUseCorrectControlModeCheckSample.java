@@ -6,9 +6,11 @@ public class DirtyContextShouldUseCorrectControlModeCheckSample {
 
   @interface MyAnnotation{}
 
-  @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD) // Noncompliant
+  @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD, hierarchyMode = DirtiesContext.HierarchyMode.EXHAUSTIVE) // Noncompliant {{Replace methodMode with classMode.}}
+//                ^^^^^^^^^^
   public static class WrongContextMode {
-    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS) // Noncompliant
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS, hierarchyMode = DirtiesContext.HierarchyMode.EXHAUSTIVE) // Noncompliant {{Replace classMode with methodMode.}}
+  //                ^^^^^^^^^
     public void wrongMode() {}
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
