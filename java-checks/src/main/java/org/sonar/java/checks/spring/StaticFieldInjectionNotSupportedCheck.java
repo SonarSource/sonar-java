@@ -50,7 +50,7 @@ public class StaticFieldInjectionNotSupportedCheck extends IssuableSubscriptionV
   private boolean analyzingSpringProject = false;
 
   @Override
-  public void setContext(JavaFileScannerContext context){
+  public void setContext(JavaFileScannerContext context) {
     super.setContext(context);
     // by default, it is not a spring context
     analyzingSpringProject = false;
@@ -71,7 +71,7 @@ public class StaticFieldInjectionNotSupportedCheck extends IssuableSubscriptionV
         .anyMatch(i -> ExpressionsHelper.concatenate((ExpressionTree) i.qualifiedIdentifier()).startsWith(SPRING_PREFIX));
     }
 
-    if(!analyzingSpringProject){
+    if (!analyzingSpringProject) {
       return;
     }
 
