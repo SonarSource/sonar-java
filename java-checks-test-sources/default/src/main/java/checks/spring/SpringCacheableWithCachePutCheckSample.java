@@ -5,8 +5,11 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
+
 public class SpringCacheableWithCachePutCheckSample {
 
+  @Transactional
   @Cacheable
 //^^^^^^^^^^> {{Cacheable}}
   @CachePut
@@ -32,11 +35,14 @@ public class SpringCacheableWithCachePutCheckSample {
   }
 
   @Cacheable
+//^^^^^^^^^^>
   @Component
   class CacheableClass {
 
     @CachePut
-    public void foo() { // Noncompliant {{Methods of a @Cacheable type should not be annotated with "@CachePut".}}
+  //^^^^^^^^^>
+    public void foo() { // Noncompliant {{Methods of a @Cacheable class should not be annotated with "@CachePut".}}
+  //            ^^^
     }
 
   }
@@ -44,7 +50,7 @@ public class SpringCacheableWithCachePutCheckSample {
   @CachePut
   record Record(String name) {
     @Cacheable
-    public String prettyName() { // Noncompliant {{Methods of a @CachePut type should not be annotated with "@Cacheable".}}
+    public String prettyName() { // Noncompliant {{Methods of a @CachePut class should not be annotated with "@Cacheable".}}
       return "~" + name + "~";
     }
   }
@@ -54,7 +60,7 @@ public class SpringCacheableWithCachePutCheckSample {
 
     @Cacheable
     @Nullable
-    public String foo() { // Noncompliant {{Methods of a @CachePut type should not be annotated with "@Cacheable".}}
+    public String foo() { // Noncompliant {{Methods of a @CachePut class should not be annotated with "@Cacheable".}}
       return null;
     }
 
@@ -65,7 +71,7 @@ public class SpringCacheableWithCachePutCheckSample {
     FOO;
 
     @CachePut
-    public CacheableEnum foo() { // Noncompliant {{Methods of a @Cacheable type should not be annotated with "@CachePut".}}
+    public CacheableEnum foo() { // Noncompliant {{Methods of a @Cacheable class should not be annotated with "@CachePut".}}
       return FOO;
     }
 

@@ -16,7 +16,6 @@
  */
 package org.sonar.java.checks.spring;
 
-import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -26,6 +25,9 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Rule(key = "S7179")
 public class SpringCacheableWithCachePutCheck extends IssuableSubscriptionVisitor {
@@ -33,8 +35,8 @@ public class SpringCacheableWithCachePutCheck extends IssuableSubscriptionVisito
   private static final String MESSAGE_FORMAT = "Remove the \"@CachePut\" annotation or the \"@Cacheable\" annotation located on the same %s.";
   private static final String CLASS_MESSAGE = String.format(MESSAGE_FORMAT, "class");
   private static final String METHOD_MESSAGE = String.format(MESSAGE_FORMAT, "method");
-  private static final String WRONG_CACHE_PUT_METHOD_MESSAGE = "Methods of a @Cacheable type should not be annotated with \"@CachePut\".";
-  private static final String WRONG_CACHEABLE_METHOD_MESSAGE = "Methods of a @CachePut type should not be annotated with \"@Cacheable\".";
+  private static final String WRONG_CACHE_PUT_METHOD_MESSAGE = "Methods of a @Cacheable class should not be annotated with \"@CachePut\".";
+  private static final String WRONG_CACHEABLE_METHOD_MESSAGE = "Methods of a @CachePut class should not be annotated with \"@Cacheable\".";
   private static final String CACHE_PUT_FQN = "org.springframework.cache.annotation.CachePut";
   private static final String CACHEABLE_FQN = "org.springframework.cache.annotation.Cacheable";
 
@@ -50,9 +52,11 @@ public class SpringCacheableWithCachePutCheck extends IssuableSubscriptionVisito
       if (isSymbolAnnotatedWithCacheableAndCachePut(methodSymbol)) {
         reportIssue(methodTree.simpleName(), METHOD_MESSAGE, getSecondaryLocations(methodSymbol), null);
       } else if (isAnnotatedWithCachePut(methodSymbol) && isAnnotatedWithCacheable(methodSymbol.enclosingClass())) {
-        reportIssue(methodTree.simpleName(), WRONG_CACHE_PUT_METHOD_MESSAGE, getSecondaryLocations(methodSymbol), null);
+        var secondaryLocations = getSecondaryLocations(methodSymbol, methodSymbol.enclosingClass());
+        reportIssue(methodTree.simpleName(), WRONG_CACHE_PUT_METHOD_MESSAGE, secondaryLocations, null);
       } else if (isAnnotatedWithCacheable(methodSymbol) && isAnnotatedWithCachePut(methodSymbol.enclosingClass())) {
-        reportIssue(methodTree.simpleName(), WRONG_CACHEABLE_METHOD_MESSAGE, getSecondaryLocations(methodSymbol), null);
+        var secondaryLocations = getSecondaryLocations(methodSymbol, methodSymbol.enclosingClass());
+        reportIssue(methodTree.simpleName(), WRONG_CACHEABLE_METHOD_MESSAGE, secondaryLocations, null);
       }
     } else {
       ClassTreeImpl classTree = (ClassTreeImpl) tree;
@@ -79,8 +83,16 @@ public class SpringCacheableWithCachePutCheck extends IssuableSubscriptionVisito
   private static List<JavaFileScannerContext.Location> getSecondaryLocations(Symbol symbol) {
     SymbolMetadata symbolMetadata = symbol.metadata();
     return symbolMetadata.annotations().stream()
+      .filter(annotation ->
+        annotation.symbol().type().is(CACHEABLE_FQN) || annotation.symbol().type().is(CACHE_PUT_FQN))
       .map(annotation -> new JavaFileScannerContext.Location(annotation.symbol().name(), symbolMetadata.findAnnotationTree(annotation)))
-      .toList();
+      .collect(Collectors.toList());
+  }
+
+  private static List<JavaFileScannerContext.Location> getSecondaryLocations(Symbol first, Symbol second) {
+    var locations = getSecondaryLocations(first);
+    locations.addAll(getSecondaryLocations(second));
+    return locations;
   }
 
 }
