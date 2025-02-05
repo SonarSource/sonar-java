@@ -1,0 +1,25 @@
+{
+  "title": "Methods returning \"Page\" or \"Slice\" must take \"Pageable\" as an input parameter",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-7186",
+  "sqKey": "S7186",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW",
+      "RELIABILITY": "HIGH",
+      "SECURITY": "LOW"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
