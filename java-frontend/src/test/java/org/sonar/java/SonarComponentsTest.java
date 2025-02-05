@@ -923,7 +923,9 @@ class SonarComponentsTest {
   @ParameterizedTest
   @MethodSource("fileCanBeSkipped_only_logs_on_first_call_input")
   void fileCanBeSkipped_only_logs_on_the_first_call(SonarComponents sonarComponents, InputFile inputFile, String logMessage) throws IOException {
-    assertThat(logTester.getLogs(Level.INFO)).isEmpty();
+    // logs may be empty or contain some progress log line
+    assertThat(logTester.getLogs(Level.INFO))
+      .allMatch(log -> log.getRawMsg().matches("[0-9]+% analyzed"));
 
     SensorContext contextMock = mock(SensorContext.class);
     sonarComponents.setSensorContext(contextMock);
