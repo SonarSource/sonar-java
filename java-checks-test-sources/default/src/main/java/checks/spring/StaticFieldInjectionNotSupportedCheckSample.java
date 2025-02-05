@@ -28,7 +28,7 @@ public class StaticFieldInjectionNotSupportedCheckSample {
     @Autowired
     StaticInjectComponent(String s, String v){}
 
-    @javax.inject.Inject // Noncompliant {{Remove the injection annotation targeting the static field.}}
+    @javax.inject.Inject // Noncompliant {{Remove this injection annotation targeting the static field.}}
   //^^^^^^^^^^^^^^^^^^^^
     private static Integer staticInject1;
 
@@ -61,7 +61,7 @@ public class StaticFieldInjectionNotSupportedCheckSample {
     @Autowired
     public String instanceAutowired;
 
-    @Inject // Noncompliant {{Remove the injection annotation targeting the static method.}}
+    @Inject // Noncompliant {{Remove this injection annotation targeting the static method.}}
   //^^^^^^^
     static void staticInjectMethod(String s){}
 
@@ -80,7 +80,7 @@ public class StaticFieldInjectionNotSupportedCheckSample {
     @Value("aValue")
     void instanceValueMethod(String s){}
 
-    static void staticValueParameter(@Value("aValue") String s){} // Noncompliant  {{Remove the injection annotation targeting the parameter.}}
+    static void staticValueParameter(@Value("aValue") String s){} // Noncompliant  {{Remove this injection annotation targeting the parameter.}}
   //                                 ^^^^^^^^^^^^^^^^
     static void staticAutowiredParameter(@Autowired String s){} // Noncompliant
 

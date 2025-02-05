@@ -30,4 +30,21 @@ class StaticFieldInjectionNotSupportedCheckTest {
       .withCheck(new StaticFieldInjectionNotSupportedCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_no_semantics(){
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/StaticFieldInjectionNotSupportedCheckSample.java"))
+      .withCheck(new StaticFieldInjectionNotSupportedCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_not_in_spring_context(){
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/StaticFieldInjectionNotSupportedCheckOnlyJakarta.java"))
+      .withCheck(new StaticFieldInjectionNotSupportedCheck())
+      .verifyNoIssues();
+  }
 }

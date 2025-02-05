@@ -20,12 +20,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -39,49 +42,62 @@ public class StaticFieldInjectionNotSupportedCheck extends IssuableSubscriptionV
     "org.springframework.beans.factory.annotation.Value"
   );
 
-  private static final String STATIC_FIELD_MESSAGE = "Remove the injection annotation targeting the static field.";
-  private static final String STATIC_METHOD_MESSAGE = "Remove the injection annotation targeting the static method.";
-  private static final String STATIC_PARAMETER_MESSAGE = "Remove the injection annotation targeting the parameter.";
+  private static final String STATIC_FIELD_MESSAGE = "Remove this injection annotation targeting the static field.";
+  private static final String STATIC_METHOD_MESSAGE = "Remove this injection annotation targeting the static method.";
+  private static final String STATIC_PARAMETER_MESSAGE = "Remove this injection annotation targeting the parameter.";
+  private static final String SPRING_PREFIX = "org.springframework";
+
+  private boolean analyzingSpringProject = false;
+
+  @Override
+  public void setContext(JavaFileScannerContext context){
+    super.setContext(context);
+    // by default, it is not a spring context
+    analyzingSpringProject = false;
+  }
+
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.METHOD, Tree.Kind.CLASS);
+    return List.of(Tree.Kind.METHOD, Tree.Kind.CLASS, Tree.Kind.COMPILATION_UNIT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree instanceof ClassTree clazz) {
-      Stream<VariableTree> staticFields = clazz.members().stream()
-        .filter(child -> child instanceof VariableTree v && ModifiersUtils.hasModifier(v.modifiers(), Modifier.STATIC))
-        .map(VariableTree.class::cast);
-
-      staticFields
-        .map(v -> injectionAnnotations(v.modifiers()))
-        .filter(anns -> !anns.isEmpty())
-        .forEach(anns ->
-          anns.forEach(ann -> reportIssue(ann, STATIC_FIELD_MESSAGE))
-        );
-      return;
-
+    if (tree instanceof CompilationUnitTree compilationUnit) {
+      analyzingSpringProject = compilationUnit.imports().stream()
+        .filter(ImportTree.class::isInstance)
+        .map(ImportTree.class::cast)
+        .anyMatch(i -> ExpressionsHelper.concatenate((ExpressionTree) i.qualifiedIdentifier()).startsWith(SPRING_PREFIX));
     }
 
-    MethodTree method = (MethodTree)tree;
-    if (ModifiersUtils.hasModifier(method.modifiers(), Modifier.STATIC)) {
+    if(!analyzingSpringProject){
+      return;
+    }
 
+    if (tree instanceof MethodTree method && method.symbol().isStatic()) {
       //report on method annotations
-      injectionAnnotations(method.modifiers())
+      selectInjectionAnnotations(method.modifiers())
         .forEach(ann -> reportIssue(ann, STATIC_METHOD_MESSAGE));
 
       //report on parameters
       method.parameters().stream()
-        .map(p -> injectionAnnotations(p.modifiers()))
-        .filter(anns -> !anns.isEmpty())
+        .map(p -> selectInjectionAnnotations(p.modifiers()))
         .forEach(anns -> anns.forEach(ann -> reportIssue(ann, STATIC_PARAMETER_MESSAGE)));
+    } else if (tree instanceof ClassTree clazz) {
+      Stream<VariableTree> staticFields = clazz.members().stream()
+        .filter(child -> child instanceof VariableTree v && v.symbol().isStatic())
+        .map(VariableTree.class::cast);
 
+      staticFields
+        .map(v -> selectInjectionAnnotations(v.modifiers()))
+        .forEach(anns ->
+          anns.forEach(ann -> reportIssue(ann, STATIC_FIELD_MESSAGE))
+        );
     }
   }
 
-  private static List<AnnotationTree> injectionAnnotations(ModifiersTree m) {
+  private static List<AnnotationTree> selectInjectionAnnotations(ModifiersTree m) {
     return m.annotations().stream()
       .filter(ann ->
         INJECTIONS_ANNOTATIONS.contains(ann.annotationType().symbolType().fullyQualifiedName()))
