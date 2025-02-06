@@ -105,6 +105,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.TestUtils.computeLineEndOffsets;
+import static org.sonar.java.TestUtils.filterOutAnalysisProgressLogMessages;
 
 @ExtendWith(MockitoExtension.class)
 class SonarComponentsTest {
@@ -925,20 +926,20 @@ class SonarComponentsTest {
   void fileCanBeSkipped_only_logs_on_the_first_call(SonarComponents sonarComponents, InputFile inputFile, String logMessage) throws IOException {
     // logs may be empty or contain some progress log line
     assertThat(
-      TestUtils.filterOutAnalysisProgressLogMessages(logTester.getLogs(Level.INFO))).isEmpty();
+      filterOutAnalysisProgressLogMessages(logTester.getLogs(Level.INFO))).isEmpty();
 
     SensorContext contextMock = mock(SensorContext.class);
     sonarComponents.setSensorContext(contextMock);
     when(inputFile.contents()).thenReturn("");
     sonarComponents.fileCanBeSkipped(inputFile);
-    List<LogAndArguments> logs = logTester.getLogs(Level.INFO);
+    List<String> logs = filterOutAnalysisProgressLogMessages(logTester.getLogs(Level.INFO));
     assertThat(logs).hasSize(1);
-    assertThat(logs.get(0).getRawMsg()).isEqualTo(logMessage);
+    assertThat(logs.get(0)).isEqualTo(logMessage);
 
     sonarComponents.fileCanBeSkipped(inputFile);
-    logs = logTester.getLogs(Level.INFO);
+    logs = filterOutAnalysisProgressLogMessages(logTester.getLogs(Level.INFO));
     assertThat(logs).hasSize(1);
-    assertThat(logs.get(0).getRawMsg()).isEqualTo(logMessage);
+    assertThat(logs.get(0)).isEqualTo(logMessage);
   }
 
   private static Stream<Arguments> provideInputsFor_canSkipUnchangedFiles() {
