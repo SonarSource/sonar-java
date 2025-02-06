@@ -17,7 +17,6 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
-import java.util.function.Consumer;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
