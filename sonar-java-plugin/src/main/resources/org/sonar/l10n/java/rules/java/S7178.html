@@ -1,0 +1,40 @@
+<h2>Why is this an issue?</h2>
+<p>Spring dependency injection framework does not support injecting data into static fields. When @Value, @Inject, or @Autowired are applied to static
+fields, they are ignored.</p>
+<h3>What is the potential impact?</h3>
+<ul>
+  <li> <strong>Null Values</strong>: Uninitialized static fields annotated with @Value, @Inject, or @Autowired will not be initialized by Spring,
+  potentially causing NullPointerException at runtime. </li>
+  <li> <strong>Confusing Code</strong>: The presence of injection annotations on static fields can mislead developers into believing that the fields
+  will be populated by Spring. </li>
+</ul>
+<p>This rule raises an issue when a static field is annotated with @Value, @Inject, or @Autowired.</p>
+<h2>How to fix it</h2>
+<p>Either use an instance field instead of a static field or remove the @Value, @Inject, or @Autowired annotation and initialize the field.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Component
+public class MyComponent {
+
+    @Value("${my.app.prop}")
+    private static SomeDependency dependency; // non compliant, @Value will be ignored and no value will be injected
+    // ...
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Component
+public class MyComponent {
+
+    @Value("${my.app.prop}")
+    private final SomeDependency dependency;
+    // ...
+}
+</pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li> Java Guides - <a href="https://www.baeldung.com/spring-inject-static-field">Injecting a Value in a Static Field in Spring</a> </li>
+</ul>
+
