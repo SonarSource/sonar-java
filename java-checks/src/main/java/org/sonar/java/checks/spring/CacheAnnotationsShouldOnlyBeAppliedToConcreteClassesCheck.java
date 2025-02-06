@@ -45,27 +45,25 @@ public class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheck extends I
 
   @Override
   public void visitNode(Tree tree) {
-    ClassTree interface_ = (ClassTree) tree;
+    ClassTree anInterface = (ClassTree) tree;
 
     // report caching annotations on the whole interface
-    selectCachingAnnotations(interface_.modifiers())
+    selectCachingAnnotations(anInterface.modifiers())
       .forEach(ann -> {
         String name = ann.symbolType().name();
         reportIssue(ann, String.format(ISSUE_MESSAGE, name));
       });
 
     // report caching annotations on interface methods
-    Stream<MethodTree> methods = interface_.members().stream()
+    Stream<MethodTree> methods = anInterface.members().stream()
       .filter(MethodTree.class::isInstance)
       .map(MethodTree.class::cast);
 
-    methods.forEach(method -> {
-      selectCachingAnnotations(method.modifiers())
-        .forEach(ann -> {
-          String name = ann.symbolType().name();
-          reportIssue(ann, String.format(ISSUE_MESSAGE, name));
-        });
-    });
+    methods.forEach(method -> selectCachingAnnotations(method.modifiers())
+      .forEach(ann -> {
+        String name = ann.symbolType().name();
+        reportIssue(ann, String.format(ISSUE_MESSAGE, name));
+      }));
   }
 
   private static Stream<AnnotationTree> selectCachingAnnotations(ModifiersTree m) {
