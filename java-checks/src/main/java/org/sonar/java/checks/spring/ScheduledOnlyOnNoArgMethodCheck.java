@@ -45,9 +45,9 @@ public class ScheduledOnlyOnNoArgMethodCheck extends IssuableSubscriptionVisitor
       var scheduledAnnotations = getScheduledAnnotations(methodTree);
       if (!scheduledAnnotations.isEmpty()) {
         var secondaryLocations = scheduledAnnotations.stream()
-            .map(annotation ->
-              new JavaFileScannerContext.Location("Triggered by this annotation", annotation.annotationType()))
-            .toList();
+          .map(annotation ->
+            new JavaFileScannerContext.Location("Triggered by this annotation", annotation.annotationType()))
+          .toList();
         reportIssue(
           methodTree.simpleName(),
           "\"@Scheduled\" annotation should only be applied to no-arg methods",
