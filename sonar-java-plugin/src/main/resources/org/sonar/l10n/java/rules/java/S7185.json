@@ -1,0 +1,23 @@
+{
+  "title": "@EventListener methods should have one parameter at most",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-7185",
+  "sqKey": "S7185",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  }
+}
