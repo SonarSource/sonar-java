@@ -924,8 +924,8 @@ class SonarComponentsTest {
   @MethodSource("fileCanBeSkipped_only_logs_on_first_call_input")
   void fileCanBeSkipped_only_logs_on_the_first_call(SonarComponents sonarComponents, InputFile inputFile, String logMessage) throws IOException {
     // logs may be empty or contain some progress log line
-    assertThat(logTester.getLogs(Level.INFO))
-      .allMatch(log -> log.getRawMsg().matches("[0-9]+% analyzed"));
+    assertThat(
+      TestUtils.filterOutAnalysisProgressLogMessages(logTester.getLogs(Level.INFO))).isEmpty();
 
     SensorContext contextMock = mock(SensorContext.class);
     sonarComponents.setSensorContext(contextMock);
@@ -957,7 +957,7 @@ class SonarComponentsTest {
   @ParameterizedTest
   @MethodSource("provideInputsFor_canSkipUnchangedFiles")
   void canSkipUnchangedFiles(@CheckForNull Boolean overrideFlagVal, @CheckForNull Boolean apiResponseVal,
-    @CheckForNull Boolean expectedResult) throws ApiMismatchException {
+                             @CheckForNull Boolean expectedResult) throws ApiMismatchException {
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     SonarComponents sonarComponents = new SonarComponents(
       fileLinesContextFactory,
