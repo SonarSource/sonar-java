@@ -35,8 +35,8 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 public class JUnit5SilentlyIgnoreClassAndMethodCheck extends AbstractJUnit5NotCompliantModifierChecker {
 
   @Override
-  protected boolean isNonCompliantModifier(Modifier modifier, boolean isMethod) {
-    return modifier == Modifier.PRIVATE || (isMethod && modifier == Modifier.STATIC);
+  protected boolean isNonCompliantModifier(Modifier modifier, ModifierScope modifierScope) {
+    return modifier == Modifier.PRIVATE || (modifierScope == ModifierScope.INSTANCE_METHOD && modifier == Modifier.STATIC);
   }
 
   @Override

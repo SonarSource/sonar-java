@@ -19,10 +19,10 @@ package org.sonar.java.checks.tests;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -36,9 +36,15 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 public abstract class AbstractJUnit5NotCompliantModifierChecker extends IssuableSubscriptionVisitor {
 
+  public enum ModifierScope {
+    CLASS,
+    CLASS_METHOD,
+    INSTANCE_METHOD
+  }
+
   protected static final String WRONG_MODIFIER_ISSUE_MESSAGE = "Remove this '%s' modifier.";
 
-  protected abstract boolean isNonCompliantModifier(Modifier modifier, boolean isMethod);
+  protected abstract boolean isNonCompliantModifier(Modifier modifier, ModifierScope modifierScope);
 
   protected abstract void raiseIssueOnNonCompliantReturnType(MethodTree methodTree);
 
@@ -46,11 +52,11 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
     QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(modifier)
-      .withMessage(String.format(WRONG_MODIFIER_ISSUE_MESSAGE, modifier.keyword().text()))
+      .withMessage(WRONG_MODIFIER_ISSUE_MESSAGE, modifier.keyword().text())
       .withQuickFix(() ->
-        JavaQuickFix.newQuickFix("Remove modifier")
-          .addTextEdit(JavaTextEdit.removeTree(modifier))
-          .build())
+        JavaQuickFix.newQuickFix("Remove \"%s\" modifier", modifier.keyword().text())
+          .addTextEdit(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(modifier, true, QuickFixHelper.nextToken(modifier), false)))
+        .build())
       .report();
   }
 
@@ -65,23 +71,43 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
     if (classTree.symbol().isAbstract()) {
       return;
     }
-    List<MethodTree> methods = classTree.members().stream()
+
+    List<MethodTree> junit5ClassMethods = new ArrayList<>();
+    List<MethodTree> junit5InstanceMethods = new ArrayList<>();
+    List<MethodTree> nonJunit5Methods = new ArrayList<>();
+    classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
-      .collect(Collectors.toCollection(ArrayList::new));
+      .forEach(method -> {
+        if (UnitTestUtils.hasJUnit5TestAnnotation(method) || UnitTestUtils.hasJUnit5InstanceLifecycleAnnotation(method)) {
+          if (isNotOverriding(method)) {
+            junit5InstanceMethods.add(method);
+          }
+        } else if (UnitTestUtils.hasJUnit5ClassLifecycleAnnotation(method)) {
+          if (isNotOverriding(method)) {
+            junit5ClassMethods.add(method);
+          }
+        } else {
+          nonJunit5Methods.add(method);
+        }
+      });
 
-    List<MethodTree> testMethods = methods.stream()
-      .filter(UnitTestUtils::hasJUnit5TestAnnotation)
-      .filter(AbstractJUnit5NotCompliantModifierChecker::isNotOverriding)
-      .toList();
-
-    for (MethodTree testMethod : testMethods) {
-      raiseIssueOnNotCompliantModifiers(testMethod.modifiers(), true);
-      raiseIssueOnNonCompliantReturnType(testMethod);
+    raiseIssueOnMethods(junit5ClassMethods, ModifierScope.CLASS_METHOD);
+    raiseIssueOnMethods(junit5InstanceMethods, ModifierScope.INSTANCE_METHOD);
+    if (!junit5InstanceMethods.isEmpty()) {
+      raiseIssueOnClass(nonJunit5Methods, classTree);
     }
+  }
 
-    methods.removeAll(testMethods);
-    boolean hasPublicStaticMethods = methods.stream()
+  private void raiseIssueOnMethods(List<MethodTree> junit5ClassMethods, ModifierScope classMethod) {
+    for (MethodTree junit5ClassMethod : junit5ClassMethods) {
+      raiseIssueOnNotCompliantModifiers(junit5ClassMethod.modifiers(), classMethod);
+      raiseIssueOnNonCompliantReturnType(junit5ClassMethod);
+    }
+  }
+
+  private void raiseIssueOnClass(List<MethodTree> nonJunit5Methods, ClassTree classTree) {
+    boolean hasPublicStaticMethods = nonJunit5Methods.stream()
       .map(MethodTree::modifiers)
       .anyMatch(AbstractJUnit5NotCompliantModifierChecker::isPublicStatic);
 
@@ -91,13 +117,9 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
       .map(VariableTree::modifiers)
       .anyMatch(AbstractJUnit5NotCompliantModifierChecker::isPublicStatic);
 
-    if (hasPublicStaticMethods || hasPublicStaticFields) {
-      // we can not ask for a change of visibility of the class
-      return;
-    }
-
-    if (!testMethods.isEmpty()) {
-      raiseIssueOnNotCompliantModifiers(classTree.modifiers(), false);
+    // Can we change the visibility of the class?
+    if (!hasPublicStaticMethods && !hasPublicStaticFields) {
+      raiseIssueOnNotCompliantModifiers(classTree.modifiers(), ModifierScope.CLASS);
     }
   }
 
@@ -105,9 +127,9 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
     return ModifiersUtils.hasAll(modifiers, Modifier.PUBLIC, Modifier.STATIC);
   }
 
-  private void raiseIssueOnNotCompliantModifiers(ModifiersTree modifierTree, boolean isMethod) {
+  private void raiseIssueOnNotCompliantModifiers(ModifiersTree modifierTree, ModifierScope modifierScope) {
     modifierTree.modifiers().stream()
-      .filter(modifier -> isNonCompliantModifier(modifier.modifier(), isMethod))
+      .filter(modifier -> isNonCompliantModifier(modifier.modifier(), modifierScope))
       .findFirst()
       .ifPresent(this::raiseIssueOnNonCompliantModifier);
   }
