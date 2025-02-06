@@ -17,22 +17,63 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
 
 @Rule(key = "S7180")
 public class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheck extends IssuableSubscriptionVisitor {
 
+  private static final String ISSUE_MESSAGE = "Move this \"@%s\" annotation from interface to a concrete class.";
+  private static final Set<String> CACHING_ANNOTATIONS = Set.of(
+    "org.springframework.cache.annotation.CacheConfig",
+    "org.springframework.cache.annotation.CacheEvict",
+    "org.springframework.cache.annotation.CachePut",
+    "org.springframework.cache.annotation.Cacheable",
+    "org.springframework.cache.annotation.Caching");
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of();
+    return List.of(Tree.Kind.INTERFACE);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    ClassTree interface_ = (ClassTree) tree;
+
+    // report caching annotations on the whole interface
+    selectCachingAnnotations(interface_.modifiers())
+      .forEach(ann -> {
+        String name = ann.symbolType().name();
+        reportIssue(ann, String.format(ISSUE_MESSAGE, name));
+      });
+
+    // report caching annotations on interface methods
+    Stream<MethodTree> methods = interface_.members().stream()
+      .filter(MethodTree.class::isInstance)
+      .map(MethodTree.class::cast);
+
+    methods.forEach(method -> {
+      selectCachingAnnotations(method.modifiers())
+        .forEach(ann -> {
+          String name = ann.symbolType().name();
+          reportIssue(ann, String.format(ISSUE_MESSAGE, name));
+        });
+    });
   }
-  
+
+  private static Stream<AnnotationTree> selectCachingAnnotations(ModifiersTree m) {
+    return m.annotations().stream()
+      .filter(ann -> {
+        String fullyQualifiedName = ann.annotationType().symbolType().fullyQualifiedName();
+        return CACHING_ANNOTATIONS.contains(fullyQualifiedName);
+      });
+  }
+
 }

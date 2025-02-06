@@ -23,11 +23,20 @@ import org.sonar.java.checks.verifier.TestUtils;
 class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheckTest {
 
   @Test
-  void test() {
+  void test_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheckSample.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheckSample.java"))
       .withCheck(new CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheck())
       .verifyIssues();
   }
-  
+
+  @Test
+  void test_without_semantics() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheckSample.java"))
+      .withCheck(new CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
 }
