@@ -248,4 +248,19 @@ public abstract class AssertJ {
     new java.util.ArrayList<Boolean>().forEach(java.util.Objects::isNull);
   }
 
+  @Test
+  public void bdd_assertions_then_no_exception_is_thrown_by(){
+    org.assertj.core.api.BDDAssertions.thenNoException() // Compliant
+      .isThrownBy(() -> { throw new Throwable(); });
+  }
+
+  @Test
+  public void bdd_assertions_then_no_exception_as() { // Noncompliant
+    org.assertj.core.api.BDDAssertions.thenNoException().as("description");
+  }
+
+  @Test
+  public void bdd_assertions_then_true_is_true(){
+    org.assertj.core.api.BDDAssertions.then(true).isTrue(); // Compliant
+  }
 }
