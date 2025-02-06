@@ -79,6 +79,7 @@ import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JspCodeVisitor;
@@ -105,7 +106,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.TestUtils.computeLineEndOffsets;
-import static org.sonar.java.TestUtils.filterOutAnalysisProgressLogMessages;
 
 @ExtendWith(MockitoExtension.class)
 class SonarComponentsTest {
@@ -138,7 +138,7 @@ class SonarComponentsTest {
   private SensorContext context;
 
   @RegisterExtension
-  public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
 
   @BeforeEach
   void setUp() {
@@ -234,7 +234,7 @@ class SonarComponentsTest {
       null, this.checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
-    assertThat(logTester.getLogs()).isEmpty();
+    assertThat(logTester.logs()).isEmpty();
   }
 
   @Test
@@ -247,8 +247,9 @@ class SonarComponentsTest {
       null, this.checkFactory, context.activeRules(), new CheckRegistrar[]{expectedRegistrar});
     sonarComponents.setSensorContext(context);
 
-    assertThat(logTester.getLogs()).hasSize(2);
-    assertThat(logTester.getLogs().get(0).getRawMsg()).isEqualTo("Registered check: [{}]");
+    List<String> logs = logTester.rawMessages(Level.DEBUG);
+    assertThat(logs).hasSize(2);
+    assertThat(logs.get(0)).isEqualTo("Registered check: [{}]");
   }
 
   @Test
@@ -924,20 +925,18 @@ class SonarComponentsTest {
   @ParameterizedTest
   @MethodSource("fileCanBeSkipped_only_logs_on_first_call_input")
   void fileCanBeSkipped_only_logs_on_the_first_call(SonarComponents sonarComponents, InputFile inputFile, String logMessage) throws IOException {
-    // logs may be empty or contain some progress log line
-    assertThat(
-      filterOutAnalysisProgressLogMessages(logTester.getLogs(Level.INFO))).isEmpty();
+    assertThat(logTester.logs(Level.INFO)).isEmpty();
 
     SensorContext contextMock = mock(SensorContext.class);
     sonarComponents.setSensorContext(contextMock);
     when(inputFile.contents()).thenReturn("");
     sonarComponents.fileCanBeSkipped(inputFile);
-    List<String> logs = filterOutAnalysisProgressLogMessages(logTester.getLogs(Level.INFO));
+    List<String> logs = logTester.rawMessages(Level.INFO);
     assertThat(logs).hasSize(1);
     assertThat(logs.get(0)).isEqualTo(logMessage);
 
     sonarComponents.fileCanBeSkipped(inputFile);
-    logs = filterOutAnalysisProgressLogMessages(logTester.getLogs(Level.INFO));
+    logs = logTester.rawMessages(Level.INFO);
     assertThat(logs).hasSize(1);
     assertThat(logs.get(0)).isEqualTo(logMessage);
   }
