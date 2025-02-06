@@ -39,8 +39,7 @@ public class StaticFieldInjectionNotSupportedCheck extends IssuableSubscriptionV
     "javax.inject.Inject",
     "org.springframework.beans.factory.annotation.Autowired",
     "jakarta.inject.Inject",
-    "org.springframework.beans.factory.annotation.Value"
-  );
+    "org.springframework.beans.factory.annotation.Value");
 
   private static final String STATIC_FIELD_MESSAGE = "Remove this injection annotation targeting the static field.";
   private static final String STATIC_METHOD_MESSAGE = "Remove this injection annotation targeting the static method.";
@@ -55,7 +54,6 @@ public class StaticFieldInjectionNotSupportedCheck extends IssuableSubscriptionV
     // by default, it is not a spring context
     analyzingSpringProject = false;
   }
-
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -76,11 +74,11 @@ public class StaticFieldInjectionNotSupportedCheck extends IssuableSubscriptionV
     }
 
     if (tree instanceof MethodTree method && method.symbol().isStatic()) {
-      //report on method annotations
+      // report on method annotations
       selectInjectionAnnotations(method.modifiers())
         .forEach(ann -> reportIssue(ann, STATIC_METHOD_MESSAGE));
 
-      //report on parameters
+      // report on parameters
       method.parameters().stream()
         .map(p -> selectInjectionAnnotations(p.modifiers()))
         .forEach(anns -> anns.forEach(ann -> reportIssue(ann, STATIC_PARAMETER_MESSAGE)));
@@ -91,16 +89,13 @@ public class StaticFieldInjectionNotSupportedCheck extends IssuableSubscriptionV
 
       staticFields
         .map(v -> selectInjectionAnnotations(v.modifiers()))
-        .forEach(anns ->
-          anns.forEach(ann -> reportIssue(ann, STATIC_FIELD_MESSAGE))
-        );
+        .forEach(anns -> anns.forEach(ann -> reportIssue(ann, STATIC_FIELD_MESSAGE)));
     }
   }
 
   private static List<AnnotationTree> selectInjectionAnnotations(ModifiersTree m) {
     return m.annotations().stream()
-      .filter(ann ->
-        INJECTIONS_ANNOTATIONS.contains(ann.annotationType().symbolType().fullyQualifiedName()))
+      .filter(ann -> INJECTIONS_ANNOTATIONS.contains(ann.annotationType().symbolType().fullyQualifiedName()))
       .toList();
   }
 }

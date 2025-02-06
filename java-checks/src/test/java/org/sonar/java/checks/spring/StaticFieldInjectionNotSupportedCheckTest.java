@@ -24,7 +24,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 class StaticFieldInjectionNotSupportedCheckTest {
 
   @Test
-  void test_compiling(){
+  void test_compiling() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/spring/StaticFieldInjectionNotSupportedCheckSample.java"))
       .withCheck(new StaticFieldInjectionNotSupportedCheck())
@@ -32,7 +32,7 @@ class StaticFieldInjectionNotSupportedCheckTest {
   }
 
   @Test
-  void test_no_semantics(){
+  void test_no_semantics() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/spring/StaticFieldInjectionNotSupportedCheckSample.java"))
       .withCheck(new StaticFieldInjectionNotSupportedCheck())
@@ -41,7 +41,7 @@ class StaticFieldInjectionNotSupportedCheckTest {
   }
 
   @Test
-  void test_not_in_spring_context(){
+  void test_not_in_spring_context() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/spring/StaticFieldInjectionNotSupportedCheckOnlyJakarta.java"))
       .withCheck(new StaticFieldInjectionNotSupportedCheck())
