@@ -1,12 +1,40 @@
 package checks.tests;
 
 import java.util.Locale;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JUnit5DefaultPackageClassAndMethodCheckSample {
+
+  @BeforeAll
+  public static void beforeAll() {} // Noncompliant {{Remove this 'public' modifier.}} [[quickfixes=qf5]]
+//^^^^^^
+  // fix@qf5 {{Remove "public" modifier}}
+  // edit@qf5 [[sc=3;ec=10]] {{}}
+
+  @AfterAll
+  protected static void afterAll() {} // Noncompliant {{Remove this 'protected' modifier.}} [[quickfixes=qf6]]
+//^^^^^^^^^
+  // fix@qf6 {{Remove "protected" modifier}}
+  // edit@qf6 [[sc=3;ec=13]] {{}}
+
+  @BeforeEach
+  public void beforeEach() {} // Noncompliant {{Remove this 'public' modifier.}} [[quickfixes=qf7]]
+//^^^^^^
+  // fix@qf7 {{Remove "public" modifier}}
+  // edit@qf7 [[sc=3;ec=10]] {{}}
+
+  @AfterEach
+  public void afterEach() {} // Noncompliant {{Remove this 'public' modifier.}} [[quickfixes=qf8]]
+//^^^^^^
+  // fix@qf8 {{Remove "public" modifier}}
+  // edit@qf8 [[sc=3;ec=10]] {{}}
 
   @Test
   public void testPublic() {} // Noncompliant {{Remove this 'public' modifier.}} [[quickfixes=qf1]]
@@ -89,6 +117,12 @@ class JUnit5DefaultPackageClassAndMethodCheckSample {
 
   public abstract class AbstractTest {
 
+    @BeforeAll
+    public void beforeAll() {} // Compliant, the rule does not report on abstract classes
+
+    @BeforeEach
+    public void beforeEach() {} // Compliant, the rule does not report on abstract classes
+
     @Test
     protected void test_inherited() {
       assertEquals(42, 21 * 2);
@@ -113,6 +147,14 @@ class JUnit5DefaultPackageClassAndMethodCheckSample {
 
 
   class ChildTest extends AbstractTest implements InterfaceTest {
+
+    @BeforeAll
+    @Override
+    public void beforeAll() {} // Compliant, the rule does not report because it overrides a method from a superclass
+
+    @BeforeEach
+    @Override
+    public void beforeEach() {} // Compliant, the rule does not report because it overrides a method from a superclass
 
     @Test
     @Override
