@@ -45,7 +45,7 @@ public class DirtyContextShouldUseCorrectControlModeCheckSample {
 
   @MyAnnotation
   @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD) // Noncompliant
-  public class AdditonalAnnotation {}
+  public class AdditionalAnnotation {}
 
 
   @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)

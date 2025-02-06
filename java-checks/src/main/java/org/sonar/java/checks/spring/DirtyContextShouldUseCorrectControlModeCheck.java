@@ -29,7 +29,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-
 @Rule(key = "S7177")
 public class DirtyContextShouldUseCorrectControlModeCheck extends IssuableSubscriptionVisitor {
 
@@ -47,28 +46,22 @@ public class DirtyContextShouldUseCorrectControlModeCheck extends IssuableSubscr
   @Override
   public void visitNode(Tree tree) {
     if (tree instanceof MethodTree method) {
-      forEachDirtyContextArguments(method.modifiers(), assign -> {
-        IdentifierTree ident = (IdentifierTree) assign.variable();
-        if (ident.name().equals(CLASS_MODE)) {
-          reportIssue(ident, REPLACE_CLASS_MODE);
-        }
-      });
+      forEachDirtyContextArguments(method.modifiers(), CLASS_MODE, REPLACE_CLASS_MODE);
     } else {
       ClassTree clazz = (ClassTree) tree;
-      forEachDirtyContextArguments(clazz.modifiers(), assign -> {
-        IdentifierTree ident = (IdentifierTree) assign.variable();
-        if (ident.name().equals(METHOD_MODE)) {
-          reportIssue(ident, REPLACE_METHOD_MODE);
-        }
-      });
+      forEachDirtyContextArguments(clazz.modifiers(), METHOD_MODE, REPLACE_METHOD_MODE);
     }
   }
 
-  private static void forEachDirtyContextArguments(ModifiersTree modifiers, Consumer<AssignmentExpressionTree> f) {
+  private void forEachDirtyContextArguments(ModifiersTree modifiers, String targetedArgument, String issueMessage) {
     for (AnnotationTree ann : modifiers.annotations()) {
       if (ann.symbolType().is(DIRTY_CONTEXT)) {
         for (ExpressionTree expr : ann.arguments()) {
-          f.accept((AssignmentExpressionTree) expr);
+          var assign = (AssignmentExpressionTree) expr;
+          var ident = (IdentifierTree) assign.variable();
+          if (ident.name().equals(targetedArgument)) {
+            reportIssue(ident, issueMessage);
+          }
         }
       }
     }
