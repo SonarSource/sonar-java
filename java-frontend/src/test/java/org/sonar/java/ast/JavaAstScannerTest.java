@@ -280,7 +280,7 @@ class JavaAstScannerTest {
       ));
 
     List<String> logs = globalLogTester.logs(Level.INFO);
-    assertThat(filterOutAnalysisProgressLogLines(logs)).hasSize(3)
+    assertThat(TestUtils.filterOutAnalysisProgressLogLines(logs)).hasSize(3)
       .contains("1/1 source file has been analyzed");
     assertThat(logTester.logs(Level.ERROR)).containsExactly(
       "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
@@ -293,11 +293,6 @@ class JavaAstScannerTest {
       .allMatch(log -> log.endsWith("module-info.java' file with misconfigured Java version."
         + " Please check that property 'sonar.java.source' is correctly configured (currently set to: 8) or exclude 'module-info.java' files from analysis."
         + " Such files only exist in Java9+ projects."));
-  }
-
-  private List<String> filterOutAnalysisProgressLogLines(List<String> logs) {
-    return logs.stream().filter(log -> !log.matches("[0-9]+% analyzed"))
-      .toList();
   }
 
   @Test
