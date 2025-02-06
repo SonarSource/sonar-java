@@ -22,19 +22,22 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ScheduledOnlyOnNoArgMethodCheckTest {
+  private static final String SAMPLE_FILE = mainCodeSourcesPath("checks/spring/ScheduledOnlyOnNoArgMethodCheckSample.java");
+  private static final ScheduledOnlyOnNoArgMethodCheck CHECK = new ScheduledOnlyOnNoArgMethodCheck();
+
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/ScheduledOnlyOnNoArgMethodCheckSample.java"))
-      .withCheck(new ScheduledOnlyOnNoArgMethodCheck())
+      .onFile(SAMPLE_FILE)
+      .withCheck(CHECK)
       .verifyIssues();
   }
 
   @Test
   void testWithoutSemantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/ScheduledOnlyOnNoArgMethodCheckSample.java"))
-      .withCheck(new ScheduledOnlyOnNoArgMethodCheck())
+      .onFile(SAMPLE_FILE)
+      .withCheck(CHECK)
       .withoutSemantic()
       // Without semantic information we do not raise issues.
       .verifyNoIssues();
