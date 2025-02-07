@@ -1,0 +1,33 @@
+<h2>Why is this an issue?</h2>
+<p>According to Spring documentation, the <code>@Scheduled</code> annotation can only be applied to methods without arguments. Applying @Scheduled to
+a method with arguments will result in a runtime error.</p>
+<h2>How to fix it</h2>
+<p>Transform method annotated with <code>@Scheduled</code> into a no-arg method.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class ExampleService {
+
+    @Scheduled(fixedRate = 5000)
+    public void scheduledTask(String param) { // non compliant, method has an argument. It will raise a runtime error.
+        // Task implementation
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class ExampleService {
+
+    @Scheduled(fixedRate = 5000)
+    public void scheduledTask() { // compliant, no-arg method
+        // Task implementation
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Spring - <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html">scheduled</a> </li>
+</ul>
+
