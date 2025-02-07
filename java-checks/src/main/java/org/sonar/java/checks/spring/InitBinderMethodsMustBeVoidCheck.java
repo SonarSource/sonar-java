@@ -17,23 +17,43 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
+import java.util.Optional;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S7183")
 public class InitBinderMethodsMustBeVoidCheck extends IssuableSubscriptionVisitor {
+  private static final String INIT_BINDER = "org.springframework.web.bind.annotation.InitBinder";
+  private static final String ISSUE_MESSAGE = "Methods annotated with @InitBinder must return void.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    // TODO: Specify the kind of nodes you want to be called to visit here.
-    return List.of();
+    // if you want to visit constructors, you will need to verify that the returnType is not null (refer to A3422)
+    return List.of(Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    MethodTree method = (MethodTree) tree;
+
+    // A3422 returnType is null only for constructors
+    TypeTree returnType = method.returnType();
+    if (returnType.symbolType().isVoid()) {
+      return;
+    }
+
+    Optional<AnnotationTree> initBinder = method.modifiers().annotations().stream()
+      .filter(ann -> ann.annotationType().symbolType().is(INIT_BINDER))
+      .findFirst();
+
+    initBinder.ifPresent(ann -> {
+      reportIssue(method.simpleName(), ISSUE_MESSAGE);
+    });
   }
-  
+
 }

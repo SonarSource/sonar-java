@@ -18,16 +18,26 @@ package org.sonar.java.checks.spring;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.TestUtils;
+
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class InitBinderMethodsMustBeVoidCheckTest {
 
   @Test
-  void test() {
+  void test_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/InitBinderMethodsMustBeVoidCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/InitBinderMethodsMustBeVoidCheckSample.java"))
       .withCheck(new InitBinderMethodsMustBeVoidCheck())
       .verifyIssues();
   }
-  
+
+  @Test
+  void test_without_sematics() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/InitBinderMethodsMustBeVoidCheckSample.java"))
+      .withCheck(new InitBinderMethodsMustBeVoidCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
 }
