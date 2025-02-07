@@ -30,7 +30,8 @@ public class AsyncMethodsCalledViaThisCheck extends IssuableSubscriptionVisitor 
 
   private static final Map<String, String> DISALLOWED_METHOD_ANNOTATIONS = Map.of(
     "org.springframework.scheduling.annotation.Async", "async",
-    "org.springframework.transaction.annotation.Transactional", "transactional");
+    "org.springframework.transaction.annotation.Transactional", "transactional",
+    "org.springframework.cache.annotation.Cacheable", "cacheable");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

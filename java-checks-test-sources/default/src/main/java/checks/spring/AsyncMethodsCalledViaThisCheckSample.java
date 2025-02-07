@@ -1,6 +1,7 @@
 package checks.spring;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,10 @@ public class AsyncMethodsCalledViaThisCheckSample {
 
   @Transactional
   public void transactionalMethod() {
+  }
+
+  @Cacheable
+  public void cacheableMethod() {
   }
 
   void normal() {
@@ -45,6 +50,18 @@ public class AsyncMethodsCalledViaThisCheckSample {
 
   void transactionalCompliant1() {
     self.transactionalMethod();
+  }
+
+  void cacheableNoncompliant1() {
+    cacheableMethod();  // Noncompliant {{Call cacheable methods via an injected dependency instead of directly via 'this'.}}
+  }
+
+  void cacheableNoncompliant2() {
+    this.cacheableMethod();  // Noncompliant {{Call cacheable methods via an injected dependency instead of directly via 'this'.}}
+  }
+
+  void cacheableCompliant() {
+    self.cacheableMethod();
   }
 
   void compliant() {
