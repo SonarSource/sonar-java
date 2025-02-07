@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.testfixtures.log.LogAndArguments;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -127,9 +126,5 @@ public class TestUtils {
 
   public static List<String> filterOutAnalysisProgressLogLines(List<String> logs) {
     return filterOutAnalysisProgressLogLines(logs.stream());
-  }
-
-  public static List<String> filterOutAnalysisProgressLogMessages(List<LogAndArguments> logs) {
-    return filterOutAnalysisProgressLogLines(logs.stream().map(LogAndArguments::getRawMsg));
   }
 }
