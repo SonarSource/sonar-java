@@ -15,7 +15,8 @@ public class MissingPathVariableAnnotationCheckSample {
   public void handleWithoutExt(@PathVariable String name, @PathVariable String version) {}
 
   @GetMapping("/something/{id:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}}") // Compliant
-  public String getObj(@PathVariable("id") String id){
+  public String getObj(@PathVariable("id") String id){ // Noncompliant
+    // it is FN, parsing the path is difficult maybe I will use parser from spring
     return "";
   }
 
@@ -100,7 +101,7 @@ public class MissingPathVariableAnnotationCheckSample {
   }
 
   @GetMapping("/{id}") // Noncompliant
-  public String getBadName(@PathVariable String a) {
+  public String getBadName(@PathVariable String a) { // Noncompliant
     return "Hello World";
   }
 
@@ -153,7 +154,7 @@ public class MissingPathVariableAnnotationCheckSample {
     return "Hello World";
   }
 
-  public String withoutRequestMappingAnnotation(@PathVariable  String id) { // compliant
+  public String withoutRequestMappingAnnotation(@PathVariable  String id) { // Noncompliant
     return "Hello World";
   }
 
@@ -246,4 +247,36 @@ public class MissingPathVariableAnnotationCheckSample {
     }
   }
 
+
+  @GetMapping("/a/path")
+  public String pathVariableWithoutParameter(@PathVariable String aVar){ // Noncompliant
+//                                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+    return "";
+  }
+
+  @GetMapping("/a/path/{aVar1}")
+  public String twoPathVariables(@PathVariable String aVar1, @PathVariable String aVar2){ // Noncompliant
+//                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    return "";
+  }
+
+  @GetMapping("/a/path")
+  public String pathVariableWithValue(@PathVariable(value = "aVar") String foo){ // Noncompliant
+    return "";
+  }
+
+  @GetMapping("/a/path")
+  public String pathVariableWithName(@PathVariable(name = "aVar") String foo){ // Noncompliant
+    return "";
+  }
+
+  @GetMapping("/a/path")
+  public String pathVariableWithDefault(@PathVariable("aVar") String foo){ // Noncompliant
+    return "";
+  }
+
+  @GetMapping("/a/path")
+  public String pathVariableEmptyName(@PathVariable("") String foo){ // Noncompliant
+    return "";
+  }
 }

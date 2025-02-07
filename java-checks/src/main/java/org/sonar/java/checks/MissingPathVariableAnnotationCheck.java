@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -40,13 +42,14 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S6856")
 public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisitor {
   private static final String PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable";
+  private static final String MAP = "java.util.Map";
   private static final String MODEL_ATTRIBUTE_ANNOTATION = "org.springframework.web.bind.annotation.ModelAttribute";
   private static final Pattern EXTRACT_PATH_VARIABLE = Pattern.compile("([^:}/]*)(:.*)?}.*");
   private static final Predicate<String> CONTAINS_PLACEHOLDER = Pattern.compile("\\$\\{.*}").asPredicate();
   private static final Predicate<String> PATH_ARG_REGEX = Pattern.compile("\\{([^{}:]+:.*)}").asPredicate();
   private static final Pattern PATH_REGEX = Pattern.compile("\\{([^{}]+)}");
 
-  private static final List<String> MAPPING_ANNOTATIONS = List.of(
+  private static final Set<String> MAPPING_ANNOTATIONS = Set.of(
     "org.springframework.web.bind.annotation.GetMapping",
     "org.springframework.web.bind.annotation.PostMapping",
     "org.springframework.web.bind.annotation.PutMapping",
@@ -66,18 +69,39 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .map(MethodTree.class::cast)
       .toList();
 
-    Set<String> modelAttributePathVariable = methods.stream()
-      .filter(method -> method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION))
-      .flatMap(method -> method.parameters().stream())
-      .map(MissingPathVariableAnnotationCheck::pathVariableName)
-      .flatMap(Optional::stream)
-      .collect(Collectors.toSet());
+    // Set<String> modelAttributePathVariable = methods.stream()
+    // .filter(method -> method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION))
+    // .flatMap(method -> method.parameters().stream())
+    // .map(MissingPathVariableAnnotationCheck::pathVariableName)
+    // .flatMap(Optional::stream)
+    // .collect(Collectors.toSet());
 
-    methods.forEach(method -> MAPPING_ANNOTATIONS
-      .forEach(annotation -> checkParameters(method, annotation, modelAttributePathVariable)));
+    methods.forEach(method -> checkParameters(method, Set.of()));
   }
 
-  private void checkParameters(MethodTree method, String annotation, Set<String> modelAttributePathVariable) {
+  private void checkParameters(MethodTree method, Set<String> modelAttributePathVariable) {
+
+    // we extract path variables
+    List<ParameterInfo> pathVariables = method.parameters().stream()
+      .map(MissingPathVariableAnnotationCheck::pathVariableName)
+      .flatMap(Optional::stream)
+      .toList();
+
+    // we extract uri parameters
+    List<UriInfo<Set<String>>> uriParameters = extractPathArgumentFromMappingAnnotations(method)
+      .map(MissingPathVariableAnnotationCheck::extractPathVariables)
+      .toList();
+
+    // we handle the case where a path variable doesn't match to an uri parameter (/{aParam}/)
+    Set<String> allUriParameters = uriParameters.stream()
+      .flatMap(uri -> uri.value().stream())
+      .collect(Collectors.toSet());
+    pathVariables.stream()
+      .filter(v -> !allUriParameters.contains(v.value()))
+      .filter(v -> !v.parameter().symbol().type().is(MAP))
+      .forEach(v -> reportIssue(v.parameter(), "an issue"));
+
+    // we handle the case where an uri parameter (/{aParam}/) doesn't match a path variable
     if (containsMap(method)) {
       /*
        * If any of the method parameters is a map, we assume all path variables are captured
@@ -86,28 +110,20 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       return;
     }
 
-    Set<String> unusedPathVariables = findUnusedPathVariables(method, annotation, modelAttributePathVariable);
-    if (!unusedPathVariables.isEmpty()) {
-      reportIssue(
-        annotation(method, annotation),
-        "Bind path variable \"" + String.join("\", \"", unusedPathVariables) + "\" to a method parameter.");
-    }
-  }
-
-  private static Set<String> findUnusedPathVariables(MethodTree method, String annotation, Set<String> modelAttributePathVariable) {
-    Set<String> pathVariablesUsedInArguments = method.parameters().stream()
-      .map(MissingPathVariableAnnotationCheck::pathVariableName)
-      .flatMap(Optional::stream)
+    Set<String> allPathVariables = pathVariables.stream()
+      .map(ParameterInfo::value)
       .collect(Collectors.toSet());
 
-    return extractPathArgumentFromMappingAnnotations(method, annotation)
-      .map(MissingPathVariableAnnotationCheck::extractPathVariables)
-      .flatMap(pathVariables -> {
-        pathVariables.removeAll(pathVariablesUsedInArguments);
-        pathVariables.removeAll(modelAttributePathVariable);
-        return pathVariables.stream();
-      })
-      .collect(Collectors.toSet());
+    uriParameters.stream()
+      .filter(uri -> !allPathVariables.containsAll(uri.value()))
+      .forEach(uri -> {
+        Set<String> unbind = new HashSet<>(uri.value());
+        unbind.removeAll(allPathVariables);
+        reportIssue(
+          uri.request(),
+          "Bind path variable \"" + String.join("\", \"", unbind) + "\" to a method parameter.");
+      });
+
   }
 
   private static boolean containsMap(MethodTree method) {
@@ -115,7 +131,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .filter(parameter -> parameter.symbol().metadata().isAnnotatedWith(PATH_VARIABLE_ANNOTATION))
       .anyMatch(parameter -> {
         Type type = parameter.type().symbolType();
-        return type.isSubtypeOf("java.util.Map");
+        return type.isSubtypeOf(MAP);
       });
   }
 
@@ -125,6 +141,14 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .findFirst()
       // it will never be empty because we are filtering on the annotation before.
       .orElseThrow();
+  }
+
+  private static UriInfo<Set<String>> extractPathVariables(UriInfo<List<String>> uriInfo) {
+    Set<String> uriParameters = new HashSet<>();
+    for (String path : uriInfo.value()) {
+      uriParameters.addAll(extractPathVariables(path));
+    }
+    return new UriInfo<>(uriInfo.request(), uriParameters);
   }
 
   private static Set<String> extractPathVariables(String path) {
@@ -148,39 +172,62 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .collect(Collectors.toSet());
   }
 
-  private static Optional<String> pathVariableName(VariableTree parameter) {
+  private static Optional<ParameterInfo> pathVariableName(VariableTree parameter) {
     SymbolMetadata metadata = parameter.symbol().metadata();
 
-    return Optional.ofNullable(metadata.valuesForAnnotation(PATH_VARIABLE_ANNOTATION)).flatMap(arguments -> {
+    return Optional.ofNullable(metadata.valuesForAnnotation(PATH_VARIABLE_ANNOTATION)).map(arguments -> {
       Map<String, Object> nameToValue = arguments.stream().collect(
         Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
 
-      return Optional.ofNullable((String) nameToValue.get("value"))
-        .or(() -> Optional.ofNullable((String) nameToValue.get("name")))
-        .or(() -> Optional.of(parameter.simpleName().name()));
+      String value = (String) nameToValue.get("value");
+      String name = (String) nameToValue.get("name");
+      if (value != null) {
+        return new ParameterInfo(parameter, value);
+      } else if (name != null) {
+        return new ParameterInfo(parameter, name);
+      } else {
+        return new ParameterInfo(parameter, parameter.simpleName().name());
+      }
     });
-
   }
 
-  private static Stream<String> extractPathArgumentFromMappingAnnotations(MethodTree method, String annotation) {
-    SymbolMetadata metadata = method.symbol().metadata();
-    return Optional.ofNullable(metadata.valuesForAnnotation(annotation)).flatMap(arguments -> {
-      Map<String, Object> nameToValue = arguments.stream().collect(
-        Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
+  private static Stream<UriInfo<List<String>>> extractPathArgumentFromMappingAnnotations(MethodTree method) {
 
-      return arrayOrString(nameToValue.get("path"))
-        .or(() -> arrayOrString(nameToValue.get("value")));
-    }).orElseGet(Stream::empty);
+    return method.modifiers().annotations().stream()
+      .filter(ann -> MAPPING_ANNOTATIONS.contains(ann.annotationType().symbolType().fullyQualifiedName()))
+      .map(ann -> {
+
+        String fullyQualifiedName = ann.annotationType().symbolType().fullyQualifiedName();
+        // valuesForAnnotation cannot be null from previous filter
+        Map<String, Object> nameToValue = method.symbol().metadata().valuesForAnnotation(fullyQualifiedName).stream()
+          .collect(Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
+
+        List<String> path = arrayOrString(nameToValue.get("path"));
+        List<String> value = arrayOrString(nameToValue.get("value"));
+        if (path != null) {
+          return new UriInfo<>(ann, path);
+        } else if (value != null) {
+          return new UriInfo<>(ann, value);
+        } else {
+          return new UriInfo<>(ann, List.of());
+        }
+      });
   }
 
-  private static Optional<Stream<String>> arrayOrString(Object value) {
+  private static List<String> arrayOrString(Object value) {
     if (value == null) {
-      return Optional.empty();
+      return null;
     }
 
     Object[] array = (Object[]) value;
-    return Optional.of(Stream.of(array)
-      .map(x -> (String) x));
+    return Stream.of(array)
+      .map(el -> (String) el)
+      .toList();
+  }
+
+  private record ParameterInfo(VariableTree parameter, String value) {
+  }
+  private record UriInfo<A>(AnnotationTree request, A value) {
   }
 
 }
