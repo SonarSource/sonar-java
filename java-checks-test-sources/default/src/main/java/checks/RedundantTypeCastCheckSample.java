@@ -1,14 +1,14 @@
 package checks;
 
-import java.util.function.Predicate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Comparator;
 import java.util.Set;
+import java.util.function.Predicate;
 
 class Outer {
   class Nested {
@@ -191,6 +191,24 @@ class RedundantTypeCastCheckSample_G<T> {
       Class<T> c = (Class<T>) Class.forName(name, true, o.getClass().getClassLoader());
       return null;
     }
+
+    public String supportSpecificTypeReturnedByGetClass(Object obj) {
+      // "getClass()" does not respect its method signature, instead of returning "Class<?>", it returns "Class<? extends String>"
+      Class<? extends String> cls1 = ((String) obj).getClass(); // Compliant, without the "(String)" cast, the code does not compile
+
+      // coverage
+      Class<? extends String> cls2 = getClass((String) obj); // not an "Object#getClass()" method invocation
+      class CornerCase{
+        int getClass;
+      }
+      ((CornerCase) obj).getClass = 42; // not a method invocation
+      return cls1.getName();
+    }
+
+    public <T> Class<? extends T> getClass(T obj) {
+      return (Class<? extends T>) obj.getClass();
+    }
+
     public static Number choose(Integer i, Float f, boolean takeFirst) {
       return takeFirst ? (Number) i : f;
     }
