@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.spring;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
@@ -25,7 +25,7 @@ class MissingPathVariableAnnotationCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/MissingPathVariableAnnotationCheckSample.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/MissingPathVariableAnnotationCheckSample.java"))
       .withCheck(new MissingPathVariableAnnotationCheck())
       .verifyIssues();
   }

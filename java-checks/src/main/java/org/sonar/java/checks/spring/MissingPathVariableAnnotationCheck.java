@@ -14,9 +14,8 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.spring;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -69,14 +68,16 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .map(MethodTree.class::cast)
       .toList();
 
-    // Set<String> modelAttributePathVariable = methods.stream()
-    // .filter(method -> method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION))
-    // .flatMap(method -> method.parameters().stream())
-    // .map(MissingPathVariableAnnotationCheck::pathVariableName)
-    // .flatMap(Optional::stream)
-    // .collect(Collectors.toSet());
+    Set<String> modelAttributePathVariable = methods.stream()
+      .filter(method -> method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION))
+      .flatMap(method -> method.parameters().stream())
+      .map(MissingPathVariableAnnotationCheck::pathVariableName)
+      .flatMap(option -> option.stream().map(ParameterInfo::value))
+      .collect(Collectors.toSet());
 
-    methods.forEach(method -> checkParameters(method, Set.of()));
+    methods.stream()
+      .filter(m -> !m.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION))
+      .forEach(method -> checkParameters(method, modelAttributePathVariable));
   }
 
   private void checkParameters(MethodTree method, Set<String> modelAttributePathVariable) {
@@ -113,6 +114,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     Set<String> allPathVariables = pathVariables.stream()
       .map(ParameterInfo::value)
       .collect(Collectors.toSet());
+    allPathVariables.addAll(modelAttributePathVariable);
 
     uriParameters.stream()
       .filter(uri -> !allPathVariables.containsAll(uri.value()))

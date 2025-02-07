@@ -1,4 +1,4 @@
-package checks;
+package checks.spring;
 
 import java.util.Map;
 import java.util.Optional;
@@ -199,8 +199,8 @@ public class MissingPathVariableAnnotationCheckSample {
 
   static class ModelA {
     @ModelAttribute("user")
-    public String getUser(@PathVariable String id, @PathVariable String name) {
-      return "user";
+    public String getUser(@PathVariable String id, @PathVariable String name) { // always compliant when method  annotated with @ModelAttribute
+      return "user"; // because the case is too complex to handle
     }
 
     @GetMapping("/{id}/{name}")
