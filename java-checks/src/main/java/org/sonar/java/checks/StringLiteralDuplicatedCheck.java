@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -89,11 +90,34 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   public void visitLiteral(LiteralTree tree) {
     if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
       String literal = tree.value();
-      if (literal.length() >= MINIMAL_LITERAL_LENGTH && !isStringLiteralFragment(tree)) {
+      if (literal.length() >= MINIMAL_LITERAL_LENGTH && !isStringLiteralFragment(tree) && !isThrowableArgument(tree)) {
         String stringValue = LiteralUtils.getAsStringValue(tree).replace("\\n", "\n");
         occurrences.computeIfAbsent(stringValue, key -> new ArrayList<>()).add(tree);
       }
     }
+  }
+
+  /**
+   * Verify that <code>literalTree</code> is an argument in
+   * <code>throw new SomeException(arg1, arg2, ...)</code>,
+   * or a part of an argument (to account for concatenation), for example,
+   * <code>throw new SomeException(arg1, "literalTree" + stuff, ...)</code>,
+   * For simplicity and to avoid surprises, we do not consider more complex cases.
+   */
+  private static boolean isThrowableArgument(LiteralTree literalTree) {
+    Optional<Tree> tree = Optional.ofNullable(literalTree.parent());
+    // If the literal is a part of string concatenation expression, move up
+    // until the argument list.
+    while(tree.filter(t -> t.is(Tree.Kind.PLUS)).isPresent()) {
+      tree = tree.map(Tree::parent);
+    }
+    return tree
+        .filter(t -> t.is(Tree.Kind.ARGUMENTS))
+        .map(Tree::parent)
+        .filter(t -> t.is(Tree.Kind.NEW_CLASS))
+        .map(Tree::parent)
+        .filter(t -> t.is(Tree.Kind.THROW_STATEMENT))
+        .isPresent();
   }
 
   private static boolean isStringLiteralFragment(ExpressionTree tree) {
