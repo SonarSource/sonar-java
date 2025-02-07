@@ -22,12 +22,24 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class EventListenerMethodOneArgCheckTest {
+  private static final String SAMPLE_FILE = mainCodeSourcesPath("checks/spring/EventListenerMethodOneArgCheckSample.java");
+  private static final EventListenerMethodOneArgCheck CHECK = new EventListenerMethodOneArgCheck();
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/EventListenerMethodOneArgCheckSample.java"))
-      .withCheck(new EventListenerMethodOneArgCheck())
+      .onFile(SAMPLE_FILE)
+      .withCheck(CHECK)
       .verifyIssues();
+  }
+
+  @Test
+  void testWithoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(SAMPLE_FILE)
+      .withCheck(CHECK)
+      .withoutSemantic()
+      // No issues when semantic information is not available.
+      .verifyNoIssues();
   }
 }
