@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S7180")
 public class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheck extends IssuableSubscriptionVisitor {
 
-  private static final String ISSUE_MESSAGE = "Move this \"@%s\" annotation from interface to a concrete class.";
+  private static final String ISSUE_MESSAGE = "\"@%s\" annotation should only be applied to concrete classes.";
   private static final Set<String> CACHING_ANNOTATIONS = Set.of(
     "org.springframework.cache.annotation.CacheConfig",
     "org.springframework.cache.annotation.CacheEvict",

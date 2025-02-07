@@ -10,7 +10,7 @@ public class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheckSample {
 
   @Cacheable("aCache") // Noncompliant
   public interface InterfaceCacheable {
-    @Cacheable("aCache") // Noncompliant {{Move this "@Cacheable" annotation from interface to a concrete class.}}
+    @Cacheable("aCache") // Noncompliant {{"@Cacheable" annotation should only be applied to concrete classes.}}
   //^^^^^^^^^^^^^^^^^^^^
     String getData(String id);
   }
@@ -45,13 +45,13 @@ public class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheckSample {
   @Cacheable("aCache") // here we apply it on an annotation and not an interface. There is no problem.
   @interface MyAnnotation {}
 
-  @CacheConfig // Noncompliant {{Move this "@CacheConfig" annotation from interface to a concrete class.}}
+  @CacheConfig // Noncompliant {{"@CacheConfig" annotation should only be applied to concrete classes.}}
   public interface InterfaceCacheConfig { }
 
   @CacheConfig
   class ClassCacheConfig { }
 
-  @CachePut("aCache") // Noncompliant {{Move this "@CachePut" annotation from interface to a concrete class.}}
+  @CachePut("aCache") // Noncompliant {{"@CachePut" annotation should only be applied to concrete classes.}}
   public interface InterfaceCachePut {
     @CachePut("aCache") // Noncompliant
     String getData(String id);
@@ -63,7 +63,7 @@ public class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheckSample {
     String getData(String id){return "";}
   }
 
-  @CacheEvict("aCache") // Noncompliant {{Move this "@CacheEvict" annotation from interface to a concrete class.}}
+  @CacheEvict("aCache") // Noncompliant {{"@CacheEvict" annotation should only be applied to concrete classes.}}
   public interface InterfaceCacheEvict {
     @CacheEvict("aCache") // Noncompliant
     String getData(String id);
@@ -75,7 +75,7 @@ public class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheckSample {
     String getData(String id){return "";}
   }
 
-  @Caching // Noncompliant {{Move this "@Caching" annotation from interface to a concrete class.}}
+  @Caching // Noncompliant {{"@Caching" annotation should only be applied to concrete classes.}}
   public interface InterfaceCaching {
     @Caching // Noncompliant
     String getData(String id);
