@@ -289,10 +289,8 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/webhook/WebhookCallerImplTest.java": [
 65,
-66,
 106,
-125,
-126
+125
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/webhook/WebhookDeliveryTest.java": [
 73
@@ -443,13 +441,6 @@
 120,
 161
 ],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/index/IssueIteratorFactoryTest.java": [
-63,
-86,
-99,
-112,
-125
-],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/notification/NewIssuesStatisticsTest.java": [
 47,
 49,
@@ -539,15 +530,13 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/monitoring/DatabaseMonitorTest.java": [
 55,
-57,
-64
+57
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/monitoring/EsMonitorTest.java": [
 52,
 53,
 64,
 76,
-77,
 89,
 100,
 111
@@ -580,18 +569,12 @@
 173
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QProfileFactoryImplTest.java": [
-308,
-309,
-310,
 314,
 315,
 316,
 317,
 318,
-319,
-324,
-328,
-329
+319
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/QualityProfileTest.java": [
 78

@@ -148,14 +148,15 @@ public class AssertJChainSimplificationCheckTest {
 
     assertThat(x.compareTo(y)).isZero(); // Noncompliant {{Use assertThat(actual).isEqualByComparingTo(expected) instead.}}
     assertThat(x.compareTo(y)).isNotZero(); // Noncompliant {{Use assertThat(actual).isNotEqualByComparingTo(expected) instead.}}
-    assertThat(x.compareTo(y)).isGreaterThan(-1); // Noncompliant {{Use isNotNegative() instead.}}
-    assertThat(x.compareTo(y)).isGreaterThan(0); // Noncompliant {{Use isPositive() instead.}}
-    assertThat(x.compareTo(y)).isGreaterThanOrEqualTo(0); // Noncompliant {{Use isNotNegative() instead.}}
-    assertThat(x.compareTo(y)).isGreaterThanOrEqualTo(1); // Noncompliant {{Use isPositive() instead.}}
-    assertThat(x.compareTo(y)).isLessThan(1); // Noncompliant {{Use isNotPositive() instead.}}
-    assertThat(x.compareTo(y)).isLessThan(0); // Noncompliant {{Use isNegative() instead.}}
-    assertThat(x.compareTo(y)).isLessThanOrEqualTo(0); // Noncompliant {{Use isNotPositive() instead.}}
-    assertThat(x.compareTo(y)).isLessThanOrEqualTo(-1); // Noncompliant {{Use isNegative() instead.}}
+
+    assertThat(x.compareTo(y)).isGreaterThan(-1); // Compliant, suggesting isNotNegative() is confusing.
+    assertThat(x.compareTo(y)).isGreaterThan(0); // Compliant, suggesting isPositive() is confusing.
+    assertThat(x.compareTo(y)).isGreaterThanOrEqualTo(0); // Compliant, suggesting isNotNegative() is confusing.
+    assertThat(x.compareTo(y)).isGreaterThanOrEqualTo(1); // Compliant, suggesting isPositive() is confusing.
+    assertThat(x.compareTo(y)).isLessThan(1); // Compliant, suggesting isNotPositive() is confusing.
+    assertThat(x.compareTo(y)).isLessThan(0); // Compliant, suggesting isNegative() is confusing.
+    assertThat(x.compareTo(y)).isLessThanOrEqualTo(0); // Compliant, suggesting isNotPositive() is confusing.
+    assertThat(x.compareTo(y)).isLessThanOrEqualTo(-1); // Compliant, suggesting isNegative() is confusing.
     assertThat(x.compareTo(y)).isNegative(); // Noncompliant {{Use assertThat(actual).isLessThan(expected) instead.}}
     assertThat(x.compareTo(y)).isNotNegative(); // Noncompliant {{Use assertThat(actual).isGreaterThanOrEqualTo(expected) instead.}}
     assertThat(x.compareTo(y)).isPositive(); // Noncompliant {{Use assertThat(actual).isGreaterThan(expected) instead.}}
@@ -221,11 +222,11 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getString().indexOf(x)).isNotZero(); // Noncompliant {{Use assertThat(actual).doesNotStartWith(expected) instead.}}
     assertThat(getString().indexOf(x)).isEqualTo(-1); // Noncompliant {{Use assertThat(actual).doesNotContain(expected) instead.}}
     assertThat(getString().indexOf(x)).isNegative(); // Noncompliant {{Use assertThat(actual).doesNotContain(expected) instead.}}
-    assertThat(getString().indexOf(x)).isLessThan(0); // Noncompliant {{Use isNegative() instead.}}
-    assertThat(getString().indexOf(x)).isLessThanOrEqualTo(-1); // Noncompliant {{Use isNegative() instead.}}
+    assertThat(getString().indexOf(x)).isLessThan(0); // Compliant, suggesting isNegative() is confusing.
+    assertThat(getString().indexOf(x)).isLessThanOrEqualTo(-1); // Compliant, suggesting isNegative() is confusing.
     assertThat(getString().indexOf(x)).isNotNegative(); // Noncompliant {{Use assertThat(actual).contains(expected) instead.}}
-    assertThat(getString().indexOf(x)).isGreaterThanOrEqualTo(0); // Noncompliant {{Use isNotNegative() instead.}}
-    assertThat(getString().indexOf(x)).isGreaterThan(-1); // Noncompliant {{Use isNotNegative() instead.}}
+    assertThat(getString().indexOf(x)).isGreaterThanOrEqualTo(0); // Compliant, suggesting isNotNegative() is confusing.
+    assertThat(getString().indexOf(x)).isGreaterThan(-1); // Compliant, suggesting isNotNegative() is confusing.
 
     assertThat(getString().trim()).isNotEmpty(); // Noncompliant {{Use assertThat(actual).isNotBlank() instead.}}
     assertThat(getString().trim()).isNotEqualTo(""); // Noncompliant {{Use assertThat(actual).isNotBlank() instead.}}
@@ -234,8 +235,8 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getString().length()).isEqualTo(x.length()); // Noncompliant {{Use assertThat(actual).hasSameSizeAs(expected) instead.}}
     assertThat(getString().length()).isEqualTo(getArray().length); // Noncompliant {{Use assertThat(actual).hasSize(expected) instead.}}
 
-    assertThat(getString().length()).isLessThanOrEqualTo(0); // Noncompliant {{Use isNotPositive() instead.}}
-    assertThat(getString().length()).isLessThan(1); // Noncompliant {{Use isNotPositive() instead.}}
+    assertThat(getString().length()).isLessThanOrEqualTo(0); // Compliant, suggesting isNotPositive() is confusing.
+    assertThat(getString().length()).isLessThan(1); // Compliant, suggesting isNotPositive() is confusing.
     assertThat(getString().length()).isPositive(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead.}}
     assertThat(getString().length()).isNotPositive(); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
     assertThat(getString().length()).isZero(); // Noncompliant {{Use assertThat(actual).isEmpty() instead.}}
@@ -267,7 +268,7 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getArray().length).isGreaterThan(i); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThan(expected) instead.}}
     assertThat(getArray().length).isGreaterThanOrEqualTo(i); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThanOrEqualTo(expected) instead.}}
 
-    assertThat(getArray().length).isGreaterThan(0); // Noncompliant {{Use isPositive() instead.}}
+    assertThat(getArray().length).isGreaterThan(0); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThan(expected) instead.}}
     assertThat(myClassWithLength.length).isGreaterThanOrEqualTo(i); // Compliant
     assertThat(getArray().hashCode()).isPositive(); // Compliant
   }
@@ -323,7 +324,7 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getMap().size()).isLessThan(42); // Noncompliant {{Use assertThat(actual).hasSizeLessThan(expected) instead.}}
     assertThat(getMap().size()).isGreaterThan(42); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThan(expected) instead.}}
     assertThat(getMap().size()).isGreaterThanOrEqualTo(42); // Noncompliant {{Use assertThat(actual).hasSizeGreaterThanOrEqualTo(expected) instead.}}
-    assertThat(getMap().size()).isLessThan(0); // Noncompliant {{Use isNegative() instead.}}
+    assertThat(getMap().size()).isLessThan(0); // Noncompliant {{Use assertThat(actual).hasSizeLessThan(expected) instead.}}
     assertThat(getMap().size()).isPositive(); // Noncompliant {{Use assertThat(actual).isNotEmpty() instead.}}
 
     assertThat(getMap().containsKey(key)).isTrue(); // Noncompliant {{Use assertThat(actual).containsKey(expected) instead.}}
@@ -413,16 +414,16 @@ public class AssertJChainSimplificationCheckTest {
     assertThat(getLong()).isEqualTo(42l); // Compliant
     assertThat(getLong()).isEqualTo(42L); // Compliant
 
-    assertThat(getLong()).isGreaterThan(0L); // Noncompliant {{Use isPositive() instead.}}
-    assertThat(getLong()).isGreaterThan(-1L); // Noncompliant {{Use isNotNegative() instead.}}
-    assertThat(getLong()).isGreaterThanOrEqualTo(0L); // Noncompliant {{Use isNotNegative() instead.}}
-    assertThat(getLong()).isGreaterThanOrEqualTo(1L); // Noncompliant {{Use isPositive() instead.}}
-    assertThat(getLong()).isGreaterThanOrEqualTo(1l); // Noncompliant {{Use isPositive() instead.}}
+    assertThat(getLong()).isGreaterThan(0L); // Compliant, suggesting isPositive() is confusing.
+    assertThat(getLong()).isGreaterThan(-1L); // Compliant, suggesting isNotNegative() is confusing.
+    assertThat(getLong()).isGreaterThanOrEqualTo(0L); // Compliant, suggesting isNotNegative() is confusing.
+    assertThat(getLong()).isGreaterThanOrEqualTo(1L); // Compliant, suggesting isPositive() is confusing.
+    assertThat(getLong()).isGreaterThanOrEqualTo(1l); // Compliant, suggesting isPositive() is confusing.
     assertThat(getLong()).isGreaterThanOrEqualTo(42L); // Compliant
-    assertThat(getLong()).isLessThan(0L); // Noncompliant {{Use isNegative() instead.}}
-    assertThat(getLong()).isLessThan(1L); // Noncompliant {{Use isNotPositive() instead.}}
-    assertThat(getLong()).isLessThanOrEqualTo(0L); // Noncompliant {{Use isNotPositive() instead.}}
-    assertThat(getLong()).isLessThanOrEqualTo(-1L); // Noncompliant {{Use isNegative() instead.}}
+    assertThat(getLong()).isLessThan(0L); // Compliant, suggesting isNegative() is confusing.
+    assertThat(getLong()).isLessThan(1L); // Compliant, suggesting isNotPositive() is confusing.
+    assertThat(getLong()).isLessThanOrEqualTo(0L); // Compliant, suggesting isNotPositive() is confusing.
+    assertThat(getLong()).isLessThanOrEqualTo(-1L); // Compliant, suggesting isNegative() is confusing.
     assertThat(getLong()).isLessThanOrEqualTo(-42L);// Compliant
     assertThat(getLong()).isNotEqualTo(0L); // Noncompliant {{Use isNotZero() instead.}}
   }
