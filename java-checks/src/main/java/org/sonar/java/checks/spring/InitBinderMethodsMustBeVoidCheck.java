@@ -18,7 +18,6 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import java.util.Optional;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -51,9 +50,7 @@ public class InitBinderMethodsMustBeVoidCheck extends IssuableSubscriptionVisito
       .filter(ann -> ann.annotationType().symbolType().is(INIT_BINDER))
       .findFirst();
 
-    initBinder.ifPresent(ann -> {
-      reportIssue(method.simpleName(), ISSUE_MESSAGE);
-    });
+    initBinder.ifPresent(ann -> reportIssue(method.simpleName(), ISSUE_MESSAGE));
   }
 
 }
