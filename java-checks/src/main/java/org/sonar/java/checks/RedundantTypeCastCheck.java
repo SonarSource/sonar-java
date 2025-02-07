@@ -30,6 +30,8 @@ import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
@@ -81,7 +83,23 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       Tree parentTree = skipParentheses(typeCastTree.parent());
       return !parentTree.is(Tree.Kind.ARGUMENTS);
     }
+    if (isMethodInvocationReceiverOfGetClass(typeCastTree)) {
+      // java.lang.Object#getClass() is a very specific method declared to return Class<?> but in fact
+      // returns Class<? extends (receiver type)> at compile time. To prevent false-positives, we ignore this case.
+      return false;
+    }
     return warnings.stream().anyMatch(warning -> matchesWarning(warning, typeCastTree));
+  }
+
+  private static boolean isMethodInvocationReceiverOfGetClass(TypeCastTree typeCastTree) {
+    Tree parent = typeCastTree.parent();
+    while (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      parent = parent.parent();
+    }
+    return parent instanceof MemberSelectExpressionTree memberSelect &&
+      "getClass".equals(memberSelect.identifier().name()) &&
+      memberSelect.parent() instanceof MethodInvocationTree methodInvocation &&
+      methodInvocation.arguments().isEmpty();
   }
 
   private static boolean matchesWarning(JWarning warning, TypeCastTree tree) {
