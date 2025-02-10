@@ -32,7 +32,7 @@ public class InitBinderMethodsMustBeVoidCheck extends IssuableSubscriptionVisito
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    // if you want to visit constructors, you will need to verify that the returnType is not null (refer to A3422)
+    // if you want to visit constructors, you will need to verify that the returnType is not null
     return List.of(Tree.Kind.METHOD);
   }
 
@@ -40,17 +40,18 @@ public class InitBinderMethodsMustBeVoidCheck extends IssuableSubscriptionVisito
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
 
-    // A3422 returnType is null only for constructors
+    // returnType is null only for constructors
     TypeTree returnType = method.returnType();
     if (returnType.symbolType().isVoid()) {
       return;
     }
 
-    Optional<AnnotationTree> initBinder = method.modifiers().annotations().stream()
-      .filter(ann -> ann.annotationType().symbolType().is(INIT_BINDER))
-      .findFirst();
+    boolean hasInitBinder = method.modifiers().annotations().stream()
+      .anyMatch(ann -> ann.annotationType().symbolType().is(INIT_BINDER));
 
-    initBinder.ifPresent(ann -> reportIssue(method.simpleName(), ISSUE_MESSAGE));
+    if (hasInitBinder) {
+      reportIssue(method.simpleName(), ISSUE_MESSAGE);
+    }
   }
 
 }
