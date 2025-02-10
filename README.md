@@ -8,8 +8,8 @@ Features
 
 * 600+ rules (including 150+ bug detection rules and 350+ code smells)
 * Metrics (cognitive complexity, number of lines, etc.)
-* Import of [test coverage reports](https://docs.sonarqube.org/display/PLUG/Code+Coverage+by+Unit+Tests+for+Java+Project)
-* [Custom rules](https://docs.sonarqube.org/latest/analysis/languages/java/)
+* Import of [test coverage reports](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/test-coverage/java-test-coverage/)
+* [Custom rules](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/languages/java/#custom-rules)
 
 Useful links
 ------------
@@ -26,7 +26,7 @@ Have questions or feedback?
 
 To provide feedback (request a feature, report a bug, etc.) use the [Sonar Community Forum](https://community.sonarsource.com/). Please do not forget to specify the language (Java!), plugin version and SonarQube version.
 
-If you have a question on how to use plugin (and the [docs](https://docs.sonarqube.org/latest/analysis/languages/java/) don't help you), we also encourage you to use the community forum.
+If you have a question on how to use plugin (and the [docs](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/languages/java/) don't help you), we also encourage you to use the community forum.
 
 Contributing
 ------------
@@ -41,7 +41,7 @@ To submit a contribution, create a pull request for this repository. Please make
 
 ### Custom Rules
 
-If you have an idea for a rule but you are not sure that everyone needs it you can implement a [custom rule](https://docs.sonarqube.org/latest/analysis/languages/java/) available only for you. Note that in order to help you, we highly recommend to first follow the [Custom Rules 101 tutorial](https://redirect.sonarsource.com/doc/java-custom-rules-guide.html) before diving directly into implementing rules from scratch.
+If you have an idea for a rule but you are not sure that everyone needs it you can implement a [custom rule](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/languages/java/) available only for you. Note that in order to help you, we highly recommend to first follow the [Custom Rules 101 tutorial](https://redirect.sonarsource.com/doc/java-custom-rules-guide.html) before diving directly into implementing rules from scratch.
 
 ### Work with us
 Would you like to work on this project full-time? We are hiring! Check out https://www.sonarsource.com/hiring 
