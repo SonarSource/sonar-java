@@ -1,0 +1,49 @@
+<h2>Why is this an issue?</h2>
+<p>Spring provides the <code>@InitBinder</code> annotation to initialize a <code>WebDataBinder</code> instance for controllers. This is useful to bind
+request parameters to a model object, and to plug converters and formatters into this process.</p>
+<p>Methods annotated with <code>@InitBinder</code> must not have a return value, otherwise the controller containing them will throw an exception when
+invoked.</p>
+<p>This rule raises an issue when a method annotated with <code>@InitBinder</code> does not have a <code>void</code> return type</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Controller
+public class MyController {
+
+	@InitBinder
+	public String initBinder(WebDataBinder binder) { // Non compliant, make the @InitBinder method return void
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		dateFormat.setLenient(false);
+		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
+        return "OK";
+	}
+
+	// ...
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Controller
+public class MyController {
+
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		dateFormat.setLenient(false);
+		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
+	}
+
+	// ...
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Spring api - <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/InitBinder.html">@InitBinder api</a>
+  </li>
+  <li> String documentation - <a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-initbinder.html">@InitBinder
+  docs</a> </li>
+</ul>
+
