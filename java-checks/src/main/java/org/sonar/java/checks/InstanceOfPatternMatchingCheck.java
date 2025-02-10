@@ -171,7 +171,8 @@ public class InstanceOfPatternMatchingCheck extends IssuableSubscriptionVisitor 
       Type type = tree.symbolType();
       if (!type.isUnknown() && type.equals(instanceOf.type().symbolType())
         && SyntacticEquivalence.areEquivalentIncludingSameVariables(tree.expression(), instanceOf.expression())) {
-        report(instanceOf, tree, tree.type().symbolType().name().toLowerCase(Locale.ROOT));
+        Type symbolType = tree.type().symbolType();
+        report(instanceOf, tree, makeVariableNameForType(symbolType));
       }
     }
 
@@ -181,5 +182,9 @@ public class InstanceOfPatternMatchingCheck extends IssuableSubscriptionVisitor 
       JavaFileScannerContext.Location secondary = new JavaFileScannerContext.Location("Location of the cast", cast);
       reportIssue(instanceOf, message, Collections.singletonList(secondary), null);
     }
+  }
+
+  private static String makeVariableNameForType(Type type) {
+    return type.name().toLowerCase(Locale.ROOT).replace("[]", "Array");
   }
 }
