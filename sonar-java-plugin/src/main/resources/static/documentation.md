@@ -144,6 +144,11 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **8.10**
+
+* New method: `IssuableSubscriptionVisitor#reportIssue(Tree startTree, Tree endTree, String message, List<JavaFileScannerContext.Location> flow, @Nullable Integer cost)`
+  This new method allows to report an issue on a location starting from a start tree to an end tree, with a flow of secondary locations.
+
 #### **7.32**
 
 * New method: `LambdaExpressionTree#symbol()`. Use this method to get the associated method symbol the lambda expression has been resolved to.

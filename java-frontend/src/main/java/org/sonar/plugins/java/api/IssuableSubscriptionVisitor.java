@@ -16,12 +16,10 @@
  */
 package org.sonar.plugins.java.api;
 
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
-
-import java.util.List;
 
 /**
  * Subscription visitor providing an API to report issues.
@@ -77,7 +75,8 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 
   /**
    * Report an issue on a specific line.
-   * @param line line on which to report the issue
+   *
+   * @param line    line on which to report the issue
    * @param message Message to display to the user
    */
   public void addIssue(int line, String message) {
@@ -86,6 +85,7 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 
   /**
    * Report an issue at file level.
+   *
    * @param message Message to display to the user
    */
   public void addIssueOnFile(String message) {
@@ -94,7 +94,8 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 
   /**
    * Report an issue.
-   * @param tree syntax node on which to raise the issue.
+   *
+   * @param tree    syntax node on which to raise the issue.
    * @param message Message to display to the user.
    */
   public void reportIssue(Tree tree, String message) {
@@ -103,11 +104,12 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 
   /**
    * Report an issue.
-   * @param tree syntax node on which to raise the issue.
+   *
+   * @param tree    syntax node on which to raise the issue.
    * @param message Message to display to the user.
-   * @param flow List of {@link JavaFileScannerContext.Location} to display secondary locations describing the flow leading to the issue.
-   *   Empty list if the issue does not requires secondary location.
-   * @param cost computed remediation cost if applicable, null if not.
+   * @param flow    List of {@link JavaFileScannerContext.Location} to display secondary locations describing the flow leading to the issue.
+   *                Empty list if the issue does not requires secondary location.
+   * @param cost    computed remediation cost if applicable, null if not.
    */
   public void reportIssue(Tree tree, String message, List<JavaFileScannerContext.Location> flow, @Nullable Integer cost) {
     context.reportIssue(this, tree, message, flow, cost);
@@ -115,11 +117,27 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 
   /**
    * Report an issue.
+   *
    * @param startTree syntax node on which to start the highlighting of the issue.
-   * @param endTree syntax node on which to end the highlighting of the issue.
-   * @param message Message to display to the user.
+   * @param endTree   syntax node on which to end the highlighting of the issue.
+   * @param message   Message to display to the user.
    */
   public void reportIssue(Tree startTree, Tree endTree, String message) {
     context.reportIssue(this, startTree, endTree, message);
   }
+
+  /**
+   * Report an issue.
+   *
+   * @param startTree syntax node on which to start the highlighting of the issue.
+   * @param endTree   syntax node on which to end the highlighting of the issue.
+   * @param message   Message to display to the user.
+   * @param flow      List of {@link JavaFileScannerContext.Location} to display secondary locations describing the flow leading to the issue.
+   *                  Empty list if the issue does not requires secondary location.
+   * @param cost      computed remediation cost if applicable, null if not.
+   */
+  public void reportIssue(Tree startTree, Tree endTree, String message, List<JavaFileScannerContext.Location> flow, @Nullable Integer cost) {
+    context.reportIssue(this, startTree, endTree, message, flow, cost);
+  }
+
 }
