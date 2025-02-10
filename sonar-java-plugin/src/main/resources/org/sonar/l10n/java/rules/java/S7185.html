@@ -1,0 +1,28 @@
+<h2>Why is this an issue?</h2>
+<p>Spring provides the <code>@EventListener</code> annotation as a simpler alternative to implementing the <code>ApplicationListener</code> interface
+for handling events. The <code>@EventListener</code> annotation registers a method as an event handler. This allows to skip the implementation of the
+<code>ApplicationListener</code> interface, making it easier to handle events.</p>
+<p>The <code>@EventListener</code> annotation can only be used on methods that have at most one parameter, which should be the specific event that we
+want to handle. To listen to several types of events, use the <code>classes</code> argument of the <code>@EventListener</code> annotation.</p>
+<p>This rule raises an issue on all methods annotated with <code>@EventListener</code> that have more than one parameter.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@EventListener
+void handleEvent(CustomerEvent customerEvent, ExceptionalEvent exceptionalEvent) { // Non compliant, this will cause a runtime error
+    //... some event handling
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@EventListener(classes = {CustomerEvent.class, ExceptionalEvent.class})
+void handleEvent(ApplicationEvent event) { // Only one parameter, of the super type `ApplicationEvent`
+    //... some event handling
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<p>Spring API - <a
+href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/event/EventListener.html">@EventListener</a></p>
+
