@@ -249,7 +249,7 @@ public class MissingPathVariableAnnotationCheckSample {
 
 
   @GetMapping("/a/path")
-  public String pathVariableWithoutParameter(@PathVariable String aVar){ // Noncompliant
+  public String pathVariableWithoutParameter(@PathVariable String aVar){ // Noncompliant {{Bind path variable "aVar" to a path parameter.}}
 //                                           ^^^^^^^^^^^^^^^^^^^^^^^^^
     return "";
   }

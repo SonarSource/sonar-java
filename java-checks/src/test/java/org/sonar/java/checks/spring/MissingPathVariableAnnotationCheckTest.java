@@ -23,11 +23,20 @@ import org.sonar.java.checks.verifier.TestUtils;
 class MissingPathVariableAnnotationCheckTest {
 
   @Test
-  void test() {
+  void test_compiling() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/spring/MissingPathVariableAnnotationCheckSample.java"))
       .withCheck(new MissingPathVariableAnnotationCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_without_semantic(){
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/MissingPathVariableAnnotationCheckSample.java"))
+      .withCheck(new MissingPathVariableAnnotationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
   
 }

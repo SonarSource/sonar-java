@@ -33,7 +33,6 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -71,7 +70,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     Set<String> modelAttributePathVariable = methods.stream()
       .filter(method -> method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION))
       .flatMap(method -> method.parameters().stream())
-      .map(MissingPathVariableAnnotationCheck::pathVariableName)
+      .map(MissingPathVariableAnnotationCheck::extractPathVariableAnnotations)
       .flatMap(option -> option.stream().map(ParameterInfo::value))
       .collect(Collectors.toSet());
 
@@ -81,16 +80,29 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   }
 
   private void checkParameters(MethodTree method, Set<String> modelAttributePathVariable) {
+    boolean unknownSymbolsInParam = method.parameters()
+      .stream()
+      .anyMatch(p -> p.symbol().isUnknown() ||
+        p.symbol().metadata().annotations()
+          .stream()
+          .anyMatch(ann -> ann.symbol().isUnknown()));
+    boolean unknownSymbolsInAnn = method.symbol().isUnknown() || method.symbol().metadata().annotations()
+      .stream()
+      .anyMatch(ann -> ann.symbol().isUnknown());
+
+    if(unknownSymbolsInParam || unknownSymbolsInAnn){
+      return;
+    }
 
     // we extract path variables
     List<ParameterInfo> pathVariables = method.parameters().stream()
-      .map(MissingPathVariableAnnotationCheck::pathVariableName)
+      .map(MissingPathVariableAnnotationCheck::extractPathVariableAnnotations)
       .flatMap(Optional::stream)
       .toList();
 
     // we extract uri parameters
     List<UriInfo<Set<String>>> uriParameters = extractPathArgumentFromMappingAnnotations(method)
-      .map(MissingPathVariableAnnotationCheck::extractPathVariables)
+      .map(MissingPathVariableAnnotationCheck::extractMappingAnnotations)
       .toList();
 
     // we handle the case where a path variable doesn't match to an uri parameter (/{aParam}/)
@@ -100,7 +112,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     pathVariables.stream()
       .filter(v -> !allUriParameters.contains(v.value()))
       .filter(v -> !v.parameter().symbol().type().is(MAP))
-      .forEach(v -> reportIssue(v.parameter(), "an issue"));
+      .forEach(v -> reportIssue(v.parameter(), String.format("Bind path variable \"%s\" to a path parameter.", v.value())));
 
     // we handle the case where an uri parameter (/{aParam}/) doesn't match a path variable
     if (containsMap(method)) {
@@ -137,23 +149,16 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       });
   }
 
-  private static ExpressionTree annotation(MethodTree method, String name) {
-    return method.modifiers().annotations().stream()
-      .filter(annotation -> annotation.symbolType().is(name))
-      .findFirst()
-      // it will never be empty because we are filtering on the annotation before.
-      .orElseThrow();
-  }
-
-  private static UriInfo<Set<String>> extractPathVariables(UriInfo<List<String>> uriInfo) {
+  private static UriInfo<Set<String>> extractMappingAnnotations(UriInfo<List<String>> uriInfo) {
     Set<String> uriParameters = new HashSet<>();
     for (String path : uriInfo.value()) {
-      uriParameters.addAll(extractPathVariables(path));
+      uriParameters.addAll(extractMappingAnnotations(path));
     }
     return new UriInfo<>(uriInfo.request(), uriParameters);
   }
 
-  private static Set<String> extractPathVariables(String path) {
+  //missing create custom parser
+  private static Set<String> extractMappingAnnotations(String path) {
     if (CONTAINS_PLACEHOLDER.test(path)) {
       return new HashSet<>();
     }
@@ -174,7 +179,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .collect(Collectors.toSet());
   }
 
-  private static Optional<ParameterInfo> pathVariableName(VariableTree parameter) {
+  private static Optional<ParameterInfo> extractPathVariableAnnotations(VariableTree parameter) {
     SymbolMetadata metadata = parameter.symbol().metadata();
 
     return Optional.ofNullable(metadata.valuesForAnnotation(PATH_VARIABLE_ANNOTATION)).map(arguments -> {
@@ -231,5 +236,4 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   }
   private record UriInfo<A>(AnnotationTree request, A value) {
   }
-
 }
