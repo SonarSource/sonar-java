@@ -3,11 +3,46 @@ package checks;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.validation.constraints.NotNull;
 
 class BoxedBooleanExpressionsCheckSample {
+  public String mapOptionalBoolean() {
+    return optionalBoolean()
+      // by construction we know that b is not null, so using a primitive boolean expression is not necessary.
+      .map(b -> b ? "truthy" : "falsey")
+      .orElse("mystery");
+  }
+
+  public String lambdaWithBooleanParameter() {
+    Function<Boolean, String> function = b -> b ? "truthy" : "falsey"; // Noncompliant
+    return  "foo";
+  }
+
+  public Optional<Boolean> optionalBoolean() {
+    return Optional.of(true);
+  }
+
+  public String mapOptionalBoolean_extraBrackets() {
+    return optionalBoolean()
+      .map((b) -> b ? true : false)
+      .map((Boolean b) -> b ? "truthy" : "falsey")
+      .orElse("mystery");
+  }
+
+  public String mapOptionalBoolean2() {
+    Boolean b1 = getSurprizeBoxedBoolean();
+    return optionalBoolean()
+      .map(b -> b1 ? "truthy" : "falsey") // Noncompliant
+      .orElse("mystery");
+  }
+  public String lambdaUsedInMapLater() {
+    // FP because the lambda is only called in places where the argument cannot be null
+    Function<Boolean, String> function = b -> b ? "truthy" : "falsey"; // Noncompliant
+    return optionalBoolean().map(function).orElse("empty");
+  }
 
   String foo(Object value) {
     if (value == null) return "";
