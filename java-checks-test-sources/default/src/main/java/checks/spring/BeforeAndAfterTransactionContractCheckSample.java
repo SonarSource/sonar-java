@@ -9,12 +9,15 @@ import org.springframework.test.context.transaction.BeforeTransaction;
 public class BeforeAndAfterTransactionContractCheckSample {
 
   @BeforeTransaction
+//^^^^^^^^^^^^^^^^^^> {{Annotation}}
   private String beforeTransaction() { // Noncompliant {{@BeforeTransaction method should return void.}}
+//        ^^^^^^
     return "before";
   }
 
   @AfterTransaction
   private String afterTransaction() { // Noncompliant {{@AfterTransaction method should return void.}}
+//        ^^^^^^
     return "after";
   }
 
@@ -24,13 +27,15 @@ public class BeforeAndAfterTransactionContractCheckSample {
   }
 
   @AfterTransaction
-  public void afterTransaction2(String name) { // Noncompliant {{@AfterTransaction method should not have parameters.}}
+  public void afterTransaction2(String name, String surname) { // Noncompliant {{@AfterTransaction method should not have parameters.}}
+    //                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
     assert name != null;
+    assert surname != null;
   }
 
   @BeforeTransaction
   public void beforeTransaction5(@Autowired Object notAComponent) { // Noncompliant {{@BeforeTransaction method should not have parameters.}}
-    // ...
+    //                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   @BeforeTransaction
