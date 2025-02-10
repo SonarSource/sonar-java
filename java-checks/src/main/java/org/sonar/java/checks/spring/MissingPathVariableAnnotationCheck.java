@@ -82,11 +82,11 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   private void checkParameters(MethodTree method, Set<String> modelAttributePathVariable) {
     boolean unknownSymbolsInParam = method.parameters()
       .stream()
-      .anyMatch(p -> p.symbol().isUnknown() ||
+      .anyMatch(p ->
         p.symbol().metadata().annotations()
           .stream()
           .anyMatch(ann -> ann.symbol().isUnknown()));
-    boolean unknownSymbolsInAnn = method.symbol().isUnknown() || method.symbol().metadata().annotations()
+    boolean unknownSymbolsInAnn = method.symbol().metadata().annotations()
       .stream()
       .anyMatch(ann -> ann.symbol().isUnknown());
 
