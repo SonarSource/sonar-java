@@ -34,8 +34,8 @@ public class BeforeAndAfterTransactionContractCheckSample {
   }
 
   @BeforeTransaction
-  public void beforeTransaction5(@Autowired Object notAComponent) { // Noncompliant {{@BeforeTransaction method should not have parameters.}}
-    //                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  public void beforeTransaction5(@Autowired Object notAComponent) { // FN, not really a component, requires spring context
+    // ...
   }
 
   @BeforeTransaction

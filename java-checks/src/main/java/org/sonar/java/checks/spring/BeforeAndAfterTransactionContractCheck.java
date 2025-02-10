@@ -18,17 +18,22 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S7190")
 public class BeforeAndAfterTransactionContractCheck extends IssuableSubscriptionVisitor {
 
-  private static final String BEFORE_TRANSACTION = "org.springframework.test.context.transaction.BeforeTransaction";
-  private static final String AFTER_TRANSACTION = "org.springframework.test.context.transaction.AfterTransaction";
-  private static final List<String> TRANSACTION_ANNOTATIONS = List.of(BEFORE_TRANSACTION, AFTER_TRANSACTION);
+  private static final String BEFORE_TRANSACTION_FQN = "org.springframework.test.context.transaction.BeforeTransaction";
+  private static final String AFTER_TRANSACTION_FQN = "org.springframework.test.context.transaction.AfterTransaction";
+  private static final List<String> TRANSACTION_ANNOTATIONS = List.of(BEFORE_TRANSACTION_FQN, AFTER_TRANSACTION_FQN);
+
+  private static final String TEST_INFO_FQN = "org.junit.jupiter.api.TestInfo";
 
   private static final String RETURN_VOID_MESSAGE = "%s method should return void.";
   private static final String NO_PARAMETERS_MESSAGE = "%s method should not have parameters.";
@@ -41,21 +46,34 @@ public class BeforeAndAfterTransactionContractCheck extends IssuableSubscription
   @Override
   public void visitNode(Tree tree) {
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-    if (methodTree.symbol().metadata().isAnnotatedWith(BEFORE_TRANSACTION)) {
-      if (!methodTree.returnType().symbolType().isVoid()) {
-        reportReturnType(methodTree, String.format(RETURN_VOID_MESSAGE, "@BeforeTransaction"));
-      }
-      if (!methodTree.parameters().isEmpty()) {
-        reportIssue(methodTree.simpleName(), String.format(NO_PARAMETERS_MESSAGE, "@BeforeTransaction"));
-      }
-    } else if (methodTree.symbol().metadata().isAnnotatedWith(AFTER_TRANSACTION)) {
-      if (!methodTree.returnType().symbolType().isVoid()) {
-        reportIssue(methodTree.returnType(), String.format(RETURN_VOID_MESSAGE, "@AfterTransaction"));
-      }
-      if (!methodTree.parameters().isEmpty()) {
-        reportIssue(methodTree.simpleName(), String.format(NO_PARAMETERS_MESSAGE, "@AfterTransaction"));
-      }
+    if (methodTree.symbol().metadata().isAnnotatedWith(BEFORE_TRANSACTION_FQN)) {
+      checkReturnType(methodTree, "@BeforeTransaction");
+      checkParameters(methodTree, "@BeforeTransaction");
+    } else if (methodTree.symbol().metadata().isAnnotatedWith(AFTER_TRANSACTION_FQN)) {
+      checkReturnType(methodTree, "@AfterTransaction");
+      checkParameters(methodTree, "@AfterTransaction");
     }
+  }
+
+  private void checkReturnType(MethodTreeImpl methodTree, String annotationName) {
+    if (!methodTree.returnType().symbolType().isVoid()) {
+      reportReturnType(methodTree, String.format(RETURN_VOID_MESSAGE, annotationName));
+    }
+  }
+
+  private void checkParameters(MethodTreeImpl methodTree, String annotationName) {
+    List<VariableTree> parameters = methodTree.parameters();
+    if (!parameters.isEmpty() && parameters.stream().anyMatch(parameter -> !isParameterAllowed(parameter))) {
+      reportParameters(methodTree, String.format(NO_PARAMETERS_MESSAGE, annotationName));
+    }
+  }
+
+  private static boolean isParameterAllowed(VariableTree parameter) {
+    Symbol parameterSymbol = parameter.symbol();
+    if (parameterSymbol.type().is(TEST_INFO_FQN)) {
+      return true;
+    }
+    return SpringUtils.isAutowired(parameterSymbol);
   }
 
   private static List<JavaFileScannerContext.Location> getSecondaryLocations(MethodTreeImpl methodTree) {
@@ -70,7 +88,9 @@ public class BeforeAndAfterTransactionContractCheck extends IssuableSubscription
   }
 
   private void reportParameters(MethodTreeImpl methodTree, String message) {
-    reportIssue(methodTree.parameters().get(0), message, getSecondaryLocations(methodTree), null);
+    var first = methodTree.parameters().get(0);
+    var last = methodTree.parameters().get(methodTree.parameters().size() - 1);
+    reportIssue(first, last, message, getSecondaryLocations(methodTree), null);
   }
 
 }
