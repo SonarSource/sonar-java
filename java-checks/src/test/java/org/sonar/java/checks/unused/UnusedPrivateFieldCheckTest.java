@@ -33,6 +33,15 @@ class UnusedPrivateFieldCheckTest {
   }
 
   @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldCheck.java"))
+      .withCheck(new UnusedPrivateFieldCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/unused/UnusedPrivateFieldCheck.java"))
