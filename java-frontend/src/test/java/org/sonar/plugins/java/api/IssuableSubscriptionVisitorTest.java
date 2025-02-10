@@ -27,6 +27,7 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.testing.VisitorsBridgeForTests;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -40,7 +41,7 @@ class IssuableSubscriptionVisitorTest {
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Collections.singletonList(new CustomRule()), new ArrayList<>(), null, new JavaVersionImpl());
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
-    assertThat(issues).hasSize(7);
+    assertThat(issues).hasSize(8);
   }
 
   @Test
@@ -77,6 +78,19 @@ class IssuableSubscriptionVisitorTest {
       reportIssue(tree, "issue on tree");
       reportIssue(tree, "issue on tree", Collections.emptyList(), null);
       reportIssue(tree, tree, "issue from tree to tree");
+
+      CompilationUnitTree cut = (CompilationUnitTree) tree;
+      for(Tree type : cut.types()) {
+        if(type instanceof ClassTree ct){
+          reportIssue(ct.members().get(0),
+            ct.members().get(ct.members().size()-1),
+            "issue on type",
+            List.of(new JavaFileScannerContext.Location("", ct)),
+            null
+            );
+        }
+      }
+
     }
   }
 }
