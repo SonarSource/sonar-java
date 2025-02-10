@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import org.sonar.java.checks.AtLeastOneConstructorCheck;
 import org.sonar.java.checks.MethodOnlyCallsSuperCheck;
+import org.sonar.java.checks.OptionalAsParameterCheck;
 import org.sonar.java.checks.ServletInstanceFieldCheck;
 import org.sonar.java.checks.TooManyParametersCheck;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -62,7 +63,8 @@ public class SpringFilter extends BaseTreeVisitorIssueFilter {
       /* S107_ */ TooManyParametersCheck.class,
       /* S1185 */ MethodOnlyCallsSuperCheck.class,
       /* S1258 */ AtLeastOneConstructorCheck.class,
-      /* S2226 */ ServletInstanceFieldCheck.class);
+      /* S2226 */ ServletInstanceFieldCheck.class,
+      /* S3553 */ OptionalAsParameterCheck.class);
   }
 
   @Override
@@ -89,6 +91,7 @@ public class SpringFilter extends BaseTreeVisitorIssueFilter {
       SymbolMetadata methodMetadata = symbol.metadata();
       excludeLinesIfTrue(S107_METHOD_ANNOTATION_EXCEPTIONS.stream().anyMatch(methodMetadata::isAnnotatedWith), reportTree, TooManyParametersCheck.class);
       excludeLinesIfTrue(isRepositoryPropertyExpression(symbol), reportTree, BadMethodNameCheck.class);
+      excludeLinesIfTrue(methodMetadata.isAnnotatedWith(AUTOWIRED), reportTree, OptionalAsParameterCheck.class);
     }
     super.visitMethod(tree);
   }
