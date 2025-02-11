@@ -207,7 +207,7 @@ quickfixes_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/quickfixes
-    - mvn verify -B -Pit-quickfixes
+    - mvn verify -Pit-quickfixes
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_task:
