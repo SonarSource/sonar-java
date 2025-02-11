@@ -1,0 +1,47 @@
+<h2>Why is this an issue?</h2>
+<p>In tests configured with Spring’s <code>@Transactional</code> annotation, methods annotated with <code>@BeforeTransaction</code> or
+<code>@AfterTransaction</code> must be void and have no arguments. These methods are executed before or after a transaction, respectively. Deviating
+from this contract by having a non-void return type or accepting arguments will cause Spring to throw a runtime error.</p>
+<h2>How to fix it</h2>
+<p>Ensure that methods annotated with <code>@BeforeTransaction</code> or <code>@AfterTransaction</code> have a void return type and do not accept any
+arguments.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class TransactionalTest {
+
+    @BeforeTransaction
+    public String setupTransaction(int x) { // non-compliant, method should be void and have no argument
+        // Setup logic
+    }
+
+    @AfterTransaction
+    public int cleanupTransaction(int x) { // non-compliant, method should be void and have no argument
+        // Cleanup logic
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class TransactionalTest {
+
+    @BeforeTransaction
+    public void setupTransaction() {
+        // Setup logic
+    }
+
+    @AfterTransaction
+    public void cleanupTransaction() {
+        // Cleanup logic
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Spring - <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/test/context/transaction/BeforeTransaction.html">BeforeTransaction</a> </li>
+  <li> Spring - <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/test/context/transaction/AfterTransaction.html">AfterTransaction</a> </li>
+</ul>
+

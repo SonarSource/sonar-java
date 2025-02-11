@@ -17,11 +17,13 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.List;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 
 public final class SpringUtils {
 
   public static final String SPRING_SCOPE_ANNOTATION = "org.springframework.context.annotation.Scope";
+  public static final String AUTOWIRED_ANNOTATION = "org.springframework.beans.factory.annotation.Autowired";
 
   private SpringUtils() {
     // Utils class
@@ -42,6 +44,10 @@ public final class SpringUtils {
       }
     }
     return true;
+  }
+
+  public static boolean isAutowired(Symbol symbol) {
+    return symbol.metadata().isAnnotatedWith(AUTOWIRED_ANNOTATION);
   }
 
 }
