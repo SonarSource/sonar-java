@@ -35,9 +35,9 @@ import org.sonar.plugins.java.api.JavaVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class QuickFixesResolutionTest {
+public class QuickFixesTest {
 
-  private static final Logger LOG = LoggerFactory.getLogger(QuickFixesResolutionTest.class);
+  private static final Logger LOG = LoggerFactory.getLogger(QuickFixesTest.class);
   private static final JavaVersion VERSION = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
   private static final Path PROJECT_LOCATION = Paths.get("../../java-checks-test-sources/");
 

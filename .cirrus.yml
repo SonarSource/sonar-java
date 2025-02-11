@@ -193,21 +193,14 @@ sanity_task:
 quickfixes_task:
   depends_on:
     - build
-  <<: *ONLY_SONARSOURCE_QA
-  eks_container:
-    <<: *CONTAINER_DEFINITION
-    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j21-latest
-    cpu: 1
-    memory: 2G
+  <<: *COMMON_BUILD_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  env:
-    MAVEN_OPTS: "-Xmx3g"
   quickfixes_script:
-    - source cirrus-env QA
+    - source cirrus-env BUILD
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/quickfixes
-    - mvn verify -Pit-quickfixes
+    - mvn package -Pit-quickfixes -Ddevelocity.scan.disabled=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 ruling_task:
