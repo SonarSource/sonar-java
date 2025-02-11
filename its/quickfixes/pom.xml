@@ -41,18 +41,6 @@
       <version>2.0.0</version>
     </dependency>
     <dependency>
-      <groupId>org.sonarsource.orchestrator</groupId>
-      <artifactId>sonar-orchestrator</artifactId>
-      <version>${orchestrator.version}</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>com.oracle</groupId>
-          <artifactId>ojdbc6</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>test-classpath-reader</artifactId>
       <version>${project.version}</version>
@@ -77,22 +65,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.sonarsource.api.plugin</groupId>
-      <artifactId>sonar-plugin-api-test-fixtures</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api-impl</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.sonarsource.sonarlint.core</groupId>
-      <artifactId>sonarlint-plugin-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.sonarsource.sonarlint.core</groupId>
-      <artifactId>sonarlint-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -110,11 +84,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>java-checks-testkit</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
