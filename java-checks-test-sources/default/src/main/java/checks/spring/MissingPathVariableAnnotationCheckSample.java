@@ -311,4 +311,7 @@ public class MissingPathVariableAnnotationCheckSample {
     @GetMapping()
     void missingTemplateParameter(@PathVariable String missing){} // Noncompliant
   }
+
+  @RequestMapping()
+  static class EmptyRequestMapping {}
 }

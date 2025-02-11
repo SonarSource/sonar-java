@@ -71,6 +71,15 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .map(MethodTree.class::cast)
       .toList();
 
+    var requestMappingArguments = clazzTree.symbol().metadata().valuesForAnnotation(REQUEST_MAPPING_ANNOTATION);
+    Set<String> requestMappingTemplateVariables = new HashSet<>();
+    if (requestMappingArguments != null) {
+      var templateVars = templateVariablesFromMapping(requestMappingArguments);
+      if(templateVars!=null){
+        requestMappingTemplateVariables = templateVars;
+      }
+    }
+
     // we find path variable annotations on method annotated with @ModelAttribute and extract the name
     Set<String> modelAttributeMethodParameter = new HashSet<>();
     for (var method : methods) {
@@ -89,14 +98,14 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     for (var method : methods) {
       if (!method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION)) {
         try {
-          checkParametersAndPathTemplate(method, modelAttributeMethodParameter);
+          checkParametersAndPathTemplate(method, modelAttributeMethodParameter, requestMappingTemplateVariables);
         } catch (DoNotReportOnMethod ignored) {
         }
       }
     }
   }
 
-  private void checkParametersAndPathTemplate(MethodTree method, Set<String> modelAttributePathVariable) {
+  private void checkParametersAndPathTemplate(MethodTree method, Set<String> modelAttributeMethodParameters, Set<String> requestMappingTemplateVars) {
     // we find path variable annotations and extract the name
     // example find : @PathVariable() String id and extract id
     List<ParameterInfo> methodParameters = new ArrayList<>();
@@ -125,19 +134,13 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       if(!MAPPING_ANNOTATIONS.contains(fullyQualifiedName)){
         continue;
       }
-      // valuesForAnnotation cannot be null from previous filter
-      Map<String, Object> nameToValue = method.symbol().metadata().valuesForAnnotation(fullyQualifiedName).stream()
-        .collect(Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
-      List<String> path = arrayOrString(nameToValue.get("path"));
-      List<String> value = arrayOrString(nameToValue.get("value"));
 
-      if (path != null || value!=null) {
-        List<String> paths = path!=null ? path : value;
-        templateVariables.add(new UriInfo<>(ann, paths.stream()
-          .map(MissingPathVariableAnnotationCheck::extractTemplateVariables)
-          .flatMap(Collection::stream)
-          .collect(Collectors.toSet()))
-        );
+      // valuesForAnnotation cannot be null from previous filter
+      var values = method.symbol().metadata().valuesForAnnotation(fullyQualifiedName);
+      var templatesVars = templateVariablesFromMapping(values);
+
+      if(templatesVars!=null){
+        templateVariables.add(new UriInfo<>(ann,templatesVars));
       }
     }
 
@@ -145,6 +148,8 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     Set<String> allTemplateVariables = templateVariables.stream()
       .flatMap(uri -> uri.value().stream())
       .collect(Collectors.toSet());
+    allTemplateVariables.addAll(requestMappingTemplateVars);
+
     methodParameters.stream()
       .filter(v -> !allTemplateVariables.contains(v.value()))
       .filter(v -> !v.parameter().symbol().type().is(MAP))
@@ -162,7 +167,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     Set<String> allPathVariables = methodParameters.stream()
       .map(ParameterInfo::value)
       .collect(Collectors.toSet());
-    allPathVariables.addAll(modelAttributePathVariable);
+    allPathVariables.addAll(modelAttributeMethodParameters);
 
     templateVariables.stream()
       .filter(uri -> !allPathVariables.containsAll(uri.value()))
@@ -183,6 +188,24 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
         Type type = parameter.type().symbolType();
         return type.isSubtypeOf(MAP);
       });
+  }
+
+  @Nullable
+  private static Set<String> templateVariablesFromMapping(List<SymbolMetadata. AnnotationValue> values) {
+    Map<String, Object> nameToValue = values.stream()
+      .collect(Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
+    List<String> path = arrayOrString(nameToValue.get("path"));
+    List<String> value = arrayOrString(nameToValue.get("value"));
+
+    if (path != null || value != null) {
+      List<String> paths = path != null ? path : value;
+      return paths.stream()
+        .map(MissingPathVariableAnnotationCheck::extractTemplateVariables)
+        .flatMap(Collection::stream)
+        .collect(Collectors.toSet());
+    } else {
+      return null;
+    }
   }
 
   // missing create custom parser
