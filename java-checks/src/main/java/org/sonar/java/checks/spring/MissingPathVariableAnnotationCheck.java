@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -67,52 +68,61 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .map(MethodTree.class::cast)
       .toList();
 
-    Set<String> modelAttributePathVariable = methods.stream()
-      .filter(method -> method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION))
-      .flatMap(method -> method.parameters().stream())
-      .map(MissingPathVariableAnnotationCheck::extractPathVariableAnnotations)
-      .flatMap(option -> option.stream().map(ParameterInfo::value))
-      .collect(Collectors.toSet());
+    // we find path variable annotations on method annotated with @ModelAttribute and extract the name
+    Set<String> modelAttributeMethodParameter = new HashSet<>();
+    for (var method : methods) {
+      if (!method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION)) {
+        continue;
+      }
+      for (var parameter : method.parameters()) {
+        SymbolMetadata metadata = parameter.symbol().metadata();
+        var arguments = metadata.valuesForAnnotation(PATH_VARIABLE_ANNOTATION);
+        if (arguments != null) {
+          modelAttributeMethodParameter.add(extractPathMethodParameters(parameter, arguments).value);
+        }
+      }
+    }
 
-    methods.stream()
-      .filter(m -> !m.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION))
-      .forEach(method -> checkParameters(method, modelAttributePathVariable));
+    for (var method : methods) {
+      if (!method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION)) {
+        try {
+          checkParameters(method, modelAttributeMethodParameter);
+        } catch (DoNotReportOnMethod ignored) {
+        }
+      }
+    }
   }
 
   private void checkParameters(MethodTree method, Set<String> modelAttributePathVariable) {
-    boolean unknownSymbolsInParam = method.parameters()
-      .stream()
-      .anyMatch(p ->
-        p.symbol().metadata().annotations()
-          .stream()
-          .anyMatch(ann -> ann.symbol().isUnknown()));
-    boolean unknownSymbolsInAnn = method.symbol().metadata().annotations()
-      .stream()
-      .anyMatch(ann -> ann.symbol().isUnknown());
+    // we find path variable annotations and extract the name
+    // example find : @PathVariable() String id and extract id
+    List<ParameterInfo> methodParameters = new ArrayList<>();
+    for (var parameter : method.parameters()) {
+      SymbolMetadata metadata = parameter.symbol().metadata();
 
-    if(unknownSymbolsInParam || unknownSymbolsInAnn){
-      return;
+      if (metadata.annotations().stream().anyMatch(ann -> ann.symbol().isUnknown())) {
+        throw new DoNotReportOnMethod();
+      }
+
+      var arguments = metadata.valuesForAnnotation(PATH_VARIABLE_ANNOTATION);
+      if (arguments != null) {
+        methodParameters.add(extractPathMethodParameters(parameter, arguments));
+      }
     }
 
-    // we extract path variables
-    List<ParameterInfo> pathVariables = method.parameters().stream()
-      .map(MissingPathVariableAnnotationCheck::extractPathVariableAnnotations)
-      .flatMap(Optional::stream)
-      .toList();
-
     // we extract uri parameters
-    List<UriInfo<Set<String>>> uriParameters = extractPathArgumentFromMappingAnnotations(method)
+    List<UriInfo<Set<String>>> templateParameters = extractPathArgumentFromMappingAnnotations(method)
       .map(MissingPathVariableAnnotationCheck::extractMappingAnnotations)
       .toList();
 
     // we handle the case where a path variable doesn't match to an uri parameter (/{aParam}/)
-    Set<String> allUriParameters = uriParameters.stream()
+    Set<String> allUriParameters = templateParameters.stream()
       .flatMap(uri -> uri.value().stream())
       .collect(Collectors.toSet());
-    pathVariables.stream()
+    methodParameters.stream()
       .filter(v -> !allUriParameters.contains(v.value()))
       .filter(v -> !v.parameter().symbol().type().is(MAP))
-      .forEach(v -> reportIssue(v.parameter(), String.format("Bind path variable \"%s\" to a path parameter.", v.value())));
+      .forEach(v -> reportIssue(v.parameter(), String.format("Bind method parameter \"%s\" to a template variable.", v.value())));
 
     // we handle the case where an uri parameter (/{aParam}/) doesn't match a path variable
     if (containsMap(method)) {
@@ -123,19 +133,19 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       return;
     }
 
-    Set<String> allPathVariables = pathVariables.stream()
+    Set<String> allPathVariables = methodParameters.stream()
       .map(ParameterInfo::value)
       .collect(Collectors.toSet());
     allPathVariables.addAll(modelAttributePathVariable);
 
-    uriParameters.stream()
+    templateParameters.stream()
       .filter(uri -> !allPathVariables.containsAll(uri.value()))
       .forEach(uri -> {
         Set<String> unbind = new HashSet<>(uri.value());
         unbind.removeAll(allPathVariables);
         reportIssue(
           uri.request(),
-          "Bind path variable \"" + String.join("\", \"", unbind) + "\" to a method parameter.");
+          "Bind template variable \"" + String.join("\", \"", unbind) + "\" to a method parameter.");
       });
 
   }
@@ -157,7 +167,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     return new UriInfo<>(uriInfo.request(), uriParameters);
   }
 
-  //missing create custom parser
+  // missing create custom parser
   private static Set<String> extractMappingAnnotations(String path) {
     if (CONTAINS_PLACEHOLDER.test(path)) {
       return new HashSet<>();
@@ -179,26 +189,27 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .collect(Collectors.toSet());
   }
 
-  private static Optional<ParameterInfo> extractPathVariableAnnotations(VariableTree parameter) {
-    SymbolMetadata metadata = parameter.symbol().metadata();
+  private static ParameterInfo extractPathMethodParameters(VariableTree parameter, List<SymbolMetadata.AnnotationValue> arguments) {
+    Map<String, Object> nameToValue = arguments.stream().collect(
+      Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
 
-    return Optional.ofNullable(metadata.valuesForAnnotation(PATH_VARIABLE_ANNOTATION)).map(arguments -> {
-      Map<String, Object> nameToValue = arguments.stream().collect(
-        Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
-
-      String value = (String) nameToValue.get("value");
-      String name = (String) nameToValue.get("name");
-      if (value != null) {
-        return new ParameterInfo(parameter, value);
-      } else if (name != null) {
-        return new ParameterInfo(parameter, name);
-      } else {
-        return new ParameterInfo(parameter, parameter.simpleName().name());
-      }
-    });
+    String value = (String) nameToValue.get("value");
+    String name = (String) nameToValue.get("name");
+    if (value != null) {
+      return new ParameterInfo(parameter, value);
+    } else if (name != null) {
+      return new ParameterInfo(parameter, name);
+    } else {
+      return new ParameterInfo(parameter, parameter.simpleName().name());
+    }
   }
 
+  // the goal of is to find mapping annotation and extract path, for instance find @GetMapping("/{id}") and extract "/{id}"
   private static Stream<UriInfo<List<String>>> extractPathArgumentFromMappingAnnotations(MethodTree method) {
+
+    if (method.modifiers().annotations().stream().anyMatch(ann -> ann.symbolType().isUnknown())) {
+      throw new DoNotReportOnMethod();
+    }
 
     return method.modifiers().annotations().stream()
       .filter(ann -> MAPPING_ANNOTATIONS.contains(ann.annotationType().symbolType().fullyQualifiedName()))
@@ -230,6 +241,9 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     return Stream.of(array)
       .map(el -> (String) el)
       .toList();
+  }
+
+  private static class DoNotReportOnMethod extends RuntimeException {
   }
 
   private record ParameterInfo(VariableTree parameter, String value) {

@@ -25,13 +25,13 @@ public class MissingPathVariableAnnotationCheckSample {
 
 
 
-  @GetMapping("/{id}") // Noncompliant {{Bind path variable "id" to a method parameter.}}
+  @GetMapping("/{id}") // Noncompliant {{Bind template variable "id" to a method parameter.}}
 //^^^^^^^^^^^^^^^^^^^^
   public String get(String id) {
     return "Hello World";
   }
 
-  @PostMapping(value = "/{name}") // Noncompliant {{Bind path variable "name" to a method parameter.}}
+  @PostMapping(value = "/{name}") // Noncompliant {{Bind template variable "name" to a method parameter.}}
   public String post(String id) {
     return "Hello World";
   }
@@ -214,7 +214,7 @@ public class MissingPathVariableAnnotationCheckSample {
       return "Hello World";
     }
 
-    @GetMapping("/{id}/{name}/{age}") // Noncompliant {{Bind path variable "age" to a method parameter.}}
+    @GetMapping("/{id}/{name}/{age}") // Noncompliant {{Bind template variable "age" to a method parameter.}}
     public String get3() {
       return "Hello World";
     }
@@ -249,7 +249,7 @@ public class MissingPathVariableAnnotationCheckSample {
 
 
   @GetMapping("/a/path")
-  public String pathVariableWithoutParameter(@PathVariable String aVar){ // Noncompliant {{Bind path variable "aVar" to a path parameter.}}
+  public String pathVariableWithoutParameter(@PathVariable String aVar){ // Noncompliant {{Bind method parameter "aVar" to a template variable.}}
 //                                           ^^^^^^^^^^^^^^^^^^^^^^^^^
     return "";
   }
