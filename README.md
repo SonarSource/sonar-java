@@ -151,7 +151,7 @@ For example using the command:
 #### Autoscan Test
 
 The tests in the [autoscan module](its/autoscan) are designed to detect differences between the issues the Java analyzer can find with and without bytecode.
-The goal here is to spot and fix the potential FPs, and verify the expected FNs between that would show up in [SonarQube Cloud's automatic analysis](https://docs.sonarcloud.io/advanced-setup/automatic-analysis/).
+The goal here is to spot and fix the potential FPs, and verify the expected FNs between that would show up in [SonarQube Cloud's automatic analysis](https://docs.sonarsource.com/sonarqube-cloud/advanced-setup/automatic-analysis/).
 
 Running this test can be broken down in 2 steps:
 
