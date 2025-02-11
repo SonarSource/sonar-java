@@ -71,6 +71,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .map(MethodTree.class::cast)
       .toList();
 
+    // request @RequestMapping can be put on top of a class, path template inside it will affect all the class methods
     var requestMappingArguments = clazzTree.symbol().metadata().valuesForAnnotation(REQUEST_MAPPING_ANNOTATION);
     Set<String> requestMappingTemplateVariables = new HashSet<>();
     if (requestMappingArguments != null) {
