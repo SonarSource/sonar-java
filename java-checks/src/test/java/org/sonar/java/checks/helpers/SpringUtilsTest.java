@@ -25,14 +25,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SpringUtilsTest {
 
   @Test
-  void isAutowired() {
+  void is_autowired() {
     var cu = JParserTestUtils.parse("""
       class A {
         @org.springframework.beans.factory.annotation.Autowired
-        Object o;
+        Object autowiredObject;
         
         @Autowired
-        Object goo;
+        Object noSemaAnnotation;
+
+        @javax.annotation.Nullable
+        Object nullableObject;
       }
       """);
     var clazz = (ClassTreeImpl) cu.types().get(0);
@@ -40,6 +43,8 @@ class SpringUtilsTest {
     assertThat(SpringUtils.isAutowired(obj.symbol())).isTrue();
     var goo = (VariableTreeImpl) clazz.members().get(1);
     assertThat(SpringUtils.isAutowired(goo.symbol())).isFalse();
+    var hoo = (VariableTreeImpl) clazz.members().get(2);
+    assertThat(SpringUtils.isAutowired(hoo.symbol())).isFalse();
   }
 
 }

@@ -57,14 +57,18 @@ public class BeforeAndAfterTransactionContractCheck extends IssuableSubscription
 
   private void checkReturnType(MethodTreeImpl methodTree, String annotationName) {
     if (!methodTree.returnType().symbolType().isVoid()) {
-      reportReturnType(methodTree, String.format(RETURN_VOID_MESSAGE, annotationName));
+      String message = String.format(RETURN_VOID_MESSAGE, annotationName);
+      reportIssue(methodTree.returnType(), message, getSecondaryLocations(methodTree), null);
     }
   }
 
   private void checkParameters(MethodTreeImpl methodTree, String annotationName) {
     List<VariableTree> parameters = methodTree.parameters();
     if (!parameters.isEmpty() && parameters.stream().anyMatch(parameter -> !isParameterAllowed(parameter))) {
-      reportParameters(methodTree, String.format(NO_PARAMETERS_MESSAGE, annotationName));
+      String message = String.format(NO_PARAMETERS_MESSAGE, annotationName);
+      var first = methodTree.parameters().get(0);
+      var last = methodTree.parameters().get(methodTree.parameters().size() - 1);
+      reportIssue(first, last, message, getSecondaryLocations(methodTree), null);
     }
   }
 
@@ -81,16 +85,6 @@ public class BeforeAndAfterTransactionContractCheck extends IssuableSubscription
       .filter(annotation -> TRANSACTION_ANNOTATIONS.contains(annotation.symbolType().fullyQualifiedName()))
       .map(annotation -> new JavaFileScannerContext.Location("Annotation", annotation))
       .toList();
-  }
-
-  private void reportReturnType(MethodTreeImpl methodTree, String message) {
-    reportIssue(methodTree.returnType(), message, getSecondaryLocations(methodTree), null);
-  }
-
-  private void reportParameters(MethodTreeImpl methodTree, String message) {
-    var first = methodTree.parameters().get(0);
-    var last = methodTree.parameters().get(methodTree.parameters().size() - 1);
-    reportIssue(first, last, message, getSecondaryLocations(methodTree), null);
   }
 
 }

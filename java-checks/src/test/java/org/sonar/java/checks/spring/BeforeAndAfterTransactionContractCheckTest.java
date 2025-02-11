@@ -35,7 +35,7 @@ class BeforeAndAfterTransactionContractCheckTest {
   }
 
   @Test
-  void testNoSemantics() {
+  void test_no_semantics() {
     CheckVerifier.newVerifier()
       .onFile(SAMPLE_FILE)
       .withCheck(CHECK)
