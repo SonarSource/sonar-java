@@ -20,12 +20,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -41,6 +45,13 @@ public final class UnitTestUtils {
     // Eclipse Vert.x with JUnit 5 (VertxTestContext)
       "|laxCheckpoint|succeedingThenComplete");
   private static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
+
+  @VisibleForTesting
+  static final Predicate<String> ASSERTJ_ASSERTION_METHODS_PREDICATE = Pattern.compile(
+    "(allMatch|assert|contains|doesNot|has|is|returns|satisfies)([A-Z].*)?").asMatchPredicate();
+
+  private static final Pattern ASSERTJ_ASSERTION_CLASSNAME_PATTERN = Pattern.compile("org\\.assertj\\.core\\.api\\.[a-zA-Z]+Assert");
+  private static final Predicate<Type> ASSERTJ_ASSERTION_TYPE_PREDICATE = type -> ASSERTJ_ASSERTION_CLASSNAME_PATTERN.matcher(type.fullyQualifiedName()).matches();
 
   public static final MethodMatchers ASSERTION_INVOCATION_MATCHERS = MethodMatchers.or(
     // fest 1.x / 2.X
@@ -62,8 +73,8 @@ public final class UnitTestUtils {
       .withAnyParameters()
       .build(),
     // assertJ
-    MethodMatchers.create().ofSubTypes("org.assertj.core.api.AbstractAssert").anyName().withAnyParameters().build(),
-    MethodMatchers.create().ofSubTypes("org.assertj.core.api.ThrowableTypeAssert").anyName().withAnyParameters().build(),
+    MethodMatchers.create().ofType(ASSERTJ_ASSERTION_TYPE_PREDICATE)
+      .name(ASSERTJ_ASSERTION_METHODS_PREDICATE).withAnyParameters().build(),
     // spring
     MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActions").names("andExpect", "andExpectAll").withAnyParameters().build(),
     // JMockit
