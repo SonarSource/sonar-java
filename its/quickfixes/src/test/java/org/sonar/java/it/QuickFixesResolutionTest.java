@@ -1,21 +1,18 @@
 /*
  * SonarQube Java
- * Copyright (C) 2024-2024 SonarSource SA
+ * Copyright (C) 2024-2025 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or (at your option) any later version.
+ * modify it under the terms of the Sonar Source-Available License Version 1, as published by SonarSource SA.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.it;
 
@@ -58,8 +55,10 @@ public class QuickFixesResolutionTest {
 
   @Test
   public void testParsingAfterQuickfixes() throws Exception {
+    LOG.info("Cloning java-checks-test-sources to temporary folder.");
     cloneJavaCheckTestSources();
     List<InputFile> files = QuickFixTestUtils.collectJavaFiles(tmpProjectClone.getRoot().getAbsolutePath());
+    LOG.info("Analyzing and applying quickfixes to all files.");
     new QuickFixesResolver().scanAndApplyQuickFixes(files);
     assertThat(validateFilesStillParse(files)).isTrue();
   }
@@ -80,16 +79,19 @@ public class QuickFixesResolutionTest {
   }
 
   private static boolean validateFilesStillParse(List<InputFile> inputFiles) {
+    boolean allFilesParse = true;
     for (InputFile inputFile : inputFiles) {
       try {
         JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(VERSION, List.of()).astParser(), VERSION.toString(), inputFile.filename(), inputFile.contents());
       } catch (IOException ioException) {
         LOG.error("Unable to read contents for file {}", inputFile.filename());
-        return false;
+        allFilesParse = false;
       }
     }
-    LOG.info("All analyzed files can still be parsed after quickfixes were applied.");
-    return true;
+    if(allFilesParse){
+      LOG.info("All files still parse after applying quickfixes.");
+    }
+    return allFilesParse;
   }
 
 }
