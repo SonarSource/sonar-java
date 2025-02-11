@@ -17,10 +17,10 @@
 package org.sonar.java.checks.spring;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.MatchResult;
@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -43,12 +44,14 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   private static final String PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable";
   private static final String MAP = "java.util.Map";
   private static final String MODEL_ATTRIBUTE_ANNOTATION = "org.springframework.web.bind.annotation.ModelAttribute";
+  private static final String REQUEST_MAPPING_ANNOTATION = "org.springframework.web.bind.annotation.RequestMapping";
   private static final Pattern EXTRACT_PATH_VARIABLE = Pattern.compile("([^:}/]*)(:.*)?}.*");
   private static final Predicate<String> CONTAINS_PLACEHOLDER = Pattern.compile("\\$\\{.*}").asPredicate();
   private static final Predicate<String> PATH_ARG_REGEX = Pattern.compile("\\{([^{}:]+:.*)}").asPredicate();
   private static final Pattern PATH_REGEX = Pattern.compile("\\{([^{}]+)}");
 
   private static final Set<String> MAPPING_ANNOTATIONS = Set.of(
+    REQUEST_MAPPING_ANNOTATION,
     "org.springframework.web.bind.annotation.GetMapping",
     "org.springframework.web.bind.annotation.PostMapping",
     "org.springframework.web.bind.annotation.PutMapping",
@@ -86,14 +89,14 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     for (var method : methods) {
       if (!method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION)) {
         try {
-          checkParameters(method, modelAttributeMethodParameter);
+          checkParametersAndPathTemplate(method, modelAttributeMethodParameter);
         } catch (DoNotReportOnMethod ignored) {
         }
       }
     }
   }
 
-  private void checkParameters(MethodTree method, Set<String> modelAttributePathVariable) {
+  private void checkParametersAndPathTemplate(MethodTree method, Set<String> modelAttributePathVariable) {
     // we find path variable annotations and extract the name
     // example find : @PathVariable() String id and extract id
     List<ParameterInfo> methodParameters = new ArrayList<>();
@@ -110,22 +113,45 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       }
     }
 
-    // we extract uri parameters
-    List<UriInfo<Set<String>>> templateParameters = extractPathArgumentFromMappingAnnotations(method)
-      .map(MissingPathVariableAnnotationCheck::extractMappingAnnotations)
-      .toList();
+
+    // we find mapping annotation and extract path
+    // example find @GetMapping("/{id}") and extract "/{id}"
+    List<UriInfo<Set<String>>> templateVariables = new ArrayList<>();
+    if (method.modifiers().annotations().stream().anyMatch(ann -> ann.symbolType().isUnknown())) {
+      throw new DoNotReportOnMethod();
+    }
+    for(var ann : method.modifiers().annotations()){
+      String fullyQualifiedName = ann.annotationType().symbolType().fullyQualifiedName();
+      if(!MAPPING_ANNOTATIONS.contains(fullyQualifiedName)){
+        continue;
+      }
+      // valuesForAnnotation cannot be null from previous filter
+      Map<String, Object> nameToValue = method.symbol().metadata().valuesForAnnotation(fullyQualifiedName).stream()
+        .collect(Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
+      List<String> path = arrayOrString(nameToValue.get("path"));
+      List<String> value = arrayOrString(nameToValue.get("value"));
+
+      if (path != null || value!=null) {
+        List<String> paths = path!=null ? path : value;
+        templateVariables.add(new UriInfo<>(ann, paths.stream()
+          .map(MissingPathVariableAnnotationCheck::extractTemplateVariables)
+          .flatMap(Collection::stream)
+          .collect(Collectors.toSet()))
+        );
+      }
+    }
 
     // we handle the case where a path variable doesn't match to an uri parameter (/{aParam}/)
-    Set<String> allUriParameters = templateParameters.stream()
+    Set<String> allTemplateVariables = templateVariables.stream()
       .flatMap(uri -> uri.value().stream())
       .collect(Collectors.toSet());
     methodParameters.stream()
-      .filter(v -> !allUriParameters.contains(v.value()))
+      .filter(v -> !allTemplateVariables.contains(v.value()))
       .filter(v -> !v.parameter().symbol().type().is(MAP))
       .forEach(v -> reportIssue(v.parameter(), String.format("Bind method parameter \"%s\" to a template variable.", v.value())));
 
-    // we handle the case where an uri parameter (/{aParam}/) doesn't match a path variable
-    if (containsMap(method)) {
+
+    if (containsTypeMapAsParameter(method)) {
       /*
        * If any of the method parameters is a map, we assume all path variables are captured
        * and there is no mismatch with path variables in the request mapping.
@@ -138,7 +164,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .collect(Collectors.toSet());
     allPathVariables.addAll(modelAttributePathVariable);
 
-    templateParameters.stream()
+    templateVariables.stream()
       .filter(uri -> !allPathVariables.containsAll(uri.value()))
       .forEach(uri -> {
         Set<String> unbind = new HashSet<>(uri.value());
@@ -150,7 +176,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
 
   }
 
-  private static boolean containsMap(MethodTree method) {
+  private static boolean containsTypeMapAsParameter(MethodTree method) {
     return method.parameters().stream()
       .filter(parameter -> parameter.symbol().metadata().isAnnotatedWith(PATH_VARIABLE_ANNOTATION))
       .anyMatch(parameter -> {
@@ -159,16 +185,8 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       });
   }
 
-  private static UriInfo<Set<String>> extractMappingAnnotations(UriInfo<List<String>> uriInfo) {
-    Set<String> uriParameters = new HashSet<>();
-    for (String path : uriInfo.value()) {
-      uriParameters.addAll(extractMappingAnnotations(path));
-    }
-    return new UriInfo<>(uriInfo.request(), uriParameters);
-  }
-
   // missing create custom parser
-  private static Set<String> extractMappingAnnotations(String path) {
+  private static Set<String> extractTemplateVariables(String path) {
     if (CONTAINS_PLACEHOLDER.test(path)) {
       return new HashSet<>();
     }
@@ -204,35 +222,8 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     }
   }
 
-  // the goal of is to find mapping annotation and extract path, for instance find @GetMapping("/{id}") and extract "/{id}"
-  private static Stream<UriInfo<List<String>>> extractPathArgumentFromMappingAnnotations(MethodTree method) {
-
-    if (method.modifiers().annotations().stream().anyMatch(ann -> ann.symbolType().isUnknown())) {
-      throw new DoNotReportOnMethod();
-    }
-
-    return method.modifiers().annotations().stream()
-      .filter(ann -> MAPPING_ANNOTATIONS.contains(ann.annotationType().symbolType().fullyQualifiedName()))
-      .map(ann -> {
-
-        String fullyQualifiedName = ann.annotationType().symbolType().fullyQualifiedName();
-        // valuesForAnnotation cannot be null from previous filter
-        Map<String, Object> nameToValue = method.symbol().metadata().valuesForAnnotation(fullyQualifiedName).stream()
-          .collect(Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
-
-        List<String> path = arrayOrString(nameToValue.get("path"));
-        List<String> value = arrayOrString(nameToValue.get("value"));
-        if (path != null) {
-          return new UriInfo<>(ann, path);
-        } else if (value != null) {
-          return new UriInfo<>(ann, value);
-        } else {
-          return new UriInfo<>(ann, List.of());
-        }
-      });
-  }
-
-  private static List<String> arrayOrString(Object value) {
+  @Nullable
+  private static List<String> arrayOrString(@Nullable Object value) {
     if (value == null) {
       return null;
     }

@@ -18,7 +18,6 @@ package org.sonar.java.checks.spring;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
@@ -36,12 +35,12 @@ class MissingPathVariableAnnotationCheckTest {
   }
 
   @Test
-  void test_without_semantic(){
+  void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(TEST_SOURCE_FILE)
       .withCheck(check)
       .withoutSemantic()
       .verifyNoIssues();
   }
-  
+
 }

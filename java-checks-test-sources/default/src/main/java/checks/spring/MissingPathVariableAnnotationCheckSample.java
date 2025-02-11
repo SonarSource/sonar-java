@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 public class MissingPathVariableAnnotationCheckSample {
 
@@ -46,6 +47,11 @@ public class MissingPathVariableAnnotationCheckSample {
     return "Hello World";
   }
 
+  @RequestMapping("/{id}") // Noncompliant
+  public String request(String id) {
+    return "Hello World";
+  }
+
   @PutMapping("/id")
   @DeleteMapping("/{id}") // Noncompliant
   public String deletePut(String id) {
@@ -74,11 +80,21 @@ public class MissingPathVariableAnnotationCheckSample {
     return "Hello World";
   }
 
+  @RequestMapping("/{id}")
+  public String requestCompliant(@PathVariable String id) {
+    return "Hello World";
+  }
+
   @GetMapping("/{id}")
   @DeleteMapping({"/{id}"})
   public String deleteGetCompliant(@PathVariable String id) { // compliant
     return "Hello World";
   }
+
+  @interface NotRequestMappingAnnotation {}
+
+  @NotRequestMappingAnnotation
+  public void notAnnotatedWithRequestMapping(){}
 
   @GetMapping("/{id}")
   public String getOtherThanString(@PathVariable Integer id) { // compliant
@@ -203,6 +219,11 @@ public class MissingPathVariableAnnotationCheckSample {
       return "user"; // because the case is too complex to handle
     }
 
+    @ModelAttribute("empty")
+    public String emptyModel(String notPathVariable){
+      return "";
+    }
+
     @GetMapping("/{id}/{name}")
     public String get() { // compliant, @ModelAttribute is always called before @GetMapping to generate the model. In our case model attribute
       // consume the id and name path variables
@@ -278,5 +299,16 @@ public class MissingPathVariableAnnotationCheckSample {
   @GetMapping("/a/path")
   public String pathVariableEmptyName(@PathVariable("") String foo){ // Noncompliant
     return "";
+  }
+
+  @RequestMapping("/path/{id}")
+  static class Controller {
+    void fromRequestMapping(@PathVariable String id){}
+
+    @GetMapping("/{age}")
+    void fromBoth(@PathVariable String id, @PathVariable int age){}
+
+    @GetMapping()
+    void missingTemplateParameter(@PathVariable String missing){} // Noncompliant
   }
 }
