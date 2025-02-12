@@ -35,6 +35,8 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+import static org.sonar.java.model.ExpressionUtils.skipParenthesesUpwards;
+
 @Rule(key = "S1126")
 public class ReturnOfBooleanExpressionsCheck extends IssuableSubscriptionVisitor {
 
@@ -126,16 +128,8 @@ public class ReturnOfBooleanExpressionsCheck extends IssuableSubscriptionVisitor
     return Optional.empty();
   }
 
-  private static Tree firstNonParenthesesParent(Tree tree) {
-    Tree skip = tree.parent();
-    while (skip.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      skip = skip.parent();
-    }
-    return skip;
-  }
-
   private static boolean areAllSyntacticallyEquivalentExceptBoolean(MethodInvocationTree mit1, MethodInvocationTree mit2) {
-    if (firstNonParenthesesParent(mit1).kind() != firstNonParenthesesParent(mit2).kind()) {
+    if (skipParenthesesUpwards(mit1.parent()).kind() != skipParenthesesUpwards(mit2.parent()).kind()) {
       // requires to have on both side a return statement, or on both side an expression statement.
       return false;
     }

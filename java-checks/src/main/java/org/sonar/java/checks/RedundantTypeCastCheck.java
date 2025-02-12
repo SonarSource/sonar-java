@@ -35,6 +35,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
+import static org.sonar.java.model.ExpressionUtils.skipParenthesesUpwards;
+
 @Rule(key = "S1905")
 public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
 
@@ -92,10 +94,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isMethodInvocationReceiverOfGetClass(TypeCastTree typeCastTree) {
-    Tree parent = typeCastTree.parent();
-    while (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      parent = parent.parent();
-    }
+    Tree parent = skipParenthesesUpwards( typeCastTree.parent());
     return parent instanceof MemberSelectExpressionTree memberSelect &&
       "getClass".equals(memberSelect.identifier().name()) &&
       memberSelect.parent() instanceof MethodInvocationTree methodInvocation &&

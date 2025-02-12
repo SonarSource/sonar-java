@@ -23,6 +23,8 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.java.model.ExpressionUtils.skipParenthesesUpwards;
+
 @Rule(key = "S2164")
 public class MathOnFloatCheck extends BaseTreeVisitor implements JavaFileScanner {
 
@@ -50,10 +52,7 @@ public class MathOnFloatCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   private static boolean withinStringConcatenation(BinaryExpressionTree tree) {
-    Tree parent = tree.parent();
-    while (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      parent = parent.parent();
-    }
+    Tree parent = skipParenthesesUpwards(tree.parent());
     return parent.is(Tree.Kind.PLUS) && ((BinaryExpressionTree) parent).symbolType().is("java.lang.String");
   }
 
