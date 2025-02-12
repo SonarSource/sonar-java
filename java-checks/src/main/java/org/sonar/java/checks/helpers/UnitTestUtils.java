@@ -51,7 +51,8 @@ public final class UnitTestUtils {
     "(allMatch|assert|contains|doesNot|has|is|returns|satisfies)([A-Z].*)?").asMatchPredicate();
 
   private static final Pattern ASSERTJ_ASSERTION_CLASSNAME_PATTERN = Pattern.compile("org\\.assertj\\.core\\.api\\.[a-zA-Z]+Assert");
-  private static final Predicate<Type> ASSERTJ_ASSERTION_TYPE_PREDICATE = type -> ASSERTJ_ASSERTION_CLASSNAME_PATTERN.matcher(type.fullyQualifiedName()).matches();
+  private static final Predicate<Type> ASSERTJ_ASSERTION_TYPE_PREDICATE = type -> ASSERTJ_ASSERTION_CLASSNAME_PATTERN.matcher(type.fullyQualifiedName()).matches()
+    || type.isSubtypeOf("org.assertj.core.api.AbstractAssert");
 
   public static final MethodMatchers ASSERTION_INVOCATION_MATCHERS = MethodMatchers.or(
     // fest 1.x / 2.X
