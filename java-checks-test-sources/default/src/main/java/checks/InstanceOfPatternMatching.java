@@ -4,6 +4,20 @@ import java.util.Map;
 
 public abstract class InstanceOfPatternMatching {
 
+  private static String booleanArray(Object o){
+    if(o instanceof boolean[]){ // Noncompliant {{Replace this instanceof check and cast with 'instanceof boolean[] booleanArray'}}
+      return Boolean.toString(((boolean[])o)[0]);
+    }
+    return "not a boolean array";
+  }
+
+  private static String booleanArray2(Object o){
+    if(o instanceof boolean[][]){ // Noncompliant {{Replace this instanceof check and cast with 'instanceof boolean[][] booleanArrayArray'}}
+      return Boolean.toString(((boolean[][])o)[0][0]);
+    }
+    return "not a boolean array";
+  }
+
   int if1(Object o) {
     if (o instanceof String) { // Noncompliant {{Replace this instanceof check and cast with 'instanceof String str'}}
 //      ^^^^^^^^^^^^^^^^^^^
