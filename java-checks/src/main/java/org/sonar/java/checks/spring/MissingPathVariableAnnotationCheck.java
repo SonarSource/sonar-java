@@ -271,7 +271,6 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
           consumeCurrentChar();
         }else if(!ifMatchConsumeRestPathWildcard() &&
           !ifMatchConsumeRestPathVariable()) {
-          // for now it is impossible to cover this line, regex path variable consume everything
           consumeRegexPathVariable();
         }
       }
@@ -339,7 +338,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
 
     // consume "regex}"
     // the regular expression can be written as regex = "([^{}]*regex)*}"
-    // it is recursive we use regex in regex
+    // remark it is a recursive definition
     private static void consumeRegex() {
       while (stringPos < path.length()) {
         char current = consumeCurrentChar();
@@ -362,7 +361,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       }
     }
 
-    // we assume bound check on the path were done
+    // for consumeCurrentChar, consumePrefix. We assume bound check on the path were done. We may add assert to ensure it.
     private static char consumeCurrentChar() {
       ++stringPos;
       return path.charAt(stringPos-1);
@@ -370,7 +369,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     private static void consumePrefix(String prefix){
       stringPos+=prefix.length();
     }
-    // current char is excluded from the substring
+    // return substring from start up to the last consumed character (excluded)
     private static String substringToCurrentChar(int start){
       return path.substring(start, stringPos-1);
     }

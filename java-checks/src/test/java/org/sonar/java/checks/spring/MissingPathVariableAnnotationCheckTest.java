@@ -93,6 +93,8 @@ class MissingPathVariableAnnotationCheckTest {
   void test_pattern_parser_errors(){
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{}"))
       .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+    assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{*aaa"))
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{xxx:"))
       .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/url/{"))
