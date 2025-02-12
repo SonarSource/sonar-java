@@ -79,7 +79,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     checkParametersAndPathTemplate(methods, modelAttributeMethodParameter, requestMappingTemplateVariables);
   }
 
-  private Set<String> extractModelAttributeMethodParameter(List<MethodTree> methods){
+  private static Set<String> extractModelAttributeMethodParameter(List<MethodTree> methods){
     Set<java.lang.String> modelAttributeMethodParameter = new HashSet<>();
     for (var method : methods) {
       if (!method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION)) {
