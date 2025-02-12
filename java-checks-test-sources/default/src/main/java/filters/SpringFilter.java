@@ -1,6 +1,7 @@
 package filters;
 
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpServlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 public class SpringFilter {
+
+  static class S3553 {
+    @Autowired
+    public void initStuff(Optional<List<Component>> injectedIfAvailable, Service service) // NoIssue
+    {
+    }
+
+    public void notAutowired(Optional<List<Component>> injectedIfAvailable) {} // WithIssue
+  }
 
   static class S100 {
     static class S100_1 implements org.springframework.data.repository.Repository<Person, Long> {
@@ -159,4 +169,5 @@ public class SpringFilter {
       private javax.sql.DataSource myDB; // WithIssue
     }
   }
+
 }
