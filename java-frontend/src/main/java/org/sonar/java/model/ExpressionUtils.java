@@ -142,6 +142,14 @@ public final class ExpressionUtils {
     return result;
   }
 
+  @Nullable
+  public static Tree skipParenthesesUpwards(@Nullable Tree tree) {
+    while (tree != null && tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      tree = tree.parent();
+    }
+    return tree;
+  }
+
   public static boolean isNullLiteral(ExpressionTree tree) {
     return skipParentheses(tree).is(Tree.Kind.NULL_LITERAL);
   }

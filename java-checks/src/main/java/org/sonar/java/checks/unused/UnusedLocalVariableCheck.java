@@ -38,6 +38,8 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.model.ExpressionUtils.skipParenthesesUpwards;
+
 @Rule(key = "S1481")
 public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
 
@@ -100,13 +102,6 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     }
     // Note that an expression statement can't be a parenthesized expression, so we don't need to skip parentheses here
     return !(parent.is(INCREMENT_KINDS) && parent.parent().is(Tree.Kind.EXPRESSION_STATEMENT));
-  }
-
-  private static Tree skipParenthesesUpwards(Tree tree) {
-    while (tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      tree = tree.parent();
-    }
-    return tree;
   }
 
   private static boolean isProperLocalVariable(VariableTree variable) {

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -31,8 +32,10 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StaticInitializerTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -43,6 +46,7 @@ import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
+import static org.sonar.java.model.ExpressionUtils.skipParenthesesUpwards;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 
 class ExpressionUtilsTest {
@@ -58,6 +62,26 @@ class ExpressionUtilsTest {
     ExpressionTree skipped = ExpressionUtils.skipParentheses(parenthesis);
     assertThat(skipped).is(Tree.Kind.CONDITIONAL_AND);
     assertThat(ExpressionUtils.skipParentheses(((BinaryExpressionTree) skipped).leftOperand())).is(Tree.Kind.IDENTIFIER);
+  }
+
+  @Test
+  void test_skip_parenthesis_upwards() {
+    CompilationUnitTree cu = JParserTestUtils.parse("""
+      class A { int a = ((42)); }
+      """);
+    VariableTree variableTree = (VariableTree) ((ClassTree) cu.types().get(0)).members().get(0);
+    ParenthesizedTree firstParentheses = (ParenthesizedTree) variableTree.initializer();
+    ParenthesizedTree secondParentheses = (ParenthesizedTree) firstParentheses.expression();
+    LiteralTree literal42 = (LiteralTree) secondParentheses.expression();
+
+    assertThat(skipParenthesesUpwards(null)).isNull();
+    assertThat(skipParenthesesUpwards(variableTree)).isSameAs(variableTree);
+    assertThat(skipParenthesesUpwards(firstParentheses)).isSameAs(variableTree);
+    assertThat(skipParenthesesUpwards(secondParentheses)).isSameAs(variableTree);
+    assertThat(skipParenthesesUpwards(literal42)).isSameAs(literal42);
+
+    ParenthesizedTree noParentParentheses = new ParenthesizedTreeImpl(null, secondParentheses.expression(), null);
+    assertThat(skipParenthesesUpwards(noParentParentheses)).isNull();
   }
 
   @Test
