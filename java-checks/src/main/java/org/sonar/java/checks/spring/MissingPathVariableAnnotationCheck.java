@@ -67,20 +67,20 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     var requestMappingArguments = clazzTree.symbol().metadata().valuesForAnnotation(REQUEST_MAPPING_ANNOTATION);
     Set<String> requestMappingTemplateVariables = new HashSet<>();
     if (requestMappingArguments != null) {
-      Set<String> templateVars;
       try {
-        templateVars = templateVariablesFromMapping(requestMappingArguments);
+        requestMappingTemplateVariables = templateVariablesFromMapping(requestMappingArguments);
       } catch (DoNotReport ignored) {
         return;
       }
-
-      if (templateVars != null) {
-        requestMappingTemplateVariables = templateVars;
-      }
     }
 
-    // we find path variable annotations on method annotated with @ModelAttribute and extract the name
-    Set<String> modelAttributeMethodParameter = new HashSet<>();
+    Set<String> modelAttributeMethodParameter = extractModelAttributeMethodParameter(methods);
+
+    checkParametersAndPathTemplate(methods, modelAttributeMethodParameter, requestMappingTemplateVariables);
+  }
+
+  private Set<String> extractModelAttributeMethodParameter(List<MethodTree> methods){
+    Set<java.lang.String> modelAttributeMethodParameter = new HashSet<>();
     for (var method : methods) {
       if (!method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION)) {
         continue;
@@ -93,12 +93,16 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
         }
       }
     }
+    return modelAttributeMethodParameter;
+  }
 
+  private void checkParametersAndPathTemplate(List<MethodTree> methods, Set<String> modelAttributeMethodParameter, Set<String> requestMappingTemplateVariables) {
     for (var method : methods) {
       if (!method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION)) {
         try {
           checkParametersAndPathTemplate(method, modelAttributeMethodParameter, requestMappingTemplateVariables);
         } catch (DoNotReport ignored) {
+          // We don't want to report when semantics is broken or we were unable to parse the path template
         }
       }
     }
@@ -136,12 +140,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
         continue;
       }
 
-      @Nullable
-      var templatesVars = templateVariablesFromMapping(values);
-
-      if (templatesVars != null) {
-        templateVariables.add(new UriInfo<>(ann, templatesVars));
-      }
+      templateVariables.add(new UriInfo<>(ann, templateVariablesFromMapping(values)));
     }
 
     // we handle the case where a path variable doesn't match to an uri parameter (/{aParam}/)
@@ -189,7 +188,6 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       });
   }
 
-  @Nullable
   private static Set<String> templateVariablesFromMapping(List<SymbolMetadata.AnnotationValue> values) {
     Map<String, Object> nameToValue = values.stream()
       .collect(Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
@@ -203,7 +201,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
         .flatMap(Collection::stream)
         .collect(Collectors.toSet());
     } else {
-      return null;
+      return Set.of();
     }
   }
 
@@ -263,10 +261,10 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
 
         if (!matchPrefix("{")) {
           consumeCurrentChar();
-        } else if (!ifMatchConsumeRestPathWildcard() &&
-          !ifMatchConsumeRestPathVariable()) {
-            consumeRegexPathVariable();
-          }
+        } else if (!ifMatchConsumeRestPathWildcard() && !ifMatchConsumeRestPathVariable()) {
+
+          consumeRegexPathVariable();
+        }
       }
       return vars;
     }
