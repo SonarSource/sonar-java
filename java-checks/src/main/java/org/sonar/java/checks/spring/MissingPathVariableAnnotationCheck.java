@@ -128,13 +128,13 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     // example find @GetMapping("/{id}") and extract "/{id}"
     List<UriInfo<Set<String>>> templateVariables = new ArrayList<>();
     for (var ann : method.modifiers().annotations()) {
-      if(ann.symbolType().isUnknown()){
+      if (ann.symbolType().isUnknown()) {
         throw new DoNotReport();
       }
 
       String fullyQualifiedName = ann.annotationType().symbolType().fullyQualifiedName();
       var values = method.symbol().metadata().valuesForAnnotation(fullyQualifiedName);
-      if (values==null || !MAPPING_ANNOTATIONS.contains(fullyQualifiedName)) {
+      if (values == null || !MAPPING_ANNOTATIONS.contains(fullyQualifiedName)) {
         continue;
       }
 
@@ -245,7 +245,8 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   }
 
   static class PathPatternParser {
-    private PathPatternParser(){}
+    private PathPatternParser() {
+    }
 
     private static final String REST_PATH_WILDCARD = "{**}";
     private static final String PREFIX_REST_PATH_VARIABLE = "{*";
@@ -264,27 +265,27 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
 
         if (!matchPrefix("{")) {
           consumeCurrentChar();
-        }else if(!ifMatchConsumeRestPathWildcard() &&
+        } else if (!ifMatchConsumeRestPathWildcard() &&
           !ifMatchConsumeRestPathVariable()) {
-          consumeRegexPathVariable();
-        }
+            consumeRegexPathVariable();
+          }
       }
       return vars;
     }
 
     // match and consume exactly "{**}"
     private static boolean ifMatchConsumeRestPathWildcard() {
-      if(matchPrefix(REST_PATH_WILDCARD)){
+      if (matchPrefix(REST_PATH_WILDCARD)) {
         consumePrefix(REST_PATH_WILDCARD);
         return true;
-      }else{
+      } else {
         return false;
       }
     }
 
     // match and consume "{*name}"
     private static boolean ifMatchConsumeRestPathVariable() {
-      if(!matchPrefix(PREFIX_REST_PATH_VARIABLE)){
+      if (!matchPrefix(PREFIX_REST_PATH_VARIABLE)) {
         return false;
       }
 
@@ -304,11 +305,11 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     // consume "{name}" or "{name:regex}"
     private static void consumeRegexPathVariable() {
 
-      if(!matchPrefix(PREFIX_REGEX_PATH_VARIABLE)){
+      if (!matchPrefix(PREFIX_REGEX_PATH_VARIABLE)) {
         throw new DoNotReport();
       }
 
-      if(matchPrefix("{}")){
+      if (matchPrefix("{}")) {
         throw new DoNotReport();
       }
 
@@ -359,14 +360,16 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     // for consumeCurrentChar, consumePrefix. We assume bound check on the path were done. We may add assert to ensure it.
     private static char consumeCurrentChar() {
       ++pos;
-      return path.charAt(pos -1);
+      return path.charAt(pos - 1);
     }
-    private static void consumePrefix(String prefix){
-      pos +=prefix.length();
+
+    private static void consumePrefix(String prefix) {
+      pos += prefix.length();
     }
+
     // return substring from start up to the last consumed character (excluded)
-    private static String substringToCurrentChar(int start){
-      return path.substring(start, pos -1);
+    private static String substringToCurrentChar(int start) {
+      return path.substring(start, pos - 1);
     }
 
   }

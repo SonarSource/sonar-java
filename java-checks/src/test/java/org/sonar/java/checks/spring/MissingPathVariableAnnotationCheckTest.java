@@ -54,13 +54,13 @@ class MissingPathVariableAnnotationCheckTest {
   }
 
   @Test
-  void test_pattern_parser_simple_pattern(){
+  void test_pattern_parser_simple_pattern() {
     assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/my/path/"))
       .isEmpty();
   }
 
   @Test
-  void test_pattern_parser_documentation_pattern(){
+  void test_pattern_parser_documentation_pattern() {
     assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/pages/t?st.html"))
       .isEmpty();
     assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/resources/*.png"))
@@ -76,17 +76,17 @@ class MissingPathVariableAnnotationCheckTest {
   }
 
   @Test
-  void test_pattern_parser_template_variables(){
+  void test_pattern_parser_template_variables() {
     assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/{page}/{age}"))
-      .containsExactly("page","age");
+      .containsExactly("page", "age");
     assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/{page}{age}"))
-      .containsExactly("page","age");
+      .containsExactly("page", "age");
     assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/{a}{b}-{c}{d:...}${e}\\{f}}"))
-      .containsExactly("a","b","c","d","e","f");
+      .containsExactly("a", "b", "c", "d", "e", "f");
   }
 
   @Test
-  void test_pattern_parser_regexes(){
+  void test_pattern_parser_regexes() {
     assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{page:[a-z]*}"))
       .containsExactly("page");
     assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{page:${}}"))
@@ -98,7 +98,7 @@ class MissingPathVariableAnnotationCheckTest {
   }
 
   @Test
-  void test_pattern_parser_errors(){
+  void test_pattern_parser_errors() {
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{}"))
       .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReport.class);
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{*aaa"))
