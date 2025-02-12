@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class MissingPathVariableAnnotationCheckTest {
@@ -41,6 +43,66 @@ class MissingPathVariableAnnotationCheckTest {
       .withCheck(check)
       .withoutSemantic()
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_pattern_parser_simple_pattern(){
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/my/path/"))
+      .isEmpty();
+  }
+
+  @Test
+  void test_pattern_parser_documentation_pattern(){
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/pages/t?st.html"))
+      .isEmpty();
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/resources/*.png"))
+      .isEmpty();
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/resources/**"))
+      .isEmpty();
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/resources/{**}"))
+      .isEmpty();
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/resources/{*path}"))
+      .containsExactly("path");
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/resources/{filename:\\\\w+}.dat"))
+      .containsExactly("filename");
+  }
+
+  @Test
+  void test_pattern_parser_template_variables(){
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/{page}/{age}"))
+      .containsExactly("page","age");
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/{page}{age}"))
+      .containsExactly("page","age");
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/{a}{b}-{c}{d:...}${e}\\{f}}"))
+      .containsExactly("a","b","c","d","e","f");
+  }
+
+  @Test
+  void test_pattern_parser_regexes(){
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{page:[a-z]*}"))
+      .containsExactly("page");
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{page:${}}"))
+      .containsExactly("page");
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{page:{{}}}"))
+      .containsExactly("page");
+    assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{page:{{}}{}}"))
+      .containsExactly("page");
+  }
+
+  @Test
+  void test_pattern_parser_errors(){
+    assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{}"))
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+    assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{xxx:"))
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+    assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/url/{"))
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+    assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{x:{}"))
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+    assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{x:\\{}"))
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+    assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{x:{{{}}}"))
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
   }
 
 }

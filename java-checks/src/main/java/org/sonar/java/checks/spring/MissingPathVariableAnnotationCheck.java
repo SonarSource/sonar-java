@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -75,8 +73,14 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     var requestMappingArguments = clazzTree.symbol().metadata().valuesForAnnotation(REQUEST_MAPPING_ANNOTATION);
     Set<String> requestMappingTemplateVariables = new HashSet<>();
     if (requestMappingArguments != null) {
-      var templateVars = templateVariablesFromMapping(requestMappingArguments);
-      if(templateVars!=null){
+      Set<String> templateVars;
+      try {
+        templateVars = templateVariablesFromMapping(requestMappingArguments);
+      } catch (DoNotReportOnMethod ignored) {
+        return;
+      }
+
+      if (templateVars != null) {
         requestMappingTemplateVariables = templateVars;
       }
     }
@@ -121,8 +125,8 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       if (arguments != null) {
         methodParameters.add(extractPathMethodParameters(parameter, arguments));
       }
-    }
 
+    }
 
     // we find mapping annotation and extract path
     // example find @GetMapping("/{id}") and extract "/{id}"
@@ -130,9 +134,9 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     if (method.modifiers().annotations().stream().anyMatch(ann -> ann.symbolType().isUnknown())) {
       throw new DoNotReportOnMethod();
     }
-    for(var ann : method.modifiers().annotations()){
+    for (var ann : method.modifiers().annotations()) {
       String fullyQualifiedName = ann.annotationType().symbolType().fullyQualifiedName();
-      if(!MAPPING_ANNOTATIONS.contains(fullyQualifiedName)){
+      if (!MAPPING_ANNOTATIONS.contains(fullyQualifiedName)) {
         continue;
       }
 
@@ -140,8 +144,8 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       var values = method.symbol().metadata().valuesForAnnotation(fullyQualifiedName);
       var templatesVars = templateVariablesFromMapping(values);
 
-      if(templatesVars!=null){
-        templateVariables.add(new UriInfo<>(ann,templatesVars));
+      if (templatesVars != null) {
+        templateVariables.add(new UriInfo<>(ann, templatesVars));
       }
     }
 
@@ -155,7 +159,6 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .filter(v -> !allTemplateVariables.contains(v.value()))
       .filter(v -> !v.parameter().symbol().type().is(MAP))
       .forEach(v -> reportIssue(v.parameter(), String.format("Bind method parameter \"%s\" to a template variable.", v.value())));
-
 
     if (containsTypeMapAsParameter(method)) {
       /*
@@ -192,7 +195,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   }
 
   @Nullable
-  private static Set<String> templateVariablesFromMapping(List<SymbolMetadata. AnnotationValue> values) {
+  private static Set<String> templateVariablesFromMapping(List<SymbolMetadata.AnnotationValue> values) {
     Map<String, Object> nameToValue = values.stream()
       .collect(Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
     List<String> path = arrayOrString(nameToValue.get("path"));
@@ -209,26 +212,8 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     }
   }
 
-  // missing create custom parser
   private static Set<String> extractTemplateVariables(String path) {
-    if (CONTAINS_PLACEHOLDER.test(path)) {
-      return new HashSet<>();
-    }
-
-    if (PATH_ARG_REGEX.test(path)) {
-      return PATH_REGEX.matcher(path).results()
-        .map(MatchResult::group)
-        .map(s -> s.substring(1))
-        .filter(s -> s.contains(":"))
-        .map(s -> s.split(":")[0])
-        .collect(Collectors.toSet());
-    }
-
-    return Stream.of(path.split("\\{"))
-      .map(EXTRACT_PATH_VARIABLE::matcher)
-      .filter(Matcher::matches)
-      .map(matcher -> matcher.group(1))
-      .collect(Collectors.toSet());
+    return PathPatternParser.parsePathVariables(path);
   }
 
   private static ParameterInfo extractPathMethodParameters(VariableTree parameter, List<SymbolMetadata.AnnotationValue> arguments) {
@@ -258,11 +243,137 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .toList();
   }
 
-  private static class DoNotReportOnMethod extends RuntimeException {
+  static class DoNotReportOnMethod extends RuntimeException {
   }
 
   private record ParameterInfo(VariableTree parameter, String value) {
   }
   private record UriInfo<A>(AnnotationTree request, A value) {
+  }
+
+  static class PathPatternParser {
+    private static final String REST_PATH_WILDCARD = "{**}";
+    private static final String PREFIX_REST_PATH_VARIABLE = "{*";
+    private static final String PREFIX_REGEX_PATH_VARIABLE = "{";
+
+    private static int stringPos;
+    private static String path;
+    private static Set<String> vars;
+
+    public static Set<String> parsePathVariables(String urlPath) {
+      stringPos = 0;
+      path = urlPath;
+      vars = new HashSet<>();
+
+      while (stringPos < path.length()) {
+
+        if (!matchPrefix("{")) {
+          consumeCurrentChar();
+        }else if(!ifMatchConsumeRestPathWildcard() &&
+          !ifMatchConsumeRestPathVariable()) {
+          // for now it is impossible to cover this line, regex path variable consume everything
+          consumeRegexPathVariable();
+        }
+      }
+      return vars;
+    }
+
+    // match and consume exactly "{**}"
+    private static boolean ifMatchConsumeRestPathWildcard() {
+      if(matchPrefix(REST_PATH_WILDCARD)){
+        consumePrefix(REST_PATH_WILDCARD);
+        return true;
+      }else{
+        return false;
+      }
+    }
+
+    // match and consume "{*name}"
+    private static boolean ifMatchConsumeRestPathVariable() {
+      if(!matchPrefix(PREFIX_REST_PATH_VARIABLE)){
+        return false;
+      }
+
+      consumePrefix(PREFIX_REST_PATH_VARIABLE);
+      int startTemplateVar = stringPos;
+
+      while (stringPos < path.length()) {
+        char current = consumeCurrentChar();
+        if (current == '}') {
+          vars.add(substringToCurrentChar(startTemplateVar));
+          return true;
+        }
+      }
+      throw new DoNotReportOnMethod();
+    }
+
+    // consume "{name}" or "{name:regex}"
+    private static void consumeRegexPathVariable() {
+
+      if(!matchPrefix(PREFIX_REGEX_PATH_VARIABLE)){
+        throw new DoNotReportOnMethod();
+      }
+
+      if(matchPrefix("{}")){
+        throw new DoNotReportOnMethod();
+      }
+
+      consumePrefix(PREFIX_REGEX_PATH_VARIABLE);
+      int startTemplateVar = stringPos;
+
+      while (stringPos < path.length()) {
+        char current = consumeCurrentChar();
+
+        if (current == '}') {
+          vars.add(substringToCurrentChar(startTemplateVar));
+          return;
+        } else if (current == ':') {
+          vars.add(substringToCurrentChar(startTemplateVar));
+          consumeRegex();
+          return;
+        }
+
+      }
+      throw new DoNotReportOnMethod();
+    }
+
+    // consume "regex}"
+    // the regular expression can be written as regex = "([^{}]*regex)*}"
+    // it is recursive we use regex in regex
+    private static void consumeRegex() {
+      while (stringPos < path.length()) {
+        char current = consumeCurrentChar();
+
+        if (current == '}') {
+          return;
+        } else if (current == '{') {
+          consumeRegex();
+        }
+      }
+      throw new DoNotReportOnMethod();
+    }
+
+    private static boolean matchPrefix(String prefix) {
+      int endPosPrefix = stringPos + prefix.length();
+      if (endPosPrefix <= path.length()) {
+        return prefix.equals(path.substring(stringPos, endPosPrefix));
+      } else {
+        return false;
+      }
+    }
+
+    // we assume bound check on the path were done
+    private static char consumeCurrentChar() {
+      ++stringPos;
+      return path.charAt(stringPos-1);
+    }
+    private static void consumePrefix(String prefix){
+      stringPos+=prefix.length();
+    }
+    // current char is excluded from the substring
+    private static String substringToCurrentChar(int start){
+      return path.substring(start, stringPos-1);
+    }
+
   }
 }

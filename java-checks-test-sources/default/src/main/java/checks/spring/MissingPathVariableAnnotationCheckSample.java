@@ -16,8 +16,7 @@ public class MissingPathVariableAnnotationCheckSample {
   public void handleWithoutExt(@PathVariable String name, @PathVariable String version) {}
 
   @GetMapping("/something/{id:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}}") // Compliant
-  public String getObj(@PathVariable("id") String id){ // Noncompliant
-    // it is FN, parsing the path is difficult maybe I will use parser from spring
+  public String getObj(@PathVariable("id") String id){
     return "";
   }
 
@@ -208,8 +207,8 @@ public class MissingPathVariableAnnotationCheckSample {
     return "Hello World";
   }
 
-  @GetMapping("/{id}/{xxx${placeHolder}xxxx}/{${{placeHolder}}}")
-  public String getPlaceHolder(String id) { // compliant, we don't consider this case
+  @GetMapping("/{id}/{a:${placeHolder}xxxx}/{b:${{placeHolder}}}")
+  public String getPlaceHolder(@PathVariable String id, @PathVariable String a, @PathVariable String b) { // compliant, we don't consider this case
     return "Hello World";
   }
 
@@ -314,4 +313,7 @@ public class MissingPathVariableAnnotationCheckSample {
 
   @RequestMapping()
   static class EmptyRequestMapping {}
+
+  @RequestMapping("/{age")
+  static class WrongPathRequestMapping {}
 }
