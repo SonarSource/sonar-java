@@ -208,7 +208,7 @@ public class MissingPathVariableAnnotationCheckSample {
   }
 
   @GetMapping("/{id}/{a:${placeHolder}xxxx}/{b:${{placeHolder}}}")
-  public String getPlaceHolder(@PathVariable String id, @PathVariable String a, @PathVariable String b) { // compliant, we don't consider this case
+  public String getPlaceHolder(@PathVariable String id, @PathVariable String a, @PathVariable String b) {
     return "Hello World";
   }
 

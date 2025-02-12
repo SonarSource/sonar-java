@@ -43,10 +43,6 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   private static final String MAP = "java.util.Map";
   private static final String MODEL_ATTRIBUTE_ANNOTATION = "org.springframework.web.bind.annotation.ModelAttribute";
   private static final String REQUEST_MAPPING_ANNOTATION = "org.springframework.web.bind.annotation.RequestMapping";
-  private static final Pattern EXTRACT_PATH_VARIABLE = Pattern.compile("([^:}/]*)(:.*)?}.*");
-  private static final Predicate<String> CONTAINS_PLACEHOLDER = Pattern.compile("\\$\\{.*}").asPredicate();
-  private static final Predicate<String> PATH_ARG_REGEX = Pattern.compile("\\{([^{}:]+:.*)}").asPredicate();
-  private static final Pattern PATH_REGEX = Pattern.compile("\\{([^{}]+)}");
 
   private static final Set<String> MAPPING_ANNOTATIONS = Set.of(
     REQUEST_MAPPING_ANNOTATION,
@@ -76,7 +72,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       Set<String> templateVars;
       try {
         templateVars = templateVariablesFromMapping(requestMappingArguments);
-      } catch (DoNotReportOnMethod ignored) {
+      } catch (DoNotReport ignored) {
         return;
       }
 
@@ -104,7 +100,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       if (!method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION)) {
         try {
           checkParametersAndPathTemplate(method, modelAttributeMethodParameter, requestMappingTemplateVariables);
-        } catch (DoNotReportOnMethod ignored) {
+        } catch (DoNotReport ignored) {
         }
       }
     }
@@ -118,7 +114,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       SymbolMetadata metadata = parameter.symbol().metadata();
 
       if (metadata.annotations().stream().anyMatch(ann -> ann.symbol().isUnknown())) {
-        throw new DoNotReportOnMethod();
+        throw new DoNotReport();
       }
 
       var arguments = metadata.valuesForAnnotation(PATH_VARIABLE_ANNOTATION);
@@ -131,17 +127,18 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     // we find mapping annotation and extract path
     // example find @GetMapping("/{id}") and extract "/{id}"
     List<UriInfo<Set<String>>> templateVariables = new ArrayList<>();
-    if (method.modifiers().annotations().stream().anyMatch(ann -> ann.symbolType().isUnknown())) {
-      throw new DoNotReportOnMethod();
-    }
     for (var ann : method.modifiers().annotations()) {
+      if(ann.symbolType().isUnknown()){
+        throw new DoNotReport();
+      }
+
       String fullyQualifiedName = ann.annotationType().symbolType().fullyQualifiedName();
-      if (!MAPPING_ANNOTATIONS.contains(fullyQualifiedName)) {
+      var values = method.symbol().metadata().valuesForAnnotation(fullyQualifiedName);
+      if (values==null || !MAPPING_ANNOTATIONS.contains(fullyQualifiedName)) {
         continue;
       }
 
-      // valuesForAnnotation cannot be null from previous filter
-      var values = method.symbol().metadata().valuesForAnnotation(fullyQualifiedName);
+      @Nullable
       var templatesVars = templateVariablesFromMapping(values);
 
       if (templatesVars != null) {
@@ -204,7 +201,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     if (path != null || value != null) {
       List<String> paths = path != null ? path : value;
       return paths.stream()
-        .map(MissingPathVariableAnnotationCheck::extractTemplateVariables)
+        .map(PathPatternParser::parsePathVariables)
         .flatMap(Collection::stream)
         .collect(Collectors.toSet());
     } else {
@@ -212,16 +209,12 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     }
   }
 
-  private static Set<String> extractTemplateVariables(String path) {
-    return PathPatternParser.parsePathVariables(path);
-  }
-
   private static ParameterInfo extractPathMethodParameters(VariableTree parameter, List<SymbolMetadata.AnnotationValue> arguments) {
-    Map<String, Object> nameToValue = arguments.stream().collect(
+    Map<String, Object> argNameToValue = arguments.stream().collect(
       Collectors.toMap(SymbolMetadata.AnnotationValue::name, SymbolMetadata.AnnotationValue::value));
 
-    String value = (String) nameToValue.get("value");
-    String name = (String) nameToValue.get("name");
+    String value = (String) argNameToValue.get("value");
+    String name = (String) argNameToValue.get("name");
     if (value != null) {
       return new ParameterInfo(parameter, value);
     } else if (name != null) {
@@ -243,7 +236,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       .toList();
   }
 
-  static class DoNotReportOnMethod extends RuntimeException {
+  static class DoNotReport extends RuntimeException {
   }
 
   private record ParameterInfo(VariableTree parameter, String value) {
@@ -252,20 +245,22 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   }
 
   static class PathPatternParser {
+    private PathPatternParser(){}
+
     private static final String REST_PATH_WILDCARD = "{**}";
     private static final String PREFIX_REST_PATH_VARIABLE = "{*";
     private static final String PREFIX_REGEX_PATH_VARIABLE = "{";
 
-    private static int stringPos;
+    private static int pos;
     private static String path;
     private static Set<String> vars;
 
     public static Set<String> parsePathVariables(String urlPath) {
-      stringPos = 0;
+      pos = 0;
       path = urlPath;
       vars = new HashSet<>();
 
-      while (stringPos < path.length()) {
+      while (pos < path.length()) {
 
         if (!matchPrefix("{")) {
           consumeCurrentChar();
@@ -294,33 +289,33 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       }
 
       consumePrefix(PREFIX_REST_PATH_VARIABLE);
-      int startTemplateVar = stringPos;
+      int startTemplateVar = pos;
 
-      while (stringPos < path.length()) {
+      while (pos < path.length()) {
         char current = consumeCurrentChar();
         if (current == '}') {
           vars.add(substringToCurrentChar(startTemplateVar));
           return true;
         }
       }
-      throw new DoNotReportOnMethod();
+      throw new DoNotReport();
     }
 
     // consume "{name}" or "{name:regex}"
     private static void consumeRegexPathVariable() {
 
       if(!matchPrefix(PREFIX_REGEX_PATH_VARIABLE)){
-        throw new DoNotReportOnMethod();
+        throw new DoNotReport();
       }
 
       if(matchPrefix("{}")){
-        throw new DoNotReportOnMethod();
+        throw new DoNotReport();
       }
 
       consumePrefix(PREFIX_REGEX_PATH_VARIABLE);
-      int startTemplateVar = stringPos;
+      int startTemplateVar = pos;
 
-      while (stringPos < path.length()) {
+      while (pos < path.length()) {
         char current = consumeCurrentChar();
 
         if (current == '}') {
@@ -333,14 +328,14 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
         }
 
       }
-      throw new DoNotReportOnMethod();
+      throw new DoNotReport();
     }
 
     // consume "regex}"
     // the regular expression can be written as regex = "([^{}]*regex)*}"
     // remark it is a recursive definition
     private static void consumeRegex() {
-      while (stringPos < path.length()) {
+      while (pos < path.length()) {
         char current = consumeCurrentChar();
 
         if (current == '}') {
@@ -349,13 +344,13 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
           consumeRegex();
         }
       }
-      throw new DoNotReportOnMethod();
+      throw new DoNotReport();
     }
 
     private static boolean matchPrefix(String prefix) {
-      int endPosPrefix = stringPos + prefix.length();
+      int endPosPrefix = pos + prefix.length();
       if (endPosPrefix <= path.length()) {
-        return prefix.equals(path.substring(stringPos, endPosPrefix));
+        return prefix.equals(path.substring(pos, endPosPrefix));
       } else {
         return false;
       }
@@ -363,15 +358,15 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
 
     // for consumeCurrentChar, consumePrefix. We assume bound check on the path were done. We may add assert to ensure it.
     private static char consumeCurrentChar() {
-      ++stringPos;
-      return path.charAt(stringPos-1);
+      ++pos;
+      return path.charAt(pos -1);
     }
     private static void consumePrefix(String prefix){
-      stringPos+=prefix.length();
+      pos +=prefix.length();
     }
     // return substring from start up to the last consumed character (excluded)
     private static String substringToCurrentChar(int start){
-      return path.substring(start, stringPos-1);
+      return path.substring(start, pos -1);
     }
 
   }

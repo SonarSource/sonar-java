@@ -46,6 +46,14 @@ class MissingPathVariableAnnotationCheckTest {
   }
 
   @Test
+  void expr() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/spring/SpringComposedRequestMappingCheck.java")
+      .withCheck(check)
+      .verifyNoIssues();
+  }
+
+  @Test
   void test_pattern_parser_simple_pattern(){
     assertThat(MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/my/path/"))
       .isEmpty();
@@ -92,19 +100,19 @@ class MissingPathVariableAnnotationCheckTest {
   @Test
   void test_pattern_parser_errors(){
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{}"))
-      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReport.class);
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{*aaa"))
-      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReport.class);
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{xxx:"))
-      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReport.class);
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("/url/{"))
-      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReport.class);
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{x:{}"))
-      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReport.class);
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{x:\\{}"))
-      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReport.class);
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{x:{{{}}}"))
-      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReportOnMethod.class);
+      .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReport.class);
   }
 
 }
