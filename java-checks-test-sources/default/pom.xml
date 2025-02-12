@@ -225,6 +225,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>io.spring.initializr</groupId>
+      <artifactId>initializr-generator-test</artifactId>
+      <version>0.21.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-acl</artifactId>
       <version>5.1.1.RELEASE</version>
