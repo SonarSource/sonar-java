@@ -37,8 +37,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public abstract class AbstractJUnit5NotCompliantModifierChecker extends IssuableSubscriptionVisitor {
 
   public enum ModifierScope {
+    // annotation like @Nested that applies to class
     CLASS,
+    // annotation like @BeforeAll that applies to static class method
     CLASS_METHOD,
+    // annotation like @BeforeEach that applies to non-static method
     INSTANCE_METHOD
   }
 
@@ -94,7 +97,8 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
 
     raiseIssueOnMethods(junit5ClassMethods, ModifierScope.CLASS_METHOD);
     raiseIssueOnMethods(junit5InstanceMethods, ModifierScope.INSTANCE_METHOD);
-    if (!junit5InstanceMethods.isEmpty()) {
+    boolean classHasJunit5InstanceMethods = !junit5InstanceMethods.isEmpty();
+    if (classHasJunit5InstanceMethods) {
       raiseIssueOnClass(nonJunit5Methods, classTree);
     }
   }
@@ -118,9 +122,10 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
       .anyMatch(AbstractJUnit5NotCompliantModifierChecker::isPublicStatic);
 
     // Can we change the visibility of the class?
-    if (!hasPublicStaticMethods && !hasPublicStaticFields) {
-      raiseIssueOnNotCompliantModifiers(classTree.modifiers(), ModifierScope.CLASS);
+    if (hasPublicStaticMethods || hasPublicStaticFields) {
+      return;
     }
+    raiseIssueOnNotCompliantModifiers(classTree.modifiers(), ModifierScope.CLASS);
   }
 
   private static boolean isPublicStatic(ModifiersTree modifiers) {
