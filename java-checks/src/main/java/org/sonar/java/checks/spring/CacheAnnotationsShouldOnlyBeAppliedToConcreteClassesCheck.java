@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheck extends IssuableSubscriptionVisitor {
 
   private static final String ISSUE_MESSAGE = "\"@%s\" annotation should only be applied to concrete classes.";
+  private static final String REPOSITORY_INTERFACE = "org.springframework.data.repository.Repository";
   private static final Set<String> CACHING_ANNOTATIONS = Set.of(
     "org.springframework.cache.annotation.CacheConfig",
     "org.springframework.cache.annotation.CacheEvict",
@@ -46,6 +47,10 @@ public class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheck extends I
   @Override
   public void visitNode(Tree tree) {
     ClassTree anInterface = (ClassTree) tree;
+
+    if (anInterface.symbol().type().isSubtypeOf(REPOSITORY_INTERFACE)) {
+      return;
+    }
 
     // report caching annotations on the whole interface
     selectCachingAnnotations(anInterface.modifiers())
