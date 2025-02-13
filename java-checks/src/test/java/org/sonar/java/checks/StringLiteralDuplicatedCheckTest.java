@@ -33,6 +33,15 @@ class StringLiteralDuplicatedCheckTest {
   }
 
   @Test
+  void detected_without_semantics() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringLiteralDuplicatedCheckSample.java"))
+      .withCheck(new StringLiteralDuplicatedCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
+  @Test
   void detected_text_blocks() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/TextBlocksDuplicatedCheckSample.java"))
