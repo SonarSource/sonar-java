@@ -3,6 +3,8 @@ package checks;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -14,6 +16,19 @@ class BoxedBooleanExpressionsCheckSample {
       // by construction we know that b is not null, so using a primitive boolean expression is not necessary.
       .map(b -> b ? "truthy" : "falsey")
       .orElse("mystery");
+  }
+
+  public void ifPresentOrElseOptionalBoolean() {
+    optionalBoolean()
+      .ifPresentOrElse(b -> {
+        if (b) { // Compliant, b can not be null in the context of ifPresentOrElse
+        }
+      }, () -> {
+      });
+    // coverage
+    List<Runnable> zeroArg = List.of(() -> {}, () -> {});
+    List<Consumer<String>> oneArg = List.of(x -> {}, x -> {});
+    List<BiFunction<Boolean, Boolean, Boolean>> twoArg = List.of((a, b) -> a ? b : false); // Noncompliant
   }
 
   public String lambdaWithBooleanParameter() {

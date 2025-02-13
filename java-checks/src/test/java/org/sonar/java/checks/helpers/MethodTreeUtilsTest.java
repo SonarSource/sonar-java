@@ -19,19 +19,27 @@ package org.sonar.java.checks.helpers;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.sonar.java.checks.helpers.MethodTreeUtils.lamdaArgumentAt;
+import static org.sonar.java.checks.helpers.MethodTreeUtils.parentMethodInvocationOfArgumentAtPos;
 
 class MethodTreeUtilsTest {
 
@@ -137,6 +145,55 @@ class MethodTreeUtilsTest {
     // coverage
     assertThat(MethodTreeUtils.hasKind(null, Tree.Kind.METHOD_INVOCATION)).isFalse();
     assertThat(MethodTreeUtils.consecutiveMethodInvocation(((MemberSelectExpressionTree) toStringMethod.parent()).identifier())).isEmpty();
+  }
+
+  @Test
+  void parent_method_invocation_of_argument_at_pos() {
+    CompilationUnitTree compilationUnitTree = JParserTestUtils.parse("""
+      class A {
+        int field1 = 1;
+        int field2 = Math.max((2), 3);
+        Thread field3 = new Thread("4");
+      }
+      """);
+    ClassTree classTree = (ClassTree) compilationUnitTree.types().get(0);
+    List<Tree> members = classTree.members();
+    LiteralTree literal1 = (LiteralTree) ((VariableTree) members.get(0)).initializer();
+    MethodInvocationTree mathMax = (MethodInvocationTree) ((VariableTree) members.get(1)).initializer();
+    LiteralTree literal2 = (LiteralTree) ((ParenthesizedTree) mathMax.arguments().get(0)).expression();
+    LiteralTree literal3 = (LiteralTree) mathMax.arguments().get(1);
+    NewClassTree newThread = (NewClassTree) ((VariableTree) members.get(2)).initializer();
+    LiteralTree literal4 = (LiteralTree) newThread.arguments().get(0);
+    LiteralTreeImpl expressionWithoutParent = new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, null);
+
+    assertThat(parentMethodInvocationOfArgumentAtPos(null, 0)).isNull();
+    assertThat(parentMethodInvocationOfArgumentAtPos(expressionWithoutParent, 0)).isNull();
+    assertThat(parentMethodInvocationOfArgumentAtPos(literal1, 0)).isNull();
+    assertThat(parentMethodInvocationOfArgumentAtPos(literal2, 0)).isSameAs(mathMax);
+    assertThat(parentMethodInvocationOfArgumentAtPos(literal2, 1)).isNull();
+    assertThat(parentMethodInvocationOfArgumentAtPos(literal2, 2)).isNull();
+    assertThat(parentMethodInvocationOfArgumentAtPos(literal3, 0)).isNull();
+    assertThat(parentMethodInvocationOfArgumentAtPos(literal3, 1)).isSameAs(mathMax);
+    assertThat(parentMethodInvocationOfArgumentAtPos(literal4, 0)).isNull();
+  }
+
+  @Test
+  void lamda_argument_ar() {
+    CompilationUnitTree compilationUnitTree = JParserTestUtils.parse("""
+      class A {
+        Runnable lambda1 = () -> {};
+        java.util.function.Consumer<String> lambda2 = a -> {};
+      }
+      """);
+    ClassTree classTree = (ClassTree) compilationUnitTree.types().get(0);
+    List<Tree> members = classTree.members();
+    LambdaExpressionTree lambda1 = (LambdaExpressionTree) ((VariableTree) members.get(0)).initializer();
+    LambdaExpressionTree lambda2 = (LambdaExpressionTree) ((VariableTree) members.get(1)).initializer();
+
+    assertThat(lamdaArgumentAt(null, 0)).isNull();
+    assertThat(lamdaArgumentAt(lambda1, 0)).isNull();
+    assertThat(lamdaArgumentAt(lambda2, 0)).isSameAs(lambda2.parameters().get(0));
+    assertThat(lamdaArgumentAt(lambda2, 1)).isNull();
   }
 
   private MethodTree parseMethod(String code) {

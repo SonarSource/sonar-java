@@ -26,15 +26,18 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -61,6 +64,42 @@ public final class MethodTreeUtils {
       result = arrayTypeTree.type().symbolType().isClass() && "String".equals(arrayTypeTree.type().symbolType().name());
     }
     return result;
+  }
+
+  /**
+   * @return null when:
+   *  - argumentCandidate is null
+   *  - the parent is not a method invocation (ignoring parent parentheses)
+   *  - argumentCandidate is not at the expected argument position
+   *  Otherwise, returns the parent method invocation.
+   */
+  @Nullable
+  public static MethodInvocationTree parentMethodInvocationOfArgumentAtPos(@Nullable ExpressionTree argumentCandidate, int expectedArgumentPosition) {
+    if (argumentCandidate == null) {
+      return null;
+    }
+    while (argumentCandidate.parent() instanceof ParenthesizedTree parenthesizedTree) {
+      argumentCandidate = parenthesizedTree;
+    }
+    if (argumentCandidate.parent() instanceof Arguments arguments &&
+      expectedArgumentPosition < arguments.size() &&
+      arguments.get(expectedArgumentPosition) == argumentCandidate &&
+      arguments.parent() instanceof MethodInvocationTree methodInvocationTree) {
+      return methodInvocationTree;
+    }
+    return null;
+  }
+
+  @Nullable
+  public static VariableTree lamdaArgumentAt(@Nullable LambdaExpressionTree lambdaExpressionTree, int argumentPosition) {
+    if (lambdaExpressionTree == null) {
+      return null;
+    }
+    List<VariableTree> parameters = lambdaExpressionTree.parameters();
+    if (parameters.size() > argumentPosition) {
+      return parameters.get(argumentPosition);
+    }
+    return null;
   }
 
   public static boolean isEqualsMethod(MethodTree m) {
