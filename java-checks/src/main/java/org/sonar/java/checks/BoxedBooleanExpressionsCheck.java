@@ -36,7 +36,6 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type.Primitives;
-import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -51,8 +50,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
+import static org.sonar.java.checks.helpers.MethodTreeUtils.lamdaArgumentAt;
+import static org.sonar.java.checks.helpers.MethodTreeUtils.parentMethodInvocationOfArgumentAtPos;
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S5411")
@@ -135,12 +137,13 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-    // parameters of lambdas applied on an Optional are always non-null
-    if (lambdaExpressionTree.parent() instanceof Arguments arguments &&
-      arguments.parent() instanceof MethodInvocationTree methodInvocationTree
-      && OPTIONAL_METHODS_WITH_LAMBDA_CONSUMING_NON_NULL.matches(methodInvocationTree)) {
-      Symbol parameterName = lambdaExpressionTree.parameters().get(0).symbol();
-      safeSymbols.put(parameterName, true);
+    VariableTree lambdaFistParameter = lamdaArgumentAt(lambdaExpressionTree, 0);
+    if (lambdaFistParameter != null) {
+      MethodInvocationTree methodInvocationTree = parentMethodInvocationOfArgumentAtPos(lambdaExpressionTree, 0);
+      // parameters of lambdas applied on an Optional are always non-null
+      if (methodInvocationTree != null && OPTIONAL_METHODS_WITH_LAMBDA_CONSUMING_NON_NULL.matches(methodInvocationTree)) {
+        safeSymbols.put(lambdaFistParameter.symbol(), true);
+      }
     }
     super.visitLambdaExpression(lambdaExpressionTree);
   }

@@ -26,6 +26,7 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -61,6 +62,35 @@ public final class MethodTreeUtils {
       result = arrayTypeTree.type().symbolType().isClass() && "String".equals(arrayTypeTree.type().symbolType().name());
     }
     return result;
+  }
+
+  @Nullable
+  public static MethodInvocationTree parentMethodInvocationOfArgumentAtPos(@Nullable Tree argumentCandidate, int expectedArgumentPosition) {
+    if (argumentCandidate == null) {
+      return null;
+    }
+    while (argumentCandidate.parent() != null && argumentCandidate.parent().is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      argumentCandidate = argumentCandidate.parent();
+    }
+    if (argumentCandidate.parent() instanceof Arguments arguments &&
+      expectedArgumentPosition < arguments.size() &&
+      arguments.get(expectedArgumentPosition) == argumentCandidate &&
+      arguments.parent() instanceof MethodInvocationTree methodInvocationTree) {
+      return methodInvocationTree;
+    }
+    return null;
+  }
+
+  @Nullable
+  public static VariableTree lamdaArgumentAt(@Nullable LambdaExpressionTree lambdaExpressionTree, int argumentPosition) {
+    if (lambdaExpressionTree == null) {
+      return null;
+    }
+    List<VariableTree> parameters = lambdaExpressionTree.parameters();
+    if (parameters.size() > argumentPosition) {
+      return parameters.get(argumentPosition);
+    }
+    return null;
   }
 
   public static boolean isEqualsMethod(MethodTree m) {
