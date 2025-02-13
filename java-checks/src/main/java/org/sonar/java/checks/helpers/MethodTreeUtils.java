@@ -30,12 +30,14 @@ import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -64,13 +66,20 @@ public final class MethodTreeUtils {
     return result;
   }
 
+  /**
+   * @return null when:
+   *  - argumentCandidate is null
+   *  - the parent is not a method invocation (ignoring parent parentheses)
+   *  - argumentCandidate is not at the expected argument position
+   *  Otherwise, returns the parent method invocation.
+   */
   @Nullable
-  public static MethodInvocationTree parentMethodInvocationOfArgumentAtPos(@Nullable Tree argumentCandidate, int expectedArgumentPosition) {
+  public static MethodInvocationTree parentMethodInvocationOfArgumentAtPos(@Nullable ExpressionTree argumentCandidate, int expectedArgumentPosition) {
     if (argumentCandidate == null) {
       return null;
     }
-    while (argumentCandidate.parent() != null && argumentCandidate.parent().is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      argumentCandidate = argumentCandidate.parent();
+    while (argumentCandidate.parent() instanceof ParenthesizedTree parenthesizedTree) {
+      argumentCandidate = parenthesizedTree;
     }
     if (argumentCandidate.parent() instanceof Arguments arguments &&
       expectedArgumentPosition < arguments.size() &&

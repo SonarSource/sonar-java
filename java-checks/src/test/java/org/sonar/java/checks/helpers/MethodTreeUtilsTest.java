@@ -19,6 +19,7 @@ package org.sonar.java.checks.helpers;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -158,20 +159,21 @@ class MethodTreeUtilsTest {
     ClassTree classTree = (ClassTree) compilationUnitTree.types().get(0);
     List<Tree> members = classTree.members();
     LiteralTree literal1 = (LiteralTree) ((VariableTree) members.get(0)).initializer();
-    MethodInvocationTree mathRound = (MethodInvocationTree) ((VariableTree) members.get(1)).initializer();
-    LiteralTree literal2 = (LiteralTree) ((ParenthesizedTree) mathRound.arguments().get(0)).expression();
-    LiteralTree literal3 = (LiteralTree) mathRound.arguments().get(1);
+    MethodInvocationTree mathMax = (MethodInvocationTree) ((VariableTree) members.get(1)).initializer();
+    LiteralTree literal2 = (LiteralTree) ((ParenthesizedTree) mathMax.arguments().get(0)).expression();
+    LiteralTree literal3 = (LiteralTree) mathMax.arguments().get(1);
     NewClassTree newThread = (NewClassTree) ((VariableTree) members.get(2)).initializer();
     LiteralTree literal4 = (LiteralTree) newThread.arguments().get(0);
+    LiteralTreeImpl expressionWithoutParent = new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, null);
 
     assertThat(parentMethodInvocationOfArgumentAtPos(null, 0)).isNull();
-    assertThat(parentMethodInvocationOfArgumentAtPos(compilationUnitTree, 0)).isNull();
+    assertThat(parentMethodInvocationOfArgumentAtPos(expressionWithoutParent, 0)).isNull();
     assertThat(parentMethodInvocationOfArgumentAtPos(literal1, 0)).isNull();
-    assertThat(parentMethodInvocationOfArgumentAtPos(literal2, 0)).isSameAs(mathRound);
+    assertThat(parentMethodInvocationOfArgumentAtPos(literal2, 0)).isSameAs(mathMax);
     assertThat(parentMethodInvocationOfArgumentAtPos(literal2, 1)).isNull();
     assertThat(parentMethodInvocationOfArgumentAtPos(literal2, 2)).isNull();
     assertThat(parentMethodInvocationOfArgumentAtPos(literal3, 0)).isNull();
-    assertThat(parentMethodInvocationOfArgumentAtPos(literal3, 1)).isSameAs(mathRound);
+    assertThat(parentMethodInvocationOfArgumentAtPos(literal3, 1)).isSameAs(mathMax);
     assertThat(parentMethodInvocationOfArgumentAtPos(literal4, 0)).isNull();
   }
 
