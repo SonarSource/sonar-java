@@ -55,6 +55,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.AnnotationsHelper.annotationTypeIdentifier;
+
 @Rule(key = "S1068")
 public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
 
@@ -193,9 +195,15 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
 
   private static boolean hasOwnerClassAllowedAnnotations(VariableTree variableTree) {
     var ownerClass = (ClassTree) variableTree.parent();
-    return ownerClass.modifiers().annotations().stream().anyMatch(
-      annotation -> OWNER_CLASS_ALLOWED_ANNOTATIONS.contains(annotation.annotationType().symbolType().fullyQualifiedName())
-    );
+    var metadata = ownerClass.symbol().metadata();
+    for (String name: OWNER_CLASS_ALLOWED_ANNOTATIONS) {
+      // If the annotation does not use a fully qualified name e.g. `@Getter`,
+      // then only the identifier portion will be available in automatic analysis.
+      if (metadata.isAnnotatedWith(name) || metadata.isAnnotatedWith(annotationTypeIdentifier(name))) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private boolean onlyUsedInVariableAssignment(Symbol symbol) {

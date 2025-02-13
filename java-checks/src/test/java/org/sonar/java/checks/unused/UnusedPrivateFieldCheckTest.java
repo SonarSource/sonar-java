@@ -32,6 +32,20 @@ class UnusedPrivateFieldCheckTest {
       .verifyIssues();
   }
 
+  /**
+   * Unused private fields can be detected without semantics. The test verifies
+   * that we correctly process annotations which suppress warnings and
+   * do not produce FPs when semantics is missing.
+   */
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedPrivateFieldCheck.java"))
+      .withCheck(new UnusedPrivateFieldCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()

@@ -6,6 +6,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Optional;
 
+import lombok.Getter;
+import lombok.Setter;
+
 class UnusedPrivateFieldCheck {
 
   private int unusedField; // Noncompliant {{Remove this unused "unusedField" private field.}}
@@ -91,6 +94,20 @@ class UnusedPrivateFieldCheckTestSonar {
     Long transform(String number) {
       return Long.valueOf(number);
     }
+  }
+}
+
+class UnusedPrivateFieldCheckUnqualifiedAnnotations {
+  @Getter
+  @Setter
+  static class MyData {
+    private String name;
+    private int dob;
+  }
+
+  static class MoreData {
+    private String airline; // Noncompliant
+    private int price; // Noncompliant
   }
 }
 
