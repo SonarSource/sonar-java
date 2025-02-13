@@ -5,6 +5,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.Repository;
 
 public class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheckSample {
 
@@ -85,5 +87,31 @@ public class CacheAnnotationsShouldOnlyBeAppliedToConcreteClassesCheckSample {
   class ClassCaching {
     @Caching
     String getData(String id){return "";}
+  }
+
+  interface MyRepository extends Repository<Integer, Integer> {
+    @Cacheable("aCache") // compliant, it is the only way to do it in repositories. I guess depending on proxy mode
+    // repositories don't work at all
+    Integer findById(Integer id);
+
+    @CachePut("aCache") // compliant
+    Integer findByIdCachePut(Integer id);
+
+    @CacheEvict("aCache") // compliant
+    Integer findByIdCacheEvict(Integer id);
+
+    @org.springframework.cache.annotation.Cacheable("aCache")
+    Integer fullyQualifiedCache(Integer i);
+  }
+
+  public interface MyCrudRepository extends CrudRepository<Integer, Integer> {
+    @CachePut("aCache") // compliant
+    Integer findByIdCachePut(Integer id);
+
+    @CacheEvict("aCache") // compliant
+    Integer findByIdCacheEvict(Integer id);
+
+    @org.springframework.cache.annotation.Cacheable("aCache")
+    Integer fullyQualifiedCache(Integer i);
   }
 }
