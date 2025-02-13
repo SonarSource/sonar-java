@@ -1,4 +1,4 @@
-package checks;
+package checks.spring;
 
 import java.util.Map;
 import java.util.Optional;
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 public class MissingPathVariableAnnotationCheckSample {
 
@@ -24,13 +25,13 @@ public class MissingPathVariableAnnotationCheckSample {
 
 
 
-  @GetMapping("/{id}") // Noncompliant {{Bind path variable "id" to a method parameter.}}
+  @GetMapping("/{id}") // Noncompliant {{Bind template variable "id" to a method parameter.}}
 //^^^^^^^^^^^^^^^^^^^^
   public String get(String id) {
     return "Hello World";
   }
 
-  @PostMapping(value = "/{name}") // Noncompliant {{Bind path variable "name" to a method parameter.}}
+  @PostMapping(value = "/{name}") // Noncompliant {{Bind template variable "name" to a method parameter.}}
   public String post(String id) {
     return "Hello World";
   }
@@ -42,6 +43,11 @@ public class MissingPathVariableAnnotationCheckSample {
 
   @DeleteMapping("/{id}") // Noncompliant
   public String delete(String id) {
+    return "Hello World";
+  }
+
+  @RequestMapping("/{id}") // Noncompliant
+  public String request(String id) {
     return "Hello World";
   }
 
@@ -73,11 +79,21 @@ public class MissingPathVariableAnnotationCheckSample {
     return "Hello World";
   }
 
+  @RequestMapping("/{id}")
+  public String requestCompliant(@PathVariable String id) {
+    return "Hello World";
+  }
+
   @GetMapping("/{id}")
   @DeleteMapping({"/{id}"})
   public String deleteGetCompliant(@PathVariable String id) { // compliant
     return "Hello World";
   }
+
+  @interface NotRequestMappingAnnotation {}
+
+  @NotRequestMappingAnnotation
+  public void notAnnotatedWithRequestMapping(){}
 
   @GetMapping("/{id}")
   public String getOtherThanString(@PathVariable Integer id) { // compliant
@@ -100,7 +116,7 @@ public class MissingPathVariableAnnotationCheckSample {
   }
 
   @GetMapping("/{id}") // Noncompliant
-  public String getBadName(@PathVariable String a) {
+  public String getBadName(@PathVariable String a) { // Noncompliant
     return "Hello World";
   }
 
@@ -153,7 +169,7 @@ public class MissingPathVariableAnnotationCheckSample {
     return "Hello World";
   }
 
-  public String withoutRequestMappingAnnotation(@PathVariable  String id) { // compliant
+  public String withoutRequestMappingAnnotation(@PathVariable  String id) { // Noncompliant
     return "Hello World";
   }
 
@@ -191,15 +207,20 @@ public class MissingPathVariableAnnotationCheckSample {
     return "Hello World";
   }
 
-  @GetMapping("/{id}/{xxx${placeHolder}xxxx}/{${{placeHolder}}}")
-  public String getPlaceHolder(String id) { // compliant, we don't consider this case
+  @GetMapping("/{id}/{a:${placeHolder}xxxx}/{b:${{placeHolder}}}")
+  public String getPlaceHolder(@PathVariable String id, @PathVariable String a, @PathVariable String b) {
     return "Hello World";
   }
 
   static class ModelA {
     @ModelAttribute("user")
-    public String getUser(@PathVariable String id, @PathVariable String name) {
-      return "user";
+    public String getUser(@PathVariable String id, @PathVariable String name) { // always compliant when method  annotated with @ModelAttribute
+      return "user"; // because the case is too complex to handle
+    }
+
+    @ModelAttribute("empty")
+    public String emptyModel(String notPathVariable){
+      return "";
     }
 
     @GetMapping("/{id}/{name}")
@@ -213,7 +234,7 @@ public class MissingPathVariableAnnotationCheckSample {
       return "Hello World";
     }
 
-    @GetMapping("/{id}/{name}/{age}") // Noncompliant {{Bind path variable "age" to a method parameter.}}
+    @GetMapping("/{id}/{name}/{age}") // Noncompliant {{Bind template variable "age" to a method parameter.}}
     public String get3() {
       return "Hello World";
     }
@@ -246,4 +267,53 @@ public class MissingPathVariableAnnotationCheckSample {
     }
   }
 
+
+  @GetMapping("/a/path")
+  public String pathVariableWithoutParameter(@PathVariable String aVar){ // Noncompliant {{Bind method parameter "aVar" to a template variable.}}
+//                                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+    return "";
+  }
+
+  @GetMapping("/a/path/{aVar1}")
+  public String twoPathVariables(@PathVariable String aVar1, @PathVariable String aVar2){ // Noncompliant
+//                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    return "";
+  }
+
+  @GetMapping("/a/path")
+  public String pathVariableWithValue(@PathVariable(value = "aVar") String foo){ // Noncompliant
+    return "";
+  }
+
+  @GetMapping("/a/path")
+  public String pathVariableWithName(@PathVariable(name = "aVar") String foo){ // Noncompliant
+    return "";
+  }
+
+  @GetMapping("/a/path")
+  public String pathVariableWithDefault(@PathVariable("aVar") String foo){ // Noncompliant
+    return "";
+  }
+
+  @GetMapping("/a/path")
+  public String pathVariableEmptyName(@PathVariable("") String foo){ // Noncompliant
+    return "";
+  }
+
+  @RequestMapping("/path/{id}")
+  static class Controller {
+    void fromRequestMapping(@PathVariable String id){}
+
+    @GetMapping("/{age}")
+    void fromBoth(@PathVariable String id, @PathVariable int age){}
+
+    @GetMapping()
+    void missingTemplateParameter(@PathVariable String missing){} // Noncompliant
+  }
+
+  @RequestMapping()
+  static class EmptyRequestMapping {}
+
+  @RequestMapping("/{age")
+  static class WrongPathRequestMapping {}
 }
