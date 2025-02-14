@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -51,6 +52,11 @@ public class MissingPathVariableAnnotationCheckSample {
     return "Hello World";
   }
 
+  @PatchMapping("/{id}") // Noncompliant
+  public String patch(String id) {
+    return "Hello World";
+  }
+
   @PutMapping("/id")
   @DeleteMapping("/{id}") // Noncompliant
   public String deletePut(String id) {
@@ -81,6 +87,11 @@ public class MissingPathVariableAnnotationCheckSample {
 
   @RequestMapping("/{id}")
   public String requestCompliant(@PathVariable String id) {
+    return "Hello World";
+  }
+
+  @PatchMapping("/{id}")
+  public String patchCompliant(@PathVariable  String id) {
     return "Hello World";
   }
 
