@@ -1798,4 +1798,36 @@ class JParserSemanticTest {
     assertThat(nestedCastWarning.message()).isEqualTo("Unnecessary cast from String to String");
     assertThat(nestedCastWarning.syntaxTree()).isEqualTo(parenthesizedTree);
   }
+
+  @Test
+  void test_variable_equals_in_lambda() {
+    String source = """
+      package org.foo;
+      class A {
+        void f1() {
+          java.util.function.Consumer<String> a = p -> { System.out.println(p); };
+          java.util.function.Consumer<String> c = p -> { System.out.println(p); };
+        }
+        void f2() {
+          java.util.function.Consumer<String> b = p -> { System.out.println(p); };
+        }
+      }
+      """;
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTree f1 = (MethodTree) c.members().get(0);
+    MethodTree f2 = (MethodTree) c.members().get(1);
+    VariableTree variableTreeA = (VariableTree) f1.block().body().get(0);
+    VariableTree variableTreeC = (VariableTree) f1.block().body().get(1);
+    VariableTree variableTreeB = (VariableTree) f2.block().body().get(0);
+    LambdaExpressionTreeImpl lambdaA = (LambdaExpressionTreeImpl) variableTreeA.initializer();
+    LambdaExpressionTreeImpl lambdaB = (LambdaExpressionTreeImpl) variableTreeB.initializer();
+    LambdaExpressionTreeImpl lambdaC = (LambdaExpressionTreeImpl) variableTreeC.initializer();
+    VariableTreeImpl pOfA = (VariableTreeImpl) lambdaA.parameters().get(0);
+    VariableTreeImpl pOfB = (VariableTreeImpl) lambdaB.parameters().get(0);
+    VariableTreeImpl pOfC = (VariableTreeImpl) lambdaC.parameters().get(0);
+
+    assertThat(pOfA.symbol()).isNotSameAs(pOfB.symbol());
+    assertThat(pOfA.symbol()).isNotSameAs(pOfC.symbol());
+  }
 }
