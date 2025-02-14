@@ -13,7 +13,8 @@
     "constantCost": "5min"
   },
   "tags": [
-    "cwe"
+    "cwe",
+    "android"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6293",
