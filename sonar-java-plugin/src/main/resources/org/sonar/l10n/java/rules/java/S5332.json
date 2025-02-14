@@ -9,7 +9,8 @@
   },
   "status": "ready",
   "tags": [
-    "cwe"
+    "cwe",
+    "android"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5332",
