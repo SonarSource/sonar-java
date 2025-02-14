@@ -194,6 +194,14 @@ abstract class JSymbol implements Symbol {
     if (!variableBinding.isRecordComponent()) {
       IMethodBinding declaringMethod = variableBinding.getDeclaringMethod();
       if (declaringMethod != null) {
+        IBinding declaringMember = declaringMethod.getDeclaringMember();
+        // declaringMember is non-null in the case of lambdas
+        if (declaringMember instanceof IMethodBinding methodBinding) {
+          return sema.methodSymbol(methodBinding);
+        }
+        if (declaringMember instanceof IVariableBinding varBinding) {
+          return sema.variableSymbol(varBinding);
+        }
         // local variable
         return sema.methodSymbol(declaringMethod);
       }
@@ -203,6 +211,10 @@ abstract class JSymbol implements Symbol {
         return sema.typeSymbol(declaringClass);
       }
     }
+    return ownerOfRecordComponentConstant(variableBinding);
+  }
+
+  private Symbol ownerOfRecordComponentConstant(IVariableBinding variableBinding) {
     Tree node = sema.declarations.get(variableBinding);
     if (node == null) {
       // array.length
