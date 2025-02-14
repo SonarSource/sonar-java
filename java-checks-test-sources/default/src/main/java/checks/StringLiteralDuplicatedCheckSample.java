@@ -186,3 +186,11 @@ class DuplicatedExceptionArguments {
     }
   }
 }
+
+class UseConstInExceptionArgs {
+  public static final String NOT_IMPLEMENTED_MESSAGE = "Will do it on Tuesday!";
+
+  public int calculateFibonacci(int k) {
+    throw new RuntimeException("Will do it on Tuesday!"); // Noncompliant {{Use already-defined constant 'NOT_IMPLEMENTED_MESSAGE' instead of duplicating its value here.}}
+  }
+}
