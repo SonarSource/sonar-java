@@ -194,6 +194,14 @@ abstract class JSymbol implements Symbol {
     if (!variableBinding.isRecordComponent()) {
       IMethodBinding declaringMethod = variableBinding.getDeclaringMethod();
       if (declaringMethod != null) {
+        IBinding declaringMember = declaringMethod.getDeclaringMember();
+        // declaringMember is non-null in the case of lambdas
+        if (declaringMember instanceof IMethodBinding methodBinding) {
+          return sema.methodSymbol(methodBinding);
+        }
+        if (declaringMember instanceof IVariableBinding varBinding) {
+          return sema.variableSymbol(varBinding);
+        }
         // local variable
         return sema.methodSymbol(declaringMethod);
       }
@@ -203,6 +211,10 @@ abstract class JSymbol implements Symbol {
         return sema.typeSymbol(declaringClass);
       }
     }
+    return ownerOfRecordComponentConstant(variableBinding);
+  }
+
+  private Symbol ownerOfRecordComponentConstant(IVariableBinding variableBinding) {
     Tree node = sema.declarations.get(variableBinding);
     if (node == null) {
       // array.length
@@ -214,8 +226,8 @@ abstract class JSymbol implements Symbol {
       node = node.parent();
       switch (node.kind()) {
         case CLASS,
-          RECORD,
-          ENUM:
+             RECORD,
+             ENUM:
           JTypeSymbol typeSymbol = sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
           if (initializerBlock) {
             return sema.initializerBlockSymbol(typeSymbol);
@@ -232,7 +244,7 @@ abstract class JSymbol implements Symbol {
           staticInitializerBlock = true;
           break;
         case METHOD,
-          CONSTRUCTOR:
+             CONSTRUCTOR:
           // local variable declaration in recovered method
           // and recovered methods do not have bindings
           return Symbols.unknownMethodSymbol;
@@ -252,7 +264,7 @@ abstract class JSymbol implements Symbol {
         ITypeBinding variableType = ((IVariableBinding) binding).getType();
         return variableType != null ? sema.type(variableType) : Symbols.unknownType;
       case IBinding.PACKAGE,
-        IBinding.METHOD:
+           IBinding.METHOD:
         return Symbols.unknownType;
       default:
         throw new IllegalStateException(unexpectedBinding());
@@ -447,8 +459,8 @@ abstract class JSymbol implements Symbol {
       node = node.parent();
       switch (node.kind()) {
         case CLASS,
-          RECORD,
-          ENUM:
+             RECORD,
+             ENUM:
           // variable declaration in a static or instance initializer
           // or local variable declaration in recovered method
           return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
