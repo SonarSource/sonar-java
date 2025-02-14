@@ -62,7 +62,9 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     constants.clear();
     scan(context.getTree());
     occurrences.forEach((key, literalTrees) -> {
-      int literalOccurrence = literalTrees.size();
+      // Do not consider `throw new Exception("repeated message")` for reporting duplicates,
+      // but still report it if a constant is available.
+      int literalOccurrence = (int) literalTrees.stream().filter(tree -> !isThrowableArgument(tree)).count();
       if (constants.containsKey(key)) {
         VariableTree constant = constants.get(key);
         List<LiteralTree> duplications = literalTrees.stream().filter(literal -> literal.parent() != constant).toList();
@@ -90,7 +92,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   public void visitLiteral(LiteralTree tree) {
     if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
       String literal = tree.value();
-      if (literal.length() >= MINIMAL_LITERAL_LENGTH && !isStringLiteralFragment(tree) && !isThrowableArgument(tree)) {
+      if (literal.length() >= MINIMAL_LITERAL_LENGTH && !isStringLiteralFragment(tree)) {
         String stringValue = LiteralUtils.getAsStringValue(tree).replace("\\n", "\n");
         occurrences.computeIfAbsent(stringValue, key -> new ArrayList<>()).add(tree);
       }
