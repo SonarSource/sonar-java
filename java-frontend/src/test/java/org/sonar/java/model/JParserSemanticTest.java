@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -54,6 +55,7 @@ import org.sonar.java.model.statement.ExpressionStatementTreeImpl;
 import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.java.model.statement.StaticInitializerTreeImpl;
 import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.java.model.statement.YieldStatementTreeImpl;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -72,6 +74,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
@@ -79,6 +82,7 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StaticInitializerTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -89,6 +93,8 @@ import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
@@ -779,6 +785,9 @@ class JParserSemanticTest {
     assertThat(superKeyword.symbolType().fullyQualifiedName()).isEqualTo("java.lang.Iterable");
   }
 
+  /**
+   * Check that the owner of a parameter of a lambda declared outside any method is the class in which it is declared.
+   */
   @Test
   void expression_lambda() {
     String source = """
@@ -788,20 +797,45 @@ class JParserSemanticTest {
       }
       """;
     JavaTree.CompilationUnitTreeImpl cu = test(source);
-    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
-    VariableTreeImpl f = (VariableTreeImpl) c.members().get(0);
-    LambdaExpressionTreeImpl lambda = (LambdaExpressionTreeImpl) f.initializer();
-    VariableTreeImpl p = (VariableTreeImpl) lambda.parameters().get(0);
+    var c = (ClassTree) cu.types().get(0);
+    var f = (VariableTree) c.members().get(0);
+    var lambda = (LambdaExpressionTree) f.initializer();
+    var p = (VariableTreeImpl) lambda.parameters().get(0);
 
-    // owner of lambda parameter is the method which defines the functional interface
     Symbol newSymbol = cu.sema.variableSymbol(p.variableBinding);
     assertThat(newSymbol.declaration().firstToken().range().start().line()).isEqualTo(3);
     Symbol newOwner = newSymbol.owner();
-    assertThat(newOwner).isNotNull();
-    assertThat(newOwner.isMethodSymbol()).isTrue();
-    assertThat(newOwner.isTypeSymbol()).isFalse();
-    assertThat(newOwner.name()).isEqualTo("accept");
-    assertThat(newOwner.owner().type().fullyQualifiedName()).isEqualTo("java.util.function.Consumer");
+    assertTrue(newOwner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
+  }
+
+  /**
+   * Check that the owner of lambda parameter is the method inside which the lambda is declared.
+   */
+  @Test
+  void expression_lambda_variable_owner() {
+    String source = """
+      package org.foo;
+      class A {
+        void foo() {
+          java.util.function.Consumer<String> v = p -> { };
+        }
+      }
+      """;
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTreeImpl foo = (MethodTreeImpl) c.members().get(0);
+    Optional<BlockTreeImpl> firstBlock = foo.getChildren().stream()
+      .filter(BlockTreeImpl.class::isInstance)
+      .map(BlockTreeImpl.class::cast)
+      .findFirst();
+    VariableTree v = (VariableTree) firstBlock.get().body().get(0);
+    LambdaExpressionTreeImpl lambda = (LambdaExpressionTreeImpl) v.initializer();
+    VariableTreeImpl p = (VariableTreeImpl) lambda.parameters().get(0);
+
+    // owner of lambda parameter is the field or variable to which it is assigned
+    Symbol newSymbol = cu.sema.variableSymbol(p.variableBinding);
+    Symbol newOwner = newSymbol.owner();
+    assertTrue(newOwner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
   }
 
   @Test
@@ -1634,19 +1668,19 @@ class JParserSemanticTest {
   @Test
   void constructor_with_type_arguments() {
     String source = """
-        class MyClass {
-          <T extends I> MyClass(T t) {}
-          <T extends J & I> MyClass(T t) {}
-          void foo(B b, C c) {
-            new<B>MyClass((I) b);
-            new<C>MyClass(c);
-          }
+      class MyClass {
+        <T extends I> MyClass(T t) {}
+        <T extends J & I> MyClass(T t) {}
+        void foo(B b, C c) {
+          new<B>MyClass((I) b);
+          new<C>MyClass(c);
         }
-        interface I {}
-        interface J {}
-        class B implements I {}
-        class C implements I, J {}
-        """;
+      }
+      interface I {}
+      interface J {}
+      class B implements I {}
+      class C implements I, J {}
+      """;
 
     JavaTree.CompilationUnitTreeImpl cu = test(source);
     ClassTree c = (ClassTree) cu.types().get(0);
@@ -1788,7 +1822,7 @@ class JParserSemanticTest {
     List<JWarning> castWarnings = cu.warnings(JWarning.Type.REDUNDANT_CAST);
     assertThat(castWarnings).hasSize(2);
 
-    TypeCastTree typeCast =  (TypeCastTree)((VariableTree)((MethodTree)(((ClassTree) cu.types().get(0)).members().get(0))).block().body().get(0)).initializer();
+    TypeCastTree typeCast = (TypeCastTree) ((VariableTree) ((MethodTree) (((ClassTree) cu.types().get(0)).members().get(0))).block().body().get(0)).initializer();
     JWarning parentCastWarning = castWarnings.get(0);
     assertThat(parentCastWarning.message()).isEqualTo("Unnecessary cast from String to String");
     assertThat(parentCastWarning.syntaxTree()).isEqualTo(typeCast);
@@ -1797,5 +1831,171 @@ class JParserSemanticTest {
     JWarning nestedCastWarning = castWarnings.get(1);
     assertThat(nestedCastWarning.message()).isEqualTo("Unnecessary cast from String to String");
     assertThat(nestedCastWarning.syntaxTree()).isEqualTo(parenthesizedTree);
+  }
+
+  @Test
+  void test_varialbe_equals_inNestedLambdas() {
+    String source = """
+          package org.foo;
+          class A {
+            void foo() {
+              consume(p2 -> {
+                 consume(p1 -> {
+                      usage(p1);
+                 });
+              });
+            }
+            interface C extends java.util.function.Consumer<String> {}
+            int consume(C c) {
+              return 0;
+            }
+          }
+      """;
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    var c = (ClassTreeImpl) cu.types().get(0);
+    var foo = (MethodTree) c.members().get(0);
+    var consumeInvocation = (MethodInvocationTree) ((ExpressionStatementTree) foo.block().body().get(0)).expression();
+    var lambdaA = (LambdaExpressionTree) consumeInvocation.arguments().get(0);
+    var p2 = lambdaA.parameters().get(0);
+
+    var consumeInvocation2 = (MethodInvocationTree) ((ExpressionStatementTree) ((BlockTree) lambdaA.body()).body().get(0)).expression();
+    var lambda2 = (LambdaExpressionTree) consumeInvocation2.arguments().get(0);
+    var p1 = lambda2.parameters().get(0);
+
+    Symbol symbol1 = p1.symbol();
+    Symbol symbol2 = p2.symbol();
+    assertNotEquals(symbol1, p2.symbol());
+
+    Symbol owner1 = symbol1.owner();
+    assertTrue(owner1 instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
+    Symbol owner2 = symbol2.owner();
+    assertTrue(owner2 instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
+    assertNotEquals(owner1, owner2);
+  }
+
+  @Test
+  void testOwner_inInitializers() {
+    CompilationUnitTree cu = test("""
+      class C { 
+        static { int j = 1; } 
+        { java.util.function.IntConsumer k = i -> {}; }
+      }
+      """);
+    ClassTree classTree = (ClassTree) cu.types().get(0);
+    var block1 = (StaticInitializerTreeImpl) classTree.members().get(0);
+    var j = (VariableTree) block1.body().get(0);
+
+    var block2 = (BlockTree) classTree.members().get(1);
+    var k = (VariableTree) block2.body().get(0);
+
+    var lambda = (LambdaExpressionTree) k.initializer();
+    var i = lambda.parameters().get(0).symbol();
+    Symbol iOwner = i.owner();
+    Symbol jOwner = j.symbol().owner();
+    Symbol kOwner = k.symbol().owner();
+    assertNotEquals(jOwner, kOwner);
+    assertTrue(iOwner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
+  }
+
+  @Test
+  void testOwner_inInitializersLambdas() {
+    String source = """
+          package org.foo;
+          class A {
+            static { consume(p -> {}); }
+            { consume(p -> {}); }
+            interface C extends java.util.function.Consumer<String> {}
+            int consume(C c) { return 0; }
+          }
+      """;
+    CompilationUnitTree cu = test(source);
+    var classTree = (ClassTree) cu.types().get(0);
+
+    var staticInit = (StaticInitializerTree) classTree.members().get(0);
+    var invocation1 = (MethodInvocationTree) ((ExpressionStatementTree) staticInit.body().get(0)).expression();
+    var lambda1 = (LambdaExpressionTree) invocation1.arguments().get(0);
+    var p1 = lambda1.parameters().get(0);
+    var owner1 = p1.symbol().owner();
+
+    var init = (BlockTree) classTree.members().get(1);
+    var invocation2 = (MethodInvocationTree) ((ExpressionStatementTree) init.body().get(0)).expression();
+    var lambda2 = (LambdaExpressionTree) invocation2.arguments().get(0);
+    var p2 = lambda2.parameters().get(0);
+    var owner2 = p2.symbol().owner();
+
+    assertNotEquals(owner1, owner2);
+  }
+
+  @Test
+  void testOwner_inFieldsInLambda() {
+    CompilationUnitTree cu = test("""
+      class C {
+        F k = s -> {};
+        F j = s -> {};
+        interface F extends java.util.function.Consumer<String> {}
+      }
+      """);
+    ClassTree classTree = (ClassTree) cu.types().get(0);
+    var k = (VariableTree) classTree.members().get(0);
+    Symbol s1 = ((LambdaExpressionTree) k.initializer()).parameters().get(0).symbol();
+    Symbol s1Owner = s1.owner();
+    assertThat(s1Owner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
+
+    var j = (VariableTree) classTree.members().get(1);
+    Symbol s2 = ((LambdaExpressionTree) j.initializer()).parameters().get(0).symbol();
+    Symbol s2Owner = s2.owner();
+    assertThat(s2Owner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
+    assertNotEquals(s1Owner, s2Owner);
+
+    // For sanity, check that the symbols are not equal
+    assertNotEquals(s1, s2);
+  }
+
+  @Test
+  void testVariableOwner_inLambdasInMethods() {
+    String source = """
+      package org.foo;
+      class A {
+        void f1() {
+          java.util.function.Consumer<String> a = p -> { System.out.println(p); };
+          java.util.function.Consumer<String> c = p -> { System.out.println(p); };
+        }
+        void f2() {
+          java.util.function.Consumer<String> b = p -> { System.out.println(p); };
+        }
+      }
+      """;
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+
+    var f1 = (MethodTree) c.members().get(0);
+    var variableTreeA = (VariableTree) f1.block().body().get(0);
+    var lambdaA = (LambdaExpressionTreeImpl) variableTreeA.initializer();
+    var pOfA = lambdaA.parameters().get(0);
+
+    var variableTreeC = (VariableTree) f1.block().body().get(1);
+    var lambdaC = (LambdaExpressionTree) variableTreeC.initializer();
+    var pOfC = lambdaC.parameters().get(0);
+
+    var f2 = (MethodTree) c.members().get(1);
+    var variableTreeB = (VariableTree) f2.block().body().get(0);
+    var lambdaB = (LambdaExpressionTree) variableTreeB.initializer();
+    var pOfB = lambdaB.parameters().get(0);
+
+    Symbol ownerA = pOfA.symbol().owner();
+    Symbol ownerC = pOfC.symbol().owner();
+    Symbol ownerB = pOfB.symbol().owner();
+
+    assertThat(ownerA instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
+    assertThat(ownerB instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
+    assertThat(ownerC instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
+    assertNotEquals(ownerA, ownerC);
+    assertNotEquals(ownerA, ownerB);
+    assertNotEquals(ownerC, ownerB);
+
+    assertNotEquals(pOfA.symbol(), pOfB.symbol());
+    assertNotEquals(pOfA.symbol(), pOfC.symbol());
+    assertNotEquals(pOfB.symbol(), pOfC.symbol());
+
   }
 }
