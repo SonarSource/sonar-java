@@ -88,17 +88,6 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     return literalTrees.stream().map(element -> new JavaFileScannerContext.Location("Duplication", element)).toList();
   }
 
-  @Override
-  public void visitLiteral(LiteralTree tree) {
-    if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
-      String literal = tree.value();
-      if (literal.length() >= MINIMAL_LITERAL_LENGTH && !isStringLiteralFragment(tree)) {
-        String stringValue = LiteralUtils.getAsStringValue(tree).replace("\\n", "\n");
-        occurrences.computeIfAbsent(stringValue, key -> new ArrayList<>()).add(tree);
-      }
-    }
-  }
-
   /**
    * Verify that <code>literalTree</code> is an argument in
    * <code>throw new SomeException(arg1, arg2, ...)</code>,
@@ -114,12 +103,23 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
       tree = tree.map(Tree::parent);
     }
     return tree
-        .filter(t -> t.is(Tree.Kind.ARGUMENTS))
-        .map(Tree::parent)
-        .filter(t -> t.is(Tree.Kind.NEW_CLASS))
-        .map(Tree::parent)
-        .filter(t -> t.is(Tree.Kind.THROW_STATEMENT))
-        .isPresent();
+      .filter(t -> t.is(Tree.Kind.ARGUMENTS))
+      .map(Tree::parent)
+      .filter(t -> t.is(Tree.Kind.NEW_CLASS))
+      .map(Tree::parent)
+      .filter(t -> t.is(Tree.Kind.THROW_STATEMENT))
+      .isPresent();
+  }
+
+  @Override
+  public void visitLiteral(LiteralTree tree) {
+    if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
+      String literal = tree.value();
+      if (literal.length() >= MINIMAL_LITERAL_LENGTH && !isStringLiteralFragment(tree)) {
+        String stringValue = LiteralUtils.getAsStringValue(tree).replace("\\n", "\n");
+        occurrences.computeIfAbsent(stringValue, key -> new ArrayList<>()).add(tree);
+      }
+    }
   }
 
   private static boolean isStringLiteralFragment(ExpressionTree tree) {
