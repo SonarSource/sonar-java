@@ -793,15 +793,15 @@ class JParserSemanticTest {
     LambdaExpressionTreeImpl lambda = (LambdaExpressionTreeImpl) f.initializer();
     VariableTreeImpl p = (VariableTreeImpl) lambda.parameters().get(0);
 
-    // owner of lambda parameter is the method which defines the functional interface
+    // owner of lambda parameter is the field or variable to which it is assigned
     Symbol newSymbol = cu.sema.variableSymbol(p.variableBinding);
     assertThat(newSymbol.declaration().firstToken().range().start().line()).isEqualTo(3);
     Symbol newOwner = newSymbol.owner();
     assertThat(newOwner).isNotNull();
-    assertThat(newOwner.isMethodSymbol()).isTrue();
+    assertThat(newOwner.isVariableSymbol()).isTrue();
     assertThat(newOwner.isTypeSymbol()).isFalse();
-    assertThat(newOwner.name()).isEqualTo("accept");
-    assertThat(newOwner.owner().type().fullyQualifiedName()).isEqualTo("java.util.function.Consumer");
+    assertThat(newOwner.name()).isEqualTo("f");
+    assertThat(newOwner.owner().type().fullyQualifiedName()).isEqualTo("org.foo.A");
   }
 
   @Test
@@ -1797,5 +1797,37 @@ class JParserSemanticTest {
     JWarning nestedCastWarning = castWarnings.get(1);
     assertThat(nestedCastWarning.message()).isEqualTo("Unnecessary cast from String to String");
     assertThat(nestedCastWarning.syntaxTree()).isEqualTo(parenthesizedTree);
+  }
+
+  @Test
+  void test_variable_equals_in_lambda() {
+    String source = """
+      package org.foo;
+      class A {
+        void f1() {
+          java.util.function.Consumer<String> a = p -> { System.out.println(p); };
+          java.util.function.Consumer<String> c = p -> { System.out.println(p); };
+        }
+        void f2() {
+          java.util.function.Consumer<String> b = p -> { System.out.println(p); };
+        }
+      }
+      """;
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl c = (ClassTreeImpl) cu.types().get(0);
+    MethodTree f1 = (MethodTree) c.members().get(0);
+    MethodTree f2 = (MethodTree) c.members().get(1);
+    VariableTree variableTreeA = (VariableTree) f1.block().body().get(0);
+    VariableTree variableTreeC = (VariableTree) f1.block().body().get(1);
+    VariableTree variableTreeB = (VariableTree) f2.block().body().get(0);
+    LambdaExpressionTreeImpl lambdaA = (LambdaExpressionTreeImpl) variableTreeA.initializer();
+    LambdaExpressionTreeImpl lambdaB = (LambdaExpressionTreeImpl) variableTreeB.initializer();
+    LambdaExpressionTreeImpl lambdaC = (LambdaExpressionTreeImpl) variableTreeC.initializer();
+    VariableTreeImpl pOfA = (VariableTreeImpl) lambdaA.parameters().get(0);
+    VariableTreeImpl pOfB = (VariableTreeImpl) lambdaB.parameters().get(0);
+    VariableTreeImpl pOfC = (VariableTreeImpl) lambdaC.parameters().get(0);
+
+    assertThat(pOfA.symbol()).isNotSameAs(pOfB.symbol());
+    assertThat(pOfA.symbol()).isNotSameAs(pOfC.symbol());
   }
 }
