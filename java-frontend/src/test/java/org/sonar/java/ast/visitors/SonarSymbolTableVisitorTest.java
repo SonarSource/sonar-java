@@ -51,7 +51,7 @@ class SonarSymbolTableVisitorTest {
   private SonarComponents sonarComponents;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     context = SensorContextTester.create(temp.getRoot());
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),
       mock(ClasspathForMain.class), mock(ClasspathForTest.class), mock(CheckFactory.class), mock(ActiveRules.class));

@@ -81,7 +81,7 @@ class JavaAstScannerTest {
   private SensorContextTester context;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     context = SensorContextTester.create(new File(""));
   }
 

@@ -46,7 +46,7 @@ class SurefireJavaParserTest {
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @BeforeEach
-  public void before() {
+  void before() {
     javaResourceLocator = mock(JavaResourceLocator.class);
     when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(invocation -> new TestInputFileBuilder("", (String) invocation.getArguments()[0]).build());
 

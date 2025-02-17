@@ -48,7 +48,7 @@ class AnyRuleIssueFilterTest {
   private FilterableIssue issue;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     issue = mock(FilterableIssue.class);
     when(issue.componentKey()).thenReturn(INPUT_FILE.key());
     when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, RULE_KEY));

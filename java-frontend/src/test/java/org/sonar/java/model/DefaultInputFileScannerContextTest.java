@@ -63,7 +63,7 @@ class DefaultInputFileScannerContextTest {
   }
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     sonarComponents = createSonarComponentsMock();
     compilationUnitTree = JParserTestUtils.parse(JAVA_FILE);
     context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true, false);

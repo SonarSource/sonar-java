@@ -53,7 +53,7 @@ class GeneratedFileTest {
   private DefaultFileSystem fs;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  void setUp() throws Exception {
     expected = tmp.resolve("file.jsp");
     Files.write(expected, "content".getBytes(UTF_8));
     fs = new DefaultFileSystem(tmp);

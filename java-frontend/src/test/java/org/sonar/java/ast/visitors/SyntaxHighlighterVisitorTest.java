@@ -59,7 +59,7 @@ class SyntaxHighlighterVisitorTest {
   private SyntaxHighlighterVisitor syntaxHighlighterVisitor;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     context = SensorContextTester.create(temp.getRoot());
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),
       mock(ClasspathForMain.class), mock(ClasspathForTest.class), mock(CheckFactory.class), mock(ActiveRules.class));

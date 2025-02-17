@@ -93,7 +93,7 @@ class InternalJavaIssueBuilderTest {
   private InputFile inputFile;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     sensorContextTester = SensorContextTester.create(new File(""));
     when(sonarComponents.context()).thenReturn(sensorContextTester);
@@ -370,7 +370,7 @@ class InternalJavaIssueBuilderTest {
     private CompilationUnitTree cut = JParserTestUtils.parse(JAVA_FILE);
 
     @BeforeEach
-    public void setup() {
+    void setup() {
       sct = Mockito.spy(SensorContextTester.create(new File("")));
       when(sct.newIssue()).thenReturn(new MockSonarLintIssue(sct));
 

@@ -33,7 +33,7 @@ class SurefireStaxHandlerTest {
   private UnitTestIndex index;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     index = new UnitTestIndex();
   }
 
