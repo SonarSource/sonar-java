@@ -35,11 +35,39 @@
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ase-assertion-with-side-effect-method"
   },
   {
+    "key": "AT_NONATOMIC_64BIT_PRIMITIVE",
+    "name": "Multi-threading - This write of this 64-bit primitive variable may not atomic",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#at-nonatomic-64bit-primitive"
+  },
+  {
+    "key": "AT_NONATOMIC_OPERATIONS_ON_SHARED_VARIABLE",
+    "name": "Multi-threading - Operation on shared variable is not atomic",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#at-nonatomic-operations-on-shared-variable"
+  },
+  {
     "key": "AT_OPERATION_SEQUENCE_ON_CONCURRENT_ABSTRACTION",
     "name": "Multi-threading - Sequence of calls to concurrent abstraction may not be atomic",
     "type": "BUG",
     "severity": "MAJOR",
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#at-operation-sequence-on-concurrent-abstraction"
+  },
+  {
+    "key": "AT_STALE_THREAD_WRITE_OF_PRIMITIVE",
+    "name": "Multi-threading - This write of this shared primitive variable may not be visible to other threads",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#at-stale-thread-write-of-primitive"
+  },
+  {
+    "key": "AT_UNSAFE_RESOURCE_ACCESS_IN_THREAD",
+    "name": "Multi-threading - Operation on resource is not safe in a multithreaded context",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#at-unsafe-resource-access-in-thread"
   },
   {
     "key": "BAC_BAD_APPLET_CONSTRUCTOR",
@@ -1148,6 +1176,13 @@
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#fl-math-using-float-precision"
   },
   {
+    "key": "FS_BAD_DATE_FORMAT_FLAG_COMBO",
+    "name": "Bad practice - Date-format strings may lead to unexpected behavior",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#fs-bad-date-format-flag-combo"
+  },
+  {
     "key": "GC_UNCHECKED_TYPE_IN_GENERIC_CALL",
     "name": "Bad practice - Unchecked type in generic call",
     "type": "CODE_SMELL",
@@ -1230,6 +1265,13 @@
     "type": "BUG",
     "severity": "MAJOR",
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#hsc-huge-shared-string-constant"
+  },
+  {
+    "key": "HSM_HIDING_METHOD",
+    "name": "Correctness - Method hiding should be avoided.",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#hsm-hiding-method"
   },
   {
     "key": "IA_AMBIGUOUS_INVOCATION_OF_INHERITED_OR_OUTER_METHOD",
@@ -3095,14 +3137,14 @@
   },
   {
     "key": "THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION",
-    "name": "Bad practice - Method lists Exception in its throws clause.",
+    "name": "Bad practice - Method lists Exception in its throws clause, but it could be more specific.",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#throws-method-throws-clause-basic-exception"
   },
   {
     "key": "THROWS_METHOD_THROWS_CLAUSE_THROWABLE",
-    "name": "Bad practice - Method lists Throwable in its throws clause.",
+    "name": "Bad practice - Method lists Throwable in its throws clause, but it could be more specific.",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#throws-method-throws-clause-throwable"
