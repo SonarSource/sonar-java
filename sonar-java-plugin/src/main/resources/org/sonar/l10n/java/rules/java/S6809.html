@@ -1,13 +1,13 @@
 <h2>Why is this an issue?</h2>
-<p>A method annotated with Spring’s <code>@Async</code> or <code>@Transactional</code> annotations will not work as expected if invoked directly from
-within its class.</p>
-<p>This is because Spring generates a proxy class with wrapper code to manage the method’s asynchronicity (<code>@Async</code>) or to handle the
-transaction (<code>@Transactional</code>). However, when called using <code>this</code>, the proxy instance is bypassed, and the method is invoked
-directly without the required wrapper code.</p>
+<p>A method annotated with Spring’s <code>@Async</code>, <code>@Cacheable</code> or <code>@Transactional</code> annotations will not work as expected
+if invoked directly from within its class.</p>
+<p>This is because Spring generates a proxy class with wrapper code to manage the method’s asynchronicity (<code>@Async</code>), to cache methods
+invocations (<code>@Cacheable</code>), or to handle the transaction (<code>@Transactional</code>). However, when called using <code>this</code>, the
+proxy instance is bypassed, and the method is invoked directly without the required wrapper code.</p>
 <h2>How to fix it</h2>
-<p>Replace calls to <code>@Async</code> or <code>@Transactional</code> methods via <code>this</code> with calls on an instance that was injected by
-Spring (<code>@Autowired</code>, <code>@Resource</code> or <code>@Inject</code>). The injected instance is a proxy on which the methods can be invoked
-safely.</p>
+<p>Replace calls to <code>@Async</code>, <code>@Cacheable</code> or <code>@Transactional</code> methods via <code>this</code> with calls on an
+instance that was injected by Spring (<code>@Autowired</code>, <code>@Resource</code> or <code>@Inject</code>). The injected instance is a proxy on
+which the methods can be invoked safely.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -17,12 +17,19 @@ public class AsyncNotificationProcessor implements NotificationProcessor {
   @Override
   public void process(Notification notification) {
     processAsync(notification); // Noncompliant, call bypasses proxy
+    retrieveNotification(notification.id); // Noncompliant, call bypasses proxy and will not be cached
   }
 
   @Async
   public processAsync(Notification notification) {
     // ...
   }
+
+  @Cacheable
+  public Notification retrieveNotification(Long id) {
+    // ...
+  }
+
 }
 </pre>
 <h4>Compliant solution</h4>
@@ -36,10 +43,16 @@ public class AsyncNotificationProcessor implements NotificationProcessor {
   @Override
   public void process(Notification notification) {
     asyncNotificationProcessor.processAsync(notification); // Compliant, call via injected proxy
+    asyncNotificationProcessor.retrieveNotification(notification.id); // Compliant, the call will be cached
   }
 
   @Async
   public processAsync(Notification notification) {
+    // ...
+  }
+
+  @Cacheable
+  public Notification retrieveNotification(Long id) {
     // ...
   }
 }
@@ -51,6 +64,8 @@ public class AsyncNotificationProcessor implements NotificationProcessor {
   Framework API - Annotation Interface Async</a> </li>
   <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Transactional.html">Spring
   Framework API - Annotation Interface Transactional</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/cache/annotation/Cacheable.html">Spring Framework
+  API - Annotation Interface Cacheable</a> </li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>
@@ -58,5 +73,7 @@ public class AsyncNotificationProcessor implements NotificationProcessor {
   <li> <a href="https://stackoverflow.com/questions/22561775/spring-async-ignored">Stack Overflow - Spring @Async ignored</a> </li>
   <li> <a href="https://stackoverflow.com/questions/4396284/does-spring-transactional-attribute-work-on-a-private-method">Stack Overflow - Does Spring
   @Transactional attribute work on a private method?</a> </li>
+  <li> <a href="https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html#cache-annotations-cacheable">Spring docs, The
+  @Cacheable Annotation</a> </li>
 </ul>
 
