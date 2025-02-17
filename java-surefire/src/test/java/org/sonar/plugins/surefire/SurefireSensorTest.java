@@ -48,7 +48,7 @@ class SurefireSensorTest {
   private PathResolver pathResolver = new PathResolver();
 
   @BeforeEach
-  public void before() {
+  void before() {
     fs = new DefaultFileSystem(new File("src/test/resources"));
     DefaultInputFile javaFile = new TestInputFileBuilder("", "src/org/foo/java").setLanguage("java").build();
     fs.add(javaFile);

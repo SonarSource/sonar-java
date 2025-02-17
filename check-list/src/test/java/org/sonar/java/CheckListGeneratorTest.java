@@ -40,7 +40,7 @@ class CheckListGeneratorTest {
   private final String directory = System.getProperty("user.dir").replace("check-list", "");
 
   @BeforeEach
-  public void setUp() throws IOException {
+  void setUp() throws IOException {
     Gson gson = new Gson();
     generator = new CheckListGenerator(gson,
       Path.of(directory, "java-checks/src/main/java"),

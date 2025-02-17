@@ -43,7 +43,7 @@ class JavadocTest {
   private static Javadoc invalidThrownExceptionUndocumented;
 
   @BeforeAll
-  public static void setup() {
+  static void setup() {
     File file = new File("src/test/files/checks/helpers/JavadocTest.java");
     tree = JParserTestUtils.parse(file);
 

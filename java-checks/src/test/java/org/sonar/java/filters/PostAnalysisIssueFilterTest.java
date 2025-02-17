@@ -44,7 +44,7 @@ class PostAnalysisIssueFilterTest {
   private FilterableIssue fakeIssue;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     postAnalysisIssueFilter = new PostAnalysisIssueFilter();
 
     context = mock(JavaFileScannerContext.class);

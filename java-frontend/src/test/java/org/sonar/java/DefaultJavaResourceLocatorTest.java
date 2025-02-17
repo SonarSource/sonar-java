@@ -40,7 +40,7 @@ class DefaultJavaResourceLocatorTest {
   private static final String TEST_BINARY_DIRS = "target/test/test-classes";
 
   @BeforeAll
-  public static void setup() {
+  static void setup() {
     ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
     when(javaClasspath.getBinaryDirs()).thenReturn(Collections.singletonList(new File(BINARY_DIRS)));
     when(javaClasspath.getElements()).thenReturn(Collections.singletonList(new File(BINARY_DIRS)));
