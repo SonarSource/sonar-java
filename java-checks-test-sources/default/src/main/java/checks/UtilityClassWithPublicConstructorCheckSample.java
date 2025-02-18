@@ -217,4 +217,24 @@ class UtilityClassWithPublicConstructorCheckSample {
     }
   }
 
+  static class CustomLombokLikeAnnotation {
+    // Custom Lombok-like annotation.
+    @interface NoArgsConstructor {
+      AccessLevel access() default AccessLevel.PUBLIC;
+    }
+
+    // This one is tricky - the annotation is not the real one, so it is noncompliant.
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    class CustomClass1 { // Noncompliant
+      public static void foo() {
+      }
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PUBLIC)
+    class CustomClass2 { // Noncompliant
+      public static void foo() {
+      }
+    }
+  }
+
 }
