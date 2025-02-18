@@ -29,6 +29,12 @@ class UtilityClassWithPublicConstructorCheckSample {
     }
   }
 
+  @lombok.NoArgsConstructor(access = AccessLevel.PUBLIC)
+  class LombokClassFullyQualifiedNoArgs { // Noncompliant
+    public static void foo() {
+    }
+  }
+
   @NoArgsConstructor(force = true)
   class LombokClass6 { // Noncompliant
     public static void foo() {
@@ -37,6 +43,12 @@ class UtilityClassWithPublicConstructorCheckSample {
 
   @AllArgsConstructor(access = PRIVATE)
   class LombokClass3 { // Compliant, a private constructor will be generated
+    public static void foo() {
+    }
+  }
+
+  @lombok.AllArgsConstructor(access = PRIVATE)
+  class LombokClassFullyQualifiedAllArgs { // Compliant, a private constructor will be generated
     public static void foo() {
     }
   }
