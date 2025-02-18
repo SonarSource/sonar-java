@@ -33,15 +33,16 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.AnnotationsHelper.annotationTypeIdentifier;
-
 @Rule(key = "S1118")
 public class UtilityClassWithPublicConstructorCheck extends IssuableSubscriptionVisitor {
 
+  /**
+   * See also {@link org.sonar.java.filters.LombokFilter}.
+   */
   private static final Set<String> LOMBOK_CONSTRUCTOR_GENERATORS = Set.of(
-    "lombok.NoArgsConstructor",
-    "lombok.AllArgsConstructor",
-    "lombok.RequiredArgsConstructor");
+    "NoArgsConstructor",
+    "AllArgsConstructor",
+    "RequiredArgsConstructor");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -90,9 +91,8 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   }
 
   private static boolean isLombokConstructorGenerator(AnnotationTree annotation) {
-    return LOMBOK_CONSTRUCTOR_GENERATORS.stream().anyMatch(
-      fullyQualifiedName -> annotation.symbolType().name().equals(annotationTypeIdentifier(fullyQualifiedName))
-    );
+    // Match only the name, not a fully qualified identifier, so it also works in automatic analysis.
+    return LOMBOK_CONSTRUCTOR_GENERATORS.contains(annotation.symbolType().name());
   }
 
   private static boolean hasPublicAccess(AnnotationTree annotation) {
