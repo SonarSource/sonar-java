@@ -19,10 +19,13 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.AnnotationsHelper;
 import org.sonar.java.checks.helpers.ClassPatternsUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -40,9 +43,14 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
    * See also {@link org.sonar.java.filters.LombokFilter}.
    */
   private static final Set<String> LOMBOK_CONSTRUCTOR_GENERATORS = Set.of(
-    "NoArgsConstructor",
-    "AllArgsConstructor",
-    "RequiredArgsConstructor");
+    "lombok.NoArgsConstructor",
+    "lombok.AllArgsConstructor",
+    "lombok.RequiredArgsConstructor");
+
+  private static final Set<String> LOMBOK_CONSTRUCTOR_GENERATOR_NAMES =
+    LOMBOK_CONSTRUCTOR_GENERATORS.stream()
+      .map(AnnotationsHelper::annotationTypeIdentifier)
+      .collect(Collectors.toSet());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -87,12 +95,17 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   }
 
   private static boolean hasCompliantGeneratedConstructors(ClassTree classTree) {
-    return classTree.modifiers().annotations().stream().anyMatch(it -> isLombokConstructorGenerator(it) && !hasPublicAccess(it));
+    return classTree.modifiers().annotations().stream()
+      .anyMatch(it -> isLombokConstructorGenerator(it.symbolType()) && !hasPublicAccess(it));
   }
 
-  private static boolean isLombokConstructorGenerator(AnnotationTree annotation) {
-    // Match only the name, not a fully qualified identifier, so it also works in automatic analysis.
-    return LOMBOK_CONSTRUCTOR_GENERATORS.contains(annotation.symbolType().name());
+  private static boolean isLombokConstructorGenerator(Type symbolType) {
+    // This happens in automatic analysis. We match only the last part of the name.
+    if(symbolType.isUnknown()) {
+      return LOMBOK_CONSTRUCTOR_GENERATOR_NAMES.contains(symbolType.name());
+    }
+
+    return LOMBOK_CONSTRUCTOR_GENERATORS.contains(symbolType.fullyQualifiedName());
   }
 
   private static boolean hasPublicAccess(AnnotationTree annotation) {
