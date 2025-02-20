@@ -1,6 +1,18 @@
 package symbolicexecution.checks;
 
+import java.util.List;
+import java.util.Map;
+import org.eclipse.jdt.annotation.NonNull;
+
 class BooleanWrapper {
+
+  public static boolean gooo(Map<Integer, List<@NonNull String>> aMap){
+    var theChosenOne = aMap.get(17);
+    if (theChosenOne != null){
+      return theChosenOne.isEmpty();
+    }
+    return false;
+  }
 
   boolean b, field;
 
