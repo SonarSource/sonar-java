@@ -30,4 +30,13 @@ class UtilityClassWithPublicConstructorCheckTest {
       .withCheck(new UtilityClassWithPublicConstructorCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UtilityClassWithPublicConstructorCheckSample.java"))
+      .withCheck(new UtilityClassWithPublicConstructorCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

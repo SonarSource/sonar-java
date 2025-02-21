@@ -18,31 +18,49 @@ class UtilityClassWithPublicConstructorCheckSample {
   }
 
   @NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
-  class LombokClass1 { // Compliant, a private constructor will be generated
+  class LombokClassNoArgsPrivate { // Compliant, a private constructor will be generated
     public static void foo() {
     }
   }
 
   @NoArgsConstructor(access = AccessLevel.PUBLIC)
-  class LombokClass2 { // Noncompliant
+  class LombokClassNoArgsPublic { // Noncompliant
+    public static void foo() {
+    }
+  }
+
+  @NoArgsConstructor(access = AccessLevel.NONE)
+  class LombokClassNoArgsNone { // Compliant
+    public static void foo() {
+    }
+  }
+
+  @lombok.NoArgsConstructor(access = AccessLevel.PUBLIC)
+  class LombokClassFullyQualifiedNoArgsPublic { // Noncompliant
     public static void foo() {
     }
   }
 
   @NoArgsConstructor(force = true)
-  class LombokClass6 { // Noncompliant
+  class LombokClassNoArgs { // Noncompliant
     public static void foo() {
     }
   }
 
   @AllArgsConstructor(access = PRIVATE)
-  class LombokClass3 { // Compliant, a private constructor will be generated
+  class LombokClassAllArgsPrivate { // Compliant, a private constructor will be generated
+    public static void foo() {
+    }
+  }
+
+  @lombok.AllArgsConstructor(access = PRIVATE)
+  class LombokClassFullyQualifiedAllArgsPrivate { // Compliant, a private constructor will be generated
     public static void foo() {
     }
   }
 
   @RequiredArgsConstructor(access = PRIVATE)
-  class LombokClass4 { // Compliant, a private constructor will be generated
+  class LombokClassRequiresPrivate { // Compliant, a private constructor will be generated
     public static void foo() {
     }
   }
@@ -202,6 +220,26 @@ class UtilityClassWithPublicConstructorCheckSample {
 
     public static checks.MySingleton getInstance() {
       return InitializationOnDemandHolderMySingleton.INSTANCE;
+    }
+  }
+
+  static class CustomLombokLikeAnnotation {
+    // Custom Lombok-like annotation.
+    @interface NoArgsConstructor {
+      AccessLevel access() default AccessLevel.PUBLIC;
+    }
+
+    // This one is tricky - the annotation is not the real one, so it is noncompliant.
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    class CustomPrivate { // Noncompliant
+      public static void foo() {
+      }
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PUBLIC)
+    class CustomPublic { // Noncompliant
+      public static void foo() {
+      }
     }
   }
 
