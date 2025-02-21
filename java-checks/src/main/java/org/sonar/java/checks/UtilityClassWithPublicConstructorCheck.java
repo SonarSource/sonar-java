@@ -101,7 +101,7 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
 
   private static boolean isLombokConstructorGenerator(Type symbolType) {
     // This happens in automatic analysis. We match only the last part of the name.
-    if(symbolType.isUnknown()) {
+    if (symbolType.isUnknown()) {
       return LOMBOK_CONSTRUCTOR_GENERATOR_NAMES.contains(symbolType.name());
     }
 
