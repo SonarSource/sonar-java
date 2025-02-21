@@ -48,7 +48,7 @@ class UtilityClassWithPublicConstructorCheckSample {
   }
 
   @AllArgsConstructor(access = PRIVATE)
-  class LombokClassAllArgs { // Compliant, a private constructor will be generated
+  class LombokClassAllArgsPrivate { // Compliant, a private constructor will be generated
     public static void foo() {
     }
   }
