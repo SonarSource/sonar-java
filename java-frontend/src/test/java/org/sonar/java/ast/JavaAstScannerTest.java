@@ -48,8 +48,13 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -176,13 +181,40 @@ class JavaAstScannerTest {
   }
 
   @Test
-  @Disabled
+  @Disabled("""
+    ECJ does not populate the CompilationUnit.problems in this case.
+    The file is correctly parsed and processed, besides the specific non-compiling expression inside
+    the method's body, which will not be there.
+    See the test below as an example.
+    """)
   void test_should_log_fail_parsing_with_incorrect_version() {
     scanWithJavaVersion(8, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
     assertThat(logTester.logs(Level.ERROR)).containsExactly(
       "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
       "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only"
     );
+  }
+
+  @Test
+  void ecj_does_not_raise_problems_on_non_compiling_code(){
+    var source = """
+      public class File {
+        void java15SwitchExpression() {
+          int h = 24;
+          int i = switch (1) {
+            case 2 -> 1;
+            default -> 2;
+          };
+          int j = 42;
+        }
+      }
+      """;
+    var cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source, new JavaVersionImpl(8));
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    var method = (MethodTreeImpl) clazz.members().get(0);
+    var block = (BlockTreeImpl) method.block();
+    //The only consequence of the non-compiling code is that the block is empty
+    assertThat(block.body()).isEmpty();
   }
 
   @ParameterizedTest
@@ -274,6 +306,7 @@ class JavaAstScannerTest {
   }
 
   @Test
+  @Disabled("Same reason as JavaAstScannerTest#test_should_log_fail_parsing_with_incorrect_version")
   void module_info_should_not_be_analyzed_or_change_the_version() {
     scanWithJavaVersion(8,
       Arrays.asList(
@@ -302,15 +335,12 @@ class JavaAstScannerTest {
     logTester.setLevel(Level.ERROR);
     scanWithJavaVersion(8,
       Arrays.asList(
-        TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java"),
+        TestUtils.inputFile("src/test/resources/IssuableSubscriptionClass.java"),
         TestUtils.inputFile("src/test/resources/module-info.java")
       ));
     assertThat(logTester.logs(Level.INFO)).isEmpty();
     assertThat(logTester.logs(Level.WARN)).isEmpty();
-    assertThat(logTester.logs(Level.ERROR)).containsExactly(
-      "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-      "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only"
-    );
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
   }
 
   @Test

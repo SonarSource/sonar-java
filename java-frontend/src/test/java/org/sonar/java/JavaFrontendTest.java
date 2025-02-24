@@ -80,6 +80,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.TestUtils.filterOutAnalysisProgressLogLines;
 
 @EnableRuleMigrationSupport
 class JavaFrontendTest {
@@ -292,7 +293,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    assertThat(logTester.logs(Level.INFO))
+    assertThat(filterOutAnalysisProgressLogLines(logTester.logs(Level.INFO)))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is enabled. The Java analyzer will not try to leverage data from a previous analysis.",

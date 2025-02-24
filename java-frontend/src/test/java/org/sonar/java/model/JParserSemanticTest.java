@@ -24,17 +24,18 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -1270,6 +1271,46 @@ class JParserSemanticTest {
   }
 
   @Test
+  void ecj_resolves_semantics_of_non_compiling_code() {
+    String source = """
+      public class Cz {
+        interface I1 {}
+        
+        @I1
+        String m(){}
+        
+        @java.lang.Integer
+        void m3(){}
+        
+        @Cz.m()
+        void m2(){}
+        
+      }
+      """;
+    var cu = test(source);
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    var method1 = (MethodTreeImpl) clazz.members().get(1);
+    var annotation1 = (AnnotationTreeImpl) method1.modifiers().get(0);
+    var annotationSymbol1 = annotation1.annotationType().symbolType().symbol();
+    // This assertion does not make sense, ECJ should have not compiled the method1 annotated with an interface
+    assertThat(annotationSymbol1.isAnnotation()).isFalse();
+
+    var method2 = (MethodTreeImpl) clazz.members().get(2);
+    var annotation2 = (AnnotationTreeImpl) method2.modifiers().get(0);
+    var annotationSymbol2 = annotation2.annotationType().symbolType().symbol();
+    //We can put any type as annotation, and the semantics will be complete
+    assertThat(annotationSymbol2.isTypeSymbol()).isTrue();
+    assertThat(annotation2.annotationType().symbolType().is("java.lang.Integer")).isTrue();
+
+    var method3 = (MethodTreeImpl) clazz.members().get(3);
+    var annotation3 = (AnnotationTreeImpl) method3.modifiers().get(0);
+    var annotationSymbol3 = annotation3.annotationType().symbolType().symbol();
+    //At least methods cannot be resolved as annotations
+    assertThat(annotationSymbol3.isUnknown()).isTrue();
+  }
+
+  @Test
+  @Disabled("Since JDT core 3.41 semantics are resolved for non-compiling code, see above test")
   void ecj_exception_when_computing_metadata_should_be_caught() {
     String source = "" +
       " public class C {\n" +
@@ -1337,7 +1378,7 @@ class JParserSemanticTest {
     assertThat(cu.sema.declarations.get(m.methodBinding)).isSameAs(m);
   }
 
-  @ParameterizedTest(name="[{index}] Type bindings of variable v should not be null in \"{0}\"")
+  @ParameterizedTest(name = "[{index}] Type bindings of variable v should not be null in \"{0}\"")
   @ValueSource(strings = {
     "interface I { int v; }", // primitive
     "interface I<T> { I<String> v; }", // parameterized
@@ -1634,19 +1675,19 @@ class JParserSemanticTest {
   @Test
   void constructor_with_type_arguments() {
     String source = """
-        class MyClass {
-          <T extends I> MyClass(T t) {}
-          <T extends J & I> MyClass(T t) {}
-          void foo(B b, C c) {
-            new<B>MyClass((I) b);
-            new<C>MyClass(c);
-          }
+      class MyClass {
+        <T extends I> MyClass(T t) {}
+        <T extends J & I> MyClass(T t) {}
+        void foo(B b, C c) {
+          new<B>MyClass((I) b);
+          new<C>MyClass(c);
         }
-        interface I {}
-        interface J {}
-        class B implements I {}
-        class C implements I, J {}
-        """;
+      }
+      interface I {}
+      interface J {}
+      class B implements I {}
+      class C implements I, J {}
+      """;
 
     JavaTree.CompilationUnitTreeImpl cu = test(source);
     ClassTree c = (ClassTree) cu.types().get(0);
@@ -1671,15 +1712,25 @@ class JParserSemanticTest {
 
   @Test
   void should_skip_implicit_break_statement() {
-    final String source = "class C { void m() { switch (0) { case 0 -> { } } } }";
-    CompilationUnit cu = createAST(source);
+    final String source = """
+      class C {
+        void m() {
+          switch (0) {
+           case 0 -> { }
+          }
+        }
+      }""";
+    CompilationUnit cu = createAST(source, new JavaVersionImpl(17));
     TypeDeclaration c = (TypeDeclaration) cu.types().get(0);
     MethodDeclaration m = c.getMethods()[0];
     SwitchStatement s = (SwitchStatement) m.getBody().statements().get(0);
     Block block = (Block) s.statements().get(1);
-    BreakStatement breakStatement = (BreakStatement) block.statements().get(0);
-    assertThat(breakStatement.getLength())
-      .isEqualTo(2);
+    // We used to expect ECJ to parse an implicit break statement inside the case block
+    // It appears that since jdt.core 3.41 that is not the case and the block is empty
+//    BreakStatement breakStatement = (BreakStatement) block.statements().get(0);
+//    assertThat(breakStatement.getLength())
+//      .isEqualTo(2);
+    assertThat(block.statements()).isEmpty();
 
     CompilationUnitTree compilationUnit = test(source);
     ClassTree cls = (ClassTree) compilationUnit.types().get(0);
@@ -1691,8 +1742,12 @@ class JParserSemanticTest {
 
   private CompilationUnit createAST(String source) {
     JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
+    return createAST(source, version);
+  }
+
+  private CompilationUnit createAST(String source, JavaVersion version) {
     ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
-    Map<String, String> options =  new HashMap<>(JavaCore.getOptions());
+    Map<String, String> options = new HashMap<>(JavaCore.getOptions());
     JavaCore.setComplianceOptions(version.effectiveJavaVersionAsString(), options);
     options.put(JavaCore.COMPILER_PB_ENABLE_PREVIEW_FEATURES, "enabled");
     astParser.setCompilerOptions(options);
@@ -1717,7 +1772,7 @@ class JParserSemanticTest {
               InnerC(int i) {}
           }
       }
-      
+            
       class B {
           class InnerB extends C.InnerC {
               InnerB(C c, int i) {
@@ -1737,22 +1792,22 @@ class JParserSemanticTest {
   @Test
   void inner_class_depending_on_outer_class_parametrized_type() {
     final String source = """
-        class X<T> {
-          InnerClass innerClass;
-          class InnerClass {
-            T method() {
-              return null;
-            }
-          }
-          static void test() {
-            new X<Y>().innerClass.method().method1();
+      class X<T> {
+        InnerClass innerClass;
+        class InnerClass {
+          T method() {
+            return null;
           }
         }
-        class Y {
-          void method1() {
-          }
+        static void test() {
+          new X<Y>().innerClass.method().method1();
         }
-        """;
+      }
+      class Y {
+        void method1() {
+        }
+      }
+      """;
     JavaTree.CompilationUnitTreeImpl cu = test(source);
     ClassTree classX = (ClassTree) cu.types().get(0);
     MethodTreeImpl method = (MethodTreeImpl) ((ClassTree) classX.members().get(1)).members().get(0);
@@ -1788,7 +1843,7 @@ class JParserSemanticTest {
     List<JWarning> castWarnings = cu.warnings(JWarning.Type.REDUNDANT_CAST);
     assertThat(castWarnings).hasSize(2);
 
-    TypeCastTree typeCast =  (TypeCastTree)((VariableTree)((MethodTree)(((ClassTree) cu.types().get(0)).members().get(0))).block().body().get(0)).initializer();
+    TypeCastTree typeCast = (TypeCastTree) ((VariableTree) ((MethodTree) (((ClassTree) cu.types().get(0)).members().get(0))).block().body().get(0)).initializer();
     JWarning parentCastWarning = castWarnings.get(0);
     assertThat(parentCastWarning.message()).isEqualTo("Unnecessary cast from String to String");
     assertThat(parentCastWarning.syntaxTree()).isEqualTo(typeCast);

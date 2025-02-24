@@ -155,6 +155,16 @@ public class JavaVersionImpl implements JavaVersion {
     return JAVA_22 <= javaVersion;
   }
 
+  @Override
+  public boolean isJava23Compatible() {
+    return JAVA_23 <= javaVersion;
+  }
+
+  @Override
+  public boolean isJava24Compatible() {
+    return JAVA_24 <= javaVersion;
+  }
+
   private boolean notSetOrAtLeast(int requiredJavaVersion) {
     return isNotSet() || requiredJavaVersion <= javaVersion;
   }

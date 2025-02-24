@@ -277,7 +277,6 @@ public class JParser {
   public static JavaTree.CompilationUnitTreeImpl parse(ASTParser astParser, String version, String unitName, String source) {
     astParser.setUnitName(unitName);
     astParser.setSource(source.toCharArray());
-
     CompilationUnit astNode;
     try {
       astNode = (CompilationUnit) astParser.createAST(null);

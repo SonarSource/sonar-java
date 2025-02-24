@@ -30,6 +30,7 @@ import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.TestUtils.filterOutAnalysisProgressLogLines;
 
 class ExecutionTimeReportTest {
 
@@ -81,7 +82,7 @@ class ExecutionTimeReportTest {
     report.report();
     assertThat(logTester.logs(Level.TRACE)).isEmpty();
     assertThat(logTester.logs(Level.DEBUG)).isEmpty();
-    assertThat(logTester.logs(Level.INFO)).isEmpty();
+    assertThat(filterOutAnalysisProgressLogLines(logTester.logs(Level.INFO))).isEmpty();
     assertThat(report).hasToString("");
   }
 
