@@ -42,6 +42,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
@@ -511,15 +512,30 @@ class JParserTest {
       .hasMessage("Failed to find token 82 or 136 in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
   }
 
-//  @Test
-//  void dont_include_running_VM_Bootclasspath_if_jvm_rt_jar_already_provided_in_classpath(@TempDir Path tempFolder) throws IOException, InterruptedException {
-//    VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
-//    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
-//
-//    Path realJRT = Path.of(System.getProperty("java.home"), "lib", "jrt-fs.jar");
-//    s1 = parseAndGetVariable("class C { void m() { String a; } }", realJRT.toFile());
-//    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
-//  }
+  @Test
+  void test_missing_problems() {
+    String version = "8";
+    String unitName = "C.java";
+    String source = """
+      class C {
+        void java15SwitchExpression() {
+          int i = switch (1) {
+            case 2 -> 1;
+            default -> 2;
+          };
+        }
+      }""";
+
+    ASTParser astParser = ASTParser.newParser(AST.getJLSLatest());
+    JavaCore.setComplianceOptions(version, JavaCore.getOptions());
+    astParser.setResolveBindings(true);
+    astParser.setUnitName(unitName);
+    astParser.setSource(source.toCharArray());
+    CompilationUnit compilationUnit = (CompilationUnit) astParser.createAST(null);
+    assertThat(compilationUnit.getProblems()).isEmpty();
+    assertThat(compilationUnit.getFlags() & ASTNode.MALFORMED).isZero();
+
+  }
 
   @Test
   @Disabled("TODO: To investigate")
