@@ -10,7 +10,7 @@
     "java21",
     "multi-threading"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-6881",
   "sqKey": "S6881",
   "scope": "Main",
