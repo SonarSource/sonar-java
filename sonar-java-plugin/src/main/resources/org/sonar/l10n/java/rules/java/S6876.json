@@ -9,7 +9,7 @@
   "tags": [
     "java21"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-6876",
   "sqKey": "S6876",
   "scope": "Main",

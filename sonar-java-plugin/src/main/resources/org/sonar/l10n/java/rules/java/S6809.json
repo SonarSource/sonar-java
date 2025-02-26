@@ -7,7 +7,7 @@
     "constantCost": "5min"
   },
   "tags": [],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-6809",
   "sqKey": "S6809",
   "scope": "Main",
