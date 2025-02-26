@@ -30,4 +30,22 @@ class SwitchWithTooManyCasesCheckCustom {
     };
   }
 
+  int bar(UnknowEnumType e) {
+    switch (e) { // Compliant, when a type is unknown, we can't know if it's an enum
+      case A:
+        return 1;
+      case B:
+        return 2;
+      case C:
+        return 3;
+      case D:
+        return 4;
+      case E:
+        return 5;
+      case F:
+        return 6;
+      case G:
+        return 7;
+    }
+  }
 }
