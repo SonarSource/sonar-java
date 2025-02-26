@@ -110,4 +110,13 @@ class NoTestInTestClassCheckTest {
       .withoutSemantic()
       .verifyNoIssues();
   }
+
+  @Test
+  void testExtensionWithoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/tests/NoTestInTestClassExtension.java"))
+      .withCheck(new NoTestInTestClassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }
