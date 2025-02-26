@@ -21,8 +21,10 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.TernaryValue;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.SwitchTree;
@@ -47,7 +49,7 @@ public class SwitchWithTooManyCasesCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     SwitchTree switchTree = (SwitchTree) tree;
-    if (isSwitchOverEnum(switchTree)) {
+    if (isSwitchOverEnum(switchTree).maybeTrue()) {
       return;
     }
 
@@ -64,8 +66,8 @@ public class SwitchWithTooManyCasesCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static boolean isSwitchOverEnum(SwitchTree switchStatementTree) {
-    Type type = switchStatementTree.expression().symbolType();
-    return type.symbol().isEnum();
+  private static TernaryValue isSwitchOverEnum(SwitchTree switchStatementTree) {
+    Symbol.TypeSymbol typeSymbol = switchStatementTree.expression().symbolType().symbol();
+    return typeSymbol.isUnknown() ? TernaryValue.UNKNOWN : TernaryValue.of(typeSymbol.isEnum());
   }
 }
