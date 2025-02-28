@@ -1,0 +1,25 @@
+{
+  "title": "Use \"java.nio.file.Path\" instead of legacy \"java.io.File\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java11"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-7208",
+  "sqKey": "S7208",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM",
+      "RELIABILITY": "LOW",
+      "SECURITY": "LOW"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
