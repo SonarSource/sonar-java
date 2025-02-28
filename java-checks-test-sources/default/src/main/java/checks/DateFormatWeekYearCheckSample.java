@@ -52,9 +52,9 @@ class DateFormatWeekYearCheckSample {
     SimpleDateFormat sdf = new SimpleDateFormat();
     sdf = new SimpleDateFormat(COMPLIANT_DATE_FORMAT);
     Date date = new SimpleDateFormat("yyyy/MM/dd").parse("2015/12/31");
-    String result = new SimpleDateFormat("YYYY/MM/dd").format(date); // Noncompliant {{Make sure that week Year "YYYY" is expected here instead of Year "yyyy".}}
-    result = new SimpleDateFormat("YYYY").format(date); // Noncompliant {{Make sure that week Year "YYYY" is expected here instead of Year "yyyy".}}
-    result = new SimpleDateFormat("  Y/MM/dd").format(date); // Noncompliant {{Make sure that week Year "Y" is expected here instead of Year "y".}}
+    String result = new SimpleDateFormat("YYYY/MM/dd").format(date); // Noncompliant {{Use "yyyy" instead of "YYYY" to output the year.}}
+    result = new SimpleDateFormat("YYYY").format(date); // Noncompliant {{Use "yyyy" instead of "YYYY" to output the year.}}
+    result = new SimpleDateFormat("  Y/MM/dd").format(date); // Noncompliant {{Use "y" instead of "Y" to output the year.}}
     result = new SimpleDateFormat("yyyy/MM/dd").format(date);   //Yields '2015/12/31' as expected
     result = new SimpleDateFormat("YYYY-ww").format(date); //compliant, 'Week year' is used along with 'Week of year'. result = '2016-01'
     result = new SimpleDateFormat("ww-YYYY").format(date); //compliant, 'Week year' is used along with 'Week of year'. result = '2016-01'
@@ -80,25 +80,25 @@ class DateFormatWeekYearCheckSample {
     DateTimeFormatter.ofPattern("YYYY-ww", Locale.ENGLISH); // Compliant
     DateTimeFormatter.ofPattern(" YY/MM/dd ".trim(), Locale.ENGLISH); // Compliant FN patterns from method invocations are not processed
 
-    DateTimeFormatter.ofPattern("YYYY"); // Noncompliant {{Make sure that week Year "YYYY" is expected here instead of Year "yyyy".}}
+    DateTimeFormatter.ofPattern("YYYY"); // Noncompliant {{Use "yyyy" instead of "YYYY" to output the year.}}
 //                              ^^^^^^
-    DateTimeFormatter.ofPattern("  Y/MM/dd"); // Noncompliant {{Make sure that week Year "Y" is expected here instead of Year "y".}}
+    DateTimeFormatter.ofPattern("  Y/MM/dd"); // Noncompliant {{Use "y" instead of "Y" to output the year.}}
 //                              ^^^^^^^^^^^
-    DateTimeFormatter.ofPattern("YY"); // Noncompliant {{Make sure that week Year "YY" is expected here instead of Year "yy".}}
+    DateTimeFormatter.ofPattern("YY"); // Noncompliant {{Use "yy" instead of "YY" to output the year.}}
 //                              ^^^^
-    DateTimeFormatter.ofPattern("Y"); // Noncompliant {{Make sure that week Year "Y" is expected here instead of Year "y".}}
+    DateTimeFormatter.ofPattern("Y"); // Noncompliant {{Use "y" instead of "Y" to output the year.}}
 //                              ^^^
-    DateTimeFormatter.ofPattern(NON_COMPLIANT_PATTERN); // Noncompliant {{Make sure that week Year "YYYY" is expected here instead of Year "yyyy".}}
+    DateTimeFormatter.ofPattern(NON_COMPLIANT_PATTERN); // Noncompliant {{Use "yyyy" instead of "YYYY" to output the year.}}
 //                              ^^^^^^^^^^^^^^^^^^^^^
-    DateTimeFormatter.ofPattern("YYYY", Locale.ENGLISH); // Noncompliant {{Make sure that week Year "YYYY" is expected here instead of Year "yyyy".}}
+    DateTimeFormatter.ofPattern("YYYY", Locale.ENGLISH); // Noncompliant {{Use "yyyy" instead of "YYYY" to output the year.}}
 //                              ^^^^^^
-    DateTimeFormatter.ofPattern("  Y/MM/dd", Locale.ENGLISH); // Noncompliant {{Make sure that week Year "Y" is expected here instead of Year "y".}}
+    DateTimeFormatter.ofPattern("  Y/MM/dd", Locale.ENGLISH); // Noncompliant {{Use "y" instead of "Y" to output the year.}}
 //                              ^^^^^^^^^^^
-    DateTimeFormatter.ofPattern("YY", Locale.ENGLISH); // Noncompliant {{Make sure that week Year "YY" is expected here instead of Year "yy".}}
+    DateTimeFormatter.ofPattern("YY", Locale.ENGLISH); // Noncompliant {{Use "yy" instead of "YY" to output the year.}}
 //                              ^^^^
-    DateTimeFormatter.ofPattern("Y", Locale.ENGLISH); // Noncompliant {{Make sure that week Year "Y" is expected here instead of Year "y".}}
+    DateTimeFormatter.ofPattern("Y", Locale.ENGLISH); // Noncompliant {{Use "y" instead of "Y" to output the year.}}
 //                              ^^^
-    DateTimeFormatter.ofPattern(NON_COMPLIANT_PATTERN, Locale.ENGLISH); // Noncompliant {{Make sure that week Year "YYYY" is expected here instead of Year "yyyy".}}
+    DateTimeFormatter.ofPattern(NON_COMPLIANT_PATTERN, Locale.ENGLISH); // Noncompliant {{Use "yyyy" instead of "YYYY" to output the year.}}
 //                              ^^^^^^^^^^^^^^^^^^^^^
   }
 
@@ -116,7 +116,7 @@ class DateFormatWeekYearCheckSample {
 
   class NonCompliantChildOfSimpleDateFormat extends SimpleDateFormat {
     public NonCompliantChildOfSimpleDateFormat() {
-      super("YYYY"); // Noncompliant {{Make sure that week Year "YYYY" is expected here instead of Year "yyyy".}}
+      super("YYYY"); // Noncompliant {{Use "yyyy" instead of "YYYY" to output the year.}}
     }
   }
 }
