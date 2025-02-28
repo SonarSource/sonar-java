@@ -49,7 +49,7 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
     .addParametersMatcher("java.lang.String", "java.util.Locale")
     .build();
 
-  private static final String RECOMMENDATION_YEAR_MESSAGE = "Make sure that week Year \"%s\" is expected here instead of Year \"%s\".";
+  private static final String RECOMMENDATION_YEAR_MESSAGE = "Use \"%s\" instead of \"%s\" to output the year.";
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -89,7 +89,7 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
       int end = getEndIndexOfYearSequence(datePattern, start);
       String firstYSeq = datePattern.substring(start, end);
       String replacement = firstYSeq.toLowerCase(Locale.ENGLISH);
-      String message = String.format(RECOMMENDATION_YEAR_MESSAGE, firstYSeq, replacement);
+      String message = String.format(RECOMMENDATION_YEAR_MESSAGE, replacement, firstYSeq);
       InternalJavaIssueBuilder issueBuilder = QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(argument)
