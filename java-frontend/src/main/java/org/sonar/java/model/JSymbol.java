@@ -377,7 +377,7 @@ abstract class JSymbol implements Symbol {
         if (returnType == null) {
           return Symbols.EMPTY_METADATA;
         }
-        return new JSymbolMetadata(sema, this, getAnnotations(returnType), binding.getAnnotations());
+        return new JSymbolMetadata(sema, this, returnType.getTypeAnnotations(), binding.getAnnotations());
       default:
         return new JSymbolMetadata(sema, this, binding.getAnnotations());
     }
