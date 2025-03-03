@@ -1310,7 +1310,12 @@ class JParserSemanticTest {
   }
 
   @Test
-  @Disabled("Since JDT core 3.41 semantics are resolved for non-compiling code, see above test")
+  @Disabled("""
+    Since JDT core 3.41, there is not anymore a null pointer thrown inside org.eclipse.jdt.core.dom.MethodBinding#filterTypeAnnotations when
+    a non-compiling annotation was found. The fix was implemented here: 
+      https://github.com/eclipse-jdt/eclipse.jdt.core/commit/65db85ca5dcc074288a9c2c353e15084599ed874
+    This makes our JSymbol.metadata() able to resolve instead of catching a RuntimeException and falling back to the Symbols.EMPTY_METADATA.
+    """)
   void ecj_exception_when_computing_metadata_should_be_caught() {
     String source = "" +
       " public class C {\n" +
