@@ -83,6 +83,34 @@ class MissingDeprecatedCheckSample {
     return 42;
   }
 
+  record Person(String name, @Deprecated(since = "date", forRemoval = true) String country) {
+    @Deprecated
+    public static final int code = 41; // Noncompliant
+
+    /**
+     * @deprecated reason
+     */
+    @Deprecated
+    public static final int anotherCode = 42;
+
+    public Person {
+      @Deprecated
+      int x = 42;
+    }
+
+    @Deprecated
+    public int number() { // Noncompliant
+      return 0;
+    }
+
+    /**
+     * @deprecated reason
+     */
+    @Deprecated
+    public int anotherNumber() {
+      return 1;
+    }
+  }
 }
 
 interface MissingDeprecatedCheckSample_Bar {
