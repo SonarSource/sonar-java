@@ -24,6 +24,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -1716,25 +1717,21 @@ class JParserSemanticTest {
   }
 
   @Test
+  @Disabled("""
+    Previously ECJ was adding an implicit break statement for empty switch cases blocks.
+    This is not the case anymore, and we do not need to test this. We might also want to 
+    remove the logic that was filtering out these artificial statements.
+    """)
   void should_skip_implicit_break_statement() {
-    final String source = """
-      class C {
-        void m() {
-          switch (0) {
-           case 0 -> { }
-          }
-        }
-      }""";
-    CompilationUnit cu = createAST(source, new JavaVersionImpl(17));
+    final String source = "class C { void m() { switch (0) { case 0 -> { } } } }";
+    CompilationUnit cu = createAST(source);
     TypeDeclaration c = (TypeDeclaration) cu.types().get(0);
     MethodDeclaration m = c.getMethods()[0];
     SwitchStatement s = (SwitchStatement) m.getBody().statements().get(0);
     Block block = (Block) s.statements().get(1);
-    // We used to expect ECJ to parse an implicit break statement inside the case block
-    // It appears that since jdt.core 3.41 that is not the case and the block is empty
-//    BreakStatement breakStatement = (BreakStatement) block.statements().get(0);
-//    assertThat(breakStatement.getLength())
-//      .isEqualTo(2);
+    BreakStatement breakStatement = (BreakStatement) block.statements().get(0);
+    assertThat(breakStatement.getLength())
+      .isEqualTo(2);
     assertThat(block.statements()).isEmpty();
 
     CompilationUnitTree compilationUnit = test(source);
