@@ -41,11 +41,19 @@ public final class ASTUtils {
   }
 
   public static void mayTolerateMissingType(AST ast) {
-    ast.getBindingResolver().lookupEnvironment().mayTolerateMissingType = true;
+    BindingResolver bindingResolver = ast.getBindingResolver();
+    if (bindingResolver.scope() != null) {
+      bindingResolver.lookupEnvironment().mayTolerateMissingType = true;
+    }
   }
 
   public static Runnable getEnvironmentCleaner(AST ast) {
-    return new EnvironmentCleaner(ast.getBindingResolver().lookupEnvironment().nameEnvironment);
+    BindingResolver bindingResolver = ast.getBindingResolver();
+    if (bindingResolver.scope() != null) {
+      return new EnvironmentCleaner(bindingResolver.lookupEnvironment().nameEnvironment);
+    }
+    return () -> {
+    };
   }
 
   @Nullable
