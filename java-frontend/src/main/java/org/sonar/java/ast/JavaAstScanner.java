@@ -18,6 +18,7 @@ package org.sonar.java.ast;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
+import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JProblem;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -128,6 +130,7 @@ public class JavaAstScanner {
     visitor.setCurrentFile(inputFile);
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
+      checkASTCompleteness(inputFile, ast);
       visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
       String path = inputFile.toString();
       collectUndefinedTypes(path, ast.sema.undefinedTypes());
@@ -146,6 +149,20 @@ public class JavaAstScanner {
     } catch (StackOverflowError error) {
       LOG.error(String.format(LOG_ERROR_STACKOVERFLOW, inputFile), error);
       throw error;
+    }
+  }
+
+  private void checkASTCompleteness(InputFile inputFile, JavaTree.CompilationUnitTreeImpl ast) throws IOException {
+    if (sonarComponents != null &&
+      sonarComponents.context() != null &&
+      sonarComponents.context().config().getBoolean("sonar.java.check-ast-completeness").orElse(false)) {
+      String convertedToSourceCode = JUtils.convertToSourceCode(ast);
+      String originalSourceCode = JUtils.normalizeSourceCode(inputFile.contents());
+      if (!convertedToSourceCode.equals(originalSourceCode) && LOG.isErrorEnabled()) {
+        LOG.error("Source code from the AST does not match the original one:\nfile: {}\n{}",
+          inputFile,
+          JUtils.showSourceCodeDiff("original", originalSourceCode, "from AST", convertedToSourceCode));
+      }
     }
   }
 

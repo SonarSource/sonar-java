@@ -32,11 +32,13 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.JUtils.convertToSourceCode;
 
 class JUtilsTest {
 
@@ -899,6 +901,73 @@ class JUtilsTest {
   void test_has_unknown_type_in_hierarchy_with_unexpected_null_owner() {
     JInitializerBlockSymbol method = new JInitializerBlockSymbol(null, true);
     assertThat(JUtils.hasUnknownTypePreventingOverrideResolution(method)).isTrue();
+  }
+
+  @Test
+  void convert_to_source_code() {
+    String source = """
+      
+      import java.util.List;
+      import org.foo.Unknown;
+      
+      class A {
+        /**
+         * comment
+         */
+        void foo() {
+          // comment
+          int a = 0, b = 0;
+        }
+      }
+      
+      """;
+    CompilationUnitTree cu = test(source);
+    assertThat(convertToSourceCode(cu)).isEqualTo(source);
+  }
+
+  @Test
+  void convert_to_source_code_missing_permits() {
+    String source = """
+     sealed class Shape permits Circle {
+     }
+     final class Circle extends Shape {
+     }
+     """;
+    CompilationUnitTree cu = test(source);
+    assertThat(convertToSourceCode(cu))
+      .isEqualTo(source.replace("permits", "       "/* TODO !!!!! */));
+  }
+
+  @Test
+  void convert_to_source_code_missing_dot_in_module_info() {
+    String source = """
+     module org.foo {
+        requires com.google.common;
+        exports org.bar;
+     }
+     """;
+    CompilationUnitTree cu = JParserTestUtils.parse("module-info.java", source);
+    assertThat(convertToSourceCode(cu))
+      .isEqualTo(source
+        .replace("org.foo", "org foo"/* TODO !!!!! */)
+        .replace("com.google.common", "com google common"/* TODO !!!!! */));
+  }
+
+  @Test
+  void convert_to_source_code_missing_markdown_comments() {
+    String source = """
+     class A {
+        void foo() {
+          /// special comment 1
+          /// special comment 2
+          // comment 3
+          // comment 4
+        }
+     }
+     """;
+    CompilationUnitTree cu = test(source);
+    assertThat(convertToSourceCode(cu))
+      .isEqualTo(source.replaceAll(" ++///.*+", ""/* TODO !!!!! */));
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {

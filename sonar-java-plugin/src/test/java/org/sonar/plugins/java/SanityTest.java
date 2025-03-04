@@ -290,6 +290,7 @@ class SanityTest {
 
   private static SonarComponents sonarComponents(File moduleBaseDir, List<InputFile> inputFiles) {
     SensorContextTester context = SensorContextTester.create(moduleBaseDir).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    context.settings().setProperty("sonar.java.check-ast-completeness", "true");
     DefaultFileSystem fileSystem = context.fileSystem();
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null) {
       @Override

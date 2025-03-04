@@ -18,15 +18,21 @@ package org.sonar.java.model;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.sonar.plugins.java.api.location.Position;
+import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
@@ -185,6 +191,105 @@ public final class JUtils {
       return false;
     }
     return hasUnknownTypeInHierarchyOrAnyMatchingMethod(superClass.symbol(), methodSymbol);
+  }
+
+  public static String convertToSourceCode(Tree tree) {
+    StringBuilder out = new StringBuilder();
+    // Unfortunately, VariableTree can reuse the same tokens form the previous VariableTree, for example "int" in "int i, j;"
+    Set<InternalSyntaxToken> writtenTokens = new HashSet<>();
+    if (tree instanceof CompilationUnitTree) {
+      convertToSourceCode(out, tree, Position.at(Position.FIRST_LINE,Position.FIRST_COLUMN), writtenTokens);
+    } else {
+      SyntaxToken firstToken = tree.firstToken();
+      if (firstToken == null) {
+        return "";
+      }
+      Position start = firstToken.range().start();
+      convertToSourceCode(out, tree, start, writtenTokens);
+    }
+    return out.toString();
+  }
+
+  private static Position convertToSourceCode(StringBuilder out, Tree node, Position currentPosition, Set<InternalSyntaxToken> writtenTokens) {
+    if (node.is(Tree.Kind.TOKEN)) {
+      InternalSyntaxToken token = (InternalSyntaxToken) node;
+      if (writtenTokens.add(token)) {
+        currentPosition = convertToSourceCode(out, token.trivias(), currentPosition);
+        Position start = token.range().start();
+        addSpace(out, currentPosition, start);
+        out.append(normalizeSourceCode(token.text()));
+        currentPosition = token.range().end();
+      }
+    } else {
+      for (Tree child : ((JavaTree) node).getChildren()) {
+        currentPosition = convertToSourceCode(out, child, currentPosition, writtenTokens);
+      }
+    }
+    return currentPosition;
+  }
+
+  private static Position convertToSourceCode(StringBuilder out, List<SyntaxTrivia> comments, Position currentPosition) {
+    for (SyntaxTrivia comment : comments) {
+      Range range = comment.range();
+      addSpace(out, currentPosition, range.start());
+      out.append(normalizeSourceCode(comment.comment()));
+      currentPosition = range.end();
+    }
+    return currentPosition;
+  }
+
+  private static Position addSpace(StringBuilder out, Position currentPosition, Position endPosition) {
+    while (currentPosition.line() < endPosition.line()) {
+      out.append('\n');
+      currentPosition = Position.at(currentPosition.line() + 1, Position.FIRST_COLUMN);
+    }
+    if (currentPosition.line() != endPosition.line()) {
+      throw new IllegalStateException("Unexpected line number, currentPosition.line() = " + currentPosition.line() + ", start.line() = " + endPosition.line());
+    }
+    if (currentPosition.column() < endPosition.column()) {
+      out.append(" ".repeat(Math.max(0, endPosition.column() - currentPosition.column())));
+      currentPosition = Position.at(currentPosition.line(), endPosition.column());
+    }
+    if (currentPosition.column() != endPosition.column()) {
+      throw new IllegalStateException("Unexpected column number, currentPosition.column() = " + currentPosition.column() + ", start.column() = " + endPosition.column());
+    }
+    return currentPosition;
+  }
+
+  public static String normalizeSourceCode(String sourceCode) {
+    return sourceCode
+      .replaceAll("\\R", "\n")
+      .replace("\t", " ")
+      .replaceAll("(?m) ++$", "");
+  }
+
+  public static String showSourceCodeDiff(String beforeName, String beforeCode, String afterName, String afterCode) {
+    if (beforeCode.equals(afterCode)) {
+      return "";
+    }
+    int lineStart = 0;
+    int lineNumber = 1;
+    for (int i = 0; i < beforeCode.length() && i < afterCode.length(); i++) {
+      char chBefore = beforeCode.charAt(i);
+      char chAfter = afterCode.charAt(i);
+      if (chBefore != chAfter) {
+        break;
+      } else if (chBefore == '\n') {
+        lineStart = i + 1;
+        lineNumber++;
+      }
+    }
+    StringBuilder out = new StringBuilder();
+    out.append("--------- ").append(beforeName).append(" ---------\n");
+    int beforeLineEnd = beforeCode.indexOf('\n', lineStart);
+    int beforeEnd = beforeLineEnd == -1 ? beforeCode.length() : beforeLineEnd;
+    out.append(lineNumber + ": ").append(beforeCode, lineStart, beforeEnd).append("\n");
+    out.append("--------- ").append(afterName).append(" ---------\n");
+    int afterLineEnd = afterCode.indexOf('\n', lineStart);
+    int afterEnd = afterLineEnd == -1 ? afterCode.length() : afterLineEnd;
+    out.append(lineNumber + ": ").append(afterCode, lineStart, afterEnd).append("\n");
+    out.append("----------------------------");
+    return out.toString();
   }
 
 }

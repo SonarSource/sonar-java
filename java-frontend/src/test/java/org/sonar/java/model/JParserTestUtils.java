@@ -68,7 +68,7 @@ public class JParserTestUtils {
     return parse("package-info.java", Arrays.stream(lines).collect(Collectors.joining("\n")));
   }
 
-  private static CompilationUnitTree parse(String unitName, String source) {
+  public static CompilationUnitTree parse(String unitName, String source) {
     return parse(unitName, source, DEFAULT_CLASSPATH);
   }
 
