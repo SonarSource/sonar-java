@@ -26,6 +26,9 @@ import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.DummyCache;
+import org.sonar.java.classpath.ClasspathForMain;
+import org.sonar.java.classpath.DependencyVersionImpl;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
@@ -38,6 +41,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class DefaultModuleScannerContextTest {
 
@@ -249,4 +253,25 @@ class DefaultModuleScannerContextTest {
     assertThat(context.sonarProduct())
       .isNull();
   }
+
+  @Test
+  void test_dependency_version_resolution() {
+    var springClasspath = TestClasspathUtils
+      .loadFromFile("../java-checks-test-sources/spring-3.2/target/test-classpath.txt");
+    ClasspathForMain classpath = mock(ClasspathForMain.class);
+    when(classpath.getElements()).thenReturn(springClasspath);
+    var sonarComponents = spy(
+      new SonarComponents(null, null, classpath, null, null, null)
+    );
+    var context = new DefaultModuleScannerContext(
+      sonarComponents,
+      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      false,
+      null
+    );
+    DependencyVersionImpl springBootDependency = context.getDependencyVersion("org.springframework.boot", "spring-boot");
+    assertThat(springBootDependency).isNotNull();
+    assertThat(springBootDependency.getVersion()).isEqualTo("3.2.4");
+  }
+
 }

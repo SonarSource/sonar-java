@@ -22,6 +22,7 @@ import org.sonar.api.SonarProduct;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.classpath.DependencyVersion;
 
 public interface ModuleScannerContext {
   /**
@@ -56,6 +57,11 @@ public interface ModuleScannerContext {
    * @return JavaVersion object with API to act on it.
    */
   JavaVersion getJavaVersion();
+
+  /**
+   * Returns the version of the queried dependency, with the API to check if it's lower or greater than some version number
+   */
+  DependencyVersion getDependencyVersion(String groupId, String artifactId);
 
   /**
    * To be used to know if the current file is in an android context or not.

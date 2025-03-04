@@ -17,12 +17,18 @@
 package org.sonar.java.model;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.CacheContextImpl;
+import org.sonar.java.classpath.DependencyVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -34,6 +40,7 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   protected final JavaVersion javaVersion;
   protected final boolean inAndroidContext;
   protected final CacheContext cacheContext;
+  private final Map<DependencyVersionImpl.CacheKey, DependencyVersionImpl> dependencyVersions = new HashMap<>();
 
   public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext,
     @Nullable CacheContext cacheContext) {
@@ -53,6 +60,31 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
 
   public JavaVersion getJavaVersion() {
     return this.javaVersion;
+  }
+
+  @Override
+  @Nullable
+  public DependencyVersionImpl getDependencyVersion(String groupId, String artifactId) {
+    var cacheKey = new DependencyVersionImpl.CacheKey(groupId, artifactId);
+    return dependencyVersions.computeIfAbsent(cacheKey, cacheKey1 -> extractDependencyVersionFromClassPath(groupId, artifactId));
+  }
+
+  @Nullable
+  private DependencyVersionImpl extractDependencyVersionFromClassPath(String groupId, String artifactId) {
+    String localDependencyPath = groupId.replace('.', '/').concat("/").concat(artifactId);
+    Optional<String> dependency = sonarComponents.getJavaClasspath().stream()
+      .map(File::getPath)
+      .filter(path -> path.contains(localDependencyPath))
+      .findFirst();
+    if (dependency.isPresent()) {
+      String regex = localDependencyPath.concat("/(\\d+\\.\\d+\\.\\d+)/");
+      Pattern pattern = Pattern.compile(regex);
+      Matcher matcher = pattern.matcher(dependency.get());
+      if (matcher.find()) {
+        return new DependencyVersionImpl(groupId, artifactId, matcher.group(1));
+      }
+    }
+    return null;
   }
 
   public boolean inAndroidContext() {
