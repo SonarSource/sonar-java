@@ -45,6 +45,18 @@ public class DependencyVersionInferenceService {
     return Pattern.compile(artifactId + "-" + VERSION_REGEX + "\\.jar");
   }
 
+  /**
+   * When the library follows standard naming and manifest structure, this method can be used to make
+   * initialization simpler.
+   */
+  static DependencyVersionInference makeStandardInference(String groupId, String artifactId) {
+    return new DependencyVersionInference.FallbackInference(
+      new DependencyVersionInference.ByNameInference(makeStandardJarPattern(artifactId),
+        groupId, artifactId),
+      new DependencyVersionInference.ManifestInference("Implementation-Version",
+        groupId, artifactId));
+  }
+
   @VisibleForTesting
   static Pattern LOMBOK_PATTERN = makeStandardJarPattern("lombok");
 
@@ -54,15 +66,8 @@ public class DependencyVersionInferenceService {
       new DependencyVersionInference.FallbackInference(
         new DependencyVersionInference.ManifestInference("Lombok-Version", "org.projectlombok", "lombok"),
         new DependencyVersionInference.ByNameInference(LOMBOK_PATTERN, "org.projectlombok", "lombok")),
-      new DependencyVersionInference.FallbackInference(
-        new DependencyVersionInference.ManifestInference("Implementation-Version", "org.springframework.boot", "spring-boot"),
-        new DependencyVersionInference.ByNameInference(makeStandardJarPattern("spring-boot"),
-          "org.springframework.boot", "spring-boot")),
-      new DependencyVersionInference.FallbackInference(
-        new DependencyVersionInference.ByNameInference(makeStandardJarPattern("spring-core"),
-          "org.springframework", "spring-core"),
-        new DependencyVersionInference.ManifestInference("Implementation-Version", "org.springframework",
-          "spring-core"))
+      makeStandardInference("org.springframework.boot", "spring-boot"),
+      makeStandardInference("org.springframework", "spring-core")
     ).forEach(service::addImplementation);
     return service;
   }
