@@ -133,7 +133,7 @@ public interface DependencyVersionInference {
 
   class SpringByNameInference extends ByNameInference {
 
-    static final Pattern PATTERN = Pattern.compile("spring-boot-" + VERSION_REGEX);
+    static final Pattern PATTERN = Pattern.compile("spring-boot-" + VERSION_REGEX + "\\.jar");
 
     protected SpringByNameInference() {
       super(PATTERN, "org.springframework.boot", "spring-boot");
