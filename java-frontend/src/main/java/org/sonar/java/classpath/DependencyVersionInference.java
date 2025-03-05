@@ -22,30 +22,51 @@ public interface DependencyVersionInference {
   boolean handles(String groupId, String artifactId);
 
   List<DependencyVersionInference> inferenceImplementations = Arrays.asList(
-    new LombokByNameInference(), new ManifestInference()
+    new LombokByNameInference(), new ManifestInference(), new SpringByNameInference()
   );
+
+  String VERSION_REGEX = "([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?";
+  Pattern VERSION_PATTERN = Pattern.compile(VERSION_REGEX);
 
   abstract class LombokInference implements DependencyVersionInference {
 
-    @Override
-    public boolean handles(String groupId, String artifactId) {
-      return groupId.equals("org.projectlombok") && artifactId.equals("lombok");
-    }
   }
 
-  class LombokByNameInference extends LombokInference {
+  abstract class ByNameInference implements DependencyVersionInference {
 
-    static Pattern PATTERN = Pattern.compile("lombok-([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?\\.jar");
+    final Pattern pattern;
+    final String groupId;
+    final String artifactId;
+
+    protected ByNameInference(Pattern pattern, String groupId, String artifactId) {
+      this.pattern = pattern;
+      this.groupId = groupId;
+      this.artifactId = artifactId;
+    }
 
     @Override
     public Optional<Version> infer(List<File> classpath) {
       for (File file : classpath) {
-        Matcher matcher = PATTERN.matcher(file.getName());
+        Matcher matcher = pattern.matcher(file.getName());
         if (matcher.matches()) {
           return Optional.of(matcherToVersion(matcher));
         }
       }
       return Optional.empty();
+    }
+
+    @Override
+    public boolean handles(String groupId, String artifactId) {
+      return groupId.equals(this.groupId) && artifactId.equals(this.artifactId);
+    }
+  }
+
+  class LombokByNameInference extends ByNameInference {
+
+    static Pattern PATTERN = Pattern.compile("lombok-([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?\\.jar");
+
+    protected LombokByNameInference() {
+      super(PATTERN, "org.projectlombok", "lombok");
     }
 
   }
@@ -58,9 +79,7 @@ public interface DependencyVersionInference {
       matcher.group(4));
   }
 
-  Pattern LOMBOK_VERSION_PATTERN = Pattern.compile("([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?");
-
-  class ReflectiveInference extends LombokInference {
+  class ReflectiveInference extends LombokByNameInference {
     private static final String KNOWN_CLASS_NAME = "lombok.Lombok";
 
     @Override
@@ -76,14 +95,14 @@ public interface DependencyVersionInference {
         Class<?> knownClass = loader.loadClass(KNOWN_CLASS_NAME);
         String implementationVersion = knownClass.getPackage().getImplementationVersion();
 
-        return Optional.of(matcherToVersion(LOMBOK_VERSION_PATTERN.matcher(implementationVersion)));
+        return Optional.of(matcherToVersion(VERSION_PATTERN.matcher(implementationVersion)));
       } catch (ClassNotFoundException e) {
         return Optional.empty();
       }
     }
   }
 
-  class ManifestInference extends LombokInference {
+  class ManifestInference extends LombokByNameInference {
 
     private static final String ATTRIBUTE_NAME = "Lombok-Version";
 
@@ -100,7 +119,7 @@ public interface DependencyVersionInference {
         if (manifest != null) {
           Attributes mainAttributes = manifest.getMainAttributes();
           if (mainAttributes != null) {
-            Matcher matcher = LOMBOK_VERSION_PATTERN.matcher(mainAttributes.getValue(ATTRIBUTE_NAME));
+            Matcher matcher = VERSION_PATTERN.matcher(mainAttributes.getValue(ATTRIBUTE_NAME));
             if (matcher.matches()) {
               return Optional.of(matcherToVersion(matcher));
             }
@@ -109,6 +128,15 @@ public interface DependencyVersionInference {
       } catch (IOException ignored) {
       }
       return Optional.empty();
+    }
+  }
+
+  class SpringByNameInference extends ByNameInference {
+
+    static final Pattern PATTERN = Pattern.compile("spring-boot-" + VERSION_REGEX);
+
+    protected SpringByNameInference() {
+      super(PATTERN, "org.springframework.boot", "spring-boot");
     }
   }
 }
