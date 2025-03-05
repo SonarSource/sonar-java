@@ -16,7 +16,7 @@ class DependencyVersionInferenceTest {
   @Test
   void inferByName() {
     // Arrange
-    DependencyVersionInference lombokInference = new DependencyVersionInference.LombokByNameInference();
+    DependencyVersionInference lombokInference = new DependencyVersionInference.ByNameInference(DependencyVersionInference.LOMBOK_PATTERN, "org.projectlombok", "lombok");
 
     // Act
     Optional<Version> version = lombokInference.infer(classpath);
@@ -46,7 +46,8 @@ class DependencyVersionInferenceTest {
   @Test
   void inferByManifest() {
     // Arrange
-    DependencyVersionInference lombokInference = new DependencyVersionInference.ManifestInference();
+    DependencyVersionInference lombokInference =
+      new DependencyVersionInference.ManifestInference("Lombok-Version", "org.projectlombok", "lombok");
 
     // Act
     Optional<Version> version = lombokInference.infer(classpath);

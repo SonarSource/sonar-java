@@ -14,6 +14,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.sonar.java.annotations.VisibleForTesting;
 
 public interface DependencyVersionInference {
 
@@ -21,18 +22,29 @@ public interface DependencyVersionInference {
 
   boolean handles(String groupId, String artifactId);
 
-  List<DependencyVersionInference> inferenceImplementations = Arrays.asList(
-    new LombokByNameInference(), new ManifestInference(), new SpringByNameInference()
-  );
-
   String VERSION_REGEX = "([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?";
   Pattern VERSION_PATTERN = Pattern.compile(VERSION_REGEX);
 
-  abstract class LombokInference implements DependencyVersionInference {
+  @VisibleForTesting
+  Pattern LOMBOK_PATTERN = Pattern.compile("lombok-([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?\\.jar");
 
+  List<DependencyVersionInference> inferenceImplementations = Arrays.asList(
+    new ByNameInference(LOMBOK_PATTERN, "org.projectlombok", "lombok"),
+    new ManifestInference("Lombok-Version", "org.projectlombok", "lombok"),
+    new ManifestInference("Implementation-Version", "org.springframework.boot", "spring-boot"),
+    new ByNameInference(Pattern.compile("spring-boot-" + VERSION_REGEX + "\\.jar"),
+      "org.springframework.boot", "spring-boot")
+  );
+
+  static Version matcherToVersion(Matcher matcher) {
+    return new Version(
+      Integer.parseInt(matcher.group(1)),
+      Integer.parseInt(matcher.group(2)),
+      Integer.parseInt(matcher.group(3)),
+      matcher.group(4));
   }
 
-  abstract class ByNameInference implements DependencyVersionInference {
+  class ByNameInference implements DependencyVersionInference {
 
     final Pattern pattern;
     final String groupId;
@@ -45,6 +57,11 @@ public interface DependencyVersionInference {
     }
 
     @Override
+    public boolean handles(String groupId, String artifactId) {
+      return groupId.equals(this.groupId) && artifactId.equals(this.artifactId);
+    }
+
+    @Override
     public Optional<Version> infer(List<File> classpath) {
       for (File file : classpath) {
         Matcher matcher = pattern.matcher(file.getName());
@@ -54,33 +71,15 @@ public interface DependencyVersionInference {
       }
       return Optional.empty();
     }
+  }
+
+  class ReflectiveInference implements DependencyVersionInference {
+    private static final String KNOWN_CLASS_NAME = "lombok.Lombok";
 
     @Override
     public boolean handles(String groupId, String artifactId) {
-      return groupId.equals(this.groupId) && artifactId.equals(this.artifactId);
+      return "org.projectlombok".equals(groupId) && "lombok".equals(artifactId);
     }
-  }
-
-  class LombokByNameInference extends ByNameInference {
-
-    static Pattern PATTERN = Pattern.compile("lombok-([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?\\.jar");
-
-    protected LombokByNameInference() {
-      super(PATTERN, "org.projectlombok", "lombok");
-    }
-
-  }
-
-  static Version matcherToVersion(Matcher matcher) {
-    return new Version(
-      Integer.parseInt(matcher.group(1)),
-      Integer.parseInt(matcher.group(2)),
-      Integer.parseInt(matcher.group(3)),
-      matcher.group(4));
-  }
-
-  class ReflectiveInference extends LombokByNameInference {
-    private static final String KNOWN_CLASS_NAME = "lombok.Lombok";
 
     @Override
     public Optional<Version> infer(List<File> classpath) {
@@ -102,9 +101,22 @@ public interface DependencyVersionInference {
     }
   }
 
-  class ManifestInference extends LombokByNameInference {
+  class ManifestInference implements DependencyVersionInference {
 
-    private static final String ATTRIBUTE_NAME = "Lombok-Version";
+    final String attributeName;
+    final String groupId;
+    final String artifactId;
+
+    public ManifestInference(String attributeName, String groupId, String artifactId) {
+      this.attributeName = attributeName;
+      this.groupId = groupId;
+      this.artifactId = artifactId;
+    }
+
+    @Override
+    public boolean handles(String groupId, String artifactId) {
+      return groupId.equals(this.groupId) && artifactId.equals(this.artifactId);
+    }
 
     @Override
     public Optional<Version> infer(List<File> classpath) {
@@ -119,7 +131,7 @@ public interface DependencyVersionInference {
         if (manifest != null) {
           Attributes mainAttributes = manifest.getMainAttributes();
           if (mainAttributes != null) {
-            Matcher matcher = VERSION_PATTERN.matcher(mainAttributes.getValue(ATTRIBUTE_NAME));
+            Matcher matcher = VERSION_PATTERN.matcher(mainAttributes.getValue(attributeName));
             if (matcher.matches()) {
               return Optional.of(matcherToVersion(matcher));
             }
@@ -131,12 +143,4 @@ public interface DependencyVersionInference {
     }
   }
 
-  class SpringByNameInference extends ByNameInference {
-
-    static final Pattern PATTERN = Pattern.compile("spring-boot-" + VERSION_REGEX + "\\.jar");
-
-    protected SpringByNameInference() {
-      super(PATTERN, "org.springframework.boot", "spring-boot");
-    }
-  }
 }
