@@ -16,7 +16,7 @@ class DependencyVersionInferenceTest {
   @Test
   void inferByName() {
     // Arrange
-    DependencyVersionInference lombokInference = new DependencyVersionInference.LombokInference();
+    DependencyVersionInference lombokInference = new DependencyVersionInference.LombokByNameInference();
 
     // Act
     Optional<Version> version = lombokInference.infer(classpath);

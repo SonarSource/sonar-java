@@ -6,6 +6,7 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,7 +19,21 @@ public interface DependencyVersionInference {
 
   Optional<Version> infer(List<File> classpath);
 
-  class LombokInference implements DependencyVersionInference {
+  boolean handles(String groupId, String artifactId);
+
+  List<DependencyVersionInference> inferenceImplementations = Arrays.asList(
+    new LombokByNameInference(), new ManifestInference()
+  );
+
+  abstract class LombokInference implements DependencyVersionInference {
+
+    @Override
+    public boolean handles(String groupId, String artifactId) {
+      return groupId.equals("org.projectlombok") && artifactId.equals("lombok");
+    }
+  }
+
+  class LombokByNameInference extends LombokInference {
 
     static Pattern PATTERN = Pattern.compile("lombok-([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?\\.jar");
 
@@ -32,6 +47,7 @@ public interface DependencyVersionInference {
       }
       return Optional.empty();
     }
+
   }
 
   static Version matcherToVersion(Matcher matcher) {
@@ -44,7 +60,7 @@ public interface DependencyVersionInference {
 
   Pattern LOMBOK_VERSION_PATTERN = Pattern.compile("([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?");
 
-  class ReflectiveInference implements DependencyVersionInference {
+  class ReflectiveInference extends LombokInference {
     private static final String KNOWN_CLASS_NAME = "lombok.Lombok";
 
     @Override
@@ -67,7 +83,7 @@ public interface DependencyVersionInference {
     }
   }
 
-  class ManifestInference implements DependencyVersionInference {
+  class ManifestInference extends LombokInference {
 
     private static final String ATTRIBUTE_NAME = "Lombok-Version";
 

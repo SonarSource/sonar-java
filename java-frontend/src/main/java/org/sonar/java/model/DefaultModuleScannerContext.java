@@ -18,6 +18,7 @@ package org.sonar.java.model;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -29,6 +30,8 @@ import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.classpath.DependencyVersionImpl;
+import org.sonar.java.classpath.DependencyVersionInference;
+import org.sonar.java.classpath.Version;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -71,18 +74,14 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
 
   @Nullable
   private DependencyVersionImpl extractDependencyVersionFromClassPath(String groupId, String artifactId) {
-    String localDependencyPath = groupId.replace('.', '/').concat("/").concat(artifactId);
-    Optional<String> dependency = sonarComponents.getJavaClasspath().stream()
-      .map(File::getPath)
-      .filter(path -> path.contains(localDependencyPath))
+    List<File> javaClasspath = sonarComponents.getJavaClasspath();
+    Optional<Version> optionalVersion = DependencyVersionInference.inferenceImplementations.stream()
+      .filter(inference -> inference.handles(groupId, artifactId))
+      .map(inference -> inference.infer(javaClasspath))
+      .flatMap(Optional::stream)
       .findFirst();
-    if (dependency.isPresent()) {
-      String regex = localDependencyPath.concat("/(\\d+\\.\\d+\\.\\d+)/");
-      Pattern pattern = Pattern.compile(regex);
-      Matcher matcher = pattern.matcher(dependency.get());
-      if (matcher.find()) {
-        return new DependencyVersionImpl(groupId, artifactId, matcher.group(1));
-      }
+    if (optionalVersion.isPresent()) {
+      return new DependencyVersionImpl(groupId, artifactId, optionalVersion.get().toString());
     }
     return null;
   }
