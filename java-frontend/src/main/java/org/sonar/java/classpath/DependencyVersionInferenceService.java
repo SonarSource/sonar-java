@@ -13,12 +13,15 @@ import org.sonar.plugins.java.api.classpath.DependencyVersion;
 import static org.sonar.java.classpath.DependencyVersionInference.VERSION_REGEX;
 
 public class DependencyVersionInferenceService {
-  Map<DependencyVersionImpl.CacheKey, DependencyVersionInference> inferenceImplementations = new HashMap<>();
+  private Map<DependencyVersionImpl.CacheKey, DependencyVersionInference> inferenceImplementations = new HashMap<>();
 
-  void addImplementation(DependencyVersionInference inference) {
+  private void addImplementation(DependencyVersionInference inference) {
     inferenceImplementations.put(
       new DependencyVersionImpl.CacheKey(inference.getGroupId(), inference.getArtifactId()),
       inference);
+  }
+
+  private DependencyVersionInferenceService() {
   }
 
   public Optional<DependencyVersion> infer(String groupId, String artifactId, List<File> classpath) {
@@ -29,8 +32,12 @@ public class DependencyVersionInferenceService {
     return inference.infer(classpath);
   }
 
+  static Pattern makeStandardJarPattern(String artifactId) {
+    return Pattern.compile(artifactId + "-" + VERSION_REGEX + "\\.jar");
+  }
+
   @VisibleForTesting
-  static Pattern LOMBOK_PATTERN = Pattern.compile("lombok-([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?\\.jar");
+  static Pattern LOMBOK_PATTERN = makeStandardJarPattern("lombok");
 
   public static DependencyVersionInferenceService make() {
     DependencyVersionInferenceService service = new DependencyVersionInferenceService();
@@ -40,7 +47,7 @@ public class DependencyVersionInferenceService {
         new DependencyVersionInference.ByNameInference(LOMBOK_PATTERN, "org.projectlombok", "lombok")),
       new DependencyVersionInference.FallbackInference(
         new DependencyVersionInference.ManifestInference("Implementation-Version", "org.springframework.boot", "spring-boot"),
-        new DependencyVersionInference.ByNameInference(Pattern.compile("spring-boot-" + VERSION_REGEX + "\\.jar"),
+        new DependencyVersionInference.ByNameInference(makeStandardJarPattern("spring-boot"),
         "org.springframework.boot", "spring-boot"))
     ).forEach(service::addImplementation);
     return service;
