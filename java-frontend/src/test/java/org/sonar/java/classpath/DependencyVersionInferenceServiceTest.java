@@ -11,12 +11,22 @@ import static org.junit.jupiter.api.Assertions.*;
 class DependencyVersionInferenceServiceTest {
 
   @Test
-  void inferAll() {
+  void inferAllSpring() {
     var springClasspath = TestClasspathUtils
       .loadFromFile("../java-checks-test-sources/spring-3.2/target/test-classpath.txt");
 
     List<DependencyVersion> dependencyVersions = DependencyVersionInferenceService.make().inferAll(springClasspath);
 
-    assertThat(dependencyVersions.size()).isGreaterThan(1);
+    assertThat(dependencyVersions.size()).isGreaterThanOrEqualTo(2);
+  }
+
+  @Test
+  void inferAllDefault() {
+    var springClasspath = TestClasspathUtils
+      .loadFromFile("../java-checks-test-sources/default/target/test-classpath.txt");
+
+    List<DependencyVersion> dependencyVersions = DependencyVersionInferenceService.make().inferAll(springClasspath);
+
+    assertThat(dependencyVersions.size()).isGreaterThanOrEqualTo(3);
   }
 }
