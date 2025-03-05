@@ -22,7 +22,6 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,7 +29,6 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.classpath.DependencyVersion;
 
 public interface DependencyVersionInference {
@@ -63,17 +61,6 @@ public interface DependencyVersionInference {
 
   String VERSION_REGEX = "([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?";
   Pattern VERSION_PATTERN = Pattern.compile(VERSION_REGEX);
-
-  @VisibleForTesting
-  Pattern LOMBOK_PATTERN = Pattern.compile("lombok-([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?\\.jar");
-
-  List<DependencyVersionInference> inferenceImplementations = Arrays.asList(
-    new ByNameInference(LOMBOK_PATTERN, "org.projectlombok", "lombok"),
-    new ManifestInference("Lombok-Version", "org.projectlombok", "lombok"),
-    new ManifestInference("Implementation-Version", "org.springframework.boot", "spring-boot"),
-    new ByNameInference(Pattern.compile("spring-boot-" + VERSION_REGEX + "\\.jar"),
-      "org.springframework.boot", "spring-boot")
-  );
 
   static Version matcherToVersion(Matcher matcher) {
     return new Version(
@@ -172,4 +159,41 @@ public interface DependencyVersionInference {
     }
   }
 
+  class FallbackInference implements DependencyVersionInference {
+
+    final DependencyVersionInference mainInference;
+    final DependencyVersionInference fallback;
+
+    public FallbackInference(DependencyVersionInference mainInference, DependencyVersionInference fallback) {
+      this.mainInference = mainInference;
+      this.fallback = fallback;
+    }
+
+    public FallbackInference make(DependencyVersionInference mainInference, DependencyVersionInference fallback) {
+      if (!(mainInference.getGroupId().equals(fallback.getGroupId()) &&
+        mainInference.getArtifactId().equals(fallback.getArtifactId()))) {
+        throw new IllegalArgumentException();
+      }
+      return new FallbackInference(mainInference, fallback);
+    }
+
+    @Override
+    public Optional<DependencyVersion> infer(List<File> classpath) {
+      Optional<DependencyVersion> inferred = mainInference.infer(classpath);
+      if (inferred.isPresent()) {
+        return inferred;
+      }
+      return fallback.infer(classpath);
+    }
+
+    @Override
+    public String getGroupId() {
+      return mainInference.getGroupId();
+    }
+
+    @Override
+    public String getArtifactId() {
+      return mainInference.getArtifactId();
+    }
+  }
 }

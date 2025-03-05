@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
@@ -30,7 +28,7 @@ import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.classpath.DependencyVersionImpl;
-import org.sonar.java.classpath.DependencyVersionInference;
+import org.sonar.java.classpath.DependencyVersionInferenceService;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -44,6 +42,7 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   protected final boolean inAndroidContext;
   protected final CacheContext cacheContext;
   private final Map<DependencyVersionImpl.CacheKey, DependencyVersion> dependencyVersions = new HashMap<>();
+  private final DependencyVersionInferenceService dependencyVersionInferenceService = DependencyVersionInferenceService.make();
 
   public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext,
     @Nullable CacheContext cacheContext) {
@@ -75,11 +74,8 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   @Nullable
   private DependencyVersion extractDependencyVersionFromClassPath(String groupId, String artifactId) {
     List<File> javaClasspath = sonarComponents.getJavaClasspath();
-    Optional<DependencyVersion> optionalVersion = DependencyVersionInference.inferenceImplementations.stream()
-      .filter(inference -> inference.handles(groupId, artifactId))
-      .map(inference -> inference.infer(javaClasspath))
-      .flatMap(Optional::stream)
-      .findFirst();
+    Optional<DependencyVersion> optionalVersion = dependencyVersionInferenceService
+      .infer(groupId, artifactId, javaClasspath);
     return optionalVersion.orElse(null);
   }
 

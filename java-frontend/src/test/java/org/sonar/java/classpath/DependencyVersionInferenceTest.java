@@ -36,7 +36,7 @@ class DependencyVersionInferenceTest {
   @Test
   void inferByName() {
     // Arrange
-    DependencyVersionInference lombokInference = new DependencyVersionInference.ByNameInference(DependencyVersionInference.LOMBOK_PATTERN, "org.projectlombok", "lombok");
+    DependencyVersionInference lombokInference = new DependencyVersionInference.ByNameInference(DependencyVersionInferenceService.LOMBOK_PATTERN, "org.projectlombok", "lombok");
 
     // Act
     Optional<DependencyVersion> version = lombokInference.infer(lombokClasspath);
@@ -84,12 +84,8 @@ class DependencyVersionInferenceTest {
   void inferenceImplementations() {
     // Act
     Optional<DependencyVersion> version =
-      DependencyVersionInference.inferenceImplementations.stream()
-        .filter(i -> i.handles("org.springframework.boot", "spring-boot"))
-        .filter(i -> i instanceof DependencyVersionInference.ManifestInference)
-        .map(i -> i.infer(classpath))
-        .flatMap(Optional::stream)
-        .findFirst();
+      DependencyVersionInferenceService.make()
+        .infer("org.springframework.boot", "spring-boot", classpath);
 
     // Assert
     assertEquals(3, version.get().getVersion().major());
