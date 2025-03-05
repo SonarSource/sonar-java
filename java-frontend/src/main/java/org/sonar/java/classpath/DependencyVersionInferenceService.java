@@ -46,15 +46,40 @@ public class DependencyVersionInferenceService {
   }
 
   /**
-   * When the library follows standard naming and manifest structure, this method can be used to make
+   * When the library follows standard naming, the builder can be used to make
    * initialization simpler.
    */
-  static DependencyVersionInference makeStandardInference(String groupId, String artifactId) {
-    return new DependencyVersionInference.FallbackInference(
-      new DependencyVersionInference.ByNameInference(makeStandardJarPattern(artifactId),
-        groupId, artifactId),
-      new DependencyVersionInference.ManifestInference("Implementation-Version",
-        groupId, artifactId));
+  static class DependencyVersionInferenceBuilder {
+    private String groupId;
+    private String artifactId;
+    private String attributeName = "Implementation-Version";
+
+    DependencyVersionInferenceBuilder groupId(String g) {
+      groupId = g;
+      return this;
+    }
+
+    DependencyVersionInferenceBuilder artifactId(String artifactId) {
+      this.artifactId = artifactId;
+      return this;
+    }
+
+    DependencyVersionInferenceBuilder attributeName(String attributeName) {
+      this.attributeName = attributeName;
+      return this;
+    }
+
+    DependencyVersionInference build() {
+      return new DependencyVersionInference.FallbackInference(
+        new DependencyVersionInference.ByNameInference(makeStandardJarPattern(artifactId),
+          groupId, artifactId),
+        new DependencyVersionInference.ManifestInference(attributeName,
+          groupId, artifactId));
+    }
+  }
+
+  static DependencyVersionInferenceBuilder builder() {
+    return new DependencyVersionInferenceBuilder();
   }
 
   @VisibleForTesting
@@ -63,11 +88,9 @@ public class DependencyVersionInferenceService {
   public static DependencyVersionInferenceService make() {
     DependencyVersionInferenceService service = new DependencyVersionInferenceService();
     Stream.of(
-      new DependencyVersionInference.FallbackInference(
-        new DependencyVersionInference.ManifestInference("Lombok-Version", "org.projectlombok", "lombok"),
-        new DependencyVersionInference.ByNameInference(LOMBOK_PATTERN, "org.projectlombok", "lombok")),
-      makeStandardInference("org.springframework.boot", "spring-boot"),
-      makeStandardInference("org.springframework", "spring-core")
+      builder().groupId("org.projectlombok").artifactId("lombok").attributeName("Lombok-Version").build(),
+      builder().groupId("org.springframework.boot").artifactId("spring-boot").build(),
+      builder().groupId("org.springframework").artifactId("spring-core").build()
     ).forEach(service::addImplementation);
     return service;
   }
