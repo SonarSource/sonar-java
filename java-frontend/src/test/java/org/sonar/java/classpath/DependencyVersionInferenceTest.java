@@ -16,7 +16,6 @@
  */
 package org.sonar.java.classpath;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Disabled;
@@ -25,10 +24,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 
 class DependencyVersionInferenceTest {
-  String path = "/home/romain.brenguier/.m2/repository/org/springframework/boot/spring-boot/3.4.1/spring-boot-3.4.1.jar,/home/romain.brenguier/git/examples/target/classes,/home/romain.brenguier/.sdkman/candidates/java/current/lib/jrt-fs.jar,/home/romain.brenguier/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar,/home/romain.brenguier/.m2/repository/org/jetbrains/annotations/25.0.0/annotations-25.0.0.jar";
-  List<File> classpath = Arrays.stream(path.split(",")).map(File::new).toList();
+  List<File> classpath = TestClasspathUtils
+    .loadFromFile("../java-checks-test-sources/spring-3.2/target/test-classpath.txt");
+  List<File> lombokClasspath = TestClasspathUtils
+    .loadFromFile("../java-checks-test-sources/default/target/test-classpath.txt");
 
   @Test
   void inferByName() {
@@ -36,7 +38,7 @@ class DependencyVersionInferenceTest {
     DependencyVersionInference lombokInference = new DependencyVersionInference.ByNameInference(DependencyVersionInference.LOMBOK_PATTERN, "org.projectlombok", "lombok");
 
     // Act
-    Optional<Version> version = lombokInference.infer(classpath);
+    Optional<Version> version = lombokInference.infer(lombokClasspath);
 
     // Assert
     assertEquals(1, version.get().major());
@@ -52,7 +54,7 @@ class DependencyVersionInferenceTest {
     DependencyVersionInference lombokInference = new DependencyVersionInference.ReflectiveInference();
 
     // Act
-    Optional<Version> version = lombokInference.infer(classpath);
+    Optional<Version> version = lombokInference.infer(lombokClasspath);
 
     // Assert
     assertEquals(1, version.get().major());
@@ -68,7 +70,7 @@ class DependencyVersionInferenceTest {
       new DependencyVersionInference.ManifestInference("Lombok-Version", "org.projectlombok", "lombok");
 
     // Act
-    Optional<Version> version = lombokInference.infer(classpath);
+    Optional<Version> version = lombokInference.infer(lombokClasspath);
 
     // Assert
     assertEquals(1, version.get().major());
@@ -90,8 +92,8 @@ class DependencyVersionInferenceTest {
 
     // Assert
     assertEquals(3, version.get().major());
-    assertEquals(4, version.get().minor());
-    assertEquals(1, version.get().patch());
+    assertEquals(2, version.get().minor());
+    assertEquals(4, version.get().patch());
     assertEquals(null, version.get().qualifier());
   }
 }
