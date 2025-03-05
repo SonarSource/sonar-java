@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.classpath.DependencyVersion;
@@ -32,6 +33,14 @@ public class DependencyVersionInferenceService {
     return inference.infer(classpath);
   }
 
+  @VisibleForTesting
+  public List<DependencyVersion> inferAll(List<File> classpath) {
+    return inferenceImplementations.values().stream()
+      .map(inference -> inference.infer(classpath))
+      .flatMap(Optional::stream)
+      .toList();
+  }
+
   static Pattern makeStandardJarPattern(String artifactId) {
     return Pattern.compile(artifactId + "-" + VERSION_REGEX + "\\.jar");
   }
@@ -48,7 +57,12 @@ public class DependencyVersionInferenceService {
       new DependencyVersionInference.FallbackInference(
         new DependencyVersionInference.ManifestInference("Implementation-Version", "org.springframework.boot", "spring-boot"),
         new DependencyVersionInference.ByNameInference(makeStandardJarPattern("spring-boot"),
-        "org.springframework.boot", "spring-boot"))
+          "org.springframework.boot", "spring-boot")),
+      new DependencyVersionInference.FallbackInference(
+        new DependencyVersionInference.ByNameInference(makeStandardJarPattern("spring-core"),
+          "org.springframework", "spring-core"),
+        new DependencyVersionInference.ManifestInference("Implementation-Version", "org.springframework",
+          "spring-core"))
     ).forEach(service::addImplementation);
     return service;
   }
