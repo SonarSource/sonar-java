@@ -1,6 +1,5 @@
 package org.sonar.java.classpath;
 
-import java.util.Comparator;
 import java.util.Objects;
 import javax.annotation.Nullable;
 
@@ -13,5 +12,13 @@ public record Version(Integer major, @Nullable Integer minor, @Nullable Integer 
     }
     // TODO: complete this
     return 0;
+  }
+
+  @Override
+  public String toString() {
+    return major +
+      (minor == null ? "" : "." + minor) +
+      (patch == null ? "" : "." + patch) +
+      (qualifier == null ? "" : qualifier);
   }
 }
