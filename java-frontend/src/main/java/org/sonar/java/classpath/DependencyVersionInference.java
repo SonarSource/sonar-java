@@ -120,7 +120,7 @@ public interface DependencyVersionInference {
 
     @Override
     public Optional<Version> infer(List<File> classpath) {
-      Optional<File> lombokJar = classpath.stream().filter(file -> file.getName().startsWith("lombok-")).findFirst();
+      Optional<File> lombokJar = classpath.stream().filter(file -> file.getName().startsWith(artifactId)).findFirst();
       if (lombokJar.isEmpty()) return Optional.empty();
 
       try {
