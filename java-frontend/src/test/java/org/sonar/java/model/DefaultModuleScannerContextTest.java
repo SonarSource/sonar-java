@@ -270,7 +270,8 @@ class DefaultModuleScannerContextTest {
       null
     );
     DependencyVersionImpl springBootDependency = context.getDependencyVersion("org.springframework.boot", "spring-boot");
-    assertThat(springBootDependency).isNotNull();
+    assertThat(springBootDependency.getGroupId()).isEqualTo("org.springframework.boot");
+    assertThat(springBootDependency.getArtifactId()).isEqualTo("spring-boot");
     assertThat(springBootDependency.getVersion()).isEqualTo("3.2.4");
   }
 
