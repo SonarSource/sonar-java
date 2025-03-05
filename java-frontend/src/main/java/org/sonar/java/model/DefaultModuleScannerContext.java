@@ -31,19 +31,19 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.classpath.DependencyVersionImpl;
 import org.sonar.java.classpath.DependencyVersionInference;
-import org.sonar.java.classpath.Version;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.classpath.DependencyVersion;
 
 public class DefaultModuleScannerContext implements ModuleScannerContext {
   protected final SonarComponents sonarComponents;
   protected final JavaVersion javaVersion;
   protected final boolean inAndroidContext;
   protected final CacheContext cacheContext;
-  private final Map<DependencyVersionImpl.CacheKey, DependencyVersionImpl> dependencyVersions = new HashMap<>();
+  private final Map<DependencyVersionImpl.CacheKey, DependencyVersion> dependencyVersions = new HashMap<>();
 
   public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext,
     @Nullable CacheContext cacheContext) {
@@ -67,23 +67,20 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
 
   @Override
   @Nullable
-  public DependencyVersionImpl getDependencyVersion(String groupId, String artifactId) {
+  public DependencyVersion getDependencyVersion(String groupId, String artifactId) {
     var cacheKey = new DependencyVersionImpl.CacheKey(groupId, artifactId);
     return dependencyVersions.computeIfAbsent(cacheKey, cacheKey1 -> extractDependencyVersionFromClassPath(groupId, artifactId));
   }
 
   @Nullable
-  private DependencyVersionImpl extractDependencyVersionFromClassPath(String groupId, String artifactId) {
+  private DependencyVersion extractDependencyVersionFromClassPath(String groupId, String artifactId) {
     List<File> javaClasspath = sonarComponents.getJavaClasspath();
-    Optional<Version> optionalVersion = DependencyVersionInference.inferenceImplementations.stream()
+    Optional<DependencyVersion> optionalVersion = DependencyVersionInference.inferenceImplementations.stream()
       .filter(inference -> inference.handles(groupId, artifactId))
       .map(inference -> inference.infer(javaClasspath))
       .flatMap(Optional::stream)
       .findFirst();
-    if (optionalVersion.isPresent()) {
-      return new DependencyVersionImpl(groupId, artifactId, optionalVersion.get().toString());
-    }
-    return null;
+    return optionalVersion.orElse(null);
   }
 
   public boolean inAndroidContext() {

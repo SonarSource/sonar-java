@@ -22,9 +22,9 @@ public class DependencyVersionImpl implements DependencyVersion {
 
   private final String groupId;
   private final String artifactId;
-  private final String version;
+  private final Version version;
 
-  public DependencyVersionImpl(String groupId, String artifactId, String version) {
+  public DependencyVersionImpl(String groupId, String artifactId, Version version) {
     this.groupId = groupId;
     this.artifactId = artifactId;
     this.version = version;
@@ -41,7 +41,7 @@ public class DependencyVersionImpl implements DependencyVersion {
   }
 
   @Override
-  public String getVersion() {
+  public Version getVersion() {
     return version;
   }
 

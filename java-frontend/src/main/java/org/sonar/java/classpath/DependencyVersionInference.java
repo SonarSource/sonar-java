@@ -31,10 +31,11 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.plugins.java.api.classpath.DependencyVersion;
 
 public interface DependencyVersionInference {
 
-  Optional<Version> infer(List<File> classpath);
+  Optional<DependencyVersion> infer(List<File> classpath);
 
   boolean handles(String groupId, String artifactId);
 
@@ -78,11 +79,12 @@ public interface DependencyVersionInference {
     }
 
     @Override
-    public Optional<Version> infer(List<File> classpath) {
+    public Optional<DependencyVersion> infer(List<File> classpath) {
       for (File file : classpath) {
         Matcher matcher = pattern.matcher(file.getName());
         if (matcher.matches()) {
-          return Optional.of(matcherToVersion(matcher));
+          return Optional.of(new DependencyVersionImpl(
+            groupId, artifactId, matcherToVersion(matcher)));
         }
       }
       return Optional.empty();
@@ -92,13 +94,16 @@ public interface DependencyVersionInference {
   class ReflectiveInference implements DependencyVersionInference {
     private static final String KNOWN_CLASS_NAME = "lombok.Lombok";
 
+    // TODO generalize for other libraries
+    String groupId = "org.projectlombok";
+    String artifactId = "lombok";
     @Override
     public boolean handles(String groupId, String artifactId) {
-      return "org.projectlombok".equals(groupId) && "lombok".equals(artifactId);
+      return groupId.equals(groupId) && artifactId.equals(artifactId);
     }
 
     @Override
-    public Optional<Version> infer(List<File> classpath) {
+    public Optional<DependencyVersion> infer(List<File> classpath) {
       URLClassLoader loader = new URLClassLoader(classpath.stream().map(file -> {
         try {
           return file.toURL();
@@ -110,7 +115,11 @@ public interface DependencyVersionInference {
         Class<?> knownClass = loader.loadClass(KNOWN_CLASS_NAME);
         String implementationVersion = knownClass.getPackage().getImplementationVersion();
 
-        return Optional.of(matcherToVersion(VERSION_PATTERN.matcher(implementationVersion)));
+        return Optional.of(
+          new DependencyVersionImpl(
+            groupId,
+            artifactId,
+            matcherToVersion(VERSION_PATTERN.matcher(implementationVersion))));
       } catch (ClassNotFoundException e) {
         return Optional.empty();
       }
@@ -135,7 +144,7 @@ public interface DependencyVersionInference {
     }
 
     @Override
-    public Optional<Version> infer(List<File> classpath) {
+    public Optional<DependencyVersion> infer(List<File> classpath) {
       Optional<File> lombokJar = classpath.stream().filter(file -> file.getName().startsWith(artifactId)).findFirst();
       if (lombokJar.isEmpty()) return Optional.empty();
 
@@ -149,7 +158,8 @@ public interface DependencyVersionInference {
           if (mainAttributes != null) {
             Matcher matcher = VERSION_PATTERN.matcher(mainAttributes.getValue(attributeName));
             if (matcher.matches()) {
-              return Optional.of(matcherToVersion(matcher));
+              return Optional.of(
+                new DependencyVersionImpl(groupId, artifactId, matcherToVersion(matcher)));
             }
           }
         }

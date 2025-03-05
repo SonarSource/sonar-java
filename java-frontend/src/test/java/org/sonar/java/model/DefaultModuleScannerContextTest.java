@@ -28,9 +28,11 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.DummyCache;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.DependencyVersionImpl;
+import org.sonar.java.classpath.Version;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.classpath.DependencyVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -269,10 +271,10 @@ class DefaultModuleScannerContextTest {
       false,
       null
     );
-    DependencyVersionImpl springBootDependency = context.getDependencyVersion("org.springframework.boot", "spring-boot");
+    DependencyVersion springBootDependency = context.getDependencyVersion("org.springframework.boot", "spring-boot");
     assertThat(springBootDependency.getGroupId()).isEqualTo("org.springframework.boot");
     assertThat(springBootDependency.getArtifactId()).isEqualTo("spring-boot");
-    assertThat(springBootDependency.getVersion()).isEqualTo("3.2.4");
+    assertThat(springBootDependency.getVersion()).isEqualTo(new Version(3, 2, 4, null));
   }
 
 }
