@@ -120,6 +120,9 @@ ws_scan_task:
   whitesource_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
+    - mvn clean install --batch-mode -Dmaven.test.skip=true -pl '!java-checks-test-sources,!java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-3.2'
+    - source ws_scan.sh
+    - rm -rf ${CIRRUS_WORKING_DIR}/.m2/repository
     - source ws_scan.sh
   allow_failures: "true"
   always:
