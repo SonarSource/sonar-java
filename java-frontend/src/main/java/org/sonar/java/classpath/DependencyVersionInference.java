@@ -37,7 +37,29 @@ public interface DependencyVersionInference {
 
   Optional<DependencyVersion> infer(List<File> classpath);
 
-  boolean handles(String groupId, String artifactId);
+  String getGroupId();
+
+  String getArtifactId();
+
+  abstract class DependencyVersionInferenceBase implements DependencyVersionInference {
+    final String groupId;
+    final String artifactId;
+
+    protected DependencyVersionInferenceBase(String groupId, String artifactId) {
+      this.groupId = groupId;
+      this.artifactId = artifactId;
+    }
+
+    @Override
+    public String getGroupId() {
+      return groupId;
+    }
+
+    @Override
+    public String getArtifactId() {
+      return artifactId;
+    }
+  }
 
   String VERSION_REGEX = "([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?";
   Pattern VERSION_PATTERN = Pattern.compile(VERSION_REGEX);
@@ -61,21 +83,13 @@ public interface DependencyVersionInference {
       matcher.group(4));
   }
 
-  class ByNameInference implements DependencyVersionInference {
+  class ByNameInference extends DependencyVersionInferenceBase {
 
     final Pattern pattern;
-    final String groupId;
-    final String artifactId;
 
     protected ByNameInference(Pattern pattern, String groupId, String artifactId) {
+      super(groupId, artifactId);
       this.pattern = pattern;
-      this.groupId = groupId;
-      this.artifactId = artifactId;
-    }
-
-    @Override
-    public boolean handles(String groupId, String artifactId) {
-      return groupId.equals(this.groupId) && artifactId.equals(this.artifactId);
     }
 
     @Override
@@ -91,15 +105,12 @@ public interface DependencyVersionInference {
     }
   }
 
-  class ReflectiveInference implements DependencyVersionInference {
+  class ReflectiveInference extends DependencyVersionInferenceBase {
     private static final String KNOWN_CLASS_NAME = "lombok.Lombok";
 
     // TODO generalize for other libraries
-    String groupId = "org.projectlombok";
-    String artifactId = "lombok";
-    @Override
-    public boolean handles(String groupId, String artifactId) {
-      return groupId.equals(groupId) && artifactId.equals(artifactId);
+    protected ReflectiveInference() {
+      super("org.projectlombok", "lombok");
     }
 
     @Override
@@ -126,21 +137,13 @@ public interface DependencyVersionInference {
     }
   }
 
-  class ManifestInference implements DependencyVersionInference {
+  class ManifestInference extends DependencyVersionInferenceBase {
 
     final String attributeName;
-    final String groupId;
-    final String artifactId;
 
     public ManifestInference(String attributeName, String groupId, String artifactId) {
+      super(groupId, artifactId);
       this.attributeName = attributeName;
-      this.groupId = groupId;
-      this.artifactId = artifactId;
-    }
-
-    @Override
-    public boolean handles(String groupId, String artifactId) {
-      return groupId.equals(this.groupId) && artifactId.equals(this.artifactId);
     }
 
     @Override
