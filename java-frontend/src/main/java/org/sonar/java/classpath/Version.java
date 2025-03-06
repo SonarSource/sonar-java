@@ -16,6 +16,7 @@
  */
 package org.sonar.java.classpath;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -52,8 +53,22 @@ public record Version(Integer major, @Nullable Integer minor, @Nullable Integer 
     if (!Objects.equals(major, o.major)) {
       return major - o.major;
     }
-    // TODO: complete this
-    return 0;
+    if (!Objects.equals(minor, o.minor)) {
+      if (minor == null) return -1;
+      if (o.minor == null) return 1;
+      return minor - o.minor;
+    }
+    if (!Objects.equals(patch, o.patch)) {
+      if (patch == null) return -1;
+      if (o.patch == null) return 1;
+      return patch - o.patch;
+    }
+    if (Objects.equals(qualifier, o.qualifier)) {
+      return 0;
+    }
+    if (qualifier == null) return -1;
+    if (o.qualifier == null) return 1;
+    return qualifier.compareTo(o.qualifier);
   }
 
   @Override
