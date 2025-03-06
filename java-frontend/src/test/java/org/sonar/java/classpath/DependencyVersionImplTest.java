@@ -27,6 +27,7 @@ class DependencyVersionImplTest {
     DependencyVersionImpl dependencyVersion = new DependencyVersionImpl("org.example", "example-artifact",
       Version.parse("3.2.6-rc1").get());
 
+    assertTrue(dependencyVersion.isGreaterThanOrEqualTo("3.2"));
     assertTrue(dependencyVersion.isGreaterThanOrEqualTo("3.2.5"));
     assertTrue(dependencyVersion.isGreaterThanOrEqualTo("2.9.4-rc2"));
     assertFalse(dependencyVersion.isGreaterThanOrEqualTo("3.2.11"));
@@ -35,6 +36,7 @@ class DependencyVersionImplTest {
     assertFalse(dependencyVersion.isLowerThan("3.2.6-rc1"));
 
     assertTrue(dependencyVersion.isGreaterThan("3.0.77"));
+    assertFalse(dependencyVersion.isGreaterThan("3.2"));
     assertFalse(dependencyVersion.isGreaterThan("3.2.6-rc1"));
 
     assertTrue(dependencyVersion.isLowerThanOrEqualTo("3.2.6-rc1"));

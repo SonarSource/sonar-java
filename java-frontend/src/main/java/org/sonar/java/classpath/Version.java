@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 
 public record Version(Integer major, @Nullable Integer minor, @Nullable Integer patch, @Nullable String qualifier) implements Comparable<Version> {
 
-  public static String VERSION_REGEX = "([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?";
+  public static String VERSION_REGEX = "([0-9]+).([0-9]+)(.[0-9]+)?([^0-9].*)?";
 
   static Pattern VERSION_PATTERN = Pattern.compile(VERSION_REGEX);
 
@@ -35,7 +35,7 @@ public record Version(Integer major, @Nullable Integer minor, @Nullable Integer 
     return new Version(
       Integer.parseInt(matcher.group(1)),
       Integer.parseInt(matcher.group(2)),
-      Integer.parseInt(matcher.group(3)),
+      matcher.group(3) != null ? Integer.parseInt(matcher.group(3).substring(1)) : null,
       matcher.group(4));
   }
 
@@ -47,27 +47,27 @@ public record Version(Integer major, @Nullable Integer minor, @Nullable Integer 
     return Optional.empty();
   }
 
+  /**
+   * Warning: this is a partial order: 2.5 and 2.5.1 are uncomparable.
+   * Qualifiers are ignored.
+   */
   @Override
   public int compareTo(Version o) {
     if (!Objects.equals(major, o.major)) {
       return major - o.major;
     }
     if (!Objects.equals(minor, o.minor)) {
-      if (minor == null) return -1;
-      if (o.minor == null) return 1;
+      if (minor == null || o.minor == null) return 0;
       return minor - o.minor;
     }
     if (!Objects.equals(patch, o.patch)) {
-      if (patch == null) return -1;
-      if (o.patch == null) return 1;
+      if (patch == null || o.patch == null) return 0;
       return patch - o.patch;
     }
     if (Objects.equals(qualifier, o.qualifier)) {
       return 0;
     }
-    if (qualifier == null) return -1;
-    if (o.qualifier == null) return 1;
-    return qualifier.compareTo(o.qualifier);
+    return 0;
   }
 
   @Override
