@@ -16,9 +16,13 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.classpath.DependencyVersion;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 
@@ -27,13 +31,17 @@ public class UseLombokCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    // TODO: Specify the kind of nodes you want to be called to visit here.
-    return List.of();
+    return Collections.singletonList(Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    String name = ((MethodTree) tree).simpleName().name();
+    if (name.startsWith("get")) {
+      DependencyVersion lombok = context.getDependencyVersion("org.projectlombok", "lombok");
+      if (lombok != null) {
+        context.reportIssue(this, tree, "Consider using @Getter and @Setter from Lombok to reduce boilerplate.");
+      }
+    }
   }
-  
 }

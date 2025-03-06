@@ -22,7 +22,6 @@ import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.classpath.DependencyVersion;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class DependencyVersionInferenceServiceTest {
 
@@ -38,10 +37,10 @@ class DependencyVersionInferenceServiceTest {
 
   @Test
   void inferAllDefault() {
-    var springClasspath = TestClasspathUtils
+    var classpath = TestClasspathUtils
       .loadFromFile("../java-checks-test-sources/default/target/test-classpath.txt");
 
-    List<DependencyVersion> dependencyVersions = DependencyVersionInferenceService.make().inferAll(springClasspath);
+    List<DependencyVersion> dependencyVersions = DependencyVersionInferenceService.make().inferAll(classpath);
 
     assertThat(dependencyVersions.size()).isGreaterThanOrEqualTo(3);
   }

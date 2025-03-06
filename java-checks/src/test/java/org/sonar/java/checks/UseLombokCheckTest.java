@@ -16,18 +16,35 @@
  */
 package org.sonar.java.checks;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 
 class UseLombokCheckTest {
 
   @Test
-  void test() {
+  void testWithoutLombokClasspath() {
+    List<File> classpath = Collections.emptyList();
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/UseLombokCheckSample.java"))
+      .withClassPath(classpath)
+      .withCheck(new UseLombokCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void testLombokClasspath() {
+    var classpath = TestClasspathUtils
+      .loadFromFile("../java-checks-test-sources/default/target/test-classpath.txt");
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/UseLombokCheckSample.java"))
+      .withClassPath(classpath)
       .withCheck(new UseLombokCheck())
       .verifyIssues();
   }
-  
+
 }
