@@ -59,16 +59,6 @@ public interface DependencyVersionInference {
     }
   }
 
-  String VERSION_REGEX = "([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?";
-  Pattern VERSION_PATTERN = Pattern.compile(VERSION_REGEX);
-
-  static Version matcherToVersion(Matcher matcher) {
-    return new Version(
-      Integer.parseInt(matcher.group(1)),
-      Integer.parseInt(matcher.group(2)),
-      Integer.parseInt(matcher.group(3)),
-      matcher.group(4));
-  }
 
   class ByNameInference extends DependencyVersionInferenceBase {
 
@@ -85,7 +75,7 @@ public interface DependencyVersionInference {
         Matcher matcher = pattern.matcher(file.getName());
         if (matcher.matches()) {
           return Optional.of(new DependencyVersionImpl(
-            groupId, artifactId, matcherToVersion(matcher)));
+            groupId, artifactId, Version.matcherToVersion(matcher)));
         }
       }
       return Optional.empty();
@@ -112,12 +102,8 @@ public interface DependencyVersionInference {
       try {
         Class<?> knownClass = loader.loadClass(KNOWN_CLASS_NAME);
         String implementationVersion = knownClass.getPackage().getImplementationVersion();
-
-        return Optional.of(
-          new DependencyVersionImpl(
-            groupId,
-            artifactId,
-            matcherToVersion(VERSION_PATTERN.matcher(implementationVersion))));
+        return Version.parse(implementationVersion).map(v ->
+          new DependencyVersionImpl(groupId, artifactId, v));
       } catch (ClassNotFoundException e) {
         return Optional.empty();
       }
@@ -146,10 +132,11 @@ public interface DependencyVersionInference {
         if (manifest != null) {
           Attributes mainAttributes = manifest.getMainAttributes();
           if (mainAttributes != null) {
-            Matcher matcher = VERSION_PATTERN.matcher(mainAttributes.getValue(attributeName));
-            if (matcher.matches()) {
+            Optional<Version> version =
+              Version.parse(mainAttributes.getValue(attributeName));
+            if (version.isPresent()) {
               return Optional.of(
-                new DependencyVersionImpl(groupId, artifactId, matcherToVersion(matcher)));
+                new DependencyVersionImpl(groupId, artifactId, version.get()));
             }
           }
         }

@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.classpath.DependencyVersion;
 
-import static org.sonar.java.classpath.DependencyVersionInference.VERSION_REGEX;
+import static org.sonar.java.classpath.Version.VERSION_REGEX;
 
 public class DependencyVersionInferenceService {
   private final Map<DependencyVersionImpl.CacheKey, DependencyVersionInference> inferenceImplementations = new HashMap<>();

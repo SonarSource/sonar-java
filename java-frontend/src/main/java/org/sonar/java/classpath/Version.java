@@ -17,9 +17,35 @@
 package org.sonar.java.classpath;
 
 import java.util.Objects;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 public record Version(Integer major, @Nullable Integer minor, @Nullable Integer patch, @Nullable String qualifier) implements Comparable<Version> {
+
+  public static String VERSION_REGEX = "([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?";
+
+  static Pattern VERSION_PATTERN = Pattern.compile(VERSION_REGEX);
+
+  /**
+   * matcher must come from a match again a pattern that contains {@link #VERSION_PATTERN} and no other groups.
+   */
+  static Version matcherToVersion(Matcher matcher) {
+    return new Version(
+      Integer.parseInt(matcher.group(1)),
+      Integer.parseInt(matcher.group(2)),
+      Integer.parseInt(matcher.group(3)),
+      matcher.group(4));
+  }
+
+  static Optional<Version> parse(String versionString) {
+    Matcher matcher = VERSION_PATTERN.matcher(versionString);
+    if (matcher.matches()) {
+      return Optional.of(matcherToVersion(matcher));
+    }
+    return Optional.empty();
+  }
 
   @Override
   public int compareTo(Version o) {
