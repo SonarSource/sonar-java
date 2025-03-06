@@ -106,7 +106,7 @@ public class JavaCheckVerifier implements CheckVerifier {
     List<JavaFileScanner> visitors = new ArrayList<>(checks);
     CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
     visitors.add(commentLinesVisitor);
-    SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, rootDirectory);
+    SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, rootDirectory, actualClasspath);
     VisitorsBridgeForTests visitorsBridge;
     if (withoutSemantic) {
       visitorsBridge = new VisitorsBridgeForTests(visitors, sonarComponents, actualVersion);

@@ -55,6 +55,10 @@ public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisit
 
   @Override
   public void visitNode(Tree tree) {
+    if(context.getDependencyVersion("org.springframework", "spring-web").isLowerThan("4.3")){
+      return;
+    }
+
     AnnotationTree annotation = (AnnotationTree) tree;
     if (annotation.symbolType().is("org.springframework.web.bind.annotation.RequestMapping")) {
       List<ExpressionTree> methodValues = annotation.arguments().stream()
