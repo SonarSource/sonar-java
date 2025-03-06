@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.classpath.DependencyVersion;
@@ -14,7 +13,7 @@ import org.sonar.plugins.java.api.classpath.DependencyVersion;
 import static org.sonar.java.classpath.DependencyVersionInference.VERSION_REGEX;
 
 public class DependencyVersionInferenceService {
-  private Map<DependencyVersionImpl.CacheKey, DependencyVersionInference> inferenceImplementations = new HashMap<>();
+  private final Map<DependencyVersionImpl.CacheKey, DependencyVersionInference> inferenceImplementations = new HashMap<>();
 
   private void addImplementation(DependencyVersionInference inference) {
     inferenceImplementations.put(
@@ -83,7 +82,7 @@ public class DependencyVersionInferenceService {
   }
 
   @VisibleForTesting
-  static Pattern LOMBOK_PATTERN = makeStandardJarPattern("lombok");
+  static final Pattern LOMBOK_PATTERN = makeStandardJarPattern("lombok");
 
   public static DependencyVersionInferenceService make() {
     DependencyVersionInferenceService service = new DependencyVersionInferenceService();
