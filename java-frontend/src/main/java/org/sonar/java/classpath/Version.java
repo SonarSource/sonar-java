@@ -91,4 +91,21 @@ public record Version(Integer major, @Nullable Integer minor, @Nullable Integer 
       (patch == null ? "" : "." + patch) +
       (qualifier == null ? "" : qualifier);
   }
+
+  public boolean isGreaterThanOrEqualTo(Version version) {
+    return compareTo(version) >= 0;
+  }
+
+  public boolean isGreaterThan(Version version) {
+    return compareTo(version) > 0;
+  }
+
+  public boolean isLowerThanOrEqualTo(Version version) {
+    return compareTo(version) <= 0;
+  }
+
+  public boolean isLowerThan(Version version) {
+    return compareTo(version) < 0;
+  }
+
 }
