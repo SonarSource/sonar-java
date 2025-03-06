@@ -23,4 +23,6 @@ public class Constants {
 
   public static final String SPRING_3_2 = "../java-checks-test-sources/spring-3.2";
   public static final String SPRING_3_2_CLASSPATH = SPRING_3_2 + "/target/test-classpath.txt";
+  public static final String SPRING_WEB_4_0_TEST_SOURCES = "../java-checks-test-sources/spring-web-4.0";
+  public static final String SPRING_WEB_4_0_CLASSPATH = SPRING_WEB_4_0_TEST_SOURCES + "/target/test-classpath.txt";
 }
