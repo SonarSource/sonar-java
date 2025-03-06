@@ -16,13 +16,15 @@
  */
 package org.sonar.plugins.java.api.classpath;
 
+import org.sonar.java.classpath.Version;
+
 public interface DependencyVersion {
 
   String getGroupId();
 
   String getArtifactId();
 
-  String getVersion();
+  Version getVersion();
 
   /**
    * Returns whether the dependency version has a higher or equal version number than the one provided

@@ -22,9 +22,9 @@ public class DependencyVersionImpl implements DependencyVersion {
 
   private final String groupId;
   private final String artifactId;
-  private final String version;
+  private final Version version;
 
-  public DependencyVersionImpl(String groupId, String artifactId, String version) {
+  public DependencyVersionImpl(String groupId, String artifactId, Version version) {
     this.groupId = groupId;
     this.artifactId = artifactId;
     this.version = version;
@@ -41,28 +41,28 @@ public class DependencyVersionImpl implements DependencyVersion {
   }
 
   @Override
-  public String getVersion() {
+  public Version getVersion() {
     return version;
   }
 
   @Override
   public boolean isGreaterThanOrEqualTo(String version) {
-    return false;
+    return Version.parse(version).map(this.version::isGreaterThanOrEqualTo).orElse(false);
   }
 
   @Override
   public boolean isGreaterThan(String version) {
-    return false;
+    return Version.parse(version).map(this.version::isGreaterThan).orElse(false);
   }
 
   @Override
   public boolean isLowerThanOrEqualTo(String version) {
-    return false;
+    return Version.parse(version).map(this.version::isLowerThanOrEqualTo).orElse(false);
   }
 
   @Override
   public boolean isLowerThan(String version) {
-    return false;
+    return Version.parse(version).map(this.version::isLowerThan).orElse(false);
   }
 
   public record CacheKey(String groupId, String artifactId) {

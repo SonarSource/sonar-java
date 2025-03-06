@@ -22,7 +22,6 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,75 +29,69 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.plugins.java.api.classpath.DependencyVersion;
 
 public interface DependencyVersionInference {
 
-  Optional<Version> infer(List<File> classpath);
+  Optional<DependencyVersion> infer(List<File> classpath);
 
-  boolean handles(String groupId, String artifactId);
+  String getGroupId();
 
-  String VERSION_REGEX = "([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?";
-  Pattern VERSION_PATTERN = Pattern.compile(VERSION_REGEX);
+  String getArtifactId();
 
-  @VisibleForTesting
-  Pattern LOMBOK_PATTERN = Pattern.compile("lombok-([0-9]+).([0-9]+).([0-9]+)([^0-9].*)?\\.jar");
-
-  List<DependencyVersionInference> inferenceImplementations = Arrays.asList(
-    new ByNameInference(LOMBOK_PATTERN, "org.projectlombok", "lombok"),
-    new ManifestInference("Lombok-Version", "org.projectlombok", "lombok"),
-    new ManifestInference("Implementation-Version", "org.springframework.boot", "spring-boot"),
-    new ByNameInference(Pattern.compile("spring-boot-" + VERSION_REGEX + "\\.jar"),
-      "org.springframework.boot", "spring-boot")
-  );
-
-  static Version matcherToVersion(Matcher matcher) {
-    return new Version(
-      Integer.parseInt(matcher.group(1)),
-      Integer.parseInt(matcher.group(2)),
-      Integer.parseInt(matcher.group(3)),
-      matcher.group(4));
-  }
-
-  class ByNameInference implements DependencyVersionInference {
-
-    final Pattern pattern;
+  abstract class DependencyVersionInferenceBase implements DependencyVersionInference {
     final String groupId;
     final String artifactId;
 
-    protected ByNameInference(Pattern pattern, String groupId, String artifactId) {
-      this.pattern = pattern;
+    protected DependencyVersionInferenceBase(String groupId, String artifactId) {
       this.groupId = groupId;
       this.artifactId = artifactId;
     }
 
     @Override
-    public boolean handles(String groupId, String artifactId) {
-      return groupId.equals(this.groupId) && artifactId.equals(this.artifactId);
+    public String getGroupId() {
+      return groupId;
     }
 
     @Override
-    public Optional<Version> infer(List<File> classpath) {
+    public String getArtifactId() {
+      return artifactId;
+    }
+  }
+
+
+  class ByNameInference extends DependencyVersionInferenceBase {
+
+    final Pattern pattern;
+
+    protected ByNameInference(Pattern pattern, String groupId, String artifactId) {
+      super(groupId, artifactId);
+      this.pattern = pattern;
+    }
+
+    @Override
+    public Optional<DependencyVersion> infer(List<File> classpath) {
       for (File file : classpath) {
         Matcher matcher = pattern.matcher(file.getName());
         if (matcher.matches()) {
-          return Optional.of(matcherToVersion(matcher));
+          return Optional.of(new DependencyVersionImpl(
+            groupId, artifactId, Version.matcherToVersion(matcher)));
         }
       }
       return Optional.empty();
     }
   }
 
-  class ReflectiveInference implements DependencyVersionInference {
+  class ReflectiveInference extends DependencyVersionInferenceBase {
     private static final String KNOWN_CLASS_NAME = "lombok.Lombok";
 
-    @Override
-    public boolean handles(String groupId, String artifactId) {
-      return "org.projectlombok".equals(groupId) && "lombok".equals(artifactId);
+    // TODO generalize for other libraries
+    protected ReflectiveInference() {
+      super("org.projectlombok", "lombok");
     }
 
     @Override
-    public Optional<Version> infer(List<File> classpath) {
+    public Optional<DependencyVersion> infer(List<File> classpath) {
       URLClassLoader loader = new URLClassLoader(classpath.stream().map(file -> {
         try {
           return file.toURL();
@@ -109,33 +102,25 @@ public interface DependencyVersionInference {
       try {
         Class<?> knownClass = loader.loadClass(KNOWN_CLASS_NAME);
         String implementationVersion = knownClass.getPackage().getImplementationVersion();
-
-        return Optional.of(matcherToVersion(VERSION_PATTERN.matcher(implementationVersion)));
+        return Version.parse(implementationVersion).map(v ->
+          new DependencyVersionImpl(groupId, artifactId, v));
       } catch (ClassNotFoundException e) {
         return Optional.empty();
       }
     }
   }
 
-  class ManifestInference implements DependencyVersionInference {
+  class ManifestInference extends DependencyVersionInferenceBase {
 
     final String attributeName;
-    final String groupId;
-    final String artifactId;
 
     public ManifestInference(String attributeName, String groupId, String artifactId) {
+      super(groupId, artifactId);
       this.attributeName = attributeName;
-      this.groupId = groupId;
-      this.artifactId = artifactId;
     }
 
     @Override
-    public boolean handles(String groupId, String artifactId) {
-      return groupId.equals(this.groupId) && artifactId.equals(this.artifactId);
-    }
-
-    @Override
-    public Optional<Version> infer(List<File> classpath) {
+    public Optional<DependencyVersion> infer(List<File> classpath) {
       Optional<File> lombokJar = classpath.stream().filter(file -> file.getName().startsWith(artifactId)).findFirst();
       if (lombokJar.isEmpty()) return Optional.empty();
 
@@ -147,9 +132,11 @@ public interface DependencyVersionInference {
         if (manifest != null) {
           Attributes mainAttributes = manifest.getMainAttributes();
           if (mainAttributes != null) {
-            Matcher matcher = VERSION_PATTERN.matcher(mainAttributes.getValue(attributeName));
-            if (matcher.matches()) {
-              return Optional.of(matcherToVersion(matcher));
+            Optional<Version> version =
+              Version.parse(mainAttributes.getValue(attributeName));
+            if (version.isPresent()) {
+              return Optional.of(
+                new DependencyVersionImpl(groupId, artifactId, version.get()));
             }
           }
         }
@@ -159,4 +146,41 @@ public interface DependencyVersionInference {
     }
   }
 
+  class FallbackInference implements DependencyVersionInference {
+
+    final DependencyVersionInference mainInference;
+    final DependencyVersionInference fallback;
+
+    public FallbackInference(DependencyVersionInference mainInference, DependencyVersionInference fallback) {
+      this.mainInference = mainInference;
+      this.fallback = fallback;
+    }
+
+    public FallbackInference make(DependencyVersionInference mainInference, DependencyVersionInference fallback) {
+      if (!(mainInference.getGroupId().equals(fallback.getGroupId()) &&
+        mainInference.getArtifactId().equals(fallback.getArtifactId()))) {
+        throw new IllegalArgumentException();
+      }
+      return new FallbackInference(mainInference, fallback);
+    }
+
+    @Override
+    public Optional<DependencyVersion> infer(List<File> classpath) {
+      Optional<DependencyVersion> inferred = mainInference.infer(classpath);
+      if (inferred.isPresent()) {
+        return inferred;
+      }
+      return fallback.infer(classpath);
+    }
+
+    @Override
+    public String getGroupId() {
+      return mainInference.getGroupId();
+    }
+
+    @Override
+    public String getArtifactId() {
+      return mainInference.getArtifactId();
+    }
+  }
 }
