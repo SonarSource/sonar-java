@@ -59,10 +59,12 @@ import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
+import static org.sonar.java.checks.verifier.internal.CheckVariant.addCheckVariantsMessageToExceptions;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.CHECK_OR_CHECKS;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.FILE_OR_FILES;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.requiresNonEmpty;
@@ -91,7 +93,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   private boolean withoutSemantic = false;
 
   // should be set by user
-  private List<JavaFileScanner> checks = null;
+  private List<JavaCheck> checks = null;
   private List<InputFile> files = null;
   private JavaVersion javaVersion = null;
   private boolean inAndroidContext = false;
@@ -155,7 +157,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     requiresNull(javaVersion, "java version");
     return withJavaVersion(javaVersionAsInt, false);
   }
-  
+
   @Override
   public InternalCheckVerifier withJavaVersion(int javaVersionAsInt, boolean enablePreviewFeatures) {
     requiresNull(javaVersion, "java version");
@@ -258,7 +260,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     requiresNonNull(checks, CHECK_OR_CHECKS);
     requiresNonNull(files, FILE_OR_FILES);
 
-    verifyAll();
+    applyAllCheckVariants(this::verifyAll);
   }
 
   @Override
@@ -266,9 +268,10 @@ public class InternalCheckVerifier implements CheckVerifier {
     requiresNonNull(checks, CHECK_OR_CHECKS);
     requiresNonNull(files, FILE_OR_FILES);
 
-    expectations.setExpectedFileIssue(expectedIssueMessage);
-
-    verifyAll();
+    applyAllCheckVariants(() -> {
+      expectations.setExpectedFileIssue(expectedIssueMessage);
+      verifyAll();
+    });
   }
 
   @Override
@@ -276,9 +279,10 @@ public class InternalCheckVerifier implements CheckVerifier {
     requiresNonNull(checks, CHECK_OR_CHECKS);
     requiresNonNull(files, FILE_OR_FILES);
 
-    expectations.setExpectedProjectIssue(expectedIssueMessage);
-
-    verifyAll();
+    applyAllCheckVariants(() -> {
+      expectations.setExpectedProjectIssue(expectedIssueMessage);
+      verifyAll();
+    });
   }
 
   @Override
@@ -286,13 +290,22 @@ public class InternalCheckVerifier implements CheckVerifier {
     requiresNonNull(checks, CHECK_OR_CHECKS);
     requiresNonNull(files, FILE_OR_FILES);
 
-    expectations.setExpectNoIssues();
+    applyAllCheckVariants(() -> {
+      expectations.setExpectNoIssues();
+      verifyAll();
+    });
+  }
 
-    verifyAll();
+  private void applyAllCheckVariants(Runnable validation) {
+    List<List<JavaCheck>> variants = CheckVariant.createCheckVariants(this.checks);
+    for (var checkVariant : variants) {
+      checks = checkVariant;
+      addCheckVariantsMessageToExceptions(validation, checks, variants.size());
+    }
   }
 
   private void verifyAll() {
-    List<JavaFileScanner> visitors = new ArrayList<>(checks);
+    List<JavaCheck> visitors = new ArrayList<>(checks);
     if (withoutSemantic && expectations.expectNoIssues()) {
       visitors.add(expectations.noEffectParser());
     } else {

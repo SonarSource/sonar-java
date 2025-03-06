@@ -55,11 +55,15 @@ import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
+import org.sonar.plugins.java.api.query.QueryAPI;
+import org.sonar.plugins.java.api.query.QueryRule;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonarsource.astquery.PipelineManager;
+import org.sonarsource.astquery.PipelineRunner;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 
 public class VisitorsBridge {
@@ -70,6 +74,7 @@ public class VisitorsBridge {
   private final List<JavaFileScanner> allScanners;
   private final List<JavaFileScanner> scannersThatCannotBeSkipped;
   private final SonarComponents sonarComponents;
+
   protected InputFile currentFile;
   protected final JavaVersion javaVersion;
   private final List<File> classpath;
@@ -114,12 +119,15 @@ public class VisitorsBridge {
   private List<JavaFileScanner> filterVisitors(Iterable<? extends JavaCheck> visitors, Predicate<Object> predicate) {
     List<JavaFileScanner> scanners = new ArrayList<>();
     final IssuableSubscriptionVisitorsRunner runner = new IssuableSubscriptionVisitorsRunner();
+    final PipelineManager<JavaFileScannerContext> pipelineManager = QueryAPI.INSTANCE.getPipelineManager();
 
     StreamSupport.stream(visitors.spliterator(), false)
       .filter(predicate)
       .forEach(visitor -> {
         if (visitor instanceof IssuableSubscriptionVisitor issuableSubscriptionVisitor) {
           runner.add(issuableSubscriptionVisitor);
+        } else if (visitor instanceof QueryRule queryRule) {
+          QueryAPI.INSTANCE.prepareQuery(pipelineManager, queryRule);
         } else if (visitor instanceof JavaFileScanner javaFileScanner) {
           scanners.add(javaFileScanner);
         }
@@ -128,6 +136,12 @@ public class VisitorsBridge {
     if (!runner.subscriptionVisitors.isEmpty()) {
       scanners.add(runner);
     }
+
+    PipelineRunner<JavaFileScannerContext> pipelineRunner = pipelineManager.getExecutablePipeline();
+    if (pipelineRunner != null) {
+      scanners.add(new QueryVisitorsRunner(pipelineRunner));
+    }
+
     return scanners;
   }
 
@@ -480,6 +494,20 @@ public class VisitorsBridge {
         runScanner(() -> callback.accept(visitor), visitor);
         visitorDuration.stop();
       }
+    }
+  }
+
+  private static class QueryVisitorsRunner implements JavaFileScanner {
+
+    private final PipelineRunner<JavaFileScannerContext> runner;
+
+    private QueryVisitorsRunner(PipelineRunner<JavaFileScannerContext> runner) {
+      this.runner = runner;
+    }
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      runner.run(context);
     }
   }
 }

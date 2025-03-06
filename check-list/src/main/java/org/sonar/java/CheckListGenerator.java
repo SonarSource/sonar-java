@@ -87,8 +87,8 @@ public class CheckListGenerator {
     try (Stream<Path> stream = Stream.concat(Files.walk(relativePath.resolve("org/sonar/java/checks")), Files.walk(awsRelativePath.resolve("org/sonar/java/checks")))) {
       return stream
         .map(p -> p.startsWith(awsRelativePath) ? awsRelativePath.relativize(p).toString() : relativePath.relativize(p).toString())
-        .filter(file -> file.endsWith("Check.java"))
-        .map(file -> file.replace(".java", "").replace(File.separator, "."))
+        .filter(file -> file.endsWith("Check.java") || file.endsWith("CheckKT.kt"))
+        .map(file -> file.replace(".java", "").replace(".kt", "").replace(File.separator, "."))
         .sorted()
         .toList();
     } catch (IOException e) {

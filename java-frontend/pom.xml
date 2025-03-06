@@ -12,6 +12,12 @@
 
   <name>SonarQube Java :: Front-end</name>
 
+  <properties>
+    <kotlin.version>2.1.10</kotlin.version>
+    <kotlin.compiler.languageVersion>2.0</kotlin.compiler.languageVersion>
+    <kotlin.compiler.apiVersion>2.0</kotlin.compiler.apiVersion>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -117,10 +123,40 @@
       <version>0.16</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.sonarsource.astquery</groupId>
+      <artifactId>core</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.astquery</groupId>
+      <artifactId>exec-greedy</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.astquery</groupId>
+      <artifactId>exec-batch</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib</artifactId>
+      <version>${kotlin.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-maven-plugin</artifactId>
+        <version>${kotlin.version}</version>
+
+        <extensions>true</extensions>
+        <configuration>
+          <jvmTarget>11</jvmTarget>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>

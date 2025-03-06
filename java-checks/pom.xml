@@ -12,6 +12,12 @@
 
   <name>SonarQube Java :: Checks</name>
 
+  <properties>
+    <kotlin.version>2.1.10</kotlin.version>
+    <kotlin.compiler.languageVersion>2.0</kotlin.compiler.languageVersion>
+    <kotlin.compiler.apiVersion>2.0</kotlin.compiler.apiVersion>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>
@@ -93,10 +99,25 @@
       <artifactId>guava</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib</artifactId>
+      <version>${kotlin.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-maven-plugin</artifactId>
+        <version>${kotlin.version}</version>
+
+        <extensions>true</extensions>
+        <configuration>
+          <jvmTarget>11</jvmTarget>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>de.thetaphi</groupId>
         <artifactId>forbiddenapis</artifactId>

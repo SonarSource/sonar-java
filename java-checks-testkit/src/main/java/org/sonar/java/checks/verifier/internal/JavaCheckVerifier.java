@@ -16,19 +16,6 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
@@ -47,6 +34,7 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
@@ -55,12 +43,16 @@ import org.sonarsource.analyzer.commons.checks.verifier.quickfix.QuickFix;
 import org.sonarsource.analyzer.commons.checks.verifier.quickfix.TextEdit;
 import org.sonarsource.analyzer.commons.checks.verifier.quickfix.TextSpan;
 
+import javax.annotation.Nullable;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.CHECK_OR_CHECKS;
-import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.FILE_OR_FILES;
-import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.requiresNonEmpty;
-import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.requiresNonNull;
-import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.requiresNull;
+import static org.sonar.java.checks.verifier.internal.CheckVariant.addCheckVariantsMessageToExceptions;
+import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.*;
 
 public class JavaCheckVerifier implements CheckVerifier {
 
@@ -83,7 +75,7 @@ public class JavaCheckVerifier implements CheckVerifier {
     Optional.of(new File(FilesUtils.DEFAULT_TEST_CLASSES_DIRECTORY)).filter(File::exists).ifPresent(DEFAULT_CLASSPATH::add);
   }
 
-  private List<JavaFileScanner> checks = null;
+  private List<JavaCheck> checks = null;
   private List<File> classpath = null;
   private JavaVersion javaVersion = null;
   private boolean inAndroidContext = false;
@@ -103,7 +95,7 @@ public class JavaCheckVerifier implements CheckVerifier {
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
     List<File> actualClasspath = classpath == null ? DEFAULT_CLASSPATH : classpath;
 
-    List<JavaFileScanner> visitors = new ArrayList<>(checks);
+    List<JavaCheck> visitors = new ArrayList<>(checks);
     CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
     visitors.add(commentLinesVisitor);
     SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, rootDirectory);
@@ -339,14 +331,14 @@ public class JavaCheckVerifier implements CheckVerifier {
   public void verifyIssues() {
     requiresNonNull(checks, CHECK_OR_CHECKS);
     requiresNonNull(files, FILE_OR_FILES);
-    createVerifier().assertOneOrMoreIssues();
+    applyAllCheckVariants(() -> createVerifier().assertOneOrMoreIssues());
   }
 
   @Override
   public void verifyIssueOnFile(String expectedIssueMessage) {
     requiresNonNull(checks, CHECK_OR_CHECKS);
     requiresNonNull(files, FILE_OR_FILES);
-    createVerifier().assertOneOrMoreIssues();
+    applyAllCheckVariants(() -> createVerifier().assertOneOrMoreIssues());
   }
 
   @Override
@@ -358,7 +350,14 @@ public class JavaCheckVerifier implements CheckVerifier {
   public void verifyNoIssues() {
     requiresNonNull(checks, CHECK_OR_CHECKS);
     requiresNonNull(files, FILE_OR_FILES);
-    createVerifier().assertNoIssuesRaised();
+    applyAllCheckVariants(() -> createVerifier().assertNoIssuesRaised());
   }
 
+  private void applyAllCheckVariants(Runnable validation) {
+    List<List<JavaCheck>> variants = CheckVariant.createCheckVariants(this.checks);
+    for (var checkVariant : variants) {
+      checks = checkVariant;
+      addCheckVariantsMessageToExceptions(validation, checks, variants.size());
+    }
+  }
 }
