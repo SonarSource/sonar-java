@@ -17,7 +17,11 @@
 package org.sonar.java.checks.spring;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.Constants;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.test.classpath.TestClasspathUtils;
+
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModule;
 
 class SpringComposedRequestMappingCheckTest {
 
@@ -31,6 +35,15 @@ class SpringComposedRequestMappingCheckTest {
       .onFile("src/test/files/checks/spring/SpringComposedRequestMappingCheck.java")
       .withCheck(new SpringComposedRequestMappingCheck())
       .withoutSemantic()
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_spring_web_4_0() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPathInModule(Constants.SPRING_WEB_4_0, "checks/SpringComposedRequestMappingCheckSample.java"))
+      .withCheck(new SpringComposedRequestMappingCheck())
+      .withClassPath(TestClasspathUtils.loadFromFile(Constants.SPRING_WEB_4_0_CLASSPATH))
       .verifyNoIssues();
   }
 
