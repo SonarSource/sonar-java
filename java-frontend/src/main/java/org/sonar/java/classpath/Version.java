@@ -72,6 +72,19 @@ public record Version(Integer major, @Nullable Integer minor, @Nullable Integer 
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    Version version = (Version) o;
+    return Objects.equals(major, version.major) && Objects.equals(minor, version.minor)
+      && Objects.equals(patch, version.patch) && Objects.equals(qualifier, version.qualifier);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(major, minor, patch, qualifier);
+  }
+
+  @Override
   public String toString() {
     return major +
       (minor == null ? "" : "." + minor) +
