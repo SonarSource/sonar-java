@@ -1,0 +1,25 @@
+{
+  "title": "Use lombok",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring", "tests"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-7190",
+  "sqKey": "S7190",
+  "scope": "Tests",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW",
+      "RELIABILITY": "HIGH",
+      "SECURITY": "LOW"
+    },
+    "attribute": "LOGICAL"
+  }
+}
