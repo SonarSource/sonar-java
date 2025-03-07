@@ -86,9 +86,9 @@ public class DependencyVersionInferenceService {
 
     DependencyVersionInference build() {
       return new DependencyVersionInference.FallbackInference(
-        new DependencyVersionInference.ByNameInference(makeStandardJarPattern(artifactId),
-          groupId, artifactId),
         new DependencyVersionInference.ManifestInference(attributeName,
+          groupId, artifactId),
+        new DependencyVersionInference.ByNameInference(makeStandardJarPattern(artifactId),
           groupId, artifactId));
     }
   }
@@ -105,7 +105,8 @@ public class DependencyVersionInferenceService {
     Stream.of(
       builder().groupId("org.projectlombok").artifactId("lombok").attributeName("Lombok-Version").build(),
       builder().groupId("org.springframework.boot").artifactId("spring-boot").build(),
-      builder().groupId("org.springframework").artifactId("spring-core").build()
+      builder().groupId("org.springframework").artifactId("spring-core").build(),
+      builder().groupId("org.springframework").artifactId("spring-web").build()
     ).forEach(service::addImplementation);
     return service;
   }

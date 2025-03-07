@@ -14,34 +14,37 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.classpath;
+package org.sonar.java.checks;
 
+import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.test.classpath.TestClasspathUtils;
-import org.sonar.plugins.java.api.classpath.DependencyVersion;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
-class DependencyVersionInferenceServiceTest {
+class UseLombokCheckTest {
 
   @Test
-  void inferAllSpring() {
-    var springClasspath = TestClasspathUtils
-      .loadFromFile("../java-checks-test-sources/spring-3.2/target/test-classpath.txt");
-
-    List<DependencyVersion> dependencyVersions = DependencyVersionInferenceService.make().inferAll(springClasspath);
-
-    assertThat(dependencyVersions.size()).isGreaterThanOrEqualTo(2);
+  void testWithoutLombokClasspath() {
+    List<File> classpath = Collections.emptyList();
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/UseLombokCheckSample.java"))
+      .withClassPath(classpath)
+      .withCheck(new UseLombokCheck())
+      .verifyNoIssues();
   }
 
   @Test
-  void inferAllDefault() {
+  void testLombokClasspath() {
     var classpath = TestClasspathUtils
       .loadFromFile("../java-checks-test-sources/default/target/test-classpath.txt");
-
-    List<DependencyVersion> dependencyVersions = DependencyVersionInferenceService.make().inferAll(classpath);
-
-    assertThat(dependencyVersions.size()).isGreaterThanOrEqualTo(3);
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/UseLombokCheckSample.java"))
+      .withClassPath(classpath)
+      .withCheck(new UseLombokCheck())
+      .verifyIssues();
   }
+
 }

@@ -31,6 +31,7 @@ class DependencyVersionImplTest {
     assertTrue(dependencyVersion.isGreaterThanOrEqualTo("3.2.5"));
     assertTrue(dependencyVersion.isGreaterThanOrEqualTo("2.9.4-rc2"));
     assertFalse(dependencyVersion.isGreaterThanOrEqualTo("3.2.11"));
+    assertTrue(dependencyVersion.isLowerThan("4.0.0.RELEASE"));
 
     assertTrue(dependencyVersion.isLowerThan("3.3.0"));
     assertFalse(dependencyVersion.isLowerThan("3.2.6-rc1"));
