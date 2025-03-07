@@ -19,6 +19,7 @@ package org.sonar.java.model;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.classpath.DependencyVersionInferenceService;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -28,8 +29,8 @@ public class DefaultInputFileScannerContext extends DefaultModuleScannerContext 
   protected final InputFile inputFile;
 
   public DefaultInputFileScannerContext(@Nullable SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext,
-                                        @Nullable CacheContext cacheContext) {
-    super(sonarComponents, javaVersion, inAndroidContext, cacheContext);
+                                        @Nullable CacheContext cacheContext, DependencyVersionInferenceService dependencyVersionInferenceService) {
+    super(sonarComponents, javaVersion, inAndroidContext, cacheContext, dependencyVersionInferenceService);
     this.inputFile = inputFile;
   }
 

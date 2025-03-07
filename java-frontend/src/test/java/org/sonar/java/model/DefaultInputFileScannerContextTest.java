@@ -66,7 +66,7 @@ class DefaultInputFileScannerContextTest {
   void setup() {
     sonarComponents = createSonarComponentsMock();
     compilationUnitTree = JParserTestUtils.parse(JAVA_FILE);
-    context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true, false);
+    context = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true, false, null);
     reportedMessage = null;
   }
 
@@ -74,7 +74,7 @@ class DefaultInputFileScannerContextTest {
   void getModuleKey() {
     var moduleKey = "some/random/module/key";
     doReturn(moduleKey).when(sonarComponents).getModuleKey();
-    var ctx = new DefaultJavaFileScannerContext(null, null, null, sonarComponents, null, false, false);
+    var ctx = new DefaultJavaFileScannerContext(null, null, null, sonarComponents, null, false, false, null);
     assertThat(ctx.getModuleKey()).isEqualTo(moduleKey);
   }
 

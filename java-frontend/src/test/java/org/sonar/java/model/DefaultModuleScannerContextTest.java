@@ -59,6 +59,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
     var check = new JavaCheck() {
@@ -74,6 +75,7 @@ class DefaultModuleScannerContextTest {
       null,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
+      null,
       null
     );
     assertThat(context.getJavaVersion().asInt()).isEqualTo(JavaVersionImpl.MAX_SUPPORTED);
@@ -81,6 +83,7 @@ class DefaultModuleScannerContextTest {
       null,
       new JavaVersionImpl(13),
       true,
+      null,
       null
     );
     assertThat(context.getJavaVersion().asInt()).isEqualTo(13);
@@ -92,6 +95,7 @@ class DefaultModuleScannerContextTest {
       null,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
+      null,
       null
     );
     assertThat(context.inAndroidContext()).isTrue();
@@ -99,6 +103,7 @@ class DefaultModuleScannerContextTest {
       null,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
     assertThat(context.inAndroidContext()).isFalse();
@@ -115,6 +120,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
+      null,
       null
     );
     verify(sonarComponents, never()).project();
@@ -134,6 +140,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
+      null,
       null
     );
     verify(sonarComponents, never()).projectLevelWorkDir();
@@ -150,6 +157,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
+      null,
       null
     );
     CacheContext cacheContext = context.getCacheContext();
@@ -169,6 +177,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
+      null,
       null
     );
     CacheContext cacheContext = context.getCacheContext();
@@ -184,7 +193,8 @@ class DefaultModuleScannerContextTest {
       null,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
-      cacheContext
+      cacheContext,
+      null
     );
     assertThat(context.getCacheContext()).isEqualTo(cacheContext);
   }
@@ -199,6 +209,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
     assertThat(context.getRootProjectWorkingDirectory()).isSameAs(projectLevelWorkDirFile);
@@ -220,6 +231,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
 
@@ -233,6 +245,7 @@ class DefaultModuleScannerContextTest {
       null,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
 
@@ -249,6 +262,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
 
@@ -269,6 +283,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
     DependencyVersion springBootDependency = context.getDependencyVersion("org.springframework.boot", "spring-boot");

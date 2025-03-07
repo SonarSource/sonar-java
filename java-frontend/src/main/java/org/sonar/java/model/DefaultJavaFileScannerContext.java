@@ -26,6 +26,7 @@ import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
+import org.sonar.java.classpath.DependencyVersionInferenceService;
 import org.sonar.java.metrics.MetricsComputer;
 import org.sonar.java.metrics.MetricsScannerContext;
 import org.sonar.java.regex.RegexCache;
@@ -61,8 +62,8 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
 
   public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
-                                       boolean fileParsed, boolean inAndroidContext, @Nullable CacheContext cacheContext) {
-    super(sonarComponents, inputFile, javaVersion, inAndroidContext, cacheContext);
+                                       boolean fileParsed, boolean inAndroidContext, @Nullable CacheContext cacheContext, DependencyVersionInferenceService dependencyVersionInferenceService) {
+    super(sonarComponents, inputFile, javaVersion, inAndroidContext, cacheContext, dependencyVersionInferenceService);
     this.tree = (JavaTree.CompilationUnitTreeImpl) tree;
     this.semanticEnabled = semanticModel != null;
     this.complexityVisitor = new ComplexityVisitor();
@@ -73,8 +74,8 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
 
   public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
-                                       boolean fileParsed, boolean inAndroidContext) {
-    this(tree,inputFile, semanticModel, sonarComponents, javaVersion, fileParsed, inAndroidContext, null);
+                                       boolean fileParsed, boolean inAndroidContext, DependencyVersionInferenceService dependencyVersionInferenceService) {
+    this(tree,inputFile, semanticModel, sonarComponents, javaVersion, fileParsed, inAndroidContext, null, dependencyVersionInferenceService);
   }
 
   @Override

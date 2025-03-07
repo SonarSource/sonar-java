@@ -42,13 +42,14 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   protected final boolean inAndroidContext;
   protected final CacheContext cacheContext;
   private final Map<DependencyVersionImpl.CacheKey, DependencyVersion> dependencyVersions = new HashMap<>();
-  private final DependencyVersionInferenceService dependencyVersionInferenceService = DependencyVersionInferenceService.make();
+  private final DependencyVersionInferenceService dependencyVersionInferenceService;
 
   public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext,
-    @Nullable CacheContext cacheContext) {
+    @Nullable CacheContext cacheContext, DependencyVersionInferenceService dependencyVersionInferenceService) {
     this.sonarComponents = sonarComponents;
     this.javaVersion = javaVersion;
     this.inAndroidContext = inAndroidContext;
+    this.dependencyVersionInferenceService = dependencyVersionInferenceService;
     if (cacheContext != null) {
       this.cacheContext = cacheContext;
     } else {
