@@ -41,7 +41,6 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   protected final JavaVersion javaVersion;
   protected final boolean inAndroidContext;
   protected final CacheContext cacheContext;
-  private final Map<DependencyVersionImpl.CacheKey, DependencyVersion> dependencyVersions = new HashMap<>();
   private final DependencyVersionInferenceService dependencyVersionInferenceService;
 
   public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext,
@@ -68,12 +67,6 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   @Override
   @Nullable
   public DependencyVersion getDependencyVersion(String groupId, String artifactId) {
-    var cacheKey = new DependencyVersionImpl.CacheKey(groupId, artifactId);
-    return dependencyVersions.computeIfAbsent(cacheKey, cacheKey1 -> extractDependencyVersionFromClassPath(groupId, artifactId));
-  }
-
-  @Nullable
-  private DependencyVersion extractDependencyVersionFromClassPath(String groupId, String artifactId) {
     List<File> javaClasspath = sonarComponents.getJavaClasspath();
     Optional<DependencyVersion> optionalVersion = dependencyVersionInferenceService
       .infer(groupId, artifactId, javaClasspath);
