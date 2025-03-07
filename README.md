@@ -1,3 +1,12 @@
+
+> [!IMPORTANT]
+> This is a demonstration application of the Query API developed as part of [Gabriel Fleischer](https://github.com/GabrielFleischer)'s [Master Thesis](./MasterThesis.pdf).
+The framework is not publish so to use this repository you need to clone the [Query API](https://github.com/SonarSource/analysis-ast-query/) and install it locally.
+> 
+> `gradlew assemble publishToMavenLocal`
+> 
+> You can find demonstration of the Query API for rule implementation in the [rules](./java-checks/src/main/java/org/sonar/java/checks/queryAPI) package.
+
 Code Quality and Security for Java [![Build Status](https://api.cirrus-ci.com/github/SonarSource/sonar-java.svg?branch=master)](https://cirrus-ci.com/github/SonarSource/sonar-java) [![Quality Gate](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=alert_status)](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.java%3Ajava) [![Coverage](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=coverage)](https://next.sonarqube.com/sonarqube/component_measures/domain/Coverage?id=org.sonarsource.java%3Ajava)
 ==========
 
