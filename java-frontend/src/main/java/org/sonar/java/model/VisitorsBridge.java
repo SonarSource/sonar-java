@@ -45,6 +45,7 @@ import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.exceptions.ThrowableUtils;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -105,10 +106,16 @@ public class VisitorsBridge {
     allScanners.clear();
     scannersThatCannotBeSkipped.clear();
 
-    allScanners.addAll(filterVisitors(visitors, this::isVisitorJavaVersionCompatible));
+    allScanners.addAll(filterVisitors(visitors, v -> isVisitorJavaVersionCompatible(v) &&
+      meetVisitorDependencyRequirements(v)));
     if (canSkipScanningOfUnchangedFiles()) {
       scannersThatCannotBeSkipped.addAll(filterVisitors(visitors, this::isUnskippableVisitor));
     }
+  }
+
+  private boolean meetVisitorDependencyRequirements(Object v) {
+    return !(v instanceof DependencyVersionAware) ||
+      ((DependencyVersionAware) v).isCompatibleWithDependencies(service)
   }
 
   private List<JavaFileScanner> filterVisitors(Iterable<? extends JavaCheck> visitors, Predicate<Object> predicate) {
