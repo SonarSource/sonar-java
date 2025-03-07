@@ -62,20 +62,20 @@ class SeveralBreakOrContinuePerLoopCheckKT : QueryRule {
       .filter { (_, breakAndContinues) -> breakAndContinues.size > 1 }
       .report { context, (loop, breakAndContinues) ->
 
-        val secondaryLocations = breakAndContinues.map { t ->
-          JavaFileScannerContext.Location(
-            "\"${if (t.`is`(Tree.Kind.BREAK_STATEMENT)) "break" else "continue"}\" statement.",
-            t
-          )
-        }
-
-        context.reportIssue(
-          this,
-          loop.firstToken()!!,
-          "Reduce the total number of break and continue statements in this loop to use at most one.",
-          secondaryLocations,
-          breakAndContinues.size - 1
+      val secondaryLocations = breakAndContinues.map { t ->
+        JavaFileScannerContext.Location(
+          "\"${if (t.`is`(Tree.Kind.BREAK_STATEMENT)) "break" else "continue"}\" statement.",
+          t
         )
       }
+
+      context.reportIssue(
+        this,
+        loop.firstToken()!!,
+        "Reduce the total number of break and continue statements in this loop to use at most one.",
+        secondaryLocations,
+        breakAndContinues.size - 1
+      )
+    }
   }
 }
