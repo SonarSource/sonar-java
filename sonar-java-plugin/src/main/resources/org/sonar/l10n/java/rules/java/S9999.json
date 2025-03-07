@@ -7,12 +7,12 @@
     "constantCost": "5min"
   },
   "tags": [
-    "spring", "tests"
+    "lombok"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-7190",
-  "sqKey": "S7190",
-  "scope": "Tests",
+  "ruleSpecification": "RSPEC-9999",
+  "sqKey": "S9999",
+  "scope": "All",
   "quickfix": "unknown",
   "code": {
     "impacts": {
