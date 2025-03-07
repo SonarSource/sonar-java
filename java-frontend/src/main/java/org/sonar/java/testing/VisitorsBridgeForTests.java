@@ -59,7 +59,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   @Override
   protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, @Nullable Sema semanticModel, SonarComponents sonarComponents, boolean failedParsing) {
     Sema model = enableSemantic ? semanticModel : null;
-    testContext = new JavaFileScannerContextForTests(tree, currentFile, model, sonarComponents, javaVersion, failedParsing, inAndroidContext, null);
+    testContext = new JavaFileScannerContextForTests(tree, currentFile, model, sonarComponents, javaVersion, failedParsing, inAndroidContext, null, null);
     return testContext;
   }
 
@@ -67,7 +67,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   protected InputFileScannerContext createScannerContext(
     SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext, CacheContext cacheContext
   ) {
-    testContext = new JavaFileScannerContextForTests(null, inputFile, null, sonarComponents, javaVersion, false, inAndroidContext, cacheContext);
+    testContext = new JavaFileScannerContextForTests(null, inputFile, null, sonarComponents, javaVersion, false, inAndroidContext, cacheContext, null);
     return testContext;
   }
 
@@ -75,7 +75,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   protected ModuleScannerContext createScannerContext(
     @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext, @Nullable CacheContext cacheContext
   ) {
-    moduleContext = new JavaFileScannerContextForTests(null, null, null, sonarComponents, javaVersion, false, inAndroidContext, cacheContext);
+    moduleContext = new JavaFileScannerContextForTests(null, null, null, sonarComponents, javaVersion, false, inAndroidContext, cacheContext, null);
     return moduleContext;
   }
 

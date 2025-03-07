@@ -26,6 +26,7 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.classpath.DependencyVersionInferenceService;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -45,8 +46,8 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
 
   public JavaFileScannerContextForTests(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                         @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
-                                        boolean failedParsing, boolean inAndroidContext, @Nullable CacheContext cacheContext) {
-    super(tree, inputFile, semanticModel, sonarComponents, javaVersion, failedParsing, inAndroidContext, cacheContext);
+                                        boolean failedParsing, boolean inAndroidContext, @Nullable CacheContext cacheContext, DependencyVersionInferenceService dependencyVersionInferenceService) {
+    super(tree, inputFile, semanticModel, sonarComponents, javaVersion, failedParsing, inAndroidContext, cacheContext, dependencyVersionInferenceService);
   }
 
   public Set<AnalyzerMessage> getIssues() {

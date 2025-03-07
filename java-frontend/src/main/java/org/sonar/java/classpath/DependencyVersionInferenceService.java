@@ -30,6 +30,7 @@ import static org.sonar.java.classpath.Version.VERSION_REGEX;
 
 public class DependencyVersionInferenceService {
   private final Map<DependencyVersionImpl.CacheKey, DependencyVersionInference> inferenceImplementations = new HashMap<>();
+  private final Map<DependencyVersionImpl.CacheKey, Optional<DependencyVersion>> dependencyVersionsCache = new HashMap<>();
 
   private void addImplementation(DependencyVersionInference inference) {
     inferenceImplementations.put(
@@ -40,12 +41,15 @@ public class DependencyVersionInferenceService {
   private DependencyVersionInferenceService() {
   }
 
+  // TODO classpath should be a dependency of the service
   public Optional<DependencyVersion> infer(String groupId, String artifactId, List<File> classpath) {
+    var cacheKey = new DependencyVersionImpl.CacheKey(groupId, artifactId);
+    return dependencyVersionsCache.computeIfAbsent(cacheKey, cacheKey1 -> inferWithoutCache(groupId, artifactId, classpath));
+  }
+
+  private Optional<DependencyVersion> inferWithoutCache(String groupId, String artifactId, List<File> classpath) {
     DependencyVersionInference inference = inferenceImplementations.get(new DependencyVersionImpl.CacheKey(groupId, artifactId));
-    if (inference == null) {
-      return Optional.empty();
-    }
-    return inference.infer(classpath);
+    return inference == null ? Optional.empty() : inference.infer(classpath);
   }
 
   @VisibleForTesting

@@ -18,7 +18,10 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.classpath.DependencyVersion;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -27,7 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 
 @Rule(key = "S9999")
-public class UseLombokCheck extends IssuableSubscriptionVisitor {
+public class UseLombokCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -38,10 +41,12 @@ public class UseLombokCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     String name = ((MethodTree) tree).simpleName().name();
     if (name.startsWith("get")) {
-      DependencyVersion lombok = context.getDependencyVersion("org.projectlombok", "lombok");
-      if (lombok != null) {
-        context.reportIssue(this, tree, "Consider using @Getter and @Setter from Lombok to reduce boilerplate.");
-      }
+      context.reportIssue(this, tree, "Consider using @Getter and @Setter from Lombok to reduce boilerplate.");
     }
+  }
+
+  @Override
+  public boolean isCompatibleWithDependencies(BiFunction<String, String, Optional<DependencyVersion>> dependencyFinder) {
+    return dependencyFinder.apply("org.projectlombok", "lombok").isPresent();
   }
 }

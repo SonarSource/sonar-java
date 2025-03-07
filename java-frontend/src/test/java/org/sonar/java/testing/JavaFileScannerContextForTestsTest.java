@@ -71,7 +71,7 @@ class JavaFileScannerContextForTestsTest {
 
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
 
-    context = new JavaFileScannerContextForTests(cut, inputFile, cut.sema, sonarComponents, javaVersion, false, false, null);
+    context = new JavaFileScannerContextForTests(cut, inputFile, cut.sema, sonarComponents, javaVersion, false, false, null, null);
   }
 
   @BeforeEach
