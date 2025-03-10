@@ -16,12 +16,12 @@
  */
 package org.sonar.java.se.checks;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.se.SECheckVerifier;
 import org.sonar.java.se.utils.SETestUtils;
-
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class NullDereferenceCheckTest {
 
@@ -128,6 +128,24 @@ class NullDereferenceCheckTest {
   void test_booleanValue_method() {
     SECheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("symbolicexecution/checks/NullFromBooleanValueCall.java"))
+      .withChecks(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_optional_of_nullable_jspecify() {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/OptionalOfNullableCall_jspecify.java"))
+      .withChecks(new NullDereferenceCheck())
+      .withClassPath(SETestUtils.CLASS_PATH)
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_optional_of_nullable_javax() {
+    SECheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("symbolicexecution/checks/OptionalOfNullableCall_javax.java"))
       .withChecks(new NullDereferenceCheck())
       .withClassPath(SETestUtils.CLASS_PATH)
       .verifyNoIssues();
