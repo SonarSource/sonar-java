@@ -28,6 +28,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.DummyCache;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.DependencyVersionImpl;
+import org.sonar.java.classpath.DependencyVersionInferenceService;
 import org.sonar.java.classpath.Version;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -284,7 +285,7 @@ class DefaultModuleScannerContextTest {
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
       null,
-      null
+      DependencyVersionInferenceService.make()
     );
     DependencyVersion springBootDependency = context.getDependencyVersion("org.springframework.boot", "spring-boot");
     assertThat(springBootDependency.getGroupId()).isEqualTo("org.springframework.boot");
