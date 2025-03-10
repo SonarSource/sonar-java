@@ -63,6 +63,8 @@ public interface ModuleScannerContext {
    */
   DependencyVersion getDependencyVersion(String groupId, String artifactId);
 
+  DependencyVersion getTestDependencyVersion(String groupId, String artifactId);
+
   /**
    * To be used to know if the current file is in an android context or not.
    * This value is determined thanks to the presence of android classes in the classpath.

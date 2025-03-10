@@ -49,7 +49,10 @@ public class DependencyVersionInferenceService {
 
   private Optional<DependencyVersion> inferWithoutCache(String groupId, String artifactId, List<File> classpath) {
     DependencyVersionInference inference = inferenceImplementations.get(new DependencyVersionImpl.CacheKey(groupId, artifactId));
-    return inference == null ? Optional.empty() : inference.infer(classpath);
+    if (inference == null) {
+      throw new IllegalArgumentException("No inference exists for " + groupId + ":" + artifactId);
+    }
+    return inference.infer(classpath);
   }
 
   @VisibleForTesting
@@ -110,7 +113,8 @@ public class DependencyVersionInferenceService {
       builder().groupId("org.projectlombok").artifactId("lombok").attributeName("Lombok-Version").build(),
       builder().groupId("org.springframework.boot").artifactId("spring-boot").build(),
       builder().groupId("org.springframework").artifactId("spring-core").build(),
-      builder().groupId("org.springframework").artifactId("spring-web").build()
+      builder().groupId("org.springframework").artifactId("spring-web").build(),
+      builder().groupId("org.springframework").artifactId("spring-test").build()
     ).forEach(service::addImplementation);
     return service;
   }

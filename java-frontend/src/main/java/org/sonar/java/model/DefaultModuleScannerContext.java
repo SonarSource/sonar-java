@@ -73,6 +73,13 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
     return optionalVersion.orElse(null);
   }
 
+  @Override
+  @Nullable
+  public DependencyVersion getTestDependencyVersion(String groupId, String artifactId) {
+    return dependencyVersionInferenceService
+      .infer(groupId, artifactId, sonarComponents.getJavaTestClasspath()).orElse(null);
+  }
+
   public boolean inAndroidContext() {
     return inAndroidContext;
   }
