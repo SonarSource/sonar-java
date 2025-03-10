@@ -17,12 +17,14 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.classpath.DependencyVersion;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -32,8 +34,6 @@ public class BeforeAndAfterTransactionContractCheck extends IssuableSubscription
   private static final String BEFORE_TRANSACTION_FQN = "org.springframework.test.context.transaction.BeforeTransaction";
   private static final String AFTER_TRANSACTION_FQN = "org.springframework.test.context.transaction.AfterTransaction";
   private static final List<String> TRANSACTION_ANNOTATIONS = List.of(BEFORE_TRANSACTION_FQN, AFTER_TRANSACTION_FQN);
-
-  private static final String TEST_INFO_FQN = "org.junit.jupiter.api.TestInfo";
 
   private static final String RETURN_VOID_MESSAGE = "%s method should return void.";
   private static final String NO_PARAMETERS_MESSAGE = "%s method should not have parameters.";
@@ -64,20 +64,12 @@ public class BeforeAndAfterTransactionContractCheck extends IssuableSubscription
 
   private void checkParameters(MethodTreeImpl methodTree, String annotationName) {
     List<VariableTree> parameters = methodTree.parameters();
-    if (!parameters.isEmpty() && parameters.stream().anyMatch(parameter -> !isParameterAllowed(parameter))) {
+    if (!parameters.isEmpty() && !areArgumentsAllowed()) {
       String message = String.format(NO_PARAMETERS_MESSAGE, annotationName);
       var first = methodTree.parameters().get(0);
       var last = methodTree.parameters().get(methodTree.parameters().size() - 1);
       reportIssue(first, last, message, getSecondaryLocations(methodTree), null);
     }
-  }
-
-  private static boolean isParameterAllowed(VariableTree parameter) {
-    Symbol parameterSymbol = parameter.symbol();
-    if (parameterSymbol.type().is(TEST_INFO_FQN)) {
-      return true;
-    }
-    return SpringUtils.isAutowired(parameterSymbol);
   }
 
   private static List<JavaFileScannerContext.Location> getSecondaryLocations(MethodTreeImpl methodTree) {
@@ -87,4 +79,8 @@ public class BeforeAndAfterTransactionContractCheck extends IssuableSubscription
       .toList();
   }
 
+  public boolean areArgumentsAllowed() {
+    DependencyVersion dependencyVersion = context.getTestDependencyVersion("org.springframework", "spring-test");
+    return dependencyVersion != null && dependencyVersion.isGreaterThanOrEqualTo("6.1");
+  }
 }

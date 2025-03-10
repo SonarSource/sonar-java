@@ -28,6 +28,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.DummyCache;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.DependencyVersionImpl;
+import org.sonar.java.classpath.DependencyVersionInferenceService;
 import org.sonar.java.classpath.Version;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -59,6 +60,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
     var check = new JavaCheck() {
@@ -74,6 +76,7 @@ class DefaultModuleScannerContextTest {
       null,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
+      null,
       null
     );
     assertThat(context.getJavaVersion().asInt()).isEqualTo(JavaVersionImpl.MAX_SUPPORTED);
@@ -81,6 +84,7 @@ class DefaultModuleScannerContextTest {
       null,
       new JavaVersionImpl(13),
       true,
+      null,
       null
     );
     assertThat(context.getJavaVersion().asInt()).isEqualTo(13);
@@ -92,6 +96,7 @@ class DefaultModuleScannerContextTest {
       null,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
+      null,
       null
     );
     assertThat(context.inAndroidContext()).isTrue();
@@ -99,6 +104,7 @@ class DefaultModuleScannerContextTest {
       null,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
     assertThat(context.inAndroidContext()).isFalse();
@@ -115,6 +121,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
+      null,
       null
     );
     verify(sonarComponents, never()).project();
@@ -134,6 +141,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
+      null,
       null
     );
     verify(sonarComponents, never()).projectLevelWorkDir();
@@ -150,6 +158,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
+      null,
       null
     );
     CacheContext cacheContext = context.getCacheContext();
@@ -169,6 +178,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
+      null,
       null
     );
     CacheContext cacheContext = context.getCacheContext();
@@ -184,7 +194,8 @@ class DefaultModuleScannerContextTest {
       null,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       true,
-      cacheContext
+      cacheContext,
+      null
     );
     assertThat(context.getCacheContext()).isEqualTo(cacheContext);
   }
@@ -199,6 +210,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
     assertThat(context.getRootProjectWorkingDirectory()).isSameAs(projectLevelWorkDirFile);
@@ -220,6 +232,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
 
@@ -233,6 +246,7 @@ class DefaultModuleScannerContextTest {
       null,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
 
@@ -249,6 +263,7 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
+      null,
       null
     );
 
@@ -269,7 +284,8 @@ class DefaultModuleScannerContextTest {
       sonarComponents,
       JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
       false,
-      null
+      null,
+      DependencyVersionInferenceService.make()
     );
     DependencyVersion springBootDependency = context.getDependencyVersion("org.springframework.boot", "spring-boot");
     assertThat(springBootDependency.getGroupId()).isEqualTo("org.springframework.boot");

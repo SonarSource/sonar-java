@@ -41,14 +41,14 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   protected final JavaVersion javaVersion;
   protected final boolean inAndroidContext;
   protected final CacheContext cacheContext;
-  private final Map<DependencyVersionImpl.CacheKey, DependencyVersion> dependencyVersions = new HashMap<>();
-  private final DependencyVersionInferenceService dependencyVersionInferenceService = DependencyVersionInferenceService.make();
+  private final DependencyVersionInferenceService dependencyVersionInferenceService;
 
   public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext,
-    @Nullable CacheContext cacheContext) {
+    @Nullable CacheContext cacheContext, DependencyVersionInferenceService dependencyVersionInferenceService) {
     this.sonarComponents = sonarComponents;
     this.javaVersion = javaVersion;
     this.inAndroidContext = inAndroidContext;
+    this.dependencyVersionInferenceService = dependencyVersionInferenceService;
     if (cacheContext != null) {
       this.cacheContext = cacheContext;
     } else {
@@ -67,16 +67,17 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   @Override
   @Nullable
   public DependencyVersion getDependencyVersion(String groupId, String artifactId) {
-    var cacheKey = new DependencyVersionImpl.CacheKey(groupId, artifactId);
-    return dependencyVersions.computeIfAbsent(cacheKey, cacheKey1 -> extractDependencyVersionFromClassPath(groupId, artifactId));
-  }
-
-  @Nullable
-  private DependencyVersion extractDependencyVersionFromClassPath(String groupId, String artifactId) {
     List<File> javaClasspath = sonarComponents.getJavaClasspath();
     Optional<DependencyVersion> optionalVersion = dependencyVersionInferenceService
       .infer(groupId, artifactId, javaClasspath);
     return optionalVersion.orElse(null);
+  }
+
+  @Override
+  @Nullable
+  public DependencyVersion getTestDependencyVersion(String groupId, String artifactId) {
+    return dependencyVersionInferenceService
+      .infer(groupId, artifactId, sonarComponents.getJavaTestClasspath()).orElse(null);
   }
 
   public boolean inAndroidContext() {
