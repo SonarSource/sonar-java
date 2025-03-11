@@ -23,7 +23,9 @@ import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.classpath.DependencyVersionInferenceService;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -59,7 +61,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   @Override
   protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, @Nullable Sema semanticModel, SonarComponents sonarComponents, boolean failedParsing) {
     Sema model = enableSemantic ? semanticModel : null;
-    testContext = new JavaFileScannerContextForTests(tree, currentFile, model, sonarComponents, javaVersion, failedParsing, inAndroidContext, null, null);
+    testContext = new JavaFileScannerContextForTests(tree, currentFile, model, sonarComponents, javaVersion, failedParsing, inAndroidContext, null, DependencyVersionInferenceService.make());
     return testContext;
   }
 
@@ -67,7 +69,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   protected InputFileScannerContext createScannerContext(
     SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext, CacheContext cacheContext
   ) {
-    testContext = new JavaFileScannerContextForTests(null, inputFile, null, sonarComponents, javaVersion, false, inAndroidContext, cacheContext, null);
+    testContext = new JavaFileScannerContextForTests(null, inputFile, null, sonarComponents, javaVersion, false, inAndroidContext, cacheContext, DependencyVersionInferenceService.make());
     return testContext;
   }
 
