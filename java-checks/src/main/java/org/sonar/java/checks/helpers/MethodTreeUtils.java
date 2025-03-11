@@ -183,6 +183,39 @@ public final class MethodTreeUtils {
     return tree != null && tree.kind() == kind;
   }
 
+  public static Optional<String> hasGetterSignature(Symbol.MethodSymbol methodSymbol) {
+    if (!methodSymbol.parameterTypes().isEmpty() || isPrivateStaticOrAbstract(methodSymbol)) {
+      return Optional.empty();
+    }
+    String methodName = methodSymbol.name();
+    if (methodName.length() > 3 && methodName.startsWith("get")) {
+      return Optional.of(lowerCaseFirstLetter(methodName.substring(3)));
+    }
+    if (methodName.length() > 2 && methodName.startsWith("is")) {
+      return Optional.of(lowerCaseFirstLetter(methodName.substring(2)));
+    }
+    return Optional.empty();
+  }
+
+  public static Optional<String> hasSetterSignature(Symbol.MethodSymbol methodSymbol) {
+    if (methodSymbol.parameterTypes().size() != 1 || isPrivateStaticOrAbstract(methodSymbol)) {
+      return Optional.empty();
+    }
+    String methodName = methodSymbol.name();
+    if (methodName.length() > 3 && methodName.startsWith("set") && methodSymbol.returnType().type().isVoid()) {
+      return Optional.of(lowerCaseFirstLetter(methodName.substring(3)));
+    }
+    return Optional.empty();
+  }
+
+  private static boolean isPrivateStaticOrAbstract(Symbol.MethodSymbol methodSymbol) {
+    return methodSymbol.isPrivate() || methodSymbol.isStatic() || methodSymbol.isAbstract();
+  }
+
+  public static String lowerCaseFirstLetter(String methodName) {
+    return Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+  }
+
   public static class MethodInvocationCollector extends BaseTreeVisitor {
     protected final List<Tree> invocationTree = new ArrayList<>();
     private final Predicate<Symbol.MethodSymbol> collectPredicate;

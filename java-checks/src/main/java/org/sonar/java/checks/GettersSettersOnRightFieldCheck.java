@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -44,41 +45,8 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    hasGetterSignature(methodTree.symbol()).ifPresent(fieldName -> checkGetter(fieldName, methodTree));
-    hasSetterSignature(methodTree.symbol()).ifPresent(fieldName -> checkSetter(fieldName, methodTree));
-  }
-
-  private static Optional<String> hasGetterSignature(Symbol.MethodSymbol methodSymbol) {
-    if (!methodSymbol.parameterTypes().isEmpty() || isPrivateStaticOrAbstract(methodSymbol)) {
-      return Optional.empty();
-    }
-    String methodName = methodSymbol.name();
-    if (methodName.length() > 3 && methodName.startsWith("get")) {
-      return Optional.of(lowerCaseFirstLetter(methodName.substring(3)));
-    }
-    if (methodName.length() > 2 && methodName.startsWith("is")) {
-      return Optional.of(lowerCaseFirstLetter(methodName.substring(2)));
-    }
-    return Optional.empty();
-  }
-
-  private static Optional<String> hasSetterSignature(Symbol.MethodSymbol methodSymbol) {
-    if (methodSymbol.parameterTypes().size() != 1 || isPrivateStaticOrAbstract(methodSymbol)) {
-      return Optional.empty();
-    }
-    String methodName = methodSymbol.name();
-    if (methodName.length() > 3 && methodName.startsWith("set") && methodSymbol.returnType().type().isVoid()) {
-      return Optional.of(lowerCaseFirstLetter(methodName.substring(3)));
-    }
-    return Optional.empty();
-  }
-
-  private static boolean isPrivateStaticOrAbstract(Symbol.MethodSymbol methodSymbol) {
-    return methodSymbol.isPrivate() || methodSymbol.isStatic() || methodSymbol.isAbstract();
-  }
-
-  private static String lowerCaseFirstLetter(String methodName) {
-    return Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+    MethodTreeUtils.hasGetterSignature(methodTree.symbol()).ifPresent(fieldName -> checkGetter(fieldName, methodTree));
+    MethodTreeUtils.hasSetterSignature(methodTree.symbol()).ifPresent(fieldName -> checkSetter(fieldName, methodTree));
   }
 
   private void checkGetter(String fieldName, MethodTree methodTree) {
