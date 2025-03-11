@@ -20,8 +20,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.java.classpath.Version;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -34,7 +38,7 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4488")
-public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisitor {
+public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
   private static final Map<String, String> PREFERRED_METHOD_MAP = buildPreferredMethodMap();
 
@@ -109,5 +113,12 @@ public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisit
         .flatMap(SpringComposedRequestMappingCheck::extractValues);
     }
     return Stream.of(expression);
+  }
+
+  @Override
+  public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
+    return dependencyFinder.apply("spring-web")
+      .map(v -> v.isGreaterThanOrEqualTo("4.3"))
+      .orElse(false);
   }
 }
