@@ -44,11 +44,11 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    isGetterLike(methodTree.symbol()).ifPresent(fieldName -> checkGetter(fieldName, methodTree));
-    isSetterLike(methodTree.symbol()).ifPresent(fieldName -> checkSetter(fieldName, methodTree));
+    hasGetterSignature(methodTree.symbol()).ifPresent(fieldName -> checkGetter(fieldName, methodTree));
+    hasSetterSignature(methodTree.symbol()).ifPresent(fieldName -> checkSetter(fieldName, methodTree));
   }
 
-  private static Optional<String> isGetterLike(Symbol.MethodSymbol methodSymbol) {
+  private static Optional<String> hasGetterSignature(Symbol.MethodSymbol methodSymbol) {
     if (!methodSymbol.parameterTypes().isEmpty() || isPrivateStaticOrAbstract(methodSymbol)) {
       return Optional.empty();
     }
@@ -62,7 +62,7 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
     return Optional.empty();
   }
 
-  private static Optional<String> isSetterLike(Symbol.MethodSymbol methodSymbol) {
+  private static Optional<String> hasSetterSignature(Symbol.MethodSymbol methodSymbol) {
     if (methodSymbol.parameterTypes().size() != 1 || isPrivateStaticOrAbstract(methodSymbol)) {
       return Optional.empty();
     }
