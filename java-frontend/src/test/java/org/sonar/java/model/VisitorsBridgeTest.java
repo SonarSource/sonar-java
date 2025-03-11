@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -39,9 +41,11 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.EndOfAnalysisVisitor;
 import org.sonar.java.checks.VisitorThatCanBeSkipped;
+import org.sonar.java.classpath.Version;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.java.testing.ThreadLocalLogTester;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -281,6 +285,43 @@ class VisitorsBridgeTest {
     visitorsBridge = new VisitorsBridge(visitors, Collections.emptyList(), null, new JavaVersionImpl(16));
     visitorsBridge.endOfAnalysis();
     assertThat(trace).containsExactly("RuleForAllJavaVersion", "RuleForJava15", "SubscriptionVisitorForJava10");
+  }
+
+  @Test
+  void testfilterScanner_byDependencies() {
+    List<String> trace = new ArrayList<>();
+    class SubscriptionVisitorForSpring8 extends IssuableSubscriptionVisitor implements DependencyVersionAware, EndOfAnalysis {
+
+      @Override
+      public List<Kind> nodesToVisit() {
+        return List.of();
+      }
+
+      @Override
+      public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
+        return dependencyFinder.apply("spring-core")
+          .map(v -> v.isGreaterThanOrEqualTo("8.0"))
+          .orElse(false);
+      }
+
+      @Override
+      public void endOfAnalysis(ModuleScannerContext context) {
+        trace.add(this.getClass().getSimpleName());
+      }
+    }
+
+    List<SubscriptionVisitorForSpring8> visitors = Collections.singletonList(new SubscriptionVisitorForSpring8());
+    VisitorsBridge visitorsBridge = new VisitorsBridge(visitors, Collections.emptyList(), null);
+    visitorsBridge.endOfAnalysis();
+    assertThat(trace).isEmpty();
+    trace.clear();
+
+
+    visitorsBridge = new VisitorsBridge(visitors, Collections.singletonList(
+      new File("/home/user/.m2/path/spring-core-8.9.12.jar")), null);
+    visitorsBridge.endOfAnalysis();
+    assertThat(trace).containsExactly("SubscriptionVisitorForSpring8");
+    trace.clear();
   }
 
   @Test
