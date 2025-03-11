@@ -118,9 +118,11 @@ public class VisitorsBridge {
   }
 
   private boolean meetVisitorDependencyRequirements(Object v) {
-    return !(v instanceof DependencyVersionAware versionAware) ||
-      versionAware.isCompatibleWithDependencies((group, artifact) ->
+    if (v instanceof DependencyVersionAware versionAware) {
+      return versionAware.isCompatibleWithDependencies((group, artifact) ->
         dependencyService.infer(group, artifact, classpath));
+    }
+    return true;
   }
 
   private List<JavaFileScanner> filterVisitors(Iterable<? extends JavaCheck> visitors, Predicate<Object> predicate) {
