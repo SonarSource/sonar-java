@@ -21,9 +21,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.classpath.DependencyVersion;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -39,9 +41,36 @@ public class UseLombokCheck extends IssuableSubscriptionVisitor implements Depen
 
   @Override
   public void visitNode(Tree tree) {
-    String name = ((MethodTree) tree).simpleName().name();
-    if (name.startsWith("get")) {
-      context.reportIssue(this, tree, "Consider using @Getter and @Setter from Lombok to reduce boilerplate.");
+    MethodTree methodTree = (MethodTree) tree;
+    checkForGetter(tree, methodTree);
+    checkForSetter(tree, methodTree);
+  }
+
+  private void checkForGetter(Tree tree, MethodTree methodTree) {
+    Optional<String> fieldName = MethodTreeUtils.hasGetterSignature(methodTree.symbol());
+    if (fieldName.isEmpty()) {
+      return;
+    }
+    Optional<Symbol> fieldSymbol = MethodTreeUtils.hasGetterBody(methodTree);
+    if (fieldSymbol.isEmpty()) {
+      return;
+    }
+    if (fieldName.get().equals(fieldSymbol.get().name())) {
+      context.reportIssue(this, tree, "Consider using @Getter from Lombok to reduce boilerplate.");
+    }
+  }
+
+  private void checkForSetter(Tree tree, MethodTree methodTree) {
+    Optional<String> fieldName = MethodTreeUtils.hasSetterSignature(methodTree.symbol());
+    if (fieldName.isEmpty()) {
+      return;
+    }
+    Optional<Symbol> fieldSymbol = MethodTreeUtils.hasSetterBody(methodTree);
+    if (fieldSymbol.isEmpty()) {
+      return;
+    }
+    if (fieldName.get().equals(fieldSymbol.get().name())) {
+      context.reportIssue(this, tree, "Consider using @Setter from Lombok to reduce boilerplate.");
     }
   }
 
