@@ -22,15 +22,19 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.checks.GettersSettersOnRightFieldCheck;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -39,6 +43,8 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -68,10 +74,10 @@ public final class MethodTreeUtils {
 
   /**
    * @return null when:
-   *  - argumentCandidate is null
-   *  - the parent is not a method invocation (ignoring parent parentheses)
-   *  - argumentCandidate is not at the expected argument position
-   *  Otherwise, returns the parent method invocation.
+   * - argumentCandidate is null
+   * - the parent is not a method invocation (ignoring parent parentheses)
+   * - argumentCandidate is not at the expected argument position
+   * Otherwise, returns the parent method invocation.
    */
   @Nullable
   public static MethodInvocationTree parentMethodInvocationOfArgumentAtPos(@Nullable ExpressionTree argumentCandidate, int expectedArgumentPosition) {
@@ -204,6 +210,46 @@ public final class MethodTreeUtils {
     String methodName = methodSymbol.name();
     if (methodName.length() > 3 && methodName.startsWith("set") && methodSymbol.returnType().type().isVoid()) {
       return Optional.of(lowerCaseFirstLetter(methodName.substring(3)));
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * If the given method tree has a body that looks like a getter, return the name of the field that would be returned
+   * by that getter.
+   */
+  public static Optional<Symbol> hasGetterBody(MethodTree methodTree) {
+    return firstAndOnlyStatement(methodTree)
+      .filter(statementTree -> statementTree.is(Tree.Kind.RETURN_STATEMENT))
+      .map(statementTree -> ((ReturnStatementTree) statementTree).expression())
+      .flatMap(MethodTreeUtils::symbolFromExpression);
+  }
+
+  /**
+   * If the given method tree has a body that looks like a setter, return the name of the field that would be set
+   * by that setter.
+   */
+  public static Optional<Symbol> hasSetterBody(MethodTree methodTree) {
+    return firstAndOnlyStatement(methodTree)
+      .filter(statementTree -> statementTree.is(Tree.Kind.EXPRESSION_STATEMENT))
+      .map(statementTree -> ((ExpressionStatementTree) statementTree).expression())
+      .filter(expressionTree -> expressionTree.is(Tree.Kind.ASSIGNMENT))
+      .map(expressionTree -> ((AssignmentExpressionTree) expressionTree).variable())
+      .flatMap(MethodTreeUtils::symbolFromExpression);
+  }
+
+  private static Optional<StatementTree> firstAndOnlyStatement(MethodTree methodTree) {
+    return Optional.ofNullable(methodTree.block())
+      .filter(b -> b.body().size() == 1)
+      .map(b -> b.body().get(0));
+  }
+
+  private static Optional<Symbol> symbolFromExpression(ExpressionTree returnExpression) {
+    if (returnExpression.is(Tree.Kind.IDENTIFIER)) {
+      return Optional.of(((IdentifierTree) returnExpression).symbol());
+    }
+    if (returnExpression.is(Tree.Kind.MEMBER_SELECT)) {
+      return Optional.of(((MemberSelectExpressionTree) returnExpression).identifier().symbol());
     }
     return Optional.empty();
   }

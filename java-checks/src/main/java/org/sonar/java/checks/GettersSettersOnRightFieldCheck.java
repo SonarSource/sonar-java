@@ -54,10 +54,7 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
     if (hasNoPrivateFieldMatchingNameAndType(fieldName, methodTree.symbol().returnType().type(), getterOwner)) {
       return;
     }
-    firstAndOnlyStatement(methodTree)
-      .filter(statementTree -> statementTree.is(Tree.Kind.RETURN_STATEMENT))
-      .map(statementTree -> ((ReturnStatementTree) statementTree).expression())
-      .flatMap(GettersSettersOnRightFieldCheck::symbolFromExpression)
+    MethodTreeUtils.hasGetterBody(methodTree)
       .filter(returnSymbol -> !fieldName.equals(returnSymbol.name()))
       .ifPresent(returnedSymbol -> context.reportIssue(this, methodTree.simpleName(),
         "Refactor this getter so that it actually refers to the field \"" + fieldName + "\"."));
@@ -68,12 +65,7 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
     if (hasNoPrivateFieldMatchingNameAndType(fieldName, methodTree.symbol().parameterTypes().get(0), setterOwner)) {
       return;
     }
-    firstAndOnlyStatement(methodTree)
-      .filter(statementTree -> statementTree.is(Tree.Kind.EXPRESSION_STATEMENT))
-      .map(statementTree -> ((ExpressionStatementTree) statementTree).expression())
-      .filter(expressionTree -> expressionTree.is(Tree.Kind.ASSIGNMENT))
-      .map(expressionTree -> ((AssignmentExpressionTree) expressionTree).variable())
-      .flatMap(GettersSettersOnRightFieldCheck::symbolFromExpression)
+    MethodTreeUtils.hasSetterBody(methodTree)
       .filter(variableSymbol -> !fieldName.equals(variableSymbol.name()))
       .ifPresent(variableSymbol -> context.reportIssue(this, methodTree.simpleName(),
         "Refactor this setter so that it actually refers to the field \"" + fieldName + "\"."));
@@ -87,19 +79,6 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
       .noneMatch(symbol -> fieldName.equals(symbol.name()));
   }
 
-  private static Optional<Symbol> symbolFromExpression(ExpressionTree returnExpression) {
-    if (returnExpression.is(Tree.Kind.IDENTIFIER)) {
-      return Optional.of(((IdentifierTree) returnExpression).symbol());
-    }
-    if (returnExpression.is(Tree.Kind.MEMBER_SELECT)) {
-      return Optional.of(((MemberSelectExpressionTree) returnExpression).identifier().symbol());
-    }
-    return Optional.empty();
-  }
 
-  private static Optional<StatementTree> firstAndOnlyStatement(MethodTree methodTree) {
-    return Optional.ofNullable(methodTree.block())
-      .filter(b -> b.body().size() == 1)
-      .map(b -> b.body().get(0));
-  }
+
 }
