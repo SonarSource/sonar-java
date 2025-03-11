@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -44,41 +45,8 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    isGetterLike(methodTree.symbol()).ifPresent(fieldName -> checkGetter(fieldName, methodTree));
-    isSetterLike(methodTree.symbol()).ifPresent(fieldName -> checkSetter(fieldName, methodTree));
-  }
-
-  private static Optional<String> isGetterLike(Symbol.MethodSymbol methodSymbol) {
-    if (!methodSymbol.parameterTypes().isEmpty() || isPrivateStaticOrAbstract(methodSymbol)) {
-      return Optional.empty();
-    }
-    String methodName = methodSymbol.name();
-    if (methodName.length() > 3 && methodName.startsWith("get")) {
-      return Optional.of(lowerCaseFirstLetter(methodName.substring(3)));
-    }
-    if (methodName.length() > 2 && methodName.startsWith("is")) {
-      return Optional.of(lowerCaseFirstLetter(methodName.substring(2)));
-    }
-    return Optional.empty();
-  }
-
-  private static Optional<String> isSetterLike(Symbol.MethodSymbol methodSymbol) {
-    if (methodSymbol.parameterTypes().size() != 1 || isPrivateStaticOrAbstract(methodSymbol)) {
-      return Optional.empty();
-    }
-    String methodName = methodSymbol.name();
-    if (methodName.length() > 3 && methodName.startsWith("set") && methodSymbol.returnType().type().isVoid()) {
-      return Optional.of(lowerCaseFirstLetter(methodName.substring(3)));
-    }
-    return Optional.empty();
-  }
-
-  private static boolean isPrivateStaticOrAbstract(Symbol.MethodSymbol methodSymbol) {
-    return methodSymbol.isPrivate() || methodSymbol.isStatic() || methodSymbol.isAbstract();
-  }
-
-  private static String lowerCaseFirstLetter(String methodName) {
-    return Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
+    MethodTreeUtils.hasGetterSignature(methodTree.symbol()).ifPresent(fieldName -> checkGetter(fieldName, methodTree));
+    MethodTreeUtils.hasSetterSignature(methodTree.symbol()).ifPresent(fieldName -> checkSetter(fieldName, methodTree));
   }
 
   private void checkGetter(String fieldName, MethodTree methodTree) {
@@ -86,10 +54,7 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
     if (hasNoPrivateFieldMatchingNameAndType(fieldName, methodTree.symbol().returnType().type(), getterOwner)) {
       return;
     }
-    firstAndOnlyStatement(methodTree)
-      .filter(statementTree -> statementTree.is(Tree.Kind.RETURN_STATEMENT))
-      .map(statementTree -> ((ReturnStatementTree) statementTree).expression())
-      .flatMap(GettersSettersOnRightFieldCheck::symbolFromExpression)
+    MethodTreeUtils.hasGetterBody(methodTree)
       .filter(returnSymbol -> !fieldName.equals(returnSymbol.name()))
       .ifPresent(returnedSymbol -> context.reportIssue(this, methodTree.simpleName(),
         "Refactor this getter so that it actually refers to the field \"" + fieldName + "\"."));
@@ -100,12 +65,7 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
     if (hasNoPrivateFieldMatchingNameAndType(fieldName, methodTree.symbol().parameterTypes().get(0), setterOwner)) {
       return;
     }
-    firstAndOnlyStatement(methodTree)
-      .filter(statementTree -> statementTree.is(Tree.Kind.EXPRESSION_STATEMENT))
-      .map(statementTree -> ((ExpressionStatementTree) statementTree).expression())
-      .filter(expressionTree -> expressionTree.is(Tree.Kind.ASSIGNMENT))
-      .map(expressionTree -> ((AssignmentExpressionTree) expressionTree).variable())
-      .flatMap(GettersSettersOnRightFieldCheck::symbolFromExpression)
+    MethodTreeUtils.hasSetterBody(methodTree)
       .filter(variableSymbol -> !fieldName.equals(variableSymbol.name()))
       .ifPresent(variableSymbol -> context.reportIssue(this, methodTree.simpleName(),
         "Refactor this setter so that it actually refers to the field \"" + fieldName + "\"."));
@@ -119,19 +79,6 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
       .noneMatch(symbol -> fieldName.equals(symbol.name()));
   }
 
-  private static Optional<Symbol> symbolFromExpression(ExpressionTree returnExpression) {
-    if (returnExpression.is(Tree.Kind.IDENTIFIER)) {
-      return Optional.of(((IdentifierTree) returnExpression).symbol());
-    }
-    if (returnExpression.is(Tree.Kind.MEMBER_SELECT)) {
-      return Optional.of(((MemberSelectExpressionTree) returnExpression).identifier().symbol());
-    }
-    return Optional.empty();
-  }
 
-  private static Optional<StatementTree> firstAndOnlyStatement(MethodTree methodTree) {
-    return Optional.ofNullable(methodTree.block())
-      .filter(b -> b.body().size() == 1)
-      .map(b -> b.body().get(0));
-  }
+
 }

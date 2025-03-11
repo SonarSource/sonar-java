@@ -60,7 +60,7 @@ public class SETestUtils {
     JavaTree.CompilationUnitTreeImpl cut = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(inputFile.file(), CLASS_PATH);
     Sema semanticModel = cut.sema;
     SymbolicExecutionVisitor sev = new SymbolicExecutionVisitor(Arrays.asList(checks));
-    sev.scanFile(new DefaultJavaFileScannerContext(cut, inputFile, semanticModel, null, new JavaVersionImpl(8), true, false));
+    sev.scanFile(new DefaultJavaFileScannerContext(cut, inputFile, semanticModel, null, new JavaVersionImpl(8), true, false, null));
     return new Pair<>(sev, semanticModel);
   }
 

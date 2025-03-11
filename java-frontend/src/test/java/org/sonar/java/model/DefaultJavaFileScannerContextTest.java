@@ -284,10 +284,10 @@ class DefaultJavaFileScannerContextTest extends DefaultInputFileScannerContextTe
     GeneratedFile file = mock(GeneratedFile.class);
     SourceMap sourceMap = mock(SourceMap.class);
     when(file.sourceMap()).thenReturn(sourceMap);
-    DefaultJavaFileScannerContext ctx = new DefaultJavaFileScannerContext(compilationUnitTree, file, null, sonarComponents, new JavaVersionImpl(), true, false);
+    DefaultJavaFileScannerContext ctx = new DefaultJavaFileScannerContext(compilationUnitTree, file, null, sonarComponents, new JavaVersionImpl(), true, false, null);
     assertThat(ctx.sourceMap()).containsSame(sourceMap);
 
-    ctx = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true, false);
+    ctx = new DefaultJavaFileScannerContext(compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true, false, null);
     assertThat(ctx.sourceMap()).isEmpty();
   }
 
@@ -305,7 +305,7 @@ class DefaultJavaFileScannerContextTest extends DefaultInputFileScannerContextTe
     doAnswer(invocation -> sensorContext).when(sonarComponents).context();
 
     DefaultJavaFileScannerContext ctx = new DefaultJavaFileScannerContext(
-      compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true, false);
+      compilationUnitTree, JAVA_INPUT_FILE, null, sonarComponents, new JavaVersionImpl(), true, false, null);
 
     var cc = ctx.getCacheContext();
     assertThat(cc.isCacheEnabled()).isTrue();

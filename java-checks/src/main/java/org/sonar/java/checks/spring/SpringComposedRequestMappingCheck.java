@@ -20,10 +20,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.classpath.DependencyVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -34,7 +38,7 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4488")
-public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisitor {
+public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
   private static final Map<String, String> PREFERRED_METHOD_MAP = buildPreferredMethodMap();
 
@@ -55,10 +59,6 @@ public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisit
 
   @Override
   public void visitNode(Tree tree) {
-    if(context.getDependencyVersion("org.springframework", "spring-web").isLowerThan("4.3")){
-      return;
-    }
-
     AnnotationTree annotation = (AnnotationTree) tree;
     if (annotation.symbolType().is("org.springframework.web.bind.annotation.RequestMapping")) {
       List<ExpressionTree> methodValues = annotation.arguments().stream()
@@ -113,5 +113,12 @@ public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisit
         .flatMap(SpringComposedRequestMappingCheck::extractValues);
     }
     return Stream.of(expression);
+  }
+
+  @Override
+  public boolean isCompatibleWithDependencies(BiFunction<String, String, Optional<DependencyVersion>> dependencyFinder) {
+    return dependencyFinder.apply("org.springframework", "spring-web")
+      .map(v -> v.isGreaterThanOrEqualTo("4.3"))
+      .orElse(false);
   }
 }
