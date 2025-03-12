@@ -86,7 +86,7 @@ build_task:
   build_script:
     - *log_develocity_url_script
     - source cirrus-env BUILD
-    - regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws'
+    - regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-web-4.0'
   cleanup_before_cache_script: cleanup_maven_repository
 
 test_analyze_task:
@@ -118,7 +118,7 @@ ws_scan_task:
   whitesource_script:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
-    - mvn clean install --batch-mode -Dmaven.test.skip=true -pl '!java-checks-test-sources,!java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-3.2'
+    - mvn clean install --batch-mode -Dmaven.test.skip=true -pl '!java-checks-test-sources,!java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-3.2,!java-checks-test-sources/spring-web-4.0'
     - source ws_scan.sh
   allow_failures: "true"
   always:
