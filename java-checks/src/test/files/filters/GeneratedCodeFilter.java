@@ -49,3 +49,24 @@ class unrelated_bad_name { //WithIssue
     Object Bad_Variable_Name; // WithIssue
   }
 }
+
+@jakarta.annotation.Generated("value")
+class bad_jakarta_generated_name { //NoIssue
+
+  Object Bad_Field_Name; // NoIssue
+
+  void Bad_Method_Name() { // NoIssue
+    Object Bad_Variable_Name; // NoIssue
+  }
+}
+
+@jakarta.annotation.processing.Generated("value")
+class bad_jakarta_processing_generated_name { //NoIssue
+
+  Object Bad_Field_Name; // NoIssue
+
+  void Bad_Method_Name() { // NoIssue
+    Object Bad_Variable_Name; // NoIssue
+  }
+}
+
