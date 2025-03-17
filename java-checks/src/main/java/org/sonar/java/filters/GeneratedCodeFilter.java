@@ -16,12 +16,22 @@
  */
 package org.sonar.java.filters;
 
+import java.util.Set;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
 public class GeneratedCodeFilter extends AnyRuleIssueFilter {
+
+  private static final Set<String> GENERATED_ANNOTATIONS = Set.of(
+    "javax.annotation.Generated",
+    "javax.annotation.processing.Generated",
+    "jakarta.annotation.Generated",
+    "jakarta.annotation.processing.Generated"
+  );
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -49,7 +59,10 @@ public class GeneratedCodeFilter extends AnyRuleIssueFilter {
   }
 
   private static boolean isGenerated(Symbol symbol) {
-    return symbol.metadata().isAnnotatedWith("javax.annotation.Generated")
-      || symbol.metadata().isAnnotatedWith("javax.annotation.processing.Generated");
+    return symbol.metadata().annotations().stream()
+      .map(AnnotationInstance::symbol)
+      .map(Symbol::type)
+      .map(Type::fullyQualifiedName)
+      .anyMatch(GENERATED_ANNOTATIONS::contains);
   }
 }
