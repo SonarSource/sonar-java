@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -62,13 +63,16 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     scan(context.getTree());
     occurrences.forEach((key, literalTrees) -> {
       int literalOccurrence = literalTrees.size();
+      // Do not consider `throw new Exception("repeated message")` for reporting duplicates,
+      // but still report it if a constant is available.
+      int triggeringOccurrences = (int) literalTrees.stream().filter(tree -> !isThrowableArgument(tree)).count();
       if (constants.containsKey(key)) {
         VariableTree constant = constants.get(key);
         List<LiteralTree> duplications = literalTrees.stream().filter(literal -> literal.parent() != constant).toList();
         context.reportIssue(this, duplications.iterator().next(),
           "Use already-defined constant '" + constant.simpleName() + "' instead of duplicating its value here.",
           secondaryLocations(duplications.subList(1, duplications.size())), literalOccurrence);
-      } else if (literalOccurrence >= threshold) {
+      } else if (triggeringOccurrences >= threshold) {
         LiteralTree literalTree = literalTrees.iterator().next();
         String message = literalTree.is(Tree.Kind.TEXT_BLOCK) ? ("Define a constant instead of duplicating this text block " + literalOccurrence + " times.")
           : ("Define a constant instead of duplicating this literal \"" + key + "\" " + literalOccurrence + " times.");
@@ -83,6 +87,29 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
 
   private static List<JavaFileScannerContext.Location> secondaryLocations(Collection<LiteralTree> literalTrees) {
     return literalTrees.stream().map(element -> new JavaFileScannerContext.Location("Duplication", element)).toList();
+  }
+
+  /**
+   * Verify that <code>literalTree</code> is an argument in
+   * <code>throw new SomeException(arg1, arg2, ...)</code>,
+   * or a part of an argument (to account for concatenation), for example,
+   * <code>throw new SomeException(arg1, "literalTree" + stuff, ...)</code>,
+   * For simplicity and to avoid surprises, we do not consider more complex cases.
+   */
+  private static boolean isThrowableArgument(LiteralTree literalTree) {
+    Optional<Tree> tree = Optional.ofNullable(literalTree.parent());
+    // If the literal is a part of string concatenation expression, move up
+    // until the argument list.
+    while(tree.filter(t -> t.is(Tree.Kind.PLUS)).isPresent()) {
+      tree = tree.map(Tree::parent);
+    }
+    return tree
+      .filter(t -> t.is(Tree.Kind.ARGUMENTS))
+      .map(Tree::parent)
+      .filter(t -> t.is(Tree.Kind.NEW_CLASS))
+      .map(Tree::parent)
+      .filter(t -> t.is(Tree.Kind.THROW_STATEMENT))
+      .isPresent();
   }
 
   @Override
