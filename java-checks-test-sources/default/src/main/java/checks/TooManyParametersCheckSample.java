@@ -12,6 +12,7 @@ import io.micronaut.http.annotation.Trace;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import lombok.Builder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class TooManyParametersCheckSample {
   TooManyParametersCheckSample(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // Noncompliant {{Constructor has 8 parameters, which is greater than 7 authorized.}}
@@ -109,6 +110,11 @@ class JakartaMethodsUsingAnnotations {
 class LombokBuilderAnnotation {
   @Builder
   LombokBuilderAnnotation(String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8) {} // Compliant
+}
+
+class SpringComponent {
+  @Autowired
+  SpringComponent(String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8) {} // Compliant
 }
 
 @Target(ElementType.METHOD)

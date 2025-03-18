@@ -70,7 +70,8 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
     "io.micronaut.http.annotation.Options",
     "io.micronaut.http.annotation.Patch",
     "io.micronaut.http.annotation.Head",
-    "io.micronaut.http.annotation.Trace");
+    "io.micronaut.http.annotation.Trace",
+    "org.springframework.beans.factory.annotation.Autowired");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
