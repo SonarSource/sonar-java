@@ -18,7 +18,9 @@ package org.sonar.plugins.surefire.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 public final class UnitTestClassReport {
@@ -31,6 +33,7 @@ public final class UnitTestClassReport {
 
   private long negativeTimeTestNumber = 0L;
   private List<UnitTestResult> results = null;
+  private Set<String> resultsNames = null;
 
   public UnitTestClassReport add(UnitTestClassReport other) {
     for (UnitTestResult otherResult : other.getResults()) {
@@ -41,10 +44,10 @@ public final class UnitTestClassReport {
 
   public UnitTestClassReport add(UnitTestResult result) {
     initResults();
-    boolean hasName = results.stream().map(UnitTestResult::getName).anyMatch(result.getName()::equals);
-    if (hasName && StringUtils.contains(result.getName(), "$")) {
+    if (StringUtils.contains(result.getName(), "$") && resultsNames.contains(result.getName())) {
       return this;
     }
+    resultsNames.add(result.getName());
     results.add(result);
     if (result.getStatus().equals(UnitTestResult.STATUS_SKIPPED)) {
       skipped += 1;
@@ -67,6 +70,7 @@ public final class UnitTestClassReport {
   private void initResults() {
     if (results == null) {
       results = new ArrayList<>();
+      resultsNames = new HashSet<>();
     }
   }
 
