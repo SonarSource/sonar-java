@@ -62,6 +62,7 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
     "jakarta.ws.rs.PUT",
     "jakarta.ws.rs.PATCH",
     "jakarta.inject.Inject",
+    "lombok.Builder",
     "io.micronaut.http.annotation.Get",
     "io.micronaut.http.annotation.Post",
     "io.micronaut.http.annotation.Put",
