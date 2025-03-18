@@ -18,6 +18,12 @@ public class UserEnumerationCheck {
 
   public static final boolean MY_CONSTANT = false;
 
+  public UserEnumerationCheck() {
+    // The following example can be considered a FP since no information is leaked.
+    // It mostly serves to ensure that the check's logic is safe and consistent in constructors.
+    throw new UsernameNotFoundException("no valid user found"); // Noncompliant
+  }
+
   public String authenticate(String username, String password) {
 
     MyUserDetailsService s1 = new MyUserDetailsService();
