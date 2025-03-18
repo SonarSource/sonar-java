@@ -17,7 +17,6 @@
 package org.sonar.java.checks.security;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -70,18 +69,18 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.THROW_STATEMENT, Tree.Kind.METHOD);
+    return List.of(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD_INVOCATION, Tree.Kind.THROW_STATEMENT, Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD)) {
-      stack.push(((MethodTree) tree));
+    // We push down references to methods and constructors before diving into other expressions
+    if (tree instanceof MethodTree method) {
+      stack.push(method);
       return;
     }
 
-    if (tree.is(Tree.Kind.THROW_STATEMENT)) {
-      ThrowStatementTree throwStatementTree = (ThrowStatementTree) tree;
+    if (tree instanceof ThrowStatementTree throwStatementTree) {
       if (throwStatementTree.expression().symbolType().is(USERNAME_NOT_FOUND_EXCEPTION) && !isInsideLoadUserByUserName()) {
         reportIssue(throwStatementTree.expression(), MESSAGE);
       }
@@ -101,14 +100,14 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD)) {
+    // Pop the reference to the method or constructor we are leaving
+    if (tree instanceof MethodTree) {
       stack.pop();
     }
   }
 
   private void checkLoadUserArgUsedInExceptions(MethodInvocationTree methodInvocationTree, ExpressionTree expression) {
-    if (LOAD_USER_MATCHER.matches(methodInvocationTree) && expression.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifierTree = (IdentifierTree) expression;
+    if (LOAD_USER_MATCHER.matches(methodInvocationTree) && expression instanceof IdentifierTree identifierTree) {
       identifierTree.symbol().usages()
         .stream().filter(UserEnumerationCheck::checkParentIsThrowable)
         .forEach(value -> reportIssue(value, MESSAGE));
@@ -124,7 +123,7 @@ public class UserEnumerationCheck extends IssuableSubscriptionVisitor {
   private static boolean checkParentIsThrowable(Tree tree) {
     Tree current = tree.parent();
     while (current instanceof ExpressionTree || current instanceof Arguments) {
-      if (current.is(Tree.Kind.NEW_CLASS) && ((NewClassTree) current).symbolType().isSubtypeOf(THROWABLE)) {
+      if (current instanceof NewClassTree newClassTree && newClassTree.symbolType().isSubtypeOf(THROWABLE)) {
         return true;
       }
       current = current.parent();
