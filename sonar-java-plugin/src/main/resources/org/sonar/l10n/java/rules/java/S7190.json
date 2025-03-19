@@ -7,9 +7,10 @@
     "constantCost": "5min"
   },
   "tags": [
-    "spring", "tests"
+    "spring",
+    "tests"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-7190",
   "sqKey": "S7190",
   "scope": "Tests",

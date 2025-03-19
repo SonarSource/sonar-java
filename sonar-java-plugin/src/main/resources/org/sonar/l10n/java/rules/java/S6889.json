@@ -18,7 +18,7 @@
   "quickfix": "unknown",
   "code": {
     "impacts": {
-      "MAINTAINABILITY": "LOW"
+      "MAINTAINABILITY": "MEDIUM"
     },
     "attribute": "EFFICIENT"
   }
