@@ -9,7 +9,7 @@
   "tags": [
     "spring"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-7178",
   "sqKey": "S7178",
   "scope": "Main",
