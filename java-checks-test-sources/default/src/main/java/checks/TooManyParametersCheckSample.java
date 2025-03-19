@@ -106,7 +106,6 @@ class JakartaMethodsUsingAnnotations {
   public void foo5(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
 }
 
-
 class LombokBuilderAnnotation {
   @Builder
   LombokBuilderAnnotation(String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8) {} // Compliant
