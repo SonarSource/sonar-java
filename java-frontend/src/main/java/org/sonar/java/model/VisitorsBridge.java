@@ -43,8 +43,10 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.caching.CacheContextImpl;
+import org.sonar.java.classpath.DependencyVersionInference;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.exceptions.ThrowableUtils;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -78,6 +80,7 @@ public class VisitorsBridge {
   private int skippedFileCount = 0;
   @VisibleForTesting
   CacheContext cacheContext;
+  private final DependencyVersionInference dependencyService;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -98,6 +101,7 @@ public class VisitorsBridge {
     this.cacheContext = CacheContextImpl.of(sonarComponents);
 
     this.javaVersion = javaVersion;
+    dependencyService = new DependencyVersionInference();
     updateScanners();
   }
 
@@ -105,10 +109,19 @@ public class VisitorsBridge {
     allScanners.clear();
     scannersThatCannotBeSkipped.clear();
 
-    allScanners.addAll(filterVisitors(visitors, this::isVisitorJavaVersionCompatible));
+    allScanners.addAll(filterVisitors(visitors, v ->
+      isVisitorJavaVersionCompatible(v) && isVisitorDependencyVersionCompatible(v)));
     if (canSkipScanningOfUnchangedFiles()) {
       scannersThatCannotBeSkipped.addAll(filterVisitors(visitors, this::isUnskippableVisitor));
     }
+  }
+
+  private boolean isVisitorDependencyVersionCompatible(Object v) {
+    if (v instanceof DependencyVersionAware versionAware) {
+      return versionAware.isCompatibleWithDependencies(artifactId ->
+        dependencyService.infer(artifactId, classpath));
+    }
+    return true;
   }
 
   private List<JavaFileScanner> filterVisitors(Iterable<? extends JavaCheck> visitors, Predicate<Object> predicate) {
@@ -171,7 +184,7 @@ public class VisitorsBridge {
   /**
    * In cases where incremental analysis is enabled, try to scan a raw file without parsing its content.
    *
-   * @param inputFile    The file to scan
+   * @param inputFile The file to scan
    * @return True if all scanners successfully scan the file without contents. False otherwise.
    */
   public boolean scanWithoutParsing(InputFile inputFile) {
@@ -183,7 +196,7 @@ public class VisitorsBridge {
       List<JavaFileScanner> scannersNotRequiringParsing = new ArrayList<>();
 
       var fileScannerContext = createScannerContext(sonarComponents, inputFile, javaVersion, inAndroidContext, cacheContext);
-      for (var scanner: scannersThatCannotBeSkipped) {
+      for (var scanner : scannersThatCannotBeSkipped) {
         boolean exceptionIsBlownUp = false;
         PerformanceMeasure.Duration scannerDuration = PerformanceMeasure.start(scanner);
         try {
@@ -288,7 +301,8 @@ public class VisitorsBridge {
       }
 
       String message = String.format(
-        "Unable to run check %s - %s on file '%s', To help improve the SonarSource Java Analyzer, please report this problem to SonarSource: see https://community.sonarsource.com/",
+        "Unable to run check %s - %s on file '%s', To help improve the SonarSource Java Analyzer, please report this problem to SonarSource: see https://community.sonarsource" +
+          ".com/",
         scanner.getClass(), ruleKey(scanner), currentFile);
 
       LOG.error(message, e);
