@@ -8,6 +8,7 @@ arguments.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
+@Transactional
 public class TransactionalTest {
 
     @BeforeTransaction
@@ -23,6 +24,7 @@ public class TransactionalTest {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
+@Transactional
 public class TransactionalTest {
 
     @BeforeTransaction

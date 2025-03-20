@@ -31,6 +31,9 @@
     "OWASP Mobile": [
       "M2"
     ],
+    "OWASP Mobile Top 10 2024": [
+      "M9"
+    ],
     "MASVS": [
       "MSTG-STORAGE-14"
     ],

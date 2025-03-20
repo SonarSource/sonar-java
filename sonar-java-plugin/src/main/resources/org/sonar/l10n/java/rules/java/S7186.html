@@ -2,7 +2,7 @@
 <p>Spring Data Repository supports paging for queries, allowing you to return results in small, manageable chunks rather than retrieving an entire
 large result set.</p>
 <p>The conventional approach to paginating data in Spring is to use the <code>Pageable</code> interface to control pagination and to store the query
-results into a <code>Page</code> or <code>Slice</code>. If a query method in a <code>Repository</code> returns a <code>Page</code> or
+results into a <code>Page</code> or <code>Slice</code>. If a query declaration in a <code>Spring Data Repository</code> returns a <code>Page</code> or
 <code>Slice</code> without taking a <code>Pageable</code> as an input, it raises a runtime exception.</p>
 <p>This rule raises an issue on queries in a <code>Repository</code> that return a <code>Page</code> or <code>Slice</code> without taking a
 <code>Pageable</code> as an input.</p>
@@ -12,14 +12,14 @@ signature.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
-public Page&lt;Item&gt; findItems() { //non compliant, no Pageable parameter
-    // query
+interface ItemRepository extends JpaRepository&lt;Item, Long&gt; {
+    Page&lt;Item&gt; findItems(); //non compliant, no Pageable parameter
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
-public Page&lt;Item&gt; findItems(Pageable pageable) {
-    // query
+interface ItemRepository extends JpaRepository&lt;Item, Long&gt; {
+    Page&lt;Item&gt; findItems(Pageable pageable);
 }
 </pre>
 <h2>Resources</h2>

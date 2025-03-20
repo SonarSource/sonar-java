@@ -31,6 +31,9 @@
     "MASVS": [
       "MSTG-PLATFORM-2"
     ],
+    "OWASP Mobile Top 10 2024": [
+      "M8"
+    ],
     "OWASP Top 10 2021": [
       "A3"
     ],
