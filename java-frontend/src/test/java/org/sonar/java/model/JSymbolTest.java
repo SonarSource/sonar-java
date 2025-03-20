@@ -42,6 +42,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.model.assertions.SymbolAssert.assertThat;
@@ -161,6 +163,43 @@ class JSymbolTest {
     assertThat(cu.sema.methodSymbol(m.methodBinding))
       .as("of method")
       .hasOwner(cu.sema.typeSymbol(c1.typeBinding));
+  }
+
+  @Test
+  void owner_lambdaVariable_variableBinding() {
+    JavaTree.CompilationUnitTreeImpl cu = test("""
+      class C {
+        java.util.function.Function<Integer, Integer> variableBinding = i -> i;
+      }
+      """
+    );
+    ClassTreeImpl classTree = (ClassTreeImpl) cu.types().get(0);
+    VariableTree variableBinding = (VariableTree) classTree.members().get(0);
+    LambdaExpressionTree lambda = (LambdaExpressionTree) variableBinding.initializer();
+    IdentifierTree i = (IdentifierTree) lambda.body();
+    Symbol owner = i.symbol().owner();
+    assertTrue(owner.isVariableSymbol());
+    assertEquals("variableBinding", owner.name());
+  }
+
+  @Test
+  void owner_lambdaVariable_methodBinding() {
+    JavaTree.CompilationUnitTreeImpl cu = test("""
+      class C {
+         void foo() {
+             java.util.function.Function<Long, Long> methodBinding = l -> l;
+          }
+      }
+      """
+    );
+    ClassTreeImpl classTree = (ClassTreeImpl) cu.types().get(0);
+    MethodTree method = (MethodTree) classTree.members().get(0);
+    VariableTree bindingInsideMethod = (VariableTree) method.block().body().get(0);
+    LambdaExpressionTree lambda = (LambdaExpressionTree) bindingInsideMethod.initializer();
+    VariableTree l = lambda.parameters().get(0);
+    Symbol owner = l.symbol().owner();
+    assertTrue(owner.isMethodSymbol());
+    assertEquals("foo", owner.name());
   }
 
   @Test
