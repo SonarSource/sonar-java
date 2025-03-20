@@ -27,6 +27,9 @@
     "OWASP Mobile": [
       "M4"
     ],
+    "OWASP Mobile Top 10 2024": [
+      "M3"
+    ],
     "MASVS": [
       "MSTG-AUTH-8"
     ],

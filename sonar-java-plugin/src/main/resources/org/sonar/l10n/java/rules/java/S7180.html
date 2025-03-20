@@ -1,10 +1,16 @@
 <h2>Why is this an issue?</h2>
-<p>Annotating interfaces or interface methods with <code>@Cache*</code> annotations is not recommended by the official Spring documentation. If you
-use the weaving-based aspect (mode="aspectj"), the <code>@Cache*</code> annotations will be ignored, and no caching proxy will be created.</p>
+<p>Annotating interfaces or interface methods with <code>@Cache*</code> annotations is not recommended by the official Spring documentation:</p>
+<pre>
+Spring recommends that you only annotate concrete classes (and methods of concrete classes) with the @Cache* annotations, as opposed to annotating interfaces. You certainly can place an @Cache* annotation on an interface (or an interface method), but this works only if you use the proxy mode (mode="proxy"). If you use the weaving-based aspect (mode="aspectj"), the caching settings are not recognized on interface-level declarations by the weaving infrastructure.
+</pre>
+<p>Also, when a method is annotated as cacheable inside an interface, if two different implementations of that method exist, the first one to be
+invoked will populate the cache. Subsequent calls will always return the cached value, even if it’s the other implementation being called.</p>
 <h3>What is the potential impact?</h3>
 <ul>
   <li> <strong>Confusing Code</strong>: Developers may mistakenly believe that caching is in effect, leading to confusion and incorrect assumptions
   about application performance. </li>
+  <li> <strong>Unreliable Code</strong>: Annotating interface methods as <code>@Cacheable</code> hides the cache name from the implementing classes,
+  making it hard to detect where a conflict of names might occur, causing unexpected results at runtime. </li>
 </ul>
 <p>This rule raises an issue when an interface or an interface method is annotated with a <code>@Cache*</code> annotation.</p>
 <h2>How to fix it</h2>
@@ -18,6 +24,29 @@ public interface ExampleService {
     String getData(String id);
 }
 </pre>
+<p>In the following example, if our application has two different rest APIs to query the most popular animal in two different zoos, the first zoo to
+be queried will populate the cache.</p>
+<p>Calls to a different API to query the other zoo will produce the same cached output, invalidating our application’s business logic.</p>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+public interface Zoo {
+    @Cacheable("popAnimal") //non compliant, interface method is annotated with @Cacheable
+    Animal getMostPopularAnimal();
+}
+
+public class SanDiegoZoo implements Zoo {
+    @Override
+    public Animal getMostPopularAnimal() {
+        return new Lion();
+    }
+}
+
+public class RomeBioparc implements Zoo {
+    @Override
+    public Animal getMostPopularAnimal() {
+        return new Pantegana();
+    }
+}
+</pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 @Service
@@ -27,6 +56,28 @@ public class ExampleServiceImpl implements ExampleService {
     @Override
     public String getData(String id) {
         // Implementation here
+    }
+}
+</pre>
+<p>With the following solution, we are granted that the two implementations will have separate caches.</p>
+<pre data-diff-id="2" data-diff-type="compliant">
+public interface Zoo {
+    Animal getMostPopularAnimal();
+}
+
+public class SanDiegoZoo implements Zoo {
+    @Override
+    @Cacheable("sanDiegoPopAnimal")
+    public Animal getMostPopularAnimal() {
+        return new Lion();
+    }
+}
+
+public class RomeBioparc implements Zoo {
+    @Override
+    @Cacheable("romePopAnimal")
+    public Animal getMostPopularAnimal() {
+        return new Pantegana();
     }
 }
 </pre>

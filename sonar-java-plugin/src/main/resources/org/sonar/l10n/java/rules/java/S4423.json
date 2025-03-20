@@ -33,6 +33,9 @@
     "OWASP Mobile": [
       "M3"
     ],
+    "OWASP Mobile Top 10 2024": [
+      "M5"
+    ],
     "MASVS": [
       "MSTG-NETWORK-2"
     ],
