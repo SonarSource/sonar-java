@@ -32,6 +32,13 @@ class ToStringReturningNullCheckSampleD {
   }
 }
 
+class ToStringReturningNullCheckSampleE {
+  public String toString() {
+    java.util.List.of("foo").forEach(s -> {return;});
+    return "bar";
+  }
+}
+
 class QuickFixesA{
   public String toString() {
     return (null); // Noncompliant [[quickfixes=qf1]]
