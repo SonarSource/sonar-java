@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>java-se</artifactId>
-    <version>8.11.0-SNAPSHOT</version>
+    <version>8.11.0-tree-unparser-for-DBD-prototype</version>
   </parent>
 
   <artifactId>java-symbolic-execution-checks-test-sources</artifactId>
