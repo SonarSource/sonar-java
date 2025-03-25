@@ -36,16 +36,20 @@ public class ToStringReturningNullCheck extends IssuableSubscriptionVisitor {
 
   private String interestingMethodName = null;
 
+  private int nestedLambdas = 0;
+
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.RETURN_STATEMENT);
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.RETURN_STATEMENT, Kind.LAMBDA_EXPRESSION);
   }
-  
+
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD)) {
       interestingMethodName = interestingMethodName((MethodTree) tree);
-    } else if (interestingMethodName != null) {
+    } else if (tree.is(Kind.LAMBDA_EXPRESSION)) {
+      nestedLambdas += 1;
+    } else if (interestingMethodName != null && nestedLambdas == 0) {
       ExpressionTree rawReturnExpression = ((ReturnStatementTree) tree).expression();
       ExpressionTree returnExpression = ExpressionUtils.skipParentheses(rawReturnExpression);
       if (returnExpression.is(Kind.NULL_LITERAL)) {
@@ -54,7 +58,7 @@ public class ToStringReturningNullCheck extends IssuableSubscriptionVisitor {
           .forRule(this)
           .onTree(returnExpression)
           .withMessage(isToString ? "Return empty string instead." : "Return a non null object.");
-        if(isToString) {
+        if (isToString) {
           builder.withQuickFix(() -> computeQuickFix(rawReturnExpression));
         }
         builder.report();
@@ -66,6 +70,8 @@ public class ToStringReturningNullCheck extends IssuableSubscriptionVisitor {
   public void leaveNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD)) {
       interestingMethodName = null;
+    } else if (tree.is(Kind.LAMBDA_EXPRESSION)) {
+      nestedLambdas -= 1;
     }
   }
 
