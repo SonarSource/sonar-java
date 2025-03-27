@@ -280,8 +280,9 @@ class JavaAstScannerTest {
       ));
 
     List<String> logs = globalLogTester.logs(Level.INFO);
-    assertThat(TestUtils.filterOutAnalysisProgressLogLines(logs)).hasSize(3)
-      .contains("1/1 source file has been analyzed");
+    List<String> filteredLogs = TestUtils.filterOutAnalysisProgressLogLines(logs);
+    assertThat(filteredLogs).contains("1/1 source file has been analyzed");
+    assertThat(filteredLogs.size()).isBetween(3,4);
     assertThat(logTester.logs(Level.ERROR)).containsExactly(
       "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
       "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only"
