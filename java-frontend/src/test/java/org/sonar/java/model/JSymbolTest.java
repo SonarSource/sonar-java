@@ -173,13 +173,11 @@ class JSymbolTest {
       }
       """
     );
-    ClassTreeImpl classTree = (ClassTreeImpl) cu.types().get(0);
-    VariableTree variableBinding = (VariableTree) classTree.members().get(0);
-    LambdaExpressionTree lambda = (LambdaExpressionTree) variableBinding.initializer();
-    IdentifierTree i = (IdentifierTree) lambda.body();
+    var classTree = (ClassTreeImpl) cu.types().get(0);
+    var lambda = (LambdaExpressionTree) ((VariableTree) classTree.members().get(0)).initializer();
+    var i = (IdentifierTree) lambda.body();
     Symbol owner = i.symbol().owner();
-    assertTrue(owner.isVariableSymbol());
-    assertEquals("variableBinding", owner.name());
+    assertEquals(classTree.symbol(), owner);
   }
 
   @Test
