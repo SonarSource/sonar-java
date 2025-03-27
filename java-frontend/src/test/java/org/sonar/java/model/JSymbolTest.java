@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -42,7 +43,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -637,6 +638,27 @@ class JSymbolTest {
       ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
       return cu.sema.variableSymbol(((VariableTreeImpl) c1.members().get(memberIndex)).variableBinding);
     }
+  }
+
+  @Test
+  void testEquality_twoLambdas() {
+    CompilationUnitTree cu = test("""
+      class C {
+        F k = s -> {};
+        F j = s -> {};
+        interface F extends java.util.function.Consumer<String> {}
+      }
+      """);
+    ClassTree classTree = (ClassTree) cu.types().get(0);
+    var k = (VariableTree) classTree.members().get(0);
+    var lambda1 = (LambdaExpressionTree) k.initializer();
+    Symbol.MethodSymbol methodSymbol1 = lambda1.symbol();
+
+    var j = (VariableTree) classTree.members().get(1);
+    var lambda2 = (LambdaExpressionTree) j.initializer();
+    Symbol.MethodSymbol methodSymbol2 = lambda2.symbol();
+
+    assertNotEquals(methodSymbol1, methodSymbol2);
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {
