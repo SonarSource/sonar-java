@@ -71,6 +71,10 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return (IMethodBinding) binding;
   }
 
+  public boolean isLambda() {
+    return methodBinding().getDeclaringMember() != null;
+  }
+
   @Override
   public List<Type> parameterTypes() {
     if (parameterTypes == null) {
