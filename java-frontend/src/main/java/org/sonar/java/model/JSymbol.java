@@ -194,16 +194,7 @@ abstract class JSymbol implements Symbol {
     if (!variableBinding.isRecordComponent()) {
       IMethodBinding declaringMethod = variableBinding.getDeclaringMethod();
       if (declaringMethod != null) {
-        IBinding declaringMember = declaringMethod.getDeclaringMember();
-        // declaringMember is non-null in the case of lambdas
-        if (declaringMember instanceof IMethodBinding methodBinding) {
-          return sema.methodSymbol(methodBinding);
-        }
-        if (declaringMember instanceof IVariableBinding varBinding) {
-          return sema.variableSymbol(varBinding);
-        }
-        // local variable
-        return sema.methodSymbol(declaringMethod);
+        return variableOwnerInMethod(declaringMethod);
       }
       ITypeBinding declaringClass = variableBinding.getDeclaringClass();
       if (declaringClass != null) {
@@ -212,6 +203,37 @@ abstract class JSymbol implements Symbol {
       }
     }
     return ownerOfRecordComponentConstant(variableBinding);
+  }
+
+  /**
+   * Returns the owner for variables that are declared in the given {@code declaringMethod}.
+   */
+  private Symbol variableOwnerInMethod(IMethodBinding declaringMethod) {
+    IBinding declaringMember = declaringMethod.getDeclaringMember();
+    // declaringMember is non-null in the case of lambdas
+    // Backtrack to the first non-lambda declaring members, for the case of nested lambdas.
+    while (declaringMember instanceof IMethodBinding methodBinding && methodBinding.getDeclaringMember() != null) {
+      declaringMember = methodBinding.getDeclaringMember();
+    }
+
+    // in the case of initializers the declaring member has an empty name
+    if (declaringMember instanceof IMethodBinding methodBinding && methodBinding.getName().isEmpty()) {
+      JMethodSymbol methodSymbol = sema.methodSymbol(methodBinding);
+      JTypeSymbol declaringClass = sema.typeSymbol(methodBinding.getDeclaringClass());
+      if (methodSymbol.isStatic()) {
+        return sema.staticInitializerBlockSymbol(declaringClass);
+      } else {
+        return sema.initializerBlockSymbol(declaringClass);
+      }
+    }
+    if (declaringMember instanceof IMethodBinding methodBinding) {
+      return sema.methodSymbol(methodBinding);
+    }
+    if (declaringMember instanceof IVariableBinding varBinding) {
+      return variableOwner(varBinding);
+    }
+    // local variable
+    return sema.methodSymbol(declaringMethod);
   }
 
   private Symbol ownerOfRecordComponentConstant(IVariableBinding variableBinding) {
