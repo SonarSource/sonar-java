@@ -93,8 +93,8 @@ import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
 import static org.sonar.java.model.assertions.TypeAssert.assertThat;
 
@@ -805,8 +805,7 @@ class JParserSemanticTest {
     Symbol newSymbol = cu.sema.variableSymbol(p.variableBinding);
     assertThat(newSymbol.declaration().firstToken().range().start().line()).isEqualTo(3);
     Symbol newOwner = newSymbol.owner();
-    assertThat(newOwner).isNotNull();
-    assertEquals(c.symbol(), newOwner);
+    assertTrue(newOwner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
   }
 
   /**
@@ -836,12 +835,7 @@ class JParserSemanticTest {
     // owner of lambda parameter is the field or variable to which it is assigned
     Symbol newSymbol = cu.sema.variableSymbol(p.variableBinding);
     Symbol newOwner = newSymbol.owner();
-    assertThat(newOwner).isNotNull();
-    assertThat(newOwner.isVariableSymbol()).isFalse();
-    assertThat(newOwner.isTypeSymbol()).isFalse();
-    assertThat(newOwner.isMethodSymbol()).isTrue();
-    assertThat(newOwner.name()).isEqualTo("foo");
-    assertThat(newOwner.owner().type().fullyQualifiedName()).isEqualTo("org.foo.A");
+    assertTrue(newOwner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
   }
 
   @Test
@@ -1873,8 +1867,10 @@ class JParserSemanticTest {
     assertNotEquals(symbol1, p2.symbol());
 
     Symbol owner1 = symbol1.owner();
+    assertTrue(owner1 instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
     Symbol owner2 = symbol2.owner();
-    assertEquals(owner1, owner2);
+    assertTrue(owner2 instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
+    assertNotEquals(owner1, owner2);
   }
 
   @Test
@@ -1898,7 +1894,7 @@ class JParserSemanticTest {
     Symbol jOwner = j.symbol().owner();
     Symbol kOwner = k.symbol().owner();
     assertNotEquals(jOwner, kOwner);
-    assertEquals(iOwner, kOwner);
+    assertTrue(iOwner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
   }
 
   @Test
@@ -1942,14 +1938,14 @@ class JParserSemanticTest {
     ClassTree classTree = (ClassTree) cu.types().get(0);
     var k = (VariableTree) classTree.members().get(0);
     Symbol s1 = ((LambdaExpressionTree) k.initializer()).parameters().get(0).symbol();
-    Symbol kOwner = s1.owner();
+    Symbol s1Owner = s1.owner();
+    assertThat(s1Owner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
 
     var j = (VariableTree) classTree.members().get(1);
     Symbol s2 = ((LambdaExpressionTree) j.initializer()).parameters().get(0).symbol();
-    Symbol jOwner = s2.owner();
-
-    assertEquals(classTree.symbol(), kOwner);
-    assertEquals(classTree.symbol(), jOwner);
+    Symbol s2Owner = s2.owner();
+    assertThat(s2Owner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
+    assertNotEquals(s1Owner, s2Owner);
 
     // For sanity, check that the symbols are not equal
     assertNotEquals(s1, s2);
@@ -1986,12 +1982,20 @@ class JParserSemanticTest {
     var lambdaB = (LambdaExpressionTree) variableTreeB.initializer();
     var pOfB = lambdaB.parameters().get(0);
 
+    Symbol ownerA = pOfA.symbol().owner();
+    Symbol ownerC = pOfC.symbol().owner();
+    Symbol ownerB = pOfB.symbol().owner();
+
+    assertThat(ownerA instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
+    assertThat(ownerB instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
+    assertThat(ownerC instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda()).isTrue();
+    assertNotEquals(ownerA, ownerC);
+    assertNotEquals(ownerA, ownerB);
+    assertNotEquals(ownerC, ownerB);
+
     assertNotEquals(pOfA.symbol(), pOfB.symbol());
     assertNotEquals(pOfA.symbol(), pOfC.symbol());
     assertNotEquals(pOfB.symbol(), pOfC.symbol());
 
-    assertEquals(f1.symbol(), pOfA.symbol().owner());
-    assertEquals(f1.symbol(), pOfC.symbol().owner());
-    assertEquals(f2.symbol(), pOfB.symbol().owner());
   }
 }

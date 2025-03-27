@@ -178,7 +178,7 @@ class JSymbolTest {
     var lambda = (LambdaExpressionTree) ((VariableTree) classTree.members().get(0)).initializer();
     var i = (IdentifierTree) lambda.body();
     Symbol owner = i.symbol().owner();
-    assertEquals(classTree.symbol(), owner);
+    assertTrue(owner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
   }
 
   @Test
@@ -197,8 +197,7 @@ class JSymbolTest {
     LambdaExpressionTree lambda = (LambdaExpressionTree) bindingInsideMethod.initializer();
     VariableTree l = lambda.parameters().get(0);
     Symbol owner = l.symbol().owner();
-    assertTrue(owner.isMethodSymbol());
-    assertEquals("foo", owner.name());
+    assertTrue(owner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
   }
 
   @Test
