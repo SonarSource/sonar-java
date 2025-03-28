@@ -20,6 +20,11 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JVariableSymbolTest {
@@ -35,6 +40,18 @@ class JVariableSymbolTest {
     VariableTreeImpl classVariable = (VariableTreeImpl) c.members().get(1);
     variableSymbol = cu.sema.variableSymbol(classVariable.variableBinding);
     assertThat(variableSymbol.isLocalVariable()).isFalse();
+  }
+
+  @Test
+  void isLocalVariable_inLambda() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { java.util.function.IntSupplier s = () -> { int a = 34; return a + 56; }; }");
+    var c = (ClassTree) cu.types().get(0);
+    var classVariable = (VariableTree) c.members().get(0);
+    assertThat(classVariable.symbol().isLocalVariable()).isFalse();
+
+    var lambda = (LambdaExpressionTree) classVariable.initializer();
+    var variableA = (VariableTree) ((BlockTree) lambda.body()).body().get(0);
+    assertThat(variableA.symbol().isLocalVariable()).isTrue();
   }
 
   @Test

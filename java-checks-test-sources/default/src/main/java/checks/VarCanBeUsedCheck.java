@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -146,6 +147,23 @@ public class VarCanBeUsedCheck {
   }
 }
 
+class VarCanBeUsedInLambdas {
+  public static final Comparator<Integer> COMPARATOR = (e1, e2) -> {
+    int compare = Integer.compare(e1, e2); // Noncompliant {{Declare this local variable with "var" instead.}}
+    return compare != 0 ? compare : Integer.compare(e2, e1);
+  };
+
+  public static int foo() {
+    java.util.function.IntSupplier supplier = () -> {
+      var sum = 0;
+      for (int i = 0; i < 10; i++) { // Noncompliant {{Declare this local variable with "var" instead.}}
+        sum += i;
+      }
+      return sum;
+    };
+    return supplier.getAsInt();
+  }
+}
 
 class Abc {
   static Abc getAbc() {
