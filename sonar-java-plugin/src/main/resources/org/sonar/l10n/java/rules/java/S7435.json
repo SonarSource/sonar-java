@@ -1,0 +1,34 @@
+{
+  "title": "Processing persistent unique identifiers is security-sensitive",
+  "type": "SECURITY_HOTSPOT",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "android"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-7435",
+  "sqKey": "S7435",
+  "scope": "All",
+  "securityStandards": {
+    "ASVS 4.0": [
+      "8.3.3"
+    ],
+    "OWASP Mobile Top 10 2024": [
+      "M6"
+    ],
+    "CWE": [
+      213
+    ]
+  },
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "SECURITY": "LOW"
+    },
+    "attribute": "TRUSTWORTHY"
+  }
+}
