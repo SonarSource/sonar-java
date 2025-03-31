@@ -20,16 +20,14 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S7409")
 public class WebViewJavaScriptInterfaceCheck extends AbstractMethodDetection {
 
-  private final static String MESSAGE = "Exposing a Javascript interface can expose sensitive information to attackers. Make sure it is safe here.";
+  private static final String MESSAGE = "Exposing a Javascript interface can expose sensitive information to attackers. Make sure it is safe here.";
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
