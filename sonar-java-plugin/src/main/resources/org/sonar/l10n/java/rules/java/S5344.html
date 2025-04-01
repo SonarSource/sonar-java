@@ -17,11 +17,48 @@ information or critical systems may be compromised.</p>
 <p>Many industries and jurisdictions have specific regulations and standards to protect user data and ensure its confidentiality. Storing passwords in
 plaintext or with weak hashing algorithms can lead to non-compliance with these regulations, potentially resulting in legal consequences, financial
 penalties, and damage to the reputation of the software application and its developers.</p>
+<h2>How to fix it in Java Cryptography Extension</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>The derived key is vulnerable because the cost factor (rounds) is too low for the chosen algorithm.</p>
+<pre data-diff-id="11" data-diff-type="noncompliant">
+private SecretKey deriveKey(String password, byte[] salt) throws Exception {
+    PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, 120000, 256); // Noncompliant
+    SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2withHmacSHA512");
+    return secretKeyFactory.generateSecret(keySpec);
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="11" data-diff-type="compliant">
+private SecretKey deriveKey(String password, byte[] salt) throws Exception {
+    PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, 210000, 256);
+    SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2withHmacSHA512");
+    return secretKeyFactory.generateSecret(keySpec);
+}
+</pre>
+<h3>How does this work?</h3>
+<h4>Select the correct PBKDF2 parameters</h4>
+<p>If PBKDF2 must be used, be aware that default values might not be considered secure.<br> Depending on the algorithm used, the number of iterations
+should be adjusted to ensure that the derived key is secure. The following are the recommended number of iterations for PBKDF2:</p>
+<ul>
+  <li> PBKDF2-HMAC-SHA1: 1,300,000 iterations </li>
+  <li> PBKDF2-HMAC-SHA256: 600,000 iterations </li>
+  <li> PBKDF2-HMAC-SHA512: 210,000 iterations </li>
+</ul>
+<p>Note that PBKDF2-HMAC-SHA256 is recommended by NIST.<br> Iterations are also called "rounds" depending on the library used.</p>
+<p>When recommended cost factors are too high in the context of the application or if the performance cost is unacceptable, a cost factor reduction
+might be considered. In that case, it should not be chosen under 100,000.</p>
+<h3>Going the extra mile</h3>
+<h4>Pepper</h4>
+<p>In a defense-in-depth security approach, <strong>peppering</strong> can also be used. This is a security technique where an external secret value
+is added to a password before it is hashed.<br> This makes it more difficult for an attacker to crack the hashed passwords, as they would need to know
+the secret value to generate the correct hash.<br> <a
+href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#peppering">Learn more here</a>.</p>
 <h2>How to fix it in Spring</h2>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <p>The following code is vulnerable because it uses a legacy digest-based password encoding that is not considered secure.</p>
-<pre data-diff-id="1" data-diff-type="noncompliant">
+<pre data-diff-id="12" data-diff-type="noncompliant">
 @Autowired
 public void configureGlobal(AuthenticationManagerBuilder auth, DataSource dataSource) throws Exception {
   auth.jdbcAuthentication()
@@ -31,7 +68,7 @@ public void configureGlobal(AuthenticationManagerBuilder auth, DataSource dataSo
 }
 </pre>
 <h4>Compliant solution</h4>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre data-diff-id="12" data-diff-type="compliant">
 @Autowired
 public void configureGlobal(AuthenticationManagerBuilder auth, DataSource dataSource) throws Exception {
   auth.jdbcAuthentication()
