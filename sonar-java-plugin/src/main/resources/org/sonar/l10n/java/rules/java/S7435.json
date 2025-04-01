@@ -24,7 +24,7 @@
       213
     ]
   },
-  "quickfix": "unknown",
+  "quickfix": "infeasible",
   "code": {
     "impacts": {
       "SECURITY": "LOW"
