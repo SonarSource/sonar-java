@@ -1,0 +1,129 @@
+<p>Using JavaScript interfaces in WebViews to expose Java objects is unsafe. Doing so allows JavaScript to invoke Java methods, potentially giving
+attackers access to data or sensitive app functionality. WebViews might include untrusted sources such as third-party iframes, making this
+functionality particularly risky. As JavaScript interfaces are passed to every frame in the WebView, those iframes are also able to access the exposed
+Java object.</p>
+<h2>Ask Yourself Whether</h2>
+<ul>
+  <li> The content in the WebView is fully trusted and secure. </li>
+  <li> Potentially untrusted iframes could be loaded in the WebView. </li>
+  <li> The JavaScript interface has to be exposed for the entire lifecycle of the WebView. </li>
+  <li> The exposed Java object might be called by untrusted sources. </li>
+</ul>
+<p>There is a risk if you answered yes to any of these questions.</p>
+<h2>Recommended Secure Coding Practices</h2>
+<h3>Disable JavaScript</h3>
+<p>If it is possible to disable JavaScript in the WebView, this is the most secure option. By default, JavaScript is disabled in a WebView, so
+<code>webSettings.setJavaScriptEnabled(false)</code> does not need to be explicitly called. Of course, sometimes it is necessary to enable JavaScript,
+in which case the following recommendations should be considered.</p>
+<h3>Remove JavaScript interface when loading untrusted content</h3>
+<p>JavaScript interfaces can be removed at a later point. It is recommended to remove the JavaScript interface when it is no longer needed. If it is
+needed for a longer time, consider removing it before loading untrusted content. This can be done by calling
+<code>webView.removeJavascriptInterface("interfaceName")</code>.</p>
+<p>A good place to do this is inside the <code>shouldInterceptRequest</code> method of a <code>WebViewClient</code>, where you can check the URL or
+resource being loaded and remove the interface if the content is untrusted.</p>
+<h3>Alternative methods to implement native bridges</h3>
+<p>If a native bridge has to be added to the WebView, and it is impossible to remove it at a later point, consider using an alternative method that
+offers more control over the communication flow. <code>WebViewCompat.postWebMessage</code>/<code>WebViewCompat.addWebMessageListener</code> and
+<code>WebMessagePort.postMessage</code> offer more ways to validate incoming and outgoing messages, such as by being able to restrict the origins that
+can send messages to the JavaScript bridge.</p>
+<h2>Sensitive Code Example</h2>
+<pre>
+public class ExampleActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        WebView webView = new WebView(this);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.addJavascriptInterface(new JavaScriptBridge(), "androidBridge"); // Sensitive
+    }
+
+    public static class JavaScriptBridge {
+        @JavascriptInterface
+        public String accessUserData(String userId) {
+            return getUserData(userId);
+        }
+    }
+}
+</pre>
+<h2>Compliant Solution</h2>
+<p>The most secure option is to disable JavaScript entirely. {rule:java:S6362} further explains why it should not be enabled unless absolutely
+necessary.</p>
+<pre>
+public class ExampleActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        WebView webView = new WebView(this);
+        webView.getSettings().setJavaScriptEnabled(false);
+    }
+}
+</pre>
+<p>If possible, remove the JavaScript interface after it is no longer needed, or before loading any untrusted content.</p>
+<pre>
+public class ExampleActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        WebView webView = new WebView(this);
+        webView.getSettings().setJavaScriptEnabled(true);
+
+        webView.addJavascriptInterface(new JavaScriptBridge(), "androidBridge");
+
+        // Sometime later, before unsafe content is loaded, remove the JavaScript interface
+        webView.removeJavascriptInterface("androidBridge");
+    }
+}
+</pre>
+<p>If a JavaScript bridge must be used, consider using <code>WebViewCompat.addWebMessageListener</code> instead. This allows you to restrict the
+origins that can send messages to the JavaScript bridge.</p>
+<pre>
+public class ExampleActivity extends AppCompatActivity {
+    private static final Set&lt;String&gt; ALLOWED_ORIGINS = Collections.singleton("https://example.com");
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        WebView webView = new WebView(this);
+        webView.getSettings().setJavaScriptEnabled(true);
+
+        WebViewCompat.addWebMessageListener(
+            webView,
+            "androidBridge",
+            ALLOWED_ORIGINS, // Only allow messages from these origins
+            new WebMessageListener() {
+                @Override
+                public void onPostMessage(
+                    WebView view,
+                    WebMessageCompat message,
+                    Uri sourceOrigin,
+                    boolean isMainFrame,
+                    JavaScriptReplyProxy replyProxy
+                ) {
+                    // Handle the message
+                }
+            }
+        );
+    }
+}
+</pre>
+<h2>See</h2>
+<ul>
+  <li> Android Documentation - <a href="https://developer.android.com/privacy-and-security/risks/insecure-webview-native-bridges">Insecure WebView
+  native bridges</a> </li>
+  <li> Android Documentation - <a href="https://developer.android.com/reference/androidx/webkit/WebViewCompat">WebViewCompat API reference</a> </li>
+  <li> OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a> </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m4-insufficient-input-output-validation.html">Mobile Top 10 2024
+  Category M4 - Insufficient Input/Output Validation</a> </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m8-security-misconfiguration.html">Mobile Top 10 2024 Category M8 -
+  Security Misconfiguration</a> </li>
+  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/79">CWE-79 - Improper Neutralization of Input During Web Page Generation</a> </li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li> {rule:java:S6362} - Enabling JavaScript support for WebViews is security-sensitive </li>
+</ul>
+
