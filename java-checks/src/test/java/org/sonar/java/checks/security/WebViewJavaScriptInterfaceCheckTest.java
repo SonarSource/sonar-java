@@ -26,7 +26,7 @@ class WebViewJavaScriptInterfaceCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/WebViewJavaScriptInterfaceCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/WebViewJavaScriptInterfaceCheckSample.java"))
       .withCheck(new WebViewJavaScriptInterfaceCheck())
       .verifyIssues();
   }

@@ -4,7 +4,7 @@ import android.annotation.JavascriptInterface;
 import android.webkit.WebView;
 import java.util.function.Consumer;
 
-public class WebViewJavaScriptInterfaceCheck {
+public class WebViewJavaScriptInterfaceCheckSample {
   private WebView webViewProperty = new WebView();
 
   public static class JsObject {
