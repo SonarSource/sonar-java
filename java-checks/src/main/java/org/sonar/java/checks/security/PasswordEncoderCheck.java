@@ -130,11 +130,18 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkJavaxCrypto(MethodInvocationTree mit) {
-    var secretKeyFactoryExpression = Optional.of(mit.methodSelect())
+    var algorithmValueExpressionAndValue = Optional.of(mit.methodSelect())
       .filter(e -> e.is(Tree.Kind.MEMBER_SELECT))
       .map(MemberSelectExpressionTree.class::cast)
-      .map(MemberSelectExpressionTree::expression);
-    if (secretKeyFactoryExpression.isEmpty()) {
+      .map(MemberSelectExpressionTree::expression)
+      .flatMap(PasswordEncoderCheck::extractAlgorithm);
+    if (algorithmValueExpressionAndValue.isEmpty()) {
+      return;
+    }
+
+    var algorithmValueExpression = algorithmValueExpressionAndValue.get().initializerExpression();
+    var algorithm = algorithmValueExpressionAndValue.get().value();
+    if (!MIN_ITERATIONS_BY_ALGORITHM.containsKey(algorithm)) {
       return;
     }
 
@@ -147,19 +154,7 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
     var iterationCountValueExpression = iterationCountExpressionsAndValue.get().initializerExpression();
     var iterationCount = iterationCountExpressionsAndValue.get().value();
 
-    var algorithmValueExpressionAndValue = extractAlgorithm(secretKeyFactoryExpression.get());
-    if (algorithmValueExpressionAndValue.isEmpty()) {
-      return;
-    }
-
-    var algorithmValueExpression = algorithmValueExpressionAndValue.get().initializerExpression();
-    var algorithm = algorithmValueExpressionAndValue.get().value();
-    if (!MIN_ITERATIONS_BY_ALGORITHM.containsKey(algorithm)) {
-      return;
-    }
-
     var minIteration = MIN_ITERATIONS_BY_ALGORITHM.get(algorithm);
-
     if (iterationCount < minIteration) {
       var secondaryLocations = new ArrayList<Location>();
       secondaryLocations.add(new Location("", algorithmValueExpression));
@@ -175,7 +170,8 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
   // iterations is var iterations = y, returns the expressions "iterations", "y", as well as "y" value (e.g. 120000).
   private static Optional<ExpressionsAndValue<Integer>> extractIterationCount(ExpressionTree keySpecArgumentExpression) {
     return getInitializerExpressionOfVariableIdentifier(keySpecArgumentExpression)
-      .or(() -> Optional.of(keySpecArgumentExpression)) // try to resolve the expression itself to a constructor invocation
+      // try to resolve the expression itself to a constructor invocation
+      .or(() -> Optional.of(keySpecArgumentExpression))
       .filter(e -> e.is(Tree.Kind.NEW_CLASS))
       .map(NewClassTree.class::cast)
       .filter(PBE_KEY_SPEC_CONSTRUCTOR::matches)
@@ -187,7 +183,8 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
   // "y", as well as "y" value (e.g. "PBKDF2withHmacSHA512").
   private static Optional<ExpressionsAndValue<String>> extractAlgorithm(ExpressionTree secretKeyFactoryExpression) {
     return getInitializerExpressionOfVariableIdentifier(secretKeyFactoryExpression)
-      .or(() -> Optional.of(secretKeyFactoryExpression)) // try to resolve the expression itself to a method invocation
+      // try to resolve the expression itself to a method invocation
+      .or(() -> Optional.of(secretKeyFactoryExpression))
       .filter(e -> e.is(Tree.Kind.METHOD_INVOCATION))
       .map(MethodInvocationTree.class::cast)
       .filter(SECRET_KEY_FACTORY_GET_INSTANCE_METHOD::matches)
