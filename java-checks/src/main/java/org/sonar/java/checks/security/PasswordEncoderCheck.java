@@ -16,19 +16,40 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S5344")
 public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
+
+  private static final String JAVAX_CRYPTO_MESSAGE_FORMAT = "Use at least %d PBKDF2 iterations.";
+
+  private static final Map<String, Integer> MIN_ITERATIONS_BY_ALGORITHM = Map.of(
+    "PBKDF2withHmacSHA1",
+    1_300_000,
+    "PBKDF2withHmacSHA256",
+    600_000,
+    "PBKDF2withHmacSHA512",
+    210_000
+  );
 
   private static final MethodMatchers JDBC_AUTHENTICATION = MethodMatchers.create()
     .ofSubTypes("org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder")
@@ -67,6 +88,25 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
     .addWithoutParametersMatcher()
     .build();
 
+  private static final MethodMatchers SECRET_KEY_FACTORY_GENERATE_SECRET_METHOD = MethodMatchers.create()
+    .ofTypes("javax.crypto.SecretKeyFactory")
+    .names("generateSecret")
+    .addParametersMatcher("java.security.spec.KeySpec")
+    .build();
+
+  private static final MethodMatchers SECRET_KEY_FACTORY_GET_INSTANCE_METHOD = MethodMatchers.create()
+    .ofTypes("javax.crypto.SecretKeyFactory")
+    .names("getInstance")
+    .addParametersMatcher("java.lang.String")
+    .build();
+
+  private static final MethodMatchers PBE_KEY_SPEC_CONSTRUCTOR = MethodMatchers.create()
+    .ofTypes("javax.crypto.spec.PBEKeySpec")
+    .constructor()
+    .addParametersMatcher("char[]", "byte[]", "int")
+    .addParametersMatcher("char[]", "byte[]", "int", "int")
+    .build();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
@@ -78,6 +118,8 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
       reportIssue(nct.identifier(), "Use secure \"PasswordEncoder\" implementation.");
     } else if (tree instanceof MethodInvocationTree mit && UNSAFE_PASSWORD_ENCODER_METHODS.matches(mit)) {
       reportIssue(ExpressionUtils.methodName(mit), "Use secure \"PasswordEncoder\" implementation.");
+    } else if (tree instanceof MethodInvocationTree mit && SECRET_KEY_FACTORY_GENERATE_SECRET_METHOD.matches(mit)) {
+      checkJavaxCrypto(mit);
     } else if (tree.is(Tree.Kind.METHOD)) {
       MethodInvocationVisitor visitor = new MethodInvocationVisitor();
       tree.accept(visitor);
@@ -85,6 +127,95 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
         reportIssue(visitor.tree, "Don't use the default \"PasswordEncoder\" relying on plain-text.");
       }
     }
+  }
+
+  private void checkJavaxCrypto(MethodInvocationTree mit) {
+    var secretKeyFactoryExpression = Optional.of(mit.methodSelect())
+      .filter(e -> e.is(Tree.Kind.MEMBER_SELECT))
+      .map(MemberSelectExpressionTree.class::cast)
+      .map(MemberSelectExpressionTree::expression);
+    if (secretKeyFactoryExpression.isEmpty()) {
+      return;
+    }
+
+    var iterationCountExpressionsAndValue = extractIterationCount(mit.arguments().get(0));
+    if (iterationCountExpressionsAndValue.isEmpty()) {
+      return;
+    }
+
+    var iterationCountExpression = iterationCountExpressionsAndValue.get().expression();
+    var iterationCountValueExpression = iterationCountExpressionsAndValue.get().initializerExpression();
+    var iterationCount = iterationCountExpressionsAndValue.get().value();
+
+    var algorithmValueExpressionAndValue = extractAlgorithm(secretKeyFactoryExpression.get());
+    if (algorithmValueExpressionAndValue.isEmpty()) {
+      return;
+    }
+
+    var algorithmValueExpression = algorithmValueExpressionAndValue.get().initializerExpression();
+    var algorithm = algorithmValueExpressionAndValue.get().value();
+    if (!MIN_ITERATIONS_BY_ALGORITHM.containsKey(algorithm)) {
+      return;
+    }
+
+    var minIteration = MIN_ITERATIONS_BY_ALGORITHM.get(algorithm);
+
+    if (iterationCount < minIteration) {
+      var secondaryLocations = new ArrayList<Location>();
+      secondaryLocations.add(new Location("", algorithmValueExpression));
+      if (!Objects.equals(iterationCountValueExpression.firstToken(), iterationCountExpression.firstToken())) {
+        secondaryLocations.add(new Location("", iterationCountValueExpression));
+      }
+
+      reportIssue(iterationCountExpression, JAVAX_CRYPTO_MESSAGE_FORMAT.formatted(minIteration), secondaryLocations, null);
+    }
+  }
+
+  // Given secretKeyFactory.generateSecret(keySpec), where var keySpec = new PBEKeySpec(..., iterations, ...), where
+  // iterations is var iterations = y, returns the expressions "iterations", "y", as well as "y" value (e.g. 120000).
+  private static Optional<ExpressionsAndValue<Integer>> extractIterationCount(ExpressionTree keySpecArgumentExpression) {
+    return getInitializerExpressionOfVariableIdentifier(keySpecArgumentExpression)
+      .or(() -> Optional.of(keySpecArgumentExpression)) // try to resolve the expression itself to a constructor invocation
+      .filter(e -> e.is(Tree.Kind.NEW_CLASS))
+      .map(NewClassTree.class::cast)
+      .filter(PBE_KEY_SPEC_CONSTRUCTOR::matches)
+      .map(gi -> gi.arguments().get(2))
+      .flatMap(e -> getInitializerExpressionAndValue(e, Integer.class));
+  }
+
+  // Given secretKeyFactory.getInstance(algorithm), where var algorithm = y, returns the expressions "algorithm",
+  // "y", as well as "y" value (e.g. "PBKDF2withHmacSHA512").
+  private static Optional<ExpressionsAndValue<String>> extractAlgorithm(ExpressionTree secretKeyFactoryExpression) {
+    return getInitializerExpressionOfVariableIdentifier(secretKeyFactoryExpression)
+      .or(() -> Optional.of(secretKeyFactoryExpression)) // try to resolve the expression itself to a method invocation
+      .filter(e -> e.is(Tree.Kind.METHOD_INVOCATION))
+      .map(MethodInvocationTree.class::cast)
+      .filter(SECRET_KEY_FACTORY_GET_INSTANCE_METHOD::matches)
+      .map(gi -> gi.arguments().get(0))
+      .flatMap(e -> getInitializerExpressionAndValue(e, String.class));
+  }
+
+  // Given any expression e, attempts constant value resolution of the expression itself and of the initializer
+  // of the declaration of e, if any.
+  private static <T> Optional<ExpressionsAndValue<T>> getInitializerExpressionAndValue(ExpressionTree expression, Class<T> type) {
+    var initializerExpression = getInitializerExpressionOfVariableIdentifier(expression);
+    return initializerExpression
+      .flatMap(e -> e.asConstant(type))
+      .map(v -> new ExpressionsAndValue<>(expression, initializerExpression.get(), v))
+      .or(() -> expression.asConstant(type).map(t -> new ExpressionsAndValue<>(expression, expression, t)));
+  }
+
+  // Given any identifier "x", returns the initializer y from the declaration of x: "var x = y" (whether in the same
+  // statement or not, whether it was reassigned between declaration and reference or not).
+  private static Optional<ExpressionTree> getInitializerExpressionOfVariableIdentifier(ExpressionTree expression) {
+    return Optional.of(expression)
+      .filter(e -> e.is(Tree.Kind.IDENTIFIER))
+      .map(IdentifierTree.class::cast)
+      .map(IdentifierTree::symbol)
+      .map(Symbol::declaration)
+      .filter(e -> e.is(Tree.Kind.VARIABLE))
+      .map(VariableTree.class::cast)
+      .map(VariableTree::initializer);
   }
 
   static class MethodInvocationVisitor extends BaseTreeVisitor {
@@ -104,5 +235,8 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
       }
       super.visitMethodInvocation(tree);
     }
+  }
+
+  private record ExpressionsAndValue<T>(ExpressionTree expression, ExpressionTree initializerExpression, T value) {
   }
 }
