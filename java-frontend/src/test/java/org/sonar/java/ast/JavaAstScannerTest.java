@@ -280,7 +280,7 @@ class JavaAstScannerTest {
   }
 
   @Test
-  // when the problem is fixed you enable test with #non_compiling_switch
+  // when the problem is fixed you can enable test with #non_compiling_switch
   void ecj_does_not_raise_problems_on_non_compiling_switch_expression() {
     var source = """
       public class File {
@@ -303,12 +303,10 @@ class JavaAstScannerTest {
   }
 
   @Test
-  // #non_compiling_switch
-  @Disabled("a bug was introduced in the 3.41 eclipse release, in java 8, non compiling switch expression do not raise errors")
   void module_info_should_not_be_analyzed_or_change_the_version() {
     scanWithJavaVersion(8,
       Arrays.asList(
-        TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java"),
+        TestUtils.inputFile("src/test/files/ast/PatternMatching.java"),
         TestUtils.inputFile("src/test/resources/module-info.java")
       ));
 
@@ -317,8 +315,8 @@ class JavaAstScannerTest {
     assertThat(filteredLogs).contains("1/1 source file has been analyzed");
     assertThat(filteredLogs.size()).isBetween(3,4);
     assertThat(logTester.logs(Level.ERROR)).containsExactly(
-      "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-      "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only"
+      "Unable to parse source file : 'src/test/files/ast/PatternMatching.java'",
+      "Parse error at line 3 column 27: Syntax error on token(s), misplaced construct(s)"
     );
     assertThat(logTester.logs(Level.WARN))
       // two files, only one log
@@ -330,20 +328,18 @@ class JavaAstScannerTest {
   }
 
   @Test
-  // #non_compiling_switch
-  @Disabled("a bug was introduced in the 3.41 eclipse release, in java 8, non compiling switch expression do not raise errors")
   void remove_info_ro_warning_log_related_to_module_info() {
     logTester.setLevel(Level.ERROR);
     scanWithJavaVersion(8,
       Arrays.asList(
-        TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java"),
+        TestUtils.inputFile("src/test/files/ast/PatternMatching.java"),
         TestUtils.inputFile("src/test/resources/module-info.java")
       ));
     assertThat(logTester.logs(Level.INFO)).isEmpty();
     assertThat(logTester.logs(Level.WARN)).isEmpty();
     assertThat(logTester.logs(Level.ERROR)).containsExactly(
-      "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-      "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only"
+      "Unable to parse source file : 'src/test/files/ast/PatternMatching.java'",
+      "Parse error at line 3 column 27: Syntax error on token(s), misplaced construct(s)"
     );
   }
 
