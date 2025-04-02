@@ -267,16 +267,9 @@ class JParserTest {
   }
 
   @Test
-  void fail_to_parse_static_method_invocation_on_a_conditional_expression_with_null_literal_on_the_else_operand() {
-    // Due to a bug in ECJ 3.39.0, the bellow Java code can not be parsed, the parser fails throwing:
-    // java.util.EmptyStackException: null
-    //    at java.base/java.util.Stack.peek(Stack.java:103)
-    //    at java.base/java.util.Stack.pop(Stack.java:85)
-    //    at org.eclipse.jdt.internal.compiler.codegen.OperandStack.pop(OperandStack.java:85)
-    //    at org.eclipse.jdt.internal.compiler.codegen.OperandStack.pop(OperandStack.java:109)
-    //    at org.eclipse.jdt.internal.compiler.ast.ConditionalExpression.generateCode(ConditionalExpression.java:322)
+  void parse_static_method_invocation_on_a_conditional_expression_with_null_literal_on_the_else_operand() {
     List<File> classpath = List.of();
-    assertThatThrownBy(() -> JParserTestUtils.parse("Reproducer.java", """
+    var res =JParserTestUtils.parse("Reproducer.java", """
       package checks;
 
       public class Reproducer {
@@ -286,10 +279,7 @@ class JParserTest {
         static void bar() {
         }
       }
-      """, classpath))
-      .isInstanceOf(RecognitionException.class)
-      .hasMessage("ECJ: Unable to parse file.")
-      .hasCauseInstanceOf(EmptyStackException.class);
+      """, classpath);
   }
 
   @Test
@@ -516,7 +506,7 @@ class JParserTest {
     assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNameRBRACE, TerminalTokens.TokenNameLBRACE)).isEqualTo(2);
     assertThatThrownBy(() -> JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNamebreak, TerminalTokens.TokenNameconst))
       .isInstanceOf(IllegalStateException.class)
-      .hasMessage("Failed to find token 83 or 138 in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
+      .hasMessage("Failed to find token 82 or 136 in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
   }
 
   @Test
