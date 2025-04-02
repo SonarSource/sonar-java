@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,8 +48,13 @@ import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.model.JParserConfig;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -175,6 +181,8 @@ class JavaAstScannerTest {
   }
 
   @Test
+  // #non_compiling_switch
+  @Disabled("a bug was introduced in the 3.41 eclipse release, in java 8, non compiling switch expression do not raise errors")
   void test_should_log_fail_parsing_with_incorrect_version() {
     scanWithJavaVersion(8, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
     assertThat(logTester.logs(Level.ERROR)).containsExactly(
@@ -272,6 +280,31 @@ class JavaAstScannerTest {
   }
 
   @Test
+  // when the problem is fixed you enable test with #non_compiling_switch
+  void ecj_does_not_raise_problems_on_non_compiling_switch_expression() {
+    var source = """
+      public class File {
+        void java15SwitchExpression() {
+          int h = 24;
+          int i = switch (1) {
+            case 2 -> 1;
+            default -> 2;
+          };
+          int j = 42;
+        }
+      }
+      """;
+    var cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source, new JavaVersionImpl(8));
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    var method = (MethodTreeImpl) clazz.members().get(0);
+    var block = (BlockTreeImpl) method.block();
+    // The only consequence of the non-compiling code is that the block is empty
+    assertThat(block.body()).isEmpty();
+  }
+
+  @Test
+  // #non_compiling_switch
+  @Disabled("a bug was introduced in the 3.41 eclipse release, in java 8, non compiling switch expression do not raise errors")
   void module_info_should_not_be_analyzed_or_change_the_version() {
     scanWithJavaVersion(8,
       Arrays.asList(
@@ -297,6 +330,8 @@ class JavaAstScannerTest {
   }
 
   @Test
+  // #non_compiling_switch
+  @Disabled("a bug was introduced in the 3.41 eclipse release, in java 8, non compiling switch expression do not raise errors")
   void remove_info_ro_warning_log_related_to_module_info() {
     logTester.setLevel(Level.ERROR);
     scanWithJavaVersion(8,
