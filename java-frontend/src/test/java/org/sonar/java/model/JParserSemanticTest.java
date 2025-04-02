@@ -1271,7 +1271,7 @@ class JParserSemanticTest {
   }
 
   @Test
-  void ecj_exception_when_computing_metadata_should_be_caught() {
+  void no_metadata_annotations_on_noncompiling_annotation_code() {
     String source = "" +
       " public class C {\n" +
       "  interface I1 {}\n" +
@@ -1292,7 +1292,7 @@ class JParserSemanticTest {
     ExpressionStatementTree expression = (ExpressionStatementTree) m.block().body().get(0);
 
     SymbolMetadata metadata = assertDoesNotThrow(() -> ((MethodInvocationTreeImpl) expression.expression()).methodSymbol().metadata());
-    assertThat(metadata).isEqualTo(Symbols.EMPTY_METADATA);
+    assertThat(metadata.annotations()).isEmpty();
   }
 
   @Test
