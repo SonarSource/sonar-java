@@ -1370,8 +1370,6 @@ public class JParser {
         declaration(t.variableBinding, t);
         statements.add(t);
       }
-    } else if (node.getNodeType() == ASTNode.BREAK_STATEMENT && node.getLength() < "break".length()) {
-      // skip implicit break-statement
     } else {
       statements.add(createStatement(node));
     }
