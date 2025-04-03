@@ -171,6 +171,14 @@ class PasswordEncoderJavaxCryptoSample {
     }
   }
 
+  public void nonCompliantIterationNotInitializedInline(String password, byte[] salt) throws Exception {
+    int iterations;
+    iterations = 10;
+    PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, iterations, 256); // FN: requires flow from assignment
+    SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2withHmacSHA512");
+    secretKeyFactory.generateSecret(keySpec);
+  }
+
   // endregion
 
   // region Compliant cases
@@ -238,6 +246,15 @@ class PasswordEncoderJavaxCryptoSample {
       SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algorithm);
       secretKeyFactory.generateSecret(keySpec);
     }
+  }
+
+  public void compliantIterationReassigned(String password, byte[] salt) throws Exception {
+    int iterations = 10;
+    iterations = 210000;
+    // FP: we only look at the initialization
+    PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, iterations, 256); // Noncompliant
+    SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2withHmacSHA512");
+    secretKeyFactory.generateSecret(keySpec);
   }
 
   // endregion
