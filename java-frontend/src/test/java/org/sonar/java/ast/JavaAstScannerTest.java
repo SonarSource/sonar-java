@@ -181,14 +181,31 @@ class JavaAstScannerTest {
   }
 
   @Test
-  // #non_compiling_switch
-  @Disabled("a bug was introduced in the 3.41 eclipse release, in java 8, non compiling switch expression do not raise errors")
   void test_should_log_fail_parsing_with_incorrect_version() {
     scanWithJavaVersion(8, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
-    assertThat(logTester.logs(Level.ERROR)).containsExactly(
-      "Unable to parse source file : 'src/test/files/metrics/Java15SwitchExpression.java'",
-      "Parse error at line 3 column 13: Switch Expressions are supported from Java 14 onwards only"
-    );
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
+  }
+
+  @Test
+  void ecj_does_not_raise_problems_on_non_compiling_switch_expression() {
+    var source = """
+      public class File {
+        void java15SwitchExpression() {
+          int h = 24;
+          int i = switch (1) {
+            case 2 -> 1;
+            default -> 2;
+          };
+          int j = 42;
+        }
+      }
+      """;
+    var cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source, new JavaVersionImpl(8));
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    var method = (MethodTreeImpl) clazz.members().get(0);
+    var block = (BlockTreeImpl) method.block();
+    // The only consequence of the non-compiling code is that the block is empty
+    assertThat(block.body()).isEmpty();
   }
 
   @ParameterizedTest
@@ -280,33 +297,10 @@ class JavaAstScannerTest {
   }
 
   @Test
-  // when the problem is fixed you can enable test with #non_compiling_switch
-  void ecj_does_not_raise_problems_on_non_compiling_switch_expression() {
-    var source = """
-      public class File {
-        void java15SwitchExpression() {
-          int h = 24;
-          int i = switch (1) {
-            case 2 -> 1;
-            default -> 2;
-          };
-          int j = 42;
-        }
-      }
-      """;
-    var cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source, new JavaVersionImpl(8));
-    var clazz = (ClassTreeImpl) cu.types().get(0);
-    var method = (MethodTreeImpl) clazz.members().get(0);
-    var block = (BlockTreeImpl) method.block();
-    // The only consequence of the non-compiling code is that the block is empty
-    assertThat(block.body()).isEmpty();
-  }
-
-  @Test
   void module_info_should_not_be_analyzed_or_change_the_version() {
     scanWithJavaVersion(8,
       Arrays.asList(
-        TestUtils.inputFile("src/test/files/ast/PatternMatching.java"),
+        TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java"),
         TestUtils.inputFile("src/test/resources/module-info.java")
       ));
 
@@ -314,10 +308,7 @@ class JavaAstScannerTest {
     List<String> filteredLogs = TestUtils.filterOutAnalysisProgressLogLines(logs);
     assertThat(filteredLogs).contains("1/1 source file has been analyzed");
     assertThat(filteredLogs.size()).isBetween(3,4);
-    assertThat(logTester.logs(Level.ERROR)).containsExactly(
-      "Unable to parse source file : 'src/test/files/ast/PatternMatching.java'",
-      "Parse error at line 3 column 27: Syntax error on token(s), misplaced construct(s)"
-    );
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
     assertThat(logTester.logs(Level.WARN))
       // two files, only one log
       .hasSize(1)
@@ -332,15 +323,12 @@ class JavaAstScannerTest {
     logTester.setLevel(Level.ERROR);
     scanWithJavaVersion(8,
       Arrays.asList(
-        TestUtils.inputFile("src/test/files/ast/PatternMatching.java"),
+        TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java"),
         TestUtils.inputFile("src/test/resources/module-info.java")
       ));
     assertThat(logTester.logs(Level.INFO)).isEmpty();
     assertThat(logTester.logs(Level.WARN)).isEmpty();
-    assertThat(logTester.logs(Level.ERROR)).containsExactly(
-      "Unable to parse source file : 'src/test/files/ast/PatternMatching.java'",
-      "Parse error at line 3 column 27: Syntax error on token(s), misplaced construct(s)"
-    );
+    assertThat(logTester.logs(Level.ERROR)).isEmpty();
   }
 
   @Test
