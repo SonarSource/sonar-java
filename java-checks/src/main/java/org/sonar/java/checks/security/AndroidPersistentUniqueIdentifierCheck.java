@@ -86,6 +86,8 @@ public class AndroidPersistentUniqueIdentifierCheck extends AbstractMethodDetect
     NON_RESETTABLE_PERSISTENT_ID_MESSAGE
   );
 
+  private static final MethodMatchers ALL_MATCHER = MethodMatchers.or(MATCHERS.keySet().toArray(MethodMatchers[]::new));
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.METHOD_REFERENCE);
@@ -93,7 +95,7 @@ public class AndroidPersistentUniqueIdentifierCheck extends AbstractMethodDetect
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.or(MATCHERS.keySet().toArray(MethodMatchers[]::new));
+    return ALL_MATCHER;
   }
 
   @Override
