@@ -169,33 +169,33 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
   // Given secretKeyFactory.generateSecret(keySpec), where var keySpec = new PBEKeySpec(..., iterations, ...), where
   // iterations is var iterations = y, returns the expressions "iterations", "y", as well as "y" value (e.g. 120000).
   private static Optional<ExpressionsAndValue<Integer>> extractIterationCount(ExpressionTree keySpecArgumentExpression) {
-    return getInitializerExpressionOfVariableIdentifier(keySpecArgumentExpression)
+    return getInitializerIfExpressionIsVariableIdentifier(keySpecArgumentExpression)
       // try to resolve the expression itself to a constructor invocation
       .or(() -> Optional.of(keySpecArgumentExpression))
       .filter(e -> e.is(Tree.Kind.NEW_CLASS))
       .map(NewClassTree.class::cast)
       .filter(PBE_KEY_SPEC_CONSTRUCTOR::matches)
       .map(gi -> gi.arguments().get(2))
-      .flatMap(e -> getInitializerExpressionAndValue(e, Integer.class));
+      .flatMap(e -> getValueIfExpressionIsVariableIdentifier(e, Integer.class));
   }
 
   // Given secretKeyFactory.getInstance(algorithm), where var algorithm = y, returns the expressions "algorithm",
   // "y", as well as "y" value (e.g. "PBKDF2withHmacSHA512").
   private static Optional<ExpressionsAndValue<String>> extractAlgorithm(ExpressionTree secretKeyFactoryExpression) {
-    return getInitializerExpressionOfVariableIdentifier(secretKeyFactoryExpression)
+    return getInitializerIfExpressionIsVariableIdentifier(secretKeyFactoryExpression)
       // try to resolve the expression itself to a method invocation
       .or(() -> Optional.of(secretKeyFactoryExpression))
       .filter(e -> e.is(Tree.Kind.METHOD_INVOCATION))
       .map(MethodInvocationTree.class::cast)
       .filter(SECRET_KEY_FACTORY_GET_INSTANCE_METHOD::matches)
       .map(gi -> gi.arguments().get(0))
-      .flatMap(e -> getInitializerExpressionAndValue(e, String.class));
+      .flatMap(e -> getValueIfExpressionIsVariableIdentifier(e, String.class));
   }
 
   // Given any expression e, attempts constant value resolution of the expression itself and of the initializer
   // of the declaration of e, if any.
-  private static <T> Optional<ExpressionsAndValue<T>> getInitializerExpressionAndValue(ExpressionTree expression, Class<T> type) {
-    var initializerExpression = getInitializerExpressionOfVariableIdentifier(expression);
+  private static <T> Optional<ExpressionsAndValue<T>> getValueIfExpressionIsVariableIdentifier(ExpressionTree expression, Class<T> type) {
+    var initializerExpression = getInitializerIfExpressionIsVariableIdentifier(expression);
     return initializerExpression
       .flatMap(e -> e.asConstant(type))
       .map(v -> new ExpressionsAndValue<>(expression, initializerExpression.get(), v))
@@ -204,7 +204,7 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
 
   // Given any identifier "x", returns the initializer y from the declaration of x: "var x = y" (whether in the same
   // statement or not, whether it was reassigned between declaration and reference or not).
-  private static Optional<ExpressionTree> getInitializerExpressionOfVariableIdentifier(ExpressionTree expression) {
+  private static Optional<ExpressionTree> getInitializerIfExpressionIsVariableIdentifier(ExpressionTree expression) {
     return Optional.of(expression)
       .filter(e -> e.is(Tree.Kind.IDENTIFIER))
       .map(IdentifierTree.class::cast)
