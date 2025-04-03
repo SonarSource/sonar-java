@@ -24,19 +24,36 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 class PasswordEncoderCheckTest {
 
   @Test
-  void test() {
+  void test_spring() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/PasswordEncoder.java"))
+      .onFile(mainCodeSourcesPath("checks/security/PasswordEncoderSpringSample.java"))
       .withCheck(new PasswordEncoderCheck())
       .verifyIssues();
   }
 
   @Test
-  void test_no_semantics() {
+  void test_spring_no_semantics() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/PasswordEncoder.java"))
+      .onFile(mainCodeSourcesPath("checks/security/PasswordEncoderSpringSample.java"))
       .withCheck(new PasswordEncoderCheck())
       .withoutSemantic()
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_javax_crypto() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/PasswordEncoderJavaxCryptoSample.java"))
+      .withCheck(new PasswordEncoderCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_javax_crypto_no_semantics() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/PasswordEncoderJavaxCryptoSample.java"))
+      .withCheck(new PasswordEncoderCheck())
+      .withoutSemantic()
+      .verifyIssues();
   }
 }
