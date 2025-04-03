@@ -31,4 +31,13 @@ class AndroidPersistentUniqueIdentifierCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/AndroidPersistentUniqueIdentifierCheckSample.java"))
+      .withCheck(new AndroidPersistentUniqueIdentifierCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
 }

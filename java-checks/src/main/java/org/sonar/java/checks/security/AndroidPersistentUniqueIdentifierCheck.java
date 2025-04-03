@@ -18,7 +18,6 @@ package org.sonar.java.checks.security;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -35,14 +34,14 @@ public class AndroidPersistentUniqueIdentifierCheck extends AbstractMethodDetect
   private static final String ADVERTISING_ID_MESSAGE = "Using Advertising ID puts user privacy at risk. Make sure it is safe here.";
   private static final String NON_RESETTABLE_PERSISTENT_ID_MESSAGE = "Using a non-resettable persistent identifier puts user privacy at risk. Make sure it is safe here.";
 
-  private static final MethodMatchers staticSettingsSecureGetStringFunMatcher =
+  private static final MethodMatchers STATIC_SETTINGS_SECURE_GET_STRING_MATCHER =
     MethodMatchers.create()
       .ofTypes("android.provider.Settings$Secure")
       .names("getString")
       .addParametersMatcher("android.content.ContentResolver", "java.lang.String")
       .build();
 
-  private static final Map<MethodMatchers, String> matchers = Map.of(
+  private static final Map<MethodMatchers, String> MATCHERS = Map.of(
     MethodMatchers.create()
       .ofTypes("android.bluetooth.BluetoothAdapter")
       .names("getAddress")
@@ -83,7 +82,7 @@ public class AndroidPersistentUniqueIdentifierCheck extends AbstractMethodDetect
       .withAnyParameters()
       .build(),
     ADVERTISING_ID_MESSAGE,
-    staticSettingsSecureGetStringFunMatcher,
+    STATIC_SETTINGS_SECURE_GET_STRING_MATCHER,
     NON_RESETTABLE_PERSISTENT_ID_MESSAGE
   );
 
@@ -94,32 +93,39 @@ public class AndroidPersistentUniqueIdentifierCheck extends AbstractMethodDetect
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.or(matchers.keySet().toArray(MethodMatchers[]::new));
+    return MethodMatchers.or(MATCHERS.keySet().toArray(MethodMatchers[]::new));
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    matchers.keySet().stream()
-      .filter(matcher -> matcher.matches(mit))
+    MATCHERS.keySet().stream()
+      .filter(matcher -> isInvocationCandidate(matcher, mit))
       .findFirst()
-      .filter(matcher ->
-        matcher != staticSettingsSecureGetStringFunMatcher ||
-          mit.arguments().get(1).asConstant().map("android_id"::equals).orElse(false))
       .ifPresent(matcher -> {
-        var tree = mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)
-          ? ((MemberSelectExpressionTree) mit.methodSelect()).identifier()
-          : mit.methodSelect();
-        var message = matchers.get(matcher);
+        var tree = mit.methodSelect() instanceof MemberSelectExpressionTree mset ? mset.identifier() : mit.methodSelect();
+        var message = MATCHERS.get(matcher);
         reportIssue(tree, message);
       });
   }
 
   @Override
   protected void onMethodReferenceFound(MethodReferenceTree methodReferenceTree) {
-    matchers.keySet().stream()
-      .filter(matcher -> matcher.matches(methodReferenceTree))
+    MATCHERS.keySet().stream()
+      .filter(matcher -> isReferenceCandidate(matcher, methodReferenceTree))
       .findFirst()
-      .filter(Predicate.not(staticSettingsSecureGetStringFunMatcher::equals))
-      .ifPresent(matcher -> reportIssue(methodReferenceTree.method(), matchers.get(matcher)));
+      .ifPresent(matcher -> reportIssue(methodReferenceTree.method(), MATCHERS.get(matcher)));
+  }
+
+  private static boolean isInvocationCandidate(MethodMatchers matcher, MethodInvocationTree mit) {
+    return matcher.matches(mit) &&
+      (matcher != STATIC_SETTINGS_SECURE_GET_STRING_MATCHER || hasAndroidIdArgument(mit));
+  }
+
+  private static boolean isReferenceCandidate(MethodMatchers matcher, MethodReferenceTree methodReferenceTree) {
+    return matcher.matches(methodReferenceTree) && matcher != STATIC_SETTINGS_SECURE_GET_STRING_MATCHER;
+  }
+
+  private static boolean hasAndroidIdArgument(MethodInvocationTree mit) {
+    return mit.arguments().get(1).asConstant().map("android_id"::equals).orElse(false);
   }
 }
