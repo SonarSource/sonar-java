@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.EmptyStackException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -50,6 +49,8 @@ import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.slf4j.event.Level;
@@ -59,6 +60,7 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.testing.ThreadLocalLogTester;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -520,15 +522,21 @@ class JParserTest {
     assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
   }
 
-  @Test
-  void dont_include_running_VM_Bootclasspath_if_android_runtime_already_provided_in_classpath(@TempDir Path tempFolder) throws IOException {
-    VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
-    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
+  @ParameterizedTest
+  @ValueSource(ints = {8, 9, 17})
+  void dont_include_running_VM_Bootclasspath_if_android_runtime_already_provided_in_classpath(int javaVersion) throws IOException {
+    JavaVersion androidVersion = new JavaVersionImpl(javaVersion);
+    String source = "class C { void m() { String a; Integer b; } }";
+    VariableTree a = parseAndGetVariable(source, androidVersion);
+    VariableTree b = (VariableTree) ((BlockTree) a.parent()).body().get(1);
+    assertThat(a.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
+    assertThat(b.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
 
-    Path fakeAndroidSdk = tempFolder.resolve("android.jar");
-    Files.createFile(fakeAndroidSdk);
-    s1 = parseAndGetVariable("class C { void m() { String a; } }", fakeAndroidSdk.toFile());
-    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
+    Path fakeAndroidSdk = Path.of("src", "test", "resources", "android.jar").toRealPath();
+    a = parseAndGetVariable(source, androidVersion, fakeAndroidSdk.toFile());
+    b = (VariableTree) ((BlockTree) a.parent()).body().get(1);
+    assertThat(a.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
+    assertThat(b.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
   }
 
   @Test
@@ -914,7 +922,11 @@ class JParserTest {
   }
 
   private VariableTree parseAndGetVariable(String code, File... classpath) {
-    CompilationUnitTree t = JParserTestUtils.parse("Foo.java", code, Arrays.asList(classpath));
+    return parseAndGetVariable(code, JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION, classpath);
+  }
+
+  private VariableTree parseAndGetVariable(String code, JavaVersion javaVersion, File... classpath) {
+    CompilationUnitTree t = JParserTestUtils.parse("Foo.java", code, Arrays.asList(classpath), javaVersion);
     ClassTree c = (ClassTree) t.types().get(0);
     MethodTree m = (MethodTree) c.members().get(0);
     BlockTree s = m.block();
