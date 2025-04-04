@@ -14,15 +14,14 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks;
+package org.sonar.plugins.java.api;
 
-public class Constants {
+import java.util.Optional;
+import java.util.function.Function;
+import org.sonar.java.classpath.Version;
 
-  private Constants() {
-  }
+public interface DependencyVersionAware {
 
-  public static final String SPRING_3_2 = "../java-checks-test-sources/spring-3.2";
-  public static final String SPRING_3_2_CLASSPATH = SPRING_3_2 + "/target/test-classpath.txt";
-  public static final String SPRING_WEB_4_0_TEST_SOURCES = "../java-checks-test-sources/spring-web-4.0";
-  public static final String SPRING_WEB_4_0_CLASSPATH = SPRING_WEB_4_0_TEST_SOURCES + "/target/test-classpath.txt";
+  boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder);
+
 }
