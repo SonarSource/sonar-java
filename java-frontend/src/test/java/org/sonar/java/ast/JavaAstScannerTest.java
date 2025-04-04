@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -64,6 +65,7 @@ import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -181,8 +183,10 @@ class JavaAstScannerTest {
   }
 
   @Test
-  void test_should_log_fail_parsing_with_incorrect_version() {
+  void test_do_not_log_fail_parsing_with_incorrect_version() {
     scanWithJavaVersion(8, Collections.singletonList(TestUtils.inputFile("src/test/files/metrics/Java15SwitchExpression.java")));
+    // read test: ecj_does_not_raise_problems_on_non_compiling_switch_expression
+    // to understand why logTester.logs(Level.ERROR) is empty
     assertThat(logTester.logs(Level.ERROR)).isEmpty();
   }
 
@@ -200,12 +204,23 @@ class JavaAstScannerTest {
         }
       }
       """;
-    var cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source, new JavaVersionImpl(8));
-    var clazz = (ClassTreeImpl) cu.types().get(0);
-    var method = (MethodTreeImpl) clazz.members().get(0);
-    var block = (BlockTreeImpl) method.block();
-    // The only consequence of the non-compiling code is that the block is empty
-    assertThat(block.body()).isEmpty();
+    // BUG in ECJ 3.41: When the Java source version is 8, ECJ incorrectly does not report errors for switch expressions (introduced in later Java versions).
+    // Affected tests:
+    // - module_info_should_not_be_analyzed_or_change_the_version
+    // - remove_info_ro_warning_log_related_to_module_info
+    // - test_should_log_fail_parsing_with_incorrect_version
+    // Once the ECJ bug is fixed, these tests should be updated to expect logging error.
+
+    // JParserTestUtils.parse throw an error in case of non compiling code, as java source version is 8
+    // JParserTestUtils.parse should throw an error
+    assertDoesNotThrow(()->{
+      var cu = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source, new JavaVersionImpl(8));
+      var clazz = (ClassTreeImpl) cu.types().get(0);
+      var method = (MethodTreeImpl) clazz.members().get(0);
+      var block = (BlockTreeImpl) method.block();
+      // The only consequence of the non-compiling code is that the block is empty
+      assertThat(block.body()).isEmpty();
+    });
   }
 
   @ParameterizedTest
@@ -308,6 +323,8 @@ class JavaAstScannerTest {
     List<String> filteredLogs = TestUtils.filterOutAnalysisProgressLogLines(logs);
     assertThat(filteredLogs).contains("1/1 source file has been analyzed");
     assertThat(filteredLogs.size()).isBetween(3,4);
+    // read test: ecj_does_not_raise_problems_on_non_compiling_switch_expression
+    // to understand why logTester.logs(Level.ERROR) is empty
     assertThat(logTester.logs(Level.ERROR)).isEmpty();
     assertThat(logTester.logs(Level.WARN))
       // two files, only one log
@@ -328,6 +345,8 @@ class JavaAstScannerTest {
       ));
     assertThat(logTester.logs(Level.INFO)).isEmpty();
     assertThat(logTester.logs(Level.WARN)).isEmpty();
+    // read test: ecj_does_not_raise_problems_on_non_compiling_switch_expression
+    // to understand why logTester.logs(Level.ERROR) is empty
     assertThat(logTester.logs(Level.ERROR)).isEmpty();
   }
 
