@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.classpath.Version;
+import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;

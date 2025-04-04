@@ -17,6 +17,7 @@
 package org.sonar.java.classpath;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.plugins.java.api.Version;
 
 import static org.junit.jupiter.api.Assertions.*;
 

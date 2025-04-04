@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import org.sonar.java.test.classpath.TestClasspathUtils;
+import org.sonar.plugins.java.api.Version;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
