@@ -84,6 +84,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -271,7 +272,7 @@ class JParserTest {
   @Test
   void parse_static_method_invocation_on_a_conditional_expression_with_null_literal_on_the_else_operand() {
     List<File> classpath = List.of();
-    var res =JParserTestUtils.parse("Reproducer.java", """
+    assertDoesNotThrow(() -> JParserTestUtils.parse("Reproducer.java", """
       package checks;
 
       public class Reproducer {
@@ -281,7 +282,7 @@ class JParserTest {
         static void bar() {
         }
       }
-      """, classpath);
+      """, classpath));
   }
 
   @Test
