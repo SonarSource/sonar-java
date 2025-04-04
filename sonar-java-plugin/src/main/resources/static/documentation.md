@@ -144,6 +144,11 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **8.12**
+
+* New type: `Version` This will allow comparing different versions of the same artifact, and is used by the new `DependencyVersionAware` interface. 
+* New interface: `DependencyVersionAware`. Implementations of `JavaCheck` that implement this interface will be activated or deactivated depending on the version of dependencies available in the project.
+
 #### **8.10**
 
 * New method: `IssuableSubscriptionVisitor#reportIssue(Tree startTree, Tree endTree, String message, List<JavaFileScannerContext.Location> flow, @Nullable Integer cost)`
