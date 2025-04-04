@@ -41,7 +41,7 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.checks.EndOfAnalysisVisitor;
 import org.sonar.java.checks.VisitorThatCanBeSkipped;
-import org.sonar.java.classpath.Version;
+import org.sonar.plugins.java.api.Version;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.java.testing.ThreadLocalLogTester;

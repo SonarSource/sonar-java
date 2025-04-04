@@ -18,7 +18,6 @@ package org.sonar.plugins.java.api;
 
 import java.util.Optional;
 import java.util.function.Function;
-import org.sonar.java.classpath.Version;
 
 public interface DependencyVersionAware {
 
