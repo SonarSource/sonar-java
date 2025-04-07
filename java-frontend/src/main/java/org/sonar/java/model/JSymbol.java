@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -102,7 +103,11 @@ abstract class JSymbol implements Symbol {
   private static boolean areEqualMethods(JSymbol thisMethodSymbol, JSymbol otherMethodSymbol) {
     IMethodBinding thisBinding = (IMethodBinding) thisMethodSymbol.binding;
     IMethodBinding otherBinding = (IMethodBinding) otherMethodSymbol.binding;
-    return Objects.equals(thisBinding.getKey(), otherBinding.getKey());
+    return thisMethodSymbol.name().equals(otherMethodSymbol.name())
+      && thisMethodSymbol.owner().equals(otherMethodSymbol.owner())
+      && Arrays.equals(thisBinding.getParameterTypes(), otherBinding.getParameterTypes())
+      && Arrays.equals(thisBinding.getTypeParameters(), otherBinding.getTypeParameters())
+      && Arrays.equals(thisBinding.getTypeArguments(), otherBinding.getTypeArguments());
   }
 
   @Override
@@ -189,6 +194,7 @@ abstract class JSymbol implements Symbol {
     if (!variableBinding.isRecordComponent()) {
       IMethodBinding declaringMethod = variableBinding.getDeclaringMethod();
       if (declaringMethod != null) {
+        // local variable
         return sema.methodSymbol(declaringMethod);
       }
       ITypeBinding declaringClass = variableBinding.getDeclaringClass();
@@ -197,10 +203,6 @@ abstract class JSymbol implements Symbol {
         return sema.typeSymbol(declaringClass);
       }
     }
-    return ownerOfRecordComponentConstant(variableBinding);
-  }
-
-  private Symbol ownerOfRecordComponentConstant(IVariableBinding variableBinding) {
     Tree node = sema.declarations.get(variableBinding);
     if (node == null) {
       // array.length
