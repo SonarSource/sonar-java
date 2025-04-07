@@ -21,10 +21,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
@@ -83,8 +84,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
   /**
    * Symbols we know are non-null, so can safely be used in boolean expressions
    */
-  // FIXME we are using IdentityHashMap instead of HashSet here because of a bug (see SONARJAVA-5338) which leads to interferences between variables declared in different lambdas.
-  private final Map<Symbol, Boolean> safeSymbols = new IdentityHashMap<>();
+  private final Set<Symbol> safeSymbols = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -142,7 +142,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
       MethodInvocationTree methodInvocationTree = parentMethodInvocationOfArgumentAtPos(lambdaExpressionTree, 0);
       // parameters of lambdas applied on an Optional are always non-null
       if (methodInvocationTree != null && OPTIONAL_METHODS_WITH_LAMBDA_CONSUMING_NON_NULL.matches(methodInvocationTree)) {
-        safeSymbols.put(lambdaFistParameter.symbol(), true);
+        safeSymbols.add(lambdaFistParameter.symbol());
       }
     }
     super.visitLambdaExpression(lambdaExpressionTree);
@@ -167,7 +167,7 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
         return true;
       }
       if (boxedBoolean instanceof IdentifierTree identifierTree &&
-        safeSymbols.containsKey(identifierTree.symbol())) {
+        safeSymbols.contains(identifierTree.symbol())) {
         return true;
       }
       QuickFixHelper.newIssue(context)
