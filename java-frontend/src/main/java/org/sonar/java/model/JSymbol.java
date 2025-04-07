@@ -84,10 +84,7 @@ abstract class JSymbol implements Symbol {
           other
         );
       case IBinding.METHOD:
-        return areEqualMethods(
-          this,
-          other
-        );
+        return areEqualMethods((JMethodSymbol) this, (JMethodSymbol) other);
       default:
         return super.equals(obj);
     }
@@ -100,12 +97,10 @@ abstract class JSymbol implements Symbol {
       && thisVariableSymbol.owner().equals(otherVariableSymbol.owner());
   }
 
-  private static boolean areEqualMethods(JSymbol thisMethodSymbol, JSymbol otherMethodSymbol) {
+  private static boolean areEqualMethods(JMethodSymbol thisMethodSymbol, JMethodSymbol otherMethodSymbol) {
     IMethodBinding thisBinding = (IMethodBinding) thisMethodSymbol.binding;
     IMethodBinding otherBinding = (IMethodBinding) otherMethodSymbol.binding;
-    if (thisMethodSymbol instanceof JMethodSymbol jMethodSymbol &&
-      otherMethodSymbol instanceof JMethodSymbol otherJMethodSymbol &&
-      jMethodSymbol.isLambda() && otherJMethodSymbol.isLambda()) {
+    if (thisMethodSymbol.isLambda() && otherMethodSymbol.isLambda()) {
       return Objects.equals(thisBinding.getKey(), otherBinding.getKey());
     }
     return thisMethodSymbol.name().equals(otherMethodSymbol.name())
