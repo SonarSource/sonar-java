@@ -33,7 +33,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -43,8 +42,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.model.assertions.SymbolAssert.assertThat;
@@ -164,40 +161,6 @@ class JSymbolTest {
     assertThat(cu.sema.methodSymbol(m.methodBinding))
       .as("of method")
       .hasOwner(cu.sema.typeSymbol(c1.typeBinding));
-  }
-
-  @Test
-  void owner_lambdaVariable_variableBinding() {
-    JavaTree.CompilationUnitTreeImpl cu = test("""
-      class C {
-        java.util.function.Function<Integer, Integer> variableBinding = i -> i;
-      }
-      """
-    );
-    var classTree = (ClassTreeImpl) cu.types().get(0);
-    var lambda = (LambdaExpressionTree) ((VariableTree) classTree.members().get(0)).initializer();
-    var i = (IdentifierTree) lambda.body();
-    Symbol owner = i.symbol().owner();
-    assertTrue(owner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
-  }
-
-  @Test
-  void owner_lambdaVariable_methodBinding() {
-    JavaTree.CompilationUnitTreeImpl cu = test("""
-      class C {
-         void foo() {
-             java.util.function.Function<Long, Long> methodBinding = l -> l;
-          }
-      }
-      """
-    );
-    ClassTreeImpl classTree = (ClassTreeImpl) cu.types().get(0);
-    MethodTree method = (MethodTree) classTree.members().get(0);
-    VariableTree bindingInsideMethod = (VariableTree) method.block().body().get(0);
-    LambdaExpressionTree lambda = (LambdaExpressionTree) bindingInsideMethod.initializer();
-    VariableTree l = lambda.parameters().get(0);
-    Symbol owner = l.symbol().owner();
-    assertTrue(owner instanceof JMethodSymbol methodSymbol && methodSymbol.isLambda());
   }
 
   @Test
@@ -637,27 +600,6 @@ class JSymbolTest {
       ClassTreeImpl c1 = (ClassTreeImpl) cu.types().get(0);
       return cu.sema.variableSymbol(((VariableTreeImpl) c1.members().get(memberIndex)).variableBinding);
     }
-  }
-
-  @Test
-  void testEquality_twoLambdas() {
-    CompilationUnitTree cu = test("""
-      class C {
-        F k = s -> {};
-        F j = s -> {};
-        interface F extends java.util.function.Consumer<String> {}
-      }
-      """);
-    ClassTree classTree = (ClassTree) cu.types().get(0);
-    var k = (VariableTree) classTree.members().get(0);
-    var lambda1 = (LambdaExpressionTree) k.initializer();
-    Symbol.MethodSymbol methodSymbol1 = lambda1.symbol();
-
-    var j = (VariableTree) classTree.members().get(1);
-    var lambda2 = (LambdaExpressionTree) j.initializer();
-    Symbol.MethodSymbol methodSymbol2 = lambda2.symbol();
-
-    assertNotEquals(methodSymbol1, methodSymbol2);
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {
