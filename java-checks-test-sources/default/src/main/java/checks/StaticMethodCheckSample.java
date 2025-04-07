@@ -8,6 +8,16 @@ import java.util.Map;
 import java.util.HashMap;
 import javax.annotation.Nullable;
 
+class GenericClass1<R extends Record> {
+  private final int recursiveMethod(int x) { // Noncompliant {{Make "recursiveMethod" a "static" method.}}
+    if (x <= 0) {
+      return 0;
+    } else {
+      return x * recursiveMethod(x - 1);
+    }
+  }
+}
+
 class Utilities {
   private static String magicWord = "magic";
   private static String string = magicWord; // coverage
