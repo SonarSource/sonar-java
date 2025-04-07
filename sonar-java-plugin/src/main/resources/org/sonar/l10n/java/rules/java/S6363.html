@@ -1,15 +1,19 @@
-<p>WebViews can be used to display web content as part of a mobile application. A browser engine is used to render and display the content. Like a web
-application, a mobile application that uses WebViews can be vulnerable to Cross-Site Scripting if untrusted code is rendered.</p>
-<p>If malicious JavaScript code in a WebView is executed this can leak the contents of sensitive files when access to local files is enabled.</p>
+<p>Exposing the Android file system to WebViews is security-sensitive.</p>
+<p>Granting file access to WebViews, particularly through the <code>file://</code> scheme, introduces a risk of local file inclusion vulnerabilities.
+The severity of this risk depends heavily on the specific <code>WebSettings</code> configured. Overly permissive settings can allow malicious scripts
+to access a wide range of local files, potentially exposing sensitive data such as Personally Identifiable Information (PII) or private application
+data, leading to data breaches and other security compromises.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> No local files have to be accessed by the Webview. </li>
-  <li> The WebView contains untrusted data that could cause harm when rendered. </li>
+  <li> You open files that may be created or altered by external sources. </li>
+  <li> You open arbitrary URLs from external sources. </li>
 </ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
+<p>There is a risk if you answered yes to any of these questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
-<p>It is recommended to disable access to local files for WebViews unless it is necessary. In the case of a successful attack through a Cross-Site
-Scripting vulnerability the attackers attack surface decreases drastically if no files can be read out.</p>
+<p>Avoid opening <code>file://</code> URLs from external sources in WebView components. If your application accepts arbitrary URLs from external
+sources, do not enable this functionality. Instead, utilize <code>androidx.webkit.WebViewAssetLoader</code> to access files, including assets and
+resources, via <code>http(s)://</code> schemes.</p>
+<p>For enhanced security, ensure that the options to load <code>file://</code> URLs are explicitly set to false.</p>
 <h2>Sensitive Code Example</h2>
 <pre>
 import android.webkit.WebView;
@@ -28,14 +32,18 @@ webView.getSettings().setAllowContentAccess(false);
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A03_2021-Injection/">Top 10 2021 Category A3 - Injection</a> </li>
+  <li> OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a> </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
+  Exposure</a> </li>
   <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
   Misconfiguration</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)">Top 10 2017 Category A7 - Cross-Site Scripting
-  (XSS)</a> </li>
   <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m8-security-misconfiguration">Mobile Top 10 2024 Category M8 - Security
   Misconfiguration</a> </li>
+  <li> OWASP - <a href="https://mas.owasp.org/checklists/MASVS-PLATFORM/">Mobile AppSec Verification Standard - Platform Interaction Requirements</a>
+  </li>
   <li> CWE - <a href="https://cwe.mitre.org/data/definitions/79">CWE-79 - Improper Neutralization of Input During Web Page Generation ('Cross-site
   Scripting')</a> </li>
+  <li> Android Documentation - <a href="https://developer.android.com/privacy-and-security/risks/webview-unsafe-file-inclusion">WebViews - Unsafe File
+  Inclusion</a> </li>
 </ul>
 
