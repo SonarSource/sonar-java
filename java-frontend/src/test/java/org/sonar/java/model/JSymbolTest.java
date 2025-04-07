@@ -40,9 +40,11 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -658,6 +660,122 @@ class JSymbolTest {
     Symbol.MethodSymbol methodSymbol2 = lambda2.symbol();
 
     assertNotEquals(methodSymbol1, methodSymbol2);
+  }
+
+  @Test
+  void equivalent_method_and_lambda_have_different_symbols() {
+    CompilationUnitTree cu = test("""
+      class C {
+        java.util.function.Consumer<String> k = s -> {};
+        static void j(String s) {};
+      }
+      """);
+    ClassTree classTree = (ClassTree) cu.types().get(0);
+    var k = (VariableTree) classTree.members().get(0);
+    var lambda1 = (LambdaExpressionTree) k.initializer();
+    Symbol.MethodSymbol methodSymbol1 = lambda1.symbol();
+
+    Symbol.MethodSymbol methodSymbol2 = ((MethodTree) classTree.members().get(1)).symbol();
+
+    assertNotEquals(methodSymbol1, methodSymbol2);
+    assertNotEquals(methodSymbol2, methodSymbol1);
+  }
+
+  @Test
+  void methods_with_same_name_from_different_owners_have_different_symbols() {
+    CompilationUnitTree cu = test("""
+      class C {
+        void j(String s) {}
+      }
+      class D {
+        void j(String s) {}
+      }
+      """);
+    ClassTree cClassTree = (ClassTree) cu.types().get(0);
+    var cj = (MethodTree) cClassTree.members().get(0);
+    Symbol.MethodSymbol methodSymbol1 = cj.symbol();
+
+    ClassTree dClassTree = (ClassTree) cu.types().get(1);
+    var dj = (MethodTree) dClassTree.members().get(0);
+    Symbol.MethodSymbol methodSymbol2 = dj.symbol();
+
+    assertNotEquals(methodSymbol1, methodSymbol2);
+    assertNotEquals(methodSymbol2, methodSymbol1);
+  }
+
+  @Test
+  void overloading_methods_have_different_symbols() {
+    CompilationUnitTree cu = test("""
+      class C {
+        void j(String s) {}
+        void j(Integer i) {}
+      }
+      """);
+    ClassTree cClassTree = (ClassTree) cu.types().get(0);
+    var jString = (MethodTree) cClassTree.members().get(0);
+    Symbol.MethodSymbol methodSymbol1 = jString.symbol();
+
+    var jInteger = (MethodTree) cClassTree.members().get(1);
+    Symbol.MethodSymbol methodSymbol2 = jInteger.symbol();
+
+    assertNotEquals(methodSymbol1, methodSymbol2);
+    assertNotEquals(methodSymbol2, methodSymbol1);
+  }
+
+  @Test
+  void method_declaration_and_invocation_share_the_same_symbol() {
+    CompilationUnitTree cu = test("""
+      class C<R> {
+        int f(int i) { return f(i-1); }
+      }
+      """);
+    ClassTree cClassTree = (ClassTree) cu.types().get(0);
+    var f = (MethodTree) cClassTree.members().get(0);
+    var returnTree = (ReturnStatementTree) f.block().body().get(0);
+    var invocation = (MethodInvocationTree) returnTree.expression();
+    Symbol.MethodSymbol fInRecursion = invocation.methodSymbol();
+
+    assertEquals(f.symbol(), fInRecursion);
+    assertEquals(fInRecursion, f.symbol());
+  }
+
+  @Test
+  void methods_and_types_have_different_symbols() {
+    CompilationUnitTree cu = test("""
+      class C {
+        int f(int i) { 
+          return 0;
+        }
+      }
+      """);
+
+    ClassTree cClassTree = (ClassTree) cu.types().get(0);
+    JSymbol cSymbol = (JSymbol) cClassTree.symbol();
+
+    MethodTree f = (MethodTree) cClassTree.members().get(0);
+    JSymbol fSymbol = (JSymbol) f.symbol();
+    assertNotEquals(fSymbol, cSymbol);
+
+    // Symmetric case
+    assertNotEquals(cSymbol, fSymbol);
+  }
+
+  @Test
+  void methods_and_variables_have_different_symbols() {
+    CompilationUnitTree cu = test("""
+      class C<R> {
+        int f = 0;
+        int f(int i) { return 0; }
+      }
+      """);
+    ClassTree cClassTree = (ClassTree) cu.types().get(0);
+    var fVar = (VariableTree) cClassTree.members().get(0);
+    var fMethod = (MethodTree) cClassTree.members().get(1);
+
+    assertNotEquals(fMethod.symbol(), fVar.symbol());
+
+    // Test symmetric case
+    assertNotEquals(fVar.symbol(), fMethod.symbol());
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {
