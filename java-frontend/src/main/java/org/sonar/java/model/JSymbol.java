@@ -110,9 +110,7 @@ abstract class JSymbol implements Symbol {
     }
     return thisMethodSymbol.name().equals(otherMethodSymbol.name())
       && thisMethodSymbol.owner().equals(otherMethodSymbol.owner())
-      && Arrays.equals(thisBinding.getParameterTypes(), otherBinding.getParameterTypes())
-      && Arrays.equals(thisBinding.getTypeParameters(), otherBinding.getTypeParameters())
-      && Arrays.equals(thisBinding.getTypeArguments(), otherBinding.getTypeArguments());
+      && Arrays.equals(thisBinding.getParameterTypes(), otherBinding.getParameterTypes());
   }
 
   @Override
