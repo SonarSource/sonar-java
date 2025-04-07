@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -102,7 +103,16 @@ abstract class JSymbol implements Symbol {
   private static boolean areEqualMethods(JSymbol thisMethodSymbol, JSymbol otherMethodSymbol) {
     IMethodBinding thisBinding = (IMethodBinding) thisMethodSymbol.binding;
     IMethodBinding otherBinding = (IMethodBinding) otherMethodSymbol.binding;
-    return Objects.equals(thisBinding.getKey(), otherBinding.getKey());
+    if (thisMethodSymbol instanceof JMethodSymbol jMethodSymbol &&
+      otherMethodSymbol instanceof JMethodSymbol otherJMethodSymbol &&
+      jMethodSymbol.isLambda() && otherJMethodSymbol.isLambda()) {
+      return Objects.equals(thisBinding.getKey(), otherBinding.getKey());
+    }
+    return thisMethodSymbol.name().equals(otherMethodSymbol.name())
+      && thisMethodSymbol.owner().equals(otherMethodSymbol.owner())
+      && Arrays.equals(thisBinding.getParameterTypes(), otherBinding.getParameterTypes())
+      && Arrays.equals(thisBinding.getTypeParameters(), otherBinding.getTypeParameters())
+      && Arrays.equals(thisBinding.getTypeArguments(), otherBinding.getTypeArguments());
   }
 
   @Override
