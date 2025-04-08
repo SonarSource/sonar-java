@@ -32,6 +32,7 @@ import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -40,6 +41,7 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -776,6 +778,48 @@ class JSymbolTest {
 
     // Test symmetric case
     assertNotEquals(fVar.symbol(), fMethod.symbol());
+  }
+
+  @Test
+  void methods_with_different_type_parameters_have_different_symbols() {
+    CompilationUnitTree cu = test("""
+      class C {
+        <T> int f(String s);
+        {
+          f("foo");
+        }
+      }
+      """);
+    ClassTree cClassTree = (ClassTree) cu.types().get(0);
+    var methodDeclaration = (MethodTree) cClassTree.members().get(0);
+    var block = (BlockTree) cClassTree.members().get(1);
+    var expression1 = (ExpressionStatementTree) block.body().get(0);
+    var invocation1 = (MethodInvocationTree) expression1.expression();
+
+    assertNotEquals(methodDeclaration.symbol(), invocation1.methodSymbol());
+    assertNotEquals(invocation1.methodSymbol(), methodDeclaration.symbol());
+  }
+
+  @Test
+  void methods_with_different_type_arguments_have_different_symbols() {
+    CompilationUnitTree cu = test("""
+      class C<T> {
+        {
+          new C<String>();
+          new C<Integer>();
+        }
+      }
+      """);
+    ClassTree cClassTree = (ClassTree) cu.types().get(0);
+    var block = (BlockTree) cClassTree.members().get(0);
+    var expression1 = (ExpressionStatementTree) block.body().get(0);
+    var invocation1 = (NewClassTree) expression1.expression();
+
+    var expression2 = (ExpressionStatementTree) block.body().get(1);
+    var invocation2 = (NewClassTree) expression2.expression();
+
+    assertNotEquals(invocation2.methodSymbol(), invocation1.methodSymbol());
+    assertNotEquals(invocation1.methodSymbol(), invocation2.methodSymbol());
   }
 
   private static JavaTree.CompilationUnitTreeImpl test(String source) {
