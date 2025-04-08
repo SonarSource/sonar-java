@@ -71,6 +71,10 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
     return (IMethodBinding) binding;
   }
 
+  public boolean isLambda() {
+    return methodBinding().getDeclaringMember() != null;
+  }
+
   @Override
   public List<Type> parameterTypes() {
     if (parameterTypes == null) {
@@ -207,5 +211,11 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
   @Override
   public boolean isNativeMethod() {
     return !isUnknown() && Modifier.isNative(binding.getModifiers());
+  }
+
+  /** This is for debugging and doesn't follow a guaranteed format. */
+  @Override
+  public String toString() {
+    return binding.getKey();
   }
 }

@@ -39,11 +39,15 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -498,4 +502,25 @@ class JMethodSymbolTest {
     }
   }
 
+  @Test
+  void isLambda() {
+    JavaTree.CompilationUnitTreeImpl cu = test("""
+        class A {
+          void foo() { }
+          java.util.function.IntConsumer bar = i -> { };
+        }
+        """);
+    ClassTreeImpl a = firstClass(cu);
+
+    MethodTreeImpl foo = firstMethod(a);
+    var fooSymbol = (JMethodSymbol) foo.symbol();
+    assertFalse(fooSymbol.isLambda());
+    assertThat(fooSymbol.toString()).isNotEmpty();
+
+    var barAssignement = (VariableTree) a.members().get(1);
+    var initializer = (LambdaExpressionTree) barAssignement.initializer();
+    var lambdaSymbol = (JMethodSymbol) initializer.symbol();
+    assertTrue(lambdaSymbol.isLambda());
+    assertThat(lambdaSymbol.toString()).isNotEmpty();
+  }
 }
