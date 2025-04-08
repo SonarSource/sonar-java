@@ -31,21 +31,25 @@ public class AwsReusableResourcesInitializedOnceCheckSample {
     @SneakyThrows
     @Override
     public Void handleRequest(Object o, Context context) {
-      S3Client s3Client = S3Client.builder().region(Region.EU_CENTRAL_1).build(); // Noncompliant {{Instantiate this client outside the Lambda function.}}
-//                                                                       ^^^^^
-      S3Client.builder().build(); // Noncompliant {{Instantiate this client outside the Lambda function.}}
-//                       ^^^^^
-      MachineLearningClient.builder().build(); // Noncompliant {{Instantiate this client outside the Lambda function.}}
-//                                    ^^^^^
-      DriverManager.getConnection("foo"); // Noncompliant {{Instantiate this database connection outside the Lambda function.}}
-//                  ^^^^^^^^^^^^^
-      var customClient = new FooClient(); // Noncompliant {{Instantiate this client outside the Lambda function.}}
-//                           ^^^^^^^^^
-      var compliant = new Object();
-      build();
+      try {
+        S3Client s3Client = S3Client.builder().region(Region.EU_CENTRAL_1).build(); // Noncompliant {{Instantiate this client outside the Lambda function.}}
+//                                                                         ^^^^^
+        S3Client.builder().build(); // Noncompliant {{Instantiate this client outside the Lambda function.}}
+//                         ^^^^^
+        MachineLearningClient.builder().build(); // Noncompliant {{Instantiate this client outside the Lambda function.}}
+//                                      ^^^^^
+        DriverManager.getConnection("foo"); // Noncompliant {{Instantiate this database connection outside the Lambda function.}}
+//                    ^^^^^^^^^^^^^
+        var customClient = new FooClient(); // Noncompliant {{Instantiate this client outside the Lambda function.}}
+//                             ^^^^^^^^^
+        var compliant = new Object();
+        build();
 
-      called();
-      return null;
+        called();
+        return null;
+      } catch (SQLException e) {
+        throw new RuntimeException(e);
+      }
     }
 
     // Similar signature but not same:
@@ -110,13 +114,17 @@ public class AwsReusableResourcesInitializedOnceCheckSample {
     @SneakyThrows
     @Override
     public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
-      S3Client s3Client = S3Client.builder().region(Region.EU_CENTRAL_1).build(); // Noncompliant
-      S3Client.builder().build(); // Noncompliant
-      MachineLearningClient.builder().build(); // Noncompliant
-      var customClient = new FooClient(); // Noncompliant
-      DriverManager.getConnection("foo"); // Noncompliant
+      try {
+        S3Client s3Client = S3Client.builder().region(Region.EU_CENTRAL_1).build(); // Noncompliant
+        S3Client.builder().build(); // Noncompliant
+        MachineLearningClient.builder().build(); // Noncompliant
+        var customClient = new FooClient(); // Noncompliant
+        DriverManager.getConnection("foo"); // Noncompliant
 
-      called();
+        called();
+      } catch (SQLException e) {
+        throw new RuntimeException(e);
+      }
     }
 
     // Similar signature but not same:
