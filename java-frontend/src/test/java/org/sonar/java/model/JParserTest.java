@@ -78,6 +78,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
@@ -94,6 +95,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.model.JParser.convertTokenTypeToCommentKind;
 import static org.sonar.java.model.JParser.isComment;
 import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
 import static org.sonar.java.model.JParserConfig.Mode.BATCH;
@@ -543,35 +545,42 @@ class JParserTest {
 
     assertThat(tokens.size()).isEqualTo(15);
 
-    Token token = tokens.get(0);
-    assertThat(token.toString(source)).isEqualTo("class");
-    assertThat(token.isComment()).isFalse();
-    assertThat(isComment(token)).isFalse();
+    Token token0 = tokens.get(0);
+    assertThat(token0.toString(source)).isEqualTo("class");
+    assertThat(token0.isComment()).isFalse();
+    assertThat(isComment(token0)).isFalse();
+    assertThatThrownBy(() -> convertTokenTypeToCommentKind(token0))
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Unexpected value: 71");
 
-    token = tokens.get(3);
-    assertThat(token.toString(source)).isEqualTo("// line comment");
-    assertThat(token.isComment()).isTrue();
-    assertThat(isComment(token)).isTrue();
+    Token token3 = tokens.get(3);
+    assertThat(token3.toString(source)).isEqualTo("// line comment");
+    assertThat(token3.isComment()).isTrue();
+    assertThat(isComment(token3)).isTrue();
+    assertThat(convertTokenTypeToCommentKind(token3)).isEqualTo(CommentKind.LINE);
 
-    token = tokens.get(4);
-    assertThat(token.toString(source)).isEqualTo("/* block comment */");
-    assertThat(token.isComment()).isTrue();
-    assertThat(isComment(token)).isTrue();
+    Token token4 = tokens.get(4);
+    assertThat(token4.toString(source)).isEqualTo("/* block comment */");
+    assertThat(token4.isComment()).isTrue();
+    assertThat(isComment(token4)).isTrue();
+    assertThat(convertTokenTypeToCommentKind(token4)).isEqualTo(CommentKind.BLOCK);
 
-    token = tokens.get(5);
-    assertThat(token.toString(source)).isEqualTo("/// markdown comment 1\n  /// markdown comment 2");
-    assertThat(token.isComment()).isFalse(); // JDT issue https://github.com/eclipse-jdt/eclipse.jdt.core/issues/3914
-    assertThat(isComment(token)).isTrue();
+    Token token5 = tokens.get(5);
+    assertThat(token5.toString(source)).isEqualTo("/// markdown comment 1\n  /// markdown comment 2");
+    assertThat(token5.isComment()).isFalse(); // JDT issue https://github.com/eclipse-jdt/eclipse.jdt.core/issues/3914
+    assertThat(isComment(token5)).isTrue();
+    assertThat(convertTokenTypeToCommentKind(token5)).isEqualTo(CommentKind.MARKDOWN);
 
-    token = tokens.get(6);
-    assertThat(token.toString(source)).isEqualTo("/**\n    * javadoc comment\n    */");
-    assertThat(token.isComment()).isTrue();
-    assertThat(isComment(token)).isTrue();
+    Token token6 = tokens.get(6);
+    assertThat(token6.toString(source)).isEqualTo("/**\n    * javadoc comment\n    */");
+    assertThat(token6.isComment()).isTrue();
+    assertThat(isComment(token6)).isTrue();
+    assertThat(convertTokenTypeToCommentKind(token6)).isEqualTo(CommentKind.JAVADOC);
 
-    token = tokens.get(7);
-    assertThat(token.toString(source)).isEqualTo("void");
-    assertThat(token.isComment()).isFalse();
-    assertThat(isComment(token)).isFalse();
+    Token token7 = tokens.get(7);
+    assertThat(token7.toString(source)).isEqualTo("void");
+    assertThat(token7.isComment()).isFalse();
+    assertThat(isComment(token7)).isFalse();
   }
 
   @Test

@@ -34,23 +34,23 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   @Nonnull
   private final Range range;
 
-  public InternalSyntaxTrivia(String comment, int line, int columnOffset) {
+  public InternalSyntaxTrivia(CommentKind commentKind, String comment, int line, int columnOffset) {
+    this.commentKind = commentKind;
     this.comment = comment;
-    if (comment.startsWith("///")) {
-      commentKind = CommentKind.MARKDOWN;
-    } else if (comment.startsWith("//")) {
-      commentKind = CommentKind.LINE;
-    } else if (comment.startsWith("/**")) {
-      commentKind = CommentKind.JAVADOC;
-    } else if (comment.startsWith("/*")) {
-      commentKind = CommentKind.BLOCK;
-    } else {
-      throw new IllegalArgumentException("Invalid comment: " + comment);
-    }
     boolean mayHaveLineBreaks = commentKind != CommentKind.LINE;
     range = mayHaveLineBreaks
       ? Range.at(InternalPosition.atOffset(line, columnOffset), comment)
       : Range.at(InternalPosition.atOffset(line, columnOffset), comment.length());
+
+    boolean validKind = switch (commentKind) {
+      case LINE -> comment.startsWith("//");
+      case BLOCK -> comment.startsWith("/*") && comment.endsWith("*/");
+      case JAVADOC -> comment.startsWith("/**") && comment.endsWith("*/");
+      case MARKDOWN -> comment.startsWith("///");
+    };
+    if (!validKind) {
+      throw new IllegalArgumentException("Invalid comment kind: " + commentKind + " for comment: " + comment);
+    }
   }
 
   @Override
@@ -101,10 +101,6 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   @Override
   public void accept(TreeVisitor visitor) {
     // do nothing
-  }
-
-  public static SyntaxTrivia create(String comment, int startLine, int column) {
-    return new InternalSyntaxTrivia(comment, startLine, column);
   }
 
   @Override

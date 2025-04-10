@@ -245,6 +245,7 @@ import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -517,13 +518,24 @@ public class JParser {
     for (int i = commentIndex; i < tokenIndex; i++) {
       Token t = tokenManager.get(i);
       LineColumnConverter.Pos pos = lineColumnConverter.toPos(t.originalStart);
-      comments.add(new InternalSyntaxTrivia(
+      comments.add(new InternalSyntaxTrivia(convertTokenTypeToCommentKind(t),
         t.toString(tokenManager.getSource()),
         pos.line(),
         pos.columnOffset()
       ));
     }
     return comments;
+  }
+
+  @VisibleForTesting
+  static CommentKind convertTokenTypeToCommentKind(Token token) {
+    return switch (token.tokenType) {
+      case TokenNameCOMMENT_BLOCK -> CommentKind.BLOCK;
+      case TokenNameCOMMENT_JAVADOC -> CommentKind.JAVADOC;
+      case TokenNameCOMMENT_LINE -> CommentKind.LINE;
+      case TokenNameCOMMENT_MARKDOWN -> CommentKind.MARKDOWN;
+      default -> throw new IllegalStateException("Unexpected value: " + token.tokenType);
+    };
   }
 
   /**
