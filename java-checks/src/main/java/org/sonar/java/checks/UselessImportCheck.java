@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
@@ -164,9 +165,9 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
     String comment = syntaxTrivia.comment();
     Matcher matcher;
-    if (syntaxTrivia.isJavadocComment()) {
+    if (syntaxTrivia.isComment(CommentKind.JAVADOC)) {
       matcher = JAVADOC_REFERENCE.matcher(comment);
-    } else if (syntaxTrivia.isMarkdownComment()) {
+    } else if (syntaxTrivia.isComment(CommentKind.MARKDOWN)) {
       matcher = MARKDOWN_REFERENCE.matcher(comment);
     } else {
       // other comment types don't have references

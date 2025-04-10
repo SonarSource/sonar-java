@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -136,7 +137,7 @@ public class PublicApiChecker {
     return tree.firstToken()
       .trivias()
       .stream()
-      .filter(SyntaxTrivia::isJavadocOrMarkdownComment)
+      .filter(trivia -> trivia.isComment(CommentKind.JAVADOC) || trivia.isComment(CommentKind.MARKDOWN))
       .map(SyntaxTrivia::comment)
       // Get last element of stream, as the last javadoc comment is the one we are looking for.
       .reduce((first, second) -> second);

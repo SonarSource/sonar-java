@@ -26,6 +26,9 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
+
+  private final CommentKind commentKind;
+
   private final String comment;
 
   @Nonnull
@@ -33,7 +36,18 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
   public InternalSyntaxTrivia(String comment, int line, int columnOffset) {
     this.comment = comment;
-    boolean mayHaveLineBreaks = comment.startsWith("/*") || comment.startsWith("///");
+    if (comment.startsWith("///")) {
+      commentKind = CommentKind.MARKDOWN;
+    } else if (comment.startsWith("//")) {
+      commentKind = CommentKind.LINE;
+    } else if (comment.startsWith("/**")) {
+      commentKind = CommentKind.JAVADOC;
+    } else if (comment.startsWith("/*")) {
+      commentKind = CommentKind.BLOCK;
+    } else {
+      throw new IllegalArgumentException("Invalid comment: " + comment);
+    }
+    boolean mayHaveLineBreaks = commentKind != CommentKind.LINE;
     range = mayHaveLineBreaks
       ? Range.at(InternalPosition.atOffset(line, columnOffset), comment)
       : Range.at(InternalPosition.atOffset(line, columnOffset), comment.length());
@@ -46,40 +60,22 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
   @Override
   public String commentContent() {
-    if (comment.startsWith("/**")) {
-      return comment.substring(3, comment.length() - 2);
-    } else if (comment.startsWith("/*")) {
-      return comment.substring(2, comment.length() - 2);
-    } else if (comment.startsWith("///")) {
-      return comment.substring(3).replaceAll("\\R[ \t\f]*+///", "\n");
-    } else {
-      return comment.substring(2);
-    }
+    return switch (commentKind) {
+      case LINE -> comment.substring(2);
+      case BLOCK -> comment.substring(2, comment.length() - 2);
+      case JAVADOC -> comment.substring(3, comment.length() - 2);
+      case MARKDOWN -> comment.substring(3).replaceAll("\\R[ \t\f]*+///", "\n");
+    };
   }
 
   @Override
-  public boolean isLineComment() {
-    return comment.startsWith("//") && !comment.startsWith("///");
+  public CommentKind commentKind() {
+    return commentKind;
   }
 
   @Override
-  public boolean isBlockComment() {
-    return comment.startsWith("/*") && !comment.startsWith("/**");
-  }
-
-  @Override
-  public boolean isJavadocComment() {
-    return comment.startsWith("/**");
-  }
-
-  @Override
-  public boolean isMarkdownComment() {
-    return comment.startsWith("///");
-  }
-
-  @Override
-  public boolean isJavadocOrMarkdownComment() {
-    return isJavadocComment() || isMarkdownComment();
+  public boolean isComment(CommentKind kind) {
+    return commentKind == kind;
   }
 
   @Override

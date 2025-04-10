@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.YieldStatementTree;
 
@@ -188,7 +189,8 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    TypeOfText typeOfText = syntaxTrivia.isJavadocOrMarkdownComment() ? TypeOfText.STRUCTURED_COMMENT : TypeOfText.COMMENT;
+    boolean isJavadocOrMarkdown = syntaxTrivia.isComment(CommentKind.JAVADOC) || syntaxTrivia.isComment(CommentKind.MARKDOWN);
+    TypeOfText typeOfText =  isJavadocOrMarkdown ? TypeOfText.STRUCTURED_COMMENT : TypeOfText.COMMENT;
     Position start = Position.startOf(syntaxTrivia);
     Position end = Position.endOf(syntaxTrivia);
     highlighting.highlight(
