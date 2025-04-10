@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 import org.sonarsource.analyzer.commons.recognizers.CodeRecognizer;
@@ -84,7 +85,8 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
         currentCommentLine != previousCommentLine) {
         previousRelatedIssue = null;
       }
-      if (!isHeader(syntaxTrivia) && !isJavadoc(syntaxTrivia.comment()) && !isJSNI(syntaxTrivia.comment())) {
+      boolean isJavadocOrMarkdownComment = syntaxTrivia.isComment(CommentKind.JAVADOC, CommentKind.MARKDOWN);
+      if (!isHeader(syntaxTrivia) && !isJavadocOrMarkdownComment && !isJSNI(syntaxTrivia.comment())) {
         previousRelatedIssue = collectIssues(issues, syntaxTrivia, previousRelatedIssue);
         previousCommentLine = currentCommentLine;
       }
@@ -145,15 +147,6 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isJavadocLink(String line) {
     return line.contains("{@link");
-  }
-
-  /**
-   * From documentation for Javadoc-tool:
-   * Documentation comments should be recognized only when placed
-   * immediately before class, interface, constructor, method, or field declarations.
-   */
-  private static boolean isJavadoc(String comment) {
-    return StringUtils.startsWith(comment, "/**");
   }
 
   /**

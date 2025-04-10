@@ -45,6 +45,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
+import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -77,6 +78,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
@@ -93,6 +95,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.model.JParser.convertTokenTypeToCommentKind;
+import static org.sonar.java.model.JParser.isComment;
 import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
 import static org.sonar.java.model.JParserConfig.Mode.BATCH;
 import static org.sonar.java.model.JParserConfig.Mode.FILE_BY_FILE;
@@ -253,6 +257,15 @@ class JParserTest {
       c.simpleName(),
       c.initializer().identifier()
     );
+  }
+
+  @Test
+  void processEnumConstantDeclaration_sets_enum_initializer_following_a_markdown_comment_as_next_token() {
+    CompilationUnitTree cu = test("enum E { C /// comment before initializer\n (3); E(int a) {} }");
+    ClassTree t = (ClassTree) cu.types().get(0);
+    EnumConstantTree c = (EnumConstantTree) t.members().get(0);
+    assertThat(c.initializer().arguments().openParenToken()).isNotNull();
+    assertThat(c.initializer().arguments()).hasSize(1);
   }
 
   @Test
@@ -510,6 +523,64 @@ class JParserTest {
     assertThatThrownBy(() -> JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNamebreak, TerminalTokens.TokenNameconst))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Failed to find token 82 or 136 in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
+  }
+
+  @Test
+  void test_comment_tokens() {
+    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
+    String unitName = "C.java";
+    String source = """
+      class A {
+        // line comment
+        /* block comment */
+        /// markdown comment 1
+        /// markdown comment 2
+        /**
+          * javadoc comment
+          */
+        void foo() {}
+      }
+      """;
+    TokenManager tokens = JParser.createTokenManager(version, unitName, source);
+
+    assertThat(tokens.size()).isEqualTo(15);
+
+    Token token0 = tokens.get(0);
+    assertThat(token0.toString(source)).isEqualTo("class");
+    assertThat(token0.isComment()).isFalse();
+    assertThat(isComment(token0)).isFalse();
+    assertThatThrownBy(() -> convertTokenTypeToCommentKind(token0))
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Unexpected value: 71");
+
+    Token token3 = tokens.get(3);
+    assertThat(token3.toString(source)).isEqualTo("// line comment");
+    assertThat(token3.isComment()).isTrue();
+    assertThat(isComment(token3)).isTrue();
+    assertThat(convertTokenTypeToCommentKind(token3)).isEqualTo(CommentKind.LINE);
+
+    Token token4 = tokens.get(4);
+    assertThat(token4.toString(source)).isEqualTo("/* block comment */");
+    assertThat(token4.isComment()).isTrue();
+    assertThat(isComment(token4)).isTrue();
+    assertThat(convertTokenTypeToCommentKind(token4)).isEqualTo(CommentKind.BLOCK);
+
+    Token token5 = tokens.get(5);
+    assertThat(token5.toString(source)).isEqualTo("/// markdown comment 1\n  /// markdown comment 2");
+    assertThat(token5.isComment()).isFalse(); // JDT issue https://github.com/eclipse-jdt/eclipse.jdt.core/issues/3914
+    assertThat(isComment(token5)).isTrue();
+    assertThat(convertTokenTypeToCommentKind(token5)).isEqualTo(CommentKind.MARKDOWN);
+
+    Token token6 = tokens.get(6);
+    assertThat(token6.toString(source)).isEqualTo("/**\n    * javadoc comment\n    */");
+    assertThat(token6.isComment()).isTrue();
+    assertThat(isComment(token6)).isTrue();
+    assertThat(convertTokenTypeToCommentKind(token6)).isEqualTo(CommentKind.JAVADOC);
+
+    Token token7 = tokens.get(7);
+    assertThat(token7.toString(source)).isEqualTo("void");
+    assertThat(token7.isComment()).isFalse();
+    assertThat(isComment(token7)).isFalse();
   }
 
   @Test
