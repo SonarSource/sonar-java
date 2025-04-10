@@ -136,13 +136,9 @@ public class PublicApiChecker {
     return tree.firstToken()
       .trivias()
       .stream()
+      .filter(SyntaxTrivia::isJavadocOrMarkdownComment)
       .map(SyntaxTrivia::comment)
-      .filter(PublicApiChecker::isJavadoc)
       // Get last element of stream, as the last javadoc comment is the one we are looking for.
       .reduce((first, second) -> second);
-  }
-
-  private static boolean isJavadoc(String comment) {
-    return comment.startsWith("/**");
   }
 }

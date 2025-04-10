@@ -84,7 +84,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
         currentCommentLine != previousCommentLine) {
         previousRelatedIssue = null;
       }
-      if (!isHeader(syntaxTrivia) && !isJavadoc(syntaxTrivia.comment()) && !isJSNI(syntaxTrivia.comment())) {
+      if (!isHeader(syntaxTrivia) && !syntaxTrivia.isJavadocOrMarkdownComment() && !isJSNI(syntaxTrivia.comment())) {
         previousRelatedIssue = collectIssues(issues, syntaxTrivia, previousRelatedIssue);
         previousCommentLine = currentCommentLine;
       }
@@ -145,15 +145,6 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isJavadocLink(String line) {
     return line.contains("{@link");
-  }
-
-  /**
-   * From documentation for Javadoc-tool:
-   * Documentation comments should be recognized only when placed
-   * immediately before class, interface, constructor, method, or field declarations.
-   */
-  private static boolean isJavadoc(String comment) {
-    return StringUtils.startsWith(comment, "/**");
   }
 
   /**

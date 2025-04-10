@@ -45,6 +45,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
+import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -93,6 +94,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.model.JParser.isComment;
 import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
 import static org.sonar.java.model.JParserConfig.Mode.BATCH;
 import static org.sonar.java.model.JParserConfig.Mode.FILE_BY_FILE;
@@ -253,6 +255,15 @@ class JParserTest {
       c.simpleName(),
       c.initializer().identifier()
     );
+  }
+
+  @Test
+  void declaration_enum_with_initializer() {
+    CompilationUnitTree cu = test("enum E { C /// comment before initializer\n (3); E(int a) {} }");
+    ClassTree t = (ClassTree) cu.types().get(0);
+    EnumConstantTree c = (EnumConstantTree) t.members().get(0);
+    assertThat(c.initializer().arguments().openParenToken()).isNotNull();
+    assertThat(c.initializer().arguments()).hasSize(1);
   }
 
   @Test
@@ -510,6 +521,57 @@ class JParserTest {
     assertThatThrownBy(() -> JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNamebreak, TerminalTokens.TokenNameconst))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Failed to find token 82 or 136 in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
+  }
+
+  @Test
+  void test_comment_tokens() {
+    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
+    String unitName = "C.java";
+    String source = """
+      class A {
+        // line comment
+        /* block comment */
+        /// markdown comment 1
+        /// markdown comment 2
+        /**
+          * javadoc comment
+          */
+        void foo() {}
+      }
+      """;
+    TokenManager tokens = JParser.createTokenManager(version, unitName, source);
+
+    assertThat(tokens.size()).isEqualTo(15);
+
+    Token token = tokens.get(0);
+    assertThat(token.toString(source)).isEqualTo("class");
+    assertThat(token.isComment()).isFalse();
+    assertThat(isComment(token)).isFalse();
+
+    token = tokens.get(3);
+    assertThat(token.toString(source)).isEqualTo("// line comment");
+    assertThat(token.isComment()).isTrue();
+    assertThat(isComment(token)).isTrue();
+
+    token = tokens.get(4);
+    assertThat(token.toString(source)).isEqualTo("/* block comment */");
+    assertThat(token.isComment()).isTrue();
+    assertThat(isComment(token)).isTrue();
+
+    token = tokens.get(5);
+    assertThat(token.toString(source)).isEqualTo("/// markdown comment 1\n  /// markdown comment 2");
+    assertThat(token.isComment()).isFalse(); // JDT issue https://github.com/eclipse-jdt/eclipse.jdt.core/issues/3914
+    assertThat(isComment(token)).isTrue();
+
+    token = tokens.get(6);
+    assertThat(token.toString(source)).isEqualTo("/**\n    * javadoc comment\n    */");
+    assertThat(token.isComment()).isTrue();
+    assertThat(isComment(token)).isTrue();
+
+    token = tokens.get(7);
+    assertThat(token.toString(source)).isEqualTo("void");
+    assertThat(token.isComment()).isFalse();
+    assertThat(isComment(token)).isFalse();
   }
 
   @Test

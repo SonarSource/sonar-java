@@ -29,6 +29,14 @@ public interface SyntaxTrivia extends Tree {
 
   String comment();
 
+  String commentContent();
+
+  boolean isLineComment();
+  boolean isBlockComment();
+  boolean isJavadocComment();
+  boolean isMarkdownComment();
+  boolean isJavadocOrMarkdownComment();
+
   /**
    * @deprecated for removal, since = 7.3, use range().start().line()
    */

@@ -33,7 +33,8 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
   public InternalSyntaxTrivia(String comment, int line, int columnOffset) {
     this.comment = comment;
-    range = comment.startsWith("/*")
+    boolean mayHaveLineBreaks = comment.startsWith("/*") || comment.startsWith("///");
+    range = mayHaveLineBreaks
       ? Range.at(InternalPosition.atOffset(line, columnOffset), comment)
       : Range.at(InternalPosition.atOffset(line, columnOffset), comment.length());
   }
@@ -41,6 +42,44 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   @Override
   public String comment() {
     return comment;
+  }
+
+  @Override
+  public String commentContent() {
+    if (comment.startsWith("/**")) {
+      return comment.substring(3, comment.length() - 2);
+    } else if (comment.startsWith("/*")) {
+      return comment.substring(2, comment.length() - 2);
+    } else if (comment.startsWith("///")) {
+      return comment.substring(3).replaceAll("\\R[ \t\f]*+///", "\n");
+    } else {
+      return comment.substring(2);
+    }
+  }
+
+  @Override
+  public boolean isLineComment() {
+    return comment.startsWith("//") && !comment.startsWith("///");
+  }
+
+  @Override
+  public boolean isBlockComment() {
+    return comment.startsWith("/*") && !comment.startsWith("/**");
+  }
+
+  @Override
+  public boolean isJavadocComment() {
+    return comment.startsWith("/**");
+  }
+
+  @Override
+  public boolean isMarkdownComment() {
+    return comment.startsWith("///");
+  }
+
+  @Override
+  public boolean isJavadocOrMarkdownComment() {
+    return isJavadocComment() || isMarkdownComment();
   }
 
   @Override

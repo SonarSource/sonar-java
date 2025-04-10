@@ -53,6 +53,7 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   private static final Pattern COMPILER_WARNING = Pattern.compile("The import ([$\\w]+(\\.[$\\w]+)*+) is never used");
   private static final Pattern NON_WORDS_CHARACTERS = Pattern.compile("\\W+");
   private static final Pattern JAVADOC_REFERENCE = Pattern.compile("\\{@link[^\\}]*\\}|(@see|@throws)[^\n]*\n");
+  private static final Pattern MARKDOWN_REFERENCE = Pattern.compile("\\[[^\\]]++\\]");
 
   private String currentPackage = "";
   private final List<ImportTree> imports = new ArrayList<>();
@@ -162,10 +163,15 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
     String comment = syntaxTrivia.comment();
-    if (!comment.startsWith("/**")) {
+    Matcher matcher;
+    if (syntaxTrivia.isJavadocComment()) {
+      matcher = JAVADOC_REFERENCE.matcher(comment);
+    } else if (syntaxTrivia.isMarkdownComment()) {
+      matcher = MARKDOWN_REFERENCE.matcher(comment);
+    } else {
+      // other comment types don't have references
       return;
     }
-    Matcher matcher = JAVADOC_REFERENCE.matcher(comment);
     while (matcher.find()) {
       String line = matcher.group(0);
       Set<String> words = NON_WORDS_CHARACTERS.splitAsStream(line)

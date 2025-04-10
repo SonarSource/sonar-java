@@ -91,8 +91,7 @@ public class TrailingCommentCheck extends IssuableSubscriptionVisitor {
     if (tokenLine != previousTokenLine) {
       syntaxToken.trivias().stream()
         .filter(trivia -> LineUtils.startLine(trivia) == previousTokenLine)
-        .map(SyntaxTrivia::comment)
-        .map(comment -> comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2))
+        .map(SyntaxTrivia::commentContent)
         .map(String::trim)
         .filter(comment -> !pattern.matcher(comment).matches() && !containsExcludedPattern(comment))
         .forEach(comment -> addIssue(previousTokenLine, "Move this trailing comment on the previous empty line."));

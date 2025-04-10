@@ -272,7 +272,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     List<SyntaxTrivia> trivias = tree.firstToken().trivias();
     if (!trivias.isEmpty()) {
       SyntaxTrivia lastTrivia = trivias.get(trivias.size() - 1);
-      if (lastTrivia.comment().startsWith("/**")) {
+      if (lastTrivia.isJavadocOrMarkdownComment()) {
         SyntaxToken lastToken = tree.lastToken();
         Position start = Position.startOf(lastTrivia);
         Position end = Position.endOf(lastToken);

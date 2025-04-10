@@ -44,7 +44,7 @@ class CommonsCollectionsTest extends MeasurerTester {
     assertThat(metrics.get("classes").intValue()).isEqualTo(412);
     assertThat(metrics.get("ncloc").intValue()).isEqualTo(26323);
     assertThat(metrics.get("statements").intValue()).isEqualTo(12047);
-    assertThat(metrics.get("comment_lines").intValue()).isEqualTo(17904);
+    assertThat(metrics.get("comment_lines").intValue()).isEqualTo(17908);
     assertThat(metrics.get("functions").intValue()).isEqualTo(3762);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(6714);
   }

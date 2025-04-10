@@ -188,8 +188,7 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    boolean isJavadoc = syntaxTrivia.comment().startsWith("/**");
-    TypeOfText typeOfText = isJavadoc ? TypeOfText.STRUCTURED_COMMENT : TypeOfText.COMMENT;
+    TypeOfText typeOfText = syntaxTrivia.isJavadocOrMarkdownComment() ? TypeOfText.STRUCTURED_COMMENT : TypeOfText.COMMENT;
     Position start = Position.startOf(syntaxTrivia);
     Position end = Position.endOf(syntaxTrivia);
     highlighting.highlight(
