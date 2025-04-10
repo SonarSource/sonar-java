@@ -51,7 +51,7 @@ public record VersionImpl(Integer major, Integer minor, @Nullable Integer patch,
   }
 
   /**
-   * Warning: this is a partial order: 2.5 and 2.5.1 are uncomparable.
+   * Warning: this is a partial order: 2.5 and 2.5.1 are incomparable.
    * Qualifiers are ignored.
    */
   @Override

@@ -16,6 +16,7 @@
  */
 package org.sonar.plugins.java.api;
 
+/** Versions of libraries. This provides methods to compare the version with other ones. */
 public interface Version {
 
   Integer major();
