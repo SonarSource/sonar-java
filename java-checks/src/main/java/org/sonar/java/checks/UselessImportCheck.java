@@ -51,10 +51,10 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S1128")
 public class UselessImportCheck extends IssuableSubscriptionVisitor {
 
-  private static final Pattern COMPILER_WARNING = Pattern.compile("The import ([$\\w]+(\\.[$\\w]+)*+) is never used");
+  private static final Pattern COMPILER_WARNING = Pattern.compile("The import ([$\\w]++(\\.[$\\w]++)*+) is never used");
   private static final Pattern NON_WORDS_CHARACTERS = Pattern.compile("\\W+");
-  private static final Pattern JAVADOC_REFERENCE = Pattern.compile("\\{@link[^\\}]*\\}|(@see|@throws)[^\n]*\n");
-  private static final Pattern MARKDOWN_REFERENCE = Pattern.compile("\\[[^\\]]++\\]");
+  private static final Pattern JAVADOC_REFERENCE = Pattern.compile("\\{@link[^\\{\\}]++\\}|(@see|@throws)[^\r\n]++[\r\n]");
+  private static final Pattern MARKDOWN_REFERENCE = Pattern.compile("\\[[^\\[\\]\\r\\n]++\\]");
 
   private String currentPackage = "";
   private final List<ImportTree> imports = new ArrayList<>();
