@@ -137,7 +137,7 @@ public class PublicApiChecker {
     return tree.firstToken()
       .trivias()
       .stream()
-      .filter(trivia -> trivia.isComment(CommentKind.JAVADOC) || trivia.isComment(CommentKind.MARKDOWN))
+      .filter(trivia -> trivia.isComment(CommentKind.JAVADOC, CommentKind.MARKDOWN))
       .map(SyntaxTrivia::comment)
       // Get last element of stream, as the last javadoc comment is the one we are looking for.
       .reduce((first, second) -> second);

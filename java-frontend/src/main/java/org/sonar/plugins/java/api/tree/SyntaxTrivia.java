@@ -39,7 +39,10 @@ public interface SyntaxTrivia extends Tree {
   String commentContent();
 
   CommentKind commentKind();
+
   boolean isComment(CommentKind kind);
+
+  boolean isComment(CommentKind... kinds);
 
   /**
    * @deprecated for removal, since = 7.3, use range().start().line()

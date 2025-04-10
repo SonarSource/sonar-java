@@ -91,9 +91,21 @@ class InternalSyntaxTriviaTest {
 
   @Test
   void invalid_comment_kind() {
-    assertThatThrownBy(() -> new InternalSyntaxTrivia(CommentKind.LINE, "/* block */", 42, 21))
+    assertThatThrownBy(() -> new InternalSyntaxTrivia(CommentKind.LINE, "/* invalid */", 42, 21))
       .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage("Invalid comment kind: LINE for comment: /* block */");
+      .hasMessage("Invalid comment kind: LINE for comment: /* invalid */");
+    assertThatThrownBy(() -> new InternalSyntaxTrivia(CommentKind.BLOCK, "// invalid", 42, 21))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Invalid comment kind: BLOCK for comment: // invalid");
+    assertThatThrownBy(() -> new InternalSyntaxTrivia(CommentKind.BLOCK, "/* broken", 42, 21))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Invalid comment kind: BLOCK for comment: /* broken");
+    assertThatThrownBy(() -> new InternalSyntaxTrivia(CommentKind.JAVADOC, "/* invalid */", 42, 21))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Invalid comment kind: JAVADOC for comment: /* invalid */");
+    assertThatThrownBy(() -> new InternalSyntaxTrivia(CommentKind.JAVADOC, "/** broken", 42, 21))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Invalid comment kind: JAVADOC for comment: /** broken");
   }
 
 }

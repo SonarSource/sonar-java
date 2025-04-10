@@ -79,6 +79,16 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   }
 
   @Override
+  public boolean isComment(CommentKind... kinds) {
+    for (CommentKind kind : kinds) {
+      if (commentKind == kind) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
   public int startLine() {
     return range.start().line();
   }

@@ -189,7 +189,7 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    boolean isJavadocOrMarkdown = syntaxTrivia.isComment(CommentKind.JAVADOC) || syntaxTrivia.isComment(CommentKind.MARKDOWN);
+    boolean isJavadocOrMarkdown = syntaxTrivia.isComment(CommentKind.JAVADOC, CommentKind.MARKDOWN);
     TypeOfText typeOfText =  isJavadocOrMarkdown ? TypeOfText.STRUCTURED_COMMENT : TypeOfText.COMMENT;
     Position start = Position.startOf(syntaxTrivia);
     Position end = Position.endOf(syntaxTrivia);

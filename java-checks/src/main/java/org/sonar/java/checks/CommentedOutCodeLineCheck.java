@@ -85,7 +85,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
         currentCommentLine != previousCommentLine) {
         previousRelatedIssue = null;
       }
-      boolean isJavadocOrMarkdownComment = syntaxTrivia.isComment(CommentKind.JAVADOC) || syntaxTrivia.isComment(CommentKind.MARKDOWN);
+      boolean isJavadocOrMarkdownComment = syntaxTrivia.isComment(CommentKind.JAVADOC, CommentKind.MARKDOWN);
       if (!isHeader(syntaxTrivia) && !isJavadocOrMarkdownComment && !isJSNI(syntaxTrivia.comment())) {
         previousRelatedIssue = collectIssues(issues, syntaxTrivia, previousRelatedIssue);
         previousCommentLine = currentCommentLine;
