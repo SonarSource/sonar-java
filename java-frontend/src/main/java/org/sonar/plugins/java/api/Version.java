@@ -14,15 +14,22 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks;
+package org.sonar.plugins.java.api;
 
-public class Constants {
+/** Versions of libraries. This provides methods to compare the version with other ones. */
+public interface Version {
 
-  private Constants() {
-  }
+  Integer major();
+  Integer minor();
+  Integer patch();
+  String qualifier();
 
-  public static final String SPRING_3_2 = "../java-checks-test-sources/spring-3.2";
-  public static final String SPRING_3_2_CLASSPATH = SPRING_3_2 + "/target/test-classpath.txt";
-  public static final String SPRING_WEB_4_0_TEST_SOURCES = "../java-checks-test-sources/spring-web-4.0";
-  public static final String SPRING_WEB_4_0_CLASSPATH = SPRING_WEB_4_0_TEST_SOURCES + "/target/test-classpath.txt";
+  boolean isGreaterThanOrEqualTo(Version version);
+  boolean isGreaterThanOrEqualTo(String version);
+  boolean isGreaterThan(Version version);
+  boolean isLowerThanOrEqualTo(Version version);
+  boolean isLowerThan(Version version);
+  boolean isGreaterThan(String version);
+  boolean isLowerThanOrEqualTo(String version);
+  boolean isLowerThan(String version);
 }
