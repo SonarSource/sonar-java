@@ -24,7 +24,7 @@ class VersionTest {
 
   @Test
   void testCompareTo() {
-    Version version = Version.parse("3.2.6-rc1");
+    VersionImpl version = VersionImpl.parse("3.2.6-rc1");
 
     assertTrue(version.isGreaterThanOrEqualTo("3.2"));
     assertTrue(version.isGreaterThanOrEqualTo("3.2.5"));
@@ -45,7 +45,7 @@ class VersionTest {
 
   @Test
   void testCompareTo_withNoPatchNumber() {
-    Version version = Version.parse("3.2");
+    VersionImpl version = VersionImpl.parse("3.2");
 
     assertTrue(version.isGreaterThanOrEqualTo("3.2"));
     assertTrue(version.isGreaterThanOrEqualTo("3.2.5"));
@@ -68,21 +68,21 @@ class VersionTest {
 
   @Test
   void testParse() {
-    assertThrows(IllegalArgumentException.class, () -> Version.parse("foo"));
+    assertThrows(IllegalArgumentException.class, () -> VersionImpl.parse("foo"));
   }
 
   @Test
   void testToString() {
-    assertEquals("5.4.3-rc1", Version.parse("5.4.3-rc1").toString());
-    assertEquals("5.43-rc1", Version.parse("5.43-rc1").toString());
-    assertEquals("5.431", Version.parse("5.431").toString());
+    assertEquals("5.4.3-rc1", VersionImpl.parse("5.4.3-rc1").toString());
+    assertEquals("5.43-rc1", VersionImpl.parse("5.43-rc1").toString());
+    assertEquals("5.431", VersionImpl.parse("5.431").toString());
   }
 
   @Test
   void testEqualsAndHashCode() {
-    Version version1 = Version.parse("1.2");
-    Version version2 = Version.parse("1.2");
-    Version version3 = Version.parse("1.2.3");
+    VersionImpl version1 = VersionImpl.parse("1.2");
+    VersionImpl version2 = VersionImpl.parse("1.2");
+    VersionImpl version3 = VersionImpl.parse("1.2.3");
 
     assertEquals(version1, version2);
     assertEquals(version1.hashCode(), version2.hashCode());
@@ -92,8 +92,8 @@ class VersionTest {
     assertFalse(version1.equals("foo"));
     assertFalse(version1.equals(null));
 
-    Version version23 = Version.parse("2.3");
-    Version version24 = Version.parse("2.4");
+    VersionImpl version23 = VersionImpl.parse("2.3");
+    VersionImpl version24 = VersionImpl.parse("2.4");
     assertNotEquals(version1, version23);
     assertNotEquals(version23, version24);
   }

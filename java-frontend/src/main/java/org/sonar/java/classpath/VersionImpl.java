@@ -20,11 +20,12 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+import org.sonar.plugins.java.api.Version;
 
 /**
  * Class to parse and compare versions of library jars.
  */
-public record Version(Integer major, Integer minor, @Nullable Integer patch, @Nullable String qualifier) implements Comparable<Version> {
+public record VersionImpl(Integer major, Integer minor, @Nullable Integer patch, @Nullable String qualifier) implements Comparable<Version>, Version {
 
   public static String VERSION_REGEX = "([0-9]+).([0-9]+)(.[0-9]+)?([^0-9].*)?";
 
@@ -33,15 +34,15 @@ public record Version(Integer major, Integer minor, @Nullable Integer patch, @Nu
   /**
    * matcher must come from a match against a pattern that contains {@link #VERSION_REGEX} and no other groups.
    */
-  public static Version matcherToVersion(Matcher matcher) {
-    return new Version(
+  public static VersionImpl matcherToVersion(Matcher matcher) {
+    return new VersionImpl(
       Integer.parseInt(matcher.group(1)),
       Integer.parseInt(matcher.group(2)),
       matcher.group(3) != null ? Integer.parseInt(matcher.group(3).substring(1)) : null,
       matcher.group(4));
   }
 
-  public static Version parse(String versionString) {
+  public static VersionImpl parse(String versionString) {
     Matcher matcher = VERSION_PATTERN.matcher(versionString);
     if (matcher.matches()) {
       return matcherToVersion(matcher);
@@ -55,27 +56,26 @@ public record Version(Integer major, Integer minor, @Nullable Integer patch, @Nu
    */
   @Override
   public int compareTo(Version o) {
-    if (!Objects.equals(major, o.major)) {
-      return major - o.major;
+    if (!Objects.equals(major, o.major())) {
+      return major - o.major();
     }
-    if (!Objects.equals(minor, o.minor)) {
-      return minor - o.minor;
+    if (!Objects.equals(minor, o.minor())) {
+      return minor - o.minor();
     }
-    if (!Objects.equals(patch, o.patch)) {
-      if (patch == null || o.patch == null) return 0;
-      return patch - o.patch;
+    if (!Objects.equals(patch, o.patch())) {
+      if (patch == null || o.patch() == null) return 0;
+      return patch - o.patch();
     }
     return 0;
   }
 
   @Override
   public boolean equals(Object o) {
-    if (o == null || getClass() != o.getClass()) return false;
-    Version version = (Version) o;
-    return Objects.equals(major, version.major)
-      && Objects.equals(minor, version.minor)
-      && Objects.equals(patch, version.patch)
-      && Objects.equals(qualifier, version.qualifier);
+    if (!(o instanceof Version version)) return false;
+    return Objects.equals(major, version.major())
+      && Objects.equals(minor, version.minor())
+      && Objects.equals(patch, version.patch())
+      && Objects.equals(qualifier, version.qualifier());
   }
 
   @Override
@@ -107,19 +107,19 @@ public record Version(Integer major, Integer minor, @Nullable Integer patch, @Nu
   }
 
   public boolean isGreaterThanOrEqualTo(String version) {
-    return isGreaterThanOrEqualTo(Version.parse(version));
+    return isGreaterThanOrEqualTo(VersionImpl.parse(version));
   }
 
   public boolean isGreaterThan(String version) {
-    return isGreaterThan(Version.parse(version));
+    return isGreaterThan(VersionImpl.parse(version));
   }
 
   public boolean isLowerThanOrEqualTo(String version) {
-    return isLowerThanOrEqualTo(Version.parse(version));
+    return isLowerThanOrEqualTo(VersionImpl.parse(version));
   }
 
   public boolean isLowerThan(String version) {
-    return isLowerThan(Version.parse(version));
+    return isLowerThan(VersionImpl.parse(version));
   }
 
 }

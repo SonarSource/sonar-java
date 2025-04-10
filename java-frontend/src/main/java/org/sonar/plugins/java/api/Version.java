@@ -16,11 +16,19 @@
  */
 package org.sonar.plugins.java.api;
 
-import java.util.Optional;
-import java.util.function.Function;
+public interface Version {
 
-public interface DependencyVersionAware {
+  Integer major();
+  Integer minor();
+  Integer patch();
+  String qualifier();
 
-  boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder);
-
+  boolean isGreaterThanOrEqualTo(Version version);
+  boolean isGreaterThanOrEqualTo(String version);
+  boolean isGreaterThan(Version version);
+  boolean isLowerThanOrEqualTo(Version version);
+  boolean isLowerThan(Version version);
+  boolean isGreaterThan(String version);
+  boolean isLowerThanOrEqualTo(String version);
+  boolean isLowerThan(String version);
 }

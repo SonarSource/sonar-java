@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.sonar.plugins.java.api.Version;
 
 public class DependencyVersionInference {
 
@@ -30,7 +31,7 @@ public class DependencyVersionInference {
   private final Map<String, Optional<Version>> dependencyVersionsCache = new HashMap<>();
 
   static Pattern makeJarPattern(String artifactId) {
-    return Pattern.compile(artifactId + "-" + Version.VERSION_REGEX + "\\.jar");
+    return Pattern.compile(artifactId + "-" + VersionImpl.VERSION_REGEX + "\\.jar");
   }
 
   public Optional<Version> infer(String artifactId, List<File> classpath) {
@@ -42,7 +43,7 @@ public class DependencyVersionInference {
     for (File file : classpath) {
       Matcher matcher = jarPattern.matcher(file.getName());
       if (matcher.matches()) {
-        return Optional.of(Version.matcherToVersion(matcher));
+        return Optional.of(VersionImpl.matcherToVersion(matcher));
       }
     }
     return Optional.empty();

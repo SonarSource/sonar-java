@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import org.sonar.java.test.classpath.TestClasspathUtils;
+import org.sonar.plugins.java.api.Version;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -39,7 +40,7 @@ class DependencyVersionInferenceTest {
 
     // Assert
     Assertions.assertTrue(version.isPresent());
-    assertEquals(new Version(1, 18, 30, null), version.get());
+    assertEquals(new VersionImpl(1, 18, 30, null), version.get());
   }
 
 
@@ -55,6 +56,6 @@ class DependencyVersionInferenceTest {
 
     // Assert
     Assertions.assertTrue(version.isPresent());
-    assertEquals(new Version(3, 2, 4, null), version.get());
+    assertEquals(new VersionImpl(3, 2, 4, null), version.get());
   }
 }
