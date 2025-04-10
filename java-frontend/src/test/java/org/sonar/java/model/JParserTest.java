@@ -260,7 +260,7 @@ class JParserTest {
   }
 
   @Test
-  void declaration_enum_with_initializer() {
+  void processEnumConstantDeclaration_sets_enum_initializer_following_a_markdown_comment_as_next_token() {
     CompilationUnitTree cu = test("enum E { C /// comment before initializer\n (3); E(int a) {} }");
     ClassTree t = (ClassTree) cu.types().get(0);
     EnumConstantTree c = (EnumConstantTree) t.members().get(0);
