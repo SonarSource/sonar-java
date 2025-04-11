@@ -40,7 +40,7 @@ class DependencyVersionInferenceTest {
 
     // Assert
     Assertions.assertTrue(version.isPresent());
-    assertEquals(new VersionImpl(1, 18, 30, null), version.get());
+    assertEquals(new VersionImpl(1, 18, 38, null), version.get());
   }
 
 

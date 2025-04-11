@@ -370,6 +370,7 @@ abstract class JSymbol implements Symbol {
         metadata = convertMetadata();
       } catch (RuntimeException e) {
         // ECJ raises exception in rare occasions, when it is the case, we don't want to prevent the whole analysis of the file
+         // ECJ 3.41.0: no longer throws the exception on the code that was used in the test
         metadata = Symbols.EMPTY_METADATA;
       }
     }

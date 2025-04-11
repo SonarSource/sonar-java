@@ -32,10 +32,7 @@ abstract class DisallowedThreadGroupCheck
     tg.setDaemon(true); // Compliant
     tg.list(); // Compliant
     tg.parentOf(tg); // Compliant
-    tg.resume(); // Compliant
     tg.setMaxPriority(0); // Compliant
-    tg.stop(); // Compliant
-    tg.suspend(); // Compliant
     tg.uncaughtException(new Thread(), new Exception()); // Compliant
     tg.toString(); // Compliant
     tg.equals(o);  // Compliant - not overridden in ThreadGroup
