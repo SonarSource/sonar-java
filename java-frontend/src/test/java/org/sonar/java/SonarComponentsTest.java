@@ -416,22 +416,20 @@ class SonarComponentsTest {
     CheckFactory specificCheckFactory = new CheckFactory(noActiveRules);
     SensorContextTester specificContext = SensorContextTester.create(new File(".")).setActiveRules(noActiveRules);
 
-    class MainScanner implements JavaFileScanner {
+    class DummyScanner implements JavaFileScanner {
       @Override
       public void scanFile(JavaFileScannerContext context) {
+        // Dummy implementation. We just need the class instance
       }
     }
 
-    class TestScanner implements JavaFileScanner {
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-      }
+    class MainScanner extends DummyScanner {
     }
 
-    class AllScanner implements JavaFileScanner {
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-      }
+    class TestScanner extends DummyScanner {
+    }
+
+    class AllScanner extends DummyScanner {
     }
 
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,

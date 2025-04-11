@@ -27,6 +27,7 @@ import org.sonar.api.rule.RuleKey;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -94,6 +95,12 @@ class CheckRegistrarTest {
       "register 2 autoscan rules.",
       "register 3 instantiated main checks.",
       "register 3 instantiated test checks.");
+  }
+
+  @Test
+  void empty_default_method_coverage() {
+    var context = new CheckRegistrar.RegistrarContext();
+    assertDoesNotThrow(() -> context.registerCustomFileScanner(null, null));
   }
 
   private static class TestInternalRegistration extends CheckRegistrar.RegistrarContext {
