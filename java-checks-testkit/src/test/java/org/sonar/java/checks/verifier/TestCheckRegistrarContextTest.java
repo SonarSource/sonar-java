@@ -19,8 +19,11 @@ package org.sonar.java.checks.verifier;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rule.RuleScope;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -125,4 +128,34 @@ class TestCheckRegistrarContextTest {
       .hasMessage("Fail to instantiate class java.lang.Object");
   }
 
+  @Test
+  void register_custom_file_scanners_with_no_active_rules() {
+    class DummyScanner implements JavaFileScanner {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        // Dummy implementation. We just need the class instance
+      }
+    }
+
+    class MainScanner extends DummyScanner {
+    }
+
+    class TestScanner extends DummyScanner {
+    }
+
+    class AllScanner extends DummyScanner {
+    }
+
+    var ctx = new TestCheckRegistrarContext();
+    ctx.registerCustomFileScanner(RuleScope.MAIN, new MainScanner());
+    ctx.registerCustomFileScanner(RuleScope.TEST, new TestScanner());
+    ctx.registerCustomFileScanner(RuleScope.ALL, new AllScanner());
+
+    assertThat(ctx.mainCheckInstances)
+      .extracting(c -> c.getClass().getSimpleName())
+      .containsExactly("MainScanner", "AllScanner");
+    assertThat(ctx.testCheckInstances)
+      .extracting(c -> c.getClass().getSimpleName())
+      .containsExactly("TestScanner", "AllScanner");
+  }
 }
