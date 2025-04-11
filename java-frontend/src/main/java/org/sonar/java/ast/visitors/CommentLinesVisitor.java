@@ -63,7 +63,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
   }
 
   private void handleCommentsForTrivia(SyntaxTrivia trivia) {
-    String[] commentLines = getContents(trivia.comment()).split("(\r)?\n|\r", -1);
+    String[] commentLines = trivia.commentContent().split("\\R", -1);
     int line = LineUtils.startLine(trivia);
     for (String commentLine : commentLines) {
       if (commentLine.contains("NOSONAR")) {
@@ -103,7 +103,4 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
     return true;
   }
 
-  private static String getContents(String comment) {
-    return comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);
-  }
 }

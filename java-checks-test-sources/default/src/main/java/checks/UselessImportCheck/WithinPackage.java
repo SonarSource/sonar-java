@@ -5,6 +5,7 @@ import a.b.c.Bar;
 import a.b.c.Baz;
 import a.b.c.Qux;
 import a.b.c.ReferencedFromJavadoc;
+import a.b.c.ReferencedFromMarkdown;
 import java.util.Map;
 import java.util.Map.Entry;
 import a.b.c.NotReferencedFromJavadoc; // Noncompliant
@@ -84,6 +85,8 @@ class Foo2 extends Foo {
       }
     };
   }
+  /// This method reference has
+  /// a reference on [ReferencedFromMarkdown]
   void foo(@Nullable int x){
     System.out.println(FLUP);;
   }

@@ -8,21 +8,21 @@ USER root
 ENV DEBIAN_FRONTEND=noninteractive
 
 # The current image is `FROM public.ecr.aws/docker/library/eclipse-temurin:17-jammy`
-# Use a similar method to install Java 22 copied from https://github.com/adoptium/containers/blob/main/22/jdk/ubuntu/jammy/Dockerfile
+# Use a similar method to install Java 23 copied from https://github.com/adoptium/containers/blob/main/22/jdk/ubuntu/jammy/Dockerfile
 
-ENV JAVA_LATEST_HOME /opt/java/openjdk22
-ENV JAVA_LATEST_VERSION jdk-22.0.2+9
+ENV JAVA_LATEST_HOME /opt/java/openjdk23
+ENV JAVA_LATEST_VERSION jdk-23.0.1+11
 
 RUN set -eux; \
     ARCH="$(dpkg --print-architecture)"; \
     case "${ARCH}" in \
        amd64) \
-         ESUM='05cd9359dacb1a1730f7c54f57e0fed47942a5292eb56a3a0ee6b13b87457a43'; \
-         BINARY_URL='https://github.com/adoptium/temurin22-binaries/releases/download/jdk-22.0.2%2B9/OpenJDK22U-jdk_x64_linux_hotspot_22.0.2_9.tar.gz'; \
+         ESUM='2400267e4e9c0f6ae880a4d763af6caf18c673714bdee5debf8388b0b5d52886'; \
+         BINARY_URL='https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_linux_hotspot_23.0.1_11.tar.gz'; \
          ;; \
        arm64) \
-         ESUM='dac62747b5158c4bf4c4636432e3bdb9dea47f80f0c9d1d007f19bd5483b7d29'; \
-         BINARY_URL='https://github.com/adoptium/temurin22-binaries/releases/download/jdk-22.0.2%2B9/OpenJDK22U-jdk_aarch64_linux_hotspot_22.0.2_9.tar.gz'; \
+         ESUM='0b498a5b673cb50fe9cfd0a13bd39c7259b4fad4d930d614e1563aeb8bca7f0e'; \
+         BINARY_URL='https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jre_aarch64_linux_hotspot_23.0.1_11.tar.gz'; \
          ;; \
        *) \
          echo "Unsupported arch: ${ARCH}"; \

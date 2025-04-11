@@ -27,7 +27,22 @@ import org.sonar.plugins.java.api.location.Range;
 @Beta
 public interface SyntaxTrivia extends Tree {
 
+  enum CommentKind {
+    LINE,
+    BLOCK,
+    JAVADOC,
+    MARKDOWN
+  }
+
   String comment();
+
+  String commentContent();
+
+  CommentKind commentKind();
+
+  boolean isComment(CommentKind kind);
+
+  boolean isComment(CommentKind... kinds);
 
   /**
    * @deprecated for removal, since = 7.3, use range().start().line()

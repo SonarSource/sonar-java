@@ -26,21 +26,66 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
+
+  private final CommentKind commentKind;
+
   private final String comment;
 
   @Nonnull
   private final Range range;
 
-  public InternalSyntaxTrivia(String comment, int line, int columnOffset) {
+  public InternalSyntaxTrivia(CommentKind commentKind, String comment, int line, int columnOffset) {
+    this.commentKind = commentKind;
     this.comment = comment;
-    range = comment.startsWith("/*")
+    boolean mayHaveLineBreaks = commentKind != CommentKind.LINE;
+    range = mayHaveLineBreaks
       ? Range.at(InternalPosition.atOffset(line, columnOffset), comment)
       : Range.at(InternalPosition.atOffset(line, columnOffset), comment.length());
+
+    boolean validKind = switch (commentKind) {
+      case LINE -> comment.startsWith("//");
+      case BLOCK -> comment.startsWith("/*") && comment.endsWith("*/");
+      case JAVADOC -> comment.startsWith("/**") && comment.endsWith("*/");
+      case MARKDOWN -> comment.startsWith("///");
+    };
+    if (!validKind) {
+      throw new IllegalArgumentException("Invalid comment kind: " + commentKind + " for comment: " + comment);
+    }
   }
 
   @Override
   public String comment() {
     return comment;
+  }
+
+  @Override
+  public String commentContent() {
+    return switch (commentKind) {
+      case LINE -> comment.substring(2);
+      case BLOCK -> comment.substring(2, comment.length() - 2);
+      case JAVADOC -> comment.substring(3, comment.length() - 2);
+      case MARKDOWN -> comment.substring(3).replaceAll("\\R[ \t\f]*+///", "\n");
+    };
+  }
+
+  @Override
+  public CommentKind commentKind() {
+    return commentKind;
+  }
+
+  @Override
+  public boolean isComment(CommentKind kind) {
+    return commentKind == kind;
+  }
+
+  @Override
+  public boolean isComment(CommentKind... kinds) {
+    for (CommentKind kind : kinds) {
+      if (commentKind == kind) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
@@ -66,10 +111,6 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   @Override
   public void accept(TreeVisitor visitor) {
     // do nothing
-  }
-
-  public static SyntaxTrivia create(String comment, int startLine, int column) {
-    return new InternalSyntaxTrivia(comment, startLine, column);
   }
 
   @Override
