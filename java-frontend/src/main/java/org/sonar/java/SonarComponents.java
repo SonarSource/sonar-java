@@ -56,6 +56,7 @@ import org.sonar.api.config.Configuration;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rule.RuleScope;
 import org.sonar.api.utils.Version;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.caching.ContentHashCache;
@@ -69,6 +70,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaIssue;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JspCodeVisitor;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonarsource.api.sonarlint.SonarLintSide;
@@ -302,6 +304,16 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   public void registerTestSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
     if (hasAtLeastOneActiveRule(ruleKeys)) {
       testChecks.add(check);
+    }
+  }
+
+  @Override
+  public void registerCustomFileScanner(RuleScope ruleScope, JavaFileScanner scanner) {
+    if (ruleScope != RuleScope.TEST) {
+      mainChecks.add(scanner);
+    }
+    if (ruleScope != RuleScope.MAIN) {
+      testChecks.add(scanner);
     }
   }
 

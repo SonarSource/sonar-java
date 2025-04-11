@@ -68,6 +68,7 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rule.RuleScope;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
@@ -81,6 +82,8 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JspCodeVisitor;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonarsource.sonarlint.core.plugin.commons.sonarapi.SonarLintRuntimeImpl;
@@ -405,6 +408,46 @@ class SonarComponentsTest {
     assertThat(sonarComponents.testChecks())
       .extracting(c -> c.getClass().getSimpleName())
       .containsExactly("RuleE");
+  }
+
+  @Test
+  void register_custom_file_scanners_with_no_active_rules() {
+    var noActiveRules = (new ActiveRulesBuilder()).build();
+    CheckFactory specificCheckFactory = new CheckFactory(noActiveRules);
+    SensorContextTester specificContext = SensorContextTester.create(new File(".")).setActiveRules(noActiveRules);
+
+    class MainScanner implements JavaFileScanner {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+      }
+    }
+
+    class TestScanner implements JavaFileScanner {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+      }
+    }
+
+    class AllScanner implements JavaFileScanner {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+      }
+    }
+
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
+      null, specificCheckFactory, noActiveRules, new CheckRegistrar[]{
+      ctx -> ctx.registerCustomFileScanner(RuleScope.MAIN, new MainScanner()),
+      ctx -> ctx.registerCustomFileScanner(RuleScope.TEST, new TestScanner()),
+      ctx -> ctx.registerCustomFileScanner(RuleScope.ALL, new AllScanner())
+    });
+
+    sonarComponents.setSensorContext(specificContext);
+    assertThat(sonarComponents.mainChecks())
+      .extracting(c -> c.getClass().getSimpleName())
+      .containsExactly("MainScanner", "AllScanner");
+    assertThat(sonarComponents.testChecks())
+      .extracting(c -> c.getClass().getSimpleName())
+      .containsExactly("TestScanner", "AllScanner");
   }
 
   @Test
