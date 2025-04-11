@@ -24,9 +24,11 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rule.RuleScope;
 import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaFileScanner;
 
 public class TestCheckRegistrarContext extends CheckRegistrar.RegistrarContext {
 
@@ -52,16 +54,34 @@ public class TestCheckRegistrarContext extends CheckRegistrar.RegistrarContext {
 
   @Override
   public void registerMainSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
+    registerMainHook(check);
+    mainRuleKeys.addAll(ruleKeys);
+  }
+
+  private void registerMainHook(JavaCheck check) {
     mainCheckClasses.add(check.getClass());
     mainCheckInstances.add(check);
-    mainRuleKeys.addAll(ruleKeys);
   }
 
   @Override
   public void registerTestSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
+    registerTestHook(check);
+    testRuleKeys.addAll(ruleKeys);
+  }
+
+  private void registerTestHook(JavaCheck check) {
     testCheckClasses.add(check.getClass());
     testCheckInstances.add(check);
-    testRuleKeys.addAll(ruleKeys);
+  }
+
+  @Override
+  public void registerCustomFileScanner(RuleScope ruleScope, JavaFileScanner scanner) {
+    if (ruleScope != RuleScope.TEST) {
+      registerMainHook(scanner);
+    }
+    if (ruleScope != RuleScope.MAIN) {
+      registerTestHook(scanner);
+    }
   }
 
   @Override
