@@ -84,10 +84,7 @@ abstract class JSymbol implements Symbol {
           other
         );
       case IBinding.METHOD:
-        return areEqualMethods(
-          this,
-          other
-        );
+        return areEqualMethodSymbols((JMethodSymbol) this, (JMethodSymbol) other);
       default:
         return super.equals(obj);
     }
@@ -100,9 +97,25 @@ abstract class JSymbol implements Symbol {
       && thisVariableSymbol.owner().equals(otherVariableSymbol.owner());
   }
 
-  private static boolean areEqualMethods(JSymbol thisMethodSymbol, JSymbol otherMethodSymbol) {
+  /**
+   * Method symbols are considered equal if they have the same name, same owner, same parameter types, same type parameters and same type arguments.
+   * In this example:
+   * <pre>
+   * {@code  <T> boolean foo(T t, String s);
+   *  foo(43, "bar");}
+   * </pre>
+   * The first symbol {@code foo} has type parameter {@code T}, parameter types {@code T} and {@code String}, and no type arguments.
+   * The symbol {@code foo} on the second line has no type parameter, parameter types are {@code Integer} and {@code String}, and has type argument {@code Integer}.
+   * So the two {@code foo} symbols are not equal, although they may refer to the same method.
+   */
+  private static boolean areEqualMethodSymbols(JMethodSymbol thisMethodSymbol, JMethodSymbol otherMethodSymbol) {
     IMethodBinding thisBinding = (IMethodBinding) thisMethodSymbol.binding;
     IMethodBinding otherBinding = (IMethodBinding) otherMethodSymbol.binding;
+    // In the case of lambdas, ecj doesn't assign a name to the different symbols, unlike the Java compiler.
+    // We work around that by comparing keys provided by ecj.
+    if (thisMethodSymbol.isLambda() && otherMethodSymbol.isLambda()) {
+      return Objects.equals(thisBinding.getKey(), otherBinding.getKey());
+    }
     return thisMethodSymbol.name().equals(otherMethodSymbol.name())
       && thisMethodSymbol.owner().equals(otherMethodSymbol.owner())
       && Arrays.equals(thisBinding.getParameterTypes(), otherBinding.getParameterTypes())
@@ -194,7 +207,6 @@ abstract class JSymbol implements Symbol {
     if (!variableBinding.isRecordComponent()) {
       IMethodBinding declaringMethod = variableBinding.getDeclaringMethod();
       if (declaringMethod != null) {
-        // local variable
         return sema.methodSymbol(declaringMethod);
       }
       ITypeBinding declaringClass = variableBinding.getDeclaringClass();
@@ -203,6 +215,10 @@ abstract class JSymbol implements Symbol {
         return sema.typeSymbol(declaringClass);
       }
     }
+    return ownerOfRecordComponentConstant(variableBinding);
+  }
+
+  private Symbol ownerOfRecordComponentConstant(IVariableBinding variableBinding) {
     Tree node = sema.declarations.get(variableBinding);
     if (node == null) {
       // array.length
@@ -214,8 +230,8 @@ abstract class JSymbol implements Symbol {
       node = node.parent();
       switch (node.kind()) {
         case CLASS,
-          RECORD,
-          ENUM:
+             RECORD,
+             ENUM:
           JTypeSymbol typeSymbol = sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
           if (initializerBlock) {
             return sema.initializerBlockSymbol(typeSymbol);
@@ -232,7 +248,7 @@ abstract class JSymbol implements Symbol {
           staticInitializerBlock = true;
           break;
         case METHOD,
-          CONSTRUCTOR:
+             CONSTRUCTOR:
           // local variable declaration in recovered method
           // and recovered methods do not have bindings
           return Symbols.unknownMethodSymbol;
@@ -252,7 +268,7 @@ abstract class JSymbol implements Symbol {
         ITypeBinding variableType = ((IVariableBinding) binding).getType();
         return variableType != null ? sema.type(variableType) : Symbols.unknownType;
       case IBinding.PACKAGE,
-        IBinding.METHOD:
+           IBinding.METHOD:
         return Symbols.unknownType;
       default:
         throw new IllegalStateException(unexpectedBinding());
@@ -447,8 +463,8 @@ abstract class JSymbol implements Symbol {
       node = node.parent();
       switch (node.kind()) {
         case CLASS,
-          RECORD,
-          ENUM:
+             RECORD,
+             ENUM:
           // variable declaration in a static or instance initializer
           // or local variable declaration in recovered method
           return sema.typeSymbol(((ClassTreeImpl) node).typeBinding);
