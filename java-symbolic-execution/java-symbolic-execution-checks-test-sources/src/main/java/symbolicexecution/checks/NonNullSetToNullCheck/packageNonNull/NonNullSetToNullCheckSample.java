@@ -50,3 +50,16 @@ class HandleNonNullByDefaultPrimitives {
   public HandleNonNullByDefaultPrimitives() { // Compliant, primitive are not reported
   }
 }
+
+
+class Caller {
+  public IssueRelease call() {
+    String userId = getUserId();
+    User user = (userId == null) ? null : new User("a", "a", "a", true);
+    return new IssueRelease("a", "a", "a", user); // Compliant
+  }
+
+  private @Nullable String getUserId() {
+    return null;
+  }
+}
