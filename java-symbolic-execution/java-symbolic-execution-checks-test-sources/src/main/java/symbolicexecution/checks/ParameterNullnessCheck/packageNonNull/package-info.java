@@ -1,4 +1,4 @@
-@ParametersAreNonnullByDefault
+//@ParametersAreNonnullByDefault
 package symbolicexecution.checks.ParameterNullnessCheck.packageNonNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;

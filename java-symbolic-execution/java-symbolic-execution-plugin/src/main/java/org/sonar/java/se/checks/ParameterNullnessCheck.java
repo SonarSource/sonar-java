@@ -52,6 +52,8 @@ public class ParameterNullnessCheck extends SECheck {
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+    System.out.println("ParameterNullnessCheck.checkPreStatement");
+    System.out.println("syntaxNode = " + syntaxNode);
     ProgramState state = context.getState();
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) syntaxNode;
@@ -64,6 +66,7 @@ public class ParameterNullnessCheck extends SECheck {
   }
 
   private void checkParameters(Tree syntaxNode, Symbol.MethodSymbol symbol, Arguments arguments, ProgramState state) {
+    System.out.println("ParameterNullnessCheck.checkParameters");
     if (!symbol.isMethodSymbol() || arguments.isEmpty()) {
       return;
     }
@@ -76,6 +79,8 @@ public class ParameterNullnessCheck extends SECheck {
     List<Symbol> parameterSymbols = symbol.declarationParameters();
     for (int i = 0; i < nbArgumentToCheck; i++) {
       ObjectConstraint constraint = state.getConstraint(argumentSVs.get(i), ObjectConstraint.class);
+      var parameterNonNullIndirectly = parameterIsNonNullIndirectly(parameterSymbols.get(i));
+      var argumentNull = constraint != null && constraint.isNull();
       if (constraint != null && constraint.isNull() && parameterIsNonNullIndirectly(parameterSymbols.get(i))) {
         reportIssue(syntaxNode, arguments.get(i), symbol);
       }
@@ -83,6 +88,7 @@ public class ParameterNullnessCheck extends SECheck {
   }
 
   private void reportIssue(Tree syntaxNode, ExpressionTree argument, Symbol.MethodSymbol methodSymbol) {
+    System.out.println("ParameterNullnessCheck.reportIssue");
     String declarationMessage = "constructor declaration";
     if (!"<init>".equals(methodSymbol.name())) {
       declarationMessage = "method '" + methodSymbol.name() + "' declaration";
@@ -107,6 +113,7 @@ public class ParameterNullnessCheck extends SECheck {
   }
 
   private static List<SymbolicValue> getArgumentSVs(ProgramState state, Tree syntaxNode, int nbArguments) {
+    System.out.println("ParameterNullnessCheck.getArgumentSVs");
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       return ListUtils.reverse(state.peekValues(nbArguments + 1).subList(0, nbArguments));
     }
@@ -114,6 +121,7 @@ public class ParameterNullnessCheck extends SECheck {
   }
 
   private static boolean parameterIsNonNullIndirectly(Symbol symbol) {
+    System.out.println("ParameterNullnessCheck.parameterIsNonNullIndirectly");
     SymbolMetadata.NullabilityData nullabilityData = symbol.metadata().nullabilityData();
     return nullabilityData.isNonNull(PACKAGE, false, false) && nullabilityData.level() != VARIABLE;
   }
