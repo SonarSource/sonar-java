@@ -245,10 +245,16 @@ import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.TokenNameCOMMENT_BLOCK;
+import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.TokenNameCOMMENT_JAVADOC;
+import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.TokenNameCOMMENT_LINE;
+import static org.eclipse.jdt.internal.compiler.parser.TerminalTokens.TokenNameCOMMENT_MARKDOWN;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JParser {
@@ -415,7 +421,7 @@ public class JParser {
 
   private int firstTokenIndexAfter(ASTNode e) {
     int index = tokenManager.firstIndexAfter(e, ANY_TOKEN);
-    while (tokenManager.get(index).isComment()) {
+    while (isComment(tokenManager.get(index))) {
       index++;
     }
     return index;
@@ -505,14 +511,14 @@ public class JParser {
 
   private List<SyntaxTrivia> collectComments(int tokenIndex) {
     int commentIndex = tokenIndex;
-    while (commentIndex > 0 && tokenManager.get(commentIndex - 1).isComment()) {
+    while (commentIndex > 0 && isComment(tokenManager.get(commentIndex - 1))) {
       commentIndex--;
     }
     List<SyntaxTrivia> comments = new ArrayList<>();
     for (int i = commentIndex; i < tokenIndex; i++) {
       Token t = tokenManager.get(i);
       LineColumnConverter.Pos pos = lineColumnConverter.toPos(t.originalStart);
-      comments.add(new InternalSyntaxTrivia(
+      comments.add(new InternalSyntaxTrivia(convertTokenTypeToCommentKind(t),
         t.toString(tokenManager.getSource()),
         pos.line(),
         pos.columnOffset()
@@ -521,13 +527,36 @@ public class JParser {
     return comments;
   }
 
+  @VisibleForTesting
+  static CommentKind convertTokenTypeToCommentKind(Token token) {
+    return switch (token.tokenType) {
+      case TokenNameCOMMENT_BLOCK -> CommentKind.BLOCK;
+      case TokenNameCOMMENT_JAVADOC -> CommentKind.JAVADOC;
+      case TokenNameCOMMENT_LINE -> CommentKind.LINE;
+      case TokenNameCOMMENT_MARKDOWN -> CommentKind.MARKDOWN;
+      default -> throw new IllegalStateException("Unexpected value: " + token.tokenType);
+    };
+  }
+
+  /**
+   * {@link Token#isComment()} has an issue https://github.com/eclipse-jdt/eclipse.jdt.core/issues/3914
+   * it does not support Markdown comments. This method has to be used instead.
+   */
+  @VisibleForTesting
+  static boolean isComment(Token token) {
+    return switch (token.tokenType) {
+      case TokenNameCOMMENT_BLOCK, TokenNameCOMMENT_JAVADOC, TokenNameCOMMENT_LINE, TokenNameCOMMENT_MARKDOWN -> true;
+      default -> false;
+    };
+  }
+
   private void addEmptyStatementsToList(int tokenIndex, List list) {
     while (true) {
       Token token;
       do {
         tokenIndex++;
         token = tokenManager.get(tokenIndex);
-      } while (token.isComment());
+      } while (isComment(token));
 
       if (token.tokenType != TerminalTokens.TokenNameSEMICOLON) {
         break;
@@ -1140,7 +1169,7 @@ public class JParser {
     }
     ASTNode last = (ASTNode) list.get(list.size() - 1);
     int tokenIndex = tokenManager.firstIndexAfter(last, ANY_TOKEN);
-    while (tokenManager.get(tokenIndex).isComment()) {
+    while (isComment(tokenManager.get(tokenIndex))) {
       tokenIndex++;
     }
     return convertTypeArguments(
@@ -1169,7 +1198,7 @@ public class JParser {
     }
     ASTNode last = (ASTNode) list.get(list.size() - 1);
     int tokenIndex = tokenManager.firstIndexAfter(last, ANY_TOKEN);
-    while (tokenManager.get(tokenIndex).isComment()) {
+    while (isComment(tokenManager.get(tokenIndex))) {
       tokenIndex++;
     }
     TypeParameterListTreeImpl t = new TypeParameterListTreeImpl(
@@ -1370,8 +1399,6 @@ public class JParser {
         declaration(t.variableBinding, t);
         statements.add(t);
       }
-    } else if (node.getNodeType() == ASTNode.BREAK_STATEMENT && node.getLength() < "break".length()) {
-      // skip implicit break-statement
     } else {
       statements.add(createStatement(node));
     }
@@ -1750,7 +1777,7 @@ public class JParser {
         do {
           tokenIndex--;
           token = tokenManager.get(tokenIndex);
-        } while (token.isComment());
+        } while (isComment(token));
 
         if (token.tokenType != TerminalTokens.TokenNameSEMICOLON) {
           break;
