@@ -51,6 +51,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -264,7 +265,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     List<SyntaxTrivia> trivias = tree.firstToken().trivias();
     if (!trivias.isEmpty()) {
       SyntaxTrivia lastTrivia = trivias.get(trivias.size() - 1);
-      if (lastTrivia.comment().startsWith("/**")) {
+      if (lastTrivia.isComment(CommentKind.JAVADOC, CommentKind.MARKDOWN)) {
         SyntaxToken lastToken = tree.lastToken();
         Position start = Position.startOf(lastTrivia);
         Position end = Position.endOf(lastToken);

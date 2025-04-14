@@ -24,7 +24,6 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.BreakStatement;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -1270,7 +1269,7 @@ class JParserSemanticTest {
   }
 
   @Test
-  void ecj_exception_when_computing_metadata_should_be_caught() {
+  void no_metadata_annotations_on_noncompiling_annotation_code() {
     String source = "" +
       " public class C {\n" +
       "  interface I1 {}\n" +
@@ -1291,7 +1290,7 @@ class JParserSemanticTest {
     ExpressionStatementTree expression = (ExpressionStatementTree) m.block().body().get(0);
 
     SymbolMetadata metadata = assertDoesNotThrow(() -> ((MethodInvocationTreeImpl) expression.expression()).methodSymbol().metadata());
-    assertThat(metadata).isEqualTo(Symbols.EMPTY_METADATA);
+    assertThat(metadata.annotations()).isEmpty();
   }
 
   @Test
@@ -1669,17 +1668,19 @@ class JParserSemanticTest {
     return (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
   }
 
+  /**
+   * Previously ECJ was adding an implicit break statement for empty switch cases blocks.
+   * This is not the case anymore, and we do not need to test this.
+   */
   @Test
-  void should_skip_implicit_break_statement() {
+  void not_need_to_skip_implicit_break_statement() {
     final String source = "class C { void m() { switch (0) { case 0 -> { } } } }";
     CompilationUnit cu = createAST(source);
     TypeDeclaration c = (TypeDeclaration) cu.types().get(0);
     MethodDeclaration m = c.getMethods()[0];
     SwitchStatement s = (SwitchStatement) m.getBody().statements().get(0);
     Block block = (Block) s.statements().get(1);
-    BreakStatement breakStatement = (BreakStatement) block.statements().get(0);
-    assertThat(breakStatement.getLength())
-      .isEqualTo(2);
+    assertThat(block.statements()).isEmpty();
 
     CompilationUnitTree compilationUnit = test(source);
     ClassTree cls = (ClassTree) compilationUnit.types().get(0);

@@ -52,7 +52,7 @@ log_develocity_url_script: &log_develocity_url_script |
 common_build_definition: &COMMON_BUILD_DEFINITION
   eks_container:
     <<: *CONTAINER_DEFINITION
-    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j22-latest
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j23-latest
     cpu: 4
     memory: 4G
   env:
@@ -127,14 +127,16 @@ ws_scan_task:
 
 qa_os_win_task:
   ec2_instance:
-    image: base-windows-jdk22-v*
+    image: base-windows-jdk21-v*
     <<: *WINDOWS_VM_DEFINITION
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
+  java_download_cache:
+    folder: ${CIRRUS_WORKING_DIR}/.java_download_cache
   build_script:
     - *log_develocity_url_script
     - source cirrus-env CI
-    - mvn.cmd clean verify
+    - ps: .cirrus/install-latest-java-on-windows.ps1 ; if ($?) { & mvn.cmd --batch-mode clean verify }
   cleanup_before_cache_script: cleanup_maven_repository
 
 plugin_qa_task:
@@ -175,7 +177,7 @@ sanity_task:
   <<: *ONLY_SONARSOURCE_QA
   eks_container:
     <<: *CONTAINER_DEFINITION
-    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j22-latest
+    image: ${CIRRUS_AWS_ACCOUNT}.dkr.ecr.eu-central-1.amazonaws.com/base:j23-latest
     cpu: 4
     memory: 4G
   maven_cache:
@@ -256,9 +258,9 @@ autoscan_task:
   eks_container:
     <<: *CONTAINER_WITH_DOCKER_DEFINITION
     # For now, this autoscan_task need to execute two mvn commands:
-    # * The build of java-checks-test-sources module which requires Java 22.
-    # * The tests using Orchestrator and SonarQube that, for now, fail to work using Java 22
-    # This is why we have a local Dockerfile that provide the 2 versions of Java, 17 and 22.
+    # * The build of java-checks-test-sources module which requires Java 23.
+    # * The tests using Orchestrator and SonarQube that, for now, fail to work using Java 23
+    # This is why we have a local Dockerfile that provide the 2 versions of Java, 17 and 23.
     cpu: 14
     memory: 6G
   maven_cache:
