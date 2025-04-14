@@ -16,10 +16,16 @@
 // TODO
 
  // Noncompliant@+1
-// TODO Explenation
+// TODO Explanation
 
  // Noncompliant@+1
 // [TODO]
+
+ // Noncompliant@+1
+/// TODO Explanation
+
+ // Noncompliant@+1
+//// TODO Explanation
 
 // PreTodo
 // toDomain

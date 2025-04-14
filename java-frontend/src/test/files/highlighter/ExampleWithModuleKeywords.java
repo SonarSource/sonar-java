@@ -17,5 +17,7 @@ abstract class module {
     provides();
   }
 
+  /// Markedown javadoc begin
+  /// Markedown javadoc end
   abstract void provides();
 }

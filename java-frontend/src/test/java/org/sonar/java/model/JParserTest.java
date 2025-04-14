@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.EmptyStackException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -46,10 +45,13 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
+import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.slf4j.event.Level;
@@ -59,6 +61,7 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.testing.ThreadLocalLogTester;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -75,6 +78,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.RecordPatternTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypePatternTree;
@@ -82,6 +86,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -90,6 +95,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.model.JParser.convertTokenTypeToCommentKind;
+import static org.sonar.java.model.JParser.isComment;
 import static org.sonar.java.model.JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
 import static org.sonar.java.model.JParserConfig.Mode.BATCH;
 import static org.sonar.java.model.JParserConfig.Mode.FILE_BY_FILE;
@@ -253,6 +260,15 @@ class JParserTest {
   }
 
   @Test
+  void processEnumConstantDeclaration_sets_enum_initializer_following_a_markdown_comment_as_next_token() {
+    CompilationUnitTree cu = test("enum E { C /// comment before initializer\n (3); E(int a) {} }");
+    ClassTree t = (ClassTree) cu.types().get(0);
+    EnumConstantTree c = (EnumConstantTree) t.members().get(0);
+    assertThat(c.initializer().arguments().openParenToken()).isNotNull();
+    assertThat(c.initializer().arguments()).hasSize(1);
+  }
+
+  @Test
   void statement_variable_declaration() {
     CompilationUnitTree t = test("class C { void m() { int a, b; } }");
     ClassTree c = (ClassTree) t.types().get(0);
@@ -267,16 +283,9 @@ class JParserTest {
   }
 
   @Test
-  void fail_to_parse_static_method_invocation_on_a_conditional_expression_with_null_literal_on_the_else_operand() {
-    // Due to a bug in ECJ 3.39.0, the bellow Java code can not be parsed, the parser fails throwing:
-    // java.util.EmptyStackException: null
-    //    at java.base/java.util.Stack.peek(Stack.java:103)
-    //    at java.base/java.util.Stack.pop(Stack.java:85)
-    //    at org.eclipse.jdt.internal.compiler.codegen.OperandStack.pop(OperandStack.java:85)
-    //    at org.eclipse.jdt.internal.compiler.codegen.OperandStack.pop(OperandStack.java:109)
-    //    at org.eclipse.jdt.internal.compiler.ast.ConditionalExpression.generateCode(ConditionalExpression.java:322)
+  void parse_static_method_invocation_on_a_conditional_expression_with_null_literal_on_the_else_operand() {
     List<File> classpath = List.of();
-    assertThatThrownBy(() -> JParserTestUtils.parse("Reproducer.java", """
+    assertDoesNotThrow(() -> JParserTestUtils.parse("Reproducer.java", """
       package checks;
 
       public class Reproducer {
@@ -286,10 +295,7 @@ class JParserTest {
         static void bar() {
         }
       }
-      """, classpath))
-      .isInstanceOf(RecognitionException.class)
-      .hasMessage("ECJ: Unable to parse file.")
-      .hasCauseInstanceOf(EmptyStackException.class);
+      """, classpath));
   }
 
   @Test
@@ -516,7 +522,65 @@ class JParserTest {
     assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNameRBRACE, TerminalTokens.TokenNameLBRACE)).isEqualTo(2);
     assertThatThrownBy(() -> JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNamebreak, TerminalTokens.TokenNameconst))
       .isInstanceOf(IllegalStateException.class)
-      .hasMessage("Failed to find token 83 or 138 in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
+      .hasMessage("Failed to find token 82 or 136 in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
+  }
+
+  @Test
+  void test_comment_tokens() {
+    String version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION.effectiveJavaVersionAsString();
+    String unitName = "C.java";
+    String source = """
+      class A {
+        // line comment
+        /* block comment */
+        /// markdown comment 1
+        /// markdown comment 2
+        /**
+          * javadoc comment
+          */
+        void foo() {}
+      }
+      """;
+    TokenManager tokens = JParser.createTokenManager(version, unitName, source);
+
+    assertThat(tokens.size()).isEqualTo(15);
+
+    Token token0 = tokens.get(0);
+    assertThat(token0.toString(source)).isEqualTo("class");
+    assertThat(token0.isComment()).isFalse();
+    assertThat(isComment(token0)).isFalse();
+    assertThatThrownBy(() -> convertTokenTypeToCommentKind(token0))
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Unexpected value: 71");
+
+    Token token3 = tokens.get(3);
+    assertThat(token3.toString(source)).isEqualTo("// line comment");
+    assertThat(token3.isComment()).isTrue();
+    assertThat(isComment(token3)).isTrue();
+    assertThat(convertTokenTypeToCommentKind(token3)).isEqualTo(CommentKind.LINE);
+
+    Token token4 = tokens.get(4);
+    assertThat(token4.toString(source)).isEqualTo("/* block comment */");
+    assertThat(token4.isComment()).isTrue();
+    assertThat(isComment(token4)).isTrue();
+    assertThat(convertTokenTypeToCommentKind(token4)).isEqualTo(CommentKind.BLOCK);
+
+    Token token5 = tokens.get(5);
+    assertThat(token5.toString(source)).isEqualTo("/// markdown comment 1\n  /// markdown comment 2");
+    assertThat(token5.isComment()).isFalse(); // JDT issue https://github.com/eclipse-jdt/eclipse.jdt.core/issues/3914
+    assertThat(isComment(token5)).isTrue();
+    assertThat(convertTokenTypeToCommentKind(token5)).isEqualTo(CommentKind.MARKDOWN);
+
+    Token token6 = tokens.get(6);
+    assertThat(token6.toString(source)).isEqualTo("/**\n    * javadoc comment\n    */");
+    assertThat(token6.isComment()).isTrue();
+    assertThat(isComment(token6)).isTrue();
+    assertThat(convertTokenTypeToCommentKind(token6)).isEqualTo(CommentKind.JAVADOC);
+
+    Token token7 = tokens.get(7);
+    assertThat(token7.toString(source)).isEqualTo("void");
+    assertThat(token7.isComment()).isFalse();
+    assertThat(isComment(token7)).isFalse();
   }
 
   @Test
@@ -530,15 +594,21 @@ class JParserTest {
     assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
   }
 
-  @Test
-  void dont_include_running_VM_Bootclasspath_if_android_runtime_already_provided_in_classpath(@TempDir Path tempFolder) throws IOException {
-    VariableTree s1 = parseAndGetVariable("class C { void m() { String a; } }");
-    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
+  @ParameterizedTest
+  @ValueSource(ints = {8, 9, 17})
+  void dont_include_running_VM_Bootclasspath_if_android_runtime_already_provided_in_classpath(int javaVersion) throws IOException {
+    JavaVersion androidVersion = new JavaVersionImpl(javaVersion);
+    String source = "class C { void m() { String a; Integer b; } }";
+    VariableTree a = parseAndGetVariable(source, androidVersion);
+    VariableTree b = (VariableTree) ((BlockTree) a.parent()).body().get(1);
+    assertThat(a.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.String");
+    assertThat(b.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
 
-    Path fakeAndroidSdk = tempFolder.resolve("android.jar");
-    Files.createFile(fakeAndroidSdk);
-    s1 = parseAndGetVariable("class C { void m() { String a; } }", fakeAndroidSdk.toFile());
-    assertThat(s1.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
+    Path fakeAndroidSdk = Path.of("src", "test", "resources", "android.jar").toRealPath();
+    a = parseAndGetVariable(source, androidVersion, fakeAndroidSdk.toFile());
+    b = (VariableTree) ((BlockTree) a.parent()).body().get(1);
+    assertThat(a.type().symbolType().fullyQualifiedName()).isEqualTo("Recovered#typeBindingLString;0");
+    assertThat(b.type().symbolType().fullyQualifiedName()).isEqualTo("java.lang.Integer");
   }
 
   @Test
@@ -924,7 +994,11 @@ class JParserTest {
   }
 
   private VariableTree parseAndGetVariable(String code, File... classpath) {
-    CompilationUnitTree t = JParserTestUtils.parse("Foo.java", code, Arrays.asList(classpath));
+    return parseAndGetVariable(code, JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION, classpath);
+  }
+
+  private VariableTree parseAndGetVariable(String code, JavaVersion javaVersion, File... classpath) {
+    CompilationUnitTree t = JParserTestUtils.parse("Foo.java", code, Arrays.asList(classpath), javaVersion);
     ClassTree c = (ClassTree) t.types().get(0);
     MethodTree m = (MethodTree) c.members().get(0);
     BlockTree s = m.block();
