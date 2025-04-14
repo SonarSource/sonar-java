@@ -13,6 +13,7 @@
     "constantCost": "2h"
   },
   "tags": [
+    "architecture",
     "brain-overload"
   ],
   "defaultSeverity": "Major",
