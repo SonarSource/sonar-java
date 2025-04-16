@@ -1,0 +1,39 @@
+<h2>Why is this an issue?</h2>
+<p>The syntax of some Java constructs, such as enhanced for loops, requires that you declare a variable that you may have no use for. To solve this
+issue, Java 22 introduced an unnamed variable pattern, <code>_</code>. This feature removes the need to name variables that are syntactically required
+but otherwise unused. Moreover, it clearly indicates the intent not to use the variable.</p>
+<p>To further minimize clutter, unnamed variables should use the <code>var</code> pattern rather than explicit type declarations. In addition to
+minimizing clutter, removing the type makes the code easier to maintain. Indeed, if the type was to change in future, the code would remain the
+same.</p>
+<h3>Exceptions</h3>
+<p>This rule does not apply to basic <code>for</code> loops and local variable declarations in a block.</p>
+<h2>How to fix it</h2>
+<p>Replace the local variable type with <code>var</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+for (String _ : myIterable) { // Noncompliant
+  // ...
+}
+
+
+try (Resource _ = new Resource()) { // Noncompliant
+  // ...
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+for (var _ : myIterable) {
+  // ....
+}
+
+try (var _ = new Resource()) {
+  // ...
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> OpenJDK - <a href="https://openjdk.org/jeps/456">JEP 456: Unnamed Variables &amp; Patterns</a> </li>
+</ul>
+

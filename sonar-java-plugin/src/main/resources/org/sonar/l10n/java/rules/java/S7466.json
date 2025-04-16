@@ -1,0 +1,23 @@
+{
+  "title": "Unnamed variable declarations should use the \"var\" identifier",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "java22"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-7466",
+  "sqKey": "S7466",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  }
+}
