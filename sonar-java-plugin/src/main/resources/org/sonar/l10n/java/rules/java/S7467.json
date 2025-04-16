@@ -1,0 +1,23 @@
+{
+  "title": "Unused exception parameter should use the unnamed variable pattern",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "java22"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-7467",
+  "sqKey": "S7467",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  }
+}
