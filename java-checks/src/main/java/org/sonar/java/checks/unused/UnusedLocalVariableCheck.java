@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -122,12 +123,22 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
   }
 
   private static List<JavaQuickFix> computeQuickFix(VariableTree variable) {
+    if (variable.parent() instanceof ForEachStatement) {
+      return makeQuickFixReplacingWithUnnamedVariable(variable);
+    }
     return getQuickFixTextSpan(variable).map(textSpan -> Collections.singletonList(
         JavaQuickFix.newQuickFix("Remove unused local variable")
           .addTextEdit(JavaTextEdit.removeTextSpan(textSpan))
           .build()
       )
     ).orElseGet(Collections::emptyList);
+  }
+
+  private static List<JavaQuickFix> makeQuickFixReplacingWithUnnamedVariable(VariableTree variable) {
+    var textSpan = AnalyzerMessage.textSpanBetween(variable.firstToken(), variable.lastToken());
+    return List.of(JavaQuickFix.newQuickFix("Replace unused local variable with _")
+      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, "var _"))
+      .build());
   }
 
   private static Optional<AnalyzerMessage.TextSpan> getQuickFixTextSpan(VariableTree variable) {
