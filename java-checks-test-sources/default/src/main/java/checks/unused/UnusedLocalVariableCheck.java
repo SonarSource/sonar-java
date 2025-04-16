@@ -12,6 +12,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class UnusedLocalVariable {
+  private static void foo() {
+    try (Stream foo = Stream.of()) { // Noncompliant
+    } catch (Exception _) {
+    }
+  }
   private UnusedLocalVariable() {
   }
 

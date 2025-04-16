@@ -75,6 +75,10 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       IdentifierTree simpleName = variable.simpleName();
       if (!simpleName.isUnnamedVariable()) {
         boolean unresolved = UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR.isUnresolved(simpleName.name());
+        if (!context.getJavaVersion().isJava22Compatible() && isTryResource(variable)) {
+          // Before Java 22, there was nothing we could do to replace unused variables in try-with-resource
+          return;
+        }
         if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol())) {
           QuickFixHelper.newIssue(context)
             .forRule(this)
@@ -110,7 +114,6 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     return symbol.isLocalVariable()
       && !symbol.isParameter()
       && !isDefinedInCatchClause(variable)
-      && !isTryResource(variable)
       && !UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR.isSwitchPatternVariable(variable);
   }
 
