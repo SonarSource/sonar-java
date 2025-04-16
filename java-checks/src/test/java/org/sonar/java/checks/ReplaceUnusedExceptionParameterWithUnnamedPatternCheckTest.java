@@ -38,5 +38,5 @@ class ReplaceUnusedExceptionParameterWithUnnamedPatternCheckTest {
       .withoutSemantic()
       .verifyIssues();
   }
-  
+
 }
