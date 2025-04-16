@@ -19,12 +19,14 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S7467")
-public class ReplaceUnusedExceptionParameterWithUnnamedPatternCheck extends IssuableSubscriptionVisitor {
+public class ReplaceUnusedExceptionParameterWithUnnamedPatternCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
   private static final String UNNAMED_PATTERN = "_";
 
   @Override
@@ -43,4 +45,8 @@ public class ReplaceUnusedExceptionParameterWithUnnamedPatternCheck extends Issu
     }
   }
 
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava22Compatible();
+  }
 }
