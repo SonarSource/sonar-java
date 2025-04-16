@@ -42,20 +42,12 @@ public class UnnamedVariableShouldUseVarCheck extends IssuableSubscriptionVisito
   @Override
   public void visitNode(Tree tree) {
     if (tree instanceof ForEachStatement forEachTree) {
-      visitForEachStatement(forEachTree);
+      checkVariable(forEachTree.variable());
     } else if (tree instanceof TryStatementTree tryTree) {
-      visitTryStatement(tryTree);
-    }
-  }
-
-  void visitForEachStatement(ForEachStatement forEachTree) {
-    checkVariable(forEachTree.variable());
-  }
-
-  void visitTryStatement(TryStatementTree tryTree) {
-    for (Tree resource: tryTree.resourceList()) {
-      if (resource instanceof VariableTree variable)  {
-        checkVariable(variable);
+      for (Tree resource: tryTree.resourceList()) {
+        if (resource instanceof VariableTree variable)  {
+          checkVariable(variable);
+        }
       }
     }
   }
