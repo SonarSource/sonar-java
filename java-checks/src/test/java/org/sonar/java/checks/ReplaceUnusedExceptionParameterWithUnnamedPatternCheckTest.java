@@ -20,14 +20,32 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 class ReplaceUnusedExceptionParameterWithUnnamedPatternCheckTest {
 
   @Test
-  void test() {
+  void test_java22() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample.java"))
       .withCheck(new ReplaceUnusedExceptionParameterWithUnnamedPatternCheck())
+      .withJavaVersion(22)
       .verifyIssues();
+  }
+
+  @Test
+  void test_java21() {
+
+    assertThatThrownBy(() -> {
+      CheckVerifier.newVerifier()
+        .onFile(TestUtils.mainCodeSourcesPath("checks/ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample.java"))
+        .withCheck(new ReplaceUnusedExceptionParameterWithUnnamedPatternCheck())
+        .withJavaVersion(21)
+        .verifyNoIssues();
+    })
+      .isInstanceOf(AssertionError.class)
+      .hasMessageContaining("'_' is a keyword from source level 9 onwards, cannot be used as identifier");
+
   }
 
   @Test
@@ -36,6 +54,7 @@ class ReplaceUnusedExceptionParameterWithUnnamedPatternCheckTest {
       .onFile(TestUtils.mainCodeSourcesPath("checks/ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample.java"))
       .withCheck(new ReplaceUnusedExceptionParameterWithUnnamedPatternCheck())
       .withoutSemantic()
+      .withJavaVersion(22)
       .verifyIssues();
   }
 
