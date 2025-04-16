@@ -35,14 +35,12 @@ class ReplaceUnusedExceptionParameterWithUnnamedPatternCheckTest {
 
   @Test
   void test_java21() {
+    var verifier = CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample.java"))
+      .withCheck(new ReplaceUnusedExceptionParameterWithUnnamedPatternCheck())
+      .withJavaVersion(21);
 
-    assertThatThrownBy(() -> {
-      CheckVerifier.newVerifier()
-        .onFile(TestUtils.mainCodeSourcesPath("checks/ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample.java"))
-        .withCheck(new ReplaceUnusedExceptionParameterWithUnnamedPatternCheck())
-        .withJavaVersion(21)
-        .verifyNoIssues();
-    })
+    assertThatThrownBy(verifier::verifyNoIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessageContaining("'_' is a keyword from source level 9 onwards, cannot be used as identifier");
 
