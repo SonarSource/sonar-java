@@ -21,13 +21,14 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class ReplaceUnusedExceptionParameterWithUnnamedPatternCheckTest {
 
   @Test
   void test_java22() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample.java"))
       .withCheck(new ReplaceUnusedExceptionParameterWithUnnamedPatternCheck())
       .withJavaVersion(22)
       .verifyIssues();
@@ -35,21 +36,17 @@ class ReplaceUnusedExceptionParameterWithUnnamedPatternCheckTest {
 
   @Test
   void test_java21() {
-    var verifier = CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample.java"))
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSampleJava21.java"))
       .withCheck(new ReplaceUnusedExceptionParameterWithUnnamedPatternCheck())
-      .withJavaVersion(21);
-
-    assertThatThrownBy(verifier::verifyNoIssues)
-      .isInstanceOf(AssertionError.class)
-      .hasMessageContaining("'_' is a keyword from source level 9 onwards, cannot be used as identifier");
-
+      .withJavaVersion(21)
+      .verifyNoIssues();
   }
 
   @Test
   void test_without_semantics() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample.java"))
       .withCheck(new ReplaceUnusedExceptionParameterWithUnnamedPatternCheck())
       .withoutSemantic()
       .withJavaVersion(22)

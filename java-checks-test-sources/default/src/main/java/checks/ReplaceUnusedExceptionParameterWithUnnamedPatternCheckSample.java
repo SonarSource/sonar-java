@@ -2,25 +2,25 @@ package checks;
 
 import io.restassured.exception.PathException;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample {
   public void simpleNonCompliant() {
-    try {
-    } catch (Exception e) {
-      var x = e;
-    }
 
     List<String> elements = List.of();
     int value = 0;
     try {
       var elem = elements.get(10);
       value = Integer.parseInt(elem);
-    } catch (NumberFormatException nfe) { // Noncompliant {{Replace nfe with an unnamed pattern.}}
+    } catch (NumberFormatException nfe) { // Noncompliant {{Replace "nfe" with an unnamed pattern.}}
       //                           ^^^
+      //                           fix@qf1 {{Replace "nfe" with "_"}}
+      //                           edit@qf1 [[sc=36;ec=39]] {{_}}
       System.err.println("Wrong number format");
-    } catch (IndexOutOfBoundsException ioob) { // Noncompliant {{Replace ioob with an unnamed pattern.}}
+    } catch (IndexOutOfBoundsException ioob) { // Noncompliant {{Replace "ioob" with an unnamed pattern.}}
+      //                               ^^^^
+      //                               fix@qf2 {{Replace "ioob" with "_"}}
+      //                               edit@qf2 [[sc=40;ec=44]] {{_}}
       System.err.println("No such element");
     }
   }

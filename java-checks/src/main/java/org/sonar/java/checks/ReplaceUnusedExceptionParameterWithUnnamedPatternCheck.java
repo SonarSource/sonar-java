@@ -18,16 +18,19 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S7467")
 public class ReplaceUnusedExceptionParameterWithUnnamedPatternCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
-  private static final String UNNAMED_PATTERN = "_";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -38,15 +41,26 @@ public class ReplaceUnusedExceptionParameterWithUnnamedPatternCheck extends Issu
   public void visitNode(Tree tree) {
     CatchTree catchTree = (CatchTree) tree;
     VariableTree v = catchTree.parameter();
-    String name = v.simpleName().name();
-    if (!UNNAMED_PATTERN.equals(name)
-      && v.symbol().usages().isEmpty()) {
-      reportIssue(v.simpleName(), String.format("Replace %s with an unnamed pattern.", name));
+    IdentifierTree ident = v.simpleName();
+
+    if (!ident.isUnnamedVariable() && v.symbol().usages().isEmpty()) {
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(ident)
+        .withMessage(String.format("Replace \"%s\" with an unnamed pattern.", ident.name()))
+        .withQuickFix(() -> getQuickFix(ident))
+        .report();
     }
   }
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
     return version.isJava22Compatible();
+  }
+
+  private static JavaQuickFix getQuickFix(IdentifierTree ident) {
+    return JavaQuickFix.newQuickFix(String.format("Replace \"%s\" with unnamed pattern \"_\"", ident.name()))
+      .addTextEdit(JavaTextEdit.replaceTree(ident, "_"))
+      .build();
   }
 }
