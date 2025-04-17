@@ -47,7 +47,6 @@ public class RemoveTypeFromUnusedPatternCheck extends IssuableSubscriptionVisito
       if (patternTree instanceof TypePatternTree pat
         && pat.patternVariable().simpleName().isUnnamedVariable()
         && !typeIsMissing(pat.patternVariable())) {
-        String type = pat.patternVariable().type().symbolType().name();
         QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(pat.patternVariable())
