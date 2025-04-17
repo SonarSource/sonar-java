@@ -1,0 +1,51 @@
+<h2>Why is this an issue?</h2>
+<p>When using pattern matching on records, matching is done against the canonical constructor of the record. This implies listing all the components
+in the canonical constructor even if some are unused. To make the intent of not using the component clear, Java 22 introduced the unnamed variable
+pattern <code>_</code>.</p>
+<p>Because we can only pattern match against the canonical constructor, there is no need to disambiguate by specifying the types of its parameters.
+Therefore, the type of unused variables in pattern matching should be omitted, as it does not bring additional value.</p>
+<h2>How to fix it</h2>
+<p>Remove the type of the unused component.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+record Guest(String name, String email, String phoneNumber) {}
+
+String greet(Object o) {
+    if (o instanceof Guest(String name, String _, String _)) { // Noncompliant
+        return "Hello " + name + "!";
+    }
+    return "Hello!";
+}
+
+String switchToGreet(Object o) {
+    return switch (o) {
+        case Guest(String name, String _, String _) -&gt; "Hello " + name + "!"; // Noncompliant
+        default -&gt; "Hello!";
+    };
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+record Guest(String name, String email, String phoneNumber) {}
+
+String greet(Object o) {
+    if (o instanceof Guest(String name, _, _)) {
+        return "Hello " + name + "!";
+    }
+    return "Hello!";
+}
+
+String switchToGreet(Object o) {
+    return switch (o) {
+        case Guest(String name, _, _) -&gt; "Hello " + name + "!";
+        default -&gt; "Hello!";
+    };
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://openjdk.org/jeps/456">JEP 456: Unnamed Variables &amp; Patterns</a> </li>
+</ul>
+

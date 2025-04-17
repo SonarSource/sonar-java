@@ -1,0 +1,24 @@
+{
+  "title": "Types of unused record components should be removed from pattern matching",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java22",
+    "unused"
+  ],
+  "defaultSeverity": "Info",
+  "ruleSpecification": "RSPEC-7475",
+  "sqKey": "S7475",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "INFO"
+    },
+    "attribute": "CLEAR"
+  }
+}
