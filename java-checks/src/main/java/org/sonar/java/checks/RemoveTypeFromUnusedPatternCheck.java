@@ -64,7 +64,7 @@ public class RemoveTypeFromUnusedPatternCheck extends IssuableSubscriptionVisito
     return version.isJava22Compatible();
   }
 
-  private static JavaQuickFix getQuickFix(TypeTree tree, String type) {
+  private static JavaQuickFix getQuickFix(TypeTree tree) {
     return JavaQuickFix.newQuickFix("Remove unused type")
       .addTextEdit(JavaTextEdit.removeTree(tree))
       .build();
