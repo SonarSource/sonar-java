@@ -98,8 +98,11 @@ class CheckRegistrarTest {
   }
 
   @Test
-  void empty_default_method_coverage() {
+  void cover_empty_default_implementations() {
     var context = new CheckRegistrar.RegistrarContext();
+    // Required for test coverage: we call the empty default implementation of the "registerCustomFileScanner" method
+    // and assert that it returns "void" normally. This is equivalent to asserting that it does not return abnormally,
+    // i.e., does not throw an exception.
     assertDoesNotThrow(() -> context.registerCustomFileScanner(null, null));
   }
 
