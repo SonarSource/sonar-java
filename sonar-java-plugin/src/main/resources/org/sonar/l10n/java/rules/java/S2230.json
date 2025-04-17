@@ -1,5 +1,5 @@
 {
-  "title": "Methods with Spring proxying annotations should be public",
+  "title": "Methods with Spring proxying annotations should not be private",
   "type": "BUG",
   "status": "ready",
   "remediation": {
