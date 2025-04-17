@@ -44,12 +44,12 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
-    if (!method.symbol().isPublic()) {
+    if (method.symbol().isPrivate()) {
       proxyAnnotations.stream()
         .filter(annSymbol -> hasAnnotation(method, annSymbol))
         .forEach(annSymbol -> reportIssue(
           method.simpleName(),
-          "Make this method \"public\" or remove the \"" + annShortName.get(annSymbol) + "\" annotation."));
+          "Make this method non-\"private\" or remove the \"" + annShortName.get(annSymbol) + "\" annotation."));
     }
   }
 
