@@ -309,10 +309,10 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   @Override
   public void registerCustomFileScanner(RuleScope ruleScope, JavaFileScanner scanner) {
-    if (ruleScope != RuleScope.TEST) {
+    if (ruleScope == RuleScope.MAIN || ruleScope == RuleScope.ALL) {
       mainChecks.add(scanner);
     }
-    if (ruleScope != RuleScope.MAIN) {
+    if (ruleScope == RuleScope.TEST || ruleScope == RuleScope.ALL) {
       testChecks.add(scanner);
     }
   }

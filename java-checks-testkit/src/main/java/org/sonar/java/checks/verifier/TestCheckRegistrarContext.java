@@ -76,10 +76,10 @@ public class TestCheckRegistrarContext extends CheckRegistrar.RegistrarContext {
 
   @Override
   public void registerCustomFileScanner(RuleScope ruleScope, JavaFileScanner scanner) {
-    if (ruleScope != RuleScope.TEST) {
+    if (ruleScope == RuleScope.MAIN || ruleScope == RuleScope.ALL) {
       registerMainHook(scanner);
     }
-    if (ruleScope != RuleScope.MAIN) {
+    if (ruleScope == RuleScope.TEST || ruleScope == RuleScope.ALL) {
       registerTestHook(scanner);
     }
   }
