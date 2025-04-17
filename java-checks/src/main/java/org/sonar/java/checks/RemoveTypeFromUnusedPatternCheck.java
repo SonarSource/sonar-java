@@ -52,7 +52,7 @@ public class RemoveTypeFromUnusedPatternCheck extends IssuableSubscriptionVisito
           .forRule(this)
           .onTree(pat.patternVariable())
           .withMessage("Remove unused type from unnamed pattern")
-          .withQuickFix(() -> getQuickFix(pat.patternVariable().type(), type))
+          .withQuickFix(() -> getQuickFix(pat.patternVariable().type()))
           .report();
       }
     }
