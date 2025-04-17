@@ -29,6 +29,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -75,7 +76,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       IdentifierTree simpleName = variable.simpleName();
       if (!simpleName.isUnnamedVariable()) {
         boolean unresolved = UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR.isUnresolved(simpleName.name());
-        if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol())) {
+        if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol()) && !isMandatoryForeachVariable(context.getJavaVersion(), variable)) {
           QuickFixHelper.newIssue(context)
             .forRule(this)
             .onTree(simpleName)
@@ -86,6 +87,14 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       }
     }
 
+  }
+
+  /**
+   * Before Java 22 it was not possible to remove the variable in a foreach statement even it is unused.
+   * For instance in {@code for (String element : list) {}}, it is only since Java 22 that it can be rewritten {@code for (var _ : list) {}}.
+   */
+  private static boolean isMandatoryForeachVariable(JavaVersion javaVersion, VariableTree variable) {
+    return variable.parent() instanceof ForEachStatement && !javaVersion.isJava22Compatible();
   }
 
   private static boolean isUnused(Symbol symbol) {
