@@ -32,6 +32,25 @@ class UnusedLocalVariableCheckTest {
   }
 
   @Test
+  void test_java22() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/unused/UnusedLocalVariableCheck_java22.java"))
+      .withCheck(new UnusedLocalVariableCheck())
+      .withJavaVersion(22)
+      .verifyIssues();
+  }
+
+  /** Check that issue that can only be acted upon with Java 22 are not raised for earlier versions. */
+  @Test
+  void test_java21() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/unused/UnusedLocalVariableCheck_java22.java"))
+      .withCheck(new UnusedLocalVariableCheck())
+      .withJavaVersion(21)
+      .verifyNoIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/unused/UnusedLocalVariableCheck.java"))
