@@ -1,5 +1,7 @@
 package checks.unused;
 
+import java.util.stream.Stream;
+
 public class UnusedLocalVariableCheck_java22 {
   private UnusedLocalVariableCheck_java22() {}
 
@@ -20,5 +22,19 @@ public class UnusedLocalVariableCheck_java22 {
     }
 
     return count;
+  }
+
+  public static void tryWithResources() {
+    try (Stream foo = Stream.of()) { // Noncompliant {{Remove this unused "foo" local variable.}} [[quickfixes=qf_tr1]]
+//              ^^^
+//              fix@qf_tr1 {{Replace unused local variable with _}}
+//              edit@qf_tr1 [[sc=10;ec=20]] {{var _}}
+    } catch (Exception e) {
+    }
+
+    Stream bar = Stream.of();
+    try(bar) {
+    } catch (Exception e) {
+    }
   }
 }

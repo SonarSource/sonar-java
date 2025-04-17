@@ -41,7 +41,15 @@ class UnusedLocalVariableCheck {
     } catch (Exception e) {
     }
 
-    try (Stream foo = Stream.of()) { // Compliant
+    try (Stream stream1 = Stream.of(); // Noncompliant {{Remove this unused "stream1" local variable.}} [[quickfixes=qf_tr1]]
+//              ^^^^^^^
+//              fix@qf_tr1 {{Replace unused local variable with _}}
+//              edit@qf_tr1 [[sc=10;ec=24]] {{var _}}
+         Stream _ = Stream.of();
+         Stream stream3 = Stream.of()) { // Noncompliant {{Remove this unused "stream3" local variable.}} [[quickfixes=qf_tr2]]
+//              ^^^^^^^
+//              fix@qf_tr2 {{Replace unused local variable with _}}
+//              edit@qf_tr2 [[sc=10;ec=24]] {{var _}}
     } catch (Exception _) {
     }
 
