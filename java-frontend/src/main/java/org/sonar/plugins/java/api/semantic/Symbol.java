@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -161,7 +160,7 @@ public interface Symbol {
 
     @Nullable
     @Override
-    ClassTree declaration();
+    Tree declaration();
 
     /**
      * @return the set of types that are super types of this type (extended classes and implemented interfaces).
