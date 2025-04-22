@@ -33,6 +33,15 @@ class RemoveTypeFromUnusedPatternCheckTest {
   }
 
   @Test
+  void test_java21() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/RemoveTypeFromUnusedPatternCheck_Java21.java"))
+      .withCheck(new RemoveTypeFromUnusedPatternCheck())
+      .withJavaVersion(21)
+      .verifyNoIssues();
+  }
+
+  @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/RemoveTypeFromUnusedPatternCheckSample.java"))

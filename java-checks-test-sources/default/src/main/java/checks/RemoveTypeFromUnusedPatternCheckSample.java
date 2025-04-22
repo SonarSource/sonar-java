@@ -10,7 +10,7 @@ public class RemoveTypeFromUnusedPatternCheckSample {
   record Foo(String a, Bar b){}
 
   void nonCompliantExamples(Object o) {
-    if (o instanceof Guest(String name, String _, String _)) { // Noncompliant 2
+    if (o instanceof Guest(String name, String _, String phoneNumber)) { // Noncompliant
     }
 
     if(o instanceof Foo(String _, Bar b)){ // Noncompliant {{Remove unused type from unnamed pattern}}
@@ -24,7 +24,7 @@ public class RemoveTypeFromUnusedPatternCheckSample {
     }
 
     String s1 = switch (o) {
-      case Guest(String name, String _, String _) -> "Hello " + name + "!"; // Noncompliant 2
+      case Guest(String name, String _, String phoneNumber) -> "Hello " + name + "!"; // Noncompliant
       default -> "Hello!";
     };
 
