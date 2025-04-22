@@ -16,6 +16,8 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.io.File;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
@@ -30,6 +32,24 @@ class TransactionalMethodVisibilityCheckTest {
       .onFile(mainCodeSourcesPath("checks/spring/TransactionalMethodVisibilityCheckSample.java"))
       .withCheck(new TransactionalMethodVisibilityCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_Spring5() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/TransactionalMethodVisibilityCheckSample_Spring5.java"))
+      .withCheck(new TransactionalMethodVisibilityCheck())
+      .verifyIssues();
+  }
+
+  /** Check that with Spring 6, we do not raise issues on protected and package private methods. */
+  @Test
+  void test_Spring6() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/TransactionalMethodVisibilityCheckSample_Spring5.java"))
+      .withCheck(new TransactionalMethodVisibilityCheck())
+      .withClassPath(List.of(new File("spring-tx-6.0.1.jar")))
+      .verifyNoIssues();
   }
 
   @Test
