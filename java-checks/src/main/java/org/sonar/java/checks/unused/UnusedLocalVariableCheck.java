@@ -93,7 +93,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
    * For instance in {@code for (String element : list) {}}, it is only since Java 22 that it can be rewritten {@code for (var _ : list) {}}.
    */
   private boolean canBeReplaced(VariableTree variable) {
-  return context.getJavaVersion().isJava22Compatible()
+    return context.getJavaVersion().isJava22Compatible()
       || (!isForeachVariable(variable) && !isTryResource(variable));
   }
 
