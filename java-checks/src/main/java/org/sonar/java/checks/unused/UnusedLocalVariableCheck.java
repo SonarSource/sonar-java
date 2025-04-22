@@ -29,7 +29,6 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -76,7 +75,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       IdentifierTree simpleName = variable.simpleName();
       if (!simpleName.isUnnamedVariable()) {
         boolean unresolved = UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR.isUnresolved(simpleName.name());
-        if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol()) && !isMandatory(variable)) {
+        if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol()) && canBeReplaced(variable)) {
           QuickFixHelper.newIssue(context)
             .forRule(this)
             .onTree(simpleName)
@@ -96,9 +95,6 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
   private boolean canBeReplaced(VariableTree variable) {
   return context.getJavaVersion().isJava22Compatible()
       || (!isForeachVariable(variable) && !isTryResource(variable));
-  }
-    return !context.getJavaVersion().isJava22Compatible()
-      && (isForeachVariable(variable) || isTryResource(variable));
   }
 
   private static boolean isUnused(Symbol symbol) {
