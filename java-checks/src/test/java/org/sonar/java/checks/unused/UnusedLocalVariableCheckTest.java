@@ -50,6 +50,16 @@ class UnusedLocalVariableCheckTest {
       .verifyNoIssues();
   }
 
+  /** Verify no regression older versions of java */
+  @Test
+  void test_java17(){
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/unused/UnusedLocalVariableCheck_java17.java"))
+      .withCheck(new UnusedLocalVariableCheck())
+      .withJavaVersion(17)
+      .verifyIssues();
+  }
+
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
