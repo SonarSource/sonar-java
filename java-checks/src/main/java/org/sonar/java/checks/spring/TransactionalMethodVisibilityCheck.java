@@ -19,14 +19,18 @@ package org.sonar.java.checks.spring;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2230")
-public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisitor {
+public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
   private static final List<String> proxyAnnotations = List.of(
     "org.springframework.transaction.annotation.Transactional",
@@ -62,4 +66,8 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
     return false;
   }
 
+  @Override
+  public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
+    return dependencyFinder.apply("spring-tx").map(version -> version.isLowerThan("6.0")).orElse(false);
+  }
 }
