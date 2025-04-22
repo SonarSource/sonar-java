@@ -93,7 +93,10 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
    * Before Java 22 it was not possible to remove the variable in a foreach statement or try with resources even it is unused.
    * For instance in {@code for (String element : list) {}}, it is only since Java 22 that it can be rewritten {@code for (var _ : list) {}}.
    */
-  private boolean isMandatory(VariableTree variable) {
+  private boolean canBeReplaced(VariableTree variable) {
+  return context.getJavaVersion().isJava22Compatible()
+      || (!isForeachVariable(variable) && !isTryResource(variable));
+  }
     return !context.getJavaVersion().isJava22Compatible()
       && (isForeachVariable(variable) || isTryResource(variable));
   }
