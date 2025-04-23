@@ -160,9 +160,9 @@ Running this test can be broken down in 2 steps:
 
 ##### Compiling the test sources
 
-Make sure that the `java-checks-tests-sources` module has been compiled (ie: the .class files in `java-checks-tests-sources/target/` are up to date).
+Make sure that the `java-checks-test-sources` module has been compiled (ie: the .class files in `java-checks-test-sources/target/` are up to date).
 
-In doubt, go the [`java-checks-tests-sources`](java-checks-tests-sources) module and run:
+In doubt, go the [`java-checks-test-sources`](java-checks-tests-sources) module and run:
 ```shell
 # Use java 23!
 mvn clean compile
