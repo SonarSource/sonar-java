@@ -68,7 +68,10 @@ class UnusedLocalVariableCheckTest {
       .verifyIssues();
   }
 
-  /** Test for false negative when a name is used in a lambda expression. */
+  /**
+   * Test for false negative when a name is used in a lambda expression.
+   * See SONARJAVA-5504 for details.
+   */
   @Test
   void test_with_lambda_without_semantics() {
     CheckVerifier.newVerifier()
