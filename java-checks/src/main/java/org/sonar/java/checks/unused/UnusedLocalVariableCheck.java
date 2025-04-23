@@ -29,7 +29,6 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -76,7 +75,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       IdentifierTree simpleName = variable.simpleName();
       if (!simpleName.isUnnamedVariable()) {
         boolean unresolved = UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR.isUnresolved(simpleName.name());
-        if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol()) && !isMandatoryForeachVariable(context.getJavaVersion(), variable)) {
+        if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol()) && canBeReplaced(variable)) {
           QuickFixHelper.newIssue(context)
             .forRule(this)
             .onTree(simpleName)
@@ -90,11 +89,12 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
   }
 
   /**
-   * Before Java 22 it was not possible to remove the variable in a foreach statement even it is unused.
+   * Before Java 22 it was not possible to remove the variable in a foreach statement or try with resources even it is unused.
    * For instance in {@code for (String element : list) {}}, it is only since Java 22 that it can be rewritten {@code for (var _ : list) {}}.
    */
-  private static boolean isMandatoryForeachVariable(JavaVersion javaVersion, VariableTree variable) {
-    return variable.parent() instanceof ForEachStatement && !javaVersion.isJava22Compatible();
+  private boolean canBeReplaced(VariableTree variable) {
+    return context.getJavaVersion().isJava22Compatible()
+      || (!isForeachVariable(variable) && !isTryResource(variable));
   }
 
   private static boolean isUnused(Symbol symbol) {
@@ -119,7 +119,6 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     return symbol.isLocalVariable()
       && !symbol.isParameter()
       && !isDefinedInCatchClause(variable)
-      && !isTryResource(variable)
       && !UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR.isSwitchPatternVariable(variable);
   }
 
@@ -131,9 +130,13 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     return variable.parent().is(Tree.Kind.LIST) && variable.parent().parent().is(Tree.Kind.TRY_STATEMENT);
   }
 
+  private static boolean isForeachVariable(VariableTree variable) {
+    return variable.parent() instanceof ForEachStatement;
+  }
+
   private static List<JavaQuickFix> computeQuickFix(VariableTree variable) {
-    if (variable.parent() instanceof ForEachStatement) {
-      return makeQuickFixReplacingWithUnnamedVariable(variable);
+    if (isForeachVariable(variable) || isTryResource(variable)) {
+      return List.of(makeQuickFixReplacingWithUnnamedVariable(variable));
     }
     return getQuickFixTextSpan(variable).map(textSpan -> Collections.singletonList(
         JavaQuickFix.newQuickFix("Remove unused local variable")
@@ -143,11 +146,14 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     ).orElseGet(Collections::emptyList);
   }
 
-  private static List<JavaQuickFix> makeQuickFixReplacingWithUnnamedVariable(VariableTree variable) {
-    var textSpan = AnalyzerMessage.textSpanBetween(variable.firstToken(), variable.lastToken());
-    return List.of(JavaQuickFix.newQuickFix("Replace unused local variable with _")
-      .addTextEdit(JavaTextEdit.replaceTextSpan(textSpan, "var _"))
-      .build());
+  private static JavaQuickFix makeQuickFixReplacingWithUnnamedVariable(VariableTree variable) {
+    return JavaQuickFix.newQuickFix("Replace unused local variable with _")
+      // This works with both enhanced for loop and try-with-resources.
+      // In the latter case we keep the initializer:
+      //   `for(int elem: elems)`  turns into  `for(var _: elems)`
+      //   `try(Resource res = initializer())`  turns into  `try(var _ = initializer ())`
+      .addTextEdit(JavaTextEdit.replaceBetweenTree(variable.type(), true, variable.simpleName(), true, "var _"))
+      .build();
   }
 
   private static Optional<AnalyzerMessage.TextSpan> getQuickFixTextSpan(VariableTree variable) {
