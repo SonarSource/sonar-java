@@ -13,7 +13,7 @@ public class UnusedLocalVariableCheck_withLambda {
     }
   }
 
-  // Commenting out decoy methods, changes the outcome of the tests without semantics.
+  // Commenting out decoy methods changes the outcome of the tests without semantics.
 
   public void decoyTryWithResources() {
     org.assertj.core.api.SoftAssertions.assertSoftly(softlyTry -> {
