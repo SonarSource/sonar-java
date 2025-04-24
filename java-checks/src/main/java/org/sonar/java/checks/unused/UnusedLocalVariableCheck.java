@@ -74,6 +74,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       VariableTree variable = (VariableTree) tree;
       IdentifierTree simpleName = variable.simpleName();
       if (!simpleName.isUnnamedVariable()) {
+        // If a variable with the same name as this is unresolved, we can't be sure it's not a usage of this. So we can't raise an issue.
         boolean unresolved = UNRESOLVED_IDENTIFIERS_AND_SWITCH_CASE_VISITOR.isUnresolved(simpleName.name());
         if (!unresolved && isProperLocalVariable(variable) && isUnused(variable.symbol()) && canBeReplaced(variable)) {
           QuickFixHelper.newIssue(context)

@@ -29,7 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class UnresolvedIdentifiersVisitor extends BaseTreeVisitor {
 
-  private Set<String> unresolvedIdentifierNames = new HashSet<>();
+  private final Set<String> unresolvedIdentifierNames = new HashSet<>();
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
@@ -72,6 +72,7 @@ public class UnresolvedIdentifiersVisitor extends BaseTreeVisitor {
     return Collections.unmodifiableSet(unresolvedIdentifierNames);
   }
 
+  /** Returns whether an identifier with the same name as the candidate is unresolved. */
   public boolean isUnresolved(String candidate) {
     return unresolvedIdentifierNames.contains(candidate);
   }
