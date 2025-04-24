@@ -46,7 +46,7 @@ public class UnusedPrivateClassCheck extends IssuableSubscriptionVisitor {
     Symbol.TypeSymbol classSymbol = classTree.symbol();
     IdentifierTree identifierTree = classTree.simpleName();
     if(identifierTree != null && classSymbol.isPrivate()
-      && classSymbol.usages().isEmpty() && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(identifierTree.name())) {
+      && classSymbol.usages().isEmpty() && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(identifierTree.symbol())) {
       reportIssue(identifierTree, "Remove this unused private \""+ classSymbol.name()+"\" class.");
     }
   }

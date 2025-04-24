@@ -16,10 +16,11 @@
  */
 package org.sonar.java.checks.helpers;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -29,7 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class UnresolvedIdentifiersVisitor extends BaseTreeVisitor {
 
-  private Set<String> unresolvedIdentifierNames = new HashSet<>();
+  private Set<Symbol> unresolvedIdentifierNames = new HashSet<>();
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
@@ -51,7 +52,7 @@ public class UnresolvedIdentifiersVisitor extends BaseTreeVisitor {
   @Override
   public void visitIdentifier(IdentifierTree tree) {
     if (tree.symbol().isUnknown()) {
-      unresolvedIdentifierNames.add(tree.name());
+      unresolvedIdentifierNames.add(tree.symbol());
     }
     super.visitIdentifier(tree);
   }
@@ -69,10 +70,10 @@ public class UnresolvedIdentifiersVisitor extends BaseTreeVisitor {
   }
 
   private Set<String> unresolvedNames() {
-    return Collections.unmodifiableSet(unresolvedIdentifierNames);
+    return unresolvedIdentifierNames.stream().map(Symbol::name).collect(Collectors.toSet());
   }
 
-  public boolean isUnresolved(String candidate) {
+  public boolean isUnresolved(Symbol candidate) {
     return unresolvedIdentifierNames.contains(candidate);
   }
 }

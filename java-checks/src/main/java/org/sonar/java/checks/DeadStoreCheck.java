@@ -154,7 +154,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
       if (symbol.isLocalVariable()
         && !out.contains(symbol)
         && (element.is(Tree.Kind.ASSIGNMENT) || isParentExpressionStatement(element))
-        && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(symbol.name())) {
+        && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(symbol)) {
         createIssue(element.operatorToken(), element.expression(), symbol);
       }
       assignmentLHS.add(lhs);
@@ -183,7 +183,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     if (initializer != null
       && !isUsualDefaultValue(initializer)
       && !out.contains(symbol)
-      && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(symbol.name())) {
+      && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(symbol)) {
       createIssue(localVar.equalToken(), initializer, symbol);
     }
     out.remove(symbol);
