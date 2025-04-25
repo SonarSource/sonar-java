@@ -513,6 +513,21 @@ class SonarComponentsTest {
   }
 
   @Test
+  void no_issue_when_reporting_from_custom_file_scanner() {
+    JavaFileScanner customScanner = scannerContext -> {
+      // empty
+    };
+    CheckRegistrar registrar =registrarContext ->
+      registrarContext.registerCustomFileScanner(RuleScope.ALL, customScanner);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
+      null, checkFactory, context.activeRules(), new CheckRegistrar[]{registrar});
+    sonarComponents.setSensorContext(context);
+
+    sonarComponents.addIssue(TestUtils.emptyInputFile("file.java"), customScanner, 0, "message", null);
+    verify(context, never()).newIssue();
+  }
+
+  @Test
   void add_issue_or_parse_error() {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);

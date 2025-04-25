@@ -176,6 +176,7 @@ public interface CheckRegistrar {
      * Registers a custom file scanner not related to any rule or repository.
      * CheckRegistrars call this function to register a custom file scanner for execution during the analysis
      * on all source files that match the given rule scope (MAIN, TEST or ALL).
+     * Custom file scanners reporting an issue will have no effect, since no rule is associated.
      */
     public void registerCustomFileScanner(RuleScope ruleScope, JavaFileScanner scanner) {
       // to be overridden

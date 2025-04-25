@@ -27,7 +27,6 @@ import org.sonar.api.rule.RuleKey;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -95,15 +94,6 @@ class CheckRegistrarTest {
       "register 2 autoscan rules.",
       "register 3 instantiated main checks.",
       "register 3 instantiated test checks.");
-  }
-
-  @Test
-  void cover_empty_default_implementations() {
-    var context = new CheckRegistrar.RegistrarContext();
-    // Required for test coverage: we call the empty default implementation of the "registerCustomFileScanner" method
-    // and assert that it returns "void" normally. This is equivalent to asserting that it does not return abnormally,
-    // i.e., does not throw an exception.
-    assertDoesNotThrow(() -> context.registerCustomFileScanner(null, null));
   }
 
   private static class TestInternalRegistration extends CheckRegistrar.RegistrarContext {
