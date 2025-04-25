@@ -40,6 +40,8 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
     "org.springframework.transaction.annotation.Transactional", "@Transactional",
     "org.springframework.scheduling.annotation.Async", "@Async");
 
+  private boolean isSpring6OrLater = false;
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.METHOD);
@@ -48,13 +50,18 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
-    if (!method.symbol().isPublic()) {
+    boolean handledBySpring = isSpring6OrLater ? !method.symbol().isPrivate() : method.symbol().isPublic();
+    if (!handledBySpring) {
       proxyAnnotations.stream()
         .filter(annSymbol -> hasAnnotation(method, annSymbol))
         .forEach(annSymbol -> reportIssue(
           method.simpleName(),
-          "Make this method \"public\" or remove the \"" + annShortName.get(annSymbol) + "\" annotation."));
+          "Make this method " + requiredVisibilityMessage() + " or remove the \"" + annShortName.get(annSymbol) + "\" annotation."));
     }
+  }
+
+  private String requiredVisibilityMessage() {
+    return isSpring6OrLater ? "non-\"private\"" : "\"public\"";
   }
 
   private static boolean hasAnnotation(MethodTree method, String annotationSymbol) {
@@ -66,8 +73,18 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
     return false;
   }
 
+  /** Check that Spring transaction artifact is present, and record whether its version is before or after 6.0. */
   @Override
   public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
-    return dependencyFinder.apply("spring-tx").map(version -> version.isLowerThan("6.0")).orElse(false);
+    Optional<Version> springContextVersion = dependencyFinder.apply("spring-context");
+    Optional<Version> springTxVersion = dependencyFinder.apply("spring-tx");
+    if (springTxVersion.isEmpty() && springContextVersion.isEmpty()) {
+      return false;
+    }
+    isSpring6OrLater = springContextVersion
+      .or(() -> springTxVersion)
+      .map(v -> v.isGreaterThanOrEqualTo("6.0"))
+      .orElse(false);
+    return true;
   }
 }
