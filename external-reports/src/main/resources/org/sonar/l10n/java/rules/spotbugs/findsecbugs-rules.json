@@ -313,7 +313,7 @@
   },
   {
     "key": "NORMALIZATION_AFTER_VALIDATION",
-    "name": "String is normalzied after validation and not before it",
+    "name": "String is normalized after validation and not before it",
     "type": "VULNERABILITY",
     "url": "https://find-sec-bugs.github.io/bugs.htm#NORMALIZATION_AFTER_VALIDATION"
   },

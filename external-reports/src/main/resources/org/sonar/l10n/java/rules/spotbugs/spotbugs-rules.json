@@ -133,13 +133,6 @@
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#bc-impossible-instanceof"
   },
   {
-    "key": "BC_NULL_INSTANCEOF",
-    "name": "Correctness - A known null value is checked to see if it is an instance of a type",
-    "type": "BUG",
-    "severity": "MAJOR",
-    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#bc-null-instanceof"
-  },
-  {
     "key": "BC_UNCONFIRMED_CAST",
     "name": "Style - Unchecked/unconfirmed cast",
     "type": "CODE_SMELL",
@@ -215,13 +208,6 @@
     "type": "BUG",
     "severity": "MAJOR",
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#boa-badly-overridden-adapter"
-  },
-  {
-    "key": "BRSA_BAD_RESULTSET_ACCESS",
-    "name": "Correctness - Method attempts to access a result set field with index 0",
-    "type": "BUG",
-    "severity": "MAJOR",
-    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#brsa-bad-resultset-access"
   },
   {
     "key": "BSHIFT_WRONG_ADD_PRIORITY",
@@ -1631,13 +1617,6 @@
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#lg-lost-logger-due-to-weak-reference"
   },
   {
-    "key": "LI_LAZY_INIT_INSTANCE",
-    "name": "Multi-threading - Incorrect lazy initialization of instance field",
-    "type": "BUG",
-    "severity": "MAJOR",
-    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#li-lazy-init-instance"
-  },
-  {
     "key": "LI_LAZY_INIT_STATIC",
     "name": "Multi-threading - Incorrect lazy initialization of static field",
     "type": "BUG",
@@ -2422,13 +2401,6 @@
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#range-string-index"
   },
   {
-    "key": "RCN_REDUNDANT_CHECKED_NULL_COMPARISON",
-    "name": "Style - Redundant comparison to null of previously checked value",
-    "type": "CODE_SMELL",
-    "severity": "MAJOR",
-    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#rcn-redundant-checked-null-comparison"
-  },
-  {
     "key": "RCN_REDUNDANT_COMPARISON_OF_NULL_AND_NONNULL_VALUE",
     "name": "Style - Redundant comparison of non-null value to null",
     "type": "CODE_SMELL",
@@ -3157,13 +3129,6 @@
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#throws-method-throws-runtimeexception"
   },
   {
-    "key": "TLW_TWO_LOCK_NOTIFY",
-    "name": "Multi-threading - Notify with two locks held",
-    "type": "BUG",
-    "severity": "MAJOR",
-    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#tlw-two-lock-notify"
-  },
-  {
     "key": "TLW_TWO_LOCK_WAIT",
     "name": "Multi-threading - Wait with two locks held",
     "type": "BUG",
@@ -3379,6 +3344,41 @@
     "type": "CODE_SMELL",
     "severity": "MAJOR",
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#usm-useless-subclass-method"
+  },
+  {
+    "key": "US_USELESS_SUPPRESSION_ON_CLASS",
+    "name": "Style - Useless suppression on a class",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#us-useless-suppression-on-class"
+  },
+  {
+    "key": "US_USELESS_SUPPRESSION_ON_FIELD",
+    "name": "Style - Useless suppression on a field",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#us-useless-suppression-on-field"
+  },
+  {
+    "key": "US_USELESS_SUPPRESSION_ON_METHOD",
+    "name": "Style - Useless suppression on a method",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#us-useless-suppression-on-method"
+  },
+  {
+    "key": "US_USELESS_SUPPRESSION_ON_METHOD_PARAMETER",
+    "name": "Style - Useless suppression on a method parameter",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#us-useless-suppression-on-method-parameter"
+  },
+  {
+    "key": "US_USELESS_SUPPRESSION_ON_PACKAGE",
+    "name": "Style - Useless suppression on a package",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#us-useless-suppression-on-package"
   },
   {
     "key": "UUF_UNUSED_FIELD",
