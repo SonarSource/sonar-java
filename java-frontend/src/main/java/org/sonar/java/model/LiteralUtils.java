@@ -86,6 +86,16 @@ public class LiteralUtils {
   }
 
   @CheckForNull
+  public static Double doubleLiteralValue(ExpressionTree expression) {
+    if (expression.is(Kind.FLOAT_LITERAL, Kind.DOUBLE_LITERAL)) {
+      String value = ((LiteralTree) expression).value().replace("_", "");
+      
+      return Double.parseDouble(value);
+    }
+    return null;
+  }
+
+  @CheckForNull
   private static Integer minus(@Nullable Integer nullableInteger) {
     return nullableInteger == null ? null : -nullableInteger;
   }
