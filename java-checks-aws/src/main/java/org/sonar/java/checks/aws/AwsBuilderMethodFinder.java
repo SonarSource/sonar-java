@@ -33,8 +33,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public abstract class AwsBuilderMethodFinder extends IssuableSubscriptionVisitor {
 
   private static final String SDK_CLIENT_TYPE = "software.amazon.awssdk.core.SdkClient";
-  private static final String SDK_CLIENT_BUILDER_TYPE = "software.amazon.awssdk.utils.builder.SdkBuilder";
-  protected static final String AWS_CLIENT_BUILDER_TYPE = "software.amazon.awssdk.awscore.client.builder.AwsClientBuilder";
+  protected static final String SDK_CLIENT_BUILDER_TYPE = "software.amazon.awssdk.utils.builder.SdkBuilder";
   private static final MethodMatchers BUILD_METHOD = MethodMatchers.create()
     .ofSubTypes(SDK_CLIENT_BUILDER_TYPE)
     .names("build")
