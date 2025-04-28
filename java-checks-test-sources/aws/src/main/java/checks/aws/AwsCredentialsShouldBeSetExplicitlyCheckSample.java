@@ -5,6 +5,7 @@ import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsPro
 import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
 import software.amazon.awssdk.core.SdkSystemSetting;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
@@ -72,5 +73,15 @@ public class AwsCredentialsShouldBeSetExplicitlyCheckSample {
 
   static AwsClientBuilder getABuilder() {
     return S3Client.builder();
+  }
+
+  void s3asyncClient() {
+    var credentialsProvider = EnvironmentVariableCredentialsProvider.create();
+    try (var client = S3AsyncClient.crtBuilder() // Compliant
+      .region(Region.EU_CENTRAL_1)
+      .credentialsProvider(credentialsProvider)
+      .build()) {
+      client.waiter();
+    }
   }
 }
