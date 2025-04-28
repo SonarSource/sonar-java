@@ -32,11 +32,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2230")
 public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
-  private static final List<String> proxyAnnotations = List.of(
+  private static final List<String> PROXY_ANNOTATIONS = List.of(
     "org.springframework.transaction.annotation.Transactional",
     "org.springframework.scheduling.annotation.Async");
 
-  private static final Map<String, String> annShortName = Map.of(
+  private static final Map<String, String> ANNOTATION_SHORT_NAMES = Map.of(
     "org.springframework.transaction.annotation.Transactional", "@Transactional",
     "org.springframework.scheduling.annotation.Async", "@Async");
 
@@ -52,11 +52,11 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
     MethodTree method = (MethodTree) tree;
     boolean handledBySpring = isSpring6OrLater ? !method.symbol().isPrivate() : method.symbol().isPublic();
     if (!handledBySpring) {
-      proxyAnnotations.stream()
+      PROXY_ANNOTATIONS.stream()
         .filter(annSymbol -> hasAnnotation(method, annSymbol))
         .forEach(annSymbol -> reportIssue(
           method.simpleName(),
-          "Make this method " + requiredVisibilityMessage() + " or remove the \"" + annShortName.get(annSymbol) + "\" annotation."));
+          "Make this method " + requiredVisibilityMessage() + " or remove the \"" + ANNOTATION_SHORT_NAMES.get(annSymbol) + "\" annotation."));
     }
   }
 
