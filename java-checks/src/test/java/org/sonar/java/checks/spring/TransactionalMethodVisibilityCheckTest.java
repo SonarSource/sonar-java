@@ -41,7 +41,7 @@ class TransactionalMethodVisibilityCheckTest {
       .onFile(mainCodeSourcesPath("checks/spring/TransactionalMethodVisibilityCheckSample_Spring6.java"))
       .withCheck(new TransactionalMethodVisibilityCheck())
       .withClassPath(List.of(new File("spring-tx-6.0.1.jar"),
-        new File("spring-context-6.0.2.jar")))
+        new File("spring-context-6.0.1.jar")))
       .verifyIssues();
   }
 
