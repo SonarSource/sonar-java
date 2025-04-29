@@ -22,7 +22,7 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 @Rule(key = "S6242")
 public class AwsCredentialsShouldBeSetExplicitlyCheck extends AwsBuilderMethodFinder {
   private static final MethodMatchers CREDENTIALS_METHOD = MethodMatchers.create()
-    .ofSubTypes(AWS_CLIENT_BUILDER_TYPE)
+    .ofSubTypes(SDK_CLIENT_BUILDER_TYPE)
     .names("credentialsProvider")
     .addParametersMatcher("software.amazon.awssdk.auth.credentials.AwsCredentialsProvider")
     .build();

@@ -22,7 +22,7 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 @Rule(key = "S6241")
 public class AwsRegionShouldBeSetExplicitlyCheck extends AwsBuilderMethodFinder {
   private static final MethodMatchers REGION_METHOD = MethodMatchers.create()
-    .ofSubTypes(AWS_CLIENT_BUILDER_TYPE)
+    .ofSubTypes(SDK_CLIENT_BUILDER_TYPE)
     .names("region")
     .addParametersMatcher("software.amazon.awssdk.regions.Region")
     .build();
