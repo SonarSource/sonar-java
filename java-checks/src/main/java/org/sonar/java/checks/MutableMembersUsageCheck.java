@@ -16,15 +16,21 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -32,6 +38,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -40,6 +47,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -81,12 +89,183 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     .build();
 
   private JavaFileScannerContext context;
-  private Deque<Set<Symbol>> parametersStack = new LinkedList<>();
+  private final Deque<List<Symbol>> parametersStack = new LinkedList<>();
+
+  private final Deque<String> methodSignatureStack = new ArrayDeque<>();
+
+  /**
+   * Maps index of arguments at the call site to parameters of the calling method.
+   * For instance in `int f(int a, int b) { g(b, 2, 3); h(4, a);}`, we would have two call-sites:
+   * `{g, <0 -> 1>} and {h, <1 -> 0>}`
+   */
+  @VisibleForTesting
+  record CallSite(String methodSignature, Map<Integer, Integer> parameters) {
+
+    /**
+     * For debugging.
+     */
+    @Override
+    public String toString() {
+      return "{" + methodSignature + ", <" +
+        parameters.entrySet().stream()
+          .map(entry -> entry.getKey() + "->" + entry.getValue())
+          .collect(Collectors.joining(", ")) + ">}";
+    }
+  }
+
+  /**
+   * Identifier of field in which a parameter of method is stored.
+   * For instance, for method `void foo(int[] a) { myField = a; }`, would be denoted by `ParameterStore("myField", 0)`.
+   */
+  private record ParameterStore(IdentifierTree memberId, int parameterIndex) {
+  }
+
+  /**
+   * Track how data passed as arguments are propagated through methods of the class. The goal is to detect if data passed to
+   * a public method, ultimately ends-up being stored in a field of the class. This would be reported in
+   * {@link #reportMutableStoreReachableByOutsideCall(JavaFileScannerContext, JavaFileScanner)}.
+   */
+  private static class MutableDataPropagationGraph {
+    /**
+     * Node of the graph are method signatures.
+     * Edges are only present if the source node is a method that calls the target method with an argument which
+     * is a mutable value directly coming from a parameter.
+     */
+    private final Map<String, List<CallSite>> callGraph = new HashMap<>();
+
+    /**
+     * Keys in this map are nodes of the graph that store a mutable parameter in a field.
+     * Values are identifiers corresponding to such fields and the index of the corresponding parameter.
+     */
+    private final Map<String, List<ParameterStore>> mutableStoredByMethod = new HashMap<>();
+
+    /**
+     * Signatures of methods that are callable from outside the class.
+     */
+    private final Set<String> nonPrivateMethods = new HashSet<>();
+
+    public void clear() {
+      mutableStoredByMethod.clear();
+      callGraph.clear();
+      nonPrivateMethods.clear();
+    }
+
+    private static final List<CallSite> EMPTY_CALL_SITE_LIST = new ArrayList<>();
+
+    /**
+     * Refers to the i-th parameter in the context of the method given by the signature.
+     */
+    private record MethodEntryPoint(String methodSignature, Integer paramIndex) {
+    }
+
+    /**
+     * Look for entry points for the given method, for which there are call sites using the same parameter.
+     */
+    private List<MethodEntryPoint> findEntryPointsWithOutgoingEdges(String methodSignature) {
+      return callGraph.getOrDefault(methodSignature, EMPTY_CALL_SITE_LIST).stream()
+        .flatMap(callSite -> callSite.parameters().values().stream())
+        .distinct()
+        .map(parameter -> new MethodEntryPoint(methodSignature, parameter))
+        .toList();
+    }
+
+    public void reportMutableStoreReachableByOutsideCall(JavaFileScannerContext context, JavaFileScanner check) {
+      // Set of mutable store reachable by outside calls, that will need reporting.
+      Set<ParameterStore> reachableMutableStore = new HashSet<>();
+
+      // Add all parameters stored directly by non-private methods
+      mutableStoredByMethod.entrySet().stream()
+        .filter(entry -> nonPrivateMethods.contains(entry.getKey()))
+        .forEach(entry -> reachableMutableStore.addAll(entry.getValue()));
+
+      // An entry point in the queue means that the i-th argument of method m may have been a mutable value provided to some
+      // method callable outside the class.
+      Deque<MethodEntryPoint> toProcess = new ArrayDeque<>();
+
+      for (String method : nonPrivateMethods) {
+        toProcess.addAll(findEntryPointsWithOutgoingEdges(method));
+      }
+
+      // Keep track of already explored entry points to avoid infinite loops
+      Set<MethodEntryPoint> explored = new HashSet<>();
+
+      while (!toProcess.isEmpty()) {
+        MethodEntryPoint current = toProcess.pop();
+        if (explored.add(current)) {
+          if (mutableStoredByMethod.containsKey(current.methodSignature())) {
+            mutableStoredByMethod.get(current.methodSignature()).stream()
+              .filter(parameterStore -> parameterStore.parameterIndex == current.paramIndex())
+              .forEach(reachableMutableStore::add);
+          }
+          List<CallSite> callSites = callGraph.getOrDefault(current.methodSignature(), EMPTY_CALL_SITE_LIST);
+          for (CallSite callSite : callSites) {
+            callSite.parameters.entrySet().stream()
+              .filter(entry -> entry.getValue().equals(current.paramIndex()))
+              .map(entry -> new MethodEntryPoint(callSite.methodSignature, entry.getKey()))
+              .forEach(toProcess::add);
+          }
+        }
+      }
+
+      for (ParameterStore parameterStore : reachableMutableStore) {
+        context.reportIssue(check, parameterStore.memberId,
+          "Store a copy of \"" + parameterStore.memberId.name() + "\".");
+      }
+    }
+
+    /**
+     * Record whether the method is callable from outside the class.
+     */
+    public void addMethod(MethodTree tree) {
+      if (!tree.symbol().isPrivate()) {
+        nonPrivateMethods.add(tree.symbol().signature());
+      }
+    }
+
+    /**
+     * Add edges between nodes if a call propagates a mutable parameter.
+     */
+    public void addMethodInvocation(Symbol.MethodSymbol methodSymbol, Arguments arguments, String callerSignature, List<Symbol> callerParameters) {
+      Map<Integer, Integer> mutableParameters = findMutableParameters(arguments, callerParameters);
+      callGraph.computeIfAbsent(callerSignature, s -> new ArrayList<>())
+        .add(new CallSite(methodSymbol.signature(), mutableParameters));
+    }
+
+
+    /**
+     * Returns the indexes of arguments to the indexes of mutable parameters that correspond.
+     */
+    private static Map<Integer, Integer> findMutableParameters(Arguments arguments, List<Symbol> parameters) {
+      Map<Integer, Integer> result = new HashMap<>();
+      for (int i = 0; i < arguments.size(); ++i) {
+        ExpressionTree arg = arguments.get(i);
+        if (isMutableType(arg) && arg instanceof IdentifierTree id) {
+          int correspondingParameterIndex = parameters.indexOf(id.symbol());
+          if (correspondingParameterIndex != -1) {
+            result.put(i, correspondingParameterIndex);
+          }
+        }
+      }
+      return result;
+    }
+
+    /**
+     * Record that the method is assigning a mutable parameter in the given member.
+     */
+    public void addStore(String methodSignature, IdentifierTree assignedMember, int parameterIndex) {
+      mutableStoredByMethod.computeIfAbsent(methodSignature, k -> new ArrayList<>())
+        .add(new ParameterStore(assignedMember, parameterIndex));
+    }
+  }
+
+  private final MutableDataPropagationGraph dataPropagationGraph = new MutableDataPropagationGraph();
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
     this.context = context;
     scan(context.getTree());
+    dataPropagationGraph.reportMutableStoreReachableByOutsideCall(context, this);
+    dataPropagationGraph.clear();
   }
 
   @Override
@@ -97,14 +276,33 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
         return;
       }
     }
-    if (tree.symbol().isPrivate()) {
-      return;
-    }
+    dataPropagationGraph.addMethod(tree);
     parametersStack.push(tree.parameters().stream()
       .map(VariableTree::symbol)
-      .collect(Collectors.toSet()));
+      .toList());
+    methodSignatureStack.push(tree.symbol().signature());
     super.visitMethod(tree);
+    methodSignatureStack.pop();
     parametersStack.pop();
+  }
+
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    if (!methodSignatureStack.isEmpty() && !parametersStack.isEmpty()) {
+      dataPropagationGraph.addMethodInvocation(
+        tree.methodSymbol(), tree.arguments(), methodSignatureStack.peek(), parametersStack.peek());
+    }
+    super.visitMethodInvocation(tree);
+  }
+
+  @Override
+  public void visitNewClass(NewClassTree tree) {
+    if (!methodSignatureStack.isEmpty() && !parametersStack.isEmpty()) {
+      dataPropagationGraph.addMethodInvocation(
+        tree.methodSymbol(), tree.arguments(), methodSignatureStack.peek(), parametersStack.peek());
+    }
+
+    super.visitNewClass(tree);
   }
 
   @Override
@@ -127,11 +325,17 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     }
   }
 
+  /**
+   * Check whether a mutable parameter is assigned to a private field
+   */
   private void checkStore(ExpressionTree expression) {
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expression;
-      if (!parametersStack.isEmpty() && parametersStack.peek().contains(identifierTree.symbol())) {
-        context.reportIssue(this, identifierTree, "Store a copy of \"" + identifierTree.name() + "\".");
+      if (!methodSignatureStack.isEmpty() && !parametersStack.isEmpty()) {
+        int parameterIndex = parametersStack.peek().indexOf(identifierTree.symbol());
+        if (parameterIndex != -1) {
+          dataPropagationGraph.addStore(methodSignatureStack.peek(), identifierTree, parameterIndex);
+        }
       }
     }
   }
