@@ -327,4 +327,19 @@ public class MissingPathVariableAnnotationCheckSample {
 
   @RequestMapping("/{age")
   static class WrongPathRequestMapping {}
+
+
+  static class PropertyPlaceholder {
+    @GetMapping("/${myapp.api.version1}/language") // compliant property placeholder
+    public void placeholder() {
+    }
+
+    @GetMapping("/${myapp.api.version1}/${myapp.api}/language") // compliant property placeholder
+    public void severalPlaceholder (){
+    }
+
+    @GetMapping("/${myapp.api}/{a:${placeHolder}xxxx}/") // Noncompliant
+    public void mixedPathVariableAndPlaceholder() {
+    }
+  }
 }

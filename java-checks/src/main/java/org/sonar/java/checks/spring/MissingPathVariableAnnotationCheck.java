@@ -41,6 +41,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   private static final String MAP = "java.util.Map";
   private static final String MODEL_ATTRIBUTE_ANNOTATION = "org.springframework.web.bind.annotation.ModelAttribute";
   private static final String REQUEST_MAPPING_ANNOTATION = "org.springframework.web.bind.annotation.RequestMapping";
+  private static final String PROPERTY_PLACEHOLDER_PATTERN = "\\$\\{[^{}]*\\}";
 
   private static final Set<String> MAPPING_ANNOTATIONS = Set.of(
     REQUEST_MAPPING_ANNOTATION,
@@ -198,6 +199,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     if (path != null || value != null) {
       List<String> paths = path != null ? path : value;
       return paths.stream()
+        .map(MissingPathVariableAnnotationCheck::removePropertyPlaceholder)
         .map(PathPatternParser::parsePathVariables)
         .flatMap(Collection::stream)
         .collect(Collectors.toSet());
@@ -239,6 +241,10 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   private record ParameterInfo(VariableTree parameter, String value) {
   }
   private record UriInfo<A>(AnnotationTree request, A value) {
+  }
+
+  private static String removePropertyPlaceholder(String path){
+    return path.replaceAll(PROPERTY_PLACEHOLDER_PATTERN, "");
   }
 
   static class PathPatternParser {
