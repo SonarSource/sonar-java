@@ -21,9 +21,17 @@ class DefaultInitializedFieldCheckSample {
   float f1 = 0.f; // Noncompliant {{Remove this initialization to "0.f", the compiler will do that for you.}}
   float f2 = 1.f;
   float f3;
+  float f_scientific_1 = 123456e-7f;
+  float f_scientific_2 = 123456E+7f;
+  float f_scientific_3 = 123.456e+7f;
+  float f_digit_separator = 1_000.0f;
   double d = 0.; // Noncompliant {{Remove this initialization to "0.", the compiler will do that for you.}}
   double d1 = 1.;
   double d2;
+  double d_scientific_1 = 123456e-7d;
+  double g_scientific_2 = 123456E+7d;
+  double d_scientific_3 = 123.456e+7d;
+  double d_digit_separator = 1_000.0d;
   double d3 = 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001; // Compliant, not 0
   char c = 0; // Noncompliant {{Remove this initialization to "0", the compiler will do that for you.}}
   char c1 = '\u0000'; // Noncompliant {{Remove this initialization to "'\u0000'", the compiler will do that for you.}}

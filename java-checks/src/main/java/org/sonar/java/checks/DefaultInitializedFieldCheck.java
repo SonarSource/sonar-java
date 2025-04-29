@@ -79,8 +79,12 @@ public class DefaultInitializedFieldCheck extends IssuableSubscriptionVisitor {
           .flatMap(numericalValue -> literalValue(expression));
       case FLOAT_LITERAL,
         DOUBLE_LITERAL:
-        return literalValue(expression)
-          .filter(numericalValue -> Double.doubleToLongBits(Double.valueOf(numericalValue)) == 0);
+        try{
+          return literalValue(expression)
+            .filter(numericalValue -> Double.doubleToLongBits(Double.valueOf(numericalValue)) == 0);
+        }catch(NumberFormatException e){
+          return Optional.empty();
+        }
       case TYPE_CAST:
         return getIfDefault(((TypeCastTree) expression).expression(), isPrimitive);
       default:
