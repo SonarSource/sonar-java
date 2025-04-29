@@ -29,7 +29,7 @@ class DefaultInitializedFieldCheckSample {
   double d1 = 1.;
   double d2;
   double d_scientific_1 = 123456e-7d;
-  double g_scientific_2 = 123456E+7d;
+  double d_scientific_2 = 123456E+7d;
   double d_scientific_3 = 123.456e+7d;
   double d_digit_separator = 1_000.0d;
   double d3 = 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001; // Compliant, not 0
