@@ -564,16 +564,43 @@ class Java9Methods {
 
 class SetThroughPrivateMethods {
   private byte[] buf;
-  private SetThroughPrivateMethods(final byte[] buf) {
-    this.buf = buf;  // Compliant: the constructor is private
+  private Map<String, String> map;
+
+  private SetThroughPrivateMethods(final byte[] buf, final Map<String, String> map) {
+    this.map = map; // Noncompliant
+    this.buf = buf; // Compliant: callers have to go through `of` which makes a clone of the parameter
   }
 
   public static SetThroughPrivateMethods of(final byte[] buf) {
-    return new SetThroughPrivateMethods(buf.clone());
+    return new SetThroughPrivateMethods(buf.clone(), Collections.emptyMap());
   }
 
-  public void set(final byte[] buf) {
+  public static SetThroughPrivateMethods of(final byte[] buf, final int off, final int len) {
+    return of(buf);
+  }
+
+  private void set(final byte[] buf) {
+    // It is possible to call `set` from outside the class using `setBuf`
     this.buf = buf;  // Noncompliant
   }
 
+  private void setBuffer(final byte[] buf) {
+    set(buf);
+  }
+
+  public void setBuf(byte[] buf) {
+    setBuffer(buf);
+  }
+
+  private void internalSet(byte[] buf) {
+    this.buf = buf; // Compliant: this is only callable by private methods
+  }
+
+  private void internalSetBuffer(byte[] buf) {
+    internalSet(buf);
+  }
+
+  static SetThroughPrivateMethods ofMap(final Map<String, String> map) {
+    return new SetThroughPrivateMethods(null, map);
+  }
 }
