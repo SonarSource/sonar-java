@@ -6,6 +6,16 @@ import java.util.Locale;
 import java.util.Random;
 
 public class RedundantRecordMethodsCheckSample {
+  record AssignmentInConstructor(int arg1, int arg2) {
+    public AssignmentInConstructor(int arg1, int arg2) { // Compliant
+      this.arg1 = arg1;
+      if (arg2 == 5) {
+        arg2 = 4;
+      }
+      this.arg2 = arg2;
+    }
+  }
+
   record RedundantConstructorAndGetters(String name, int age) {
 
     static Object variable = null;
