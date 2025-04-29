@@ -548,3 +548,19 @@ class Java9Methods {
   }
 
 }
+
+class SetThroughPrivateMethods {
+  private byte[] buf;
+  private SetThroughPrivateMethods(final byte[] buf) {
+    this.buf = buf;  // Compliant: the constructor is private
+  }
+
+  public static SetThroughPrivateMethods of(final byte[] buf) {
+    return new SetThroughPrivateMethods(buf.clone());
+  }
+
+  public void set(final byte[] buf) {
+    this.buf = buf;  // Noncompliant
+  }
+
+}
