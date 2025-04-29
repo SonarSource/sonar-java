@@ -28,4 +28,13 @@ class RedundantRecordMethodsCheckTest {
       .withCheck(new RedundantRecordMethodsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantics() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/RedundantRecordMethodsCheckSample.java"))
+      .withCheck(new RedundantRecordMethodsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -1,5 +1,7 @@
 package checks;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Locale;
 import java.util.Random;
 
@@ -139,6 +141,22 @@ public class RedundantRecordMethodsCheckSample {
       } else {
         return this.name;
       }
+    }
+  }
+
+  record RecordWithJsonAnnotation(String value) {
+    @JsonCreator
+    RecordWithJsonAnnotation(@JsonProperty("myName") String value) { // Compliant: annotated
+      this.value = value;
+    }
+  }
+
+  @interface MyAnnotation {}
+
+  record RecordWithCustomAnnotation(String value) {
+    @MyAnnotation
+    RecordWithCustomAnnotation(String value) { // Compliant: annotated
+      this.value = value;
     }
   }
 }
