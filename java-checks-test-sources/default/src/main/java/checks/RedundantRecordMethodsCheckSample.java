@@ -144,9 +144,16 @@ public class RedundantRecordMethodsCheckSample {
     }
   }
 
-  record RecordWithJsonAnnotation(String value) {
+  record RecordWithConstructorAnnotation(String value) {
     @JsonCreator
-    RecordWithJsonAnnotation(@JsonProperty("myName") String value) { // Compliant: annotated
+    RecordWithConstructorAnnotation(@JsonProperty("myName") String value) { // Compliant: annotated
+      this.value = value;
+    }
+  }
+
+  record RecordWithParamAnnotation(String value) {
+    // The annotation can be applied to the component and the constructor can be removed.
+    RecordWithParamAnnotation(@JsonProperty("myName") String value) { // Noncompliant
       this.value = value;
     }
   }
