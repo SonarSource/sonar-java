@@ -87,10 +87,16 @@ public class LiteralUtils {
 
   @CheckForNull
   public static Double doubleLiteralValue(ExpressionTree expression) {
+    int sign = 1;
+    if (expression.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
+      sign = expression.is(Kind.UNARY_MINUS) ? -1 : 1;
+      expression = ((UnaryExpressionTree) expression).expression();
+    }
+
     if (expression.is(Kind.FLOAT_LITERAL, Kind.DOUBLE_LITERAL)) {
       String value = ((LiteralTree) expression).value().replace("_", "");
       
-      return Double.parseDouble(value);
+      return sign*Double.parseDouble(value);
     }
     return null;
   }
