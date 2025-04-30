@@ -27,10 +27,12 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -114,70 +116,108 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
     if (constructor.parameters().size() != components.size()) {
       return false;
     }
-    List<Symbol.VariableSymbol> parameters = constructor.parameters().stream()
-      .map(parameter -> (Symbol.VariableSymbol) parameter.symbol())
-      .toList();
-    List<AssignmentExpressionTree> assignments = extractAssignments(constructor.block().body());
-    Set<Symbol> componentsAssignedInConstructor = new HashSet<>();
-    for (AssignmentExpressionTree assignment : assignments) {
-      assignsParameterToComponent(assignment, components, parameters).ifPresent(componentsAssignedInConstructor::add);
-    }
-    return componentsAssignedInConstructor.containsAll(components);
+    List<String> componentNames = components.stream().map(Symbol.VariableSymbol::name).toList();
+    ConstructorExecutionState executionState = new ConstructorExecutionState(componentNames);
+    constructor.block().body().forEach(executionState::applyStatement);
+    return executionState.componentsAreFullyAssigned();
   }
 
   private static boolean isAnnotated(MethodTree method) {
     return !method.modifiers().annotations().isEmpty();
   }
 
-  private static List<AssignmentExpressionTree> extractAssignments(List<StatementTree> statements) {
-    return statements.stream()
-      .map(RedundantRecordMethodsCheck::extractAssignment)
-      .filter(Optional::isPresent)
-      .map(Optional::get)
-      .toList();
-  }
-
-  private static Optional<AssignmentExpressionTree> extractAssignment(StatementTree statement) {
-    if (!statement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      return Optional.empty();
-    }
-    ExpressionStatementTree initialStatement = (ExpressionStatementTree) statement;
-    if (!initialStatement.expression().is(Tree.Kind.ASSIGNMENT)) {
-      return Optional.empty();
-    }
-    return Optional.of((AssignmentExpressionTree) initialStatement.expression());
-  }
-
   /**
-   * Returns the symbol of a component used as the receiving end of the assignment if the matching parameter is used as the value.
-   * @param assignment The assignment statement
-   * @param components The components' symbols
-   * @param parameters The parameters' symbols
-   * @return Optional of the component's symbol receiving the matching parameter. Optional.empty() otherwise.
+   * Class to perform a simple symbolic execution of a record constructor. The state keeps track of which components have been
+   * assigned to the corresponding parameters and which parameters have been changed from their initial values.
    */
-  private static Optional<Symbol.VariableSymbol> assignsParameterToComponent(
-    AssignmentExpressionTree assignment,
-    List<Symbol.VariableSymbol> components,
-    List<Symbol.VariableSymbol> parameters) {
-    ExpressionTree leftHandSide = assignment.variable();
-    if (!leftHandSide.is(Tree.Kind.MEMBER_SELECT)) {
+  private static class ConstructorExecutionState {
+    /**
+     * Immutable list of the components in the record
+     */
+    final List<String> componentNames;
+
+    /**
+     * Set of names of components of the record that have been assigned to the corresponding parameter so far
+     */
+    Set<String> assignedComponents;
+
+    /**
+     * Set of name of parameters that still hold the value of the argument passed to the constructor
+     */
+    Set<String> unchangedParameters;
+
+    private ConstructorExecutionState(List<String> componentNames) {
+      assignedComponents = new HashSet<>();
+      this.componentNames = componentNames;
+      unchangedParameters = new HashSet<>();
+      unchangedParameters.addAll(componentNames);
+    }
+
+    private boolean isParameter(Symbol symbol) {
+      return componentNames.contains(symbol.name());
+    }
+
+    /**
+     * Return the name of the component if the given expression is of the form `this.name`.
+     */
+    public Optional<String> getComponent(ExpressionTree expression) {
+      if (expression instanceof MemberSelectExpressionTree memberSelect) {
+        String name = memberSelect.identifier().name();
+        if (componentNames.contains(name)) {
+          return Optional.of(name);
+        }
+      }
       return Optional.empty();
     }
-    Symbol variableSymbol = ((MemberSelectExpressionTree) leftHandSide).identifier().symbol();
-    Optional<Symbol.VariableSymbol> component = components.stream()
-      .filter(variableSymbol::equals)
-      .findFirst();
-    if (!component.isPresent()) {
-      return Optional.empty();
+
+    private void applyAssignment(ExpressionTree lhs, ExpressionTree rhs) {
+      if (rhs instanceof IdentifierTree identifier
+        && isParameter(identifier.symbol())
+        && unchangedParameters.contains(identifier.name())) {
+        getComponent(lhs)
+          .filter(name -> name.equals(identifier.name()))
+          .ifPresent(assignedComponents::add);
+      } else if (lhs instanceof IdentifierTree identifier && isParameter(identifier.symbol())) {
+        unchangedParameters.remove(identifier.name());
+      }
     }
-    ExpressionTree rightHandSide = assignment.expression();
-    if (!rightHandSide.is(Tree.Kind.IDENTIFIER)) {
-      return Optional.empty();
+
+    private ConstructorExecutionState copy() {
+      var copy = new ConstructorExecutionState(componentNames);
+      copy.unchangedParameters.clear();
+      copy.unchangedParameters.addAll(unchangedParameters);
+      copy.assignedComponents.addAll(assignedComponents);
+      return copy;
     }
-    Symbol valueSymbol = ((IdentifierTree) rightHandSide).symbol();
-    if (parameters.stream().anyMatch(valueSymbol::equals) && variableSymbol.name().equals(valueSymbol.name())) {
-      return component;
+
+    /**
+     * When joining two branches of the execution, a component is considered assigned if it was assigned in both branches.
+     * A parameter is considered unchanged if it was unchanged on both branches.
+     */
+    private void mergeWith(ConstructorExecutionState other) {
+      assignedComponents.removeIf(component -> !other.assignedComponents.contains(component));
+      unchangedParameters.removeIf(component -> !other.unchangedParameters.contains(component));
     }
-    return Optional.empty();
+
+    public void applyStatement(StatementTree statement) {
+      if (statement instanceof ExpressionStatementTree expression
+        && expression.expression() instanceof AssignmentExpressionTree assignment) {
+        applyAssignment(assignment.variable(), assignment.expression());
+      } else if (statement instanceof IfStatementTree ifStatement) {
+        ConstructorExecutionState stateCopy = copy();
+        applyStatement(ifStatement.thenStatement());
+        StatementTree elseStatement = ifStatement.elseStatement();
+        if (elseStatement != null) {
+          stateCopy.applyStatement(elseStatement);
+        }
+        mergeWith(stateCopy);
+      } else if (statement instanceof BlockTree block) {
+        block.body().forEach(this::applyStatement);
+      }
+    }
+
+    public boolean componentsAreFullyAssigned() {
+      return assignedComponents.size() == componentNames.size();
+    }
   }
 }
