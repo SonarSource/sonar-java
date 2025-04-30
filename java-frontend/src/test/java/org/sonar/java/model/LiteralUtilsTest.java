@@ -85,6 +85,28 @@ class LiteralUtilsTest {
   long y17 = 0XFFL;
   long y18 = 0B1100110L;
 
+  float f1 = 0f;
+  float f2 = 0.f;
+  float f3 = 123.45f;
+  float f4 = 1_000_000F;
+  float f5 = +1_000_000_000_000_000_000f;
+  float f6 = -1_000_000F;
+  float f7 = -.9f;
+  float f8 = 0x1.2p3f;
+  float f9 = 123_456e-7f;
+  float f10 = (float)0;
+  float f11 = 0;
+  float f13 = f1 + 0;
+  double d1 = 0.;
+  double d2 = 1.d;
+  double d3 = 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001;
+  double d4 = -1_000_000D;
+  double d5 = +1_000_000_000_000_000_000d;
+  double d6 = 23_456e-7d;
+  double d7 = 0x1.2p3;
+  double d8 = 0;
+  double d9 = d1 + 0;
+
   String s1 = "";
   String s2 = " ";
   String s3 = "not_empty";
@@ -112,6 +134,30 @@ class LiteralUtilsTest {
         assertThat(LiteralUtils.intLiteralValue(variableTree.initializer())).isEqualTo(expectedIntegerValues[i++]);
       } else if (variableTree.simpleName().name().startsWith("y")) {
         assertThat(LiteralUtils.longLiteralValue(variableTree.initializer())).isEqualTo(expectedLongValues[j++]);
+      }
+    }
+  }
+
+  @Test
+  void test_float_value() {
+    Double[] expectedValues = {0d, 0.d, 123.45d, 1_000_000D, 1_000_000_000_000_000_000d, -1_000_000d, -.9d, 0x1.2p3d, 123_456e-7d, null, null, null};
+    int idx = 0;
+
+    for (VariableTree variableTree : variables) {
+      if (variableTree.simpleName().name().startsWith("f")) {
+        assertThat(LiteralUtils.doubleLiteralValue(variableTree.initializer())).isEqualTo(expectedValues[idx++]);
+      }
+    }
+  }
+
+  @Test
+  void test_double_value() {
+    Double[] expectedValues = {0., 1.d, 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001, -1_000_000D, +1_000_000_000_000_000_000d, 23_456e-7d, 0x1.2p3, null , null};
+    int idx = 0;
+
+    for (VariableTree variableTree : variables) {
+      if (variableTree.simpleName().name().startsWith("d")) {
+        assertThat(LiteralUtils.doubleLiteralValue(variableTree.initializer())).isEqualTo(expectedValues[idx++]);
       }
     }
   }
