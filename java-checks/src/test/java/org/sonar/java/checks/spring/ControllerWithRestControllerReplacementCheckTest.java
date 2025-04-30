@@ -26,7 +26,7 @@ class ControllerWithRestControllerReplacementCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/spring/ControllerWithRestControllerReplacementCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/spring/ControllerWithRestControllerReplacementCheckSample.java"))
       .withCheck(new ControllerWithRestControllerReplacementCheck())
       .verifyIssues();
   }
