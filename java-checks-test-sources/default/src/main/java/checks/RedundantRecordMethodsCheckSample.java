@@ -1,5 +1,7 @@
 package checks;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Locale;
 import java.util.Random;
 
@@ -139,6 +141,29 @@ public class RedundantRecordMethodsCheckSample {
       } else {
         return this.name;
       }
+    }
+  }
+
+  record RecordWithConstructorAnnotation(String value) {
+    @JsonCreator
+    RecordWithConstructorAnnotation(@JsonProperty("myName") String value) { // Compliant: annotated
+      this.value = value;
+    }
+  }
+
+  record RecordWithParamAnnotation(String value) {
+    // The annotation can be applied to the component and the constructor can be removed.
+    RecordWithParamAnnotation(@JsonProperty("myName") String value) { // Noncompliant
+      this.value = value;
+    }
+  }
+
+  @interface MyAnnotation {}
+
+  record RecordWithCustomAnnotation(String value) {
+    @MyAnnotation
+    RecordWithCustomAnnotation(String value) { // Compliant: annotated
+      this.value = value;
     }
   }
 }

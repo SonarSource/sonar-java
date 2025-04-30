@@ -68,6 +68,9 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkConstructor(MethodTree constructor, List<Symbol.VariableSymbol> components) {
+    if(isAnnotated(constructor)) {
+      return;
+    }
     if (constructor.block().body().isEmpty() || onlyDoesSimpleAssignments(constructor, components)) {
       reportIssue(constructor.simpleName(), "Remove this redundant constructor which is the same as a default one.");
     }
@@ -120,6 +123,10 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
       assignsParameterToComponent(assignment, components, parameters).ifPresent(componentsAssignedInConstructor::add);
     }
     return componentsAssignedInConstructor.containsAll(components);
+  }
+
+  private static boolean isAnnotated(MethodTree method) {
+    return !method.modifiers().annotations().isEmpty();
   }
 
   private static List<AssignmentExpressionTree> extractAssignments(List<StatementTree> statements) {
