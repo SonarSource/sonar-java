@@ -77,12 +77,13 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     }
 
     Set<String> modelAttributeMethodParameter = extractModelAttributeMethodParameter(methods);
+    modelAttributeMethodParameter.addAll(addInheritedModelAttributeMethodParameter(modelAttributeMethodParameter, clazzTree));
 
     checkParametersAndPathTemplate(methods, modelAttributeMethodParameter, requestMappingTemplateVariables);
   }
 
   private static Set<String> extractModelAttributeMethodParameter(List<MethodTree> methods){
-    Set<java.lang.String> modelAttributeMethodParameter = new HashSet<>();
+    Set<String> modelAttributeMethodParameter = new HashSet<>();
     for (var method : methods) {
       if (!method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION)) {
         continue;
@@ -96,6 +97,23 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       }
     }
     return modelAttributeMethodParameter;
+  }
+
+  private static Set<String> addInheritedModelAttributeMethodParameter(Set<String> modelAttributeMethodParameters, ClassTree clazz){
+    if(clazz.superClass() == null){
+      return modelAttributeMethodParameters;
+    }
+    Type superClass = clazz.superClass().symbolType();
+    ClassTree declaration = superClass.symbol().declaration();
+    if(declaration != null){
+      List<MethodTree> methods = declaration.members().stream()
+        .filter(member -> member.is(Tree.Kind.METHOD))
+        .map(MethodTree.class::cast)
+        .toList();
+      modelAttributeMethodParameters.addAll(extractModelAttributeMethodParameter(methods));
+      modelAttributeMethodParameters.addAll(addInheritedModelAttributeMethodParameter(modelAttributeMethodParameters, declaration));
+    }
+    return modelAttributeMethodParameters;
   }
 
   private void checkParametersAndPathTemplate(List<MethodTree> methods, Set<String> modelAttributeMethodParameter, Set<String> requestMappingTemplateVariables) {

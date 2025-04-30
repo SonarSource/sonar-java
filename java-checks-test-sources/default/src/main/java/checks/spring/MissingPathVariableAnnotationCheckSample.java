@@ -13,6 +13,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 public class MissingPathVariableAnnotationCheckSample {
 
+  class ParentController {
+    @ModelAttribute("viewCfg")
+    public String getView(@PathVariable("view") final String view){
+      return "";
+    }
+  }
+  class ChildController extends ParentController {
+    @GetMapping("/model/{view}") //Compliant, parent class defines 'view' path var in the model attribute
+    public String list(@ModelAttribute("viewCfg") final String viewConfig){
+      return "";
+    }
+  }
+  class MissingParentChildController extends MissingPathVariableParentInDifferentSample {
+    @GetMapping("/model/{view}") // Noncompliant
+    // FP: parent class in different file, cannot collect the model attribute
+    public String list(@ModelAttribute("parentView") final String viewConfig){
+      return "";
+    }
+  }
+
   @GetMapping("/{name:[a-z-]+}-{version:\\d\\.\\d\\.\\d}{ext:\\.[a-z]+}") // Noncompliant
   public void handleWithoutExt(@PathVariable String name, @PathVariable String version) {}
 
