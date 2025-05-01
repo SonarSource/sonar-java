@@ -33,6 +33,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S6833")
 public class ControllerWithRestControllerReplacementCheck extends IssuableSubscriptionVisitor {
   private static final String RESPONSE_BODY = "org.springframework.web.bind.annotation.ResponseBody";
+  private static final List<String> MAPPING_ANNOTATIONS = List.of(
+    "org.springframework.web.bind.annotation.RequestMapping",
+    "org.springframework.web.bind.annotation.GetMapping",
+    "org.springframework.web.bind.annotation.PostMapping",
+    "org.springframework.web.bind.annotation.PutMapping",
+    "org.springframework.web.bind.annotation.PatchMapping",
+    "org.springframework.web.bind.annotation.DeleteMapping"
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -56,15 +64,10 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
     for(Tree member : classTree.members()) {
       if (member instanceof MethodTree method) {
 
-        var response = getAnnotation(method, RESPONSE_BODY);
+        var response = firstAnnotation(method, List.of(RESPONSE_BODY));
         response.ifPresent(responseBodyOnMethods::add);
 
-        var mapping = getAnnotation(method, "org.springframework.web.bind.annotation.RequestMapping")
-          .or(() -> getAnnotation(method, "org.springframework.web.bind.annotation.GetMapping"))
-          .or(() -> getAnnotation(method, "org.springframework.web.bind.annotation.PostMapping"))
-          .or(() -> getAnnotation(method, "org.springframework.web.bind.annotation.PutMapping"))
-          .or(() -> getAnnotation(method, "org.springframework.web.bind.annotation.PatchMapping"))
-          .or(() -> getAnnotation(method, "org.springframework.web.bind.annotation.DeleteMapping"));
+        var mapping = firstAnnotation(method, MAPPING_ANNOTATIONS);
 
         if(mapping.isPresent() && response.isEmpty()){
           return;
@@ -82,7 +85,7 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
       });
 
     classTree.modifiers().annotations().stream()
-      .filter(a -> RESPONSE_BODY.equals(a.annotationType().symbolType().fullyQualifiedName()))
+      .filter(ControllerWithRestControllerReplacementCheck::isResponseBody)
       .forEach(annotationTree -> secondaryLocations.add(new JavaFileScannerContext.Location("Remove this \"@ResponseBody\" annotation.", annotationTree)));
 
     if (secondaryLocations.isEmpty()) {
@@ -100,9 +103,13 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
 
   }
 
-  private static Optional<AnnotationTree> getAnnotation(MethodTree method, String fullyQualifiedName){
+  private static boolean isResponseBody(AnnotationTree a) {
+    return RESPONSE_BODY.equals(a.annotationType().symbolType().fullyQualifiedName());
+  }
+
+  private static Optional<AnnotationTree> firstAnnotation(MethodTree method, List<String> annFullyQualifiedNames){
     return method.modifiers().annotations().stream()
-      .filter(a -> fullyQualifiedName.equals(a.annotationType().symbolType().fullyQualifiedName()))
+      .filter(a -> annFullyQualifiedNames.stream().anyMatch(name -> name.equals(a.annotationType().symbolType().fullyQualifiedName())))
       .findFirst();
   }
 
