@@ -25,8 +25,5 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/DateTimeConverter.java": [
 186,
 197
-],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsBean.java": [
-505
 ]
 }
