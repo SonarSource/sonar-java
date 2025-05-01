@@ -102,35 +102,39 @@ class MutableMembersUsageCheckSample {
   private static final Set<String> DIFF = Sets.difference(Collections.emptySet(), Set.of("Java"));
   private static final Set<String> INTER = Sets.intersection(Collections.emptySet(), Set.of("Java"));
   private static final Set<String> SYM_DIFF = Sets.symmetricDifference(Collections.emptySet(), Set.of("Java"));
-  private static final List<String> AS_LIST = Lists.asList("ABC", new String[] {"", ""});
+  private static final List<String> AS_LIST = Lists.asList("ABC", new String[]{"", ""});
 
   public Set<String> getUnion() {
     return UNION;
   }
+
   public Set<String> getDiff() {
     return DIFF;
   }
+
   public Set<String> getInter() {
     return INTER;
   }
+
   public Set<String> getSymDiff() {
     return SYM_DIFF;
   }
+
   public List<String> getAsList() {
     return AS_LIST;
   }
 
-  public MutableMembersUsageCheckSample () {
+  public MutableMembersUsageCheckSample() {
     strings = new String[]{"first", "second"};
     properties = new String[]{"a"};
   }
 
-  public String [] getStrings() {
+  public String[] getStrings() {
     return strings; // Noncompliant {{Return a copy of "strings".}}
 //         ^^^^^^^
   }
 
-  public void setStringsFromGiven(String [] given) {
+  public void setStringsFromGiven(String[] given) {
     strings = given; // Noncompliant {{Store a copy of "given".}}
 //            ^^^^^
   }
@@ -191,6 +195,7 @@ class MutableMembersUsageCheckSample {
     public static List<String> create(List<String> given) {
       return Collections.unmodifiableList(given);
     }
+
     public static List<String> staticallyImportedMethod(List<String> given) {
       return Collections.unmodifiableList(given);
     }
@@ -229,7 +234,7 @@ class MutableMembersUsageCheckSample {
     return tmp;
   }
 
-  public void setStrings(String [] strings) {
+  public void setStrings(String[] strings) {
     this.strings = strings; // Noncompliant {{Store a copy of "strings".}}
     String[] local = new String[0];
     this.strings = local;
@@ -242,6 +247,7 @@ class MutableMembersUsageCheckSample {
   public List<String> foo() {
     return list; // Noncompliant
   }
+
   public List<String> foo2() {
     List<String> plop = Collections.unmodifiableList(list);
     return plop;
@@ -249,17 +255,17 @@ class MutableMembersUsageCheckSample {
 }
 
 class MutableMembersUsageCheckSample2 {
-  private String [] strings;
+  private String[] strings;
 
-  public MutableMembersUsageCheckSample2 () {
+  public MutableMembersUsageCheckSample2() {
     strings = new String[]{"first", "second"};
   }
 
-  public String [] getStrings() {
+  public String[] getStrings() {
     return strings.clone();
   }
 
-  public void setStrings(String [] strings) {
+  public void setStrings(String[] strings) {
     this.strings = strings.clone(); // Compliant
   }
 }
@@ -278,7 +284,7 @@ class MutableClass {
   }
 
   public Date getDateOK() {
-    return (Date)d.clone();
+    return (Date) d.clone();
   }
 }
 
@@ -317,17 +323,17 @@ class MutableClass2 {
 
 class ReturnRef {
   // Internal state, may contain sensitive data
-  private Hashtable<Integer,String> ht = new Hashtable<Integer,String>();
+  private Hashtable<Integer, String> ht = new Hashtable<Integer, String>();
 
   private ReturnRef() {
     ht.put(1, "123-45-6666");
   }
 
-  public Hashtable<Integer,String> getValues(){
+  public Hashtable<Integer, String> getValues() {
     return ht; // Noncompliant {{Return a copy of "ht".}}
   }
 
-  private Hashtable<Integer,String> getValuesOK(){
+  private Hashtable<Integer, String> getValuesOK() {
     return (Hashtable<Integer, String>) ht.clone(); // shallow copy
   }
 }
@@ -341,10 +347,12 @@ class MutableMembersUsageCheckSampleFields {
     UNMODIFIABLE2 = Collections.unmodifiableList(Arrays.asList("A", "B", "C"));
     UNMODIFIABLE_OBJECT = UNMODIFIABLE2;
   }
+
   private static final ImmutableCollection UNMODIFIABLE3 = getImmutableCollection();
 
   private static final List<String> MODIFIABLE = new ArrayList<>();
   private static final List<String> MODIFIABLE2;
+
   static {
     MODIFIABLE2 = new ArrayList<>();
   }
@@ -441,24 +449,29 @@ class MutableMembersUsageCheckSampleEmptyArrayExample {
   private static final int[][][] EMPTY_SEVERAL_DIMS = new int[0][0][0];
   private static final int[] NOT_EMPTY = new int[foo()];
   private static final int[][][] NOT_EMPTY_SEVERAL_DIMS = new int[0][foo()][1];
-  private static final int[] NOT_EMPTY_INIT = new int[]{ 1, 2};
-  private static final char[] PLUS_SIGN = { '+' };
+  private static final int[] NOT_EMPTY_INIT = new int[]{1, 2};
+  private static final char[] PLUS_SIGN = {'+'};
 
   public int[] getValues() {
     return EMPTY;
   }
+
   public int[][][] getValues2() {
     return EMPTY_SEVERAL_DIMS;
   }
+
   public int[] getValues3() {
     return NOT_EMPTY; // Noncompliant
   }
+
   public int[][][] getValues4() {
     return NOT_EMPTY_SEVERAL_DIMS; // Noncompliant
   }
+
   public int[] getValues5() {
     return NOT_EMPTY_INIT; // Noncompliant
   }
+
   public char[] getValues6() {
     return PLUS_SIGN; // Noncompliant
   }
