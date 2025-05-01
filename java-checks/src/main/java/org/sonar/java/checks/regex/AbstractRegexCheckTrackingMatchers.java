@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -114,6 +115,7 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
     nodes.add(Tree.Kind.NEW_CLASS);
     nodes.add(Tree.Kind.RETURN_STATEMENT);
     nodes.add(Tree.Kind.COMPILATION_UNIT);
+    nodes.add(Tree.Kind.METHOD_REFERENCE);
     return nodes;
   }
 
@@ -137,6 +139,8 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
       if (PATTERN_OR_MATCHER_ARGUMENT.matches((NewClassTree) tree)) {
         onConstructorFound((NewClassTree) tree);
       }
+    } else if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
+      onMethodReferenceFound((MethodReferenceTree) tree);
     } else {
       super.visitNode(tree);
     }
@@ -173,6 +177,13 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
       for (ExpressionTree argument : mit.arguments()) {
         getRegex(argument).ifPresent(escapingRegexes::add);
       }
+    }
+  }
+
+  private void onMethodReferenceFound(MethodReferenceTree methodReference) {
+    Tree expression = methodReference.expression();
+    if( expression instanceof ExpressionTree expressionTree) {
+      getRegex(expressionTree).ifPresent(escapingRegexes::add);
     }
   }
 
@@ -237,6 +248,8 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
       if (!grandParent.is(Tree.Kind.METHOD_INVOCATION) || !trackedMethodMatchers().matches((MethodInvocationTree) grandParent)) {
         escapingRegexes.add(regex);
       }
+    } else if (parent.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+      escapingRegexes.add(regex);
     }
   }
 

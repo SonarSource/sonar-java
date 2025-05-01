@@ -1,7 +1,10 @@
 package checks.regex;
 
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 abstract class UnusedGroupNamesCheck {
 
@@ -296,4 +299,34 @@ abstract class UnusedGroupNamesCheck {
   @org.hibernate.validator.constraints.URL(regexp = "(?<group>[a-z])") // Noncompliant
   String url;
 
+  static class GroupUsedInMethodReference {
+    private static final Pattern NAME_WITH_QUOTED_VALUE =
+      Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Compliant
+
+    public static Map<String, String> hiddenUsage(List<String> strings) {
+      return strings.stream()
+        .map(NAME_WITH_QUOTED_VALUE::matcher)
+        .filter(Matcher::matches)
+        .collect(Collectors.toMap(
+          nv -> nv.group("name"),
+          nv -> nv.group("value"))
+        );
+    }
+  }
+
+  static class GroupUsedInLambda {
+    private static final Pattern NAME_WITH_QUOTED_VALUE =
+      Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Compliant
+
+    public static Map<String, String> hiddenUsage(List<String> strings) {
+
+      return strings.stream()
+        .map(s -> NAME_WITH_QUOTED_VALUE.matcher(s))
+        .filter(Matcher::matches)
+        .collect(Collectors.toMap(
+          nv -> nv.group("name"),
+          nv -> nv.group("value"))
+        );
+    }
+  }
 }
