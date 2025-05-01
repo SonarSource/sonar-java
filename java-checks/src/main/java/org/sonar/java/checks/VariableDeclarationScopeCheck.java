@@ -104,6 +104,8 @@ public class VariableDeclarationScopeCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitIdentifier(IdentifierTree tree) {
       referencesSymbol |= symbol.equals(tree.symbol());
+      // If the symbol is "Unknown" and has same name, we assume it's the same to avoid FPs.
+      referencesSymbol |= tree.symbol().isUnknown() && symbol.name().equals(tree.name());
       super.visitIdentifier(tree);
     }
   }
