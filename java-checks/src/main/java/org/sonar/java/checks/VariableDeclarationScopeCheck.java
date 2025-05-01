@@ -60,7 +60,7 @@ public class VariableDeclarationScopeCheck extends IssuableSubscriptionVisitor {
     ReferenceVisitor referenceVisitor = new ReferenceVisitor(symbol);
     for (int i = next; i < bodySize; i++) {
       referenceVisitor.visit(body.get(i));
-      if (referenceVisitor.referenceSymbol) {
+      if (referenceVisitor.referencesSymbol) {
         return;
       }
       if (referenceVisitor.hasBreakingStatement) {
@@ -71,8 +71,8 @@ public class VariableDeclarationScopeCheck extends IssuableSubscriptionVisitor {
   }
 
   private static class ReferenceVisitor extends BaseTreeVisitor {
-    Symbol symbol;
-    boolean referenceSymbol;
+    private final Symbol symbol;
+    boolean referencesSymbol;
     boolean hasBreakingStatement;
 
     ReferenceVisitor(Symbol symbol) {
@@ -80,32 +80,26 @@ public class VariableDeclarationScopeCheck extends IssuableSubscriptionVisitor {
     }
 
     void visit(StatementTree node) {
-      referenceSymbol = false;
+      referencesSymbol = false;
       hasBreakingStatement = false;
       node.accept(this);
     }
 
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
-      if (!hasBreakingStatement) {
-        hasBreakingStatement = true;
-      }
+      hasBreakingStatement = true;
       super.visitReturnStatement(tree);
     }
 
     @Override
     public void visitThrowStatement(ThrowStatementTree tree) {
-      if (!hasBreakingStatement) {
-        hasBreakingStatement = true;
-      }
+      hasBreakingStatement = true;
       super.visitThrowStatement(tree);
     }
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      if (!referenceSymbol && symbol.equals(tree.symbol())) {
-        referenceSymbol = true;
-      }
+      referencesSymbol |= symbol.equals(tree.symbol());
       super.visitIdentifier(tree);
     }
   }
