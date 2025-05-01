@@ -55,6 +55,10 @@ public class VariableDeclarationScopeCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  /**
+   * If there is a {@code return} or {@code throw} in {@code body} at index greater or equal to {@code next} and before any reference to
+   * {@code variable} then report an issue.
+   */
   private void check(VariableTree variable, List<StatementTree> body, int bodySize, int next) {
     Symbol symbol = variable.symbol();
     ReferenceVisitor referenceVisitor = new ReferenceVisitor(symbol);
