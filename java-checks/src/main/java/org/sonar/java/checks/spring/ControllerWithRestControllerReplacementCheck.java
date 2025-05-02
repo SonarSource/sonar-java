@@ -18,18 +18,28 @@ package org.sonar.java.checks.spring;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6833")
 public class ControllerWithRestControllerReplacementCheck extends IssuableSubscriptionVisitor {
+  private static final String RESPONSE_BODY = "org.springframework.web.bind.annotation.ResponseBody";
+  private static final List<String> MAPPING_ANNOTATIONS = List.of(
+    "org.springframework.web.bind.annotation.RequestMapping",
+    "org.springframework.web.bind.annotation.GetMapping",
+    "org.springframework.web.bind.annotation.PostMapping",
+    "org.springframework.web.bind.annotation.PutMapping",
+    "org.springframework.web.bind.annotation.PatchMapping",
+    "org.springframework.web.bind.annotation.DeleteMapping");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -48,22 +58,31 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
       return;
     }
 
+    List<AnnotationTree> responseBodyOnMethods = new ArrayList<>();
+
+    for (Tree member : classTree.members()) {
+      if (member instanceof MethodTree method) {
+
+        var response = firstAnnotation(method, List.of(RESPONSE_BODY));
+        if (response.isPresent()) {
+          responseBodyOnMethods.add(response.get());
+        } else if (firstAnnotation(method, MAPPING_ANNOTATIONS).isPresent()) {
+          return;
+        }
+      }
+    }
+
     var secondaryLocations = new ArrayList<JavaFileScannerContext.Location>();
     List<JavaTextEdit> edits = new ArrayList<>();
 
-    classTree.members().stream()
-      .filter(member -> member.is(Tree.Kind.METHOD))
-      .map(MethodTree.class::cast)
-      .forEach(method -> {
-        var methodAnnotation = method.modifiers().annotations().stream()
-          .filter(a -> "org.springframework.web.bind.annotation.ResponseBody".equals(a.annotationType().symbolType().fullyQualifiedName()))
-          .findFirst();
-        methodAnnotation.ifPresent(annotationTree -> secondaryLocations.add(new JavaFileScannerContext.Location("Remove this \"@ResponseBody\" annotation.", annotationTree)));
-        methodAnnotation.ifPresent(annotationTree -> edits.add(JavaTextEdit.removeTree(annotationTree)));
+    responseBodyOnMethods
+      .forEach(ann -> {
+        secondaryLocations.add(new JavaFileScannerContext.Location("Remove this \"@ResponseBody\" annotation.", ann));
+        edits.add(JavaTextEdit.removeTree(ann));
       });
 
     classTree.modifiers().annotations().stream()
-      .filter(a -> "org.springframework.web.bind.annotation.ResponseBody".equals(a.annotationType().symbolType().fullyQualifiedName()))
+      .filter(ControllerWithRestControllerReplacementCheck::isResponseBody)
       .forEach(annotationTree -> secondaryLocations.add(new JavaFileScannerContext.Location("Remove this \"@ResponseBody\" annotation.", annotationTree)));
 
     if (secondaryLocations.isEmpty()) {
@@ -79,6 +98,20 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
         JavaQuickFix.newQuickFix("Replace \"@Controller\" by \"@RestController\".").addTextEdit(JavaTextEdit.replaceTree(annotation.get(), "@RestController")).build()))
       .report();
 
+  }
+
+  private static boolean isResponseBody(AnnotationTree a) {
+    return RESPONSE_BODY.equals(a.symbolType().fullyQualifiedName());
+  }
+
+  private static Optional<AnnotationTree> firstAnnotation(MethodTree method, List<String> annFullyQualifiedNames) {
+    for (AnnotationTree annotation : method.modifiers().annotations()) {
+      String fqn = annotation.symbolType().fullyQualifiedName();
+      if (annFullyQualifiedNames.contains(fqn)) {
+        return Optional.of(annotation);
+      }
+    }
+    return Optional.empty();
   }
 
 }
