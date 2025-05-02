@@ -181,8 +181,8 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
   }
 
   private void onMethodReferenceFound(MethodReferenceTree methodReference) {
-    Tree expression = methodReference.expression();
-    if( expression instanceof ExpressionTree expressionTree) {
+    if (matchers.matches(methodReference)
+      && methodReference.expression() instanceof ExpressionTree expressionTree) {
       getRegex(expressionTree).ifPresent(escapingRegexes::add);
     }
   }

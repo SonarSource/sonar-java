@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 abstract class UnusedGroupNamesCheck {
 
@@ -314,6 +315,21 @@ abstract class UnusedGroupNamesCheck {
     }
   }
 
+  // Do not consider RE escaping if the method reference is not "leaking" it
+  // (matcher replaced with flags).
+  static class GroupNotUsedInMethodReference {
+    private static final Pattern NAME_WITH_QUOTED_VALUE =
+      Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Noncompliant
+
+    public static int noUsage(List<String> strings) {
+      return Stream
+        .generate(NAME_WITH_QUOTED_VALUE::flags)
+        .limit(1)
+        .findFirst()
+        .get();
+    }
+  }
+
   static class GroupUsedInLambda {
     private static final Pattern NAME_WITH_QUOTED_VALUE =
       Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Compliant
@@ -338,8 +354,7 @@ abstract class UnusedGroupNamesCheck {
     public static Map<String, String> noUsage(List<String> strings) {
       return strings.stream()
         .map(s -> NAME_WITH_QUOTED_VALUE.hashCode())
-        .collect(Collectors.toMap(hc -> hc.toString(), unused -> "s")
-        );
+        .collect(Collectors.toMap(hc -> hc.toString(), unused -> "s"));
     }
   }
 }
