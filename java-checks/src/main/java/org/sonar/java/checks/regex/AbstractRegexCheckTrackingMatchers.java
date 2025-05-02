@@ -180,6 +180,10 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
     }
   }
 
+  /**
+   * When method reference is used on a pattern, we can no longer analyze it,
+   * and therefore must add it to the {@link #escapingRegexes}.
+   */
   private void onMethodReferenceFound(MethodReferenceTree methodReference) {
     if (matchers.matches(methodReference)
       && methodReference.expression() instanceof ExpressionTree expressionTree) {
@@ -234,6 +238,10 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
     }
   }
 
+  /**
+   * Track ownership of pattern when they are assigned to variables and
+   * add them to {@link #escapingRegexes}, when we cannot track them.
+   */
   private void handleAssignment(MethodInvocationTree mit, RegexParseResult regex) {
     Tree parent = mit.parent();
     if (parent.is(Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT)) {
