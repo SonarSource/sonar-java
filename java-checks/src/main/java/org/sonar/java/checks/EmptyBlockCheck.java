@@ -30,7 +30,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S108")
 public class EmptyBlockCheck extends IssuableSubscriptionVisitor {
 
-  private static final String MESSAGE = "Either remove or fill this block of code.";
+  private static final String MESSAGE = "Remove this block of code, fill it in, or add a comment explaining why it is empty.";
   private boolean isMethodBlock;
 
   @Override
