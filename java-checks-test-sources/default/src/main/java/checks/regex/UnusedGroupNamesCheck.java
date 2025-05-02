@@ -319,13 +319,26 @@ abstract class UnusedGroupNamesCheck {
       Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Compliant
 
     public static Map<String, String> hiddenUsage(List<String> strings) {
-
       return strings.stream()
         .map(s -> NAME_WITH_QUOTED_VALUE.matcher(s))
         .filter(Matcher::matches)
         .collect(Collectors.toMap(
           nv -> nv.group("name"),
           nv -> nv.group("value"))
+        );
+    }
+  }
+
+  // Do not consider RE escaping if the method in lambda is not "leaking" it
+  // (matcher replaced with hashCode).
+  static class GroupNotUsedInLambda {
+    private static final Pattern NAME_WITH_QUOTED_VALUE =
+      Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Noncompliant
+
+    public static Map<String, String> noUsage(List<String> strings) {
+      return strings.stream()
+        .map(s -> NAME_WITH_QUOTED_VALUE.hashCode())
+        .collect(Collectors.toMap(hc -> hc.toString(), unused -> "s")
         );
     }
   }
