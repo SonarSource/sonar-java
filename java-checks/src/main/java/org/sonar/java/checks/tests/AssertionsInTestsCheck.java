@@ -27,13 +27,17 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.AbstractAssertionVisitor;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -53,6 +57,13 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     defaultValue = "")
   public String customAssertionMethods = "";
   private MethodMatchers customAssertionMethodsMatcher = null;
+
+  private static final MethodMatchers SPRING_BOOT_APP_CTX_RUNNER_RUN_MATCHER = MethodMatchers.create()
+    .ofTypes("org.springframework.boot.test.context.runner.ApplicationContextRunner")
+    .names("run")
+    .addParametersMatcher("org.springframework.boot.test.context.runner.ContextConsumer")
+    .build();
+  private static final MethodInvocationMatcherVisitor SPRING_BOOT_APP_CTX_RUNNER_VISITOR = new MethodInvocationMatcherVisitor(SPRING_BOOT_APP_CTX_RUNNER_RUN_MATCHER);
 
   private final Map<Symbol, Boolean> assertionInMethod = new HashMap<>();
   private JavaFileScannerContext context;
@@ -75,13 +86,74 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
       return;
     }
 
-    if (isUnitTest(methodTree) && !isSpringBootSanityTest(methodTree) && !expectAssertion(methodTree) && !isLocalMethodWithAssertion(methodTree.symbol())) {
-      context.reportIssue(this, methodTree.simpleName(), "Add at least one assertion to this test case.");
+    if (isUnitTest(methodTree)) {
+      if (isSpringBootAssertableContext(methodTree)) {
+        return;
+      }
+      if (!isSpringBootSanityTest(methodTree) && !expectAssertion(methodTree) && !isLocalMethodWithAssertion(methodTree.symbol())) {
+        context.reportIssue(this, methodTree.simpleName(), "Add at least one assertion to this test case.");
+      }
     }
   }
 
-  private static boolean isSpringBootSanityTest(MethodTree methodTree){
-    if("contextLoads".equals(methodTree.simpleName().name())){
+  private boolean isSpringBootAssertableContext(MethodTree methodTree) {
+    var runMethodInvocation = SPRING_BOOT_APP_CTX_RUNNER_VISITOR.findMethodInvocation(methodTree);
+    if (runMethodInvocation != null) {
+      var contextConsumerImplSymbol = runMethodInvocation.arguments().get(0).symbolType().symbol();
+      if (contextConsumerImplSymbol.isUnknown()) {
+        // In this case we cannot know if the provided ContextConsumer has the type param <AssertableApplicationContext>, but we want to avoid FPs
+        return true;
+      }
+      var contextConsumerType = contextConsumerImplSymbol.interfaces().get(0);
+      return isAssertableApplicationContext(contextConsumerType) && hasDeclaredAssertions(contextConsumerImplSymbol);
+    }
+    return false;
+  }
+
+  private static boolean isAssertableApplicationContext(Type contextConsumerType) {
+    return contextConsumerType.typeArguments().get(0).is("org.springframework.boot.test.context.assertj.AssertableApplicationContext");
+  }
+
+  /**
+   * If there is no declaration for the class implementing the ContextConsumer (e.g. is declared in another file)
+   * we assume that it is declaring assertions to avoid FPs
+   */
+  private boolean hasDeclaredAssertions(Symbol contextConsumerImplSymbol) {
+    Tree declaration = contextConsumerImplSymbol.declaration();
+    if (declaration instanceof ClassTreeImpl contextConsumerImpl) {
+      return contextConsumerImpl.members().stream()
+        .anyMatch(m -> m instanceof MethodTree method && isLocalMethodWithAssertion(method.symbol()));
+    }
+    return true;
+  }
+
+  private static class MethodInvocationMatcherVisitor extends BaseTreeVisitor {
+
+    private MethodInvocationTreeImpl methodInvocationTree;
+    private MethodMatchers matcher;
+
+    private MethodInvocationMatcherVisitor(MethodMatchers matcher) {
+      this.matcher = matcher;
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (matcher.matches(tree)) {
+        methodInvocationTree = (MethodInvocationTreeImpl) tree;
+        return;
+      }
+      super.visitMethodInvocation(tree);
+    }
+
+    public MethodInvocationTreeImpl findMethodInvocation(Tree tree) {
+      methodInvocationTree = null;
+      tree.accept(this);
+      return methodInvocationTree;
+    }
+  }
+
+  private static boolean isSpringBootSanityTest(MethodTree methodTree) {
+    if ("contextLoads".equals(methodTree.simpleName().name())) {
       ClassTree classTree = (ClassTree) methodTree.parent();
       return classTree.symbol().metadata().isAnnotatedWith("org.springframework.boot.test.context.SpringBootTest");
     }
