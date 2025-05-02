@@ -65,11 +65,9 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
       if (member instanceof MethodTree method) {
 
         var response = firstAnnotation(method, List.of(RESPONSE_BODY));
-        response.ifPresent(responseBodyOnMethods::add);
-
-        var mapping = firstAnnotation(method, MAPPING_ANNOTATIONS);
-
-        if(mapping.isPresent() && response.isEmpty()){
+        if(response.isPresent()){
+          responseBodyOnMethods.add(response.get());
+        }else if(firstAnnotation(method, MAPPING_ANNOTATIONS).isPresent()){
           return;
         }
       }
@@ -104,13 +102,17 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
   }
 
   private static boolean isResponseBody(AnnotationTree a) {
-    return RESPONSE_BODY.equals(a.annotationType().symbolType().fullyQualifiedName());
+    return RESPONSE_BODY.equals(a.symbolType().fullyQualifiedName());
   }
 
   private static Optional<AnnotationTree> firstAnnotation(MethodTree method, List<String> annFullyQualifiedNames){
-    return method.modifiers().annotations().stream()
-      .filter(a -> annFullyQualifiedNames.stream().anyMatch(name -> name.equals(a.annotationType().symbolType().fullyQualifiedName())))
-      .findFirst();
+    for (AnnotationTree annotation: method.modifiers().annotations()) {
+      String fqn = annotation.symbolType().fullyQualifiedName();
+      if (annFullyQualifiedNames.contains(fqn)) {
+        return Optional.of(annotation);
+      }
+    }
+    return Optional.empty();
   }
 
 }
