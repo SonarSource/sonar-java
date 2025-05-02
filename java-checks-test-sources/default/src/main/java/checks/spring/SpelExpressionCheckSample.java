@@ -1,6 +1,7 @@
 package checks.spring;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -441,4 +442,45 @@ public class SpelExpressionCheckSample {
   private String sonarJava5079DefaultValueContainsColon2;
 
   private static final String MOCKED_SOAP_SP_CLIENT_SSL = "classpath:mocked-soap-sp-client-ssl.jks";
+
+  static class PropertyPlaceHolderInsideSpel {
+    // we want to parse correctly
+    @Value("#{${placeholder}}") // Compliant
+    private Map<String, Integer> notYetSubstituted1;
+
+    // however, the problem is that first spring substitutes "${valuesMap}" with "{}" for instance
+    // and then try to parse the SpEL expression.
+
+    @Value("#{{}}") // Compliant
+    private Map<String, Integer> substituted1;
+
+    // a first solution is to first parse the property placeholder and substitute it with "#aVar" (a SpEL variable)
+    @Value("#{${placeholder}}") // Compliant
+    private Integer notYetSubstituted2;
+    @Value("#{#aVar}") // Compliant
+    private Integer substituted2;
+
+    // however it does not always work, for instance if we substitute the name of a bean ("@" refer to a bean in spring)
+    @Value("#{@${placeholder}}") // Compliant
+    private Integer notYetSubstituted3;
+    @Value("#{@#aVar}") // Noncompliant
+    private Integer substituted3;
+
+    // the solution is to use different substitution rules for the placeholder, for instance to replace "#${...}" with "@aBean"
+    @Value("#{@${placeholder}}") // Compliant
+    private Integer notYetSubstituted4;
+    @Value("#{@aBean}") // Compliant
+    private Integer substituted4;
+
+    // if the property placeholder has a default value, we use it
+    @Value("#{${placeholder:10}}") // Compliant
+    private Integer notYetSubstitute5;
+    @Value("#{10}") // Compliant
+    private Integer substituted5;
+
+    @Value("#{@${placeholder:10}}") // Noncompliant
+    private Integer notYetSubstitute6;
+    @Value("#{@10}") // Noncompliant
+    private Integer substituted6;
+  }
 }
