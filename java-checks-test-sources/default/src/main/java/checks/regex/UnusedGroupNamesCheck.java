@@ -300,7 +300,7 @@ abstract class UnusedGroupNamesCheck {
   @org.hibernate.validator.constraints.URL(regexp = "(?<group>[a-z])") // Noncompliant
   String url;
 
-  static class GroupUsedInMethodReference {
+  static class GroupUsedViaMethodReference {
     private static final Pattern NAME_WITH_QUOTED_VALUE =
       Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Compliant
 
@@ -317,20 +317,19 @@ abstract class UnusedGroupNamesCheck {
 
   // Do not consider RE escaping if the method reference is not "leaking" it
   // (matcher replaced with flags).
-  static class GroupNotUsedInMethodReference {
+  static class GroupNotUsedViaMethodReference {
     private static final Pattern NAME_WITH_QUOTED_VALUE =
       Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Noncompliant
 
     public static int noUsage(List<String> strings) {
-      return Stream
-        .generate(NAME_WITH_QUOTED_VALUE::flags)
+      return Stream.generate(NAME_WITH_QUOTED_VALUE::flags)
         .limit(1)
         .findFirst()
         .get();
     }
   }
 
-  static class GroupUsedInLambda {
+  static class GroupUsedViaLambda {
     private static final Pattern NAME_WITH_QUOTED_VALUE =
       Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Compliant
 
@@ -347,7 +346,7 @@ abstract class UnusedGroupNamesCheck {
 
   // Do not consider RE escaping if the method in lambda is not "leaking" it
   // (matcher replaced with hashCode).
-  static class GroupNotUsedInLambda {
+  static class GroupNotUsedViaLambda {
     private static final Pattern NAME_WITH_QUOTED_VALUE =
       Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Noncompliant
 
