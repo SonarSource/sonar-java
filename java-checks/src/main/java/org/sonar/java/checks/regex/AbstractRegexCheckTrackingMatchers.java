@@ -185,10 +185,13 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
    * and therefore must add it to the {@link #escapingRegexes}.
    */
   private void onMethodReferenceFound(MethodReferenceTree methodReference) {
-    if (matchers.matches(methodReference)
-      && methodReference.expression() instanceof ExpressionTree expressionTree) {
-      getRegex(expressionTree).ifPresent(escapingRegexes::add);
-    }
+    Optional.of(methodReference)
+      .filter(matchers::matches)
+      .map(MethodReferenceTree::expression)
+      .filter(ExpressionTree.class::isInstance)
+      .map(ExpressionTree.class::cast)
+      .flatMap(this::getRegex)
+      .ifPresent(escapingRegexes::add);
   }
 
   private Optional<RegexParseResult> getRegex(ExpressionTree tree) {
