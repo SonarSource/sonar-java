@@ -91,6 +91,11 @@ public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor
     if (isBigIntegerPotentiallyBiggerThanLong(newClassTree)) {
       return;
     }
+    if (newClassTree.arguments().stream().anyMatch(arg -> arg.symbolType().isUnknown())) {
+      // If the argument type is unknown the parser may take a wild guess at which constructor is used, which may cause false positives
+      return;
+    }
+
     if(matchers.matches(newClassTree)) {
       QuickFixHelper.newIssue(context)
         .forRule(this)

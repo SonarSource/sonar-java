@@ -30,4 +30,13 @@ class StringPrimitiveConstructorCheckTest {
       .withCheck(new StringPrimitiveConstructorCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantics() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringPrimitiveConstructorCheckSample.java"))
+      .withCheck(new StringPrimitiveConstructorCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }
