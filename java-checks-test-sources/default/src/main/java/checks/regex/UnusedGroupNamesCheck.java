@@ -1,7 +1,11 @@
 package checks.regex;
 
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 abstract class UnusedGroupNamesCheck {
 
@@ -296,4 +300,78 @@ abstract class UnusedGroupNamesCheck {
   @org.hibernate.validator.constraints.URL(regexp = "(?<group>[a-z])") // Noncompliant
   String url;
 
+  static class GroupUsedViaMethodReference {
+    private static final Pattern NAME_WITH_QUOTED_VALUE =
+      Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Compliant
+
+    public static Map<String, String> hiddenUsage(List<String> strings) {
+      return strings.stream()
+        .map(NAME_WITH_QUOTED_VALUE::matcher)
+        .filter(Matcher::matches)
+        .collect(Collectors.toMap(
+          nv -> nv.group("name"),
+          nv -> nv.group("value"))
+        );
+    }
+  }
+
+  // Do not consider RE escaping if the method reference is not "leaking" it
+  // (matcher replaced with flags).
+  static class GroupNotUsedViaMethodReference {
+    private static final Pattern NAME_WITH_QUOTED_VALUE =
+      Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Noncompliant
+
+    public static int noUsage(List<String> strings) {
+      return Stream.generate(NAME_WITH_QUOTED_VALUE::flags)
+        .limit(1)
+        .findFirst()
+        .get();
+    }
+  }
+
+  static class GroupUsedViaLambda {
+    private static final Pattern NAME_WITH_QUOTED_VALUE =
+      Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Compliant
+
+    public static Map<String, String> hiddenUsage(List<String> strings) {
+      return strings.stream()
+        .map(s -> NAME_WITH_QUOTED_VALUE.matcher(s))
+        .filter(Matcher::matches)
+        .collect(Collectors.toMap(
+          nv -> nv.group("name"),
+          nv -> nv.group("value"))
+        );
+    }
+  }
+
+  static class GroupUsedViaBlockInLambda {
+    private static final Pattern NAME_WITH_QUOTED_VALUE =
+      Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Compliant
+
+    public static Map<String, String> hiddenUsage(List<String> strings) {
+      return strings.stream()
+        .map(s -> {
+          System.out.println("testing usage inside a block in a lambda");
+          return NAME_WITH_QUOTED_VALUE.matcher(s);
+        })
+        .filter(Matcher::matches)
+        .collect(Collectors.toMap(
+          nv -> nv.group("name"),
+          nv -> nv.group("value"))
+        );
+    }
+  }
+
+  // Do not consider RE escaping if the method in lambda is not "leaking" it
+  // (matcher replaced with hashCode).
+  static class GroupNotUsedViaLambda {
+    private static final Pattern NAME_WITH_QUOTED_VALUE =
+      Pattern.compile("^(?<name>[a-zA-Z_:][a-zA-Z0-9_:]*)=\"(?<value>.*)\"$"); // Noncompliant
+
+    public static Map<String, String> noUsage(List<String> strings) {
+      return strings.stream()
+        .map(s -> NAME_WITH_QUOTED_VALUE.hashCode())
+        .collect(Collectors.toMap(hc -> hc.toString(), unused -> "s"));
+    }
+  }
 }

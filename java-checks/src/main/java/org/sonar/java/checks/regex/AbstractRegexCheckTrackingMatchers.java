@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -114,6 +115,7 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
     nodes.add(Tree.Kind.NEW_CLASS);
     nodes.add(Tree.Kind.RETURN_STATEMENT);
     nodes.add(Tree.Kind.COMPILATION_UNIT);
+    nodes.add(Tree.Kind.METHOD_REFERENCE);
     return nodes;
   }
 
@@ -137,6 +139,8 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
       if (PATTERN_OR_MATCHER_ARGUMENT.matches((NewClassTree) tree)) {
         onConstructorFound((NewClassTree) tree);
       }
+    } else if (tree.is(Tree.Kind.METHOD_REFERENCE)) {
+      onMethodReferenceFound((MethodReferenceTree) tree);
     } else {
       super.visitNode(tree);
     }
@@ -174,6 +178,20 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
         getRegex(argument).ifPresent(escapingRegexes::add);
       }
     }
+  }
+
+  /**
+   * When method reference is used on a pattern, we can no longer analyze it,
+   * and therefore must add it to the {@link #escapingRegexes}.
+   */
+  private void onMethodReferenceFound(MethodReferenceTree methodReference) {
+    Optional.of(methodReference)
+      .filter(matchers::matches)
+      .map(MethodReferenceTree::expression)
+      .filter(ExpressionTree.class::isInstance)
+      .map(ExpressionTree.class::cast)
+      .flatMap(this::getRegex)
+      .ifPresent(escapingRegexes::add);
   }
 
   private Optional<RegexParseResult> getRegex(ExpressionTree tree) {
@@ -223,6 +241,10 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
     }
   }
 
+  /**
+   * Track ownership of pattern when they are assigned to variables and
+   * add them to {@link #escapingRegexes}, when we cannot track them.
+   */
   private void handleAssignment(MethodInvocationTree mit, RegexParseResult regex) {
     Tree parent = mit.parent();
     if (parent.is(Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT)) {
@@ -237,6 +259,8 @@ public abstract class AbstractRegexCheckTrackingMatchers extends AbstractRegexCh
       if (!grandParent.is(Tree.Kind.METHOD_INVOCATION) || !trackedMethodMatchers().matches((MethodInvocationTree) grandParent)) {
         escapingRegexes.add(regex);
       }
+    } else if (parent.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+      escapingRegexes.add(regex);
     }
   }
 
