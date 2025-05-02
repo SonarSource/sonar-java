@@ -1,3 +1,6 @@
+import java.util.List;
+import java.util.ArrayList;
+
 abstract class A {
 
   void m1();
@@ -54,5 +57,24 @@ abstract class A {
       int b = 2;
       return;
     }
+  }
+
+  void withLambdaUsingVar() {
+    List<String> outsideLambda = new ArrayList<>(); // Compliant: this cannot be declared anywhere else
+    Collections.singletonList(23).stream.map(x -> {
+        outsideLambda.add(x);
+        return x;
+      })
+      .collect(Collectors.toList());
+    return outsideLambda;
+  }
+
+  void withLambdaNotUsingVar() {
+    List<String> outsideLambda = new ArrayList<>(); // Noncompliant
+    Collections.singletonList(23).stream.map(x -> {
+        return x;
+      })
+      .collect(Collectors.toList());
+    return outsideLambda;
   }
 }
