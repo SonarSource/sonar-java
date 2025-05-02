@@ -39,8 +39,7 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
     "org.springframework.web.bind.annotation.PostMapping",
     "org.springframework.web.bind.annotation.PutMapping",
     "org.springframework.web.bind.annotation.PatchMapping",
-    "org.springframework.web.bind.annotation.DeleteMapping"
-  );
+    "org.springframework.web.bind.annotation.DeleteMapping");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -61,13 +60,13 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
 
     List<AnnotationTree> responseBodyOnMethods = new ArrayList<>();
 
-    for(Tree member : classTree.members()) {
+    for (Tree member : classTree.members()) {
       if (member instanceof MethodTree method) {
 
         var response = firstAnnotation(method, List.of(RESPONSE_BODY));
-        if(response.isPresent()){
+        if (response.isPresent()) {
           responseBodyOnMethods.add(response.get());
-        }else if(firstAnnotation(method, MAPPING_ANNOTATIONS).isPresent()){
+        } else if (firstAnnotation(method, MAPPING_ANNOTATIONS).isPresent()) {
           return;
         }
       }
@@ -105,8 +104,8 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
     return RESPONSE_BODY.equals(a.symbolType().fullyQualifiedName());
   }
 
-  private static Optional<AnnotationTree> firstAnnotation(MethodTree method, List<String> annFullyQualifiedNames){
-    for (AnnotationTree annotation: method.modifiers().annotations()) {
+  private static Optional<AnnotationTree> firstAnnotation(MethodTree method, List<String> annFullyQualifiedNames) {
+    for (AnnotationTree annotation : method.modifiers().annotations()) {
       String fqn = annotation.symbolType().fullyQualifiedName();
       if (annFullyQualifiedNames.contains(fqn)) {
         return Optional.of(annotation);
