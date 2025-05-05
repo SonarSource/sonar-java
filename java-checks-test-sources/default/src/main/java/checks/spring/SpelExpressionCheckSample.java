@@ -15,6 +15,9 @@ public class SpelExpressionCheckSample {
   private static final String INVALID_PROPERTY_PLACEHOLDER = "${foo.bar[}";
   private static final String VALID_PROPERTY_PLACEHOLDER = "${foo.bar}";
 
+  @Value("${user.region:defaultRegion}") // Compliant
+  private String default144;
+
   @Value(UNCLOSED) // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
 //       ^^^^^^^^
   private String complexArgument1;
@@ -94,22 +97,20 @@ public class SpelExpressionCheckSample {
   @Value("${user.region:#{  null + 3 }}") // Compliant
   private String default8;
 
-  @Value("${user.region:#{  null + * 3 }}") // Noncompliant {{Correct this malformed SpEL expression.}}
-//                      ^^^^^^^^^^^^^^^^
+  @Value("${user.region:#{  null + * 3 }}") // Compliant, but the default part of a property placeholder should not contain SpEL. seems to be quite some people that do that on github
   private String default9;
 
   @Value("${user.region:#{'D'+'E'}}") // Compliant
   private String default10;
 
-  @Value("${user.region:#{null}:#{null}:foo.bar}") // Noncompliant
+  @Value("${user.region:#{null}:#{null}:foo.bar}") // Compliant, but the default part of a property placeholder should not contain SpEL
   private String default11;
 
-  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // Noncompliant {{Correct this malformed property placeholder.}}
-//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // Compliant
   private String default12;
 
-  @Value("${user.region:#{4**4}:#{null}:foo.bar}") // Noncompliant {{Correct this malformed SpEL expression.}}
-//                      ^^^^^^^
+  @Value("${user.region:#{4**4}:#{null}:foo.bar}") // Compliant
+
   private String default13;
 
   @Value("${user.2region:default-region}") // Compliant
@@ -443,44 +444,49 @@ public class SpelExpressionCheckSample {
 
   private static final String MOCKED_SOAP_SP_CLIENT_SSL = "classpath:mocked-soap-sp-client-ssl.jks";
 
-  static class PropertyPlaceHolderInsideSpel {
-    // we want to parse correctly
+  static class PropertyPlaceHolderInsideSpEL {
+    // We want to parse correctly the expression below
     @Value("#{${placeholder}}") // Compliant
-    private Map<String, Integer> notYetSubstituted1;
+    private Map<String, Integer> placeholderStage1;
 
-    // however, the problem is that first spring substitutes "${valuesMap}" with "{}" for instance
-    // and then try to parse the SpEL expression.
+    // However, the problem is that Spring evaluates the expression in two stages
+    // 1. it parses the property placeholders and substitutes them
+    // 2. it parses the SpEL expression and executes it
 
-    @Value("#{{}}") // Compliant
-    private Map<String, Integer> substituted1;
+    // After evaluating the property placeholder, we have the following expression
+    @Value("#{{key1: '1', key2: '2', key3: '3'}}") // Compliant
+    private Map<String, Integer> SpELStage1;
 
-    // a first solution is to first parse the property placeholder and substitute it with "#aVar" (a SpEL variable)
+    // It is easy to validate that property placeholders are valid, but without the context we cannot validate the spring expression
+    // A solution is to use clever values to replace the property placeholders for instance replace "${placeholder}" with  "#aVar"
     @Value("#{${placeholder}}") // Compliant
-    private Integer notYetSubstituted2;
+    private Integer placeholderStage2;
     @Value("#{#aVar}") // Compliant
-    private Integer substituted2;
+    private Integer SpELStage2;
 
-    // however it does not always work, for instance if we substitute the name of a bean ("@" refer to a bean in spring)
+    // However, it is not possible to find a value that is valid in all the cases.
+    // "#aVar" does not work in the case below.
     @Value("#{@${placeholder}}") // Compliant
-    private Integer notYetSubstituted3;
+    private Integer placeholderStage3;
+    // "@#aVar" is not a valid SpEL expression.
     @Value("#{@#aVar}") // Noncompliant
-    private Integer substituted3;
+    private Integer SpELStage3;
 
-    // the solution is to use different substitution rules for the placeholder, for instance to replace "#${...}" with "@aBean"
+    // We can use different values depending on the context. For instance, we can replace "@${placeholder}" with "@aBean".
     @Value("#{@${placeholder}}") // Compliant
-    private Integer notYetSubstituted4;
+    private Integer placeholderStage4;
     @Value("#{@aBean}") // Compliant
-    private Integer substituted4;
+    private Integer SpELStage4;
 
-    // if the property placeholder has a default value, we use it
+    // If the property placeholder has a default value, we use it
     @Value("#{${placeholder:10}}") // Compliant
-    private Integer notYetSubstitute5;
+    private Integer placeholderStage5;
     @Value("#{10}") // Compliant
-    private Integer substituted5;
+    private Integer SpELStage5;
 
     @Value("#{@${placeholder:10}}") // Noncompliant
-    private Integer notYetSubstitute6;
+    private Integer placeholderStage6;
     @Value("#{@10}") // Noncompliant
-    private Integer substituted6;
+    private Integer SpELStage6;
   }
 }
