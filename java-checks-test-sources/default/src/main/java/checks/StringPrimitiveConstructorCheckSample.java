@@ -1,7 +1,11 @@
 package checks;
 
+import com.google.api.client.http.HttpResponse;
+import com.google.common.primitives.Bytes;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 
 class StringPrimitiveConstructorCheckSample {
 
@@ -56,6 +60,22 @@ class StringPrimitiveConstructorCheckSample {
     BigInteger bigInteger3 = BigInteger.valueOf(-9223372036854775808L);
     BigDecimal doubleBigDecimal = BigDecimal.valueOf(1.1);
     Short myShort = (short) 0;
+  }
+
+  /**
+   * When semantics is not available, the type of the argument of the constructor will be unknown.
+   * We have to be careful to avoid false positives in that case.
+   */
+  String fromHtttp(HttpResponse response) throws IOException {
+    return new String(response.getContent().readAllBytes());
+  }
+
+  /**
+   * When semantics is not available, the type of the argument of the constructor will be unknown.
+   * We have to be careful to avoid false positives in that case.
+   */
+  public String formGuava(int i1, int i2) {
+    return new String(Bytes.toArray(List.of(i1, i2)));
   }
 }
 
