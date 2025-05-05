@@ -16,10 +16,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.reportTreeForDeprecatedTree;
@@ -29,6 +31,11 @@ import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.reportTreeFo
 public class MissingDeprecatedCheck extends AbstractMissingDeprecatedChecker {
 
   void handleDeprecatedElement(Tree tree, @CheckForNull AnnotationTree deprecatedAnnotation, boolean hasJavadocDeprecatedTag) {
+    // Record fields cannot have JavaDocs, so skip the check.
+    if (isRecordComponent(tree)) {
+      return;
+    }
+
     boolean hasDeprecatedAnnotation = deprecatedAnnotation != null;
     if (hasDeprecatedAnnotation) {
       if (!hasJavadocDeprecatedTag) {
@@ -39,4 +46,15 @@ public class MissingDeprecatedCheck extends AbstractMissingDeprecatedChecker {
     }
   }
 
+  /**
+   * Checks whether the argument is a component of a record (a non-static field).
+   */
+  private static boolean isRecordComponent(Tree tree) {
+    if (tree instanceof VariableTree variableTree && !variableTree.symbol().isStatic()) {
+      return Optional.ofNullable(tree.parent())
+        .filter(parent -> parent.is(Tree.Kind.RECORD))
+        .isPresent();
+    }
+    return false;
+  }
 }
