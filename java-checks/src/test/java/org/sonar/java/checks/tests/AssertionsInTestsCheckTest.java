@@ -117,4 +117,13 @@ class AssertionsInTestsCheckTest {
       .withCheck(check)
       .verifyIssues();
   }
+
+  @Test
+  void testSpringBootAssertableApplicationContext(){
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsInTestsCheck/SpringBootAppContextRunnerSample.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
+
 }
