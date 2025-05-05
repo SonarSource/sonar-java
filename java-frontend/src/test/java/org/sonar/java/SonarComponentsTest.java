@@ -517,7 +517,7 @@ class SonarComponentsTest {
     JavaFileScanner customScanner = scannerContext -> {
       // empty
     };
-    CheckRegistrar registrar =registrarContext ->
+    CheckRegistrar registrar = registrarContext ->
       registrarContext.registerCustomFileScanner(RuleScope.ALL, customScanner);
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
       null, checkFactory, context.activeRules(), new CheckRegistrar[]{registrar});
