@@ -104,7 +104,12 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
         // In this case we cannot know if the provided ContextConsumer has the type param <AssertableApplicationContext>, but we want to avoid FPs
         return true;
       }
-      var contextConsumerType = contextConsumerImplSymbol.interfaces().get(0);
+      Type contextConsumerType;
+      if (contextConsumerImplSymbol.isInterface()) {
+        contextConsumerType = contextConsumerImplSymbol.type();
+      } else {
+        contextConsumerType = contextConsumerImplSymbol.interfaces().get(0);
+      }
       return isAssertableApplicationContext(contextConsumerType) && hasDeclaredAssertions(contextConsumerImplSymbol);
     }
     return false;
@@ -114,10 +119,6 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     return contextConsumerType.typeArguments().get(0).is("org.springframework.boot.test.context.assertj.AssertableApplicationContext");
   }
 
-  /**
-   * If there is no declaration for the class implementing the ContextConsumer (e.g. is declared in another file)
-   * we assume that it is declaring assertions to avoid FPs
-   */
   private boolean hasDeclaredAssertions(Symbol contextConsumerImplSymbol) {
     Tree declaration = contextConsumerImplSymbol.declaration();
     if (declaration instanceof ClassTreeImpl contextConsumerImpl) {
