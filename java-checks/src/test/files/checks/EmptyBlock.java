@@ -42,7 +42,7 @@ class EmptyBlock {
     }
 
 
-    switch (1) { // Noncompliant {{Either remove or fill this block of code.}}
+    switch (1) { // Noncompliant {{Remove this block of code, fill it in, or add a comment explaining why it is empty.}}
 //             ^
     }
 
