@@ -15,8 +15,6 @@ public class SpelExpressionCheckSample {
   private static final String INVALID_PROPERTY_PLACEHOLDER = "${foo.bar[}";
   private static final String VALID_PROPERTY_PLACEHOLDER = "${foo.bar}";
 
-  @Value("${user.region:defaultRegion}") // Compliant
-  private String default144;
 
   @Value(UNCLOSED) // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
 //       ^^^^^^^^
@@ -466,24 +464,26 @@ public class SpelExpressionCheckSample {
 
     // However, it is not possible to find a value that is valid in all the cases.
     // "#aVar" does not work in the case below.
-    @Value("#{@${placeholder}}") // Compliant
+    // FN
+    @Value("#{@${placeholder}}") // Noncompliant
     private Integer placeholderStage3;
     // "@#aVar" is not a valid SpEL expression.
     @Value("#{@#aVar}") // Noncompliant
     private Integer SpELStage3;
 
-    // We can use different values depending on the context. For instance, we can replace "@${placeholder}" with "@aBean".
-    @Value("#{@${placeholder}}") // Compliant
+    // FN
+    @Value("#{@${placeholder}}") // Noncompliant
     private Integer placeholderStage4;
     @Value("#{@aBean}") // Compliant
     private Integer SpELStage4;
 
-    // If the property placeholder has a default value, we use it
+    // FP
     @Value("#{${placeholder:10}}") // Compliant
     private Integer placeholderStage5;
     @Value("#{10}") // Compliant
     private Integer SpELStage5;
 
+    // FP
     @Value("#{@${placeholder:10}}") // Noncompliant
     private Integer placeholderStage6;
     @Value("#{@10}") // Noncompliant

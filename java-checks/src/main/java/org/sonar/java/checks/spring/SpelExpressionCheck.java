@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.ObjIntConsumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -68,8 +69,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
    * </pre>
    */
   private static final Pattern PROPERTY_PLACEHOLDER_PATTERN = Pattern.compile(
-    "[a-zA-Z0-9/_-]++(\\[\\d++])*+(\\.[a-zA-Z0-9/_-]++(\\[\\d++])*+)*+"
-  );
+    "[a-zA-Z0-9/_-]++(\\[\\d++])*+(\\.[a-zA-Z0-9/_-]++(\\[\\d++])*+)*+");
 
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE);
@@ -85,8 +85,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
   private static Stream<AnnotationTree> getClassAndMemberAnnotations(ClassTree cls) {
     return Stream.concat(
       Stream.of(cls.modifiers().annotations()),
-      cls.members().stream().map(SpelExpressionCheck::getMemberAnnotations)
-    ).flatMap(Collection::stream);
+      cls.members().stream().map(SpelExpressionCheck::getMemberAnnotations)).flatMap(Collection::stream);
   }
 
   private static List<AnnotationTree> getMemberAnnotations(Tree member) {
@@ -99,7 +98,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  //TODO est-ce que ça fait du sens de levé sur toutes les annotations spring?
+  // TODO est-ce que ça fait du sens de levé sur toutes les annotations spring?
   private static boolean isSpringAnnotation(AnnotationTree annotation) {
     return annotation.symbolType().fullyQualifiedName().startsWith(SPRING_PREFIX);
   }
@@ -145,8 +144,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
         tokenStart.line(),
         tokenStart.columnOffset() + error.startColumn,
         tokenStart.line(),
-        tokenStart.columnOffset() + error.endColumn
-      );
+        tokenStart.columnOffset() + error.endColumn);
 
       var analyzerMessage = new AnalyzerMessage(this, context.getInputFile(), textSpan, error.getMessage(), 0);
       ((DefaultJavaFileScannerContext) context).reportIssue(analyzerMessage);
@@ -155,19 +153,19 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static void checkStringContents(String content, int startColumn) throws SyntaxError {
+  private static void checkStringContents(String content, int offset) throws SyntaxError {
     // je vais merge des boucles
     List<Expr> rootExpr = new java.util.ArrayList<>();
     int idx = 0;
     validateRootExpr: while (idx < content.length()) {
-      if(PropertyPlaceholder.matchPrefix(content, idx)) {
-        var expr = parseDelimiterBraces(""+PropertyPlaceholder.prefix, content, idx+1, startColumn);
-        PropertyPlaceholder.validPlaceholder(expr);
-        idx = expr.endIdx();
+      if (PropertyPlaceholder.matchPrefix(content, idx)) {
+        var placeholder = PropertyPlaceholder.parse(content, idx, offset);
+        idx = placeholder.endIdx();
+        continue;
       } else if (SpEL.matchPrefix(content, idx)) {
-        var expr = parseDelimiterBraces(""+SpEL.prefix, content, idx+1, startColumn);
-        SpEL.validSpEL(expr);
+        var expr = SpEL.parse(content, idx, offset);
         idx = expr.endIdx();
+        continue;
       }
       ++idx;
     }
@@ -192,9 +190,10 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
   // doit tout prendre
   private record Expr(String prefix, String expr, int startIdx, int endIdx, int offset) {
   }
+
   private static Expr parseDelimiterBraces(String prefix, String content, int firstBraceIdx, int offset) throws SyntaxError {
     if (content.charAt(firstBraceIdx) != '{') {
-      throw  new IllegalArgumentException();
+      throw new IllegalArgumentException();
     }
 
     int openCount = 1;
@@ -205,14 +204,13 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
       } else if (c == '}') {
         openCount--;
         if (openCount == 0) {
-          return new Expr(prefix, content.substring(firstBraceIdx-prefix.length(), i+1), firstBraceIdx-prefix.length(), i+1, offset);
+          return new Expr(prefix, content.substring(firstBraceIdx - prefix.length(), i + 1), firstBraceIdx - prefix.length(), i + 1, offset);
         }
       }
     }
 
-    throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", offset+firstBraceIdx-prefix.length(), offset+content.length());
+    throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", offset + firstBraceIdx - prefix.length(), offset + content.length());
   }
-
 
   private static class SyntaxError extends RuntimeException {
 
@@ -226,137 +224,154 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     public final int endColumn;
   }
 
-  // je veux utiliser une liste de règle
   private static class PropertyPlaceholder {
     private static char prefix = '$';
-    record Placeholder(int startIdx, int endIdx, String expr, @Nullable String defaultValue) {
-    }
 
-    private static boolean matchPrefix(String stream, int idx){
-      return idx + 1 < stream.length() && stream.charAt(idx)==prefix && stream.charAt(idx+1)=='{';
-    }
-
-    // quelle datatstructure je veux utiliser?
-    private static void validPlaceholder(Expr placeholder){
-      // utiliser regex
-      String mainPart = placeholder.expr.substring(2, placeholder.expr.length()-1);
-      String expr = mainPart.split(":")[0].trim();
-      if(!PROPERTY_PLACEHOLDER_PATTERN.asMatchPredicate().test(expr)){
-        throw new SyntaxError("Correct this malformed property placeholder.", placeholder.offset+placeholder.startIdx(), placeholder.offset+placeholder.endIdx());
+    // range are always inclusive, exclusive
+    record Placeholder(int offset, int startIdx, int endIdx, String expr, @Nullable String defaultValue) {
+      public Placeholder {
+        if (!PROPERTY_PLACEHOLDER_PATTERN.asMatchPredicate().test(expr)) {
+          throw new SyntaxError("Correct this malformed property placeholder.", offset + startIdx, offset + endIdx);
+        }
       }
     }
 
+    private static boolean matchPrefix(String stream, int idx) {
+      return idx + 1 < stream.length() && stream.charAt(idx) == prefix && stream.charAt(idx + 1) == '{';
+    }
 
-    private static String evaluate(String expr) {
-      List<Placeholder> placeholders = parse(expr);
+    // parse a placeholder starting from idx in the stream
+    private static Placeholder parse(String stream, int startIdx, int offset) {
+      if (!PropertyPlaceholder.matchPrefix(stream, startIdx)) {
+        throw new IllegalArgumentException();
+      }
 
-      for (Placeholder placeholder : placeholders) {
+      ParseStates state = new EXPR(startIdx);
+      int startExpr = startIdx + 2;
 
-        //parseValidPropertyPlaceholder(placeholder.expr, placeholder.startIdx);
-
-        for(SubstitutionRule rule : substitutionRules) {
-          Optional<String> value = rule.substitute(expr, placeholder);
-          if (value.isPresent()) {
-            expr = expr.substring(0, placeholder.startIdx) + value.get() + expr.substring(placeholder.endIdx);
-            break;
+      for (int idx = startExpr; idx < stream.length(); idx++) {
+        char c = stream.charAt(idx);
+        if (state instanceof EXPR e && (c == '}' || c == ':')) {
+          String expr = stream.substring(startExpr, idx).trim();
+          if (c == '}') {
+            return new Placeholder(offset, e.start, idx+1, expr, null);
+          } else {
+            state = new DEFAULT_VALUE(e.start, 0, expr, idx+1);
           }
-        }
-      }
-      return expr;
-    }
-
-
-
-    // a placeholder has the following format ${...:..}
-    private static List<Placeholder> parse(String expr) {
-      List<Placeholder> placeholders = new java.util.ArrayList<>();
-
-      ParseStates state = new OUTSIDE_PLACEHOLDER();
-
-      for (int idx = 0; idx < expr.length(); idx++) {
-        if (idx + 1 < expr.length() && state instanceof OUTSIDE_PLACEHOLDER && expr.charAt(idx) == '$' && expr.charAt(idx + 1) == '{') {
-          state = new INSIDE_PLACEHOLDER(idx);
-        } else if (state instanceof INSIDE_PLACEHOLDER s && expr.charAt(idx) == '}') {
-          state = new OUTSIDE_PLACEHOLDER();
-          placeholders.add(new Placeholder(s.start, idx, expr.substring(s.start + 2, idx - 1), null));
-        } else if (state instanceof INSIDE_PLACEHOLDER s && expr.charAt(idx) == ':') {
-          state = new INSIDE_DEFAULT_VALUE(s.start, expr.substring(s.start + 2, idx - 1), idx);
-        } else if (state instanceof INSIDE_DEFAULT_VALUE s && expr.charAt(idx) == '}') {
-          state = new OUTSIDE_PLACEHOLDER();
-          placeholders.add(new Placeholder(s.start, idx, s.expr, expr.substring(s.startDefault + 1, idx - 1)));
+        } else if (state instanceof DEFAULT_VALUE d && c == '}' && d.nestingLevel == 0) {
+          return new Placeholder(offset, startExpr, idx+1, d.expr, stream.substring(d.startDefault, idx).trim());
+        } else if (state instanceof DEFAULT_VALUE d && c == '{') {
+          state = d.increaseNestingLevel();
+        } else if (state instanceof DEFAULT_VALUE d && c == '}') {
+          state = d.decreaseNestingLevel();
         }
       }
 
-      boolean inPlaceholder = state instanceof INSIDE_PLACEHOLDER || state instanceof INSIDE_DEFAULT_VALUE;
-      if(inPlaceholder && expr.charAt(expr.length()-1)!='}') {
-        throw new SyntaxError("", 0, expr.length());
-      }
-
-      return placeholders;
+      throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", startIdx+offset, stream.length()+offset);
     }
-    
-    sealed interface ParseStates {}
-    record INSIDE_PLACEHOLDER(int start) implements ParseStates {}
-    record INSIDE_DEFAULT_VALUE(int start, String expr, int startDefault) implements ParseStates {}
-    record OUTSIDE_PLACEHOLDER() implements ParseStates {}
+
+    sealed interface ParseStates {
+    }
+    record EXPR(int start) implements ParseStates {
+    }
+    record DEFAULT_VALUE(int start, int nestingLevel, String expr, int startDefault) implements ParseStates {
+      DEFAULT_VALUE increaseNestingLevel() {
+        return new DEFAULT_VALUE(start, nestingLevel + 1, expr, startDefault);
+      }
+      DEFAULT_VALUE decreaseNestingLevel() {
+        return new DEFAULT_VALUE(start, nestingLevel - 1, expr, startDefault);
+      }
+    }
 
     @FunctionalInterface
     interface SubstitutionRule {
       Optional<String> substitute(String expr, Placeholder placeholder);
     }
+
     private static List<SubstitutionRule> substitutionRules = List.of(
       (expr, placeholder) -> {
-        if(placeholder.startIdx>0 && expr.charAt(placeholder.startIdx-1)=='@') {
+        if (placeholder.startIdx > 0 && expr.charAt(placeholder.startIdx - 1) == '@') {
           return Optional.of("bean");
         }
         return Optional.empty();
       },
       (expr, placeholder) -> {
         return Optional.of("#aVar");
-      }
-    );
+      });
 
   }
-  private  static class SpEL {
+  private static class SpEL {
     private static char prefix = '#';
 
-    record SpELExpr(String expr, int startIdx, int endIdx) {
-    }
-
-    private static boolean matchPrefix(String stream, int idx){
-      return idx + 1 < stream.length() && stream.charAt(idx)==prefix && stream.charAt(idx+1)=='{';
-    }
-
-    private static void validSpEL(Expr expr) throws SyntaxError {
-      String placeholderEvaluated = PropertyPlaceholder.evaluate(expr.expr);
-      String prefix = placeholderEvaluated.substring(0,2);
-      String mainPart = 3<placeholderEvaluated.length()? placeholderEvaluated.substring(2,placeholderEvaluated.length()-1): "";
-      String suffix = placeholderEvaluated.substring(placeholderEvaluated.length()-1);
-
-      if(!prefix.equals("#{")||!suffix.equals("}")) {
-        throw new SyntaxError("Correct this malformed SpEL expression.",expr.offset+expr.startIdx, expr.offset+expr.endIdx());
-      }
-      parseValidSpelExpression(mainPart, expr.offset+expr.startIdx, expr.offset+expr.endIdx);
-    }
-
-
-    private static void parseValidSpelExpression(String expressionString, int startColumn, int endColumn) throws SyntaxError {
-      if (!isValidSpelExpression(expressionString)) {
-        throw new SyntaxError("Correct this malformed SpEL expression.", startColumn, endColumn);
+    //range is inclusive, exclusive
+    record SpELExpr(String expr, int startIdx, int endIdx, int offset) {
+      public SpELExpr {
+        try {
+          new SpelExpressionParser().parseExpression(expr);
+        } catch (ParseException | IllegalStateException | IllegalArgumentException e) {
+          throw new SyntaxError("Correct this malformed SpEL expression.", offset + startIdx, offset + endIdx);
+        }
       }
     }
 
-    private static boolean isValidSpelExpression(String expressionString) {
-      expressionString = expressionString.strip();
-      if (expressionString.isEmpty()) {
-        return false;
-      }
-      try {
-        new SpelExpressionParser().parseExpression(expressionString);
-      } catch (ParseException | IllegalStateException e) {
-        return false;
-      }
-      return true;
+    private static boolean matchPrefix(String stream, int startIdx) {
+      return startIdx + 1 < stream.length() && stream.charAt(startIdx) == prefix && stream.charAt(startIdx + 1) == '{';
     }
+
+    private static SpELExpr parse(String stream, int startIdx, int offset) {
+      if (!SpEL.matchPrefix(stream, startIdx)) {
+        throw new IllegalArgumentException();
+      }
+
+      int startExpr = startIdx + 2;
+      int startText = startExpr;
+      int nestingLevel = 0;
+      int idx=startExpr;
+      boolean finished = false;
+      List<Token> tokens = new java.util.ArrayList<>();
+
+      while(idx < stream.length()) {
+        if(SpelExpressionCheck.PropertyPlaceholder.matchPrefix(stream, idx)) {
+          tokens.add(new Text(stream.substring(startText, idx)));
+          var placeholder = SpelExpressionCheck.PropertyPlaceholder.parse(stream, idx, offset);
+          tokens.add(new SpEL.PropertyPlaceholder(placeholder));
+          idx = placeholder.endIdx();
+          startText = idx;
+          continue;
+        } else if (stream.charAt(idx) == '}' && nestingLevel==0) {
+          if(startText < idx) {
+            tokens.add(new Text(stream.substring(startText,idx)));
+          }
+          finished=true;
+          break;
+        } else if(stream.charAt(idx) == '{'){
+          nestingLevel++;
+        } else if(stream.charAt(idx) == '}') {
+          nestingLevel--;
+        }
+        idx++;
+      }
+
+      if(nestingLevel > 0 || !finished) {
+        throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", startIdx+offset, stream.length()+offset);
+      }
+
+      String expr = tokens.stream().map(t -> {
+        if(t instanceof Text text) {
+          return text.text();
+        }else if(t instanceof SpEL.PropertyPlaceholder p) {
+          return "#aVar";
+        }
+        return "";
+      }).collect(Collectors.joining(""));
+
+      return new SpELExpr(expr, startIdx, idx+1, offset);
+
+    }
+
+    sealed interface Token {}
+    record PropertyPlaceholder(SpelExpressionCheck.PropertyPlaceholder.Placeholder p) implements Token {}
+    record Text(String text) implements Token {}
+
   }
 }
