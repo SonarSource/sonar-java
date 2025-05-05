@@ -19,6 +19,8 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class LambdaSingleExpressionCheckTest {
 
   @Test
@@ -38,4 +40,11 @@ class LambdaSingleExpressionCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void ambiguous() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/LambdaSingleExpressionCheckSample.java"))
+      .withCheck(new LambdaSingleExpressionCheck())
+      .verifyIssues();
+  }
 }
