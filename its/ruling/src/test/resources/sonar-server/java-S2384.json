@@ -16,16 +16,8 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/batch/BatchWs.java": [
 33
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/batch/ProjectDataLoader.java": [
-225,
-226
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ce/ws/CeWs.java": [
 31
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/ce/ws/TaskFormatter.java": [
-152,
-153
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ComponentService.java": [
 43
@@ -45,14 +37,6 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/FilterParser.java": [
 142
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/SearchProjectsAction.java": [
-411,
-413,
-414,
-460,
-461,
-464
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/measurecomputer/MeasureComputerContextImpl.java": [
 183
 ],
@@ -60,7 +44,6 @@
 41
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/api/posttask/ScannerContextImpl.java": [
-35,
 40
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/component/DisabledComponentsHolderImpl.java": [
@@ -107,8 +90,7 @@
 102
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadMeasureComputersStep.java": [
-58,
-144
+58
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistComponentsStep.java": [
 170
@@ -180,15 +162,10 @@
 126
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/exceptions/BadRequestException.java": [
-38,
 52
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/favorite/ws/FavoritesWs.java": [
 28
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/favorite/ws/SearchAction.java": [
-121,
-122
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/Action.java": [
 62
@@ -235,7 +212,6 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/Result.java": [
 70,
-95,
 119
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIteratorForSingleChunk.java": [
@@ -300,9 +276,6 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/metric/ws/MetricsWs.java": [
 31
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/metric/ws/SearchAction.java": [
-98
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/DefaultNotificationManager.java": [
 59
 ],
@@ -320,7 +293,6 @@
 28
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ApplyPermissionTemplateQuery.java": [
-34,
 47
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/index/PermissionIndexer.java": [
@@ -375,23 +347,14 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/Visibility.java": [
 68
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/GhostsAction.java": [
-149
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/ProjectsWs.java": [
 32
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/ProvisionedAction.java": [
-150
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/SearchMyProjectsData.java": [
 106,
 111,
 116,
 121
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/SearchMyProjectsDataLoader.java": [
-97
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/projectanalysis/ws/ProjectAnalysesWs.java": [
 29
@@ -414,7 +377,6 @@
 247
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/QgateProjectFinder.java": [
-97,
 102
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/QualityGatesWs.java": [
@@ -485,9 +447,6 @@
 71,
 78,
 173
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleUpdater.java": [
-275
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleQuery.java": [
 103,

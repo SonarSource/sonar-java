@@ -97,6 +97,9 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
         return;
       }
     }
+    if (tree.symbol().isPrivate()) {
+      return;
+    }
     parametersStack.push(tree.parameters().stream()
       .map(VariableTree::symbol)
       .collect(Collectors.toSet()));
