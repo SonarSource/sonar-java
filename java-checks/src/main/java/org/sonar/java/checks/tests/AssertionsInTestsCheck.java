@@ -119,6 +119,14 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     return contextConsumerType.typeArguments().get(0).is("org.springframework.boot.test.context.assertj.AssertableApplicationContext");
   }
 
+  /**
+   * Takes a Symbol as input and checks if it has a declaring class available. If so, it will also check that the class has at least
+   * one method with an assertion.
+   * Used by {@link #isSpringBootAssertableContext(MethodTree)} to check if a ContextConsumer of AssertableApplicationContext
+   *   has at least an assertion in its methods.
+   * @param contextConsumerImplSymbol The symbol for which we want to check the declaration of
+   * @return true if the symbol has no declaration (to avoid FPs), or if its declaration is a class with at least one method with assertions
+   */
   private boolean hasDeclaredAssertions(Symbol contextConsumerImplSymbol) {
     Tree declaration = contextConsumerImplSymbol.declaration();
     if (declaration instanceof ClassTreeImpl contextConsumerImpl) {
@@ -128,10 +136,13 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     return true;
   }
 
+  /**
+   * Finds the first nested method invocation in a tree that matches the MethodMatchers provided in the constructor
+   */
   private static class MethodInvocationMatcherVisitor extends BaseTreeVisitor {
 
     private MethodInvocationTreeImpl methodInvocationTree;
-    private MethodMatchers matcher;
+    private final MethodMatchers matcher;
 
     private MethodInvocationMatcherVisitor(MethodMatchers matcher) {
       this.matcher = matcher;
