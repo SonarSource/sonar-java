@@ -25,6 +25,7 @@ import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rule.RuleScope;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.Beta;
@@ -168,6 +169,16 @@ public interface CheckRegistrar {
      * RuleKey automatically.
      */
     public void registerMainSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
+      // to be overridden
+    }
+
+    /**
+     * Registers a custom file scanner not related to any rule or repository.
+     * CheckRegistrars call this function to register a custom file scanner for execution during the analysis
+     * on all source files that match the given rule scope (MAIN, TEST or ALL).
+     * Custom file scanners reporting an issue will have no effect, since no rule is associated.
+     */
+    public void registerCustomFileScanner(RuleScope ruleScope, JavaFileScanner scanner) {
       // to be overridden
     }
 

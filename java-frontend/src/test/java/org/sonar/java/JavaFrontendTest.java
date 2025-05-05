@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
@@ -51,6 +52,7 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.api.rule.RuleScope;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
@@ -60,6 +62,8 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.plugins.java.api.CheckRegistrar;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -189,6 +193,38 @@ class JavaFrontendTest {
       "No \"Test\" source files to scan.",
       "No \"Generated\" source files to scan."
     );
+  }
+
+  @Test
+  void scan_method_is_called_for_hook() throws IOException {
+    class Hook implements CheckRegistrar, JavaFileScanner {
+      int callCount;
+
+      @Override
+      public void register(RegistrarContext registrarContext) {
+        registrarContext.registerCustomFileScanner(RuleScope.ALL, this);
+      }
+
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        callCount++;
+      }
+    }
+
+    var settings = new MapSettings();
+    if (sensorContext == null) {
+      File baseDir = temp.getRoot().getAbsoluteFile();
+      sensorContext = SensorContextTester.create(baseDir);
+      sensorContext.setSettings(settings);
+    }
+
+    var hook = new Hook();
+    var inputFiles = List.of(
+      addFile("class A {}", sensorContext),
+      addFile("class B {}", sensorContext)
+    );
+    scan(settings, SONARLINT_RUNTIME, inputFiles, new CheckRegistrar[]{hook});
+    assertThat(hook.callCount).isEqualTo(2);
   }
 
   @Test
@@ -808,6 +844,10 @@ class JavaFrontendTest {
   }
 
   private List<InputFile> scan(MapSettings settings, SonarRuntime sonarRuntime, List<InputFile> inputFiles) {
+    return scan(settings, sonarRuntime, inputFiles, null);
+  }
+
+  private List<InputFile> scan(MapSettings settings, SonarRuntime sonarRuntime, List<InputFile> inputFiles, @Nullable CheckRegistrar[] checkRegistrars) {
     if (sensorContext == null) {
       File baseDir = temp.getRoot().getAbsoluteFile();
       sensorContext = SensorContextTester.create(baseDir);
@@ -823,7 +863,7 @@ class JavaFrontendTest {
     javaClasspath = mock(ClasspathForMain.class);
     javaTestClasspath = mock(ClasspathForTest.class);
     sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath,
-      mock(CheckFactory.class), mock(ActiveRules.class));
+      mock(CheckFactory.class), mock(ActiveRules.class), checkRegistrars);
     sonarComponents.setSensorContext(sensorContext);
     sonarComponents.mainChecks().add(mainCodeIssueScannerAndFilter);
     sonarComponents.testChecks().add(testCodeIssueScannerAndFilter);
@@ -831,7 +871,7 @@ class JavaFrontendTest {
       .map(JavaVersionImpl::fromString)
       .orElse(new JavaVersionImpl());
     JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class),
-      null, mainCodeIssueScannerAndFilter);
+      null, sonarComponents.mainChecks().toArray(new JavaCheck[0]));
     frontend.scan(inputFiles, Collections.emptyList(), Collections.emptyList());
 
     return inputFiles;

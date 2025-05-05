@@ -68,6 +68,7 @@ import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rule.RuleScope;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
@@ -81,6 +82,8 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JspCodeVisitor;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonarsource.sonarlint.core.plugin.commons.sonarapi.SonarLintRuntimeImpl;
@@ -408,6 +411,44 @@ class SonarComponentsTest {
   }
 
   @Test
+  void register_custom_file_scanners_with_no_active_rules() {
+    var noActiveRules = (new ActiveRulesBuilder()).build();
+    CheckFactory specificCheckFactory = new CheckFactory(noActiveRules);
+    SensorContextTester specificContext = SensorContextTester.create(new File(".")).setActiveRules(noActiveRules);
+
+    class DummyScanner implements JavaFileScanner {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        // Dummy implementation. We just need the class instance
+      }
+    }
+
+    class MainScanner extends DummyScanner {
+    }
+
+    class TestScanner extends DummyScanner {
+    }
+
+    class AllScanner extends DummyScanner {
+    }
+
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
+      null, specificCheckFactory, noActiveRules, new CheckRegistrar[]{
+      ctx -> ctx.registerCustomFileScanner(RuleScope.MAIN, new MainScanner()),
+      ctx -> ctx.registerCustomFileScanner(RuleScope.TEST, new TestScanner()),
+      ctx -> ctx.registerCustomFileScanner(RuleScope.ALL, new AllScanner())
+    });
+
+    sonarComponents.setSensorContext(specificContext);
+    assertThat(sonarComponents.mainChecks())
+      .extracting(c -> c.getClass().getSimpleName())
+      .containsExactly("MainScanner", "AllScanner");
+    assertThat(sonarComponents.testChecks())
+      .extracting(c -> c.getClass().getSimpleName())
+      .containsExactly("TestScanner", "AllScanner");
+  }
+
+  @Test
   void register_custom_rule_by_instances_instead_of_classes() {
     ActiveRules activeRules = activeRules("java:S101", "java:S102");
     CheckFactory specificCheckFactory = new CheckFactory(activeRules);
@@ -468,6 +509,21 @@ class SonarComponentsTest {
     sonarComponents.setSensorContext(context);
 
     sonarComponents.addIssue(TestUtils.emptyInputFile("file.java"), expectedCheck, 0, "message", null);
+    verify(context, never()).newIssue();
+  }
+
+  @Test
+  void no_issue_when_reporting_from_custom_file_scanner() {
+    JavaFileScanner customScanner = scannerContext -> {
+      // empty
+    };
+    CheckRegistrar registrar = registrarContext ->
+      registrarContext.registerCustomFileScanner(RuleScope.ALL, customScanner);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, null, null,
+      null, checkFactory, context.activeRules(), new CheckRegistrar[]{registrar});
+    sonarComponents.setSensorContext(context);
+
+    sonarComponents.addIssue(TestUtils.emptyInputFile("file.java"), customScanner, 0, "message", null);
     verify(context, never()).newIssue();
   }
 
