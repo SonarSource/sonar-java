@@ -95,19 +95,19 @@ public class SpelExpressionCheckSample {
   @Value("${user.region:#{  null + 3 }}") // Compliant
   private String default8;
 
-  @Value("${user.region:#{  null + * 3 }}") // Compliant, but the default part of a property placeholder should not contain SpEL. seems to be quite some people that do that on github
+  @Value("${user.region:#{  null + * 3 }}") // FN, we don't check the default part of a property placeholder
   private String default9;
 
   @Value("${user.region:#{'D'+'E'}}") // Compliant
   private String default10;
 
-  @Value("${user.region:#{null}:#{null}:foo.bar}") // Compliant, but the default part of a property placeholder should not contain SpEL
+  @Value("${user.region:#{null}:#{null}:foo.bar}") // Compliant
   private String default11;
 
-  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // Compliant
+  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // FN, we don't check the default part of a property placeholder
   private String default12;
 
-  @Value("${user.region:#{4**4}:#{null}:foo.bar}") // Compliant
+  @Value("${user.region:#{4**4}:#{null}:foo.bar}") // FN, we don't check the default part of a property placeholder
 
   private String default13;
 
@@ -464,27 +464,24 @@ public class SpelExpressionCheckSample {
 
     // However, it is not possible to find a value that is valid in all the cases.
     // "#aVar" does not work in the case below.
-    // FN
-    @Value("#{@${placeholder}}") // Noncompliant
+    @Value("#{@${placeholder}}") // Compliant
     private Integer placeholderStage3;
     // "@#aVar" is not a valid SpEL expression.
     @Value("#{@#aVar}") // Noncompliant
     private Integer SpELStage3;
 
-    // FN
-    @Value("#{@${placeholder}}") // Noncompliant
+    @Value("#{@${placeholder}}") // Compliant
     private Integer placeholderStage4;
     @Value("#{@aBean}") // Compliant
     private Integer SpELStage4;
 
-    // FP
     @Value("#{${placeholder:10}}") // Compliant
     private Integer placeholderStage5;
     @Value("#{10}") // Compliant
     private Integer SpELStage5;
 
-    // FP
-    @Value("#{@${placeholder:10}}") // Noncompliant
+
+    @Value("#{@${placeholder:10}}") // Compliant
     private Integer placeholderStage6;
     @Value("#{@10}") // Noncompliant
     private Integer SpELStage6;

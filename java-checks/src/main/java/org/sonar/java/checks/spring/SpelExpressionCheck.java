@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -159,7 +158,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
       } else if (SpEL.matchPrefix(content, idx)) {
         var expr = SpEL.parse(content, idx, offset);
         idx = expr.range.end;
-      }else{
+      } else {
         ++idx;
       }
     }
@@ -189,43 +188,62 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
   private static class PropertyPlaceholder {
     private static char prefix = '$';
 
-    // range are always inclusive, exclusive
     record Placeholder(int offset, Range range, String expr, @Nullable String defaultValue) {
       public Placeholder {
         if (!PROPERTY_PLACEHOLDER_PATTERN.asMatchPredicate().test(expr)) {
           throw new SyntaxError("Correct this malformed property placeholder.", range.addOffset(offset));
         }
       }
+
+      public String evaluate(String stream) {
+        char before = range.start > 0 ? stream.charAt(range.start - 1) : ' ';
+        if (before == '@') {
+          return "bean";
+        }
+        return "#var";
+      }
     }
 
-    private static boolean matchPrefix(String stream, int idx) {
+    static boolean matchPrefix(String stream, int idx) {
       return idx + 1 < stream.length() && stream.charAt(idx) == prefix && stream.charAt(idx + 1) == '{';
     }
 
-    // parse a placeholder starting from idx in the stream
-    private static Placeholder parse(String stream, int startIdx, int offset) {
+    /**
+     * Parses a property placeholder from the given string starting at the specified index.
+     * Assumes that the prefix for a property placeholder is already matched.
+     *
+     * @param stream The input string containing the property placeholder.
+     * @param startIdx The starting index of the placeholder in the string.
+     * @param offset The offset to be added to the range for error reporting.
+     * @return A {@link Placeholder} object representing the parsed placeholder.
+     * @throws IllegalArgumentException If the prefix is not matched.
+     * @throws SyntaxError If the placeholder is malformed or if matching braces are not closed.
+     */
+    static Placeholder parse(String stream, int startIdx, int offset) {
       if (!PropertyPlaceholder.matchPrefix(stream, startIdx)) {
         throw new IllegalArgumentException();
       }
 
-      ParseStates state = new EXPR(startIdx);
+      ParseStates state = new Expr();
       int startExpr = startIdx + 2;
 
       for (int idx = startExpr; idx < stream.length(); idx++) {
         char c = stream.charAt(idx);
-        if (state instanceof EXPR e && (c == '}' || c == ':')) {
+        if (state instanceof Expr e && (c == '}' || c == ':')) {
           String expr = stream.substring(startExpr, idx).trim();
           if (c == '}') {
-            return new Placeholder(offset, new Range(e.start, idx+1), expr, null);
+            return new Placeholder(offset, new Range(startIdx, idx + 1), expr, null);
           } else {
-            state = new DEFAULT_VALUE(e.start, 0, expr, idx + 1);
+            state = new DefaultValue(0, expr, idx + 1);
           }
-        } else if (state instanceof DEFAULT_VALUE d && c == '}' && d.nestingLevel == 0) {
-          return new Placeholder(offset, new Range(startExpr, idx + 1), d.expr, stream.substring(d.startDefault, idx).trim());
-        } else if (state instanceof DEFAULT_VALUE d && c == '{') {
-          state = d.increaseNestingLevel();
-        } else if (state instanceof DEFAULT_VALUE d && c == '}') {
-          state = d.decreaseNestingLevel();
+        } else if (state instanceof DefaultValue d && c == '}' && d.nestingLevel == 0) {
+          return new Placeholder(offset, new Range(startIdx, idx + 1), d.expr, stream.substring(d.startDefault, idx).trim());
+        } else if (state instanceof DefaultValue d) {
+          if (c == '{') {
+            state = d.increaseNestingLevel();
+          } else if (c == '}') {
+            state = d.decreaseNestingLevel();
+          }
         }
       }
 
@@ -235,22 +253,21 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
 
     sealed interface ParseStates {
     }
-    record EXPR(int start) implements ParseStates {
+    record Expr() implements ParseStates {
     }
-    record DEFAULT_VALUE(int start, int nestingLevel, String expr, int startDefault) implements ParseStates {
-      DEFAULT_VALUE increaseNestingLevel() {
-        return new DEFAULT_VALUE(start, nestingLevel + 1, expr, startDefault);
+    record DefaultValue(int nestingLevel, String expr, int startDefault) implements ParseStates {
+      DefaultValue increaseNestingLevel() {
+        return new DefaultValue(nestingLevel + 1, expr, startDefault);
       }
 
-      DEFAULT_VALUE decreaseNestingLevel() {
-        return new DEFAULT_VALUE(start, nestingLevel - 1, expr, startDefault);
+      DefaultValue decreaseNestingLevel() {
+        return new DefaultValue(nestingLevel - 1, expr, startDefault);
       }
     }
   }
   private static class SpEL {
     private static char prefix = '#';
 
-    // range is inclusive, exclusive
     record SpELExpr(String expr, Range range, int offset) {
       public SpELExpr {
         try {
@@ -261,11 +278,22 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
       }
     }
 
-    private static boolean matchPrefix(String stream, int startIdx) {
+    static boolean matchPrefix(String stream, int startIdx) {
       return startIdx + 1 < stream.length() && stream.charAt(startIdx) == prefix && stream.charAt(startIdx + 1) == '{';
     }
 
-    private static SpELExpr parse(String stream, int startIdx, int offset) {
+    /**
+     * Parses a SpEL (Spring Expression Language) expression from the given string starting at the specified index.
+     * Assumes that the prefix for a SpEL expression is already matched.
+     *
+     * @param stream The input string containing the SpEL expression.
+     * @param startIdx The starting index of the SpEL expression in the string.
+     * @param offset The offset to be added to the range for error reporting.
+     * @return A {@link SpELExpr} object representing the parsed SpEL expression.
+     * @throws IllegalArgumentException If the prefix is not matched.
+     * @throws SyntaxError If the SpEL expression is malformed or if matching braces are not closed.
+     */
+    static SpELExpr parse(String stream, int startIdx, int offset) {
       if (!SpEL.matchPrefix(stream, startIdx)) {
         throw new IllegalArgumentException();
       }
@@ -275,16 +303,15 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
       int nestingLevel = 0;
       int idx = startExpr;
 
-
       while (idx < stream.length()) {
         if (SpelExpressionCheck.PropertyPlaceholder.matchPrefix(stream, idx)) {
           var placeholder = SpelExpressionCheck.PropertyPlaceholder.parse(stream, idx, offset);
-          evaluated.append("#aVar");
+          evaluated.append(placeholder.evaluate(stream));
           idx = placeholder.range.end;
         } else if (stream.charAt(idx) == '}' && nestingLevel == 0) {
 
-          return new SpELExpr(evaluated.toString(), new Range(startIdx, idx+1), offset);
-        }  else {
+          return new SpELExpr(evaluated.toString(), new Range(startIdx, idx + 1), offset);
+        } else {
           evaluated.append(stream.charAt(idx));
           if (stream.charAt(idx) == '{') {
             nestingLevel++;
