@@ -186,7 +186,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
   private record Range(int start, int end) implements Serializable {
     public Range {
       if (start >= end) {
-        throw new IllegalArgumentException("a range is must be non empty, this imply start must be less than end");
+        throw new IllegalArgumentException("Range must be non-empty; start value must be less than end value.");
       }
     }
 
@@ -199,10 +199,10 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
   }
 
   private static class PropertyPlaceholder {
-    private final static char prefix = '$';
+    private static final char PREFIX = '$';
 
     static boolean matchPrefix(String expressionSource, int idx) {
-      return idx + 1 < expressionSource.length() && expressionSource.charAt(idx) == prefix && expressionSource.charAt(idx + 1) == '{';
+      return idx + 1 < expressionSource.length() && expressionSource.charAt(idx) == PREFIX && expressionSource.charAt(idx + 1) == '{';
     }
 
     /**
@@ -296,10 +296,10 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
   }
 
   private static class SpEL {
-    private final static char prefix = '#';
+    private static final char PREFIX = '#';
 
     static boolean matchPrefix(String expressionSource, int startIdx) {
-      return startIdx + 1 < expressionSource.length() && expressionSource.charAt(startIdx) == prefix && expressionSource.charAt(startIdx + 1) == '{';
+      return startIdx + 1 < expressionSource.length() && expressionSource.charAt(startIdx) == PREFIX && expressionSource.charAt(startIdx + 1) == '{';
     }
 
     /**
