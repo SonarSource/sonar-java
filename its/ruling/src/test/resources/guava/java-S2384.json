@@ -7,6 +7,7 @@
 4498
 ],
 "com.google.guava:guava:src/com/google/common/collect/AbstractBiMap.java": [
+63,
 69,
 96
 ],
@@ -30,6 +31,12 @@
 ],
 "com.google.guava:guava:src/com/google/common/collect/HashBiMap.java": [
 684
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableEnumMap.java": [
+52
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableEnumSet.java": [
+57
 ],
 "com.google.guava:guava:src/com/google/common/collect/ImmutableMapEntrySet.java": [
 42
@@ -78,9 +85,11 @@
 1146
 ],
 "com.google.guava:guava:src/com/google/common/collect/TreeRangeSet.java": [
-268
+268,
+433
 ],
 "com.google.guava:guava:src/com/google/common/collect/WellBehavedMap.java": [
+43,
 57
 ],
 "com.google.guava:guava:src/com/google/common/escape/ArrayBasedEscaperMap.java": [

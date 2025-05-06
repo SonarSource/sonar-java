@@ -162,6 +162,7 @@
 126
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/exceptions/BadRequestException.java": [
+38,
 52
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/favorite/ws/FavoritesWs.java": [
@@ -212,6 +213,7 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/Result.java": [
 70,
+95,
 119
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIteratorForSingleChunk.java": [
@@ -276,6 +278,9 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/metric/ws/MetricsWs.java": [
 31
 ],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/metric/ws/SearchAction.java": [
+98
+],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/DefaultNotificationManager.java": [
 59
 ],
@@ -293,6 +298,7 @@
 28
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ApplyPermissionTemplateQuery.java": [
+34,
 47
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/index/PermissionIndexer.java": [
@@ -347,8 +353,14 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/Visibility.java": [
 68
 ],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/GhostsAction.java": [
+149
+],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/ProjectsWs.java": [
 32
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/ProvisionedAction.java": [
+150
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/SearchMyProjectsData.java": [
 106,
