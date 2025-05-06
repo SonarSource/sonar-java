@@ -198,8 +198,8 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
   /**
    * Represents a context for parsing expressions.
    *
-   * @param expressionSource the source of the expression
-   * @param offset           offset represents the start of the source expression with respect to the literal tree
+   * @param expressionSource the expression source text
+   * @param offset           offset represents the start of the expression text with respect to the literal string containing it.
    */
   private record ParseCtx(String expressionSource, int offset) {
   }
