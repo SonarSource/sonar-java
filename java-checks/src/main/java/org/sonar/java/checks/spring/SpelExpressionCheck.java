@@ -124,9 +124,9 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     try {
       var argValue = entry.getValue();
       if (expression.is(Tree.Kind.STRING_LITERAL)) {
-        checkStringContents(argValue, 1);
+        checkStringContents(new ParseCtx(argValue, 1));
       } else {
-        checkStringContents(argValue, 0);
+        checkStringContents(new ParseCtx(argValue, 0));
       }
     } catch (SyntaxError e) {
       reportIssue(expression, e);
@@ -150,14 +150,16 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static void checkStringContents(String content, int offset) throws SyntaxError {
+  private static void checkStringContents(ParseCtx ctx) throws SyntaxError {
+    String expressionSource = ctx.expressionSource();
     int idx = 0;
-    while (idx < content.length()) {
-      if (PropertyPlaceholder.matchPrefix(content, idx)) {
-        var placeholder = PropertyPlaceholder.parse(content, idx, offset);
+
+    while (idx < expressionSource.length()) {
+      if (PropertyPlaceholder.matchPrefix(expressionSource, idx)) {
+        var placeholder = PropertyPlaceholder.parse(ctx, idx);
         idx = placeholder.range.end;
-      } else if (SpEL.matchPrefix(content, idx)) {
-        var expr = SpEL.parse(content, idx, offset);
+      } else if (SpEL.matchPrefix(expressionSource, idx)) {
+        var expr = SpEL.parse(ctx, idx);
         idx = expr.range.end;
       } else {
         ++idx;
@@ -193,6 +195,9 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  private record ParseCtx(String expressionSource, int offset) {
+  }
+
   private static class PropertyPlaceholder {
     private final static char prefix = '$';
 
@@ -205,20 +210,19 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
      * Assumes that the prefix for a property placeholder is already matched.
      *
      * For example, given the inputs:
-     * - expressionSource="1234${foo.property:default}"
+     * - ctx=ParseCtx("1234${foo.property:default}", offset=0)
      * - startIdx=4
-     * - offset=0
      * parse will return: Placeholder(offset=0, range=Range(4, 27), expr="foo.property", defaultValue="default")
      *
-     * @param expressionSource The input string containing the property placeholder.
+     * @param ctx The context of the parsing.
      * @param startIdx The starting index of the placeholder in the string.
-     * @param offset The offset to be added to the range for error reporting.
      * @return A {@link Placeholder} object representing the parsed placeholder.
      * @throws IllegalArgumentException If the prefix is not matched.
      * @throws SyntaxError If the placeholder is malformed or if matching braces are not closed.
      *
      */
-    static Placeholder parse(String expressionSource, int startIdx, int offset) {
+    static Placeholder parse(ParseCtx ctx, int startIdx) {
+      String expressionSource = ctx.expressionSource();
       if (!PropertyPlaceholder.matchPrefix(expressionSource, startIdx)) {
         throw new IllegalArgumentException();
       }
@@ -232,14 +236,16 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
         if (state instanceof Expr && (current == '}' || current == ':')) {
           String expr = expressionSource.substring(startExpr, idx).trim();
           if (current == '}') {
-            return new Placeholder(offset, new Range(startIdx, idx + 1), expr, null);
+            return new Placeholder(ctx.offset(), new Range(startIdx, idx + 1), expr, null);
           } else {
             state = new DefaultValue(0, expr, idx + 1);
           }
         } else if (state instanceof DefaultValue d && current == '}' && d.nestingLevel == 0) {
-          return new Placeholder(offset, new Range(startIdx, idx + 1), d.expr, expressionSource.substring(d.startDefault, idx).trim());
+          return new Placeholder(ctx.offset(), new Range(startIdx, idx + 1), d.expr, expressionSource.substring(d.startDefault, idx).trim());
         } else if (state instanceof DefaultValue d) {
-          if (current == '{') {
+          if (SpEL.matchPrefix(expressionSource, idx)) {
+            SpEL.parse(ctx, idx);
+          } else if (current == '{') {
             state = d.increaseNestingLevel();
           } else if (current == '}') {
             state = d.decreaseNestingLevel();
@@ -248,7 +254,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
       }
 
       Range range = new Range(startIdx, expressionSource.length());
-      throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", range.addOffset(offset));
+      throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", range.addOffset(ctx.offset()));
     }
 
     sealed interface ParseStates {
@@ -289,7 +295,6 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  
   private static class SpEL {
     private final static char prefix = '#';
 
@@ -302,19 +307,18 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
      * Assumes that the prefix for a SpEL expression is already matched.
      *
      * For example, given the inputs:
-     * - expressionSource="1234#{1 + 2}"
+     * - ctx=ParseCtx(expressionSource="1234#{1 + 2}", offset=0)
      * - startIdx=4
-     * - offset=0
      * parse will return: SpELExpr(offset=0, range=Range(4, 12), expr="1 + 2")
      *
-     * @param expressionSource The input string containing the SpEL expression.
+     * @param ctx The context of the parsing.
      * @param startIdx The starting index of the SpEL expression in the string.
-     * @param offset The offset to be added to the range for error reporting.
      * @return A {@link SpELExpr} object representing the parsed SpEL expression.
      * @throws IllegalArgumentException If the prefix is not matched.
      * @throws SyntaxError If the SpEL expression is malformed or if matching braces are not closed.
      */
-    static SpELExpr parse(String expressionSource, int startIdx, int offset) {
+    static SpELExpr parse(ParseCtx ctx, int startIdx) {
+      String expressionSource = ctx.expressionSource();
       if (!SpEL.matchPrefix(expressionSource, startIdx)) {
         throw new IllegalArgumentException();
       }
@@ -328,12 +332,12 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
         char current = expressionSource.charAt(idx);
 
         if (SpelExpressionCheck.PropertyPlaceholder.matchPrefix(expressionSource, idx)) {
-          var placeholder = SpelExpressionCheck.PropertyPlaceholder.parse(expressionSource, idx, offset);
+          var placeholder = SpelExpressionCheck.PropertyPlaceholder.parse(ctx, idx);
           evaluated.append(placeholder.evaluate(expressionSource));
           idx = placeholder.range.end;
         } else if (current == '}' && nestingLevel == 0) {
 
-          return new SpELExpr(evaluated.toString(), new Range(startIdx, idx + 1), offset);
+          return new SpELExpr(evaluated.toString(), new Range(startIdx, idx + 1), ctx.offset());
         } else {
           evaluated.append(expressionSource.charAt(idx));
           if (current == '{') {
@@ -346,7 +350,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
       }
 
       Range range = new Range(startIdx, expressionSource.length());
-      throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", range.addOffset(offset));
+      throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", range.addOffset(ctx.offset()));
     }
 
   }

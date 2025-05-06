@@ -95,7 +95,8 @@ public class SpelExpressionCheckSample {
   @Value("${user.region:#{  null + 3 }}") // Compliant
   private String default8;
 
-  @Value("${user.region:#{  null + * 3 }}") // FN, we don't check the default part of a property placeholder
+  @Value("${user.region:#{  null + * 3 }}") // Noncompliant {{Correct this malformed SpEL expression.}}
+//                      ^^^^^^^^^^^^^^^^
   private String default9;
 
   @Value("${user.region:#{'D'+'E'}}") // Compliant
@@ -104,10 +105,11 @@ public class SpelExpressionCheckSample {
   @Value("${user.region:#{null}:#{null}:foo.bar}") // Compliant
   private String default11;
 
-  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // FN, we don't check the default part of a property placeholder
+  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // Noncompliant {{Correct this malformed SpEL expression.}}
+  //                            ^^^^^^^
   private String default12;
 
-  @Value("${user.region:#{4**4}:#{null}:foo.bar}") // FN, we don't check the default part of a property placeholder
+  @Value("${user.region:#{4**4}:#{null}:foo.bar}") // Noncompliant {{Correct this malformed SpEL expression.}}
 
   private String default13;
 
