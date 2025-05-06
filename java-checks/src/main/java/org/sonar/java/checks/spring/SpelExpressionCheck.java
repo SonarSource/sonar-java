@@ -16,15 +16,16 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.ObjIntConsumer;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
@@ -66,8 +67,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
    * </pre>
    */
   private static final Pattern PROPERTY_PLACEHOLDER_PATTERN = Pattern.compile(
-    "[a-zA-Z0-9/_-]++(\\[\\d++])*+(\\.[a-zA-Z0-9/_-]++(\\[\\d++])*+)*+"
-  );
+    "[a-zA-Z0-9/_-]++(\\[\\d++])*+(\\.[a-zA-Z0-9/_-]++(\\[\\d++])*+)*+");
 
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE);
@@ -83,8 +83,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
   private static Stream<AnnotationTree> getClassAndMemberAnnotations(ClassTree cls) {
     return Stream.concat(
       Stream.of(cls.modifiers().annotations()),
-      cls.members().stream().map(SpelExpressionCheck::getMemberAnnotations)
-    ).flatMap(Collection::stream);
+      cls.members().stream().map(SpelExpressionCheck::getMemberAnnotations)).flatMap(Collection::stream);
   }
 
   private static List<AnnotationTree> getMemberAnnotations(Tree member) {
@@ -125,9 +124,9 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     try {
       var argValue = entry.getValue();
       if (expression.is(Tree.Kind.STRING_LITERAL)) {
-        checkStringContents(argValue, 1);
+        checkStringContents(new ParseCtx(argValue, 1));
       } else {
-        checkStringContents(argValue, 0);
+        checkStringContents(new ParseCtx(argValue, 0));
       }
     } catch (SyntaxError e) {
       reportIssue(expression, e);
@@ -140,10 +139,9 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
       var tokenStart = Position.startOf(expression);
       var textSpan = new AnalyzerMessage.TextSpan(
         tokenStart.line(),
-        tokenStart.columnOffset() + error.startColumn,
+        tokenStart.columnOffset() + error.range.start,
         tokenStart.line(),
-        tokenStart.columnOffset() + error.endColumn
-      );
+        tokenStart.columnOffset() + error.range.end);
 
       var analyzerMessage = new AnalyzerMessage(this, context.getInputFile(), textSpan, error.getMessage(), 0);
       ((DefaultJavaFileScannerContext) context).reportIssue(analyzerMessage);
@@ -152,162 +150,224 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static void checkStringContents(String content, int startColumn) throws SyntaxError {
-    var i = 0;
-    while (i < content.length()) {
-      var c = content.charAt(i);
-      switch (c) {
-        case '$':
-          i = parseDelimitersAndContents(content, i + 1, startColumn + i, SpelExpressionCheck::parseValidPropertyPlaceholder);
-          break;
-        case '#':
-          i = parseDelimitersAndContents(content, i + 1, startColumn + i, SpelExpressionCheck::parseValidSpelExpression);
-          break;
-        default:
-          i++;
-          break;
+  private static void checkStringContents(ParseCtx ctx) throws SyntaxError {
+    String expressionSource = ctx.expressionSource();
+    int idx = 0;
+
+    while (idx < expressionSource.length()) {
+      if (PropertyPlaceholder.matchPrefix(expressionSource, idx)) {
+        var placeholder = PropertyPlaceholder.parse(ctx, idx);
+        idx = placeholder.range.end;
+      } else if (SpEL.matchPrefix(expressionSource, idx)) {
+        var expr = SpEL.parse(ctx, idx);
+        idx = expr.range.end;
+      } else {
+        ++idx;
       }
     }
-  }
-
-  /**
-   * Parses the following grammatical expression, starting at <code>startIndex</code> in `value`:
-   *
-   * <pre>
-   * ('{' contents '}')?
-   * </pre>
-   * <p>
-   * Where correct bracing is checked and then <code>contents</code> is parsed using the given <code>parseContents</code> function.
-   *
-   * @param value         string containing the character sequence to parse
-   * @param startIndex    index of the opening delimiter we start from in <code>value</code>
-   * @param startColumn   offset with the position of <code>value</code> within a potentially longer original string (used for reporting)
-   * @param parseContents function to parse <code>contents</code>
-   * @throws SyntaxError when the input does not comply with the expected grammatical expression
-   */
-  private static int parseDelimitersAndContents(
-    String value,
-    int startIndex,
-    int startColumn,
-    ObjIntConsumer<String> parseContents
-  ) throws SyntaxError {
-    if (startIndex == value.length()) {
-      return startIndex;
-    }
-    var endIndex = parseDelimiterBraces(value, startIndex, startColumn);
-    if (endIndex == startIndex) {
-      return endIndex;
-    }
-    var contents = value.substring(startIndex + 1, endIndex - 1);
-    parseContents.accept(contents, startColumn);
-    return endIndex;
-  }
-
-  private static int parseDelimiterBraces(String value, int startIndex, int startColumn) throws SyntaxError {
-    if (value.charAt(startIndex) != '{') {
-      return startIndex;
-    }
-
-    int openCount = 1;
-    for (var i = startIndex + 1; i < value.length(); i++) {
-      var c = value.charAt(i);
-      if (c == '{') {
-        openCount++;
-      } else if (c == '}') {
-        openCount--;
-        if (openCount == 0) {
-          return i + 1;
-        }
-      }
-    }
-
-    // +1 because of prefix `$` or `#`
-    var endColumn = startColumn + value.length() - startIndex + 1;
-    throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", startColumn, endColumn);
-  }
-
-  private static void parseValidPropertyPlaceholder(String placeholder, int startColumn) throws SyntaxError {
-    if (!isValidPropertyPlaceholder(placeholder, startColumn)) {
-      // +3 because of delimiter `#{` and `}`
-      var endColumn = startColumn + placeholder.length() + 3;
-      throw new SyntaxError("Correct this malformed property placeholder.", startColumn, endColumn);
-    }
-  }
-
-  private static boolean isValidPropertyPlaceholder(String placeholder, int startColumn) throws SyntaxError {
-    var segments = placeholder.split(":",2);
-    if (!isValidPropertyPlaceholderFirstSegment(segments[0], startColumn)) {
-      return false;
-    }
-    return segments.length < 2 || (isValidPropertyPlaceholderDefaultSegment(segments[1], startColumn + segments[0].length() + 1));
-  }
-
-  private static boolean isValidPropertyPlaceholderFirstSegment(String segment, int startColumn) throws SyntaxError {
-    var stripped = segment.stripLeading();
-    startColumn += segment.length() - stripped.length();
-    stripped = stripped.stripTrailing();
-
-    if (stripped.startsWith("#{")) {
-      parseDelimitersAndContents(stripped, 1, startColumn + 2, SpelExpressionCheck::parseValidSpelExpression);
-      return true;
-    } else {
-      return PROPERTY_PLACEHOLDER_PATTERN.matcher(stripped).matches();
-    }
-  }
-
-  private static boolean isValidPropertyPlaceholderDefaultSegment(String segment, int startColumn) throws SyntaxError {
-    var stripped = segment.stripLeading();
-    startColumn += segment.length() - stripped.length();
-    stripped = stripped.stripTrailing();
-
-    var contentsParser = getContentsParser(stripped);
-    if (contentsParser != null) {
-      var endIndex = parseDelimitersAndContents(stripped, 1, startColumn + 2, contentsParser);
-      return endIndex == segment.stripTrailing().length();
-    }
-    return true;
-  }
-
-  private static ObjIntConsumer<String> getContentsParser(String contents) {
-    if (contents.startsWith("${")) {
-      return SpelExpressionCheck::parseValidPropertyPlaceholder;
-    }
-    if (contents.startsWith("#{")) {
-      return SpelExpressionCheck::parseValidSpelExpression;
-    }
-    return null;
-  }
-
-  private static void parseValidSpelExpression(String expressionString, int startColumn) throws SyntaxError {
-    if (!isValidSpelExpression(expressionString)) {
-      // +3 because of delimiter `${` and `}`
-      var endColumn = startColumn + expressionString.length() + 3;
-      throw new SyntaxError("Correct this malformed SpEL expression.", startColumn, endColumn);
-    }
-  }
-
-  private static boolean isValidSpelExpression(String expressionString) {
-    expressionString = expressionString.strip();
-    if (expressionString.isEmpty()) {
-      return false;
-    }
-    try {
-      new SpelExpressionParser().parseExpression(expressionString);
-    } catch (ParseException | IllegalStateException e) {
-      return false;
-    }
-    return true;
   }
 
   private static class SyntaxError extends RuntimeException {
 
-    SyntaxError(String message, int startColumn, int endColumn) {
+    SyntaxError(String message, Range range) {
       super(message);
-      this.startColumn = startColumn;
-      this.endColumn = endColumn;
+      this.range = range;
     }
 
-    public final int startColumn;
-    public final int endColumn;
+    public final Range range;
+  }
+
+  /**
+   * Represents a non-empty range
+   *
+   * @param start the inclusive start index of the range
+   * @param end   the exclusive end index of the range
+   */
+  private record Range(int start, int end) implements Serializable {
+    public Range {
+      if (start >= end) {
+        throw new IllegalArgumentException("Range must be non-empty; start value must be less than end value.");
+      }
+    }
+
+    public Range addOffset(int offset) {
+      return new Range(start + offset, end + offset);
+    }
+  }
+
+  /**
+   * Represents a context for parsing expressions.
+   *
+   * @param expressionSource the expression source text
+   * @param offset           offset represents the start of the expression text with respect to the literal string containing it.
+   */
+  private record ParseCtx(String expressionSource, int offset) {
+  }
+
+  private static class PropertyPlaceholder {
+    private static final char PREFIX = '$';
+
+    static boolean matchPrefix(String expressionSource, int idx) {
+      return idx + 1 < expressionSource.length() && expressionSource.charAt(idx) == PREFIX && expressionSource.charAt(idx + 1) == '{';
+    }
+
+    /**
+     * Parses a property placeholder from the given string starting at the specified index.
+     * Assumes that the prefix for a property placeholder is already matched.
+     *
+     * For example, given the inputs:
+     * - ctx=ParseCtx("1234${foo.property:default}", offset=0)
+     * - startIdx=4
+     * parse will return: Placeholder(offset=0, range=Range(4, 27), expr="foo.property", defaultValue="default")
+     *
+     * @param ctx The context of the parsing.
+     * @param startIdx The starting index of the placeholder in the string.
+     * @return A {@link Placeholder} object representing the parsed placeholder.
+     * @throws IllegalArgumentException If the prefix is not matched.
+     * @throws SyntaxError If the placeholder is malformed or if matching braces are not closed.
+     *
+     */
+    static Placeholder parse(ParseCtx ctx, int startIdx) {
+      String expressionSource = ctx.expressionSource();
+      if (!PropertyPlaceholder.matchPrefix(expressionSource, startIdx)) {
+        throw new IllegalArgumentException();
+      }
+
+      ParseStates state = new Expr();
+      int startExpr = startIdx + 2;
+
+      for (int idx = startExpr; idx < expressionSource.length(); idx++) {
+        char current = expressionSource.charAt(idx);
+
+        if (state instanceof Expr && (current == '}' || current == ':')) {
+          String expr = expressionSource.substring(startExpr, idx).trim();
+          if (current == '}') {
+            return new Placeholder(ctx.offset(), new Range(startIdx, idx + 1), expr, null);
+          } else {
+            state = new DefaultValue(0, expr, idx + 1);
+          }
+        } else if (state instanceof DefaultValue d && current == '}' && d.nestingLevel == 0) {
+          return new Placeholder(ctx.offset(), new Range(startIdx, idx + 1), d.expr, expressionSource.substring(d.startDefault, idx).trim());
+        } else if (state instanceof DefaultValue d) {
+          if (SpEL.matchPrefix(expressionSource, idx)) {
+            SpEL.parse(ctx, idx);
+          } else if (current == '{') {
+            state = d.increaseNestingLevel();
+          } else if (current == '}') {
+            state = d.decreaseNestingLevel();
+          }
+        }
+      }
+
+      Range range = new Range(startIdx, expressionSource.length());
+      throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", range.addOffset(ctx.offset()));
+    }
+
+    sealed interface ParseStates {
+    }
+    record Expr() implements ParseStates {
+    }
+    record DefaultValue(int nestingLevel, String expr, int startDefault) implements ParseStates {
+      DefaultValue increaseNestingLevel() {
+        return new DefaultValue(nestingLevel + 1, expr, startDefault);
+      }
+
+      DefaultValue decreaseNestingLevel() {
+        return new DefaultValue(nestingLevel - 1, expr, startDefault);
+      }
+    }
+  }
+
+  record Placeholder(int offset, Range range, String expr, @Nullable String defaultValue) {
+    public Placeholder {
+      if (!PROPERTY_PLACEHOLDER_PATTERN.asMatchPredicate().test(expr)) {
+        throw new SyntaxError("Correct this malformed property placeholder.", range.addOffset(offset));
+      }
+    }
+
+    /**
+     * Evaluates the placeholder and returns its evaluation using a heuristic.
+     * We cannot return the true value without access to the context.
+     *
+     * @param expressionSource The original string containing the placeholder.
+     * @return The evaluated string value of the placeholder.
+     */
+    public String evaluate(String expressionSource) {
+      char before = range.start > 0 ? expressionSource.charAt(range.start - 1) : ' ';
+      if (before == '@') {
+        return "bean";
+      }
+      return "#var";
+    }
+  }
+
+  private static class SpEL {
+    private static final char PREFIX = '#';
+
+    static boolean matchPrefix(String expressionSource, int startIdx) {
+      return startIdx + 1 < expressionSource.length() && expressionSource.charAt(startIdx) == PREFIX && expressionSource.charAt(startIdx + 1) == '{';
+    }
+
+    /**
+     * Parses a SpEL (Spring Expression Language) expression from the given string starting at the specified index.
+     * Assumes that the prefix for a SpEL expression is already matched.
+     *
+     * For example, given the inputs:
+     * - ctx=ParseCtx(expressionSource="1234#{1 + 2}", offset=0)
+     * - startIdx=4
+     * parse will return: SpELExpr(offset=0, range=Range(4, 12), expr="1 + 2")
+     *
+     * @param ctx The context of the parsing.
+     * @param startIdx The starting index of the SpEL expression in the string.
+     * @return A {@link SpELExpr} object representing the parsed SpEL expression.
+     * @throws IllegalArgumentException If the prefix is not matched.
+     * @throws SyntaxError If the SpEL expression is malformed or if matching braces are not closed.
+     */
+    static SpELExpr parse(ParseCtx ctx, int startIdx) {
+      String expressionSource = ctx.expressionSource();
+      if (!SpEL.matchPrefix(expressionSource, startIdx)) {
+        throw new IllegalArgumentException();
+      }
+
+      int startExpr = startIdx + 2;
+      StringBuilder evaluated = new StringBuilder();
+      int nestingLevel = 0;
+      int idx = startExpr;
+
+      while (idx < expressionSource.length()) {
+        char current = expressionSource.charAt(idx);
+
+        if (SpelExpressionCheck.PropertyPlaceholder.matchPrefix(expressionSource, idx)) {
+          var placeholder = SpelExpressionCheck.PropertyPlaceholder.parse(ctx, idx);
+          evaluated.append(placeholder.evaluate(expressionSource));
+          idx = placeholder.range.end;
+        } else if (current == '}' && nestingLevel == 0) {
+
+          return new SpELExpr(evaluated.toString(), new Range(startIdx, idx + 1), ctx.offset());
+        } else {
+          evaluated.append(expressionSource.charAt(idx));
+          if (current == '{') {
+            nestingLevel++;
+          } else if (current == '}') {
+            nestingLevel--;
+          }
+          idx++;
+        }
+      }
+
+      Range range = new Range(startIdx, expressionSource.length());
+      throw new SyntaxError("Add missing '}' for this property placeholder or SpEL expression.", range.addOffset(ctx.offset()));
+    }
+
+  }
+
+  record SpELExpr(String expr, Range range, int offset) {
+    public SpELExpr {
+      try {
+        new SpelExpressionParser().parseExpression(expr);
+      } catch (ParseException | IllegalStateException | IllegalArgumentException e) {
+        throw new SyntaxError("Correct this malformed SpEL expression.", range.addOffset(offset));
+      }
+    }
   }
 }

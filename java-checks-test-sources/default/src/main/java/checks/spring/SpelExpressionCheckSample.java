@@ -1,6 +1,7 @@
 package checks.spring;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +14,7 @@ public class SpelExpressionCheckSample {
   private static final String INVALID_SPEL = "#{1 * * 2}";
   private static final String INVALID_PROPERTY_PLACEHOLDER = "${foo.bar[}";
   private static final String VALID_PROPERTY_PLACEHOLDER = "${foo.bar}";
+
 
   @Value(UNCLOSED) // Noncompliant {{Add missing '}' for this property placeholder or SpEL expression.}}
 //       ^^^^^^^^
@@ -100,15 +102,15 @@ public class SpelExpressionCheckSample {
   @Value("${user.region:#{'D'+'E'}}") // Compliant
   private String default10;
 
-  @Value("${user.region:#{null}:#{null}:foo.bar}") // Noncompliant
+  @Value("${user.region:#{null}:#{null}:foo.bar}") // Compliant
   private String default11;
 
-  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // Noncompliant {{Correct this malformed property placeholder.}}
-//        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  @Value("${user.region:#{null}:#{4**4}:foo.bar}") // Noncompliant {{Correct this malformed SpEL expression.}}
+  //                            ^^^^^^^
   private String default12;
 
   @Value("${user.region:#{4**4}:#{null}:foo.bar}") // Noncompliant {{Correct this malformed SpEL expression.}}
-//                      ^^^^^^^
+
   private String default13;
 
   @Value("${user.2region:default-region}") // Compliant
@@ -441,4 +443,49 @@ public class SpelExpressionCheckSample {
   private String sonarJava5079DefaultValueContainsColon2;
 
   private static final String MOCKED_SOAP_SP_CLIENT_SSL = "classpath:mocked-soap-sp-client-ssl.jks";
+
+  static class PropertyPlaceHolderInsideSpEL {
+    // We want to parse correctly the expression below
+    @Value("#{${placeholder}}") // Compliant
+    private Map<String, Integer> placeholderStage1;
+
+    // However, the problem is that Spring evaluates the expression in two stages
+    // 1. it parses the property placeholders and substitutes them
+    // 2. it parses the SpEL expression and executes it
+
+    // After evaluating the property placeholder, we have the following expression
+    @Value("#{{key1: '1', key2: '2', key3: '3'}}") // Compliant
+    private Map<String, Integer> SpELStage1;
+
+    // It is easy to validate that property placeholders are valid, but without the context we cannot validate the spring expression
+    // A solution is to use clever values to replace the property placeholders for instance replace "${placeholder}" with  "#aVar"
+    @Value("#{${placeholder}}") // Compliant
+    private Integer placeholderStage2;
+    @Value("#{#aVar}") // Compliant
+    private Integer SpELStage2;
+
+    // However, it is not possible to find a value that is valid in all the cases.
+    // "#aVar" does not work in the case below.
+    @Value("#{@${placeholder}}") // Compliant
+    private Integer placeholderStage3;
+    // "@#aVar" is not a valid SpEL expression.
+    @Value("#{@#aVar}") // Noncompliant
+    private Integer SpELStage3;
+
+    @Value("#{@${placeholder}}") // Compliant
+    private Integer placeholderStage4;
+    @Value("#{@aBean}") // Compliant
+    private Integer SpELStage4;
+
+    @Value("#{${placeholder:10}}") // Compliant
+    private Integer placeholderStage5;
+    @Value("#{10}") // Compliant
+    private Integer SpELStage5;
+
+
+    @Value("#{@${placeholder:10}}") // Compliant
+    private Integer placeholderStage6;
+    @Value("#{@10}") // Noncompliant
+    private Integer SpELStage6;
+  }
 }
