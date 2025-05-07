@@ -16,9 +16,11 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
@@ -40,4 +42,14 @@ class MutableMembersUsageCheckTest {
       .verifyNoIssues();
   }
 
+  /** The toString method is just used for debugging, so correctness doesn't matter, we just want it not to crash. */
+  @Test
+  void test_toString() {
+    var callSite = new MutableMembersUsageCheck.CallSite(
+      "foo()V",
+      Arrays.asList(
+        new MutableMembersUsageCheck.ArgumentParameterMapping(1, 0),
+        new MutableMembersUsageCheck.ArgumentParameterMapping(0, 2)));
+    assertThat(callSite.toString()).isNotEmpty();
+  }
 }
