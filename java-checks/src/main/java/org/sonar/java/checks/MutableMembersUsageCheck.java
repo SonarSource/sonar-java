@@ -93,13 +93,19 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
 
   private final Deque<String> methodSignatureStack = new ArrayDeque<>();
 
+  /** In the context of a method call, this means the argument at {@code argumentIndex}, is given by the
+   * calling method parameter at {@code parameterIndex}. For instance, in {@code int f(int a, int b) { g(0, 1, a); }}, we would have
+   * a mapping (0, 2): parameter 0 of `f`, i.e. a, is used as argument 2 of `g`. */
+  @VisibleForTesting
+  record ArgumentParameterMapping(int parameterIndex, int argumentIndex) {}
+
   /**
    * Maps index of arguments at the call site to parameters of the calling method.
    * For instance in `int f(int a, int b) { g(b, 2, 3); h(4, a);}`, we would have two call-sites:
-   * `{g, <0 -> 1>} and {h, <1 -> 0>}`
+   * `{g, (1,0)} and {h, (0, 1)}`
    */
   @VisibleForTesting
-  record CallSite(String methodSignature, Map<Integer, Integer> parameters) {
+  record CallSite(String methodSignature, List<ArgumentParameterMapping> parameters) {
 
     /**
      * For debugging.
@@ -107,8 +113,8 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     @Override
     public String toString() {
       return "{" + methodSignature + ", <" +
-        parameters.entrySet().stream()
-          .map(entry -> entry.getKey() + "->" + entry.getValue())
+        parameters.stream()
+          .map(entry -> entry.parameterIndex + "->" + entry.argumentIndex)
           .collect(Collectors.joining(", ")) + ">}";
     }
   }
@@ -163,7 +169,8 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
      */
     private List<MethodEntryPoint> findEntryPointsWithOutgoingEdges(String methodSignature) {
       return callGraph.getOrDefault(methodSignature, EMPTY_CALL_SITE_LIST).stream()
-        .flatMap(callSite -> callSite.parameters().values().stream())
+        .flatMap(callSite -> callSite.parameters().stream())
+        .map(ArgumentParameterMapping::parameterIndex)
         .distinct()
         .map(parameter -> new MethodEntryPoint(methodSignature, parameter))
         .toList();
@@ -199,9 +206,9 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
           }
           List<CallSite> callSites = callGraph.getOrDefault(current.methodSignature(), EMPTY_CALL_SITE_LIST);
           for (CallSite callSite : callSites) {
-            callSite.parameters.entrySet().stream()
-              .filter(entry -> entry.getValue().equals(current.paramIndex()))
-              .map(entry -> new MethodEntryPoint(callSite.methodSignature, entry.getKey()))
+            callSite.parameters.stream()
+              .filter(mapping -> mapping.parameterIndex == current.paramIndex())
+              .map(mapping -> new MethodEntryPoint(callSite.methodSignature, mapping.argumentIndex))
               .forEach(toProcess::add);
           }
         }
@@ -226,7 +233,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
      * Add edges between nodes if a call propagates a mutable parameter.
      */
     public void addMethodInvocation(Symbol.MethodSymbol methodSymbol, Arguments arguments, String callerSignature, List<Symbol> callerParameters) {
-      Map<Integer, Integer> mutableParameters = findMutableParameters(arguments, callerParameters);
+      List<ArgumentParameterMapping> mutableParameters = findMutableParameters(arguments, callerParameters);
       callGraph.computeIfAbsent(callerSignature, s -> new ArrayList<>())
         .add(new CallSite(methodSymbol.signature(), mutableParameters));
     }
@@ -235,14 +242,14 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     /**
      * Returns the indexes of arguments to the indexes of mutable parameters that correspond.
      */
-    private static Map<Integer, Integer> findMutableParameters(Arguments arguments, List<Symbol> parameters) {
-      Map<Integer, Integer> result = new HashMap<>();
+    private static List<ArgumentParameterMapping> findMutableParameters(Arguments arguments, List<Symbol> parameters) {
+      List<ArgumentParameterMapping> result = new ArrayList<>();
       for (int i = 0; i < arguments.size(); ++i) {
         ExpressionTree arg = arguments.get(i);
         if (isMutableType(arg) && arg instanceof IdentifierTree id) {
           int correspondingParameterIndex = parameters.indexOf(id.symbol());
           if (correspondingParameterIndex != -1) {
-            result.put(i, correspondingParameterIndex);
+            result.add(new ArgumentParameterMapping(correspondingParameterIndex, i));
           }
         }
       }
