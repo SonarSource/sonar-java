@@ -36,7 +36,7 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
   private static final MethodMatchers AUTHORIZED_METHODS = MethodMatchers.or(FAIL_METHOD_MATCHER, MOCKITO_MOCK_METHOD_MATCHERS);
   private static final MethodMatchers ENUM_FINAL_METHODS = MethodMatchers.create()
     .ofType(t -> t.is("java.lang.Enum"))
-    .names("name", "ordinal", "equals", "hashCode", "compareTo", "getDeclaringClass", "describeConstable", "finalize")
+    .names("name", "ordinal", "equals", "hashCode", "compareTo", "getDeclaringClass", "describeConstable")
     .withAnyParameters()
     .build();
 
