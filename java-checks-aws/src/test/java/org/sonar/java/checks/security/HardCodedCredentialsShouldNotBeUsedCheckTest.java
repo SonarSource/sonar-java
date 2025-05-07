@@ -17,12 +17,16 @@
 package org.sonar.java.checks.security;
 
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
 import org.sonar.api.testfixtures.log.LogAndArguments;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
+import org.sonar.java.checks.helpers.CredentialMethod;
+import org.sonar.java.checks.helpers.CredentialMethodsLoader;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
@@ -45,6 +49,42 @@ class HardCodedCredentialsShouldNotBeUsedCheckTest {
       .containsOnly("Could not load methods from \"non-existing-file.json\".");
   }
 
+  private boolean areMethodsDistinct(CredentialMethod method, CredentialMethod other) {
+    if (!method.cls.equals(other.cls) || !method.name.equals(other.name)) {
+      return true;
+    }
+    if (method.args.size() != other.args.size()) {
+      return true;
+    }
+    for (int i = 0; i < method.args.size(); i++) {
+      if (!method.args.get(i).equals(other.args.get(i)) &&
+        !method.args.get(i).equals("*") && !other.args.get(i).equals("*")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private void checkMethodsDistinct(List<CredentialMethod> methods) {
+    for (int i = 0; i < methods.size(); i++) {
+      for (int j = i + 1; j < methods.size(); j++) {
+        assertThat(areMethodsDistinct(methods.get(i), methods.get(j)))
+        .as("credential method entries " + methods.get(i) + " and " + methods.get(j) + " are distinct")
+        .isTrue();
+      }
+    }
+  }
+
+  @Test
+  void test_credential_file_content() throws IOException {
+    Map<String, List<CredentialMethod>> methods = CredentialMethodsLoader
+      .load(HardCodedCredentialsShouldNotBeUsedCheck.CREDENTIALS_METHODS_FILE);
+
+    for (Map.Entry<String, List<CredentialMethod>> entry : methods.entrySet()) {
+      checkMethodsDistinct(entry.getValue());
+    }
+    assertThat(methods).hasSize(2730);
+  }
 
   @Test
   void test() {

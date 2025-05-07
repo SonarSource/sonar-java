@@ -57,4 +57,10 @@ public class CredentialMethod {
       .build();
     return methodMatcher;
   }
+
+  /** This is intended for debugging and testing. */
+  @Override
+  public String toString() {
+    return cls + "#" + name + args + "@" + indices ;
+  }
 }
