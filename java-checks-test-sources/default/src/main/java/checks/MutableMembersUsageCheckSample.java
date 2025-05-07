@@ -565,10 +565,12 @@ class Java9Methods {
 class SetThroughPrivateMethods {
   private byte[] buf;
   private Map<String, String> map;
+  private List<Integer> list;
 
   private SetThroughPrivateMethods(final byte[] buf, final Map<String, String> map) {
     this.map = map; // Noncompliant
     this.buf = buf; // Compliant: callers have to go through `of` which makes a clone of the parameter
+    this.list = new ArrayList<>(); // Compliant: not set from a parameter of this method
   }
 
   public static SetThroughPrivateMethods of(final byte[] buf) {
@@ -602,5 +604,18 @@ class SetThroughPrivateMethods {
 
   static SetThroughPrivateMethods ofMap(final Map<String, String> map) {
     return new SetThroughPrivateMethods(null, map);
+  }
+
+  public void cycle(List<Integer> l){
+    cycleA(l, 5);
+  }
+  private void cycleA(List<Integer> l, int i){
+    cycleB(l, i);
+  }
+  private void cycleB(List<Integer> l, int i){
+    if (i > 0) {
+      cycleA(l, i - 1);
+    }
+    list = l; // Noncompliant
   }
 }
