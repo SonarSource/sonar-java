@@ -13,6 +13,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OneExpectedRuntimeExceptionCheckSample {
 
+  private String fun(String x) {
+    return x;
+  }
+
+  enum ENUM {
+    E1;
+  }
+
+  @Test
+  void testEnumStaticFinalMethods() {
+    assertThrows(IllegalStateException.class, () -> fun(ENUM.E1.name())); //Compliant, ENUM.E1 is cannot throw exceptions
+  }
+
   private final Class<IllegalStateException> myException = IllegalStateException.class;
   private final Executable exec = () -> foo(foo(1));
 

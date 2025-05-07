@@ -186,9 +186,14 @@ public final class MethodTreeUtils {
   public static class MethodInvocationCollector extends BaseTreeVisitor {
     protected final List<Tree> invocationTree = new ArrayList<>();
     private final Predicate<Symbol.MethodSymbol> collectPredicate;
+    private final Predicate<Symbol.MethodSymbol> excludePredicate;
 
     public MethodInvocationCollector(Predicate<Symbol.MethodSymbol> collectPredicate) {
+      this(collectPredicate, m -> false);
+    }
+    public MethodInvocationCollector(Predicate<Symbol.MethodSymbol> collectPredicate, Predicate<Symbol.MethodSymbol> excludePredicate){
       this.collectPredicate = collectPredicate;
+      this.excludePredicate = excludePredicate;
     }
 
     public List<Tree> getInvocationTree() {
@@ -197,7 +202,7 @@ public final class MethodTreeUtils {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (collectPredicate.test(mit.methodSymbol())) {
+      if (collectPredicate.test(mit.methodSymbol()) && !excludePredicate.test(mit.methodSymbol())) {
         invocationTree.add(ExpressionUtils.methodName(mit));
       }
       super.visitMethodInvocation(mit);
@@ -205,7 +210,7 @@ public final class MethodTreeUtils {
 
     @Override
     public void visitNewClass(NewClassTree tree) {
-      if (collectPredicate.test(tree.methodSymbol())) {
+      if (collectPredicate.test(tree.methodSymbol()) && !excludePredicate.test(tree.methodSymbol())) {
         invocationTree.add(tree.identifier());
       }
       super.visitNewClass(tree);

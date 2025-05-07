@@ -34,6 +34,11 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
     .addParametersMatcher("java.lang.Class").addParametersMatcher("java.lang.Class", "java.lang.String")
     .build();
   private static final MethodMatchers AUTHORIZED_METHODS = MethodMatchers.or(FAIL_METHOD_MATCHER, MOCKITO_MOCK_METHOD_MATCHERS);
+  private static final MethodMatchers ENUM_FINAL_METHODS = MethodMatchers.create()
+    .ofType(t -> t.is("java.lang.Enum"))
+    .names("name", "ordinal", "equals", "hashCode", "compareTo", "getDeclaringClass", "describeConstable", "finalize")
+    .withAnyParameters()
+    .build();
 
   @Override
   void reportMultipleCallInTree(List<Type> expectedExceptions, Tree treeToVisit, Tree reportLocation, String placeToRefactor) {
@@ -45,7 +50,10 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
       return;
     }
 
-    MethodTreeUtils.MethodInvocationCollector visitor = new MethodTreeUtils.MethodInvocationCollector(symbol -> !AUTHORIZED_METHODS.matches(symbol));
+    MethodTreeUtils.MethodInvocationCollector visitor = new MethodTreeUtils.MethodInvocationCollector(
+      symbol -> !AUTHORIZED_METHODS.matches(symbol),
+      ENUM_FINAL_METHODS::matches
+    );
     treeToVisit.accept(visitor);
     List<Tree> invocationTree = visitor.getInvocationTree();
     if (invocationTree.size() > 1) {
