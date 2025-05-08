@@ -42,7 +42,7 @@ jobs:
       - name: Update Files
         run: |
           java -jar "/tmp/rule-api-${{ env.RULE_API_VERSION }}.jar" update
-          sed -i '' 's/rule:java:S3649/rule:javasecurity:S3649/g' 'sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S2077.html'
+          sed --in-place='' -e 's/rule:java:S3649/rule:javasecurity:S3649/g' 'sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S2077.html'
 
       - name: Create PR
         run: |
