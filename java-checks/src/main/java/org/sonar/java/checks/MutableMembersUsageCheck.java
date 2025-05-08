@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -157,7 +156,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     /**
      * Maps method that return the result of another method
      */
-    private final Map<String, String> passingThroughMethod = new HashMap<>();
+    private final Map<String, List<String>> passingThroughMethod = new HashMap<>();
 
     /**
      * Map methods that return private mutable values to the identifier of the mutable they are returning.
@@ -245,8 +244,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
           mutableValuesToReport.add(methodsReturningPrivateMutable.get(current));
         }
         if (explored.add(current)) {
-          Optional.ofNullable(passingThroughMethod.get(current))
-            .ifPresent(queue::add);
+          queue.addAll(passingThroughMethod.getOrDefault(current, new ArrayList<>()));
         }
       }
 
@@ -300,7 +298,8 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     }
 
     private void addPassingThroughMethod(String callingMethodSignature, String calledMethodSignature) {
-      passingThroughMethod.put(callingMethodSignature, calledMethodSignature);
+      passingThroughMethod.computeIfAbsent(callingMethodSignature, key -> new ArrayList<>())
+        .add(calledMethodSignature);
     }
 
     private void addMethodReturningPrivateMutable(String methodSignature, IdentifierTree mutableIdentifier) {
