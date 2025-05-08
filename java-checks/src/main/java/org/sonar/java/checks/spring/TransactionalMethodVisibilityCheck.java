@@ -19,22 +19,28 @@ package org.sonar.java.checks.spring;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2230")
-public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisitor {
+public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
-  private static final List<String> proxyAnnotations = List.of(
+  private static final List<String> PROXY_ANNOTATIONS = List.of(
     "org.springframework.transaction.annotation.Transactional",
     "org.springframework.scheduling.annotation.Async");
 
-  private static final Map<String, String> annShortName = Map.of(
+  private static final Map<String, String> ANNOTATION_SHORT_NAMES = Map.of(
     "org.springframework.transaction.annotation.Transactional", "@Transactional",
     "org.springframework.scheduling.annotation.Async", "@Async");
+
+  private boolean isSpring6OrLater = false;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -44,13 +50,18 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
-    if (!method.symbol().isPublic()) {
-      proxyAnnotations.stream()
+    boolean handledBySpring = isSpring6OrLater ? !method.symbol().isPrivate() : method.symbol().isPublic();
+    if (!handledBySpring) {
+      PROXY_ANNOTATIONS.stream()
         .filter(annSymbol -> hasAnnotation(method, annSymbol))
         .forEach(annSymbol -> reportIssue(
           method.simpleName(),
-          "Make this method \"public\" or remove the \"" + annShortName.get(annSymbol) + "\" annotation."));
+          "Make this method " + requiredVisibilityMessage() + " or remove the \"" + ANNOTATION_SHORT_NAMES.get(annSymbol) + "\" annotation."));
     }
+  }
+
+  private String requiredVisibilityMessage() {
+    return isSpring6OrLater ? "non-\"private\"" : "\"public\"";
   }
 
   private static boolean hasAnnotation(MethodTree method, String annotationSymbol) {
@@ -62,4 +73,18 @@ public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisi
     return false;
   }
 
+  /** Check that Spring transaction artifact is present, and record whether its version is before or after 6.0. */
+  @Override
+  public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
+    Optional<Version> springContextVersion = dependencyFinder.apply("spring-context");
+    Optional<Version> springTxVersion = dependencyFinder.apply("spring-tx");
+    if (springTxVersion.isEmpty() && springContextVersion.isEmpty()) {
+      return false;
+    }
+    isSpring6OrLater = springContextVersion
+      .or(() -> springTxVersion)
+      .map(v -> v.isGreaterThanOrEqualTo("6.0"))
+      .orElse(false);
+    return true;
+  }
 }
