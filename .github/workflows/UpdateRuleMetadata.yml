@@ -1,8 +1,6 @@
 name: Update Rule Metadata
 
-on: push
-  branches:
-    - tt/action-update-rule-metadata
+on: workflow_dispatch
 
 env:
   PR_BRANCH_NAME: update-rule-metadata
