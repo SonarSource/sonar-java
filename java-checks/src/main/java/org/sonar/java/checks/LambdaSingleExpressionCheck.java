@@ -90,17 +90,12 @@ public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor imp
    * get the symbol of the method and the position of the argument.
    */
   private static Optional<InvocationData> getInvocationData(Tree argument) {
-    Optional<Arguments> argumentList = Optional.ofNullable(argument.parent())
-      .filter(Arguments.class::isInstance)
-      .map(Arguments.class::cast);
+    if (argument.parent() instanceof Arguments argumentList) {
+      int position = argumentList.indexOf(argument);
 
-    if(argumentList.isPresent()) {
-      int position = argumentList.get().indexOf(argument);
-      return argumentList
-        .map(Tree::parent)
-        .filter(MethodInvocationTree.class::isInstance)
-        .map(MethodInvocationTree.class::cast)
-        .map(mit -> new InvocationData(mit.methodSymbol(), position));
+      if (argumentList.parent() instanceof MethodInvocationTree mit) {
+        return Optional.of(new InvocationData(mit.methodSymbol(), position));
+      }
     }
 
     return Optional.empty();
