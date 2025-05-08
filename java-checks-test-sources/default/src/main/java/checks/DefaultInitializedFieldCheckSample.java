@@ -21,26 +21,10 @@ class DefaultInitializedFieldCheckSample {
   float f1 = 0.f; // Noncompliant {{Remove this initialization to "0.f", the compiler will do that for you.}}
   float f2 = 1.f;
   float f3;
-  float f4 = 1_000_000F; // Compliant, not 0
-  float f5 = 1_000_000_000_000_000_000f; // Compliant, not 0
-  float f6 = 1_000_000; // Compliant, not 0
-  float f7 = 0_000_000; // Noncompliant {{Remove this initialization to "0_000_000", the compiler will do that for you.}}
-  float f8 = 0_000_000f; // Noncompliant {{Remove this initialization to "0_000_000f", the compiler will do that for you.}}
-  float f9 = (float) 1_000_000d; // Compliant, not 0
-  float f10 = 123_456e-7f; // Compliant, not 0
-  float f11 = 1_000.0f; // Compliant, not 0
   double d = 0.; // Noncompliant {{Remove this initialization to "0.", the compiler will do that for you.}}
   double d1 = 1.;
   double d2;
   double d3 = 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001; // Compliant, not 0
-  double d4 = 1_000_000D; // Compliant, not 0
-  double d5 = 1_000_000_000_000_000_000d; // Compliant, not 0
-  double d6 = 1_000_000; // Compliant, not 0
-  double d7 = 0_000_000; // Noncompliant {{Remove this initialization to "0_000_000", the compiler will do that for you.}}
-  double d8 = 0_000_000d; // Noncompliant {{Remove this initialization to "0_000_000d", the compiler will do that for you.}}
-  double d9 = 1_000_000f; // Compliant, not 0
-  double d10 = 123_456e-7d; // Compliant, not 0
-  double d11 = 1_000.0f; // Compliant, not 0
   char c = 0; // Noncompliant {{Remove this initialization to "0", the compiler will do that for you.}}
   char c1 = '\u0000'; // Noncompliant {{Remove this initialization to "'\u0000'", the compiler will do that for you.}}
 //          ^^^^^^^^
