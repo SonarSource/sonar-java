@@ -635,7 +635,7 @@ class ReturnedAndPassedThrough {
   }
 
   public byte[] getSecureData() {
-    return Arrays.copyOf(secureData, secureData.length);
+    return Arrays.copyOf(getSecureDataInternal(), secureData.length);
   }
 
   public byte[] getData() {
