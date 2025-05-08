@@ -639,6 +639,10 @@ class ReturnedAndPassedThrough {
   }
 
   public byte[] getData() {
-    return getDataInternal();
+    if (secureData.length > 0) {
+      return getDataInternal();
+    } else {
+      return getData();
+    }
   }
 }
