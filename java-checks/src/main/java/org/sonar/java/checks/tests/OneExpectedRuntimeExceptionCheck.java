@@ -38,7 +38,11 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
     .names("name", "ordinal", "equals", "hashCode", "compareTo", "getDeclaringClass", "describeConstable")
     .withAnyParameters()
     .build();
-  private static final MethodMatchers AUTHORIZED_METHODS = MethodMatchers.or(FAIL_METHOD_MATCHER, MOCKITO_MOCK_METHOD_MATCHERS, ENUM_FINAL_METHODS);
+  private static final MethodMatchers AUTHORIZED_METHODS = MethodMatchers.or(
+    FAIL_METHOD_MATCHER,
+    MOCKITO_MOCK_METHOD_MATCHERS,
+    ENUM_FINAL_METHODS
+  );
 
   @Override
   void reportMultipleCallInTree(List<Type> expectedExceptions, Tree treeToVisit, Tree reportLocation, String placeToRefactor) {
