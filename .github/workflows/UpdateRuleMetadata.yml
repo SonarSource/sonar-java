@@ -6,6 +6,7 @@ on:
       - 'tt/action-update-rule-metadata'
 
 env:
+  RULE_API_VERSION: 2.10.0.4287
   PR_BRANCH_NAME: update-rule-metadata
 
 jobs:
@@ -27,6 +28,11 @@ jobs:
         with:
           artifactoryRoleSuffix: private-reader
 
+      - name: Setup Rule API
+        run: |
+          jfrog rt download "sonarsource-private-releases/com/sonarsource/rule-api/rule-api/${{ env.RULE_API_VERSION }}/rule-api-${{ env.RULE_API_VERSION }}.jar" --flat
+        working-directory: /tmp
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -34,11 +40,9 @@ jobs:
           java-version: '21'
 
       - name: Update Files
-        env:
-          LATEST_RELEASE_URL: https://repox.jfrog.io/repox/sonarsource-private-releases/com/sonarsource/rule-api/rule-api/[RELEASE]/rule-api-[RELEASE].jar
         run: |
-          curl --show-error --location -o rule-api.jar --header "X-JFrog-Art-Api: ${TOKEN}" --globoff "${LATEST_RELEASE_URL}"
           java -jar rule-api.jar update
+          sed -i '' 's/rule:java:S3649/rule:javasecurity:S3649/g' 'sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S2077.html'
 
       - name: Create PR
         run: |
