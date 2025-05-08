@@ -1,13 +1,10 @@
 name: Update Rule Metadata
 
-on:
-  push:
-    branches:
-      - 'tt/action-update-rule-metadata'
+on: workflow_dispatch
 
 env:
   RULE_API_VERSION: 2.10.0.4287
-  PR_BRANCH_NAME: update-rule-metadata
+  PR_BRANCH_NAME: gh-action/next-iteration
 
 jobs:
   UpdateRuleMetadata_job:
@@ -46,4 +43,9 @@ jobs:
 
       - name: Create PR
         run: |
-          echo TODO
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git checkout -b "${{ env.PR_BRANCH_NAME }}"
+          git commit -m 'Update rule metadata' -a
+          git push --set-upstream origin "${{ env.PR_BRANCH_NAME }}"
+          gh pr create -B master --title 'Update rule metadata' --body ''
