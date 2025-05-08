@@ -115,9 +115,10 @@ public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor imp
   }
 
   /**
-   * Given a collection of method symbols, get the distinct types possible at {@code position}.
+   * Given a collection of method symbols and a number indicating position
+   * inside a parameter list, get the distinct types possible at this position.
    */
-  private static Stream<Type> getTypesAtPos(Collection<Symbol> symbols, int position) {
+  private static Stream<Type> getTypesAtPosition(Collection<Symbol> symbols, int position) {
     return symbols.stream()
       .filter(Symbol.MethodSymbol.class::isInstance)
       .map(Symbol.MethodSymbol.class::cast)
@@ -140,7 +141,7 @@ public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor imp
     if (invocationData.isPresent()) {
       Symbol.MethodSymbol methodSymbol = invocationData.get().methodSymbol();
       Collection<Symbol> overloads = getOverloads(methodSymbol);
-      return getTypesAtPos(overloads, invocationData.get().argumentPosition()).count() > 1;
+      return getTypesAtPosition(overloads, invocationData.get().argumentPosition()).count() > 1;
     }
 
     return false;
