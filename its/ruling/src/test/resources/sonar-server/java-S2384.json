@@ -278,9 +278,6 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/metric/ws/MetricsWs.java": [
 31
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/metric/ws/SearchAction.java": [
-98
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/DefaultNotificationManager.java": [
 59
 ],
@@ -353,14 +350,8 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/Visibility.java": [
 68
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/GhostsAction.java": [
-149
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/ProjectsWs.java": [
 32
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/ProvisionedAction.java": [
-150
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/SearchMyProjectsData.java": [
 106,
