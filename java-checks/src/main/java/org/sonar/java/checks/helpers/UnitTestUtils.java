@@ -78,6 +78,7 @@ public final class UnitTestUtils {
       .name(ASSERTJ_ASSERTION_METHODS_PREDICATE).withAnyParameters().build(),
     // spring
     MethodMatchers.create().ofTypes("org.springframework.test.web.servlet.ResultActions").names("andExpect", "andExpectAll").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes("org.springframework.util.Assert").anyName().withAnyParameters().build(),
     // JMockit
     MethodMatchers.create().ofTypes("mockit.Verifications").constructor().withAnyParameters().build(),
     // Eclipse Vert.x with JUnit 4

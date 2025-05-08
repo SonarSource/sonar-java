@@ -126,4 +126,12 @@ class AssertionsInTestsCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void testSpringUtilAssert(){
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsInTestsCheck/SpringUtilAssertTestSample.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
+
 }
