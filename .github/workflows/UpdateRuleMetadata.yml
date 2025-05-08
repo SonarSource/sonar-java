@@ -1,6 +1,9 @@
 name: Update Rule Metadata
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - 'tt/action-update-rule-metadata'
 
 env:
   RULE_API_VERSION: 2.10.0.4287
