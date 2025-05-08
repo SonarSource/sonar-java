@@ -7,7 +7,7 @@ on:
 
 env:
   RULE_API_VERSION: 2.10.0.4287
-  PR_BRANCH_NAME: gh-action/next-iteration
+  PR_BRANCH_NAME: gh-action/update-rule-metadata
 
 jobs:
   UpdateRuleMetadata_job:
@@ -45,6 +45,8 @@ jobs:
           sed --in-place='' -e 's/rule:java:S3649/rule:javasecurity:S3649/g' 'sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S2077.html'
 
       - name: Create PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
