@@ -1,0 +1,53 @@
+name: Update Rule Metadata
+
+on: workflow_dispatch
+
+env:
+  RULE_API_VERSION: 2.10.0.4287
+  PR_BRANCH_NAME: gh-action/update-rule-metadata
+
+jobs:
+  UpdateRuleMetadata_job:
+    name: Update Rule Metadata
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+      id-token: write
+
+    steps:
+
+      - name: Checkout Sources
+        uses: actions/checkout@v4
+
+      - name: Setup JFrog
+        uses: SonarSource/jfrog-setup-wrapper@v3
+        with:
+          artifactoryRoleSuffix: private-reader
+
+      - name: Setup Rule API
+        run: |
+          jfrog rt download "sonarsource-private-releases/com/sonarsource/rule-api/rule-api/${{ env.RULE_API_VERSION }}/rule-api-${{ env.RULE_API_VERSION }}.jar" --flat
+        working-directory: /tmp
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Update Files
+        run: |
+          java -jar "/tmp/rule-api-${{ env.RULE_API_VERSION }}.jar" update
+          sed --in-place='' -e 's/rule:java:S3649/rule:javasecurity:S3649/g' 'sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S2077.html'
+
+      - name: Create PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git checkout -b "${{ env.PR_BRANCH_NAME }}"
+          git commit -m 'Update rule metadata' -a
+          git push --set-upstream origin "${{ env.PR_BRANCH_NAME }}"
+          gh pr create -B master --title 'Update rule metadata' --body ''
