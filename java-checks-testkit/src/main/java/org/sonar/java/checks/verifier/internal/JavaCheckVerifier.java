@@ -92,7 +92,7 @@ public class JavaCheckVerifier implements CheckVerifier {
   private List<InputFile> files = null;
   private boolean withoutSemantic = false;
   private boolean isCacheEnabled = false;
-  private Consumer<CompilationUnitTree> compilationUnitModifier = (unused) -> {};
+  private Consumer<CompilationUnitTree> compilationUnitModifier = unused -> {};
 
   @VisibleForTesting
   CacheContext cacheContext = null;

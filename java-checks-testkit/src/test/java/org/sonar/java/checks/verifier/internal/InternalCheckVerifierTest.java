@@ -1061,7 +1061,8 @@ class InternalCheckVerifierTest {
 
     Throwable e = catchThrowable(() -> {
       checkVerifier
-        .withCompilationUnitModifier((tree) ->{});
+        .withCompilationUnitModifier(tree -> {
+        });
     });
 
     assertThat(e)

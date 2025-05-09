@@ -77,9 +77,13 @@ public class JavaAstScanner {
       // Split files between successfully scanned without parsing and failed to scan without parsing
       .collect(Collectors.partitioningBy(visitor::scanWithoutParsing));
   }
+
   public void scan(Iterable<? extends InputFile> inputFiles) {
-    scan(inputFiles, (compilationUnitTree)->{});
+    scan(inputFiles, compilationUnitTree -> {
+    });
   }
+
+  // modifyCompilationUnit should be used for testing.
   public void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
     List<? extends InputFile> filesNames = filterModuleInfo(inputFiles).toList();
     AnalysisProgress analysisProgress = new AnalysisProgress(filesNames.size());
@@ -128,11 +132,14 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp){
-    simpleScan(inputFile, result, cleanUp, (compilationUnitTree) -> {});
+  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
+    simpleScan(inputFile, result, cleanUp, compilationUnitTree -> {
+    });
   }
 
-  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp, Consumer<CompilationUnitTree> modifyCompilationUnit) {
+  // modifyCompilationUnit should be used for testing.
+  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp,
+    Consumer<CompilationUnitTree> modifyCompilationUnit) {
     visitor.setCurrentFile(inputFile);
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();

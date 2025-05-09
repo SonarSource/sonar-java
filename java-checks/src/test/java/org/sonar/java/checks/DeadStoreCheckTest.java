@@ -36,7 +36,7 @@ class DeadStoreCheckTest {
   }
 
   @Test
-  void test_no_variable_symbol() {
+  void test_variable_identifier_with_unknown_symbol() {
     EraseSymbols eraser = new EraseSymbols();
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/DeadStoreCheckSample.java"))
@@ -56,7 +56,7 @@ class DeadStoreCheckTest {
     }
 
     @Override
-    public void visitIdentifier(IdentifierTree tree){
+    public void visitIdentifier(IdentifierTree tree) {
       if (tree instanceof IdentifierTreeImpl id) {
         id.binding = null;
       }
