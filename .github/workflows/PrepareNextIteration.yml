@@ -10,7 +10,7 @@ on:
 jobs:
   Next-Iteration-Job:
     name: Next Iteration Job
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
     permissions:
       pull-requests: write
       contents: write

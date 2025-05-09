@@ -11,7 +11,7 @@ on:
 jobs:
   releasability-job:
     name: Releasability check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
     permissions:
       id-token: write      # required by SonarSource/vault-action-wrapper
       contents: read       # required by checkout
