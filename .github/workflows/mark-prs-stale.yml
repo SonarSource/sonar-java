@@ -6,7 +6,7 @@ on:
 
 jobs:
   stale:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
     permissions:
       issues: write
       pull-requests: write
