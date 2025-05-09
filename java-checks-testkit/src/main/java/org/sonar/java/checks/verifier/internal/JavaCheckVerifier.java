@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
@@ -50,6 +51,7 @@ import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonarsource.analyzer.commons.checks.verifier.MultiFileVerifier;
 import org.sonarsource.analyzer.commons.checks.verifier.quickfix.QuickFix;
 import org.sonarsource.analyzer.commons.checks.verifier.quickfix.TextEdit;
@@ -90,6 +92,7 @@ public class JavaCheckVerifier implements CheckVerifier {
   private List<InputFile> files = null;
   private boolean withoutSemantic = false;
   private boolean isCacheEnabled = false;
+  private Consumer<CompilationUnitTree> compilationUnitModifier = (unused) -> {};
 
   @VisibleForTesting
   CacheContext cacheContext = null;
@@ -124,7 +127,7 @@ public class JavaCheckVerifier implements CheckVerifier {
       visitorsBridge.setCacheContext(cacheContext);
       filesToParse = astScanner.scanWithoutParsing(files).get(false);
     }
-    astScanner.scan(filesToParse);
+    astScanner.scan(filesToParse, compilationUnitModifier);
 
     addComments(verifier, commentLinesVisitor);
 
@@ -332,6 +335,12 @@ public class JavaCheckVerifier implements CheckVerifier {
   @Override
   public CheckVerifier withProjectLevelWorkDir(String rootDirectory) {
     this.rootDirectory = new File(rootDirectory);
+    return this;
+  }
+
+  @Override
+  public CheckVerifier withCompilationUnitModifier(Consumer<CompilationUnitTree> compilationUnitModifier) {
+    this.compilationUnitModifier = compilationUnitModifier;
     return this;
   }
 

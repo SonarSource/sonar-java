@@ -19,6 +19,11 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
+import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 class DeadStoreCheckTest {
 
@@ -31,9 +36,39 @@ class DeadStoreCheckTest {
   }
 
   @Test
+  void test_no_variable_symbol() {
+    EraseSymbols eraser = new EraseSymbols();
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/DeadStoreCheckSample.java"))
+      .withCheck(new DeadStoreCheck())
+      .withCompilationUnitModifier(eraser::visitCompilationUnit)
+      .verifyNoIssues();
+  }
+
+  private static class EraseSymbols extends BaseTreeVisitor {
+
+    @Override
+    public void visitVariable(VariableTree tree) {
+      if (tree instanceof VariableTreeImpl varImpl) {
+        varImpl.variableBinding = null;
+      }
+      super.visitVariable(tree);
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree){
+      if (tree instanceof IdentifierTreeImpl id) {
+        id.binding = null;
+      }
+      super.visitIdentifier(tree);
+    }
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/DeadStoreCheckSample.java"))
+      .withoutSemantic()
       .withCheck(new DeadStoreCheck())
       .verifyIssues();
   }

@@ -62,6 +62,7 @@ import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.CHECK_OR_CHECKS;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.FILE_OR_FILES;
@@ -250,7 +251,12 @@ public class InternalCheckVerifier implements CheckVerifier {
 
   @Override
   public CheckVerifier withProjectLevelWorkDir(String rootDirectory) {
-    throw new RuntimeException("Method not implemented, feel free to implement.");
+    throw new UnsupportedOperationException("Method not implemented, feel free to implement.");
+  }
+
+  @Override
+  public CheckVerifier withCompilationUnitModifier(Consumer<CompilationUnitTree> compilationUnitModifier) {
+    throw new UnsupportedOperationException("Method not implemented, feel free to implement.");
   }
 
   @Override

@@ -42,6 +42,7 @@ import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 public class JavaAstScanner {
   private static final Logger LOG = LoggerFactory.getLogger(JavaAstScanner.class);
@@ -76,8 +77,10 @@ public class JavaAstScanner {
       // Split files between successfully scanned without parsing and failed to scan without parsing
       .collect(Collectors.partitioningBy(visitor::scanWithoutParsing));
   }
-
   public void scan(Iterable<? extends InputFile> inputFiles) {
+    scan(inputFiles, (compilationUnitTree)->{});
+  }
+  public void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
     List<? extends InputFile> filesNames = filterModuleInfo(inputFiles).toList();
     AnalysisProgress analysisProgress = new AnalysisProgress(filesNames.size());
     try {
@@ -90,7 +93,8 @@ public class JavaAstScanner {
           analysisProgress,
           (i, r) -> simpleScan(i, r,
             // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually. See SONARJAVA-3609.
-            JavaAstScanner::cleanUpAst));
+            JavaAstScanner::cleanUpAst,
+            modifyCompilationUnit));
     } finally {
       endOfAnalysis();
     }
@@ -124,10 +128,15 @@ public class JavaAstScanner {
     return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
-  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
+  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp){
+    simpleScan(inputFile, result, cleanUp, (compilationUnitTree) -> {});
+  }
+
+  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp, Consumer<CompilationUnitTree> modifyCompilationUnit) {
     visitor.setCurrentFile(inputFile);
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
+      modifyCompilationUnit.accept(ast);
       visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
       String path = inputFile.toString();
       collectUndefinedTypes(path, ast.sema.undefinedTypes());
