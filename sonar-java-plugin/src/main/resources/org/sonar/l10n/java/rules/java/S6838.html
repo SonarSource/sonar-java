@@ -37,7 +37,7 @@ class ConfigurationExample {
   @Bean
   @Scope("prototype")
   public PrototypeBean prototypeBean() {
-    return new PrototypeBean(singletonBean()); // Noncompliant, the singletonBean is created every time a prototypeBean is created
+    return new PrototypeBean(singletonBean()); // Noncompliant: a "singletonBean" is created every time a prototypeBean is created
   }
 
   class SingletonBean {

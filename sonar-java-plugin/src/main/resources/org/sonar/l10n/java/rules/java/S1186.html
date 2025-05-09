@@ -10,6 +10,7 @@ functionality and are misleading to others as they might think the method implem
 <h3>Exceptions</h3>
 <p>This does not raise an issue in the following cases:</p>
 <ul>
+  <li> Methods with a comment to explain why they are empty </li>
   <li> Non-public default (no-argument) constructors </li>
   <li> Public default (no-argument) constructors when there are other constructors in the class </li>
   <li> Empty methods in abstract classes </li>
@@ -22,6 +23,7 @@ public abstract class Animal {
 }
 </pre>
 <h2>How to fix it</h2>
+<p>To fix this issue, either make the method do something, throw an exception, or add a comment to explain why it is empty.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
