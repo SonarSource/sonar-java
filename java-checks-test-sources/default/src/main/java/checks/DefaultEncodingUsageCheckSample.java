@@ -1,5 +1,6 @@
 package checks;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -15,7 +16,9 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Formatter;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.checkerframework.common.reflection.qual.UnknownClass;
@@ -149,5 +152,38 @@ public class DefaultEncodingUsageCheckSample {
     FileUtils.writeStringToFile(file, "data", (java.nio.charset.Charset) null); // Noncompliant
   }
 
+  static class MethodReferences {
+    void usageOfConstructorReference(String resourcePath) throws IOException {
+      try (InputStream is = MethodReferences.class.getResourceAsStream(resourcePath)) {
+        Optional.ofNullable(is)
+          .map(InputStreamReader::new) // Noncompliant {{Remove this reference.}}
+//                                ^^^
+          .map(reader -> reader.hashCode() + 1);
+      }
+    }
 
+    String usageOfMethodReference(checks.File file) throws Exception {
+      return myMap(FileUtils::readFileToString, file); // Noncompliant {{Remove this reference.}}
+//                            ^^^^^^^^^^^^^^^^
+    }
+
+    // We need an interface for FileUtils::readFileToString that allows throwing an exception.
+    interface IOFunction<T, R> {
+      R apply(T input) throws IOException;
+    }
+
+    String myMap(IOFunction<checks.File, String> mapper, checks.File file) throws IOException {
+      return mapper.apply(file);
+    }
+
+    Optional<String> goodExamples() {
+      return Optional.of("good")
+        .map(String::new) // Compliant
+        .map(String::toUpperCase); // Compliant
+    }
+
+    Stream<ByteArrayOutputStream> goodBaos() {
+      return Stream.generate(ByteArrayOutputStream::new); // Compliant
+    }
+  }
 }
