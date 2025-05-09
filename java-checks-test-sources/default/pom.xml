@@ -1025,6 +1025,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
+          <compilerArgs>
+            <arg>-Xlint:-deprecation</arg>
+          </compilerArgs>
           <release>23</release>
           <source>23</source>
           <target>23</target>
