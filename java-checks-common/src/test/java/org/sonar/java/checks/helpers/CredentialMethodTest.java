@@ -47,4 +47,10 @@ class CredentialMethodTest {
     MethodMatchers methodMatcher = equalsMatcher.methodMatcher();
     assertThat(equalsMatcher.methodMatcher()).isSameAs(methodMatcher);
   }
+
+  /** Since toString is only used for debugging, we don't need strong guarantees on it. */
+  @Test
+  void test_toString() {
+    assertThat(new CredentialMethod("Foo", "bar", List.of("java.lang.String"), List.of(1)).toString()).isNotEmpty();
+  }
 }
