@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
@@ -131,11 +132,6 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection implement
   }
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
-  }
-
-  @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     ArrayList<MethodMatchers> matchers = new ArrayList<>(Arrays.asList(
       MethodMatchers.create().ofTypes(JAVA_LANG_STRING).names("getBytes")
@@ -207,6 +203,11 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection implement
     } else {
       reportIssue(ExpressionUtils.methodName(mit), "Remove this use of \"" + mit.methodSymbol().name() + "\".");
     }
+  }
+
+  @Override
+  protected void onMethodReferenceFound(MethodReferenceTree methodReferenceTree) {
+    reportIssue(methodReferenceTree.method(), "Remove this reference.");
   }
 
   private void testNullLiteralPassedForEncoding(ExpressionTree argument) {
