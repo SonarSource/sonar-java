@@ -9,7 +9,7 @@ env:
 jobs:
   UpdateRuleMetadata_job:
     name: Update Rule Metadata
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
     permissions:
       pull-requests: write
       contents: write
