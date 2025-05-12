@@ -20,7 +20,7 @@ invoked will populate the cache. Subsequent calls will always return the cached 
 <pre data-diff-id="1" data-diff-type="noncompliant">
 public interface ExampleService {
 
-    @Cacheable("exampleCache") //non compliant, interface method is annotated with @Cacheable
+    @Cacheable("exampleCache") // Noncompliant: interface method is annotated with @Cacheable
     String getData(String id);
 }
 </pre>
