@@ -10,6 +10,10 @@ class DeadStoreCheckSample {
 
   int var;
 
+  void singleAssignment(){
+    int z = 10; // Noncompliant
+  }
+
   int foo(int u) {
     int x = 0;// Compliant - default value
     x = 3; // Noncompliant

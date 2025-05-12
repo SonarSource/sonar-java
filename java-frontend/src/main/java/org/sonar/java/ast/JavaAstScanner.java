@@ -79,12 +79,22 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
-    scan(inputFiles, compilationUnitTree -> {
-    });
+    scan(inputFiles, compilationUnitTree -> {});
   }
 
-  // modifyCompilationUnit should be used for testing.
-  public void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
+  /**
+   * Scan the given files and modify
+   *
+   * @param inputFiles The list of files to analyze
+   * @param modifyCompilationUnit allow you to modify the ast before running the analysis on it, for example to remove semantic information
+   */
+  @VisibleForTesting
+  public void scanForTesting(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
+    scan(inputFiles, modifyCompilationUnit);
+  }
+
+
+  private void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
     List<? extends InputFile> filesNames = filterModuleInfo(inputFiles).toList();
     AnalysisProgress analysisProgress = new AnalysisProgress(filesNames.size());
     try {

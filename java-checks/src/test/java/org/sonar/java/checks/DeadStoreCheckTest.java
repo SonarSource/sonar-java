@@ -47,13 +47,6 @@ class DeadStoreCheckTest {
 
   private static class EraseSymbols extends BaseTreeVisitor {
 
-    @Override
-    public void visitVariable(VariableTree tree) {
-      if (tree instanceof VariableTreeImpl varImpl) {
-        varImpl.variableBinding = null;
-      }
-      super.visitVariable(tree);
-    }
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
@@ -68,7 +61,6 @@ class DeadStoreCheckTest {
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/DeadStoreCheckSample.java"))
-      .withoutSemantic()
       .withCheck(new DeadStoreCheck())
       .verifyIssues();
   }

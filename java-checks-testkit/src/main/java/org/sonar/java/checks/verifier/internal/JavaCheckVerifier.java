@@ -127,7 +127,7 @@ public class JavaCheckVerifier implements CheckVerifier {
       visitorsBridge.setCacheContext(cacheContext);
       filesToParse = astScanner.scanWithoutParsing(files).get(false);
     }
-    astScanner.scan(filesToParse, compilationUnitModifier);
+    astScanner.scanForTesting(filesToParse, compilationUnitModifier);
 
     addComments(verifier, commentLinesVisitor);
 

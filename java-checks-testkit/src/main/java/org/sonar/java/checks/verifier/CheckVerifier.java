@@ -237,8 +237,9 @@ public interface CheckVerifier {
    * @param rootDirectory The path of the project root working directory
    * @return the verifier configured with the project root working directory.
    */
-  CheckVerifier withProjectLevelWorkDir(String rootDirectory);
-
+  default CheckVerifier withProjectLevelWorkDir(String rootDirectory) {
+    throw new UnsupportedOperationException("Method not implemented, feel free to implement.");
+  }
 
   /**
    * Allows to modify the compilation unit tree after parsing.
@@ -248,7 +249,9 @@ public interface CheckVerifier {
    * @param compilationUnitModifier the modifier to apply to the compilation unit tree
    * @return the verifier configured with the compilation unit modifier.
    */
-  CheckVerifier withCompilationUnitModifier(Consumer<CompilationUnitTree> compilationUnitModifier);
+  default CheckVerifier withCompilationUnitModifier(Consumer<CompilationUnitTree> compilationUnitModifier) {
+    throw new UnsupportedOperationException("Method not implemented, feel free to implement.");
+  }
 
   /**
    * Verifies that all the expected issues are correctly raised by the rule(s),

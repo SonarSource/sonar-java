@@ -323,18 +323,21 @@ class JavaCheckVerifierTest {
       classTree.complete((ModifiersTreeImpl)classTree.modifiers(), classTree.declarationKeyword(), ident);
     };
 
-    var checkInstance = JavaCheckVerifier.newInstance()
-      .onFile(TEST_FILE)
-      .withCheck(new JavaFileScanner() {
-        @Override
-        public void scanFile(JavaFileScannerContext context) {
-          CompilationUnitTree tree = context.getTree();
-          ClassTreeImpl classTree = (ClassTreeImpl) tree.types().get(0);
-          assertThat(classTree.simpleName().name()).isEqualTo("Modified");
-        }
-      })
-      .withCompilationUnitModifier(modifier);
-    assertThatCode(checkInstance::verifyNoIssues).doesNotThrowAnyException();
+    var check = new JavaFileScanner() {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        CompilationUnitTree tree = context.getTree();
+        ClassTreeImpl classTree = (ClassTreeImpl) tree.types().get(0);
+        assertThat(classTree.simpleName().name()).isEqualTo("Modified");
+      }
+    };
+    assertThatCode(() -> {
+      JavaCheckVerifier.newInstance()
+        .onFile(TEST_FILE)
+        .withCheck(check)
+        .withCompilationUnitModifier(modifier)
+        .verifyNoIssues();
+    }).doesNotThrowAnyException();
   }
 
 }

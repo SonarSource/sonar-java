@@ -135,16 +135,6 @@ public class SECheckVerifier implements CheckVerifier {
   }
 
   @Override
-  public CheckVerifier withProjectLevelWorkDir(String rootDirectory) {
-    throw new UnsupportedOperationException("Method not implemented, feel free to implement.");
-  }
-
-  @Override
-  public CheckVerifier withCompilationUnitModifier(Consumer<CompilationUnitTree> compilationUnitModifier) {
-    throw new UnsupportedOperationException("Method not implemented, feel free to implement.");
-  }
-
-  @Override
   public void verifyIssues() {
     checkVerifier.verifyIssues();
   }
