@@ -7,7 +7,7 @@ be passed to that method as a parameter.</p>
 <h3>Noncompliant code example</h3>
 <pre>
 @Controller
-@SessionAttributes("hello")  // Noncompliant; this doesn't get cleaned up
+@SessionAttributes("hello")  // Noncompliant: this doesn't get cleaned up
 public class HelloWorld {
 
   @RequestMapping("/greet", method = GET)

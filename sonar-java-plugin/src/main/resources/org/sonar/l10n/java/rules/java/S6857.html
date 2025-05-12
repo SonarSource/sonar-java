@@ -1,30 +1,40 @@
-<p>This rule reports syntax errors in Spring Expression Language (SpEL) expressions.</p>
+<p>This rule reports syntax errors in Spring Expression Language (<code>SpEL</code>) expressions and property placeholders. It verifies that every
+<code>SpEL</code> expression and property placeholder is properly closed and that the content of each expression or placeholder is syntactically
+correct.</p>
 <h2>Why is this an issue?</h2>
-<p>SpEL is used in Spring annotations and is parsed by the Spring framework, not by the Java compiler. This means that invalid SpEL expressions are
-not detected during Java compile time. They will cause exceptions during runtime instead, or even fail silently with the expression string interpreted
-as a simple string literal by Spring.</p>
+<p>Only the Spring framework, not the Java compiler, parses <code>SpEL</code> expression inside Spring annotations. This means that the Java compiler
+does not detect invalid <code>SpEL</code> expressions during compile time. They will cause exceptions during runtime instead, or even fail silently
+when Spring interprets the expression as a simple string literal.</p>
 <h3>Exceptions</h3>
-<p>This rule does report syntactical errors in SpEL expressions but does not consider semantic errors, such as unknown identifiers or incompatible
-operand data types.</p>
+<p>This rule reports syntactical errors in <code>SpEL</code> expressions but does not consider semantic errors, such as unknown identifiers or
+incompatible operand data types.</p>
 <h2>How to fix it</h2>
 <p>Correct the syntax error in the SpEL expression.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
-@Value("#{systemProperties['user.region'}") // Noncompliant, unclosed "["
+@Value("#{systemProperties['user.region'}") // Noncompliant: unclosed "["
 private String region;
 </pre>
 <pre data-diff-id="2" data-diff-type="noncompliant">
-@Value("#{'${listOfValues}' split(',')}") // Noncompliant, missing operator
+@Value("#{'${listOfValues}' split(',')}") // Noncompliant: missing operator
 private List&lt;String&gt; valuesList;
 </pre>
 <pre data-diff-id="3" data-diff-type="noncompliant">
-@Value("#{T(java.lang.Math).random() * 64h}") // Noncompliant, invalid number
+@Value("#{T(java.lang.Math).random() * 64h}") // Noncompliant: invalid number
 private Double randPercent;
 </pre>
 <pre data-diff-id="4" data-diff-type="noncompliant">
-@Query("SELECT u FROM User u WHERE u.status = :#{#status+}") // Noncompliant, missing operand for "+"
+@Query("SELECT u FROM User u WHERE u.status = :#{#status+}") // Noncompliant: missing operand for "+"
 List&lt;User&gt; findUsersByStatus(@Param("status") String status);
+</pre>
+<pre data-diff-id="5" data-diff-type="noncompliant">
+@Value("${myapp.!prop}") // Noncompliant: property key contains an exclamation mark "!"
+private String myProperty;
+</pre>
+<pre data-diff-id="6" data-diff-type="noncompliant">
+@Value("${my.property:#{1**1}}") // Noncompliant: invalid SpEL expression "1**1"
+private Integer myValue;
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
@@ -43,10 +53,18 @@ private Double randPercent;
 @Query("SELECT u FROM User u WHERE u.status = :#{#status+42}") // Compliant
 List&lt;User&gt; findUsersByStatus(@Param("status") String status);
 </pre>
+<pre data-diff-id="5" data-diff-type="compliant">
+@Value("${myapp.prop}") // Compliant
+private String myProperty;
+</pre>
+<pre data-diff-id="6" data-diff-type="compliant">
+@Value("${my.property:#{1*1}}") // Compliant
+private Integer myValue;
+</pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.spring.io/spring-framework/reference/core/expressions.html">Spring Framework - Spring Expression Language (SpEL)</a>
-  </li>
+  <li> Spring Framework Documentation - <a href="https://docs.spring.io/spring-framework/reference/core/expressions.html">Spring Expression Language
+  (SpEL)</a> </li>
 </ul>
 

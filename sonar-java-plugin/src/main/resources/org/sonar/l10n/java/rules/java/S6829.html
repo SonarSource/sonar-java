@@ -6,13 +6,13 @@ class. This ambiguity can cause the application to crash at runtime, and it make
 maintain.</p>
 <h3>What is the potential impact?</h3>
 <ul>
-  <li> <strong>Incorrect Instantiation</strong>: the wrong constructor is selected for instantiation, leading to a bean not being correctly
+  <li> <strong>incorrect instantiation</strong>: the wrong constructor is selected for instantiation, leading to a bean not being correctly
   initialized. </li>
-  <li> <strong>Unsatisfied Dependency Exception</strong>: the constructor selected by Spring requires beans that are not available in the Spring
+  <li> <strong>unsatisfied dependency exception</strong>: the constructor selected by Spring requires beans that are not available in the Spring
   context. </li>
-  <li> <strong>Non-Deterministic Behavior</strong>: the constructor selected by Spring can vary, based on the number of dependencies that can be
+  <li> <strong>non-deterministic behavior</strong>: the constructor selected by Spring can vary, based on the number of dependencies that can be
   satisfied at runtime, leading to unpredictable application behavior. </li>
-  <li> <strong>Maintainability Issues</strong>: adding more constructors in the future could lead to further confusion and potential bugs. </li>
+  <li> <strong>maintainability issues</strong>: adding more constructors in the future could lead to further confusion and potential bugs. </li>
 </ul>
 <h2>How to fix it</h2>
 <p>Use the <code>@Autowired</code> annotation to specify which constructor to use for auto-wiring.</p>
@@ -20,7 +20,7 @@ maintain.</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 @Component
-public class ExampleClass { // Noncompliant, multiple constructors present and no @Autowired annotation to specify which one to use
+public class ExampleClass { // Noncompliant: multiple constructors present and no @Autowired annotation to specify which one to use
 
     private final DependencyClass1 dependency1;
 

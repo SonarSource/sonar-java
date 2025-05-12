@@ -19,20 +19,100 @@ clarity and efficiency.</p>
 <p>In summary, unused local variables can make your code less readable, more confusing, and harder to maintain, and they can potentially lead to bugs
 or inefficient memory use. Therefore, it is best to remove them.</p>
 <h2>How to fix it</h2>
-<p>The fix for this issue is straightforward. Once you ensure the unused variable is not part of an incomplete implementation leading to bugs, you
-just need to remove it.</p>
+<p>The fix for this issue is straightforward. Once you ensure the unused variable is not part of an incomplete implementation, you just need to remove
+it.</p>
+<p>Java 22 introduces the unnamed variable pattern <code>_</code>. When a variable declared within a pattern match, an enhanced for loop, or a try
+with resource is unused, you should replace its name with the unnamed variable pattern to clearly indicate the intent not to use the variable.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 public int numberOfMinutes(int hours) {
-  int seconds = 0;   // Noncompliant - seconds is unused
+  int seconds = 0;   // Noncompliant: "seconds" is unused
   return hours * 60;
+}
+</pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+public String name(Person p) {
+  return switch (p) {
+    case User(String name, int age) -&gt; name; // Noncompliant: "age" is unused replace it with the unnamed variable pattern (starting from Java 22)
+    default -&gt; throw new IllegalArgumentException();
+  };
+}
+</pre>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+public String type(Person p) {
+  return switch (p) {
+    case User user -&gt; "user"; // Noncompliant:  "user" is unused replace it with the unnamed variable pattern (starting from Java 22)
+    default -&gt; throw new IllegalArgumentException();
+  };
+}
+</pre>
+<pre data-diff-id="4" data-diff-type="noncompliant">
+public int age(Person p) {
+  if (p instanceof User(String name, int age)) { // Noncompliant:  "name" is unused replace it with the unnamed variable pattern (starting from Java 22)
+    return age;
+  }
+}
+</pre>
+<pre data-diff-id="5" data-diff-type="noncompliant">
+public static int count(int[] elements) {
+  int count = 0;
+  for (var el : elements) { // Noncompliant:  "el" is unused replace it with the unnamed variable pattern (starting from Java 22)
+    count++;
+  }
+  return count;
+}
+</pre>
+<pre data-diff-id="6" data-diff-type="noncompliant">
+public void foo() {
+  try (var file = Files.createTempFile(directory, "temp", ".txt")) { // Noncompliant:  "file" is unused replace it with the unnamed variable pattern (starting from Java 22)
+    System.out.println("file created");
+  }
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 public int numberOfMinutes(int hours) {
   return hours * 60;
+}
+</pre>
+<pre data-diff-id="2" data-diff-type="compliant">
+public String name(Person p) {
+  return switch (p) {
+    case User(String name, _) -&gt; name; // Compliant
+    default -&gt; throw new IllegalArgumentException();
+  };
+}
+</pre>
+<pre data-diff-id="3" data-diff-type="compliant">
+public String type(Person p) {
+  return switch (p) {
+    case User _ -&gt; "user"; // Compliant
+    default -&gt; throw new IllegalArgumentException();
+  };
+}
+</pre>
+<pre data-diff-id="4" data-diff-type="compliant">
+public int age(Person p) {
+  if (p instanceof User(String _, int age)) { // Compliant
+    return age;
+  }
+}
+</pre>
+<pre data-diff-id="5" data-diff-type="compliant">
+public static int count(int[] elements) {
+  int count = 0;
+  for (var _ : elements) { // Compliant
+    count++;
+  }
+  return count;
+}
+</pre>
+<pre data-diff-id="6" data-diff-type="compliant">
+public void foo() {
+  try (var _ = Files.createTempFile(directory, "temp", ".txt")) { // Compliant
+    System.out.println("file created");
+  }
 }
 </pre>
 
