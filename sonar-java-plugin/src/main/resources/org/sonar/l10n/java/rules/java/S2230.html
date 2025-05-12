@@ -1,8 +1,12 @@
 <h2>Why is this an issue?</h2>
-<p>Marking a non-public method <code>@Async</code> or <code>@Transactional</code> is misleading because Spring does not recognize non-public methods,
-and so makes no provision for their proper invocation. Nor does Spring make provision for the methods invoked by the method it called.</p>
-<p>Therefore marking a private method, for instance, @Transactional can only result in a runtime error or exception if the method is annotated as
-@Transactional.</p>
+<p>Marking a non-public method <code>@Async</code> or <code>@Transactional</code> is misleading because, up to version 5, Spring does not recognize
+non-public methods, and so makes no provision for their proper invocation. Nor does Spring make provision for the methods invoked by the method it
+called. Since Spring 6, protected and package-private methods can be handled, but the issue remains for private methods.</p>
+<p>Therefore, marking a private method, for instance, @Transactional gives a false sense of security, and can lead to incorrect assumptions and
+potential bugs.</p>
+<h2>Exceptions</h2>
+<p>The rule targets all non-public methods for project using Spring up to Spring 5, but only private methods for Spring 6 because Spring 6 takes into
+account all non-private methods.</p>
 <h2>How to fix it</h2>
 <p>Declare the method <code>public</code>. Note that this action alone does not resolve the issue of direct instance calls from within the same class
 (see rule {rule:java:S6809}), but it is a required precondition to fix it.</p>
@@ -28,6 +32,8 @@ public Future&lt;String&gt; asyncMethodWithReturnType() { // Compliant
   Framework API - Annotation Interface Async</a> </li>
   <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Transactional.html">Spring
   Framework API - Annotation Interface Transactional</a> </li>
+  <li> <a
+  href="https://docs.spring.io/spring-framework/reference/6.2.6/data-access/transaction/declarative/annotations.html#transaction-declarative-annotations-method-visibility">Method visibility and @Transactional in proxy mode</a> </li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>
