@@ -62,7 +62,6 @@ import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.CHECK_OR_CHECKS;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.FILE_OR_FILES;
