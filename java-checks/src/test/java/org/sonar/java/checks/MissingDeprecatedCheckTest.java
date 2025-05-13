@@ -54,7 +54,6 @@ class MissingDeprecatedCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/MissingDeprecatedCheckMarkdownSample.java"))
       .withCheck(new MissingDeprecatedCheck())
-      .withJavaVersion(23)
       .verifyIssues();
   }
 }
