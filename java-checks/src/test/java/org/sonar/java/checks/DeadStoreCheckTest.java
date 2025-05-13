@@ -47,8 +47,8 @@ class DeadStoreCheckTest {
 
     @Override
     public void visitVariable(VariableTree tree) {
-      if (tree instanceof VariableTreeImpl v) {
-        v.variableBinding = null;
+      if (tree instanceof VariableTreeImpl varImpl) {
+        varImpl.variableBinding = null;
       }
       super.visitVariable(tree);
     }
