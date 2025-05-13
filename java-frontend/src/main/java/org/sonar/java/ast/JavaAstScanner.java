@@ -143,8 +143,7 @@ public class JavaAstScanner {
   }
 
   public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
-    simpleScan(inputFile, result, cleanUp, compilationUnitTree -> {
-    });
+    simpleScan(inputFile, result, cleanUp, compilationUnitTree -> {});
   }
 
   // modifyCompilationUnit should be used for testing.
