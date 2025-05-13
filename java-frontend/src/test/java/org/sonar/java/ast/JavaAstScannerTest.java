@@ -53,6 +53,7 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
 import org.sonar.java.testing.ThreadLocalLogTester;
@@ -60,6 +61,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -445,6 +447,37 @@ class JavaAstScannerTest {
     assertThat(actual).hasSize(2);
     assertThat(actual.get(false)).containsExactly(unsuccessful);
     assertThat(actual.get(true)).containsExactly(successful, successful);
+  }
+
+  @Test
+  void test_modifyCompilationUnit_modify_ast() {
+
+    InputFile trivialCompilationUnit = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
+
+    var check = new JavaFileScanner() {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        CompilationUnitTree tree = context.getTree();
+        ClassTreeImpl classTree = (ClassTreeImpl) tree.types().get(0);
+        assertThat(classTree.simpleName().symbol().isUnknown()).isTrue();
+      }
+    };
+    VisitorsBridge visitorsBridge = new VisitorsBridge(
+      List.of(check),
+      Collections.emptyList(),
+      null);
+
+    assertDoesNotThrow(() -> {
+      JavaAstScanner scanner = new JavaAstScanner(null);
+      scanner.setVisitorBridge(visitorsBridge);
+      scanner.scanForTesting(Collections.singletonList(trivialCompilationUnit), compilationUnit -> {
+        var clazz = (ClassTreeImpl) ((JavaTree.CompilationUnitTreeImpl) compilationUnit).types().get(0);
+        assertThat(clazz.simpleName().name()).isEqualTo("C");
+        assertThat(clazz.simpleName().symbol().isUnknown()).isFalse();
+        IdentifierTreeImpl identifierTree = (IdentifierTreeImpl) clazz.simpleName();
+        identifierTree.binding = null;
+      });
+    });
   }
 
   private void scanSingleFile(InputFile file, boolean failOnException) {

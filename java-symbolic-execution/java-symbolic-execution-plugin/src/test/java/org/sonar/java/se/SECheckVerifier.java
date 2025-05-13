@@ -32,7 +32,6 @@ import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 public class SECheckVerifier implements CheckVerifier {
   
