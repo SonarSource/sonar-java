@@ -43,6 +43,14 @@ class DeadStoreCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/DeadStoreCheckSample.java"))
+      .withCheck(new DeadStoreCheck())
+      .verifyIssues();
+  }
+
   private static class EraseSymbols extends BaseTreeVisitor {
 
     @Override
@@ -53,13 +61,4 @@ class DeadStoreCheckTest {
       super.visitVariable(tree);
     }
   }
-
-  @Test
-  void test_non_compiling() {
-    CheckVerifier.newVerifier()
-      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/DeadStoreCheckSample.java"))
-      .withCheck(new DeadStoreCheck())
-      .verifyIssues();
-  }
-
 }

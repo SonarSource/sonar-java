@@ -331,13 +331,12 @@ class JavaCheckVerifierTest {
         assertThat(classTree.simpleName().name()).isEqualTo("Modified");
       }
     };
-    assertThatCode(() -> {
-      JavaCheckVerifier.newInstance()
-        .onFile(TEST_FILE)
-        .withCheck(check)
-        .withCompilationUnitModifier(modifier)
-        .verifyNoIssues();
-    }).doesNotThrowAnyException();
+    
+    JavaCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withCheck(check)
+      .withCompilationUnitModifier(modifier)
+      .verifyNoIssues();
   }
 
 }

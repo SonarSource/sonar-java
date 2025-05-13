@@ -451,7 +451,6 @@ class JavaAstScannerTest {
 
   @Test
   void test_modifyCompilationUnit_modify_ast() {
-
     InputFile trivialCompilationUnit = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
 
     var check = new JavaFileScanner() {
@@ -462,22 +461,22 @@ class JavaAstScannerTest {
         assertThat(classTree.simpleName().symbol().isUnknown()).isTrue();
       }
     };
+
     VisitorsBridge visitorsBridge = new VisitorsBridge(
       List.of(check),
       Collections.emptyList(),
       null);
 
-    assertDoesNotThrow(() -> {
-      JavaAstScanner scanner = new JavaAstScanner(null);
-      scanner.setVisitorBridge(visitorsBridge);
-      scanner.scanForTesting(Collections.singletonList(trivialCompilationUnit), compilationUnit -> {
-        var clazz = (ClassTreeImpl) ((JavaTree.CompilationUnitTreeImpl) compilationUnit).types().get(0);
-        assertThat(clazz.simpleName().name()).isEqualTo("C");
-        assertThat(clazz.simpleName().symbol().isUnknown()).isFalse();
-        IdentifierTreeImpl identifierTree = (IdentifierTreeImpl) clazz.simpleName();
-        identifierTree.binding = null;
-      });
+    JavaAstScanner scanner = new JavaAstScanner(null);
+    scanner.setVisitorBridge(visitorsBridge);
+    scanner.scanForTesting(Collections.singletonList(trivialCompilationUnit), compilationUnit -> {
+      var clazz = (ClassTreeImpl) ((JavaTree.CompilationUnitTreeImpl) compilationUnit).types().get(0);
+      assertThat(clazz.simpleName().name()).isEqualTo("C");
+      assertThat(clazz.simpleName().symbol().isUnknown()).isFalse();
+      IdentifierTreeImpl identifierTree = (IdentifierTreeImpl) clazz.simpleName();
+      identifierTree.binding = null;
     });
+
   }
 
   private void scanSingleFile(InputFile file, boolean failOnException) {
