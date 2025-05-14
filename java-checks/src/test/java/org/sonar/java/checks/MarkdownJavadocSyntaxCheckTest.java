@@ -17,6 +17,8 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
@@ -34,28 +36,45 @@ class MarkdownJavadocSyntaxCheckTest {
   }
 
   @Test
-  void removeQuotedCode() {
-    String javadoc = "foo`<b>`bar`<i>`baz```\n<ul>\n<li>\n```<pre>\n\n`a`quz";
-    List<String> strings = MarkdownJavadocSyntaxCheck.removeQuotedCode(javadoc);
-    assertThat(strings).containsExactly("foo", "bar", "baz", "<pre>\n\n", "quz");
+  void testPattern() {
+    String input = "<p>foo<b>bar</b>";
+    Matcher matcher = MarkdownJavadocSyntaxCheck.NON_MARKDOWN_JAVADOC_PATTERN.matcher(input);
+    matcher.region(3, input.length());
+
+    assertThat(matcher.find()).isTrue();
+    assertThat(matcher.group(0)).isEqualTo("<b>");
   }
 
   @Test
-  void removeQuotedCode_unclosedTag() {
-    String javadoc = "foo``` ";
-    List<String> strings = MarkdownJavadocSyntaxCheck.removeQuotedCode(javadoc);
-    assertThat(strings).containsExactly("foo");
+  void testPositionOfStringIndex() {
+    String input = "a\nb\nzzzc\n";
+    List<Integer> lineLengths = MarkdownJavadocSyntaxCheck.lineLengths(input);
+    MarkdownJavadocSyntaxCheck.Position position =
+      MarkdownJavadocSyntaxCheck.Position.ofStringIndex(input.indexOf('c'), lineLengths);
+    assertThat(position.lineNumber()).isEqualTo(2);
+    assertThat(position.columnNumber()).isEqualTo(3);
   }
 
-  /**
-   * Checking that in the case of a String containing only a quoted bit of code, the result of {@link MarkdownJavadocSyntaxCheck#removeQuotedCode(String)}
-   * contains two empty strings: one for the part before and one for the part after the quoted part.
-   */
+  @Test
+  void rangeOfNonQuotedCode() {
+    String javadoc = "foo`<b>`bar`<i>`baz```\n<ul>\n<li>\n```<pre>\n\n`a`quz";
+    List<Pair<Integer, Integer>> strings = MarkdownJavadocSyntaxCheck.rangeOfNonQuotedCode(javadoc);
+    assertThat(strings).containsExactly(Pair.of(0, 3), Pair.of(8, 11),
+      Pair.of(16, 19), Pair.of(36, 43), Pair.of(46, 49));
+  }
+
+  @Test
+  void rangeOfNonQuotedCode_unclosedTag() {
+    String javadoc = "foo``` ";
+    List<Pair<Integer, Integer>> nonQuotedCode = MarkdownJavadocSyntaxCheck.rangeOfNonQuotedCode(javadoc);
+    assertThat(nonQuotedCode).containsExactly(Pair.of(0, 3));
+  }
+
   @Test
   void removeEscapedCode_noNonQuoted() {
     String javadoc = "`<b>`";
-    List<String> strings = MarkdownJavadocSyntaxCheck.removeQuotedCode(javadoc);
-    assertThat(strings).containsExactly("", "");
+    List<Pair<Integer, Integer>> rangeOfNonQuotedCode = MarkdownJavadocSyntaxCheck.rangeOfNonQuotedCode(javadoc);
+    assertThat(rangeOfNonQuotedCode).containsExactly(Pair.of(0, 0), Pair.of(5, 5));
   }
 
   @Test
@@ -83,6 +102,13 @@ class MarkdownJavadocSyntaxCheckTest {
   void findEndOfMarkdowQuote_unclosed() {
     String javadoc = "```foo`  ";
     int end = MarkdownJavadocSyntaxCheck.findEndOfMarkdownQuote(javadoc, 0);
+    assertThat(end).isEqualTo(-1);
+  }
+
+  @Test
+  void findEndOfMarkdowQuote_unclosedSingleQuote() {
+    String javadoc = "foo`bar  ";
+    int end = MarkdownJavadocSyntaxCheck.findEndOfMarkdownQuote(javadoc, 3);
     assertThat(end).isEqualTo(-1);
   }
 }

@@ -19,13 +19,16 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.tuple.Pair;
 import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.java.model.DefaultModuleScannerContext;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -35,9 +38,11 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
   /**
    * Pattern to find Javadoc or HTML tags that can be replaced with Markdown.
    */
-  private static final Pattern NON_MARKDOWN_JAVADOC_PATTERN = Pattern.compile("<b>|<i>|<p>|<pre>|<ul>|<table>|\\{@code |\\{@link ");
+  @VisibleForTesting
+  static final Pattern NON_MARKDOWN_JAVADOC_PATTERN = Pattern.compile("<b>|<i>|<p>|<pre>|<ul>|<table>|\\{@code |\\{@link ");
 
   private static final Pattern TRIPLE_QUOTE = Pattern.compile("```");
+  private static final String MESSAGE = "replace HTML syntax with Markdown syntax in javadoc";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -46,41 +51,64 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    SyntaxToken firstToken = tree.firstToken();
-    if (firstToken == null) {
-      return;
-    }
-    boolean containsNonMarkdownSyntax = firstToken
-      .trivias()
-      .stream()
-      .filter(trivia -> trivia.isComment(SyntaxTrivia.CommentKind.MARKDOWN))
-      .map(SyntaxTrivia::comment)
-      .flatMap(comment -> removeQuotedCode(comment).stream())
-      .anyMatch(comment -> NON_MARKDOWN_JAVADOC_PATTERN.matcher(comment).find());
+    List<SyntaxTrivia> markdownJavadoc =
+      Optional.ofNullable(tree.firstToken())
+        .stream()
+        .flatMap(token -> token.trivias().stream())
+        .filter(trivia -> trivia.isComment(SyntaxTrivia.CommentKind.MARKDOWN))
+        .toList();
 
-    if (containsNonMarkdownSyntax) {
-      context.reportIssue(this, tree, "replace HTML syntax with Markdown syntax in javadoc");
+    for (SyntaxTrivia trivia : markdownJavadoc) {
+      String comment = trivia.comment();
+      Matcher matcher = NON_MARKDOWN_JAVADOC_PATTERN.matcher(comment);
+      for (Pair<Integer, Integer> range : rangeOfNonQuotedCode(comment)) {
+        matcher.region(range.getLeft(), range.getRight());
+        if (matcher.find()) {
+          List<Integer> lineLengths = lineLengths(comment);
+          Position startPosition = Position.ofStringIndex(matcher.start(), lineLengths);
+          Position endPosition = Position.ofStringIndex(matcher.end(), lineLengths);
+          reportNonMarkdownSyntax(trivia, startPosition, endPosition);
+        }
+      }
     }
+  }
+
+  void reportNonMarkdownSyntax(SyntaxTrivia trivia, Position start, Position end) {
+    int triviaLine = trivia.range().start().line();
+    int triviaColumn = trivia.range().start().columnOffset();
+
+    int startLine = triviaLine + start.lineNumber;
+    int endLine = triviaLine + end.lineNumber;
+
+    int startColumn = start.lineNumber == 0
+      ? (triviaColumn + start.columnNumber)
+      : start.columnNumber;
+    int endColumn = end.lineNumber == 0
+      ? (triviaColumn + end.columnNumber)
+      : end.columnNumber;
+    var textSpan = new AnalyzerMessage.TextSpan(startLine, startColumn, endLine, endColumn);
+    ((DefaultModuleScannerContext) this.context).reportIssue(
+      new AnalyzerMessage(this, context.getInputFile(), textSpan, MESSAGE, 0));
   }
 
   /**
    * Remove from the text, parts that are between backquotes ({@code `}) and triple backquote ({@code ```}) for Markdown code.
    */
   @VisibleForTesting
-  static List<String> removeQuotedCode(String javadoc) {
-    List<String> nonEscaped = new ArrayList<>();
+  static List<Pair<Integer, Integer>> rangeOfNonQuotedCode(String javadoc) {
+    List<Pair<Integer, Integer>> nonQuoted = new ArrayList<>();
     int currentPosition = 0;
     while (currentPosition != -1) {
       int nextQuote = javadoc.indexOf("`", currentPosition);
       if (nextQuote != -1) {
-        nonEscaped.add(javadoc.substring(currentPosition, nextQuote));
+        nonQuoted.add(Pair.of(currentPosition, nextQuote));
         currentPosition = findEndOfMarkdownQuote(javadoc, nextQuote);
       } else {
-        nonEscaped.add(javadoc.substring(currentPosition));
+        nonQuoted.add(Pair.of(currentPosition, javadoc.length()));
         currentPosition = -1;
       }
     }
-    return nonEscaped;
+    return nonQuoted;
   }
 
   @VisibleForTesting
@@ -95,4 +123,27 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
       return closingQuotePosition == -1 ? -1 : (closingQuotePosition + 1);
     }
   }
+
+  record Position(int lineNumber, int columnNumber) {
+    @VisibleForTesting
+    static Position ofStringIndex(int index, List<Integer> lineLengths) {
+      int currentLine = 0;
+      int indexOfCurrentLine = 0;
+      while (currentLine < lineLengths.size() &&
+        index >= indexOfCurrentLine + lineLengths.get(currentLine) + 1) {
+        // We need to add 1 to account for the newline character
+        indexOfCurrentLine += lineLengths.get(currentLine) + 1;
+        currentLine++;
+      }
+      int column = index - indexOfCurrentLine;
+      return new Position(currentLine, column);
+    }
+  }
+
+  @VisibleForTesting
+  static List<Integer> lineLengths(String text) {
+    return Arrays.stream(text.split("\n")).map(String::length).toList();
+  }
+
+
 }
