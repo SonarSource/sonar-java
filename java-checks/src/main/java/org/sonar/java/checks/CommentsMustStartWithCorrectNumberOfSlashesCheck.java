@@ -21,7 +21,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -31,7 +30,6 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
   private static final String AFTER_JAVA_23 = "Markdown documentation should start with exactly three slashes, no more.";
   private static final String SLASHES_BEFORE_JAVA_23 = "///";
   private static final String SLASHES_AFTER_JAVA_23 = "////";
-
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -67,9 +65,11 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
   /*
    * Represents a span of text within a single line, defined by its line number and start/end positions.
    *
-   * @param line  The line number where the span is located (1-based index).
+   * @param line The line number where the span is located (1-based index).
+   * 
    * @param start The starting column position of the span (0-based index).
-   * @param end   The ending column position of the span (0-based index, exclusive).
+   * 
+   * @param end The ending column position of the span (0-based index, exclusive).
    *
    * example for line below:
    * /// a comment
@@ -79,9 +79,7 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
   private record LineSpan(int line, int start, int end) {
     public static LineSpan fromComment(SyntaxTrivia comment, int line, int startChar, int endChar) {
       int sourceLine = comment.range().start().line() + line;
-      if (sourceLine > comment.range().end().line()) {
-        throw new IllegalArgumentException("Invalid line span");
-      }
+      if (sourceLine > comment.range().end().line()) { throw new IllegalArgumentException("line is outside comment"); }
       if (line == 0) {
         int offset = comment.range().start().columnOffset();
         return new LineSpan(sourceLine, offset + startChar, offset + endChar);
