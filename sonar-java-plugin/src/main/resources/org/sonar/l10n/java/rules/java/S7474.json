@@ -1,0 +1,24 @@
+{
+  "title": "Markdown, HTML and Javadoc tags should be consistent",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java23",
+    "javadoc"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-7474",
+  "sqKey": "S7474",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "FORMATTED"
+  }
+}
