@@ -64,17 +64,29 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
     return new AnalyzerMessage(this, context.getInputFile(), textSpan, message, 0);
   }
 
+  /*
+   * Represents a span of text within a single line, defined by its line number and start/end positions.
+   *
+   * @param line  The line number where the span is located (1-based index).
+   * @param start The starting column position of the span (0-based index).
+   * @param end   The ending column position of the span (0-based index, exclusive).
+   *
+   * example for line below:
+   * /// a comment
+   * ^^^
+   * the LineSpan corresponds to the caret is LineSpan(aLine, 0, 3)
+   */
   private record LineSpan(int line, int start, int end) {
-    public static LineSpan fromComment(SyntaxTrivia comment, int line, int start, int end) {
+    public static LineSpan fromComment(SyntaxTrivia comment, int line, int startChar, int endChar) {
       int sourceLine = comment.range().start().line() + line;
       if (sourceLine > comment.range().end().line()) {
         throw new IllegalArgumentException("Invalid line span");
       }
       if (line == 0) {
         int offset = comment.range().start().columnOffset();
-        return new LineSpan(sourceLine, offset + start, offset + end);
+        return new LineSpan(sourceLine, offset + startChar, offset + endChar);
       } else {
-        return new LineSpan(sourceLine, start, end);
+        return new LineSpan(sourceLine, startChar, endChar);
       }
     }
   }
