@@ -18,6 +18,7 @@ package org.sonar.java.checks.verifier;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
@@ -25,6 +26,7 @@ import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.java.checks.verifier.internal.JavaCheckVerifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 /**
  * This interface defines how to use checks (rules) verifiers. Its goal is to provide all the required information
@@ -235,7 +237,21 @@ public interface CheckVerifier {
    * @param rootDirectory The path of the project root working directory
    * @return the verifier configured with the project root working directory.
    */
-  CheckVerifier withProjectLevelWorkDir(String rootDirectory);
+  default CheckVerifier withProjectLevelWorkDir(String rootDirectory) {
+    throw new UnsupportedOperationException("Method not implemented, feel free to implement.");
+  }
+
+  /**
+   * Allows to modify the compilation unit tree after parsing.
+   * This is useful for adding or modifying nodes in the tree for testing purposes.
+   * There is at most one modifier per {@link CheckVerifier}.
+   *
+   * @param compilationUnitModifier the modifier to apply to the compilation unit tree
+   * @return the verifier configured with the compilation unit modifier.
+   */
+  default CheckVerifier withCompilationUnitModifier(Consumer<CompilationUnitTree> compilationUnitModifier) {
+    throw new UnsupportedOperationException("Method not implemented, feel free to implement.");
+  }
 
   /**
    * Verifies that all the expected issues are correctly raised by the rule(s),

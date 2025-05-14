@@ -42,6 +42,7 @@ import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 public class JavaAstScanner {
   private static final Logger LOG = LoggerFactory.getLogger(JavaAstScanner.class);
@@ -78,6 +79,22 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
+    scan(inputFiles, compilationUnitTree -> {});
+  }
+
+  /**
+   * Scan the given files and modify
+   *
+   * @param inputFiles The list of files to analyze
+   * @param modifyCompilationUnit allow you to modify the ast before running the analysis on it, for example to remove semantic information
+   */
+  @VisibleForTesting
+  public void scanForTesting(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
+    scan(inputFiles, modifyCompilationUnit);
+  }
+
+
+  private void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
     List<? extends InputFile> filesNames = filterModuleInfo(inputFiles).toList();
     AnalysisProgress analysisProgress = new AnalysisProgress(filesNames.size());
     try {
@@ -90,7 +107,8 @@ public class JavaAstScanner {
           analysisProgress,
           (i, r) -> simpleScan(i, r,
             // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually. See SONARJAVA-3609.
-            JavaAstScanner::cleanUpAst));
+            JavaAstScanner::cleanUpAst,
+            modifyCompilationUnit));
     } finally {
       endOfAnalysis();
     }
@@ -125,9 +143,16 @@ public class JavaAstScanner {
   }
 
   public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
+    simpleScan(inputFile, result, cleanUp, compilationUnitTree -> {});
+  }
+
+  // modifyCompilationUnit should be used for testing.
+  public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp,
+    Consumer<CompilationUnitTree> modifyCompilationUnit) {
     visitor.setCurrentFile(inputFile);
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
+      modifyCompilationUnit.accept(ast);
       visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
       String path = inputFile.toString();
       collectUndefinedTypes(path, ast.sema.undefinedTypes());

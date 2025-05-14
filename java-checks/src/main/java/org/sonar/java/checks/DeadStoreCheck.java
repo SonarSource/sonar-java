@@ -181,6 +181,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     Symbol symbol = localVar.symbol();
     ExpressionTree initializer = localVar.initializer();
     if (initializer != null
+      && !localVar.symbol().isUnknown()
       && !isUsualDefaultValue(initializer)
       && !out.contains(symbol)
       && !UNRESOLVED_IDENTIFIERS_VISITOR.isUnresolved(symbol.name())) {

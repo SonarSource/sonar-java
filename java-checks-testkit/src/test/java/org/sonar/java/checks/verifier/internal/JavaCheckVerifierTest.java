@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
@@ -33,7 +35,11 @@ import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.IssueWithQuickFix;
 import org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.NoEffectEndOfAnalysisCheck;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -42,6 +48,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -305,6 +313,30 @@ class JavaCheckVerifierTest {
     dummyReadInternalWrite.withCache(null, new InternalWriteCache());
     assertThat(dummyReadInternalWrite.cacheContext.getReadCache()).isInstanceOf(JavaReadCache.class);
     assertThat(dummyReadInternalWrite.cacheContext.getWriteCache()).isInstanceOf(JavaWriteCache.class);
+  }
+
+  @Test
+  void compilationUnitModifier_modify_tree() {
+    Consumer<CompilationUnitTree> modifier = tree -> {
+      ClassTreeImpl classTree = (ClassTreeImpl) tree.types().get(0);
+      IdentifierTree ident = new IdentifierTreeImpl(new InternalSyntaxToken(1, 1, "Modified", List.of(), false));
+      classTree.complete((ModifiersTreeImpl)classTree.modifiers(), classTree.declarationKeyword(), ident);
+    };
+
+    var check = new JavaFileScanner() {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        CompilationUnitTree tree = context.getTree();
+        ClassTreeImpl classTree = (ClassTreeImpl) tree.types().get(0);
+        assertThat(classTree.simpleName().name()).isEqualTo("Modified");
+      }
+    };
+    
+    JavaCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withCheck(check)
+      .withCompilationUnitModifier(modifier)
+      .verifyNoIssues();
   }
 
 }

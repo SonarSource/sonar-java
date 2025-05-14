@@ -249,11 +249,6 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   @Override
-  public CheckVerifier withProjectLevelWorkDir(String rootDirectory) {
-    throw new RuntimeException("Method not implemented, feel free to implement.");
-  }
-
-  @Override
   public void verifyIssues() {
     requiresNonNull(checks, CHECK_OR_CHECKS);
     requiresNonNull(files, FILE_OR_FILES);

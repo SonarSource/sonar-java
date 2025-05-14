@@ -524,7 +524,7 @@ class InternalCheckVerifierTest {
     });
 
     assertThat(e)
-      .isInstanceOf(RuntimeException.class)
+      .isInstanceOf(UnsupportedOperationException.class)
       .hasMessage("Method not implemented, feel free to implement.");
   }
 
@@ -1051,6 +1051,23 @@ class InternalCheckVerifierTest {
     dummyReadInternalWrite.withCache(null, new InternalWriteCache());
     assertThat(dummyReadInternalWrite.cacheContext.getReadCache()).isInstanceOf(JavaReadCache.class);
     assertThat(dummyReadInternalWrite.cacheContext.getWriteCache()).isInstanceOf(JavaWriteCache.class);
+  }
+
+  @Test
+  void compilationUnitModifier_not_supported() {
+
+    InternalCheckVerifier checkVerifier = InternalCheckVerifier.newInstance()
+      .onFile(TEST_FILE);
+
+    Throwable e = catchThrowable(() -> {
+      checkVerifier
+        .withCompilationUnitModifier(tree -> {
+        });
+    });
+
+    assertThat(e)
+      .isInstanceOf(UnsupportedOperationException.class)
+      .hasMessage("Method not implemented, feel free to implement.");
   }
 
 }
