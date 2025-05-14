@@ -49,4 +49,11 @@ class MissingDeprecatedCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_markdown() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MissingDeprecatedCheckMarkdownSample.java"))
+      .withCheck(new MissingDeprecatedCheck())
+      .verifyIssues();
+  }
 }
