@@ -18,8 +18,12 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.java.model.DefaultModuleScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -28,8 +32,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSubscriptionVisitor {
   private static final String BEFORE_JAVA_23 = "A single-line comment should start with exactly two slashes, no more.";
   private static final String AFTER_JAVA_23 = "Markdown documentation should start with exactly three slashes, no more.";
-  private static final String SLASHES_BEFORE_JAVA_23 = "///";
-  private static final String SLASHES_AFTER_JAVA_23 = "////";
+  private static final String INCORRECT_SLASHES_BEFORE_JAVA_23 = "///";
+  private static final String INCORRECT_SLASHES_AFTER_JAVA_23 = "////";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -38,9 +42,9 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    if (syntaxTrivia.isComment(SyntaxTrivia.CommentKind.LINE) && syntaxTrivia.comment().startsWith(SLASHES_BEFORE_JAVA_23)) {
-      var span = LineSpan.fromComment(syntaxTrivia, 0, 0, SLASHES_BEFORE_JAVA_23.length());
-      ((DefaultJavaFileScannerContext) this.context).reportIssue(issueSingleLine(span, BEFORE_JAVA_23));
+    if (syntaxTrivia.isComment(SyntaxTrivia.CommentKind.LINE) && syntaxTrivia.comment().startsWith(INCORRECT_SLASHES_BEFORE_JAVA_23)) {
+      var span = LineSpan.fromComment(syntaxTrivia, 0, 0, INCORRECT_SLASHES_BEFORE_JAVA_23.length());
+      reportIssue(span, BEFORE_JAVA_23);
     }
 
     if (syntaxTrivia.isComment(SyntaxTrivia.CommentKind.MARKDOWN)) {
@@ -48,17 +52,21 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
       for (int idx = 0; idx < lines.length; idx++) {
         String line = lines[idx];
 
-        if (line.trim().startsWith(SLASHES_AFTER_JAVA_23)) {
-          int startPos = line.indexOf(SLASHES_AFTER_JAVA_23);
-          var span = LineSpan.fromComment(syntaxTrivia, idx, startPos, startPos + SLASHES_AFTER_JAVA_23.length());
-          ((DefaultJavaFileScannerContext) this.context).reportIssue(issueSingleLine(span, AFTER_JAVA_23));
+        if (line.trim().startsWith(INCORRECT_SLASHES_AFTER_JAVA_23)) {
+          int startPos = line.indexOf(INCORRECT_SLASHES_AFTER_JAVA_23);
+          var span = LineSpan.fromComment(syntaxTrivia, idx, startPos, startPos + INCORRECT_SLASHES_AFTER_JAVA_23.length());
+          reportIssue(span, AFTER_JAVA_23);
         }
       }
     }
   }
 
+  private void reportIssue(LineSpan span, String message) {
+    ((DefaultModuleScannerContext) this.context).reportIssue(issueSingleLine(span,message));
+  }
+
   private AnalyzerMessage issueSingleLine(LineSpan span, String message) {
-    AnalyzerMessage.TextSpan textSpan = new AnalyzerMessage.TextSpan(span.line, span.start, span.line, span.end);
+    var textSpan = new AnalyzerMessage.TextSpan(span.line, span.start, span.line, span.end);
     return new AnalyzerMessage(this, context.getInputFile(), textSpan, message, 0);
   }
 
