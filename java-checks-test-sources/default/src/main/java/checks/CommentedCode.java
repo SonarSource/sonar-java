@@ -153,6 +153,14 @@ public class CommentedCode {
     return field;
   }
 
+  /// No detection of commented-out code in Markdown documentation for method
+  /// for (Visitor visitor : visitors) {
+  ///  continue;
+  /// }
+  public int getFieldMarkdown() {
+    return field;
+  }
+
   /*
    * FIXME: the following method calls {@link CommentedCode#method(String)}
    */
