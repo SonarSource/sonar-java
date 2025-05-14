@@ -1,0 +1,35 @@
+<h2>Why is this an issue?</h2>
+<p>Starting in Java 23, comments beginning with three slashes <code>///</code> are interpreted as JavaDoc comments using Markdown syntax.</p>
+<p>In Java 22 and earlier, comments starting with more than 2 slashes were treated as normal comments. Accidentally writing comments with three or
+more slashes can lead to unintended JavaDoc being generated, when migrating to Java 23.</p>
+<h3>What is the potential impact?</h3>
+<ul>
+  <li> Accidental JavaDoc generation where normal comments were intended. </li>
+  <li> Misleading or broken documentation output. </li>
+  <li> Increased maintenance burden when upgrading to Java 23 or later. </li>
+</ul>
+<h2>How to fix it</h2>
+<p>In versions of Java prior to 23, all comments should always start with exactly 2 slashes, and from Java 23 forward they should not start with more
+than 3.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>The following code will generate misleading Javadoc comments if migrated to Java 23:</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+/// Some comment for the developers
+public abstract void foo();
+//// public void foo(String s){}
+public void foo(){}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+// Some comment for the developers
+public abstract void foo();
+// public void foo(String s){}
+public void foo(){}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://openjdk.org/jeps/467">JEP 467: Markdown Documentation Comments</a> </li>
+</ul>
+

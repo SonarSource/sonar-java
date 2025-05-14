@@ -1,0 +1,25 @@
+{
+  "title": "Comments should start with the appropriate number of slashes",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java23",
+    "javadoc"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-7476",
+  "sqKey": "S7476",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM",
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
