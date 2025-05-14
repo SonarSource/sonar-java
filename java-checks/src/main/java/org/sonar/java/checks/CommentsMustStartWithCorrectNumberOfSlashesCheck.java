@@ -27,17 +27,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S7476")
 public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSubscriptionVisitor {
-  private DefaultJavaFileScannerContext context;
-  private final static String BEFORE_JAVA_23 = "Do not use more than two slashes in a comment.";
-  private final static String AFTER_JAVA_23 = "Do not use more than three slashes in a comment.";
-  private final static String SLASHES_BEFORE_JAVA_23 = "///";
-  private final static String SLASHES_AFTER_JAVA_23 = "////";
+  private static final String BEFORE_JAVA_23 = "A single-line comment should start with exactly two slashes, no more.";
+  private static final String AFTER_JAVA_23 = "Markdown documentation should start with exactly three slashes, no more.";
+  private static final String SLASHES_BEFORE_JAVA_23 = "///";
+  private static final String SLASHES_AFTER_JAVA_23 = "////";
 
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    super.setContext(context);
-    this.context = (DefaultJavaFileScannerContext) context;
-  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -46,9 +40,9 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
-    if (syntaxTrivia.isComment(SyntaxTrivia.CommentKind.LINE) && syntaxTrivia.comment().trim().startsWith(SLASHES_BEFORE_JAVA_23)) {
+    if (syntaxTrivia.isComment(SyntaxTrivia.CommentKind.LINE) && syntaxTrivia.comment().startsWith(SLASHES_BEFORE_JAVA_23)) {
       var span = LineSpan.fromComment(syntaxTrivia, 0, 0, SLASHES_BEFORE_JAVA_23.length());
-      context.reportIssue(issueSingleLine(LineSpan.fromComment(syntaxTrivia, 0, 0, SLASHES_BEFORE_JAVA_23.length()), BEFORE_JAVA_23));
+      ((DefaultJavaFileScannerContext) this.context).reportIssue(issueSingleLine(span, BEFORE_JAVA_23));
     }
 
     if (syntaxTrivia.isComment(SyntaxTrivia.CommentKind.MARKDOWN)) {
@@ -59,7 +53,7 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
         if (line.trim().startsWith(SLASHES_AFTER_JAVA_23)) {
           int startPos = line.indexOf(SLASHES_AFTER_JAVA_23);
           var span = LineSpan.fromComment(syntaxTrivia, idx, startPos, startPos + SLASHES_AFTER_JAVA_23.length());
-          context.reportIssue(issueSingleLine(span, AFTER_JAVA_23));
+          ((DefaultJavaFileScannerContext) this.context).reportIssue(issueSingleLine(span, AFTER_JAVA_23));
         }
       }
     }

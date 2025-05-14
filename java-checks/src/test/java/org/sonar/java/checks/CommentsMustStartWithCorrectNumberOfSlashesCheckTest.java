@@ -20,12 +20,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class CommentsMustStartWithCorrectNumberOfSlashesCheckTest {
 
   @Test
   void test_before_java23() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/CommentsMustStartWithCorrectNumberOfSlashesCheckBeforeJava23.java"))
+      .onFile(mainCodeSourcesPath("checks/CommentsMustStartWithCorrectNumberOfSlashesCheckBeforeJava23.java"))
       .withCheck(new CommentsMustStartWithCorrectNumberOfSlashesCheck())
       .withJavaVersion(22)
       .verifyIssues();
@@ -34,7 +36,7 @@ class CommentsMustStartWithCorrectNumberOfSlashesCheckTest {
   @Test
   void test_after_java23() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/CommentsMustStartWithCorrectNumberOfSlashesCheckAfterJava23.java"))
+      .onFile(mainCodeSourcesPath("checks/CommentsMustStartWithCorrectNumberOfSlashesCheckAfterJava23.java"))
       .withCheck(new CommentsMustStartWithCorrectNumberOfSlashesCheck())
       .withJavaVersion(23)
       .verifyIssues();

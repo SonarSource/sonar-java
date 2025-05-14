@@ -3,12 +3,16 @@ package checks;
 public class CommentsMustStartWithCorrectNumberOfSlashesCheckAfterJava23 {
   // This is a comment
   public void twoSlashes() {}
-  /// This is a javadoc
+  /// javadoc using markdown
   public void threeSlashes() {}
   // Noncompliant@+1
-  //// This is javadoc using markdown {{Do not use more than three slashes in a comment.}}
+  ////javadoc using markdown {{Markdown documentation should start with exactly three slashes, no more.}}
 //^^^^
   public void fourSlashes() {}
+  // Noncompliant@+1
+  ///// javadoc using markdown
+//^^^^
+  public void fiveSlashes() {}
 
   // //
   public void twoTimeTwoSlashes() {}
@@ -29,7 +33,9 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheckAfterJava23 {
    */
 
   /**
-   *
+   //
+   ///
+   ////
    * @param input A string input to be processed.
    */
   public void javadoc(String input){
@@ -43,15 +49,5 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheckAfterJava23 {
   //// invalid
 //^^^^
   public void markdownJavadoc() {
-  }
-
-  /// Calculates the sum of two integers.
-  ///
-  /// - @param `a` the first integer to add
-  /// - @param `b` the second integer to add
-  /// - @return the sum of the two integers
-  /// - @throws `IllegalArgumentException` if either of the integers is null
-  public int calculateSum(Integer a, Integer b) {
-    return a + b;
   }
 }
