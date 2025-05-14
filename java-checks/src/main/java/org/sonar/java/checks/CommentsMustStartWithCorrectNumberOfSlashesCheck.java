@@ -79,7 +79,6 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
   private record LineSpan(int line, int start, int end) {
     public static LineSpan fromComment(SyntaxTrivia comment, int line, int startChar, int endChar) {
       int sourceLine = comment.range().start().line() + line;
-      if (sourceLine > comment.range().end().line()) { throw new IllegalArgumentException("line is outside comment"); }
       if (line == 0) {
         int offset = comment.range().start().columnOffset();
         return new LineSpan(sourceLine, offset + startChar, offset + endChar);
