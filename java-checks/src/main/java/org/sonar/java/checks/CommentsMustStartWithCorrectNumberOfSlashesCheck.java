@@ -18,12 +18,8 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.DefaultModuleScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
-import org.sonar.java.reporting.JavaQuickFix;
-import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
