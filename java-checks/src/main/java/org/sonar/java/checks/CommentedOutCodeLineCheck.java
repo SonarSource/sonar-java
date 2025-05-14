@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
@@ -45,6 +46,9 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
   private static final String START_JSNI = "/*-{";
   private static final String END_JSNI = "}-*/";
   private static final String MESSAGE = "This block of commented-out lines of code should be removed.";
+
+  private static final Pattern LICENSE_PATTERN = Pattern.compile(".*[Ll]icen[sc]e.*");
+  private static final Pattern NATURAL_LANGUAGE_PATTERN = Pattern.compile(".*[a-z]{4,}.*[.;]\\s*$");
 
   private final CodeRecognizer codeRecognizer;
   private static final Position FILE_START = Position.at(Position.FIRST_LINE, Position.FIRST_COLUMN);
@@ -100,7 +104,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
     AnalyzerMessage issue = previousRelatedIssue;
     for (int lineOffset = 0; lineOffset < lines.length; lineOffset++) {
       String line = lines[lineOffset];
-      if (!isJavadocLink(line) && codeRecognizer.isLineOfCode(line)) {
+      if (!isJavadocLink(line) && !isLicenseOrNaturalLanguage(line) && codeRecognizer.isLineOfCode(line)) {
         int startLine = LineUtils.startLine(syntaxTrivia) + lineOffset;
         int startColumnOffset = (lineOffset == 0 ? Position.startOf(syntaxTrivia).columnOffset() : 0);
         if (issue != null) {
@@ -112,6 +116,12 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
       }
     }
     return issue;
+  }
+
+  private boolean isLicenseOrNaturalLanguage(String line) {
+    String trimmedLine = line.trim();
+    return LICENSE_PATTERN.matcher(trimmedLine).matches() ||
+           NATURAL_LANGUAGE_PATTERN.matcher(trimmedLine).matches();
   }
 
   private AnalyzerMessage createAnalyzerMessage(int startLine, int startColumn, String line, String message) {

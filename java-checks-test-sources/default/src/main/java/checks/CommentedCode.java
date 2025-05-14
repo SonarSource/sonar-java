@@ -17,6 +17,14 @@ package checks;
  */
 public class CommentedCode {
 
+  // The following comments should not be detected as code
+  // This is a natural sentence that ends with a semicolon; not code at all.
+  // (TR) xxx xx xx xxx x xxx xx xxxx xx xxx xx xx xxxx; clearly not code
+  // Licensed under the Apache License, Version 2.0 (the "License"); normal text
+  /*
+   * Licensed under the Apache License, Version 2.0 (the "License"); more text
+   */
+
   /**
    * No detection of commented-out code in Javadoc for field
    * for (Visitor visitor : visitors) {
