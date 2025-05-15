@@ -50,7 +50,8 @@ public class JspTest {
     OrchestratorRuleBuilder orchestratorBuilder = OrchestratorRule.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
-      .setEdition(Edition.ENTERPRISE)
+      .setEdition(Edition.ENTERPRISE_LW)
+      .activateLicense()
       .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION)
       // we need html plugin to have "jsp" language
       .addPlugin(MavenLocation.of("org.sonarsource.html", "sonar-html-plugin", "DEV"))
