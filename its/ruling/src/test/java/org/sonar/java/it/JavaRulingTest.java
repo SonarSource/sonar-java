@@ -100,7 +100,7 @@ public class JavaRulingTest {
     if (isCommunityEditionTestsOnly()) {
       orchestratorBuilder.setEdition(Edition.COMMUNITY);
     } else {
-      orchestratorBuilder.setEdition(Edition.DEVELOPER)
+      orchestratorBuilder.setEdition(Edition.ENTERPRISE_LW)
         .activateLicense();
     }
     return orchestratorBuilder.build();
