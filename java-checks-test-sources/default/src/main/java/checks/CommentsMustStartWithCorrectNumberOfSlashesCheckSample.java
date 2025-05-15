@@ -1,6 +1,18 @@
+///////////////////////////////////////////////////////////////////////////////////////////////
+//
+// this a license header, we don't raise on it as it will not generate javadoc
+//
+///////////////////////////////////////////////////////////////////////////////////////////////
 package checks;
 
-public class CommentsMustStartWithCorrectNumberOfSlashesCheckBeforeJava23 {
+
+// Noncompliant@+1
+/// don't use three slashes
+import java.util.List;
+
+// Noncompliant@+1
+/// This is a comment, but will be javadoc in java 23
+public class CommentsMustStartWithCorrectNumberOfSlashesCheckSample {
 
   // This is a comment
   public void twoSlashes() {}
@@ -12,6 +24,11 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheckBeforeJava23 {
   //// This is a comment
 //^^^
   public void fourSlashes() {}
+
+  public void insideMethod() {
+    // Noncompliant@+1
+    ///This is a comment
+  }
 
 
   // //
