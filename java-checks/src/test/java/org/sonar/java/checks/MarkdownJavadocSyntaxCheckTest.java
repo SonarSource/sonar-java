@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import org.apache.commons.lang3.tuple.Pair;
@@ -24,6 +25,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.checks.MarkdownJavadocSyntaxCheck.endIndexOfTag;
 
 class MarkdownJavadocSyntaxCheckTest {
 
@@ -100,5 +102,32 @@ class MarkdownJavadocSyntaxCheckTest {
     String javadoc = "foo`bar  ";
     int end = MarkdownJavadocSyntaxCheck.findEndOfMarkdownQuote(javadoc, 3);
     assertThat(end).isEqualTo(-1);
+  }
+
+  @Test
+  void testEndIndexOfTag() {
+    String javadoc = "<p>bar";
+    Matcher matcher = MarkdownJavadocSyntaxCheck.NON_MARKDOWN_JAVADOC_PATTERN.matcher(javadoc);
+    assertThat(matcher.find()).isTrue();
+    int index = endIndexOfTag(matcher, javadoc, Collections.emptyList());
+    assertThat(index).isEqualTo(3);
+  }
+
+  @Test
+  void testEndIndexOfTag_atCode() {
+    String javadoc = "{@code {} {}}";
+    Matcher matcher = MarkdownJavadocSyntaxCheck.NON_MARKDOWN_JAVADOC_PATTERN.matcher(javadoc);
+    assertThat(matcher.find()).isTrue();
+    int index = endIndexOfTag(matcher, javadoc, Collections.singletonList(Pair.of(0, javadoc.length())));
+    assertThat(index).isEqualTo(javadoc.length());
+  }
+
+  @Test
+  void testEndIndexOfTag_unclosedTag() {
+    String javadoc = "{@code {} {}";
+    Matcher matcher = MarkdownJavadocSyntaxCheck.NON_MARKDOWN_JAVADOC_PATTERN.matcher(javadoc);
+    assertThat(matcher.find()).isTrue();
+    int index = endIndexOfTag(matcher, javadoc, Collections.singletonList(Pair.of(0, javadoc.length())));
+    assertThat(index).isEqualTo(javadoc.length());
   }
 }

@@ -36,7 +36,7 @@ public class MarkdownJavadocSyntaxCheckSample {
 
   // Noncompliant@+1
   /// For inline code snippets, it uses the {@code <code>} tag.
-  //                                        ^^^^^^^
+  //                                        ^^^^^^^^^^^^^^
   public void withCode() {
     // Empty
     }
@@ -68,7 +68,7 @@ public class MarkdownJavadocSyntaxCheckSample {
 
   // Noncompliant@+1
   /// {@link String#length()} links to the {@link java.lang.String#length()} method.
-  //  ^^^^^^^
+  //  ^^^^^^^^^^^^^^^^^^^^^^^
   public void withLink() {
     // Empty
   }
