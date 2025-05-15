@@ -18,6 +18,7 @@ package org.sonar.java.model;
 
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
+import org.sonar.plugins.java.api.location.Position;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -83,4 +84,11 @@ class LineColumnConverterTest {
       "400:(201,0)");
   }
 
+  /** Check that position 0 in String corresponds to FIRST_LINE:FIRST_COLUMN. */
+  @Test
+  void testToPosition() {
+    Position firstPosition = new LineColumnConverter("foo").toPosition(0);
+    assertThat(firstPosition.line()).isEqualTo(Position.FIRST_LINE);
+    assertThat(firstPosition.column()).isEqualTo(Position.FIRST_COLUMN);
+  }
 }

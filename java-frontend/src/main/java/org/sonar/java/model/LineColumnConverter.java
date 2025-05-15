@@ -19,6 +19,7 @@ package org.sonar.java.model;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.sonar.plugins.java.api.location.Position;
 
 /**
  * There is a different convention in the JDT for line and column numbers.
@@ -61,7 +62,14 @@ public class LineColumnConverter {
     }
   }
 
+  public Position toPosition(int absolutSourcePosition) {
+    return toPos(absolutSourcePosition).toPosition();
+  }
+
   public record Pos(int line, int columnOffset) {
+    public Position toPosition() {
+      return Position.at(line, columnOffset + 1);
+    }
   }
 
 }
