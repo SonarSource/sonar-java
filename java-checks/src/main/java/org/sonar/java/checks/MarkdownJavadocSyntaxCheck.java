@@ -39,7 +39,7 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
    * Pattern to find Javadoc or HTML tags that can be replaced with Markdown.
    */
   @VisibleForTesting
-  static final Pattern NON_MARKDOWN_JAVADOC_PATTERN = Pattern.compile("<b>|<i>|<p>|<pre>|<ul>|<table>|\\{@code |\\{@link ");
+  static final Pattern NON_MARKDOWN_JAVADOC_PATTERN = Pattern.compile("<b>|<i>|<p>|<pre>|<ul>|<ol>|<table>|\\{@code |\\{@link ");
 
   private static final Pattern TRIPLE_QUOTE = Pattern.compile("```");
   private static final String MESSAGE = "replace HTML syntax with Markdown syntax in javadoc";
