@@ -3,7 +3,6 @@ name: Update Rule Metadata
 on: workflow_dispatch
 
 env:
-  RULE_API_VERSION: 2.10.0.4287
   PR_BRANCH_NAME: gh-action/update-rule-metadata
 
 jobs:
@@ -27,7 +26,10 @@ jobs:
 
       - name: Setup Rule API
         run: |
-          jfrog rt download "sonarsource-private-releases/com/sonarsource/rule-api/rule-api/${{ env.RULE_API_VERSION }}/rule-api-${{ env.RULE_API_VERSION }}.jar" --flat
+          jfrog rt curl -sLf "sonarsource-private-releases/com/sonarsource/rule-api/rule-api/%5BRELEASE%5D/rule-api-%5BRELEASE%5D.jar" -o rule-api.jar
+          echo "Latest com.sonarsource.rule-api:rule-api release:"
+          jar xf rule-api.jar META-INF/MANIFEST.MF
+          grep 'Implementation-Version' META-INF/MANIFEST.MF
         working-directory: /tmp
 
       - name: Setup Java
@@ -38,7 +40,7 @@ jobs:
 
       - name: Update Files
         run: |
-          java -jar "/tmp/rule-api-${{ env.RULE_API_VERSION }}.jar" update
+          java -jar "/tmp/rule-api.jar" update
           sed --in-place='' -e 's/rule:java:S3649/rule:javasecurity:S3649/g' 'sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S2077.html'
 
       - name: Create PR
