@@ -98,6 +98,23 @@ public class MarkdownJavadocSyntaxCheckSample {
   }
 
   // Noncompliant@+2
+  /// An ordered list:
+  /// <ol>
+  /// <li>one
+  /// <li>two
+  /// </ol>
+  public int withOrderedList() {
+    return 0;
+  }
+
+  /// An ordered list:
+  /// 1. one
+  /// 1. two
+  public int withOrderedListMarkdown() {
+    return 0;
+  }
+
+  // Noncompliant@+2
   /// Here is a table:
   /// <table>
   /// <tr>
@@ -125,5 +142,11 @@ public class MarkdownJavadocSyntaxCheckSample {
   /// | Row 2, Col 1 | Row 2, Col 2 |
   public void withTableMarkdown() { // Compliant
     // Empty
+  }
+
+  public void danglingComment() {
+    // Compliant, because this is not placed where it would be considered by JavaDocs.
+
+    /// Some text in <i>italic</i>
   }
 }
