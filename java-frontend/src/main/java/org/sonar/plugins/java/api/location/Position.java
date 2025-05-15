@@ -80,4 +80,5 @@ public interface Position extends Comparable<Position> {
     return token.range().end();
   }
 
+  Position relativeTo(Position other);
 }

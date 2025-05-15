@@ -90,4 +90,16 @@ class InternalPositionTest {
     assertThat(p1.equals(new Object())).isFalse();
   }
 
+  @Test
+  void relativeTo() {
+    Position p1 = Position.at(2, 5);
+    Position p2 = Position.at(3, 7);
+
+    // The 3rd line when starting to count from the second line is the 4th line.
+    assertThat(p1.relativeTo(p2)).isEqualTo(Position.at(4, 5));
+
+    Position p3 = Position.at(1, 5);
+    assertThat(p3.relativeTo(p2)).isEqualTo(Position.at(3, 11));
+  }
+
 }
