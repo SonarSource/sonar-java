@@ -75,6 +75,19 @@ public class InternalPosition implements Position {
     return compareTo(other) > 0;
   }
 
+/**
+ * Returns a new {@code Position} object that represents this position's coordinates
+ * when counted relative to the given starting position.
+ */
+  @Override
+  public Position relativeTo(Position startPosition) {
+    if (line == 1) {
+      // If we are on the first line we need to account the column startPosition. Otherwise, it doesn't matter.
+      return new InternalPosition(line + startPosition.lineOffset(), column + startPosition.columnOffset());
+    }
+    return new InternalPosition(line + startPosition.lineOffset(), column);
+  }
+
   @Override
   public boolean equals(@Nullable Object o) {
     if (this == o) {
