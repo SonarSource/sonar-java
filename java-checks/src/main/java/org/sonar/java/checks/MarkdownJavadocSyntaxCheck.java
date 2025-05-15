@@ -27,8 +27,10 @@ import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.model.DefaultModuleScannerContext;
+import org.sonar.java.model.LineColumnConverter;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -61,12 +63,12 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
     for (SyntaxTrivia trivia : markdownJavadoc) {
       String comment = trivia.comment();
       Matcher matcher = NON_MARKDOWN_JAVADOC_PATTERN.matcher(comment);
+      LineColumnConverter lineColumnConverter = new LineColumnConverter(comment);
       for (Pair<Integer, Integer> range : rangeOfNonQuotedCode(comment)) {
         matcher.region(range.getLeft(), range.getRight());
         if (matcher.find()) {
-          List<Integer> lineLengths = lineLengths(comment);
-          Position startPosition = Position.ofStringIndex(matcher.start(), lineLengths);
-          Position endPosition = Position.ofStringIndex(matcher.end(), lineLengths);
+          Position startPosition = lineColumnConverter.toPosition(matcher.start());
+          Position endPosition = lineColumnConverter.toPosition(matcher.end());
           reportNonMarkdownSyntax(trivia, startPosition, endPosition);
         }
       }
@@ -74,19 +76,12 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
   }
 
   void reportNonMarkdownSyntax(SyntaxTrivia trivia, Position start, Position end) {
-    int triviaLine = trivia.range().start().line();
-    int triviaColumn = trivia.range().start().columnOffset();
-
-    int startLine = triviaLine + start.lineNumber;
-    int endLine = triviaLine + end.lineNumber;
-
-    int startColumn = start.lineNumber == 0
-      ? (triviaColumn + start.columnNumber)
-      : start.columnNumber;
-    int endColumn = end.lineNumber == 0
-      ? (triviaColumn + end.columnNumber)
-      : end.columnNumber;
-    var textSpan = new AnalyzerMessage.TextSpan(startLine, startColumn, endLine, endColumn);
+    Position triviaPosition = trivia.range().start();
+    Position absoluteStart = start.relativeTo(triviaPosition);
+    Position absoluteEnd = end.relativeTo(triviaPosition);
+    var textSpan = new AnalyzerMessage.TextSpan(
+      absoluteStart.line(), absoluteStart.columnOffset(),
+      absoluteEnd.line(), absoluteEnd.columnOffset());
     ((DefaultModuleScannerContext) this.context).reportIssue(
       new AnalyzerMessage(this, context.getInputFile(), textSpan, MESSAGE, 0));
   }
@@ -123,27 +118,4 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
       return closingQuotePosition == -1 ? -1 : (closingQuotePosition + 1);
     }
   }
-
-  record Position(int lineNumber, int columnNumber) {
-    @VisibleForTesting
-    static Position ofStringIndex(int index, List<Integer> lineLengths) {
-      int currentLine = 0;
-      int indexOfCurrentLine = 0;
-      while (currentLine < lineLengths.size() &&
-        index >= indexOfCurrentLine + lineLengths.get(currentLine) + 1) {
-        // We need to add 1 to account for the newline character
-        indexOfCurrentLine += lineLengths.get(currentLine) + 1;
-        currentLine++;
-      }
-      int column = index - indexOfCurrentLine;
-      return new Position(currentLine, column);
-    }
-  }
-
-  @VisibleForTesting
-  static List<Integer> lineLengths(String text) {
-    return Arrays.stream(text.split("\n")).map(String::length).toList();
-  }
-
-
 }
