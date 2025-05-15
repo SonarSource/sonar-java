@@ -64,15 +64,46 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
       String comment = trivia.comment();
       Matcher matcher = NON_MARKDOWN_JAVADOC_PATTERN.matcher(comment);
       LineColumnConverter lineColumnConverter = new LineColumnConverter(comment);
-      for (Pair<Integer, Integer> range : rangeOfNonQuotedCode(comment)) {
+      List<Pair<Integer, Integer>> rangeOfNonQuotedCode = rangeOfNonQuotedCode(comment);
+      for (Pair<Integer, Integer> range : rangeOfNonQuotedCode) {
         matcher.region(range.getLeft(), range.getRight());
         if (matcher.find()) {
           Position startPosition = lineColumnConverter.toPosition(matcher.start());
-          Position endPosition = lineColumnConverter.toPosition(matcher.end());
+          int endIndex = endIndexOfTag(matcher, comment, rangeOfNonQuotedCode);
+          Position endPosition = lineColumnConverter.toPosition(endIndex);
           reportNonMarkdownSyntax(trivia, startPosition, endPosition);
         }
       }
     }
+  }
+
+  @VisibleForTesting
+  static int endIndexOfTag(Matcher matcher, String comment, List<Pair<Integer, Integer>> rangeOfNonQuotedCode) {
+    if (!matcher.group().startsWith("{")) {
+      return matcher.end();
+    }
+    int index = indexOfClosingBracket(comment, matcher.end(), rangeOfNonQuotedCode);
+    if (index == -1) {
+      return comment.length();
+    }
+    return index + 1;
+  }
+
+  private static int indexOfClosingBracket(String comment, int fromIndex, List<Pair<Integer, Integer>> inRanges) {
+    int unclosedBrackets = 1;
+    for (Pair<Integer, Integer> range : inRanges) {
+      for (int i = Math.max(range.getLeft(), fromIndex); i < range.getRight(); i++) {
+        if (comment.charAt(i) == '{') {
+          unclosedBrackets++;
+        } else if (comment.charAt(i) == '}') {
+          unclosedBrackets--;
+        }
+        if (unclosedBrackets == 0) {
+          return i;
+        }
+      }
+    }
+    return -1;
   }
 
   void reportNonMarkdownSyntax(SyntaxTrivia trivia, Position start, Position end) {
