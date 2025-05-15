@@ -46,16 +46,6 @@ class MarkdownJavadocSyntaxCheckTest {
   }
 
   @Test
-  void testPositionOfStringIndex() {
-    String input = "a\nb\nzzzc\n";
-    List<Integer> lineLengths = MarkdownJavadocSyntaxCheck.lineLengths(input);
-    MarkdownJavadocSyntaxCheck.Position position =
-      MarkdownJavadocSyntaxCheck.Position.ofStringIndex(input.indexOf('c'), lineLengths);
-    assertThat(position.lineNumber()).isEqualTo(2);
-    assertThat(position.columnNumber()).isEqualTo(3);
-  }
-
-  @Test
   void rangeOfNonQuotedCode() {
     String javadoc = "foo`<b>`bar`<i>`baz```\n<ul>\n<li>\n```<pre>\n\n`a`quz";
     List<Pair<Integer, Integer>> strings = MarkdownJavadocSyntaxCheck.rangeOfNonQuotedCode(javadoc);

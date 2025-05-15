@@ -1,5 +1,4 @@
 package checks;
-
 // Noncompliant@+3 {{replace HTML syntax with Markdown syntax in javadoc}}
 
 /// The javadoc in this class uses markdown comment (3 slashes) but uses some HTML tags.
