@@ -64,6 +64,8 @@ public class JavaTestSuite {
     OrchestratorRuleBuilder orchestratorBuilder = OrchestratorRule.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
+      .setEdition(com.sonar.orchestrator.container.Edition.ENTERPRISE_LW)
+      .activateLicense()
       .addPlugin(JAVA_PLUGIN_LOCATION)
       .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../../java-symbolic-execution/java-symbolic-execution-plugin").toFile()))
       // for support of custom rules
