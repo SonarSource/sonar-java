@@ -16,13 +16,11 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.lang3.tuple.Pair;
 import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.PublicApiChecker;
@@ -61,46 +59,40 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
         .toList();
 
     for (SyntaxTrivia trivia : markdownJavadoc) {
-      String comment = trivia.comment();
-      Matcher matcher = NON_MARKDOWN_JAVADOC_PATTERN.matcher(comment);
-      LineColumnConverter lineColumnConverter = new LineColumnConverter(comment);
-      List<Pair<Integer, Integer>> rangeOfNonQuotedCode = rangeOfNonQuotedCode(comment);
-      for (Pair<Integer, Integer> range : rangeOfNonQuotedCode) {
-        matcher.region(range.getLeft(), range.getRight());
-        if (matcher.find()) {
-          Position startPosition = lineColumnConverter.toPosition(matcher.start());
-          int endIndex = endIndexOfTag(matcher, comment, rangeOfNonQuotedCode);
-          Position endPosition = lineColumnConverter.toPosition(endIndex);
-          reportNonMarkdownSyntax(trivia, startPosition, endPosition);
-        }
+      String withoutQuotedCode = replaceQuotedCodeWithBlanks(trivia.comment());
+      Matcher matcher = NON_MARKDOWN_JAVADOC_PATTERN.matcher(withoutQuotedCode);
+      LineColumnConverter lineColumnConverter = new LineColumnConverter(withoutQuotedCode);
+      if (matcher.find()) {
+        Position startPosition = lineColumnConverter.toPosition(matcher.start());
+        int endIndex = endIndexOfTag(matcher, withoutQuotedCode);
+        Position endPosition = lineColumnConverter.toPosition(endIndex);
+        reportNonMarkdownSyntax(trivia, startPosition, endPosition);
       }
     }
   }
 
   @VisibleForTesting
-  static int endIndexOfTag(Matcher matcher, String comment, List<Pair<Integer, Integer>> rangeOfNonQuotedCode) {
+  static int endIndexOfTag(Matcher matcher, String comment) {
     if (!matcher.group().startsWith("{")) {
       return matcher.end();
     }
-    int index = indexOfClosingBracket(comment, matcher.end(), rangeOfNonQuotedCode);
+    int index = indexOfClosingBracket(comment, matcher.end());
     if (index == -1) {
       return comment.length();
     }
     return index + 1;
   }
 
-  private static int indexOfClosingBracket(String comment, int fromIndex, List<Pair<Integer, Integer>> inRanges) {
+  private static int indexOfClosingBracket(String comment, int fromIndex) {
     int unclosedBrackets = 1;
-    for (Pair<Integer, Integer> range : inRanges) {
-      for (int i = Math.max(range.getLeft(), fromIndex); i < range.getRight(); i++) {
-        if (comment.charAt(i) == '{') {
-          unclosedBrackets++;
-        } else if (comment.charAt(i) == '}') {
-          unclosedBrackets--;
-        }
-        if (unclosedBrackets == 0) {
-          return i;
-        }
+    for (int i = fromIndex; i < comment.length(); i++) {
+      if (comment.charAt(i) == '{') {
+        unclosedBrackets++;
+      } else if (comment.charAt(i) == '}') {
+        unclosedBrackets--;
+      }
+      if (unclosedBrackets == 0) {
+        return i;
       }
     }
     return -1;
@@ -118,23 +110,29 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
   }
 
   /**
-   * Remove from the text, parts that are between backquotes ({@code `}) and triple backquote ({@code ```}) for Markdown code.
+   * Return a new string, where parts of the text that are between backquotes ({@code `}) and triple backquote ({@code ```}),
+   * are replaced with blank spaces, while preserving the number of characters and line numbers.
    */
   @VisibleForTesting
-  static List<Pair<Integer, Integer>> rangeOfNonQuotedCode(String javadoc) {
-    List<Pair<Integer, Integer>> nonQuoted = new ArrayList<>();
+  static String replaceQuotedCodeWithBlanks(String javadoc) {
+    StringBuilder result = new StringBuilder();
     int currentPosition = 0;
     while (currentPosition != -1) {
       int nextQuote = javadoc.indexOf("`", currentPosition);
       if (nextQuote != -1) {
-        nonQuoted.add(Pair.of(currentPosition, nextQuote));
+        result.append(javadoc, currentPosition, nextQuote);
         currentPosition = findEndOfMarkdownQuote(javadoc, nextQuote);
+        int endOfQuote = currentPosition == -1 ? javadoc.length() : currentPosition;
+        // Replace all printable characters by spaces, so that they can't be interpreted as tags.
+        // Don't replace non-printable characters, as this could interfere with line counting.
+        result.append(javadoc.substring(nextQuote, endOfQuote)
+          .replaceAll("\\p{Print}", " "));
       } else {
-        nonQuoted.add(Pair.of(currentPosition, javadoc.length()));
+        result.append(javadoc, currentPosition, javadoc.length());
         currentPosition = -1;
       }
     }
-    return nonQuoted;
+    return result.toString();
   }
 
   @VisibleForTesting

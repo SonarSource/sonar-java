@@ -16,10 +16,7 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.regex.Matcher;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
@@ -48,25 +45,24 @@ class MarkdownJavadocSyntaxCheckTest {
   }
 
   @Test
-  void rangeOfNonQuotedCode() {
+  void replaceQuotedCodeWithBlanks() {
     String javadoc = "foo`<b>`bar`<i>`baz```\n<ul>\n<li>\n```<pre>\n\n`a`quz";
-    List<Pair<Integer, Integer>> strings = MarkdownJavadocSyntaxCheck.rangeOfNonQuotedCode(javadoc);
-    assertThat(strings).containsExactly(Pair.of(0, 3), Pair.of(8, 11),
-      Pair.of(16, 19), Pair.of(36, 43), Pair.of(46, 49));
+    String withoutQuotedCode = MarkdownJavadocSyntaxCheck.replaceQuotedCodeWithBlanks(javadoc);
+    assertThat(withoutQuotedCode).isEqualTo("foo     bar     baz   \n    \n    \n   <pre>\n\n   quz");
   }
 
   @Test
-  void rangeOfNonQuotedCode_unclosedTag() {
+  void replaceQuotedCodeWithBlanks_unclosedTag() {
     String javadoc = "foo``` ";
-    List<Pair<Integer, Integer>> nonQuotedCode = MarkdownJavadocSyntaxCheck.rangeOfNonQuotedCode(javadoc);
-    assertThat(nonQuotedCode).containsExactly(Pair.of(0, 3));
+    String nonQuotedCode = MarkdownJavadocSyntaxCheck.replaceQuotedCodeWithBlanks(javadoc);
+    assertThat(nonQuotedCode).isEqualTo("foo    ");
   }
 
   @Test
   void removeEscapedCode_noNonQuoted() {
     String javadoc = "`<b>`";
-    List<Pair<Integer, Integer>> rangeOfNonQuotedCode = MarkdownJavadocSyntaxCheck.rangeOfNonQuotedCode(javadoc);
-    assertThat(rangeOfNonQuotedCode).containsExactly(Pair.of(0, 0), Pair.of(5, 5));
+    String withoutQuotedCode = MarkdownJavadocSyntaxCheck.replaceQuotedCodeWithBlanks(javadoc);
+    assertThat(withoutQuotedCode).isEqualTo("     ");
   }
 
   @Test
@@ -109,7 +105,7 @@ class MarkdownJavadocSyntaxCheckTest {
     String javadoc = "<p>bar";
     Matcher matcher = MarkdownJavadocSyntaxCheck.NON_MARKDOWN_JAVADOC_PATTERN.matcher(javadoc);
     assertThat(matcher.find()).isTrue();
-    int index = endIndexOfTag(matcher, javadoc, Collections.emptyList());
+    int index = endIndexOfTag(matcher, javadoc);
     assertThat(index).isEqualTo(3);
   }
 
@@ -118,7 +114,7 @@ class MarkdownJavadocSyntaxCheckTest {
     String javadoc = "{@code {} {}}";
     Matcher matcher = MarkdownJavadocSyntaxCheck.NON_MARKDOWN_JAVADOC_PATTERN.matcher(javadoc);
     assertThat(matcher.find()).isTrue();
-    int index = endIndexOfTag(matcher, javadoc, Collections.singletonList(Pair.of(0, javadoc.length())));
+    int index = endIndexOfTag(matcher, javadoc);
     assertThat(index).isEqualTo(javadoc.length());
   }
 
@@ -127,7 +123,7 @@ class MarkdownJavadocSyntaxCheckTest {
     String javadoc = "{@code {} {}";
     Matcher matcher = MarkdownJavadocSyntaxCheck.NON_MARKDOWN_JAVADOC_PATTERN.matcher(javadoc);
     assertThat(matcher.find()).isTrue();
-    int index = endIndexOfTag(matcher, javadoc, Collections.singletonList(Pair.of(0, javadoc.length())));
+    int index = endIndexOfTag(matcher, javadoc);
     assertThat(index).isEqualTo(javadoc.length());
   }
 }
