@@ -57,7 +57,7 @@ public class LineColumnConverter {
     int searchResult = Arrays.binarySearch(lineStartIndexes, 0, lineStartIndexesLength, absolutSourcePosition);
     if (searchResult < 0) {
       return new Pos(-searchResult - 1, absolutSourcePosition - lineStartIndexes[-searchResult - 2]);
-    } else  {
+    } else {
       return new Pos(searchResult + 1, 0);
     }
   }
@@ -66,7 +66,13 @@ public class LineColumnConverter {
     return toPos(absolutSourcePosition).toPosition();
   }
 
+  /**
+   * Represent the position in a source String. The first character is at {@code line} 1, and {@code columnOffset} 0.
+   */
   public record Pos(int line, int columnOffset) {
+    /**
+     * Convert this object to an equivalent {@link Position}. The {@link Position} for the first character, has line 1 and column 1.
+     */
     public Position toPosition() {
       return Position.at(line, columnOffset + 1);
     }
