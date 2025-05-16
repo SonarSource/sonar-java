@@ -606,16 +606,51 @@ class SetThroughPrivateMethods {
     return new SetThroughPrivateMethods(null, map);
   }
 
-  public void cycle(List<Integer> l){
+  public void cycle(List<Integer> l) {
     cycleA(l, 5);
   }
-  private void cycleA(List<Integer> l, int i){
+
+  private void cycleA(List<Integer> l, int i) {
     cycleB(l, i);
   }
-  private void cycleB(List<Integer> l, int i){
+
+  private void cycleB(List<Integer> l, int i) {
     if (i > 0) {
       cycleA(l, i - 1);
     }
     list = l; // Noncompliant
   }
 }
+
+class ReturnedAndPassedThrough {
+  private byte[] secureData = new byte[10];
+  private byte[] data = new byte[10];
+
+  private byte[] getDataInternal() {
+    return data; // Noncompliant
+  }
+
+  private byte[] getSecureDataInternal() {
+    return data; // Compliant: only called by `getSecureData()` which performs a copy.
+  }
+
+  public byte[] getSecureData() {
+    return Arrays.copyOf(getSecureDataInternal(), secureData.length);
+  }
+
+  public byte[] getData() {
+    if (secureData.length > 0) {
+      return getDataInternal();
+    } else {
+      return getData();
+    }
+  }
+
+  public byte[] getDataWithTwoReturns() {
+    if (data.length > 5) {
+      return data; // Noncompliant
+    }
+    return data; // Noncompliant
+  }
+}
+

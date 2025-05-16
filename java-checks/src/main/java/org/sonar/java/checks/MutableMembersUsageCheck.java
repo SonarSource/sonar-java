@@ -93,11 +93,14 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
 
   private final Deque<String> methodSignatureStack = new ArrayDeque<>();
 
-  /** In the context of a method call, this means the argument at {@code argumentIndex}, is given by the
+  /**
+   * In the context of a method call, this means the argument at {@code argumentIndex}, is given by the
    * calling method parameter at {@code parameterIndex}. For instance, in {@code int f(int a, int b) { g(0, 1, a); }}, we would have
-   * a mapping (0, 2): parameter 0 of `f`, i.e. a, is used as argument 2 of `g`. */
+   * a mapping (0, 2): parameter 0 of `f`, i.e. a, is used as argument 2 of `g`.
+   */
   @VisibleForTesting
-  record ArgumentParameterMapping(int parameterIndex, int argumentIndex) {}
+  record ArgumentParameterMapping(int parameterIndex, int argumentIndex) {
+  }
 
   /**
    * Maps index of arguments at the call site to parameters of the calling method.
@@ -150,10 +153,22 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
      */
     private final Set<String> nonPrivateMethods = new HashSet<>();
 
+    /**
+     * Maps method that return the result of another method
+     */
+    private final Map<String, List<String>> passingThroughMethod = new HashMap<>();
+
+    /**
+     * Map methods that return private mutable values to the identifier of the mutable they are returning.
+     */
+    private final Map<String, List<IdentifierTree>> methodsReturningPrivateMutable = new HashMap<>();
+
     public void clear() {
       mutableStoredByMethod.clear();
       callGraph.clear();
       nonPrivateMethods.clear();
+      passingThroughMethod.clear();
+      methodsReturningPrivateMutable.clear();
     }
 
     private static final List<CallSite> EMPTY_CALL_SITE_LIST = new ArrayList<>();
@@ -220,6 +235,26 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
       }
     }
 
+    private void reportMutableFieldReachingToOutside(JavaFileScannerContext context, JavaFileScanner check) {
+      Set<IdentifierTree> mutableValuesToReport = new HashSet<>();
+      ArrayDeque<String> queue = new ArrayDeque<>(nonPrivateMethods);
+      Set<String> explored = new HashSet<>();
+
+      while (!queue.isEmpty()) {
+        String current = queue.pop();
+        if (methodsReturningPrivateMutable.containsKey(current)) {
+          mutableValuesToReport.addAll(methodsReturningPrivateMutable.get(current));
+        }
+        if (explored.add(current)) {
+          queue.addAll(passingThroughMethod.getOrDefault(current, new ArrayList<>()));
+        }
+      }
+
+      for (IdentifierTree identifierTree : mutableValuesToReport) {
+        context.reportIssue(check, identifierTree, "Return a copy of \"" + identifierTree.name() + "\".");
+      }
+    }
+
     /**
      * Record whether the method is callable from outside the class.
      */
@@ -237,7 +272,6 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
       callGraph.computeIfAbsent(callerSignature, s -> new ArrayList<>())
         .add(new CallSite(methodSymbol.signature(), mutableParameters));
     }
-
 
     /**
      * Returns the indexes of arguments to the indexes of mutable parameters that correspond.
@@ -263,6 +297,17 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
       mutableStoredByMethod.computeIfAbsent(methodSignature, k -> new ArrayList<>())
         .add(new ParameterStore(assignedMember, parameterIndex));
     }
+
+    private void addPassingThroughMethod(String callingMethodSignature, String calledMethodSignature) {
+      passingThroughMethod.computeIfAbsent(callingMethodSignature, key -> new ArrayList<>())
+        .add(calledMethodSignature);
+    }
+
+    private void addMethodReturningPrivateMutable(String methodSignature, IdentifierTree mutableIdentifier) {
+      methodsReturningPrivateMutable
+        .computeIfAbsent(methodSignature, key -> new ArrayList<>())
+        .add(mutableIdentifier);
+    }
   }
 
   private final MutableDataPropagationGraph dataPropagationGraph = new MutableDataPropagationGraph();
@@ -272,6 +317,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     this.context = context;
     scan(context.getTree());
     dataPropagationGraph.reportMutableStoreReachableByOutsideCall(context, this);
+    dataPropagationGraph.reportMutableFieldReachingToOutside(context, this);
     dataPropagationGraph.clear();
   }
 
@@ -366,9 +412,14 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     }
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expression;
-      if (identifierTree.symbol().isPrivate() && !isOnlyAssignedImmutableVariable((Symbol.VariableSymbol) identifierTree.symbol())) {
-        context.reportIssue(this, identifierTree, "Return a copy of \"" + identifierTree.name() + "\".");
+      if (identifierTree.symbol().isPrivate()
+        && !isOnlyAssignedImmutableVariable((Symbol.VariableSymbol) identifierTree.symbol())
+        && !methodSignatureStack.isEmpty()) {
+        dataPropagationGraph.addMethodReturningPrivateMutable(methodSignatureStack.peek(), identifierTree);
       }
+    }
+    if (expression instanceof MethodInvocationTree methodInvocationTree && !methodSignatureStack.isEmpty()) {
+      dataPropagationGraph.addPassingThroughMethod(methodSignatureStack.peek(), methodInvocationTree.methodSymbol().signature());
     }
   }
 
