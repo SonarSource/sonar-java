@@ -18,27 +18,38 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.plugins.java.api.JavaFileScanner;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class CommentsMustStartWithCorrectNumberOfSlashesCheckTest {
+  private static final JavaFileScanner check = new CommentsMustStartWithCorrectNumberOfSlashesCheck();
+
+  @Test
+  void test_before_java17() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CommentsMustStartWithCorrectNumberOfSlashesCheckSample.java"))
+      .withCheck(check)
+      .withJavaVersion(16)
+      .verifyNoIssues();
+  }
 
   @Test
   void test_before_java23() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CommentsMustStartWithCorrectNumberOfSlashesCheckBeforeJava23.java"))
-      .withCheck(new CommentsMustStartWithCorrectNumberOfSlashesCheck())
+      .onFile(mainCodeSourcesPath("checks/CommentsMustStartWithCorrectNumberOfSlashesCheckSample.java"))
+      .withCheck(check)
       .withJavaVersion(22)
       .verifyIssues();
   }
 
   @Test
-  void test_after_java23() {
+  void test_java23() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CommentsMustStartWithCorrectNumberOfSlashesCheckAfterJava23.java"))
-      .withCheck(new CommentsMustStartWithCorrectNumberOfSlashesCheck())
+      .onFile(mainCodeSourcesPath("checks/CommentsMustStartWithCorrectNumberOfSlashesCheckJava23.java"))
+      .withCheck(check)
       .withJavaVersion(23)
       .verifyIssues();
   }
-  
+
 }

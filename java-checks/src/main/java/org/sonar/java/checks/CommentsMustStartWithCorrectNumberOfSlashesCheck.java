@@ -17,19 +17,43 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultModuleScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.location.Position;
+import org.sonar.plugins.java.api.location.Range;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S7476")
-public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSubscriptionVisitor {
+public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
   private static final String BEFORE_JAVA_23 = "A single-line comment should start with exactly two slashes, no more.";
-  private static final String AFTER_JAVA_23 = "Markdown documentation should start with exactly three slashes, no more.";
+  private static final String JAVA_23 = "Markdown documentation should start with exactly three slashes, no more.";
   private static final String INCORRECT_SLASHES_BEFORE_JAVA_23 = "///";
-  private static final String INCORRECT_SLASHES_AFTER_JAVA_23 = "////";
+  private static final String INCORRECT_SLASHES_JAVA_23 = "////";
+  private static final Position FILE_START = Position.at(Position.FIRST_LINE, Position.FIRST_COLUMN);
+  private Position compilationUnitFirstTokenPosition = FILE_START;
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    compilationUnitFirstTokenPosition = Optional.ofNullable(context.getTree())
+      .map(Tree::firstToken)
+      .map(SyntaxToken::range)
+      .map(Range::start).orElse(FILE_START);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    compilationUnitFirstTokenPosition = FILE_START;
+    super.leaveFile(context);
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -38,6 +62,9 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
 
   @Override
   public void visitTrivia(SyntaxTrivia syntaxTrivia) {
+    if (isHeader(syntaxTrivia)) {
+      return;
+    }
     if (syntaxTrivia.isComment(SyntaxTrivia.CommentKind.LINE) && syntaxTrivia.comment().startsWith(INCORRECT_SLASHES_BEFORE_JAVA_23)) {
       var span = LineSpan.fromComment(syntaxTrivia, 0, 0, INCORRECT_SLASHES_BEFORE_JAVA_23.length());
       reportIssue(span, BEFORE_JAVA_23);
@@ -48,17 +75,26 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
       for (int idx = 0; idx < lines.length; idx++) {
         String line = lines[idx];
 
-        if (line.trim().startsWith(INCORRECT_SLASHES_AFTER_JAVA_23)) {
-          int startPos = line.indexOf(INCORRECT_SLASHES_AFTER_JAVA_23);
-          var span = LineSpan.fromComment(syntaxTrivia, idx, startPos, startPos + INCORRECT_SLASHES_AFTER_JAVA_23.length());
-          reportIssue(span, AFTER_JAVA_23);
+        if (line.trim().startsWith(INCORRECT_SLASHES_JAVA_23)) {
+          int startPos = line.indexOf(INCORRECT_SLASHES_JAVA_23);
+          var span = LineSpan.fromComment(syntaxTrivia, idx, startPos, startPos + INCORRECT_SLASHES_JAVA_23.length());
+          reportIssue(span, JAVA_23);
         }
       }
     }
   }
 
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava17Compatible();
+  }
+
+  private boolean isHeader(SyntaxTrivia syntaxTrivia) {
+    return syntaxTrivia.range().start().isBefore(compilationUnitFirstTokenPosition);
+  }
+
   private void reportIssue(LineSpan span, String message) {
-    ((DefaultModuleScannerContext) this.context).reportIssue(issueSingleLine(span,message));
+    ((DefaultModuleScannerContext) this.context).reportIssue(issueSingleLine(span, message));
   }
 
   private AnalyzerMessage issueSingleLine(LineSpan span, String message) {

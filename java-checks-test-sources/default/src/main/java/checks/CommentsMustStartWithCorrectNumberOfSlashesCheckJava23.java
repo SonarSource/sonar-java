@@ -1,6 +1,11 @@
+///////////////////////////////////////////////////////////////////////////////////////////////
+//
+// this a license header, we don't raise on it as it will not generate javadoc
+//
+///////////////////////////////////////////////////////////////////////////////////////////////
 package checks;
 
-public class CommentsMustStartWithCorrectNumberOfSlashesCheckAfterJava23 {
+public class CommentsMustStartWithCorrectNumberOfSlashesCheckJava23 {
   // This is a comment
   public void twoSlashes() {}
   /// javadoc using markdown
@@ -44,9 +49,9 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheckAfterJava23 {
   // Noncompliant@+3
   // Noncompliant@+4
   /// This is a javadoc
-	//// invalid
-  ///
   //// invalid
+  ///
+  ///// invalid
 //^^^^
   public void markdownJavadoc() {
   }
