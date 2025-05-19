@@ -88,7 +88,6 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     .withAnyParameters()
     .build();
 
-  private JavaFileScannerContext context;
   private final Deque<List<Symbol>> parametersStack = new LinkedList<>();
 
   private final Deque<String> methodSignatureStack = new ArrayDeque<>();
@@ -314,7 +313,6 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
-    this.context = context;
     scan(context.getTree());
     dataPropagationGraph.reportMutableStoreReachableByOutsideCall(context, this);
     dataPropagationGraph.reportMutableFieldReachingToOutside(context, this);
