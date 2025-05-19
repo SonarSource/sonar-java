@@ -72,6 +72,7 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
 
     if (syntaxTrivia.isComment(SyntaxTrivia.CommentKind.MARKDOWN)) {
       String[] lines = syntaxTrivia.comment().split("\\R");
+
       for (int idx = 0; idx < lines.length; idx++) {
         String line = lines[idx];
         if (line.trim().startsWith(INCORRECT_SLASHES_JAVA_23)) {
