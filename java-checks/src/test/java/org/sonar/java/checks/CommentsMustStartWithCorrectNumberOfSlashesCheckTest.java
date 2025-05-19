@@ -44,12 +44,12 @@ class CommentsMustStartWithCorrectNumberOfSlashesCheckTest {
   }
 
   @Test
-  void test_after_java23() {
+  void test_java23() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CommentsMustStartWithCorrectNumberOfSlashesCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/CommentsMustStartWithCorrectNumberOfSlashesCheckJava23.java"))
       .withCheck(check)
       .withJavaVersion(23)
-      .verifyNoIssues();
+      .verifyIssues();
   }
-  
+
 }

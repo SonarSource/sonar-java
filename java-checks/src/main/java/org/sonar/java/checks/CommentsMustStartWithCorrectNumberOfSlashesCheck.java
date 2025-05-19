@@ -32,9 +32,11 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S7476")
-public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor  {
+public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
   private static final String BEFORE_JAVA_23 = "A single-line comment should start with exactly two slashes, no more.";
+  private static final String JAVA_23 = "Markdown documentation should start with exactly three slashes, no more.";
   private static final String INCORRECT_SLASHES_BEFORE_JAVA_23 = "///";
+  private static final String INCORRECT_SLASHES_JAVA_23 = "////";
   private static final Position FILE_START = Position.at(Position.FIRST_LINE, Position.FIRST_COLUMN);
   private Position compilationUnitFirstTokenPosition = FILE_START;
 
@@ -67,6 +69,18 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
       var span = LineSpan.fromComment(syntaxTrivia, 0, 0, INCORRECT_SLASHES_BEFORE_JAVA_23.length());
       reportIssue(span, BEFORE_JAVA_23);
     }
+
+    if (syntaxTrivia.isComment(SyntaxTrivia.CommentKind.MARKDOWN)) {
+      String[] lines = syntaxTrivia.comment().split("\\R");
+      for (int idx = 0; idx < lines.length; idx++) {
+        String line = lines[idx];
+        if (line.trim().startsWith(INCORRECT_SLASHES_JAVA_23)) {
+          int startPos = line.indexOf(INCORRECT_SLASHES_JAVA_23);
+          var span = LineSpan.fromComment(syntaxTrivia, idx, startPos, startPos + INCORRECT_SLASHES_JAVA_23.length());
+          reportIssue(span, JAVA_23);
+        }
+      }
+    }
   }
 
   @Override
@@ -79,7 +93,7 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
   }
 
   private void reportIssue(LineSpan span, String message) {
-    ((DefaultModuleScannerContext) this.context).reportIssue(issueSingleLine(span,message));
+    ((DefaultModuleScannerContext) this.context).reportIssue(issueSingleLine(span, message));
   }
 
   private AnalyzerMessage issueSingleLine(LineSpan span, String message) {
