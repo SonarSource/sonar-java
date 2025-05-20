@@ -63,6 +63,8 @@ public class AutoScanTest {
 
   @ClassRule
   public static OrchestratorRule orchestrator = OrchestratorRule.builderEnv()
+    .setEdition(com.sonar.orchestrator.container.Edition.ENTERPRISE_LW)
+    .activateLicense()
     .useDefaultAdminCredentialsForBuilds(true)
     .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
     .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../sonar-java-plugin").toFile()))
