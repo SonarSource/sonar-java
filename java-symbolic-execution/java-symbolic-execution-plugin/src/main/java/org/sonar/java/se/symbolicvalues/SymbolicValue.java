@@ -24,7 +24,6 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.Preconditions;
-import org.sonar.java.model.SESymbols;
 import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
@@ -274,7 +273,7 @@ public class SymbolicValue {
         if (ps.size() == 1 && ps.get(0).equals(programState)) {
           // FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint
           // should store the deduced type.
-          return Collections.singletonList(programState.addConstraint(this, new TypedConstraint(SESymbols.unknownType.fullyQualifiedName())));
+          return Collections.singletonList(programState.addConstraint(this, new TypedConstraint(Type.UNKNOWN.fullyQualifiedName())));
         }
         return ps;
       }

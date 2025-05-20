@@ -21,7 +21,6 @@ import java.util.List;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
-import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -94,7 +93,7 @@ public class MethodInvocationTreeImpl extends AssessableExpressionTree implement
   public Symbol.MethodSymbol methodSymbol() {
     return methodBinding != null
       ? root.sema.methodSymbol(methodBinding)
-      : Symbols.unknownMethodSymbol;
+      : Symbol.MethodSymbol.UNKNOWN_METHOD;
   }
 
   @Override

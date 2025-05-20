@@ -22,7 +22,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.sonar.java.model.SESymbols;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.Constraint;
@@ -64,10 +63,9 @@ public class ExceptionalYield extends MethodYield {
 
   public Type exceptionType(Sema semanticModel) {
     if (exceptionType == null) {
-      return SESymbols.unknownType;
+      return Type.UNKNOWN;
     }
-    Type type = semanticModel.getClassType(this.exceptionType);
-    return type == null ? SESymbols.unknownType : type;
+    return semanticModel.getClassType(this.exceptionType);
   }
 
   @Override

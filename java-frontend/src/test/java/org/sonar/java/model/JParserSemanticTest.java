@@ -1019,6 +1019,14 @@ class JParserSemanticTest {
     VariableTreeImpl s = (VariableTreeImpl) m.block().body().get(0);
     assertThat(s.variableBinding).isNotNull();
     assertThat(cu.sema.declarations.get(s.variableBinding)).isSameAs(s);
+
+    assertThat(s.symbol().isUnknown()).isFalse();
+    assertThat(s.symbol().name()).isEqualTo("v");
+
+    // simulate a variable binding problem
+    s.variableBinding = null;
+
+    assertThat(s.symbol().isUnknown()).isTrue();
   }
 
   @Test
@@ -1059,6 +1067,13 @@ class JParserSemanticTest {
     TypeParameterTreeImpl typeParameter = (TypeParameterTreeImpl) c.typeParameters().get(0);
     assertThat(typeParameter.typeBinding)
       .isNotNull();
+    assertThat(typeParameter.symbol().isUnknown()).isFalse();
+    assertThat(typeParameter.symbol().name()).isEqualTo("T");
+
+    // simulate a type binding problem
+    typeParameter.typeBinding = null;
+
+    assertThat(typeParameter.symbol().isUnknown()).isTrue();
   }
 
   /**

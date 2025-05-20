@@ -20,7 +20,6 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -183,7 +182,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
       if (expression.is(Tree.Kind.MEMBER_SELECT)) {
         return ((MemberSelectExpressionTree) expression).identifier().symbol();
       }
-      return Symbols.unknownSymbol;
+      return Symbol.UNKNOWN_SYMBOL;
     }
 
     private static Symbol ivSymbol(NewClassTree newClassTree) {
@@ -194,7 +193,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
       if (parent.is(Tree.Kind.ASSIGNMENT)) {
         return symbol(((AssignmentExpressionTree) parent).variable());
       }
-      return Symbols.unknownSymbol;
+      return Symbol.UNKNOWN_SYMBOL;
     }
   }
 }

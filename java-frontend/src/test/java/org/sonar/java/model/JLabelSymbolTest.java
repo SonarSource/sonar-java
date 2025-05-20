@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +29,7 @@ class JLabelSymbolTest {
     JLabelSymbol symbol = new JLabelSymbol("");
     assertAll(
       () -> assertThat(symbol.owner()).isNull(), // see e.g. InnerStaticClassesCheck
-      () -> assertThat(symbol.type()).isSameAs(Symbols.unknownType), // see e.g. MethodIdenticalImplementationsCheck
+      () -> assertThat(symbol.type()).isSameAs(Type.UNKNOWN), // see e.g. MethodIdenticalImplementationsCheck
       () -> assertThat(symbol.isVariableSymbol()).isFalse(), // see e.g. LombokFilter
       () -> assertThat(symbol.isTypeSymbol()).isFalse(),
       () -> assertThat(symbol.isMethodSymbol()).isFalse(),

@@ -31,7 +31,6 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -221,7 +220,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   public Symbol.MethodSymbol symbol() {
     return methodBinding != null
       ? root.sema.methodSymbol(methodBinding)
-      : Symbols.unknownMethodSymbol;
+      : Symbol.MethodSymbol.UNKNOWN_METHOD;
   }
 
   @Override

@@ -144,6 +144,10 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **8.15**
+
+* New fields for unknown symbols: `Symbol#ROOT_PACKAGE`, `Symbol#UNKNOWN_SYMBOL`, `Symbol.TypeSymbol#UNKNOWN_TYPE`, `Symbol.MethodSymbol#UNKNOWN_METHOD`, `Type#UNKNOWN`.
+
 #### **8.12**
 
 * New type: `Version` This will allow comparing different versions of the same artifact, and is used by the new `DependencyVersionAware` interface. 

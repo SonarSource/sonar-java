@@ -18,11 +18,17 @@ package org.sonar.plugins.java.api.semantic;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import org.sonar.java.model.Symbols;
 
 /**
  * Interface to access resolved type of an expression or a Type.
  */
 public interface Type {
+
+  /**
+   * Instance of {@link Type} representing an unknown type
+   */
+  Type UNKNOWN = new Symbols.UnknownType();
 
   /**
    * Primitive java types.

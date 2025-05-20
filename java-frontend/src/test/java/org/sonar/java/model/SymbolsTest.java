@@ -41,14 +41,14 @@ class SymbolsTest {
 
   @Test
   void unknown_type() {
-    Type unknownType = Symbols.unknownType;
+    Type unknownType = Type.UNKNOWN;
 
     assertThat(unknownType.isUnknown()).isTrue();
-    assertThat(unknownType).isEqualTo(Symbols.unknownType);
+    assertThat(unknownType).isEqualTo(Type.UNKNOWN);
 
     assertThat(unknownType.is("!Unknown!")).isFalse();
     assertThat(unknownType.isSubtypeOf("!Unknown!")).isFalse();
-    assertThat(unknownType.isSubtypeOf(Symbols.unknownType)).isFalse();
+    assertThat(unknownType.isSubtypeOf(Type.UNKNOWN)).isFalse();
 
     assertThat(unknownType.isArray()).isFalse();
     assertThat(unknownType.isClass()).isFalse();
@@ -67,8 +67,8 @@ class SymbolsTest {
     assertThat(unknownType.fullyQualifiedName()).isEqualTo("!Unknown!");
     assertThat(unknownType.name()).isEqualTo("!Unknown!");
 
-    assertThat(unknownType.symbol()).isEqualTo(Symbols.unknownTypeSymbol);
-    assertThat(unknownType.erasure()).isEqualTo(Symbols.unknownType);
+    assertThat(unknownType.symbol()).isEqualTo(Symbol.TypeSymbol.UNKNOWN_TYPE);
+    assertThat(unknownType.erasure()).isEqualTo(Type.UNKNOWN);
 
     // since SonarJava 6.3
     assertThat(unknownType.typeArguments()).isEmpty();
@@ -102,7 +102,7 @@ class SymbolsTest {
   @Test
   void metadata_with_unknown_symbol_and_unsupported_declaration() {
     Tree unsupportedDeclaration = mock(Tree.class);
-    Symbol symbol = spy(Symbols.unknownSymbol);
+    Symbol symbol = spy(Symbol.UNKNOWN_SYMBOL);
     when(symbol.declaration()).thenReturn(unsupportedDeclaration);
     SymbolMetadata metadata = new JSymbolMetadata(JUtilsTest.SEMA, symbol, new IAnnotationBinding[0]);
     assertThat(metadata.findAnnotationTree(mock(AnnotationInstance.class))).isNull();
@@ -112,7 +112,7 @@ class SymbolsTest {
 
   @Test
   void root_package_symbol() {
-    Symbol rootPackage = Symbols.rootPackage;
+    Symbol rootPackage = Symbol.ROOT_PACKAGE;
 
     assertThat(rootPackage.isUnknown()).isTrue();
     assertThat(rootPackage.name()).isEmpty();
@@ -122,11 +122,11 @@ class SymbolsTest {
 
   @Test
   void unknown_symbol() {
-    Symbol unknownSymbol = Symbols.unknownSymbol;
+    Symbol unknownSymbol = Symbol.UNKNOWN_SYMBOL;
 
     assertCommonProperties(unknownSymbol);
     assertThat(unknownSymbol.name()).isEqualTo("!unknown!");
-    assertThat(unknownSymbol.owner()).isEqualTo(Symbols.rootPackage);
+    assertThat(unknownSymbol.owner()).isEqualTo(Symbol.ROOT_PACKAGE);
     SymbolMetadata metadata = unknownSymbol.metadata();
     assertThat(metadata.nullabilityData().type()).isEqualTo(NullabilityType.UNKNOWN);
     assertThat(metadata.nullabilityData(NullabilityTarget.METHOD).type()).isEqualTo(NullabilityType.UNKNOWN);
@@ -134,31 +134,31 @@ class SymbolsTest {
 
   @Test
   void unknown_type_symbol() {
-    Symbol.TypeSymbol unknownTypeSymbol = Symbols.unknownTypeSymbol;
+    Symbol.TypeSymbol unknownTypeSymbol = Symbol.TypeSymbol.UNKNOWN_TYPE;
 
     assertCommonProperties(unknownTypeSymbol);
     assertThat(unknownTypeSymbol.name()).isEqualTo("!unknown!");
-    assertThat(unknownTypeSymbol.owner()).isEqualTo(Symbols.rootPackage);
+    assertThat(unknownTypeSymbol.owner()).isEqualTo(Symbol.ROOT_PACKAGE);
 
     assertThat(unknownTypeSymbol.superClass()).isNull();
     assertThat(unknownTypeSymbol.interfaces()).isEmpty();
     assertThat(unknownTypeSymbol.memberSymbols()).isEmpty();
     assertThat(unknownTypeSymbol.lookupSymbols("whatever")).isEmpty();
     assertThat(unknownTypeSymbol.isAnnotation()).isFalse();
-    assertThat(unknownTypeSymbol.outermostClass()).isEqualTo(Symbols.unknownTypeSymbol);
+    assertThat(unknownTypeSymbol.outermostClass()).isEqualTo(Symbol.TypeSymbol.UNKNOWN_TYPE);
     assertThat(unknownTypeSymbol.superTypes()).isEmpty();
   }
 
   @Test
   void unknown_method_symbol() {
-    Symbol.MethodSymbol unknownMethodSymbol = Symbols.unknownMethodSymbol;
+    Symbol.MethodSymbol unknownMethodSymbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
 
     assertCommonProperties(unknownMethodSymbol);
     assertThat(unknownMethodSymbol.name()).isEqualTo("!unknownMethod!");
-    assertThat(unknownMethodSymbol.owner()).isEqualTo(Symbols.unknownTypeSymbol);
+    assertThat(unknownMethodSymbol.owner()).isEqualTo(Symbol.TypeSymbol.UNKNOWN_TYPE);
 
     assertThat(unknownMethodSymbol.signature()).isEqualTo("!unknownMethod!");
-    assertThat(unknownMethodSymbol.returnType()).isEqualTo(Symbols.unknownTypeSymbol);
+    assertThat(unknownMethodSymbol.returnType()).isEqualTo(Symbol.TypeSymbol.UNKNOWN_TYPE);
     assertThat(unknownMethodSymbol.parameterTypes()).isEmpty();
     assertThat(unknownMethodSymbol.declarationParameters()).isEmpty();
     assertThat(unknownMethodSymbol.thrownTypes()).isEmpty();
@@ -191,8 +191,8 @@ class SymbolsTest {
     assertThat(unknownSymbol.usages()).isEmpty();
 
     assertThat(unknownSymbol.metadata()).isEqualTo(Symbols.EMPTY_METADATA);
-    assertThat(unknownSymbol.type()).isEqualTo(Symbols.unknownType);
-    assertThat(unknownSymbol.enclosingClass()).isEqualTo(Symbols.unknownTypeSymbol);
+    assertThat(unknownSymbol.type()).isEqualTo(Type.UNKNOWN);
+    assertThat(unknownSymbol.enclosingClass()).isEqualTo(Symbol.TypeSymbol.UNKNOWN_TYPE);
   }
 
   @Test

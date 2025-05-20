@@ -42,7 +42,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   /**
    * Cache for {@link #superClass()}.
    */
-  private Type superclass = Symbols.unknownType;
+  private Type superclass = Type.UNKNOWN;
 
   /**
    * Cache for {@link #interfaces()}.
@@ -73,7 +73,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
         return JTypeSymbol.this.type();
       }
       Type superClass = JTypeSymbol.this.superClass();
-      return superClass == null ? Symbols.unknownType : superClass;
+      return superClass == null ? Type.UNKNOWN : superClass;
     }
   };
 
@@ -100,7 +100,7 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   @CheckForNull
   @Override
   public Type superClass() {
-    if (superclass == Symbols.unknownType) {
+    if (superclass == Type.UNKNOWN) {
       superclass = convertSuperClass();
     }
     return superclass;

@@ -19,10 +19,10 @@ package org.sonar.java.model.declaration;
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.Symbols;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -130,10 +130,10 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   @Override
-  public org.sonar.plugins.java.api.semantic.Symbol symbol() {
+  public Symbol symbol() {
     return variableBinding != null
       ? root.sema.variableSymbol(variableBinding)
-      : Symbols.unknownSymbol;
+      : Symbol.UNKNOWN_SYMBOL;
   }
 
   @Override

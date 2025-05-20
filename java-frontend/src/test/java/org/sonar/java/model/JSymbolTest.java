@@ -110,11 +110,11 @@ class JSymbolTest {
 
     assertThat(cu.sema.typeSymbol(p.variableBinding.getType()))
       .as("of type int")
-      .hasOwner(Symbols.rootPackage)
+      .hasOwner(Symbol.ROOT_PACKAGE)
       .hasSameHashCodeAs(p.type().symbolType().symbol().hashCode());
 
     assertThat(cu.sema.packageSymbol(null))
-      .isEqualTo(Symbols.rootPackage);
+      .isEqualTo(Symbol.ROOT_PACKAGE);
 
     JType uType = cu.sema.type(u.variableBinding.getType());
     Symbol.TypeSymbol uTypeSymbol = uType.symbol();
@@ -139,10 +139,10 @@ class JSymbolTest {
 
     Symbol intFieldType = ((VariableTree) c.members().get(1)).type().symbolType().symbol();
     assertThat(intFieldType.owner().name()).isEmpty();
-    assertThat(intFieldType.owner()).isEqualTo(Symbols.rootPackage);
+    assertThat(intFieldType.owner()).isEqualTo(Symbol.ROOT_PACKAGE);
 
     Symbol objectArrayFieldType = ((VariableTree) c.members().get(2)).type().symbolType().symbol();
-    assertThat(objectArrayFieldType.owner()).isEqualTo(Symbols.rootPackage);
+    assertThat(objectArrayFieldType.owner()).isEqualTo(Symbol.ROOT_PACKAGE);
 
     Type listFieldTypeTree = ((VariableTree) c.members().get(3)).type().symbolType();
     Symbol.TypeSymbol listType = listFieldTypeTree.symbol();
@@ -150,7 +150,7 @@ class JSymbolTest {
     assertThat(listFieldTypeTree.typeArguments()).hasSize(1);
     Type wildcardType = listFieldTypeTree.typeArguments().get(0);
     assertThat(wildcardType.name()).isEqualTo("?");
-    assertThat(wildcardType.symbol().owner()).isEqualTo(Symbols.rootPackage);
+    assertThat(wildcardType.symbol().owner()).isEqualTo(Symbol.ROOT_PACKAGE);
   }
 
   @Test
@@ -281,7 +281,7 @@ class JSymbolTest {
     MemberSelectExpressionTree methodSelect = (MemberSelectExpressionTree) hashCodeInvocation.methodSelect();
     KeywordSuper keywordSuper = (KeywordSuper) methodSelect.expression();
 
-    assertThat(keywordSuper.symbolType()).isEqualTo(Symbols.unknownType);
+    assertThat(keywordSuper.symbolType()).isEqualTo(Type.UNKNOWN);
   }
 
   private void variable_in_class_initializer(boolean isStatic) {

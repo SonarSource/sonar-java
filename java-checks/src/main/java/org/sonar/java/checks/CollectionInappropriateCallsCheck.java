@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -144,7 +143,7 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
         return parameters.get(index);
       }
     }
-    return Symbols.unknownType;
+    return Type.UNKNOWN;
   }
 
   private static Type findSuperTypeMatching(Type type, String genericTypeName) {
@@ -155,7 +154,7 @@ public class CollectionInappropriateCallsCheck extends IssuableSubscriptionVisit
       .stream()
       .filter(superType -> superType.is(genericTypeName))
       .findFirst()
-      .orElse(Symbols.unknownType);
+      .orElse(Type.UNKNOWN);
   }
 
   private static boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {

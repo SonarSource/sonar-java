@@ -114,7 +114,7 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
       ITypeBinding methodBindingReturnType = methodBinding().getReturnType();
       // In rare circumstances, when the semantic information is incomplete, methodBindingReturnType can be null.
       if (methodBindingReturnType == null) {
-        return Symbols.unknownTypeSymbol;
+        return TypeSymbol.UNKNOWN_TYPE;
       }
       this.returnType = sema.typeSymbol(methodBindingReturnType);
     }

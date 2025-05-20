@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
@@ -33,6 +34,15 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  * Interface to access symbol information.
  */
 public interface Symbol {
+
+  /**
+   * An instance of {@link Symbol} representing an unknown root package
+   */
+  Symbol ROOT_PACKAGE = new Symbols.RootPackageSymbol();
+  /**
+   * An instance of {@link Symbol} representing an unknown symbol
+   */
+  Symbol UNKNOWN_SYMBOL = new Symbols.UnknownSymbol();
 
   /**
    * Name of this symbol.
@@ -133,6 +143,11 @@ public interface Symbol {
   interface TypeSymbol extends Symbol {
 
     /**
+     * An instance of {@link TypeSymbol} representing an unknown type symbol
+     */
+    TypeSymbol UNKNOWN_TYPE = new Symbols.UnkownTypeSymbol();
+
+    /**
      * Returns the superclass of this type symbol.
      * @return null for java.lang.Object, the superclass for every other type.
      */
@@ -206,6 +221,11 @@ public interface Symbol {
    * Symbol for methods.
    */
   interface MethodSymbol extends Symbol {
+
+    /**
+     * Instance of {@link Symbol.MethodSymbol} representing an unknown method symbol
+     */
+    MethodSymbol UNKNOWN_METHOD = new Symbols.UnknownMethodSymbol();
 
     /**
      * Type of parameters declared by this method.
