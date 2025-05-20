@@ -32,7 +32,7 @@ public abstract class AbstractTypedTree extends JavaTree {
   public Type symbolType() {
     return typeBinding != null
       ? root.sema.type(typeBinding)
-      : Symbols.unknownType;
+      : Type.UNKNOWN;
   }
 
 }

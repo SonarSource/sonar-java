@@ -41,13 +41,6 @@ public class Symbols {
     // Utility class
   }
 
-  public static final Type unknownType = new UnknownType();
-
-  public static final Symbol rootPackage = new RootPackageSymbol();
-  public static final Symbol unknownSymbol = new UnknownSymbol();
-  public static final Symbol.TypeSymbol unknownTypeSymbol = new UnkownTypeSymbol();
-  public static final Symbol.MethodSymbol unknownMethodSymbol = new UnknownMethodSymbol();
-
   public static final SymbolMetadata EMPTY_METADATA = new SymbolMetadata() {
 
     @Override
@@ -166,7 +159,7 @@ public class Symbols {
     }
   }
 
-  private static class UnknownSymbol extends DefaultSymbol {
+  public static class UnknownSymbol extends DefaultSymbol {
     @Override
     public boolean isUnknown() {
       return true;
@@ -179,17 +172,17 @@ public class Symbols {
 
     @Override
     public Symbol owner() {
-      return rootPackage;
+      return ROOT_PACKAGE;
     }
 
     @Override
     public final Type type() {
-      return unknownType;
+      return Type.UNKNOWN;
     }
 
     @Override
     public final Symbol.TypeSymbol enclosingClass() {
-      return unknownTypeSymbol;
+      return TypeSymbol.UNKNOWN_TYPE;
     }
 
     @Override
@@ -203,7 +196,7 @@ public class Symbols {
     }
   }
 
-  private static final class UnkownTypeSymbol extends UnknownSymbol implements Symbol.TypeSymbol {
+  public static final class UnkownTypeSymbol extends UnknownSymbol implements Symbol.TypeSymbol {
     @Override
     public ClassTree declaration() {
       return null;
@@ -216,7 +209,7 @@ public class Symbols {
 
     @Override
     public TypeSymbol outermostClass() {
-      return Symbols.unknownTypeSymbol;
+      return TypeSymbol.UNKNOWN_TYPE;
     }
 
     @Override
@@ -245,7 +238,7 @@ public class Symbols {
     }
   }
 
-  private static final class RootPackageSymbol extends UnknownSymbol {
+  public static final class RootPackageSymbol extends UnknownSymbol {
     @Override
     public boolean isPackageSymbol() {
       return true;
@@ -262,7 +255,7 @@ public class Symbols {
     }
   }
 
-  private static final class UnknownMethodSymbol extends UnknownSymbol implements Symbol.MethodSymbol {
+  public static final class UnknownMethodSymbol extends UnknownSymbol implements Symbol.MethodSymbol {
     @Override
     public MethodTree declaration() {
       return null;
@@ -280,7 +273,7 @@ public class Symbols {
 
     @Override
     public Symbol.TypeSymbol returnType() {
-      return unknownTypeSymbol;
+      return TypeSymbol.UNKNOWN_TYPE;
     }
 
     @Override
@@ -295,7 +288,7 @@ public class Symbols {
 
     @Override
     public Symbol owner() {
-      return unknownTypeSymbol;
+      return TypeSymbol.UNKNOWN_TYPE;
     }
 
     @Override
@@ -339,7 +332,7 @@ public class Symbols {
     }
   }
 
-  private static final class UnknownType implements Type {
+  public static final class UnknownType implements Type {
     @Override
     public boolean is(String fullyQualifiedName) {
       return false;
@@ -439,12 +432,12 @@ public class Symbols {
 
     @Override
     public Symbol.TypeSymbol symbol() {
-      return unknownTypeSymbol;
+      return Symbol.TypeSymbol.UNKNOWN_TYPE;
     }
 
     @Override
     public Type erasure() {
-      return unknownType;
+      return UNKNOWN;
     }
 
     @Override

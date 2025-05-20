@@ -498,7 +498,7 @@ class JMethodSymbolTest {
 
     @Test
     void unknown_method_is_not_native() {
-      assertThat(Symbols.unknownMethodSymbol.isNativeMethod()).isFalse();
+      assertThat(Symbol.MethodSymbol.UNKNOWN_METHOD.isNativeMethod()).isFalse();
     }
   }
 

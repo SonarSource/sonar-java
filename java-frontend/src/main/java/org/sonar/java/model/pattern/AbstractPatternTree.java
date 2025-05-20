@@ -20,7 +20,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.PatternTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -44,7 +43,7 @@ public abstract class AbstractPatternTree extends JavaTree implements PatternTre
   public Type symbolType() {
     return typeBinding != null
       ? root.sema.type(typeBinding)
-      : Symbols.unknownType;
+      : Type.UNKNOWN;
   }
 
   @Override

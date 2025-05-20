@@ -22,7 +22,6 @@ import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.Symbols;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -217,7 +216,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   public Symbol.TypeSymbol symbol() {
     return typeBinding != null
       ? root.sema.typeSymbol(typeBinding)
-      : Symbols.unknownTypeSymbol;
+      : Symbol.TypeSymbol.UNKNOWN_TYPE;
   }
 
   @Nullable

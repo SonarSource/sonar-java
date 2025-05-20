@@ -27,7 +27,6 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JLabelSymbol;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -97,7 +96,7 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
     if (labelSymbol != null) {
       return labelSymbol;
     }
-    return Symbols.unknownSymbol;
+    return Symbol.UNKNOWN_SYMBOL;
   }
 
   @Override

@@ -23,7 +23,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
@@ -49,7 +48,7 @@ public class AwsConsumerBuilderUsageCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     MethodSymbol methodSymbol = mit.methodSymbol();
-    Symbol parentClass = Optional.ofNullable(methodSymbol.owner()).orElse(Symbols.unknownTypeSymbol);
+    Symbol parentClass = Optional.ofNullable(methodSymbol.owner()).orElse(Symbol.TypeSymbol.UNKNOWN_TYPE);
     Symbol.TypeSymbol returnType = methodSymbol.returnType();
     if (!returnType.isUnknown() && "Builder".equals(parentClass.name())) {
       String returnTypeName = returnType.type().fullyQualifiedName();

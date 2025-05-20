@@ -23,11 +23,20 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class JSemaTest {
+
+  @Test
+  void testGetClassTypeUnknown() {
+    assertThat(sema.getClassType("com.google.common.collect.ImmutableMap")).
+      isEqualTo(Type.UNKNOWN);
+    assertThat(sema.getClassType("java.lang.Object"))
+      .isNotEqualTo(Type.UNKNOWN);
+  }
 
   @Test
   void type() {

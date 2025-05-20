@@ -92,6 +92,6 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
   public Symbol symbol() {
     return typeBinding != null
       ? root.sema.typeSymbol(typeBinding)
-      : Symbols.unknownSymbol;
+      : Symbol.UNKNOWN_SYMBOL;
   }
 }

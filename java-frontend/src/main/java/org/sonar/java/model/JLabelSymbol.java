@@ -58,7 +58,7 @@ public class JLabelSymbol extends Symbols.DefaultSymbol implements Symbol.LabelS
 
   @Override
   public Type type() {
-    return Symbols.unknownType;
+    return Type.UNKNOWN;
   }
 
   @Override

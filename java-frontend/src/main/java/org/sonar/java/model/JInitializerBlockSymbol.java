@@ -55,7 +55,7 @@ final class JInitializerBlockSymbol implements Symbol.MethodSymbol {
 
   @Override
   public Symbol.TypeSymbol returnType() {
-    return Symbols.unknownTypeSymbol;
+    return TypeSymbol.UNKNOWN_TYPE;
   }
 
   @Override
@@ -75,7 +75,7 @@ final class JInitializerBlockSymbol implements Symbol.MethodSymbol {
 
   @Override
   public Type type() {
-    return Symbols.unknownType;
+    return Type.UNKNOWN;
   }
 
   @Override

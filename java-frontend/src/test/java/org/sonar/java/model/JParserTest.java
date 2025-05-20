@@ -63,6 +63,7 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.location.Range;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -465,7 +466,7 @@ class JParserTest {
     VariableTree variableTree = patternTree.patternVariable();
     assertThat(variableTree.type().symbolType().fullyQualifiedName()).isEqualTo("int");
     assertThat(variableTree.simpleName().name()).isEqualTo("_");
-    assertThat(variableTree.simpleName().symbol()).isEqualTo(Symbols.unknownSymbol);
+    assertThat(variableTree.simpleName().symbol()).isEqualTo(Symbol.UNKNOWN_SYMBOL);
     assertThat(variableTree.simpleName().isUnnamedVariable()).isTrue();
   }
 

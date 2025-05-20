@@ -516,7 +516,7 @@ class JUtilsTest {
 
     @Test
     void from_unknown() {
-      assertThat(JUtils.getPackage(Symbols.unknownSymbol)).isSameAs(Symbols.rootPackage);
+      assertThat(JUtils.getPackage(Symbol.UNKNOWN_SYMBOL)).isSameAs(Symbol.ROOT_PACKAGE);
     }
   }
 
@@ -544,7 +544,7 @@ class JUtilsTest {
 
     @Test
     void unknown_method_is_not_varargs() {
-      assertThat(Symbols.unknownMethodSymbol.isVarArgsMethod()).isFalse();
+      assertThat(Symbol.MethodSymbol.UNKNOWN_METHOD.isVarArgsMethod()).isFalse();
     }
   }
 
@@ -572,7 +572,7 @@ class JUtilsTest {
 
     @Test
     void unknown_method_is_not_synchronized() {
-      assertThat(Symbols.unknownMethodSymbol.isSynchronizedMethod()).isFalse();
+      assertThat(Symbol.MethodSymbol.UNKNOWN_METHOD.isSynchronizedMethod()).isFalse();
     }
   }
 
@@ -600,7 +600,7 @@ class JUtilsTest {
 
     @Test
     void unknown_method_is_not_default() {
-      assertThat(Symbols.unknownMethodSymbol.isDefaultMethod()).isFalse();
+      assertThat(Symbol.MethodSymbol.UNKNOWN_METHOD.isDefaultMethod()).isFalse();
     }
   }
 
@@ -628,7 +628,7 @@ class JUtilsTest {
 
     @Test
     void unknown_method_has_no_default_value() {
-      assertThat(JUtils.defaultValue(Symbols.unknownMethodSymbol)).isNull();
+      assertThat(JUtils.defaultValue(Symbol.MethodSymbol.UNKNOWN_METHOD)).isNull();
     }
   }
 
@@ -685,7 +685,7 @@ class JUtilsTest {
 
     @Test
     void unknown_method_is_not_overridable() {
-      assertThat(Symbols.unknownMethodSymbol.isOverridable()).isFalse();
+      assertThat(Symbol.MethodSymbol.UNKNOWN_METHOD.isOverridable()).isFalse();
     }
   }
 
@@ -723,7 +723,7 @@ class JUtilsTest {
 
     @Test
     void unknown_method_is_not_parametrized() {
-      assertThat(Symbols.unknownMethodSymbol.isParametrizedMethod()).isFalse();
+      assertThat(Symbol.MethodSymbol.UNKNOWN_METHOD.isParametrizedMethod()).isFalse();
     }
   }
 
@@ -770,7 +770,7 @@ class JUtilsTest {
 
     @Test
     void unkown_type_has_no_direct_supertypes() {
-      assertThat(JUtils.directSuperTypes(Symbols.unknownType)).isEmpty();
+      assertThat(JUtils.directSuperTypes(Type.UNKNOWN)).isEmpty();
     }
 
     @Test
@@ -883,7 +883,7 @@ class JUtilsTest {
 
   @Test
   void parameterAnnotations() {
-    assertThat(JUtils.parameterAnnotations(Symbols.unknownMethodSymbol, 42)).isEqualTo(Symbols.EMPTY_METADATA);
+    assertThat(JUtils.parameterAnnotations(Symbol.MethodSymbol.UNKNOWN_METHOD, 42)).isEqualTo(Symbols.EMPTY_METADATA);
 
     JavaTree.CompilationUnitTreeImpl cu = test("package org.foo; class A { void m(@MyAnnotation Object o) { } } @interface MyAnnotation {}");
     ClassTreeImpl a = firstClass(cu);

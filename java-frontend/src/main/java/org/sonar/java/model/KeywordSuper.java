@@ -38,7 +38,7 @@ final class KeywordSuper extends IdentifierTreeImpl {
   @Override
   public Symbol symbol() {
     if (typeBinding == null) {
-      return Symbols.unknownSymbol;
+      return Symbol.UNKNOWN_SYMBOL;
     }
     return root.sema.typeSymbol(typeBinding).superSymbol;
   }

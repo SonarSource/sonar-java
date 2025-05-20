@@ -19,7 +19,6 @@ package org.sonar.java.model.expression;
 import java.util.Arrays;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.sonar.java.cfg.CFG;
-import org.sonar.java.model.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -94,7 +93,7 @@ public class LambdaExpressionTreeImpl extends AssessableExpressionTree implement
   public Symbol.MethodSymbol symbol() {
     return methodBinding != null
       ? root.sema.methodSymbol(methodBinding)
-      : Symbols.unknownMethodSymbol;
+      : Symbol.MethodSymbol.UNKNOWN_METHOD;
   }
 
   @Override

@@ -72,7 +72,7 @@ public final class JSema implements Sema {
 
   public Symbol packageSymbol(@Nullable IPackageBinding packageBinding) {
     if (packageBinding == null) {
-      return Symbols.rootPackage;
+      return Symbol.ROOT_PACKAGE;
     }
     return symbols.computeIfAbsent(packageBinding, k -> new JPackageSymbol(this, (IPackageBinding) k));
   }
@@ -119,7 +119,7 @@ public final class JSema implements Sema {
   public Type getClassType(String fullyQualifiedName) {
     return nameToTypeCache.computeIfAbsent(fullyQualifiedName, t -> {
       ITypeBinding typeBinding = resolveType(t);
-      return typeBinding != null ? type(typeBinding) : Symbols.unknownType;
+      return typeBinding != null ? type(typeBinding) : Type.UNKNOWN;
     });
   }
 
