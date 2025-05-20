@@ -1,0 +1,32 @@
+name: Releasability Check
+
+# Update releasability check. This workflow run continuously,
+# in contrast to the other releasability, which needs to be triggered manually.
+
+'on':
+  check_suite:
+    types:
+      - completed
+
+jobs:
+  update_releasability_status:
+    runs-on: ubuntu-latest-large
+    name: Releasability Check
+    permissions:
+      id-token: write
+      statuses: write
+      contents: read
+    if: >-
+      (contains(fromJSON('["main", "master"]'),
+      github.event.check_suite.head_branch) ||
+      startsWith(github.event.check_suite.head_branch, 'dogfood-') ||
+      startsWith(github.event.check_suite.head_branch, 'branch-')) &&
+      github.event.check_suite.conclusion == 'success' &&
+      github.event.check_suite.app.slug == 'cirrus-ci'
+    steps:
+      -   uses: >-
+            SonarSource/gh-action_releasability/releasability-status@v2
+          with:
+            optional_checks: "Jira"
+          env:
+            GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
