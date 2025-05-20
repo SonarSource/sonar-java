@@ -23,7 +23,7 @@
     <sonar.plugin.api.version>10.7.0.2191</sonar.plugin.api.version>
     <sonarjava.version>8.0.1.36337</sonarjava.version>
     <!-- Don't forget to update this version of JaCoCo -->
-    <jacoco.version>0.8.10</jacoco.version>
+    <jacoco.version>0.8.13</jacoco.version>
     <!-- Use UTF-8 for all resources -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Make sure to be compatible with java 8 -->
