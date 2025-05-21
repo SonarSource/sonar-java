@@ -2742,12 +2742,6 @@
     "falsePositives": 0
   },
   {
-    "ruleKey": "S6300",
-    "hasTruePositives": false,
-    "falseNegatives": 0,
-    "falsePositives": 0
-  },
-  {
     "ruleKey": "S6301",
     "hasTruePositives": true,
     "falseNegatives": 0,
