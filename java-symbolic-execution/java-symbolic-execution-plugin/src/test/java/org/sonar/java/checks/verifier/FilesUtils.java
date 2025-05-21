@@ -26,7 +26,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
-import org.sonar.java.annotations.VisibleForTesting;
 
 public final class FilesUtils {
 
@@ -42,7 +41,6 @@ public final class FilesUtils {
   public static final String DEFAULT_TEST_CLASSPATH_FILE = TEST_SOURCES_ROOT + TARGET_TEST_CLASSPATH_FILE;
   public static final String DEFAULT_TEST_CLASSES_DIRECTORY = TEST_SOURCES_ROOT + TARGET_CLASSES;
 
-  @VisibleForTesting
   public static List<File> getFilesRecursively(Path root, String... extensions) {
     final List<File> files = new ArrayList<>();
 

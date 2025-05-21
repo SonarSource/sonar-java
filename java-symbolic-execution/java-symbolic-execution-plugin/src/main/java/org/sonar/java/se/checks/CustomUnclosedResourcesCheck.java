@@ -21,7 +21,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.matcher.MethodMatcherFactory;
+import org.sonar.java.matcher.SEMethodMatcherFactory;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ExplodedGraph;
 import org.sonar.java.se.Flow;
@@ -139,7 +139,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
 
   private static MethodMatchers createMethodMatchers(String rule) {
     if (rule.length() > 0) {
-      return MethodMatcherFactory.methodMatchers(rule);
+      return SEMethodMatcherFactory.methodMatchers(rule);
     } else {
       return MethodMatchers.none();
     }
@@ -248,7 +248,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       if (classConstructor == null) {
         classConstructor = MethodMatchers.none();
         if (constructor.length() > 0) {
-          classConstructor = MethodMatcherFactory.constructorMatcher(constructor);
+          classConstructor = SEMethodMatcherFactory.constructorMatcher(constructor);
         }
       }
       return classConstructor;

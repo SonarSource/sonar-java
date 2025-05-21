@@ -49,8 +49,8 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>15000000</maxsize>
-                  <minsize>10000000</minsize>
+                  <maxsize>1500000</maxsize>
+                  <minsize>900000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                   </files>
@@ -85,12 +85,6 @@
                     <exclude>LICENSE*</exclude>
                     <exclude>NOTICE*</exclude>
                   </excludes>
-                </filter>
-                <filter>
-                  <artifact>org.sonarsource.java:java-frontend</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
                 </filter>
               </filters>
             </configuration>
@@ -131,6 +125,7 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>java-frontend</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>
@@ -159,6 +154,10 @@
     <dependency>
       <groupId>org.sonarsource.analyzer-commons</groupId>
       <artifactId>sonar-analyzer-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>org.sonarsource.java</groupId>
