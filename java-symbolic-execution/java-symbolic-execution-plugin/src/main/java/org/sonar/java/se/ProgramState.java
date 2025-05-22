@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.Preconditions;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.StreamConsumedCheck;
@@ -347,7 +346,7 @@ public class ProgramState {
    * To be used only by the ExplodedGraphWalker only, when manipulating program states.
    * Only made 'public' because of some method yield tests.
    */
-  @VisibleForTesting
+  // VisibleForTesting
   public ProgramState put(Symbol symbol, SymbolicValue value) {
     if (symbol.isUnknown() || isVolatileField(symbol)) {
       return this;

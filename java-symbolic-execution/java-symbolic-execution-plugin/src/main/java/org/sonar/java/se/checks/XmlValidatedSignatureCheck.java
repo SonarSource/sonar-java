@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.FlowComputation;
 import org.sonar.java.se.ProgramState;
@@ -193,7 +192,7 @@ public class XmlValidatedSignatureCheck extends SECheck {
     context.reportIssue(reportTree, this, message);
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   static class DomValidateContextSymbolicValue extends SymbolicValue {
     private final Tree init;
     private boolean isField;

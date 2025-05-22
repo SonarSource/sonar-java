@@ -21,7 +21,6 @@ import java.io.StringWriter;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.xproc.BehaviorCache;
 import org.sonar.java.se.xproc.MethodBehavior;
@@ -36,7 +35,7 @@ public class SymbolicExecutionVisitor extends BaseTreeVisitor implements JavaFil
   private static final Logger LOG = LoggerFactory.getLogger(SymbolicExecutionVisitor.class);
   protected JavaFileScannerContext context;
 
-  @VisibleForTesting
+  // VisibleForTesting
   public final BehaviorCache behaviorCache;
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
 
@@ -86,7 +85,7 @@ public class SymbolicExecutionVisitor extends BaseTreeVisitor implements JavaFil
     }
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   protected ExplodedGraphWalker getWalker() {
     return egwFactory.createWalker(behaviorCache, context);
   }

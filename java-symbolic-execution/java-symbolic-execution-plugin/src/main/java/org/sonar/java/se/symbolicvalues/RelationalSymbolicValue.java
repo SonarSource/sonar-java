@@ -27,7 +27,6 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.Preconditions;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
@@ -87,7 +86,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     this.kind = kind;
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   RelationalSymbolicValue(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
     this.kind = kind;
     this.leftOp = leftOp;
@@ -231,7 +230,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return newStates;
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   RelationState resolveRelationState(Set<RelationalSymbolicValue> knownRelations) {
     if (hasSameOperand()) {
       return relationStateForSameOperand();
@@ -271,7 +270,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return RelationState.UNDETERMINED;
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   Set<RelationalSymbolicValue> transitiveRelations(Set<RelationalSymbolicValue> knownRelations) {
     Set<RelationalSymbolicValue> newRelations = new HashSet<>();
     Deque<RelationalSymbolicValue> workList = new ArrayDeque<>();
@@ -295,7 +294,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return newRelations;
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   RelationalSymbolicValue deduceTransitiveOrSimplified(RelationalSymbolicValue other) {
     RelationalSymbolicValue result = simplify(other);
     if (result != null) {
@@ -314,7 +313,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return null;
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   boolean potentiallyTransitiveWith(RelationalSymbolicValue other) {
     if (hasSameOperand() || other.hasSameOperand()) {
       return false;
@@ -409,7 +408,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
       || (leftOp.equals(other.rightOp) && rightOp.equals(other.leftOp));
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   SymbolicValue differentOperand(RelationalSymbolicValue other) {
     Preconditions.checkState(potentiallyTransitiveWith(other), "%s is not in transitive relationship with %s", this, other);
     return other.hasOperand(leftOp) ? rightOp : leftOp;
@@ -477,7 +476,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     }
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   public Kind kind() {
     return kind;
   }

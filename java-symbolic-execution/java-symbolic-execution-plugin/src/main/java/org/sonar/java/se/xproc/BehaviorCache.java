@@ -33,7 +33,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -44,7 +43,7 @@ public class BehaviorCache {
 
   private SymbolicExecutionVisitor sev;
 
-  @VisibleForTesting
+  // VisibleForTesting
   public final Map<String, MethodBehavior> behaviors = new LinkedHashMap<>();
   private Map<String, MethodBehavior> hardcodedBehaviors = null;
 
@@ -56,7 +55,7 @@ public class BehaviorCache {
     behaviors.clear();
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   Map<String, MethodBehavior> hardcodedBehaviors() {
     if (hardcodedBehaviors == null) {
       hardcodedBehaviors = HardcodedMethodBehaviors.load();
@@ -160,7 +159,7 @@ public class BehaviorCache {
           .toList());
     }
 
-    @VisibleForTesting
+    // VisibleForTesting
     static Map<String, MethodBehavior> loadHardcodedBehaviors(Supplier<List<InputStream>> methodBehaviorStreamsSupplier) {
       Map<String, MethodBehavior> result = new LinkedHashMap<>();
       Gson gson = MethodBehaviorJsonAdapter.gson();

@@ -163,7 +163,7 @@ public class SELiveVariables {
     if (syntaxNode == null) {
       return Collections.emptySet();
     }
-    VariableReadExtractor extractorFromClass = new VariableReadExtractor(owner, false);
+    SEVariableReadExtractor extractorFromClass = new SEVariableReadExtractor(owner, false);
     syntaxNode.accept(extractorFromClass);
     return extractorFromClass.usedVariables();
   }

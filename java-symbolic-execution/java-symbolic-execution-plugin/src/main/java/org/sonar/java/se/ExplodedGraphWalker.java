@@ -33,7 +33,6 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.Preconditions;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.cfg.SELiveVariables;
 import org.sonar.java.model.CFGUtils;
 import org.sonar.java.model.SEExpressionUtils;
@@ -108,7 +107,7 @@ public class ExplodedGraphWalker {
   private static final int MAX_STARTING_STATES = 1_024;
   private static final Set<String> THIS_SUPER = SetUtils.immutableSetOf("this", "super");
 
-  @VisibleForTesting
+  // VisibleForTesting
   static final int MAX_EXEC_PROGRAM_POINT = 2;
 
   private static final MethodMatchers SYSTEM_EXIT_MATCHER = MethodMatchers.create().ofTypes("java.lang.System").names("exit").addParametersMatcher("int").build();
@@ -133,19 +132,19 @@ public class ExplodedGraphWalker {
 
   private ExplodedGraph explodedGraph;
 
-  @VisibleForTesting
+  // VisibleForTesting
   Deque<ExplodedGraph.Node> workList;
   ExplodedGraph.Node node;
   ProgramPoint programPosition;
   ProgramState programState;
   private SELiveVariables liveVariables;
-  @VisibleForTesting
+  // VisibleForTesting
   CheckerDispatcher checkerDispatcher;
   private Block exitBlock;
 
   private final Sema semanticModel;
   private final BehaviorCache behaviorCache;
-  @VisibleForTesting
+  // VisibleForTesting
   int steps;
 
   ConstraintManager constraintManager;
@@ -181,7 +180,7 @@ public class ExplodedGraphWalker {
     }
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   public ExplodedGraphWalker(BehaviorCache behaviorCache, JavaFileScannerContext context) {
     List<SECheck> checks = Arrays.asList(new NullDereferenceCheck(), new DivisionByZeroCheck(),
       new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck(), new NoWayOutLoopCheck());
@@ -191,13 +190,13 @@ public class ExplodedGraphWalker {
     this.semanticModel = (Sema) context.getSemanticModel();
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   ExplodedGraphWalker(BehaviorCache behaviorCache, JavaFileScannerContext context, boolean cleanup) {
     this(behaviorCache, context);
     this.cleanup = cleanup;
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   protected ExplodedGraphWalker(List<SECheck> seChecks, BehaviorCache behaviorCache, JavaFileScannerContext context) {
     this.alwaysTrueOrFalseExpressionCollector = new AlwaysTrueOrFalseExpressionCollector();
     this.checkerDispatcher = new CheckerDispatcher(this, seChecks, context);
@@ -1293,7 +1292,7 @@ public class ExplodedGraphWalker {
     }
   }
 
-  @VisibleForTesting
+  // VisibleForTesting
   protected int maxSteps() {
     return MAX_STEPS;
   }
@@ -1309,7 +1308,7 @@ public class ExplodedGraphWalker {
    */
   public static class ExplodedGraphWalkerFactory {
 
-    @VisibleForTesting
+    // VisibleForTesting
     final List<SECheck> seChecks = new ArrayList<>();
 
     public ExplodedGraphWalkerFactory(List<SECheck> activeSEChecks) {
