@@ -7,15 +7,12 @@
     },
     "attribute": "TRUSTWORTHY"
   },
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
-  "tags": [
-    "cwe",
-    "android"
-  ],
+  "tags": [],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6291",
   "sqKey": "S6291",

@@ -3,17 +3,19 @@
 <p>In Java 22 and earlier, comments starting with more than 2 slashes were treated as normal comments. Accidentally writing comments with three or
 more slashes can lead to unintended JavaDoc being generated, when migrating to Java 23.</p>
 <h3>What is the potential impact?</h3>
+<p>Comments starting with three or more slashes will increase the migration cost when upgrading to Java 23 or later. Moreover, IDE or other tools may
+handle such comments as JavaDoc comments if they are not aware of the Java version.</p>
+<h3>Exceptions</h3>
 <ul>
-  <li> Accidental JavaDoc generation where normal comments were intended. </li>
-  <li> Misleading or broken documentation output. </li>
-  <li> Increased maintenance burden when upgrading to Java 23 or later. </li>
+  <li> The rule does not raise issues on license headers at the start of files because they will not be considered as JavaDoc comments. </li>
+  <li> The rule only raises issues in projects using Java 17 or above, because those projects will likely be migrated to Java 23 or later. </li>
 </ul>
 <h2>How to fix it</h2>
-<p>In versions of Java prior to 23, all comments should always start with exactly 2 slashes, and from Java 23 forward they should not start with more
-than 3.</p>
+<p>In versions of Java prior to 23, comments should not start with more than 2 slashes, and from Java 23 forward they should not start with more than
+3.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
-<p>The following code will generate misleading Javadoc comments if migrated to Java 23:</p>
+<p>The following code will generate unintended JavaDoc comments if migrated to Java 23:</p>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 /// Some comment for the developers
 public abstract void foo();
@@ -30,6 +32,6 @@ public void foo(){}
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://openjdk.org/jeps/467">JEP 467: Markdown Documentation Comments</a> </li>
+  <li> OpenJDK - <a href="https://openjdk.org/jeps/467">JEP 467: Markdown Documentation Comments</a> </li>
 </ul>
 
