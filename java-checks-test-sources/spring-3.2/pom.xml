@@ -62,11 +62,13 @@
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
       <version>6.4.6</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
       <version>6.1.5</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
     
