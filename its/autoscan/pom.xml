@@ -81,12 +81,6 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.sonarsource.java</groupId>
-      <artifactId>sonar-java-symbolic-execution-plugin</artifactId>
-      <version>${symbolic.execution.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <profiles>
