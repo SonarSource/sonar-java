@@ -66,7 +66,6 @@ public class JavaTestSuite {
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
       .addPlugin(JAVA_PLUGIN_LOCATION)
-      .addPlugin(MavenLocation.of("org.sonarsource.java", "java-symbolic-execution-plugin", System.getProperty("symbolic.execution.version", "DEV")))
       // for support of custom rules
       .addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")))
       // making sure the tutorial is still working
