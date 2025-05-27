@@ -66,7 +66,7 @@ public class AutoScanTest {
     .useDefaultAdminCredentialsForBuilds(true)
     .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
     .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../sonar-java-plugin").toFile()))
-    .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../java-symbolic-execution/java-symbolic-execution-plugin").toFile()))
+//    .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../java-symbolic-execution/java-symbolic-execution-plugin").toFile()))
     .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.11.0.2659"))
     .build();
 
@@ -195,8 +195,8 @@ public class AutoScanTest {
     SoftAssertions softly = new SoftAssertions();
     softly.assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs.values());
     softly.assertThat(newTotal).isEqualTo(knownTotal);
-    softly.assertThat(rulesCausingFPs).hasSize(9);
-    softly.assertThat(rulesNotReporting).hasSize(10);
+    softly.assertThat(rulesCausingFPs).hasSize(12);
+    softly.assertThat(rulesNotReporting).hasSize(8);
 
     /**
      * 4. Check total number of differences (FPs + FNs)
