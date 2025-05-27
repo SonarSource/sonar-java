@@ -51,7 +51,6 @@
   <modules>
     <module>java-checks-test-sources</module>
     <module>java-frontend</module>
-    <module>java-symbolic-execution</module>
     <module>java-checks-testkit</module>
     <module>java-checks</module>
     <module>java-checks-aws</module>
@@ -81,6 +80,7 @@
   </ciManagement>
 
   <properties>
+    <symbolic.execution.version>8.15.0.76</symbolic.execution.version>
     <license.title>SonarQube Java</license.title>
 
     <jdk.min.version>17</jdk.min.version>

@@ -19,6 +19,7 @@ package com.sonar.it.java.suite;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
 import com.sonar.orchestrator.junit4.OrchestratorRuleBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
+import com.sonar.orchestrator.locator.MavenLocation;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -65,7 +66,7 @@ public class JavaTestSuite {
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
       .addPlugin(JAVA_PLUGIN_LOCATION)
-      .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../../java-symbolic-execution/java-symbolic-execution-plugin").toFile()))
+      .addPlugin(MavenLocation.of("org.sonarsource.java", "java-symbolic-execution-plugin", System.getProperty("symbolic.execution.version", "DEV")))
       // for support of custom rules
       .addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")))
       // making sure the tutorial is still working
