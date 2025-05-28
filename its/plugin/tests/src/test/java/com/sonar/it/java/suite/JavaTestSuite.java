@@ -19,7 +19,6 @@ package com.sonar.it.java.suite;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
 import com.sonar.orchestrator.junit4.OrchestratorRuleBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
-import com.sonar.orchestrator.locator.MavenLocation;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
