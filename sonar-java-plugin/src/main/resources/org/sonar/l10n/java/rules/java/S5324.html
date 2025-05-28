@@ -3,7 +3,7 @@ use the external file storage which usually offers a larger amount of disc space
 <p>Files created on the external storage are globally readable and writable. Therefore, a malicious application having the permissions
 <code>WRITE_EXTERNAL_STORAGE</code> or <code>READ_EXTERNAL_STORAGE</code> could try to read sensitive information from the files that other
 applications have stored on the external storage.</p>
-<p>External storage can also be removed by the user (e.g when based on SD card) making the files unavailable to the application.</p>
+<p>External storage can also be removed by the user (e.g. when based on SD card) making the files unavailable to the application.</p>
 <h2>Ask Yourself Whether</h2>
 <p>Your application uses external storage to:</p>
 <ul>
@@ -22,7 +22,7 @@ applications have stored on the external storage.</p>
   <li> As some external storage can be removed, make sure to never store files on it that are critical for the usability of your application. </li>
 </ul>
 <h2>Sensitive Code Example</h2>
-<pre>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 import android.content.Context;
 
 public class AccessExternalFiles {
@@ -33,7 +33,7 @@ public class AccessExternalFiles {
 }
 </pre>
 <h2>Compliant Solution</h2>
-<pre>
+<pre data-diff-id="1" data-diff-type="compliant">
 import android.content.Context;
 
 public class AccessExternalFiles {

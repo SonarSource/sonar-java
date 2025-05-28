@@ -7,20 +7,22 @@ never be returned to a caller or accepted and stored directly. Doing so leaves y
 <h3>Exceptions</h3>
 <p>The rule violation is not reported for mutable values stored in private methods if no non-private methods directly passes a mutable parameter to
 them.</p>
+<p>Similarly, rule violations are not reported for mutable values returned by a private getter if that getter’s value is not directly exposed by a
+non-private method.</p>
 <h3>Noncompliant code example</h3>
 <pre>
 class A {
-  private String [] strings;
+  private String[] strings;
 
   public A () {
     strings = new String[]{"first", "second"};
   }
 
-  public String [] getStrings() {
+  public String[] getStrings() {
     return strings; // Noncompliant
   }
 
-  public void setStrings(String [] strings) {
+  public void setStrings(String[] strings) {
     this.strings = strings;  // Noncompliant
   }
 }
@@ -43,15 +45,19 @@ class A {
     strings = new String[]{"first", "second"};
   }
 
-  public String [] getStrings() {
-    return strings.clone();
+  public String[] getStrings() {
+    return getStringsInternal().clone();
   }
 
-  private void setStringsInternal(String [] strings) {
+  private String[] getStringsInternal() {
+    return strings;
+  }
+
+  private void setStringsInternal(String[] strings) {
     this.strings = strings;
   }
 
-  public void setStrings(String [] strings) {
+  public void setStrings(String[] strings) {
     this.strings = strings.clone();
   }
 }
