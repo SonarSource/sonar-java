@@ -74,7 +74,7 @@ public class PackageInfoTest {
     orchestrator.executeBuild(build);
 
     List<Issue> issues = TestUtils.issuesForComponent(orchestrator, projectKey);
-    assertThat(issues).hasSize(11);
+    assertThat(issues).isEmpty();
   }
 
 }
