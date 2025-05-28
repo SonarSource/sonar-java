@@ -1,5 +1,5 @@
 {
-  "title": "Exposing Java objects through JavaScript interfaces is security-sensitive",
+  "title": "Exposing native code through JavaScript interfaces is security-sensitive",
   "type": "SECURITY_HOTSPOT",
   "status": "ready",
   "remediation": {
