@@ -79,7 +79,6 @@ public class JavaTestSuite {
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-filtered-issues.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-using-aar-dep.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-package-info.xml"))
-      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-package-info-annotations.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings-pmd.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-depends-on-jdk-types.xml"));
