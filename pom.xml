@@ -51,7 +51,6 @@
   <modules>
     <module>java-checks-test-sources</module>
     <module>java-frontend</module>
-    <module>java-symbolic-execution</module>
     <module>java-checks-testkit</module>
     <module>java-checks</module>
     <module>java-checks-aws</module>

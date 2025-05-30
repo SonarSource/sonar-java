@@ -96,7 +96,6 @@ class SanityTest {
     "S2253", // DisallowedMethodCheck
     "S3417", // DisallowedDependenciesCheck - XML
     "S3688", // DisallowedClassCheck
-    "S3546", // CustomUnclosedResourcesCheck - SE-based
     "S4011" // DisallowedConstructorCheck
   ));
 

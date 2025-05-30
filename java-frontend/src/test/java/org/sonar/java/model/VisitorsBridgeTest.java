@@ -615,9 +615,6 @@ class VisitorsBridgeTest {
 
   private static String ruleKeyFromErrorLog(String errorLog) {
     String newString = errorLog.substring("Unable to run check class ".length(), errorLog.indexOf(" on file"));
-    if (newString.contains("SymbolicExecutionVisitor")) {
-      return "SE";
-    }
     return newString.substring(newString.lastIndexOf("$") + 1);
   }
 

@@ -175,7 +175,6 @@ public class CheckListGenerator {
           .collect(Collectors.toList());
 
           private static final Set<Class<? extends JavaCheck>> JAVA_CHECKS_NOT_WORKING_FOR_AUTOSCAN = Set.of(
-            // Symbolic executions rules are not in this list because they are dynamically excluded
             // Rules relying on correct setup of jdk.home
             CallToDeprecatedCodeMarkedForRemovalCheck.class,
             CallToDeprecatedMethodCheck.class,

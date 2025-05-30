@@ -64,17 +64,4 @@ public class PackageInfoTest {
     assertThat(issuesOnTestPackage).isEmpty();
   }
 
-  @Test
-  public void should_take_into_account_package_annotations() {
-    String projectKey = "org.sonarsource.it.projects:package-info-annotations";
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("package-info-annotations"))
-      .setCleanPackageSonarGoals()
-      .setProperty("sonar.scm.disabled", "true");
-    TestUtils.provisionProject(orchestrator, projectKey, "package-info-annotations", "java", "package-info-annotations");
-    orchestrator.executeBuild(build);
-
-    List<Issue> issues = TestUtils.issuesForComponent(orchestrator, projectKey);
-    assertThat(issues).hasSize(11);
-  }
-
 }

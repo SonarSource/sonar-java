@@ -95,7 +95,6 @@ public class JavaRulingTest {
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
       .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../sonar-java-plugin").toFile()))
-      .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../java-symbolic-execution/java-symbolic-execution-plugin").toFile()))
       .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.11.0.2659"));
 
     if (isCommunityEditionTestsOnly()) {
@@ -136,10 +135,6 @@ public class JavaRulingTest {
     instantiateTemplateRule("S2253", "stringToCharArray", "className=\"java.lang.String\";methodName=\"toCharArray\"", activatedRuleKeys);
     instantiateTemplateRule("S4011", "longDate", "className=\"java.util.Date\";argumentTypes=\"long\"", activatedRuleKeys);
     instantiateTemplateRule("S124", "commentRegexTest", "regularExpression=\"(?i).*TODO\\(user\\).*\";message=\"bad user\"", activatedRuleKeys);
-    instantiateTemplateRule("S3546", "InstancesOfNewControllerClosedWithDone",
-      "factoryMethod=\"org.sonar.api.server.ws.WebService$Context#createController\";closingMethod=\"org.sonar.api.server.ws.WebService$NewController#done\"", activatedRuleKeys);
-    instantiateTemplateRule("S3546", "JsonWriterNotClosed",
-      "factoryMethod=\"org.sonar.api.server.ws.Response#newJsonWriter\";closingMethod=\"org.sonar.api.utils.text.JsonWriter#close\"", activatedRuleKeys);
 
     SUBSET_OF_ENABLED_RULES.stream()
       .filter(ruleKey -> !activatedRuleKeys.contains(ruleKey))

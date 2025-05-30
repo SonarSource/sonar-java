@@ -65,7 +65,6 @@ public class JavaTestSuite {
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
       .addPlugin(JAVA_PLUGIN_LOCATION)
-      .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../../java-symbolic-execution/java-symbolic-execution-plugin").toFile()))
       // for support of custom rules
       .addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")))
       // making sure the tutorial is still working
@@ -80,7 +79,6 @@ public class JavaTestSuite {
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-filtered-issues.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-using-aar-dep.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-package-info.xml"))
-      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-package-info-annotations.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings-pmd.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-depends-on-jdk-types.xml"));
