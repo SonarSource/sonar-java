@@ -39,10 +39,6 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S1186")
 public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
 
-  // Some methods may legitimately be left empty, e.g. methods annotated with org.aspectj.lang.annotation.Pointcut. We ignore them here.
-  private static final String IGNORED_METHODS_ANNOTATION = "org.aspectj.lang.annotation.Pointcut";
-  private static final String IGNORED_METHODS_ANNOTATION_UNQUALIFIED = "Pointcut";
-
   @Override
   public List<Kind> nodesToVisit() {
     return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.RECORD);
@@ -73,8 +69,18 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
    * Returns true if the annotation indicates that the method body can legitimately be empty.
    */
   private static boolean isExceptedAnnotation(AnnotationTree annotationTree) {
-    return annotationTree.symbolType().is(IGNORED_METHODS_ANNOTATION) ||
-      (annotationTree.symbolType().isUnknown() && annotationTree.symbolType().name().equals(IGNORED_METHODS_ANNOTATION_UNQUALIFIED));
+    if (annotationTree.symbolType().isUnknown()) {
+      return switch (annotationTree.symbolType().name()) {
+        case "Pointcut",
+            "CacheEvict" -> true;
+        default -> false;
+      };
+    }
+    return switch (annotationTree.symbolType().fullyQualifiedName()) {
+      case "org.aspectj.lang.annotation.Pointcut",
+          "org.springframework.cache.annotation.CacheEvict" -> true;
+      default -> false;
+    };
   }
 
   private void checkConstructors(List<Tree> members) {
