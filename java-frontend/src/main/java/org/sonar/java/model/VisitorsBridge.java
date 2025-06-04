@@ -55,6 +55,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.ProjectContextModelVisitor;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.semantic.Sema;
@@ -81,6 +82,8 @@ public class VisitorsBridge {
   @VisibleForTesting
   CacheContext cacheContext;
   private final DependencyVersionInference dependencyService;
+
+  private final ProjectContextModelVisitor projectContextModelVisitor = new ProjectContextModelVisitor();
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -262,6 +265,9 @@ public class VisitorsBridge {
     var scanners = getScanners(fileCanBeSkipped);
 
     PerformanceMeasure.Duration scannersDuration = PerformanceMeasure.start("Scanners");
+
+    scanForProjectContextModel(javaFileScannerContext);
+
     for (JavaFileScanner scanner : scanners) {
       PerformanceMeasure.Duration scannerDuration = PerformanceMeasure.start(scanner);
       try {
@@ -273,6 +279,17 @@ public class VisitorsBridge {
       }
     }
     scannersDuration.stop();
+  }
+
+  private void scanForProjectContextModel(JavaFileScannerContext javaFileScannerContext){
+    PerformanceMeasure.Duration scannerDuration = PerformanceMeasure.start(projectContextModelVisitor);
+    try {
+      runScanner(javaFileScannerContext, projectContextModelVisitor);
+    } catch (CheckFailureException e) {
+      interruptIfFailFast(e);
+    } finally {
+      scannerDuration.stop();
+    }
   }
 
   private void interruptIfFailFast(CheckFailureException e) {
@@ -351,7 +368,7 @@ public class VisitorsBridge {
   protected ModuleScannerContext createScannerContext(
     @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext, @Nullable CacheContext cacheContext
   ) {
-    return new DefaultModuleScannerContext(sonarComponents, javaVersion, inAndroidContext, cacheContext);
+    return new DefaultModuleScannerContext(sonarComponents, javaVersion, inAndroidContext, cacheContext, projectContextModelVisitor.buildProjectContextModel());
   }
 
   private void createSonarSymbolTable(CompilationUnitTree tree) {

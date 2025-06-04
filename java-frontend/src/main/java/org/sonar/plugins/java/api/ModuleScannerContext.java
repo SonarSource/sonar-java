@@ -18,6 +18,7 @@ package org.sonar.plugins.java.api;
 
 import java.io.File;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputComponent;
@@ -88,4 +89,10 @@ public interface ModuleScannerContext {
    */
   @CheckForNull
   SonarProduct sonarProduct();
+
+  @Nullable
+  default ProjectContextModel getProjectContextModel() {
+    return null;
+  }
+
 }
