@@ -232,4 +232,9 @@ class JasperOptions implements Options {
   public boolean getQuoteAttributeEL() {
     return false;
   }
+
+  @Override
+  public String getUseNonstandardTagOptimizations() {
+    return "";
+  }
 }
