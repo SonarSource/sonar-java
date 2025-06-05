@@ -47,7 +47,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
-//@Rule(key = "S4605")
+@Rule(key = "S4605")
 public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisitor implements EndOfAnalysis {
 
   private static final Logger LOG = LoggerFactory.getLogger(SpringBeansShouldBeAccessibleCheck.class);

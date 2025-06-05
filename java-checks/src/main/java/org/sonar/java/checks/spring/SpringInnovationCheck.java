@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-@Rule(key = "S4605")
+@Rule(key = "S4606")
 public class SpringInnovationCheck extends IssuableSubscriptionVisitor implements EndOfAnalysis {
   private static final String[] SPRING_INJECTION_ANNOTATIONS = {
     "org.springframework.beans.factory.annotation.Autowired"
