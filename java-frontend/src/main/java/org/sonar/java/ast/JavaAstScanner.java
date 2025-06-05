@@ -98,6 +98,10 @@ public class JavaAstScanner {
     scan(inputFiles, modifyCompilationUnit, null);
   }
 
+  @VisibleForTesting
+  public void scanForTesting(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit, ProjectContextModelReader modelReader) {
+    scan(inputFiles, modifyCompilationUnit, modelReader);
+  }
 
   private void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit, @Nullable ProjectContextModelReader projectContextModelReader) {
     List<? extends InputFile> filesNames = filterModuleInfo(inputFiles).toList();

@@ -38,7 +38,7 @@ class SpringInnovationCheckTest {
 
     CheckVerifier.newVerifier()
       .onFiles(files)
-      .withCheck(new SpringInnovationCheck())
+      .withChecks(new SpringInnovationCheck())
       .verifyIssues();
   }
 }

@@ -33,6 +33,8 @@ import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
+import org.sonar.java.JavaProjectContextModelVisitor;
+import org.sonar.java.ProjectContextModel;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.JavaAstScanner;
@@ -100,6 +102,8 @@ public class JavaCheckVerifier implements CheckVerifier {
   private WriteCache writeCache;
   private File rootDirectory;
 
+  private ProjectContextModel projectContextModel = new ProjectContextModel();
+
   private MultiFileVerifier createVerifier() {
     MultiFileVerifier verifier = MultiFileVerifier.create(Paths.get(files.get(0).uri()), UTF_8);
 
@@ -107,6 +111,7 @@ public class JavaCheckVerifier implements CheckVerifier {
     List<File> actualClasspath = classpath == null ? DEFAULT_CLASSPATH : classpath;
 
     List<JavaFileScanner> visitors = new ArrayList<>(checks);
+    visitors.add(new JavaProjectContextModelVisitor(projectContextModel));
     CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
     visitors.add(commentLinesVisitor);
     SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, rootDirectory);
@@ -127,7 +132,7 @@ public class JavaCheckVerifier implements CheckVerifier {
       visitorsBridge.setCacheContext(cacheContext);
       filesToParse = astScanner.scanWithoutParsing(files).get(false);
     }
-    astScanner.scanForTesting(filesToParse, compilationUnitModifier);
+    astScanner.scanForTesting(filesToParse, compilationUnitModifier, projectContextModel);
 
     addComments(verifier, commentLinesVisitor);
 
