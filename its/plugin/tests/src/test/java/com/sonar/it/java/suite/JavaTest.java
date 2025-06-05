@@ -47,7 +47,7 @@ public class JavaTest {
    */
   @Test
   public void shouldAcceptFilenamesWithDollar() {
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("dollar-in-names"))
+    MavenBuild build = TestUtils.createMavenBuild().setPom(TestUtils.projectPom("dollar-in-names"))
       .setCleanPackageSonarGoals()
       .setProperty("sonar.dynamicAnalysis", "false");
     orchestrator.executeBuild(build);
@@ -62,7 +62,7 @@ public class JavaTest {
    */
   @Test
   public void shouldFailIfInvalidJavaPackage() {
-    MavenBuild build = MavenBuild.create()
+    MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("invalid-java-package"))
       .setCleanSonarGoals();
 
@@ -72,7 +72,7 @@ public class JavaTest {
 
   @Test
   public void measures_on_directory() {
-    MavenBuild build = MavenBuild.create()
+    MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("measures-on-directory"))
       .setCleanPackageSonarGoals();
     BuildResult result = orchestrator.executeBuildQuietly(build);
@@ -82,12 +82,12 @@ public class JavaTest {
 
   @Test
   public void multiple_package_in_directory_should_not_fail() {
-    MavenBuild inspection = MavenBuild.create()
+    MavenBuild inspection = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("multiple-packages-in-directory"))
       .setCleanPackageSonarGoals();
     BuildResult result = orchestrator.executeBuildQuietly(inspection);
     assertThat(result.getLastStatus()).isZero();
-    inspection = MavenBuild.create()
+    inspection = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("multiple-packages-in-directory"))
       .setProperty("sonar.skipPackageDesign", "true")
       .setGoals("sonar:sonar");
@@ -100,7 +100,8 @@ public class JavaTest {
    */
   @Test
   public void filtered_issues() {
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("filtered-issues"))
+    MavenBuild build = TestUtils.createMavenBuild()
+      .setPom(TestUtils.projectPom("filtered-issues"))
       .setCleanPackageSonarGoals();
 
     TestUtils.provisionProject(orchestrator, "org.example:example", "filtered-issues", "java", "filtered-issues");
@@ -122,7 +123,8 @@ public class JavaTest {
    */
   @Test
   public void support_jav_file_extension() {
-    SonarScanner scan = SonarScanner.create(TestUtils.projectDir("jav-file-extension"))
+    SonarScanner scan = TestUtils.createSonarScanner()
+      .setProjectDir(TestUtils.projectDir("jav-file-extension"))
       .setProperty("sonar.projectKey", "jav-file-extension")
       .setProperty("sonar.projectName", "jav-file-extension")
       .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
@@ -135,7 +137,8 @@ public class JavaTest {
 
   @Test
   public void support_change_of_extension_property() {
-    SonarScanner scan = SonarScanner.create(TestUtils.projectDir("jav-file-extension"))
+    SonarScanner scan = TestUtils.createSonarScanner()
+      .setProjectDir(TestUtils.projectDir("jav-file-extension"))
       .setProperty("sonar.projectKey", "jav-file-extension")
       .setProperty("sonar.projectName", "jav-file-extension")
       .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
@@ -152,7 +155,7 @@ public class JavaTest {
   public void should_execute_rule_on_test() {
     MavenLocation junit411 = MavenLocation.of("junit", "junit", "4.11");
     orchestrator.getConfiguration().locators().copyToDirectory(junit411, tmp.getRoot());
-    MavenBuild build = MavenBuild.create()
+    MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("java-inner-classes"))
       .setProperty("sonar.java.test.binaries", "target/test-classes")
       .setProperty("sonar.java.test.libraries", new File(tmp.getRoot(), junit411.getFilename()).getAbsolutePath())
@@ -166,7 +169,8 @@ public class JavaTest {
   public void java_aware_visitor_rely_on_java_version() {
     String sonarJavaSource = "sonar.java.source";
 
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-version-aware-visitor"))
+    MavenBuild build = TestUtils.createMavenBuild()
+      .setPom(TestUtils.projectPom("java-version-aware-visitor"))
       .setCleanSonarGoals();
     String projectKey = "java-version-aware-visitor";
     build.setProperties("sonar.projectKey", projectKey);
@@ -202,7 +206,8 @@ public class JavaTest {
     int numberIssuesWithJava6 = getMeasureAsInteger(projectKey, "violations");
     assertThat(numberIssuesWithJava6).isZero();
 
-    SonarScanner scan = SonarScanner.create(TestUtils.projectDir("java-version-aware-visitor"))
+    SonarScanner scan = TestUtils.createSonarScanner()
+      .setProjectDir(TestUtils.projectDir("java-version-aware-visitor"))
       .setProperty("sonar.projectKey", "org.example:example-scanner")
       .setProperty("sonar.projectName", "example")
       .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
