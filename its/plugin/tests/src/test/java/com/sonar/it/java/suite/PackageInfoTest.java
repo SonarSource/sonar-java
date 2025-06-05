@@ -35,7 +35,7 @@ public class PackageInfoTest {
   @Test
   public void should_detect_package_info_issues() {
     String projectKey = "org.sonarsource.it.projects:package-info";
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("package-info"))
+    MavenBuild build = TestUtils.createMavenBuild().setPom(TestUtils.projectPom("package-info"))
       .setCleanPackageSonarGoals()
       .setProperty("sonar.sources", "src/main/java,src/main/other-src")
       .setProperty("sonar.scm.disabled", "true");

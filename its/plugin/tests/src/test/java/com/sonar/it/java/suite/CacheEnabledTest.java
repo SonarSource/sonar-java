@@ -31,7 +31,8 @@ public class CacheEnabledTest {
 
   @Test
   public void test_cache_is_enabled() {
-    SonarScanner build = SonarScanner.create(TestUtils.projectDir("java-tutorial"))
+    SonarScanner build = TestUtils.createSonarScanner()
+      .setProjectDir(TestUtils.projectDir("java-tutorial"))
       .setProperty("sonar.projectKey", "org.sonarsource.it.projects:java-tutorial")
       .setProperty("sonar.projectName", "java-tutorial")
       .setProperty("sonar.sources", "src/main/java")
@@ -46,7 +47,8 @@ public class CacheEnabledTest {
 
   @Test
   public void test_cache_is_disabled() {
-    SonarScanner build = SonarScanner.create(TestUtils.projectDir("java-tutorial"))
+    SonarScanner build = TestUtils.createSonarScanner()
+      .setProjectDir(TestUtils.projectDir("java-tutorial"))
       .setProperty("sonar.projectKey", "org.sonarsource.it.projects:java-tutorial")
       .setProperty("sonar.projectName", "java-tutorial")
       .setProperty("sonar.sources", "src/main/java")
@@ -63,6 +65,8 @@ public class CacheEnabledTest {
 
   private static OrchestratorRule initServer() {
     return OrchestratorRule.builderEnv()
+      .setEdition(com.sonar.orchestrator.container.Edition.ENTERPRISE_LW)
+      .activateLicense()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
       .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION)
