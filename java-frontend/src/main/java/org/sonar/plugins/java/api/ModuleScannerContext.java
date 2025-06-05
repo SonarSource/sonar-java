@@ -91,7 +91,7 @@ public interface ModuleScannerContext {
   SonarProduct sonarProduct();
 
   @Nullable
-  default ProjectContextModel getProjectContextModel() {
+  default ProjectContextModelReader getProjectContextModel() {
     return null;
   }
 

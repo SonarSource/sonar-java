@@ -17,6 +17,7 @@
 package org.sonar.java;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -46,6 +48,7 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.ProjectContextModelReader;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
@@ -61,9 +64,10 @@ public class JavaFrontend {
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
   private final JavaAstScanner astScannerForGeneratedFiles;
+  private final ProjectContextModel projectContextModel = new ProjectContextModel();
 
   public JavaFrontend(JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-                      JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
+    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
     this.javaVersion = javaVersion;
     this.sonarComponents = sonarComponents;
     List<JavaCheck> commonVisitors = new ArrayList<>();
@@ -71,8 +75,7 @@ public class JavaFrontend {
     if (postAnalysisIssueFilter != null) {
       commonVisitors.add(postAnalysisIssueFilter);
     }
-
-    Iterable<JavaCheck> codeVisitors = ListUtils.concat(commonVisitors, Arrays.asList(visitors));
+    Iterable<JavaCheck> codeVisitors = ListUtils.concat(commonVisitors, Arrays.asList(visitors), List.of(new JavaProjectContextModelVisitor(projectContextModel)));
     Collection<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
     if (measurer != null) {
       Iterable<JavaCheck> measurers = Collections.singletonList(measurer);
@@ -112,6 +115,21 @@ public class JavaFrontend {
     astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, jspClasspath, javaVersion, sonarComponents, inAndroidContext));
   }
 
+  private void visitPropertiesFiles() {
+    if (sonarComponents == null) {
+      return;
+    }
+    for (InputFile propertiesFile : sonarComponents.getPropertiesFiles()) {
+      try (var is = propertiesFile.inputStream()) {
+        var properties = new Properties();
+        properties.load(is);
+        projectContextModel.propertiesFiles.put(propertiesFile.relativePath(), properties);
+      } catch (IOException e) {
+        LOG.debug("Failed to read properties file: {}", propertiesFile.filename());
+      }
+    }
+  }
+
   private static VisitorsBridge createVisitorBridge(
     Iterable<JavaCheck> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, boolean inAndroidContext) {
     VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents, javaVersion);
@@ -125,6 +143,7 @@ public class JavaFrontend {
   }
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
+    visitPropertiesFiles();
     if (canOptimizeScanning()) {
       long successfullyScanned = 0L;
       long total = 0L;
@@ -156,7 +175,7 @@ public class JavaFrontend {
     boolean isSonarLint = sonarComponents != null && sonarComponents.isSonarLintContext();
     boolean fileByFileMode = isSonarLint || isFileByFileEnabled();
     if (fileByFileMode) {
-      scanAndMeasureTask(sourceFiles, astScanner::scan, "Main");
+      scanAndMeasureTask(sourceFiles, inputFiles -> astScanner.scan(inputFiles, projectContextModel), "Main");
       scanAndMeasureTask(testFiles, astScannerForTests::scan, "Test");
       scanAndMeasureTask(generatedFiles, astScannerForGeneratedFiles::scan, "Generated");
     } else if (isAutoScan()) {
@@ -170,11 +189,11 @@ public class JavaFrontend {
 
   /**
    * Scans the files given as input in batch mode.
-   *
+   * <p>
    * The batch size used is determined by configuration.
    * This batch size is then used as a threshold: files are added to a batch until the threshold is passed.
    * Once the threshold is passed, the batch is processed for analysis.
-   *
+   * <p>
    * If no batch size is configured, the input files are scanned as a single batch.
    *
    * @param inputFiles The collections of files to scan
@@ -192,7 +211,7 @@ public class JavaFrontend {
           LOG.info("No \"{}\" source files to scan.", context.descriptor());
         }
       } finally {
-        context.endOfAnalysis();
+        context.endOfAnalysis(projectContextModel);
       }
     } catch (AnalysisException e) {
       throw e;
@@ -228,7 +247,7 @@ public class JavaFrontend {
   private <T extends InputFile> void scanBatch(BatchModeContext context, List<T> batchFiles, AnalysisProgress analysisProgress) {
     analysisProgress.startBatch(batchFiles.size());
     Set<Runnable> environmentsCleaners = new HashSet<>();
-    boolean shouldIgnoreUnnamedModuleForSplitPackage = sonarComponents!= null && sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage();
+    boolean shouldIgnoreUnnamedModuleForSplitPackage = sonarComponents != null && sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage();
     JParserConfig.Mode.BATCH
       .create(javaVersion, context.getClasspath(), shouldIgnoreUnnamedModuleForSplitPackage)
       .parse(batchFiles, this::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsCleaners));
@@ -256,7 +275,7 @@ public class JavaFrontend {
 
     JavaAstScanner selectScanner(InputFile input);
 
-    void endOfAnalysis();
+    void endOfAnalysis(ProjectContextModelReader projectContextModel);
   }
 
   class AutoScanBatchContext implements BatchModeContext {
@@ -282,10 +301,10 @@ public class JavaFrontend {
     }
 
     @Override
-    public void endOfAnalysis() {
-      astScanner.endOfAnalysis();
-      astScannerForTests.endOfAnalysis();
-      astScannerForGeneratedFiles.endOfAnalysis();
+    public void endOfAnalysis(ProjectContextModelReader projectContextModel) {
+      astScanner.endOfAnalysis(projectContextModel);
+      astScannerForTests.endOfAnalysis(projectContextModel);
+      astScannerForGeneratedFiles.endOfAnalysis(projectContextModel);
     }
 
   }
@@ -320,8 +339,8 @@ public class JavaFrontend {
     }
 
     @Override
-    public void endOfAnalysis() {
-      scanner.endOfAnalysis();
+    public void endOfAnalysis(ProjectContextModelReader projectContextModel) {
+      scanner.endOfAnalysis(projectContextModel);
     }
 
   }

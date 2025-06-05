@@ -108,6 +108,10 @@
       <artifactId>sonar-regex-parsing</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.sonarsource.analyzer-commons</groupId>
+      <artifactId>sonar-xml-parsing</artifactId>
+    </dependency>
+    <dependency>
      <groupId>org.sonarsource.analyzer-commons</groupId>
      <artifactId>sonar-performance-measure</artifactId>
     </dependency>

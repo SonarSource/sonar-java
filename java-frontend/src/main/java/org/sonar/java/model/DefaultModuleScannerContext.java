@@ -27,7 +27,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.ModuleScannerContext;
-import org.sonar.plugins.java.api.ProjectContextModel;
+import org.sonar.plugins.java.api.ProjectContextModelReader;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
 public class DefaultModuleScannerContext implements ModuleScannerContext {
@@ -35,7 +35,7 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   protected final JavaVersion javaVersion;
   protected final boolean inAndroidContext;
   protected final CacheContext cacheContext;
-  private final ProjectContextModel projectContextModel;
+  public ProjectContextModelReader projectContextModelReader;
 
   public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext,
     @Nullable CacheContext cacheContext) {
@@ -43,7 +43,7 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   }
 
   public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext,
-    @Nullable CacheContext cacheContext, @Nullable ProjectContextModel projectContextModel) {
+    @Nullable CacheContext cacheContext, @Nullable ProjectContextModelReader projectContextModelReader) {
     this.sonarComponents = sonarComponents;
     this.javaVersion = javaVersion;
     this.inAndroidContext = inAndroidContext;
@@ -52,7 +52,7 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
     } else {
       this.cacheContext = CacheContextImpl.of(sonarComponents);
     }
-    this.projectContextModel = projectContextModel;
+    this.projectContextModelReader = projectContextModelReader;
   }
 
   public void addIssueOnProject(JavaCheck check, String message) {
@@ -113,7 +113,7 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
 
   @Nullable
   @Override
-  public ProjectContextModel getProjectContextModel() {
-    return projectContextModel;
+  public ProjectContextModelReader getProjectContextModel() {
+    return projectContextModelReader;
   }
 }

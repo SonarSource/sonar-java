@@ -42,6 +42,7 @@ import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.ProjectContextModelReader;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 public class JavaAstScanner {
@@ -79,7 +80,11 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
-    scan(inputFiles, compilationUnitTree -> {});
+    scan(inputFiles, compilationUnitTree -> {}, null);
+  }
+
+  public void scan(Iterable<? extends InputFile> inputFiles, ProjectContextModelReader projectContextModelReader) {
+    scan(inputFiles, compilationUnitTree -> {}, projectContextModelReader);
   }
 
   /**
@@ -90,11 +95,11 @@ public class JavaAstScanner {
    */
   @VisibleForTesting
   public void scanForTesting(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
-    scan(inputFiles, modifyCompilationUnit);
+    scan(inputFiles, modifyCompilationUnit, null);
   }
 
 
-  private void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit) {
+  private void scan(Iterable<? extends InputFile> inputFiles, Consumer<CompilationUnitTree> modifyCompilationUnit, @Nullable ProjectContextModelReader projectContextModelReader) {
     List<? extends InputFile> filesNames = filterModuleInfo(inputFiles).toList();
     AnalysisProgress analysisProgress = new AnalysisProgress(filesNames.size());
     try {
@@ -110,7 +115,7 @@ public class JavaAstScanner {
             JavaAstScanner::cleanUpAst,
             modifyCompilationUnit));
     } finally {
-      endOfAnalysis();
+      endOfAnalysis(projectContextModelReader);
     }
   }
 
@@ -127,8 +132,8 @@ public class JavaAstScanner {
       });
   }
 
-  public void endOfAnalysis() {
-    visitor.endOfAnalysis();
+  public void endOfAnalysis(ProjectContextModelReader projectContextModel) {
+    visitor.endOfAnalysis(projectContextModel);
     logUndefinedTypes();
   }
 

@@ -268,22 +268,22 @@ class VisitorsBridgeTest {
       new SubscriptionVisitorForJava10());
     // By default, the visitor bridge is created with a version = -1 (unset)
     VisitorsBridge visitorsBridge = new VisitorsBridge(visitors, Collections.emptyList(), null);
-    visitorsBridge.endOfAnalysis();
+    visitorsBridge.endOfAnalysis(null);
     assertThat(trace).containsExactly("RuleForAllJavaVersion");
 
     trace.clear();
     visitorsBridge = new VisitorsBridge(visitors, Collections.emptyList(), null, new JavaVersionImpl(8));
-    visitorsBridge.endOfAnalysis();
+    visitorsBridge.endOfAnalysis(null);
     assertThat(trace).containsExactly("RuleForAllJavaVersion");
 
     trace.clear();
     visitorsBridge = new VisitorsBridge(visitors, Collections.emptyList(), null, new JavaVersionImpl(11));
-    visitorsBridge.endOfAnalysis();
+    visitorsBridge.endOfAnalysis(null);
     assertThat(trace).containsExactly("RuleForAllJavaVersion", "SubscriptionVisitorForJava10");
 
     trace.clear();
     visitorsBridge = new VisitorsBridge(visitors, Collections.emptyList(), null, new JavaVersionImpl(16));
-    visitorsBridge.endOfAnalysis();
+    visitorsBridge.endOfAnalysis(null);
     assertThat(trace).containsExactly("RuleForAllJavaVersion", "RuleForJava15", "SubscriptionVisitorForJava10");
   }
 
@@ -312,14 +312,14 @@ class VisitorsBridgeTest {
 
     List<SubscriptionVisitorForSpring8> visitors = Collections.singletonList(new SubscriptionVisitorForSpring8());
     VisitorsBridge visitorsBridge = new VisitorsBridge(visitors, Collections.emptyList(), null);
-    visitorsBridge.endOfAnalysis();
+    visitorsBridge.endOfAnalysis(null);
     assertThat(trace).isEmpty();
     trace.clear();
 
 
     visitorsBridge = new VisitorsBridge(visitors, Collections.singletonList(
       new File("/home/user/.m2/path/spring-core-8.9.12.jar")), null);
-    visitorsBridge.endOfAnalysis();
+    visitorsBridge.endOfAnalysis(null);
     assertThat(trace).containsExactly("SubscriptionVisitorForSpring8");
     trace.clear();
   }
@@ -412,7 +412,7 @@ class VisitorsBridgeTest {
       null
     );
     assertThat(logTester.logs(Level.INFO)).isEmpty();
-    visitorsBridge.endOfAnalysis();
+    visitorsBridge.endOfAnalysis(null);
     assertThat(logTester.logs(Level.INFO)).isEmpty();
   }
 
@@ -429,7 +429,7 @@ class VisitorsBridgeTest {
     assertThat(logTester.logs(Level.INFO)).isEmpty();
     visitorsBridge.visitFile(null, false);
     assertThat(logTester.logs(Level.INFO)).isEmpty();
-    visitorsBridge.endOfAnalysis();
+    visitorsBridge.endOfAnalysis(null);
     assertThat(logTester.logs(Level.INFO))
       .containsExactly("Did not optimize analysis for any files, performed a full analysis for all 1 files.");
   }
@@ -447,7 +447,7 @@ class VisitorsBridgeTest {
     assertThat(logTester.logs(Level.INFO)).isEmpty();
     visitorsBridge.visitFile(null, true);
     assertThat(logTester.logs(Level.INFO)).isEmpty();
-    visitorsBridge.endOfAnalysis();
+    visitorsBridge.endOfAnalysis(null);
     assertThat(logTester.logs(Level.INFO))
       .containsExactly("Optimized analysis for 1 of 1 files.");
   }
