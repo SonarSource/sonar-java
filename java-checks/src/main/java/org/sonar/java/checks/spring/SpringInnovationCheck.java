@@ -29,28 +29,19 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S4605")
 public class SpringInnovationCheck extends IssuableSubscriptionVisitor implements EndOfAnalysis {
-
-  private static final String[] SPRING_BEAN_ANNOTATIONS = {
-    "org.springframework.stereotype.Component"
-  };
-
   private static final String[] SPRING_INJECTION_ANNOTATIONS = {
     "org.springframework.beans.factory.annotation.Autowired"
   };
 
   record Location(AnalyzerMessage analyzerMessage) {}
-
   Map<String, Set<Location>> injections = new HashMap<>();
-  Map<String, Set<String>> availableImpls = new HashMap<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -60,16 +51,6 @@ public class SpringInnovationCheck extends IssuableSubscriptionVisitor implement
   @Override
   public void visitNode(Tree tree) {
     if (tree instanceof ClassTree classTree) {
-      SymbolMetadata classSymbolMetadata = classTree.symbol().metadata();
-      if (hasAnnotation(classSymbolMetadata, SPRING_BEAN_ANNOTATIONS)) {
-        Symbol.TypeSymbol symbol = classTree.symbol();
-        Set<String> types = getTypes(symbol);
-        for (String type : types) {
-          Set<String> impls = availableImpls.computeIfAbsent(type, k -> new HashSet<>());
-          impls.add(symbol.type().fullyQualifiedName());
-        }
-      }
-
       DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
 
       for (Tree member: classTree.members()) {
@@ -92,15 +73,6 @@ public class SpringInnovationCheck extends IssuableSubscriptionVisitor implement
     return Arrays.stream(annotationName).anyMatch(classSymbolMetadata::isAnnotatedWith);
   }
 
-  private static Set<String> getTypes(Symbol.TypeSymbol symbol) {
-    var result = new HashSet<String>();
-    result.add(symbol.type().fullyQualifiedName());
-    for (Type iface: symbol.interfaces()) {
-      result.add(iface.fullyQualifiedName());
-    }
-    return result;
-  }
-
   @Override
   public void endOfAnalysis(ModuleScannerContext context) {
     var defaultContext = (DefaultModuleScannerContext) context;
@@ -108,7 +80,7 @@ public class SpringInnovationCheck extends IssuableSubscriptionVisitor implement
     for(Map.Entry<String,Set<Location>> entry : injections.entrySet()) {
       String typeFqn = entry.getKey();
       Set<Location> locations = entry.getValue();
-      if (availableImpls.get(typeFqn).size() > 1) {
+      if (defaultContext.projectContextModelReader.availableImpls().get(typeFqn).size() > 1) {
         for(Location location :locations) {
           defaultContext.reportIssue(location.analyzerMessage());
         }

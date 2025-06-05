@@ -22,12 +22,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import org.sonar.java.reporting.AnalyzerMessage;
 
 public class ProjectContextModel implements org.sonar.plugins.java.api.ProjectContextModelReader {
 
   public final Set<String> springComponents = new HashSet<>();
   public final Set<String> springRepositories = new HashSet<>();
   public final Map<String, Properties> propertiesFiles = new HashMap<>();
+
+  public record Location(AnalyzerMessage analyzerMessage) {}
+  public final Map<String, Set<Location>> injections = new HashMap<>();
+  public final Map<String, Set<String>> availableImpls = new HashMap<>();
 
   @Override
   public boolean isSpringComponent(String fullyQualifiedName) {
@@ -52,6 +57,11 @@ public class ProjectContextModel implements org.sonar.plugins.java.api.ProjectCo
   public Properties getProperties(String filePath) {
     //careful this is modifiable
     return propertiesFiles.get(filePath);
+  }
+
+  @Override
+  public Map<String, Set<String>> availableImpls() {
+    return availableImpls;
   }
 
 

@@ -16,6 +16,7 @@
  */
 package org.sonar.plugins.java.api;
 
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -27,5 +28,5 @@ public interface ProjectContextModelReader {
   Set<String> getPropertiesFilePaths();
   Properties getProperties(String filePath);
 
-
+  Map<String, Set<String>>  availableImpls();
 }
