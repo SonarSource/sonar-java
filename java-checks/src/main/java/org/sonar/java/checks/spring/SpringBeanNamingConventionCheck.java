@@ -23,6 +23,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -35,13 +36,13 @@ public class SpringBeanNamingConventionCheck extends IssuableSubscriptionVisitor
 
   private static final List<String> ANNOTATIONS_TO_CHECK = List.of(
     "org.springframework.beans.factory.annotation.Qualifier",
-    "org.springframework.context.annotation.Bean",
-    "org.springframework.context.annotation.Configuration",
-    "org.springframework.stereotype.Controller",
-    "org.springframework.stereotype.Component",
-    "org.springframework.stereotype.Repository",
-    "org.springframework.stereotype.Service",
-    "org.springframework.web.bind.annotation.RestController");
+    SpringUtils.BEAN_ANNOTATION,
+    SpringUtils.CONFIGURATION_ANNOTATION,
+    SpringUtils.CONTROLLER_ANNOTATION,
+    SpringUtils.COMPONENT_ANNOTATION,
+    SpringUtils.REPOSITORY_ANNOTATION,
+    SpringUtils.SERVICE_ANNOTATION,
+    SpringUtils.REST_CONTROLLER_ANNOTATION);
 
   private static final Pattern NAMING_CONVENTION = Pattern.compile("^[a-z][a-zA-Z0-9]*$");
 

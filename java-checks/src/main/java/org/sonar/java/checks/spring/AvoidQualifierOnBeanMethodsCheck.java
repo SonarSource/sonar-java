@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -32,7 +33,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6831")
 public class AvoidQualifierOnBeanMethodsCheck extends IssuableSubscriptionVisitor {
-  private static final String BEAN_ANNOTATION = "org.springframework.context.annotation.Bean";
   private static final String QUALIFIER_ANNOTATION = "org.springframework.beans.factory.annotation.Qualifier";
 
   @Override
@@ -47,7 +47,7 @@ public class AvoidQualifierOnBeanMethodsCheck extends IssuableSubscriptionVisito
   public void visitNode(Tree tree) {
     var methodTree = (MethodTree) tree;
 
-    var beanAnnotation = getAnnotation(methodTree, BEAN_ANNOTATION);
+    var beanAnnotation = getAnnotation(methodTree, SpringUtils.BEAN_ANNOTATION);
     var qualifierAnnotation = getAnnotation(methodTree, QUALIFIER_ANNOTATION);
 
     if (beanAnnotation != null && qualifierAnnotation != null) {

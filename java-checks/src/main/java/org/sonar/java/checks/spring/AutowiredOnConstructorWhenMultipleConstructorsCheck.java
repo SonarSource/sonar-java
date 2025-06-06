@@ -18,6 +18,7 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -27,12 +28,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class AutowiredOnConstructorWhenMultipleConstructorsCheck extends IssuableSubscriptionVisitor {
 
   private final List<String> annotations = List.of(
-    "org.springframework.context.annotation.Bean",
-    "org.springframework.context.annotation.Configuration",
-    "org.springframework.stereotype.Component",
-    "org.springframework.stereotype.Controller",
-    "org.springframework.stereotype.Repository",
-    "org.springframework.stereotype.Service");
+    SpringUtils.BEAN_ANNOTATION,
+    SpringUtils.CONFIGURATION_ANNOTATION,
+    SpringUtils.COMPONENT_ANNOTATION,
+    SpringUtils.CONTROLLER_ANNOTATION,
+    SpringUtils.REPOSITORY_ANNOTATION,
+    SpringUtils.SERVICE_ANNOTATION);
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -57,7 +58,7 @@ public class AutowiredOnConstructorWhenMultipleConstructorsCheck extends Issuabl
     if (constructors.size() > 1) {
       boolean anyHasAutowired = constructors.stream()
         .anyMatch(constructor -> constructor.modifiers().annotations().stream()
-          .anyMatch(annotation -> annotation.symbolType().is("org.springframework.beans.factory.annotation.Autowired")));
+          .anyMatch(annotation -> annotation.symbolType().is(SpringUtils.AUTOWIRED_ANNOTATION)));
 
       if (!anyHasAutowired) {
         reportIssue(classTree.simpleName(), "Add @Autowired to one of the constructors.");

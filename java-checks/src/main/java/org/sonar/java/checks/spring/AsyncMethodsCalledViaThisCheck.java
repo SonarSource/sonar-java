@@ -19,6 +19,7 @@ package org.sonar.java.checks.spring;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -29,8 +30,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class AsyncMethodsCalledViaThisCheck extends IssuableSubscriptionVisitor {
 
   private static final Map<String, String> DISALLOWED_METHOD_ANNOTATIONS = Map.of(
-    "org.springframework.scheduling.annotation.Async", "async",
-    "org.springframework.transaction.annotation.Transactional", "transactional",
+    SpringUtils.ASYNC_ANNOTATION, "async",
+    SpringUtils.TRANSACTIONAL_ANNOTATION, "transactional",
     "org.springframework.cache.annotation.Cacheable", "cacheable");
 
   @Override

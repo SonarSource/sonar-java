@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -34,8 +35,8 @@ public class RequestMappingMethodPublicCheck extends IssuableSubscriptionVisitor
   }
 
   private static final List<String> CONTROLLER_ANNOTATIONS = Arrays.asList(
-    "org.springframework.stereotype.Controller",
-    "org.springframework.web.bind.annotation.RestController"
+    SpringUtils.CONTROLLER_ANNOTATION,
+    SpringUtils.REST_CONTROLLER_ANNOTATION
   );
 
   private static final List<String> REQUEST_ANNOTATIONS = Arrays.asList(

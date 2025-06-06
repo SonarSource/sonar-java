@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.Version;
@@ -33,12 +34,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
   private static final List<String> PROXY_ANNOTATIONS = List.of(
-    "org.springframework.transaction.annotation.Transactional",
-    "org.springframework.scheduling.annotation.Async");
+    SpringUtils.TRANSACTIONAL_ANNOTATION,
+    SpringUtils.ASYNC_ANNOTATION);
 
   private static final Map<String, String> ANNOTATION_SHORT_NAMES = Map.of(
-    "org.springframework.transaction.annotation.Transactional", "@Transactional",
-    "org.springframework.scheduling.annotation.Async", "@Async");
+    SpringUtils.TRANSACTIONAL_ANNOTATION, "@Transactional",
+    SpringUtils.ASYNC_ANNOTATION, "@Async");
 
   private boolean isSpring6OrLater = false;
 

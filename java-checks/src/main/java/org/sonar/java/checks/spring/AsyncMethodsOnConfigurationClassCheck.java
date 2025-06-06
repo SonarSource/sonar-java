@@ -19,6 +19,7 @@ package org.sonar.java.checks.spring;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -38,14 +39,14 @@ public class AsyncMethodsOnConfigurationClassCheck extends IssuableSubscriptionV
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     boolean isConfiguration = classTree.modifiers().annotations().stream()
-      .anyMatch(annotation -> annotation.annotationType().symbolType().is("org.springframework.context.annotation.Configuration"));
+      .anyMatch(annotation -> annotation.annotationType().symbolType().is(SpringUtils.CONFIGURATION_ANNOTATION));
 
     if (isConfiguration) {
       classTree.members().stream()
         .filter(member -> member.is(Tree.Kind.METHOD))
         .map(MethodTree.class::cast)
         .forEach(member -> member.modifiers().annotations().stream()
-          .filter(annotation -> annotation.annotationType().symbolType().is("org.springframework.scheduling.annotation.Async"))
+          .filter(annotation -> annotation.annotationType().symbolType().is(SpringUtils.ASYNC_ANNOTATION))
           .findFirst()
           .ifPresent(annotation -> QuickFixHelper.newIssue(context)
             .forRule(this)

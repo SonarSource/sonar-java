@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -30,8 +31,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6804")
 public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubscriptionVisitor {
-
-  private static final String SPRING_VALUE = "org.springframework.beans.factory.annotation.Value";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -60,7 +59,7 @@ public class ValueAnnotationShouldInjectPropertyOrSpELCheck extends IssuableSubs
   }
 
   private static boolean isSimpleSpringValue(AnnotationTree annotation) {
-    if (annotation.symbolType().is(SPRING_VALUE)) {
+    if (annotation.symbolType().is(SpringUtils.VALUE_ANNOTATION)) {
       String value = extractArgumentValue(annotation.arguments().get(0));
       return value != null && !isPropertyName(value) && !isSpEL(value) && !referenceResource(value);
     }

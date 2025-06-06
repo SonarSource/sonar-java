@@ -18,6 +18,7 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -33,7 +34,7 @@ public class SuperfluousResponseBodyAnnotationCheck extends IssuableSubscription
   @Override
   public void visitNode(Tree tree) {
     var ct = (ClassTree) tree;
-    if (!ct.symbol().metadata().isAnnotatedWith("org.springframework.web.bind.annotation.RestController")) {
+    if (!ct.symbol().metadata().isAnnotatedWith(SpringUtils.REST_CONTROLLER_ANNOTATION)) {
       return;
     }
 

@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.DefaultModuleScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -56,17 +57,16 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     + "Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.";
 
   private static final String[] SPRING_BEAN_ANNOTATIONS = {
-    "org.springframework.stereotype.Component",
-    "org.springframework.stereotype.Service",
-    "org.springframework.stereotype.Repository",
-    "org.springframework.stereotype.Controller",
-    "org.springframework.web.bind.annotation.RestController"
+    SpringUtils.COMPONENT_ANNOTATION,
+    SpringUtils.SERVICE_ANNOTATION,
+    SpringUtils.REPOSITORY_ANNOTATION,
+    SpringUtils.CONTROLLER_ANNOTATION,
+    SpringUtils.REST_CONTROLLER_ANNOTATION
   };
 
   private static final String COMPONENT_SCAN_ANNOTATION = "org.springframework.context.annotation.ComponentScan";
   private static final Set<String> COMPONENT_SCAN_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "value");
 
-  private static final String SPRING_BOOT_APP_ANNOTATION = "org.springframework.boot.autoconfigure.SpringBootApplication";
   private static final String CACHE_KEY_PREFIX = "java:S4605:targeted:";
 
   /**
@@ -121,7 +121,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     List<SymbolMetadata.AnnotationValue> componentScanValues = classSymbolMetadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
     if (componentScanValues != null) {
       componentScanValues.forEach(this::addToScannedPackages);
-    } else if (hasAnnotation(classSymbolMetadata, SPRING_BOOT_APP_ANNOTATION)) {
+    } else if (hasAnnotation(classSymbolMetadata, SpringUtils.SPRING_BOOT_APP_ANNOTATION)) {
       var targetedPackages = targetedPackages(classPackageName, classSymbolMetadata);
       packagesScannedBySpringAtProjectLevel.addAll(targetedPackages);
       packagesScannedBySpringAtFileLevel.addAll(targetedPackages);
@@ -172,7 +172,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
 
   private static List<String> targetedPackages(String classPackageName, SymbolMetadata classSymbolMetadata) {
     // annotation is necessarily there already
-    return Objects.requireNonNull(classSymbolMetadata.valuesForAnnotation(SPRING_BOOT_APP_ANNOTATION))
+    return Objects.requireNonNull(classSymbolMetadata.valuesForAnnotation(SpringUtils.SPRING_BOOT_APP_ANNOTATION))
       .stream()
       .filter(v -> "scanBasePackages".equals(v.name()))
       .map(SymbolMetadata.AnnotationValue::value)
