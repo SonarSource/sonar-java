@@ -66,7 +66,7 @@ public class JspTest {
       return;
     }
 
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom(PROJECT))
+    MavenBuild build = TestUtils.createMavenBuild().setPom(TestUtils.projectPom(PROJECT))
       .setCleanPackageSonarGoals()
       .setDebugLogs(true)
       .setProperty("sonar.scm.disabled", "true");

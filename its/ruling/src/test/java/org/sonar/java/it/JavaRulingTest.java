@@ -391,6 +391,7 @@ public class JavaRulingTest {
   }
 
   private static void executeBuildWithCommonProperties(Build<?> build, String projectName, boolean buildQuietly) throws IOException {
+    build.setProperty("sonar.scanner.skipJreProvisioning", "true");
     build.setProperty("sonar.cpd.exclusions", "**/*")
       .setProperty("sonar.java.performance.measure", "true")
       .setProperty("sonar.java.performance.measure.path", "target/performance/sonar.java.performance.measure.json")
