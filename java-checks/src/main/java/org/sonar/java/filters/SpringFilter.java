@@ -24,6 +24,7 @@ import org.sonar.java.checks.OptionalAsParameterCheck;
 import org.sonar.java.checks.ServletInstanceFieldCheck;
 import org.sonar.java.checks.TooManyParametersCheck;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -38,8 +39,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 public class SpringFilter extends BaseTreeVisitorIssueFilter {
 
-  private static final String AUTOWIRED = "org.springframework.beans.factory.annotation.Autowired";
-
   private static final List<String> S107_METHOD_ANNOTATION_EXCEPTIONS = List.of(
     "org.springframework.web.bind.annotation.RequestMapping",
     "org.springframework.web.bind.annotation.GetMapping",
@@ -47,14 +46,14 @@ public class SpringFilter extends BaseTreeVisitorIssueFilter {
     "org.springframework.web.bind.annotation.PutMapping",
     "org.springframework.web.bind.annotation.DeleteMapping",
     "org.springframework.web.bind.annotation.PatchMapping",
-    "org.springframework.context.annotation.Bean",
-    AUTOWIRED);
+    SpringUtils.BEAN_ANNOTATION,
+    SpringUtils.AUTOWIRED_ANNOTATION);
 
   private static final List<String> S107_CLASS_ANNOTATION_EXCEPTIONS = List.of(
-    "org.springframework.stereotype.Component",
-    "org.springframework.context.annotation.Configuration",
-    "org.springframework.stereotype.Service",
-    "org.springframework.stereotype.Repository");
+    SpringUtils.COMPONENT_ANNOTATION,
+    SpringUtils.CONFIGURATION_ANNOTATION,
+    SpringUtils.SERVICE_ANNOTATION,
+    SpringUtils.REPOSITORY_ANNOTATION);
 
   @Override
   public Set<Class<? extends JavaCheck>> filteredRules() {
@@ -91,7 +90,7 @@ public class SpringFilter extends BaseTreeVisitorIssueFilter {
       SymbolMetadata methodMetadata = symbol.metadata();
       excludeLinesIfTrue(S107_METHOD_ANNOTATION_EXCEPTIONS.stream().anyMatch(methodMetadata::isAnnotatedWith), reportTree, TooManyParametersCheck.class);
       excludeLinesIfTrue(isRepositoryPropertyExpression(symbol), reportTree, BadMethodNameCheck.class);
-      excludeLinesIfTrue(methodMetadata.isAnnotatedWith(AUTOWIRED), reportTree, OptionalAsParameterCheck.class);
+      excludeLinesIfTrue(methodMetadata.isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION), reportTree, OptionalAsParameterCheck.class);
     }
     super.visitMethod(tree);
   }
@@ -110,7 +109,7 @@ public class SpringFilter extends BaseTreeVisitorIssueFilter {
     String name = symbol.name();
     int underscorePosition = name.indexOf('_');
     boolean isSeparatorInMethodName = underscorePosition > 0 && underscorePosition < name.length() - 1;
-    return isSeparatorInMethodName && symbol.owner().type().isSubtypeOf("org.springframework.data.repository.Repository");
+    return isSeparatorInMethodName && symbol.owner().type().isSubtypeOf(SpringUtils.DATA_REPOSITORY_ANNOTATION);
   }
 
   private static boolean hasAutowiredField(ClassTree tree) {
@@ -121,13 +120,13 @@ public class SpringFilter extends BaseTreeVisitorIssueFilter {
   }
 
   private static boolean isAutowired(VariableTree tree) {
-    return tree.symbol().metadata().isAnnotatedWith(AUTOWIRED)
+    return tree.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)
       // missing semantic
       || hasUnknownAnnotationWithName(tree.modifiers(), "Autowired");
   }
 
   private static boolean isTransactional(ClassTree tree) {
-    return tree.symbol().metadata().isAnnotatedWith("org.springframework.transaction.annotation.Transactional")
+    return tree.symbol().metadata().isAnnotatedWith(SpringUtils.TRANSACTIONAL_ANNOTATION)
       // missing semantic
       || hasUnknownAnnotationWithName(tree.modifiers(), "Transactional");
   }

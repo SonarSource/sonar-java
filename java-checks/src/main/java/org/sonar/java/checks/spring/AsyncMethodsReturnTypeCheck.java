@@ -18,6 +18,7 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -33,7 +34,7 @@ public class AsyncMethodsReturnTypeCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     var mt = (MethodTree) tree;
-    if (mt.symbol().metadata().isAnnotatedWith("org.springframework.scheduling.annotation.Async")) {
+    if (mt.symbol().metadata().isAnnotatedWith(SpringUtils.ASYNC_ANNOTATION)) {
       var returnType = mt.returnType();
       // returnType can only be null if the method is a constructor. Since the @Async annotation is not allowed on constructors, and since
       // we hence only visit methods, not constructors, we assume that returnType is not null.

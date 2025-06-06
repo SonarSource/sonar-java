@@ -19,6 +19,7 @@ package org.sonar.java.checks.spring;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -29,8 +30,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6818")
 public class AutowiredOnMultipleConstructorsCheck extends IssuableSubscriptionVisitor {
-
-  private static final String AUTOWIRED_ANNOTATION = "org.springframework.beans.factory.annotation.Autowired";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -61,7 +60,7 @@ public class AutowiredOnMultipleConstructorsCheck extends IssuableSubscriptionVi
 
     if (isAutowiredAlreadyFound && isAutowired) {
       Optional<AnnotationTree> autowiredAnnotation = methodTree.modifiers().annotations().stream()
-        .filter(a -> a.annotationType().symbolType().is(AUTOWIRED_ANNOTATION))
+        .filter(a -> a.annotationType().symbolType().is(SpringUtils.AUTOWIRED_ANNOTATION))
         .findFirst();
       autowiredAnnotation.ifPresent(annotationTree -> reportIssue(annotationTree, "Remove this \"@Autowired\" annotation."));
     }
@@ -70,8 +69,8 @@ public class AutowiredOnMultipleConstructorsCheck extends IssuableSubscriptionVi
   }
 
   private static boolean isAutowired(Symbol s) {
-    if (s.metadata().isAnnotatedWith(AUTOWIRED_ANNOTATION)) {
-      List<SymbolMetadata.AnnotationValue> annotationValues = s.metadata().valuesForAnnotation(AUTOWIRED_ANNOTATION);
+    if (s.metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
+      List<SymbolMetadata.AnnotationValue> annotationValues = s.metadata().valuesForAnnotation(SpringUtils.AUTOWIRED_ANNOTATION);
       return annotationValues.isEmpty() || annotationValues.stream().anyMatch(a -> a.value().equals(true));
     }
     return false;
