@@ -35,7 +35,7 @@ public class UnitTestsTest {
 
   @Test
   public void tests_without_main_code() {
-    MavenBuild build = MavenBuild.create()
+    MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("tests-without-main-code"))
       .setGoals("clean test-compile surefire:test", "sonar:sonar");
     orchestrator.executeBuild(build);
@@ -53,7 +53,7 @@ public class UnitTestsTest {
 
   @Test
   public void tests_with_report_name_suffix() {
-    MavenBuild build = MavenBuild.create()
+    MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("tests-surefire-suffix"))
       .setGoals("clean test-compile surefire:test -Dsurefire.reportNameSuffix=Run1", "test-compile surefire:test -Dsurefire.reportNameSuffix=Run2", "sonar:sonar");
     orchestrator.executeBuild(build);

@@ -32,7 +32,7 @@ public class JavaExtensionsTest {
 
   @Test
   public void test() {
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-extension"))
+    MavenBuild build = TestUtils.createMavenBuild().setPom(TestUtils.projectPom("java-extension"))
       .setCleanSonarGoals();
     TestUtils.provisionProject(orchestrator, "org.sonarsource.it.projects:java-extension","java-extension","java","java-extension");
     orchestrator.executeBuild(build);

@@ -200,7 +200,8 @@ public class JavaClasspathTest {
   private static void testJdk8ProjectWithModularJdk(boolean useJdkHomeProperty) {
     String projectKey = "use-jdk8-only-api-" + (useJdkHomeProperty ? "with" : "without") + "-jdkHome-property";
 
-    SonarScanner scanner = SonarScanner.create(TestUtils.projectDir("use-jdk8-only-api"))
+    SonarScanner scanner = TestUtils.createSonarScanner()
+      .setProjectDir(TestUtils.projectDir("use-jdk8-only-api"))
       .setProperty("sonar.projectKey", projectKey)
       .setProperty("sonar.projectName", projectKey)
       .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
@@ -269,7 +270,7 @@ public class JavaClasspathTest {
   }
 
   private static void mavenOnDitProject(String goal) {
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("dit-check"))
+    MavenBuild build = TestUtils.createMavenBuild().setPom(TestUtils.projectPom("dit-check"))
       .setGoals(goal)
       .setProperty("sonar.dynamicAnalysis", "false");
 
@@ -277,7 +278,8 @@ public class JavaClasspathTest {
   }
 
   private static SonarScanner aarProjectSonarScanner() {
-    return SonarScanner.create(TestUtils.projectDir("using-aar-dep"))
+    return TestUtils.createSonarScanner()
+      .setProjectDir(TestUtils.projectDir("using-aar-dep"))
       .setProperty("sonar.projectKey", PROJECT_KEY_AAR)
       .setProperty("sonar.projectName", "using-aar-dep")
       .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
@@ -285,7 +287,8 @@ public class JavaClasspathTest {
   }
 
   private static SonarScanner ditProjectSonarScanner() {
-    return SonarScanner.create(TestUtils.projectDir("dit-check"))
+    return TestUtils.createSonarScanner()
+      .setProjectDir(TestUtils.projectDir("dit-check"))
       .setProperty("sonar.projectKey", PROJECT_KEY_DIT)
       .setProperty("sonar.projectName", "dit-check")
       .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
