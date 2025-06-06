@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -41,7 +42,7 @@ import static org.sonar.java.checks.helpers.AnnotationsHelper.hasUnknownAnnotati
 public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
 
   private static final Set<String> SPRING_INJECT_ANNOTATIONS = Set.of(
-    "org.springframework.beans.factory.annotation.Autowired",
+    SpringUtils.AUTOWIRED_ANNOTATION,
     "javax.inject.Inject",
     "jakarta.inject.Inject",
     "javax.annotation.Resource",

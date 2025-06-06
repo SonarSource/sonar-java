@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -43,8 +44,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6816")
 public class NullableInjectedFieldsHaveDefaultValueCheck extends IssuableSubscriptionVisitor {
-
-  private static final String VALUE_ANNOTATION = "org.springframework.beans.factory.annotation.Value";
 
   private static final String MESSAGE_FOR_FIELDS = "Provide a default null value for this field.";
   private static final String MESSAGE_FOR_PARAMETERS = "Provide a default null value for this parameter.";
@@ -160,7 +159,7 @@ public class NullableInjectedFieldsHaveDefaultValueCheck extends IssuableSubscri
   private static AnnotationTree extractValueAnnotationOnSetter(MethodTree method) {
     if (MethodTreeUtils.isSetterMethod(method)) {
       return method.modifiers().annotations().stream()
-        .filter(annotation -> annotation.symbolType().is(VALUE_ANNOTATION) &&
+        .filter(annotation -> annotation.symbolType().is(SpringUtils.VALUE_ANNOTATION) &&
           !hasDefaultValue(annotation))
         .findFirst()
         .orElse(null);
@@ -179,7 +178,7 @@ public class NullableInjectedFieldsHaveDefaultValueCheck extends IssuableSubscri
 
   private static Optional<AnnotationTree> getValueAnnotationWithoutDefault(VariableTree field) {
     return field.modifiers().annotations().stream()
-      .filter(annotation -> annotation.symbolType().is(VALUE_ANNOTATION) && !hasDefaultValue(annotation))
+      .filter(annotation -> annotation.symbolType().is(SpringUtils.VALUE_ANNOTATION) && !hasDefaultValue(annotation))
       .findFirst();
   }
 

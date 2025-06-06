@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -46,7 +47,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2229")
 public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVisitor {
 
-  private static final String SPRING_TRANSACTIONAL_ANNOTATION = "org.springframework.transaction.annotation.Transactional";
   private static final String JAVAX_TRANSACTIONAL_ANNOTATION = "javax.transaction.Transactional";
 
   private static final String MANDATORY = "MANDATORY";
@@ -166,7 +166,7 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
       Type annotationType = annotationSymbol.type();
       if (annotationSymbol.isUnknown()) {
         return Optional.empty();
-      } else if (annotationType.is(SPRING_TRANSACTIONAL_ANNOTATION)) {
+      } else if (annotationType.is(SpringUtils.TRANSACTIONAL_ANNOTATION)) {
         propagation = getAnnotationAttributeAsString(annotationInstance.values(), "propagation", defaultValue);
       } else if (annotationType.is(JAVAX_TRANSACTIONAL_ANNOTATION)) {
         propagation = getAnnotationAttributeAsString(annotationInstance.values(), "value", defaultValue);

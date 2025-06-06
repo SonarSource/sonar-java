@@ -18,6 +18,7 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -26,7 +27,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S6813")
 public class FieldDependencyInjectionCheck extends IssuableSubscriptionVisitor {
   private static final List<String> INJECTION_ANNOTATIONS = List.of(
-    "org.springframework.beans.factory.annotation.Autowired",
+    SpringUtils.AUTOWIRED_ANNOTATION,
     "javax.inject.Inject",
     "jakarta.inject.Inject");
 

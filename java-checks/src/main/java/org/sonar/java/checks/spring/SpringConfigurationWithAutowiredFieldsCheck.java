@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -39,10 +40,8 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
 
   private static final String MESSAGE_FORMAT = "Inject this field value directly into \"%s\", the only method that uses it.";
 
-  private static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
-  private static final String BEAN_ANNOTATION = "org.springframework.context.annotation.Bean";
   private static final List<String> AUTOWIRED_ANNOTATIONS = Arrays.asList(
-    "org.springframework.beans.factory.annotation.Autowired",
+    SpringUtils.AUTOWIRED_ANNOTATION,
     "javax.inject.Inject");
 
   @Override
@@ -53,7 +52,7 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (classTree.symbol().metadata().isAnnotatedWith(CONFIGURATION_ANNOTATION)) {
+    if (classTree.symbol().metadata().isAnnotatedWith(SpringUtils.CONFIGURATION_ANNOTATION)) {
       Map<Symbol, VariableTree> autowiredFields = new HashMap<>();
       classTree.members().forEach(m -> collectAutowiredFields(m, autowiredFields));
 
@@ -64,7 +63,7 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
       // report autowired fields that are used by a single method, if that method is @Bean
       methodsThatUseAutowiredFields.entrySet().stream()
         .filter(methodsForField -> methodsForField.getValue().size() == 1 &&
-          methodsForField.getValue().get(0).symbol().metadata().isAnnotatedWith(BEAN_ANNOTATION))
+          methodsForField.getValue().get(0).symbol().metadata().isAnnotatedWith(SpringUtils.BEAN_ANNOTATION))
         .forEach(methodsForField -> reportIssue(
           autowiredFields.get(methodsForField.getKey()).simpleName(),
           String.format(MESSAGE_FORMAT, methodsForField.getValue().get(0).simpleName().name())));

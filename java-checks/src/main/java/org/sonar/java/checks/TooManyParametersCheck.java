@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -71,7 +72,7 @@ public class TooManyParametersCheck extends IssuableSubscriptionVisitor {
     "io.micronaut.http.annotation.Patch",
     "io.micronaut.http.annotation.Head",
     "io.micronaut.http.annotation.Trace",
-    "org.springframework.beans.factory.annotation.Autowired");
+    SpringUtils.AUTOWIRED_ANNOTATION);
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
