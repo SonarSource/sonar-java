@@ -33,7 +33,7 @@ public class JavaTutorialTest {
 
   @Test
   public void test() {
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-tutorial")).setCleanPackageSonarGoals();
+    MavenBuild build = TestUtils.createMavenBuild().setPom(TestUtils.projectPom("java-tutorial")).setCleanPackageSonarGoals();
     String projectKey = "org.sonarsource.it.projects:java-tutorial";
     TestUtils.provisionProject(orchestrator, projectKey, "java-tutorial", "java", "java-tutorial");
     executeAndAssertBuild(build, projectKey);
@@ -43,7 +43,7 @@ public class JavaTutorialTest {
   public void test_as_batch_mode() {
     String projectKey = "org.sonarsource.it.projects:java-tutorial-batch";
     String projectName = "java-tutorial-batch";
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-tutorial"))
+    MavenBuild build = TestUtils.createMavenBuild().setPom(TestUtils.projectPom("java-tutorial"))
       .setCleanPackageSonarGoals()
       .setProperty("sonar.projectKey", projectKey)
       .setProperty("sonar.projectName", projectName)

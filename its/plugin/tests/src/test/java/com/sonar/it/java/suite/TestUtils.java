@@ -17,6 +17,8 @@
 package com.sonar.it.java.suite;
 
 import com.google.common.collect.Iterables;
+import com.sonar.orchestrator.build.MavenBuild;
+import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.container.Server;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
 import java.io.File;
@@ -91,5 +93,15 @@ public class TestUtils {
     Server server = orchestrator.getServer();
     server.provisionProject(projectKey, projectName);
     server.associateProjectToQualityProfile(projectKey, languageKey, profileName);
+  }
+
+  public static SonarScanner createSonarScanner() {
+    return SonarScanner.create()
+      .setProperty("sonar.scanner.skipJreProvisioning", "true");
+  }
+
+  public static MavenBuild createMavenBuild() {
+    return MavenBuild.create()
+      .setProperty("sonar.scanner.skipJreProvisioning", "true");
   }
 }

@@ -34,7 +34,8 @@ public class DuplicationTest {
 
   @Test
   public void duplication_should_be_computed_by_SQ() {
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("test-duplications")).setCleanPackageSonarGoals();
+    MavenBuild build = TestUtils.createMavenBuild()
+      .setPom(TestUtils.projectPom("test-duplications")).setCleanPackageSonarGoals();
 
     orchestrator.executeBuild(build);
 

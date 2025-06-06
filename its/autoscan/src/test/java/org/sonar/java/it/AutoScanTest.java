@@ -93,6 +93,7 @@ public class AutoScanTest {
     String correctConfigIssues = absolutePathFor(TARGET_ACTUAL + PROJECT_KEY + "-mvn");
 
     MavenBuild mavenBuild = MavenBuild.create()
+      .setProperty("sonar.scanner.skipJreProvisioning", "true")
       .setPom(FileLocation.of(PROJECT_LOCATION + "pom.xml").getFile().getCanonicalFile())
       .addSonarGoal()
       .addArgument("-DskipTests")
@@ -115,6 +116,7 @@ public class AutoScanTest {
      * 2. Execute the analysis as sonar-scanner project, without any bytecode nor dependencies/libraries
      */
     SonarScanner sonarScannerBuild = SonarScanner.create(FileLocation.of(PROJECT_LOCATION).getFile())
+      .setProperty("sonar.scanner.skipJreProvisioning", "true")
       .setProjectKey(PROJECT_KEY)
       .setProjectName(PROJECT_NAME)
       .setProjectVersion("0.1.0-SNAPSHOT")
