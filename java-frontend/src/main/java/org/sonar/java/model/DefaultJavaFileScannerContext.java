@@ -37,6 +37,7 @@ import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.ProjectContextModelReader;
 import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
@@ -60,9 +61,15 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   private String content;
 
   public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
+    @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
+    boolean fileParsed, boolean inAndroidContext, @Nullable CacheContext cacheContext) {
+    this(tree, inputFile, semanticModel, sonarComponents, javaVersion, fileParsed, inAndroidContext, cacheContext, null);
+  }
+
+  public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
-                                       boolean fileParsed, boolean inAndroidContext, @Nullable CacheContext cacheContext) {
-    super(sonarComponents, inputFile, javaVersion, inAndroidContext, cacheContext);
+                                       boolean fileParsed, boolean inAndroidContext, @Nullable CacheContext cacheContext, @Nullable ProjectContextModelReader projectContextModel) {
+    super(sonarComponents, inputFile, javaVersion, inAndroidContext, cacheContext, projectContextModel);
     this.tree = (JavaTree.CompilationUnitTreeImpl) tree;
     this.semanticEnabled = semanticModel != null;
     this.complexityVisitor = new ComplexityVisitor();

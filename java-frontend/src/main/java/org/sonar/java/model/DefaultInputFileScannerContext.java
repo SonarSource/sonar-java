@@ -22,6 +22,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.ProjectContextModelReader;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
 public class DefaultInputFileScannerContext extends DefaultModuleScannerContext implements InputFileScannerContext {
@@ -30,6 +31,12 @@ public class DefaultInputFileScannerContext extends DefaultModuleScannerContext 
   public DefaultInputFileScannerContext(@Nullable SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext,
                                         @Nullable CacheContext cacheContext) {
     super(sonarComponents, javaVersion, inAndroidContext, cacheContext);
+    this.inputFile = inputFile;
+  }
+
+  public DefaultInputFileScannerContext(@Nullable SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext,
+    @Nullable CacheContext cacheContext, @Nullable ProjectContextModelReader projectContextModel) {
+    super(sonarComponents, javaVersion, inAndroidContext, cacheContext, projectContextModel);
     this.inputFile = inputFile;
   }
 

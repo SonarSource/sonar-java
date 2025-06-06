@@ -351,9 +351,10 @@ public class VisitorsBridge {
   }
 
   protected ModuleScannerContext createScannerContext(
-    @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext, @Nullable CacheContext cacheContext
+    @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext, @Nullable CacheContext cacheContext,
+    @Nullable ProjectContextModelReader projectContextModelReader
   ) {
-    return new DefaultModuleScannerContext(sonarComponents, javaVersion, inAndroidContext, cacheContext);
+    return new DefaultModuleScannerContext(sonarComponents, javaVersion, inAndroidContext, cacheContext, projectContextModelReader);
   }
 
   private void createSonarSymbolTable(CompilationUnitTree tree) {
@@ -390,8 +391,7 @@ public class VisitorsBridge {
       LOG.info("Did not optimize analysis for any files, performed a full analysis for all {} files.", fullyScannedFileCount);
     }
 
-    var moduleContext = createScannerContext(sonarComponents, javaVersion, inAndroidContext, cacheContext);
-    ((DefaultModuleScannerContext)moduleContext).projectContextModelReader = projectContextModel;
+    var moduleContext = createScannerContext(sonarComponents, javaVersion, inAndroidContext, cacheContext, projectContextModel);
 
     allScanners.stream()
       .filter(EndOfAnalysis.class::isInstance)

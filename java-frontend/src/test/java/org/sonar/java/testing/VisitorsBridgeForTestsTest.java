@@ -100,8 +100,8 @@ class VisitorsBridgeForTestsTest {
   @Test
   void lastCreatedModuleContext_returns_last_created_module_context() {
     var bridge = new VisitorsBridgeForTests(Collections.emptyList(), mock(SonarComponents.class), new JavaVersionImpl());
-    var firstModuleContext = bridge.createScannerContext(null, new JavaVersionImpl(), false, null);
-    var secondAndExpectedModuleContext = bridge.createScannerContext(null, new JavaVersionImpl(), false, null);
+    var firstModuleContext = bridge.createScannerContext(null, new JavaVersionImpl(), false, null, null);
+    var secondAndExpectedModuleContext = bridge.createScannerContext(null, new JavaVersionImpl(), false, null, null);
     var firstTestContext = bridge.createScannerContext((CompilationUnitTree) null, null, null, false);
     var secondTestContext = bridge.createScannerContext(null, (InputFile) null, new JavaVersionImpl(), false, null);
 

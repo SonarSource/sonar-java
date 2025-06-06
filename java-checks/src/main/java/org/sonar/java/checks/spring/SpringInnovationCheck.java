@@ -80,7 +80,7 @@ public class SpringInnovationCheck extends IssuableSubscriptionVisitor implement
     for(Map.Entry<String,Set<Location>> entry : injections.entrySet()) {
       String typeFqn = entry.getKey();
       Set<Location> locations = entry.getValue();
-      if (defaultContext.projectContextModelReader.availableImpls().get(typeFqn).size() > 1) {
+      if (defaultContext.getProjectContextModel().availableImpls().get(typeFqn).size() > 1) {
         for(Location location :locations) {
           defaultContext.reportIssue(location.analyzerMessage());
         }

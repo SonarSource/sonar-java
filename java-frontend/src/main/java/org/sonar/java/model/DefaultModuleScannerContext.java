@@ -35,7 +35,7 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   protected final JavaVersion javaVersion;
   protected final boolean inAndroidContext;
   protected final CacheContext cacheContext;
-  public ProjectContextModelReader projectContextModelReader;
+  private final ProjectContextModelReader projectContextModelReader;
 
   public DefaultModuleScannerContext(@Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext,
     @Nullable CacheContext cacheContext) {

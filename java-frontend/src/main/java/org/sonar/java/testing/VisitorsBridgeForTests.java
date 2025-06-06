@@ -24,6 +24,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.plugins.java.api.ProjectContextModelReader;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -73,9 +74,11 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
   @Override
   protected ModuleScannerContext createScannerContext(
-    @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext, @Nullable CacheContext cacheContext
+    @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext, @Nullable CacheContext cacheContext,
+    @Nullable ProjectContextModelReader projectContextModelReader
   ) {
-    moduleContext = new JavaFileScannerContextForTests(null, null, null, sonarComponents, javaVersion, false, inAndroidContext, cacheContext);
+    moduleContext = new JavaFileScannerContextForTests(null, null, null, sonarComponents, javaVersion,
+      false, inAndroidContext, cacheContext, projectContextModelReader);
     return moduleContext;
   }
 
