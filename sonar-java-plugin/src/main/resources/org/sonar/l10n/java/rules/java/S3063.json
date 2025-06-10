@@ -1,0 +1,23 @@
+{
+  "title": "\"StringBuilder\" data should be used",
+  "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "performance"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3063",
+  "sqKey": "S3063",
+  "scope": "Main",
+  "quickfix": "unknown"
+}
