@@ -1,0 +1,18 @@
+{
+  "title": "\".length\" should be used to test for the emptiness of StringBuffers",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "performance",
+    "clumsy"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3033",
+  "sqKey": "S3033",
+  "scope": "Main",
+  "quickfix": "unknown"
+}
