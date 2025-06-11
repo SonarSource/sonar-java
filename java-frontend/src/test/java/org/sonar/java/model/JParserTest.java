@@ -44,7 +44,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
+import org.eclipse.jdt.internal.compiler.parser.TerminalToken;
 import org.eclipse.jdt.internal.formatter.Token;
 import org.eclipse.jdt.internal.formatter.TokenManager;
 import org.junit.jupiter.api.Test;
@@ -518,12 +518,12 @@ class JParserTest {
     CompilationUnit compilationUnit = (CompilationUnit) astParser.createAST(null);
     TokenManager tokenManager = JParser.createTokenManager(version, unitName, source);
 
-    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNameIdentifier, TerminalTokens.TokenNameLBRACE)).isEqualTo(1);
-    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNameLBRACE, TerminalTokens.TokenNameIdentifier)).isEqualTo(1);
-    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNameRBRACE, TerminalTokens.TokenNameLBRACE)).isEqualTo(2);
-    assertThatThrownBy(() -> JParser.firstIndexIn(tokenManager, compilationUnit, TerminalTokens.TokenNamebreak, TerminalTokens.TokenNameconst))
+    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameIdentifier, TerminalToken.TokenNameLBRACE)).isEqualTo(1);
+    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameLBRACE, TerminalToken.TokenNameIdentifier)).isEqualTo(1);
+    assertThat(JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNameRBRACE, TerminalToken.TokenNameLBRACE)).isEqualTo(2);
+    assertThatThrownBy(() -> JParser.firstIndexIn(tokenManager, compilationUnit, TerminalToken.TokenNamebreak, TerminalToken.TokenNameconst))
       .isInstanceOf(IllegalStateException.class)
-      .hasMessage("Failed to find token 82 or 136 in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
+      .hasMessage("Failed to find token TokenNamebreak or TokenNameconst in the tokens of a org.eclipse.jdt.core.dom.CompilationUnit");
   }
 
   @Test
@@ -552,7 +552,7 @@ class JParserTest {
     assertThat(isComment(token0)).isFalse();
     assertThatThrownBy(() -> convertTokenTypeToCommentKind(token0))
       .isInstanceOf(IllegalStateException.class)
-      .hasMessage("Unexpected value: 71");
+      .hasMessage("Unexpected value: TokenNameclass");
 
     Token token3 = tokens.get(3);
     assertThat(token3.toString(source)).isEqualTo("// line comment");
