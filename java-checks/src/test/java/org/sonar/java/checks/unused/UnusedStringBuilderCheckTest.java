@@ -29,4 +29,13 @@ class UnusedStringBuilderCheckTest {
       .withCheck(new UnusedStringBuilderCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantics() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedStringBuilderCheckSample.java"))
+      .withCheck(new UnusedStringBuilderCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }
