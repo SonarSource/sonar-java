@@ -31,6 +31,7 @@ import static org.sonar.java.model.LiteralUtils.isEmptyString;
 
 @Rule(key = "S3033")
 public class UseIsEmptyToTestEmptinessOfStringBuilderCheck extends AbstractMethodDetection {
+  private static final String STRING = "java.lang.String";
 
   private static final MethodMatchers TO_STRING = MethodMatchers.create()
     .ofTypes("java.lang.StringBuilder", "java.lang.StringBuffer")
@@ -38,17 +39,17 @@ public class UseIsEmptyToTestEmptinessOfStringBuilderCheck extends AbstractMetho
     .withAnyParameters()
     .build();
   private static final MethodMatchers EQUALS = MethodMatchers.create()
-    .ofTypes("java.lang.String")
+    .ofTypes(STRING)
     .names("equals")
     .withAnyParameters()
     .build();
   private static final MethodMatchers IS_EMPTY = MethodMatchers.create()
-    .ofTypes("java.lang.String")
+    .ofTypes(STRING)
     .names("isEmpty")
     .withAnyParameters()
     .build();
   private static final MethodMatchers LENGTH = MethodMatchers.create()
-    .ofTypes("java.lang.String")
+    .ofTypes(STRING)
     .names("length")
     .withAnyParameters()
     .build();

@@ -36,6 +36,8 @@ public class UseIsEmptyToTestEmptinessOfStringBuilderCheckSample {
     }
 
   }
+
+  void consume(String s){}
   
   void noncompliantStringBuffer() {
     StringBuffer sb = new StringBuffer();
@@ -71,6 +73,11 @@ public class UseIsEmptyToTestEmptinessOfStringBuilderCheckSample {
       System.out.println("Empty StringBuilder");
     }
 
+    boolean isName = "name".equals(sb.toString());
+    boolean singleLetter = sb.toString().length() == 1;
+    boolean greaterThan = sb.toString().length() > 1;
+    String substring = sb.toString().substring(0, 1);
+
 
     String sbString = sb.toString();
     if ("".equals(sbString)) { // Compliant, we do not support variables assignment
@@ -80,7 +87,6 @@ public class UseIsEmptyToTestEmptinessOfStringBuilderCheckSample {
     if (sb.isEmpty()) { // Compliant, we do not support variables assignment
       System.out.println("Empty string");
     }
-
   }
   
   void compliantStringBuffer() {
