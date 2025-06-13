@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -45,21 +46,21 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
   public String customInjectionAnnotations = "";
 
   private static final List<String> SPRING_INJECTION_ANNOTATION = Arrays.asList(
-    "org.springframework.beans.factory.annotation.Autowired",
+    SpringUtils.AUTOWIRED_ANNOTATION,
     "javax.inject.Inject",
     "jakarta.inject.Inject",
     "javax.annotation.Resource",
     "jakarta.annotation.Resource",
     "javax.persistence.PersistenceContext",
     "jakarta.persistence.PersistenceContext",
-    "org.springframework.beans.factory.annotation.Value");
+    SpringUtils.VALUE_ANNOTATION);
 
   private static final List<String> SPRING_SINGLETON_ANNOTATION = Arrays.asList(
-    "org.springframework.stereotype.Controller",
-    "org.springframework.web.bind.annotation.RestController",
-    "org.springframework.stereotype.Service",
-    "org.springframework.stereotype.Component",
-    "org.springframework.stereotype.Repository");
+    SpringUtils.CONTROLLER_ANNOTATION,
+    SpringUtils.REST_CONTROLLER_ANNOTATION,
+    SpringUtils.SERVICE_ANNOTATION,
+    SpringUtils.COMPONENT_ANNOTATION,
+    SpringUtils.REPOSITORY_ANNOTATION);
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

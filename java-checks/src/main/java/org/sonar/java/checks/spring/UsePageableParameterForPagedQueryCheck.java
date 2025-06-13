@@ -18,6 +18,7 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -30,7 +31,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 public class UsePageableParameterForPagedQueryCheck extends IssuableSubscriptionVisitor {
 
   private static final String ISSUE_MESSAGE = "Add a \"Pageable\" parameter to this method to support pagination.";
-  private static final String SPRING_REPOSITORY_FQN = "org.springframework.data.repository.Repository";
   private static final String SPRING_PAGE_FQN = "org.springframework.data.domain.Page";
   private static final String SPRING_SLICE_FQN = "org.springframework.data.domain.Slice";
   private static final String SPRING_PAGEABLE_FQN = "org.springframework.data.domain.Pageable";
@@ -59,7 +59,7 @@ public class UsePageableParameterForPagedQueryCheck extends IssuableSubscription
   }
 
   private static boolean isPageableMethod(MethodTreeImpl method, Type enclosingClassType) {
-    return returnsPageOrSlice(method) && isTypeOrDescendantOf(enclosingClassType, SPRING_REPOSITORY_FQN);
+    return returnsPageOrSlice(method) && isTypeOrDescendantOf(enclosingClassType, SpringUtils.DATA_REPOSITORY_ANNOTATION);
   }
 
   private static boolean returnsPageOrSlice(MethodTreeImpl method) {

@@ -22,15 +22,27 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 
 public final class SpringUtils {
 
-  public static final String SPRING_SCOPE_ANNOTATION = "org.springframework.context.annotation.Scope";
+  public static final String SPRING_BOOT_APP_ANNOTATION = "org.springframework.boot.autoconfigure.SpringBootApplication";
+  public static final String CONTROLLER_ANNOTATION = "org.springframework.stereotype.Controller";
+  public static final String COMPONENT_ANNOTATION = "org.springframework.stereotype.Component";
+  public static final String REPOSITORY_ANNOTATION = "org.springframework.stereotype.Repository";
+  public static final String SERVICE_ANNOTATION = "org.springframework.stereotype.Service";
   public static final String AUTOWIRED_ANNOTATION = "org.springframework.beans.factory.annotation.Autowired";
+  public static final String VALUE_ANNOTATION = "org.springframework.beans.factory.annotation.Value";
+  public static final String TRANSACTIONAL_ANNOTATION = "org.springframework.transaction.annotation.Transactional";
+  public static final String BEAN_ANNOTATION = "org.springframework.context.annotation.Bean";
+  public static final String SCOPE_ANNOTATION = "org.springframework.context.annotation.Scope";
+  public static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
+  public static final String ASYNC_ANNOTATION = "org.springframework.scheduling.annotation.Async";
+  public static final String DATA_REPOSITORY_ANNOTATION = "org.springframework.data.repository.Repository";
+  public static final String REST_CONTROLLER_ANNOTATION = "org.springframework.web.bind.annotation.RestController";
 
   private SpringUtils() {
     // Utils class
   }
 
   public static boolean isScopeSingleton(SymbolMetadata clazzMeta) {
-    List<SymbolMetadata.AnnotationValue> values = clazzMeta.valuesForAnnotation(SPRING_SCOPE_ANNOTATION);
+    List<SymbolMetadata.AnnotationValue> values = clazzMeta.valuesForAnnotation(SCOPE_ANNOTATION);
     if (values == null) {
       // Scope is singleton by default
       return true;

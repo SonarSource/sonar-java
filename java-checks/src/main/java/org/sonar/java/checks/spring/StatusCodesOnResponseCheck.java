@@ -19,6 +19,7 @@ package org.sonar.java.checks.spring;
 import java.util.List;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -251,7 +252,7 @@ public class StatusCodesOnResponseCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isClassController(ClassTree classTree) {
-    return Stream.of("org.springframework.stereotype.Controller", "org.springframework.web.bind.annotation.RestController")
+    return Stream.of(SpringUtils.CONTROLLER_ANNOTATION, SpringUtils.REST_CONTROLLER_ANNOTATION)
       .anyMatch(annotation -> classTree.symbol().metadata().isAnnotatedWith(annotation));
   }
 

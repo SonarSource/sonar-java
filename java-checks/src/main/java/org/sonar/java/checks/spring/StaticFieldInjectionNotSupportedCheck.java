@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -37,9 +38,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class StaticFieldInjectionNotSupportedCheck extends IssuableSubscriptionVisitor {
   private static final Set<String> INJECTIONS_ANNOTATIONS = Set.of(
     "javax.inject.Inject",
-    "org.springframework.beans.factory.annotation.Autowired",
+    SpringUtils.AUTOWIRED_ANNOTATION,
     "jakarta.inject.Inject",
-    "org.springframework.beans.factory.annotation.Value");
+    SpringUtils.VALUE_ANNOTATION);
 
   private static final String STATIC_FIELD_MESSAGE = "Remove this injection annotation targeting the static field.";
   private static final String STATIC_METHOD_MESSAGE = "Remove this injection annotation targeting the static method.";

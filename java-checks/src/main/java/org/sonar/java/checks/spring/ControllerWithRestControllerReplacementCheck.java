@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -51,7 +52,7 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
     var classTree = (ClassTree) tree;
 
     var annotation = classTree.modifiers().annotations().stream()
-      .filter(a -> "org.springframework.stereotype.Controller".equals(a.annotationType().symbolType().fullyQualifiedName()))
+      .filter(a -> SpringUtils.CONTROLLER_ANNOTATION.equals(a.annotationType().symbolType().fullyQualifiedName()))
       .findFirst();
 
     if (annotation.isEmpty()) {

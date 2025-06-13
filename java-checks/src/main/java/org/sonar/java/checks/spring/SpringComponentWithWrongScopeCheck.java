@@ -19,12 +19,13 @@ package org.sonar.java.checks.spring;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.SpringUtils.SPRING_SCOPE_ANNOTATION;
+import static org.sonar.java.checks.helpers.SpringUtils.SCOPE_ANNOTATION;
 import static org.sonar.java.checks.helpers.SpringUtils.isScopeSingleton;
 
 @Rule(key = "S3750")
@@ -42,21 +43,21 @@ public class SpringComponentWithWrongScopeCheck extends IssuableSubscriptionVisi
     SymbolMetadata clazzMeta = clazzTree.symbol().metadata();
 
     if (isSpringComponent(clazzMeta)
-      && clazzMeta.isAnnotatedWith(SPRING_SCOPE_ANNOTATION)
+      && clazzMeta.isAnnotatedWith(SCOPE_ANNOTATION)
       && !isScopeSingleton(clazzMeta)) {
       checkScopeAnnotation(clazzTree);
     }
   }
 
   private static boolean isSpringComponent(SymbolMetadata clazzMeta) {
-    return clazzMeta.isAnnotatedWith("org.springframework.stereotype.Controller")
-      || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Service")
-      || clazzMeta.isAnnotatedWith("org.springframework.stereotype.Repository");
+    return clazzMeta.isAnnotatedWith(SpringUtils.CONTROLLER_ANNOTATION)
+      || clazzMeta.isAnnotatedWith(SpringUtils.SERVICE_ANNOTATION)
+      || clazzMeta.isAnnotatedWith(SpringUtils.REPOSITORY_ANNOTATION);
   }
 
   private void checkScopeAnnotation(ClassTree tree) {
     tree.modifiers().annotations().stream()
-      .filter(a -> a.annotationType().symbolType().fullyQualifiedName().equals(SPRING_SCOPE_ANNOTATION))
+      .filter(a -> a.annotationType().symbolType().fullyQualifiedName().equals(SCOPE_ANNOTATION))
       .forEach(a -> reportIssue(a, "Remove this \"@Scope\" annotation."));
   }
 

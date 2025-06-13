@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -33,11 +34,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6832")
 public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionVisitor {
-  private static final String SCOPED_ANNOTATION = "org.springframework.context.annotation.Scope";
-  private static final String AUTOWIRED_ANNOTATION = "org.springframework.beans.factory.annotation.Autowired";
   private static final String JAVAX_INJECT_ANNOTATION = "javax.inject.Inject";
   private static final String JAKARTA_INJECT_ANNOTATION = "jakarta.inject.Inject";
-  private static final Set<String> AUTO_WIRING_ANNOTATIONS = Set.of(AUTOWIRED_ANNOTATION, JAVAX_INJECT_ANNOTATION, JAKARTA_INJECT_ANNOTATION);
+  private static final Set<String> AUTO_WIRING_ANNOTATIONS = Set.of(SpringUtils.AUTOWIRED_ANNOTATION, JAVAX_INJECT_ANNOTATION, JAKARTA_INJECT_ANNOTATION);
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -166,7 +165,7 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
   }
 
   private static boolean isNotSingletonScopeAnnotation(SymbolMetadata.AnnotationInstance annotationInstance) {
-    return annotationInstance.symbol().type().is(SCOPED_ANNOTATION)
+    return annotationInstance.symbol().type().is(SpringUtils.SCOPE_ANNOTATION)
       && annotationInstance.values()
         .stream()
         .anyMatch(NonSingletonAutowiredInSingletonCheck::isNotSingletonAnnotationValue);

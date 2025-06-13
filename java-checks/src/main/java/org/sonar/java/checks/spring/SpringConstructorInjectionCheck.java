@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -43,9 +44,9 @@ public class SpringConstructorInjectionCheck extends IssuableSubscriptionVisitor
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (isClassTreeAnnotatedWith(classTree,
-      "org.springframework.stereotype.Controller",
-      "org.springframework.stereotype.Repository",
-      "org.springframework.stereotype.Service")) {
+      SpringUtils.CONTROLLER_ANNOTATION,
+      SpringUtils.REPOSITORY_ANNOTATION,
+      SpringUtils.SERVICE_ANNOTATION)) {
       List<Tree> toReport = classTree.members()
         .stream()
         .filter(SpringConstructorInjectionCheck::isMemberAutowired)
@@ -82,7 +83,7 @@ public class SpringConstructorInjectionCheck extends IssuableSubscriptionVisitor
   }
 
   private static boolean isAutowired(Symbol s) {
-    return s.metadata().isAnnotatedWith("org.springframework.beans.factory.annotation.Autowired");
+    return s.metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION);
   }
 
   private static Tree toReportTree(Tree member) {
@@ -93,7 +94,7 @@ public class SpringConstructorInjectionCheck extends IssuableSubscriptionVisitor
       stream = ((MethodTree) member).modifiers().annotations().stream();
     }
     return stream
-      .filter(a -> a.annotationType().symbolType().is("org.springframework.beans.factory.annotation.Autowired"))
+      .filter(a -> a.annotationType().symbolType().is(SpringUtils.AUTOWIRED_ANNOTATION))
       .findFirst()
       .orElseThrow(() -> new IllegalStateException("Mapping a tree to something unexpected"));
   }
