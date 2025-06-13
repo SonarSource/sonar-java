@@ -25,6 +25,8 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -34,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.sonar.java.model.LiteralUtils.isEmptyString;
 
 @Rule(key = "S3033")
-public class UseIsEmptyToTestEmptinessOfStringBuilderCheck extends AbstractMethodDetection {
+public class UseIsEmptyToTestEmptinessOfStringBuilderCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
   private static final String JAVA_LANG_STRING = "java.lang.String";
 
   private static final MethodMatchers TO_STRING = MethodMatchers.create()
@@ -65,6 +67,11 @@ public class UseIsEmptyToTestEmptinessOfStringBuilderCheck extends AbstractMetho
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return TO_STRING;
+  }
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava15Compatible();
   }
 
   @Override
@@ -131,5 +138,4 @@ public class UseIsEmptyToTestEmptinessOfStringBuilderCheck extends AbstractMetho
     }
     return false;
   }
-
 }
