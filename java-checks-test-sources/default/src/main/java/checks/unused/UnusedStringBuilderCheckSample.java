@@ -30,6 +30,7 @@ public class UnusedStringBuilderCheckSample {
 
   public void unused() {
     StringBuilder sb = new StringBuilder(); // Noncompliant {{Consume or remove this unused StringBuilder}}
+//                ^^
     sb.append("Hello");
     sb.append("!");
     System.out.println("Hello!");
@@ -37,6 +38,7 @@ public class UnusedStringBuilderCheckSample {
 
   public void unusedNoOperationsAtAll() {
     StringBuilder sb = new StringBuilder(); // Noncompliant {{Consume or remove this unused StringBuilder}}
+//                ^^
   }
 
   public String usedTerminalSubstring() {
@@ -87,6 +89,7 @@ public class UnusedStringBuilderCheckSample {
   private void assignedRhs(Supplier<StringBuilder> supplier) {
     // FP, because sb escapes analysis, but we do not handle it.
     StringBuilder sb = new StringBuilder(); // Noncompliant {{Consume or remove this unused StringBuilder}}
+//                ^^
     sb.append("assignment");
     StringBuilder sb2 = sb;
     System.out.println(sb2);
@@ -94,6 +97,7 @@ public class UnusedStringBuilderCheckSample {
 
   private String unusedConstructorWithArgument() {
     StringBuilder sb = new StringBuilder("Hello"); // Noncompliant {{Consume or remove this unused StringBuilder}}
+//                ^^
     sb.append("!");
     return "Hello!";
   }
@@ -107,6 +111,7 @@ public class UnusedStringBuilderCheckSample {
 
   public void unusedStringBuffer() {
     StringBuffer stringBuffer = new StringBuffer(); // Noncompliant {{Consume or remove this unused StringBuffer}}
+//               ^^^^^^^^^^^^
     stringBuffer.append("Hello");
     stringBuffer.append("!");
     System.out.println("Hello!");
@@ -133,6 +138,7 @@ public class UnusedStringBuilderCheckSample {
 
   static class UnusedFieldPrivate {
     private StringBuilder stringBuilder = new StringBuilder(); // Noncompliant
+//                        ^^^^^^^^^^^^^
 
     void appendHello() {
       stringBuilder.append("Hello");
