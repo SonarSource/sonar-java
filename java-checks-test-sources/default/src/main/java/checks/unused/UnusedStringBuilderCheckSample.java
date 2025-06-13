@@ -56,6 +56,16 @@ public class UnusedStringBuilderCheckSample {
     return sb.append("returned");
   }
 
+  public void usedChainedTwicePrinted() {
+    StringBuilder sb = new StringBuilder();
+    System.out.println(sb.append("one").append("two"));
+  }
+
+  public String usedChainedTwiceReturned() {
+    StringBuilder sb = new StringBuilder();
+    return sb.append("one").append("two").toString();
+  }
+
   private void passedAsArg(StringBuilder fromOutside) {
     // Considered used, because the caller can invoke a terminal operation.
     fromOutside.append("good");
