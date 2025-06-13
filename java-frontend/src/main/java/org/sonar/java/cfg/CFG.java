@@ -68,6 +68,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.NullPatternTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
@@ -88,6 +89,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
+import org.sonar.plugins.java.api.tree.WildcardTree;
 import org.sonar.plugins.java.api.tree.YieldStatementTree;
 import org.sonarsource.analyzer.commons.collections.ListUtils;
 
@@ -686,6 +688,20 @@ public class CFG implements ControlFlowGraph {
         RECORD_PATTERN,
         DEFAULT_PATTERN:
         buildPattern((PatternTree) tree);
+        break;
+      case PARAMETERIZED_TYPE:
+        var typeTree = (ParameterizedTypeTree) tree;
+        build(typeTree.type());
+        build(typeTree.typeArguments());
+        break;
+      case UNBOUNDED_WILDCARD,
+           EXTENDS_WILDCARD,
+           SUPER_WILDCARD:
+        TypeTree bound = ((WildcardTree) tree).bound();
+        if (bound != null) {
+          build(bound);
+        }
+        currentBlock.elements.add(tree);
         break;
       default:
         throw new UnsupportedOperationException(tree.kind().name() + " " + ((JavaTree) tree).getLine());

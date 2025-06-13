@@ -59,6 +59,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.CONTINUE_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.DEFAULT_PATTERN;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.DO_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.EQUAL_TO;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.EXTENDS_WILDCARD;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.FOR_EACH_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.FOR_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.GREATER_THAN;
@@ -87,6 +88,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.RECORD;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.RECORD_PATTERN;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.RETURN_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.STRING_LITERAL;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.SUPER_WILDCARD;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.SWITCH_EXPRESSION;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.SWITCH_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.SYNCHRONIZED_STATEMENT;
@@ -95,6 +97,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.TRY_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.TYPE_CAST;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.TYPE_PATTERN;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.UNARY_MINUS;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.UNBOUNDED_WILDCARD;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.VARIABLE;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.WHILE_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.YIELD_STATEMENT;
@@ -403,7 +406,10 @@ class CFGTest {
           TYPE_PATTERN,
           GUARDED_PATTERN,
           DEFAULT_PATTERN,
-          RECORD_PATTERN:
+          RECORD_PATTERN,
+          UNBOUNDED_WILDCARD,
+          SUPER_WILDCARD,
+          EXTENDS_WILDCARD:
           break;
         default:
           throw new IllegalArgumentException("Unsupported element kind: " + kind);
@@ -3147,6 +3153,42 @@ class CFGTest {
     );
     cfgChecker.check(cfg);
 
+  }
+
+  @Test
+  void generic_record_pattern() {
+    CFG cfg = buildCFG("""
+          private static boolean testGen3(GenBase<Integer, String> o) {
+            return o instanceof GenRecord1<?, ? super Integer, ? extends CharSequence>(String a, Integer i, CharSequence s) && i == 3 && s.isEmpty();
+          }
+        """);
+
+    CFGChecker cfgChecker = checker(
+      block(
+        element(IDENTIFIER, "o"),
+        element(RECORD_PATTERN),
+        element(UNBOUNDED_WILDCARD),
+        element(SUPER_WILDCARD),
+        element(IDENTIFIER, "Integer"),
+        element(EXTENDS_WILDCARD),
+        element(IDENTIFIER, "CharSequence"),
+        element(IDENTIFIER, "GenRecord1"),
+        element(TYPE_PATTERN),
+        element(VARIABLE, "a"),
+        element(TYPE_PATTERN),
+        element(VARIABLE, "i"),
+        element(TYPE_PATTERN),
+        element(VARIABLE, "s"),
+        element(PATTERN_INSTANCE_OF)
+      ).terminator(CONDITIONAL_AND).ifTrue(4).ifFalse(3),
+      block(element(IDENTIFIER, "i"), element(INT_LITERAL, "3"), element(EQUAL_TO))
+        .successors(3),
+      terminator(CONDITIONAL_AND).ifTrue(2).ifFalse(1),
+      block(element(IDENTIFIER, "s"), element(METHOD_INVOCATION))
+        .successors(1),
+      terminator(RETURN_STATEMENT).successors(0));
+
+    cfgChecker.check(cfg);
   }
 
   @Test
