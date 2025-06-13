@@ -68,6 +68,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.NullPatternTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.PatternTree;
@@ -664,6 +665,7 @@ public class CFG implements ControlFlowGraph {
         INTERFACE,
         METHOD_REFERENCE,
         LAMBDA_EXPRESSION,
+        UNBOUNDED_WILDCARD,
         // simple instructions
         INT_LITERAL,
         LONG_LITERAL,
@@ -686,6 +688,11 @@ public class CFG implements ControlFlowGraph {
         RECORD_PATTERN,
         DEFAULT_PATTERN:
         buildPattern((PatternTree) tree);
+        break;
+      case PARAMETERIZED_TYPE:
+        var typeTree = (ParameterizedTypeTree) tree;
+        build(typeTree.type());
+        build(typeTree.typeArguments());
         break;
       default:
         throw new UnsupportedOperationException(tree.kind().name() + " " + ((JavaTree) tree).getLine());

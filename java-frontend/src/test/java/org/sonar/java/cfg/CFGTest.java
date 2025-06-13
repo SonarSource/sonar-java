@@ -95,6 +95,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.TRY_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.TYPE_CAST;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.TYPE_PATTERN;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.UNARY_MINUS;
+import static org.sonar.plugins.java.api.tree.Tree.Kind.UNBOUNDED_WILDCARD;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.VARIABLE;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.WHILE_STATEMENT;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.YIELD_STATEMENT;
@@ -403,7 +404,8 @@ class CFGTest {
           TYPE_PATTERN,
           GUARDED_PATTERN,
           DEFAULT_PATTERN,
-          RECORD_PATTERN:
+          RECORD_PATTERN,
+          UNBOUNDED_WILDCARD:
           break;
         default:
           throw new IllegalArgumentException("Unsupported element kind: " + kind);
@@ -3147,6 +3149,37 @@ class CFGTest {
     );
     cfgChecker.check(cfg);
 
+  }
+
+  @Test
+  void generic_record_pattern() {
+    CFG cfg = buildCFG("""
+        private static boolean testGen3(Object o) throws Throwable {
+          return o instanceof GenRecord1<?, ?>(Integer i, var s) && i.intValue() == 3 && s.length() == 0;
+        }
+        """);
+
+    CFGChecker cfgChecker = checker(
+      block(
+        element(IDENTIFIER, "o"),
+        element(RECORD_PATTERN),
+        element(UNBOUNDED_WILDCARD),
+        element(UNBOUNDED_WILDCARD),
+        element(IDENTIFIER, "GenRecord1"),
+        element(TYPE_PATTERN),
+        element(VARIABLE, "i"),
+        element(TYPE_PATTERN),
+        element(VARIABLE, "s"),
+        element(PATTERN_INSTANCE_OF)
+      ).terminator(CONDITIONAL_AND).ifTrue(4).ifFalse(3),
+      block(element(IDENTIFIER, "i"), element(METHOD_INVOCATION), element(INT_LITERAL, "3"), element(EQUAL_TO))
+        .successors(3),
+      terminator(CONDITIONAL_AND).ifTrue(2).ifFalse(1),
+      block(element(IDENTIFIER, "s"), element(METHOD_INVOCATION), element(INT_LITERAL, "0"), element(EQUAL_TO))
+        .successors(1),
+      terminator(RETURN_STATEMENT).successors(0));
+
+    cfgChecker.check(cfg);
   }
 
   @Test
