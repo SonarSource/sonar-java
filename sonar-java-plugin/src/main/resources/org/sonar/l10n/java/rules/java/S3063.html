@@ -1,0 +1,42 @@
+<h2>Why is this an issue?</h2>
+<p><code>StringBuffer</code> and <code>StringBuilder</code> instances that are <code>append</code>ed but never <code>toString</code>ed needlessly
+clutter the code, and worse are a drag on performance. Either they should be removed, or the missing <code>toString</code> call added.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+public void doSomething(List&lt;String&gt; strings) {
+
+  StringBuilder sb = new StringBuilder();  // Noncompliant
+  sb.append("Got: ");
+  for (String str : strings) {
+    sb.append(str).append(", ");
+    // ...
+  }
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre>
+public void doSomething(List&lt;String&gt; strings) {
+
+  for (String str : strings) {
+    // ...
+  }
+}
+</pre>
+<p>or</p>
+<pre>
+public void doSomething(List&lt;String&gt; strings) {
+
+  StringBuilder sb = new StringBuilder();
+  sb.append("Got: ");
+  for (String str : strings) {
+    sb.append(str).append(", ");
+    // ...
+  }
+
+  LOGGER.info(sb.toString);
+}
+</pre>
+<h3>Exceptions</h3>
+<p>This rule ignores <code>StringBuffer</code>s and <code>StringBuilder</code>s that are passed as method arguments on the grounds that they are
+likely <code>toString</code>ed there.</p>
+
