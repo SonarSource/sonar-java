@@ -65,6 +65,8 @@ public class CacheEnabledTest {
 
   private static OrchestratorRule initServer() {
     return OrchestratorRule.builderEnv()
+      .setEdition(com.sonar.orchestrator.container.Edition.ENTERPRISE_LW)
+      .activateLicense()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
       .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION)
