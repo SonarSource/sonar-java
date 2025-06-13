@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -47,10 +48,15 @@ public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (tree instanceof VariableTree variableTree) {
-      String typeName = getStringBuilderOrStringBuffer(variableTree.symbol().type());
+      Symbol symbol = variableTree.symbol();
+      String typeName = getStringBuilderOrStringBuffer(symbol.type());
+
+      // Exclude non-local variables with non-private visibility,
+      // because they can be changed in a way that is hard to track.
       if (typeName != null && isInitializedByConstructor(variableTree.initializer()) &&
-        variableTree.symbol().usages().stream().noneMatch(UnusedStringBuilderCheck::isUsedInAssignment) &&
-        variableTree.symbol().usages().stream().noneMatch(UnusedStringBuilderCheck::isConsumed)) {
+        isLocalOrPrivate(symbol) &&
+        symbol.usages().stream().noneMatch(UnusedStringBuilderCheck::isUsedInAssignment) &&
+        symbol.usages().stream().noneMatch(UnusedStringBuilderCheck::isConsumed)) {
         reportIssue(variableTree.simpleName(), "Consume or remove this unused %s".formatted(typeName));
       }
     }
@@ -75,6 +81,10 @@ public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
    */
   private static boolean isInitializedByConstructor(@Nullable ExpressionTree initializer) {
     return initializer instanceof NewClassTree;
+  }
+
+  private static boolean isLocalOrPrivate(Symbol symbol) {
+    return symbol.isLocalVariable() || symbol.isPrivate();
   }
 
   /**

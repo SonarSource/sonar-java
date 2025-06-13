@@ -118,16 +118,45 @@ public class UnusedStringBuilderCheckSample {
     list.add(5);
   }
 
-  static class UnusedField {
-    // FN, because it is not implemented.
+  static class UnusedField1 {
+    // FN, because it is not implemented (initialization in the constructor).
     StringBuilder stringBuilder;
 
-    UnusedField() {
+    UnusedField1() {
       this.stringBuilder = new StringBuilder();
     }
 
     void appendHello() {
       stringBuilder.append("Hello");
+    }
+  }
+
+  static class UnusedFieldPrivate {
+    private StringBuilder stringBuilder = new StringBuilder(); // Noncompliant
+
+    void appendHello() {
+      stringBuilder.append("Hello");
+    }
+  }
+
+  static class UnusedFieldProtected {
+    // It can be used in subclass.
+    protected StringBuilder stringBuilder = new StringBuilder();
+
+    void appendHello() {
+      stringBuilder.append("Hello");
+    }
+  }
+
+  static class UsedFieldPrivate {
+    private StringBuilder stringBuilder = new StringBuilder(); // Compliant
+
+    void appendHello() {
+      stringBuilder.append("Hello");
+    }
+
+    void print() {
+      System.out.println(stringBuilder);
     }
   }
 }
