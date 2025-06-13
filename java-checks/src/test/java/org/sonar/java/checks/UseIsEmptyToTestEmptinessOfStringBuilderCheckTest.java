@@ -20,14 +20,36 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class UseIsEmptyToTestEmptinessOfStringBuilderCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/UseIsEmptyToTestEmptinessOfStringBuilderCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/UseIsEmptyToTestEmptinessOfStringBuilderCheckSample.java"))
       .withCheck(new UseIsEmptyToTestEmptinessOfStringBuilderCheck())
+      .withJavaVersion(15)
       .verifyIssues();
+  }
+
+  @Test
+  void no_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UseIsEmptyToTestEmptinessOfStringBuilderCheckSample.java"))
+      .withCheck(new UseIsEmptyToTestEmptinessOfStringBuilderCheck())
+      .withoutSemantic()
+      .withJavaVersion(15)
+      .verifyIssues();
+  }
+
+  @Test
+  void below_java_15() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UseIsEmptyToTestEmptinessOfStringBuilderCheckSample.java"))
+      .withCheck(new UseIsEmptyToTestEmptinessOfStringBuilderCheck())
+      .withJavaVersion(14)
+      .verifyNoIssues();
   }
   
 }
