@@ -80,18 +80,17 @@ public class UseIsEmptyToTestEmptinessOfStringBuilderCheck extends AbstractMetho
     if (STRING_EQUALS.matches(mit) && isEqualsWithEmptyString(mit)) {
       reportIssue(mit, MESSAGE_EQUALS);
     } else if (STRING_IS_EMPTY.matches(mit)) {
-      // var edit = JavaTextEdit.removeTree(((MemberSelectExpressionTree)toStringInvocation.methodSelect()).identifier());
-      // //(((MemberSelectExpressionTree)toStringInvocation.methodSelect()).identifier(), mit, ".isEmpty()");
-      //
-      // QuickFixHelper.newIssue(context)
-      // .forRule(this)
-      // .onTree(mit)
-      // .withMessage(MESSAGE_IS_EMPTY)
-      // .withQuickFixes(() -> List.of(
-      // JavaQuickFix.newQuickFix("").addTextEdit(edit).build()
-      // ))
-      // .report();
-      reportIssue(mit, MESSAGE_IS_EMPTY);
+      var operator = ((MemberSelectExpressionTree) toStringInvocation.methodSelect()).operatorToken();
+      var edit = JavaTextEdit.replaceBetweenTree(operator, mit, ".isEmpty()");
+
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(mit)
+        .withMessage(MESSAGE_IS_EMPTY)
+        .withQuickFixes(() -> List.of(
+          JavaQuickFix.newQuickFix("Replace with \"isEmpty()\"").addTextEdit(edit).build()
+        ))
+        .report();
     } else if (STRING_LENGTH.matches(mit) && isComparedToZero(mit)) {
       reportIssue(mit, MESSAGE_LENGTH);
     }
