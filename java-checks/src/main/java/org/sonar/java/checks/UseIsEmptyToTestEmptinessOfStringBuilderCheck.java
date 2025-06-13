@@ -16,11 +16,15 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -31,25 +35,25 @@ import static org.sonar.java.model.LiteralUtils.isEmptyString;
 
 @Rule(key = "S3033")
 public class UseIsEmptyToTestEmptinessOfStringBuilderCheck extends AbstractMethodDetection {
-  private static final String STRING = "java.lang.String";
+  private static final String JAVA_LANG_STRING = "java.lang.String";
 
   private static final MethodMatchers TO_STRING = MethodMatchers.create()
     .ofTypes("java.lang.StringBuilder", "java.lang.StringBuffer")
     .names("toString")
     .withAnyParameters()
     .build();
-  private static final MethodMatchers EQUALS = MethodMatchers.create()
-    .ofTypes(STRING)
+  private static final MethodMatchers STRING_EQUALS = MethodMatchers.create()
+    .ofTypes(JAVA_LANG_STRING)
     .names("equals")
     .withAnyParameters()
     .build();
-  private static final MethodMatchers IS_EMPTY = MethodMatchers.create()
-    .ofTypes(STRING)
+  private static final MethodMatchers STRING_IS_EMPTY = MethodMatchers.create()
+    .ofTypes(JAVA_LANG_STRING)
     .names("isEmpty")
     .withAnyParameters()
     .build();
-  private static final MethodMatchers LENGTH = MethodMatchers.create()
-    .ofTypes(STRING)
+  private static final MethodMatchers STRING_LENGTH = MethodMatchers.create()
+    .ofTypes(JAVA_LANG_STRING)
     .names("length")
     .withAnyParameters()
     .build();
@@ -73,31 +77,44 @@ public class UseIsEmptyToTestEmptinessOfStringBuilderCheck extends AbstractMetho
       return;
     }
 
-    if (EQUALS.matches(mit) && isEqualsWithEmptyString(mit)) {
+    if (STRING_EQUALS.matches(mit) && isEqualsWithEmptyString(mit)) {
       reportIssue(mit, MESSAGE_EQUALS);
-    } else if (IS_EMPTY.matches(mit)) {
+    } else if (STRING_IS_EMPTY.matches(mit)) {
+      // var edit = JavaTextEdit.removeTree(((MemberSelectExpressionTree)toStringInvocation.methodSelect()).identifier());
+      // //(((MemberSelectExpressionTree)toStringInvocation.methodSelect()).identifier(), mit, ".isEmpty()");
+      //
+      // QuickFixHelper.newIssue(context)
+      // .forRule(this)
+      // .onTree(mit)
+      // .withMessage(MESSAGE_IS_EMPTY)
+      // .withQuickFixes(() -> List.of(
+      // JavaQuickFix.newQuickFix("").addTextEdit(edit).build()
+      // ))
+      // .report();
       reportIssue(mit, MESSAGE_IS_EMPTY);
-    } else if (LENGTH.matches(mit) && isComparedToZero(mit)) {
+    } else if (STRING_LENGTH.matches(mit) && isComparedToZero(mit)) {
       reportIssue(mit, MESSAGE_LENGTH);
     }
   }
 
   // example: "".equals(sb.toString()) and toStringInvocation=sb.toString() -> "".equals(sb.toString())
   private static Optional<MethodInvocationTree> argumentSide(MethodInvocationTree toStringInvocation) {
-    Tree parent = toStringInvocation.parent();
-    if (parent instanceof ArgumentListTreeImpl args && args.parent() instanceof MethodInvocationTree mit) {
-      return Optional.of(mit);
-    }
-    return Optional.empty();
+    return Optional.ofNullable(toStringInvocation.parent())
+      .filter(ArgumentListTreeImpl.class::isInstance)
+      .map(ArgumentListTreeImpl.class::cast)
+      .map(ArgumentListTreeImpl::parent)
+      .filter(MethodInvocationTree.class::isInstance)
+      .map(MethodInvocationTree.class::cast);
   }
 
   // example: sb.toString().equals("") and toStringInvocation=sb.toString() -> sb.toString().equals("")
   private static Optional<MethodInvocationTree> methodSelectSide(MethodInvocationTree toStringInvocation) {
-    Tree parent = toStringInvocation.parent();
-    if (parent instanceof MemberSelectExpressionTree select && select.parent() instanceof MethodInvocationTree mit) {
-      return Optional.of(mit);
-    }
-    return Optional.empty();
+    return Optional.ofNullable(toStringInvocation.parent())
+      .filter(MemberSelectExpressionTree.class::isInstance)
+      .map(MemberSelectExpressionTree.class::cast)
+      .map(MemberSelectExpressionTree::parent)
+      .filter(MethodInvocationTree.class::isInstance)
+      .map(MethodInvocationTree.class::cast);
   }
 
   private static boolean isEqualsWithEmptyString(MethodInvocationTree equalsInvocation) {
