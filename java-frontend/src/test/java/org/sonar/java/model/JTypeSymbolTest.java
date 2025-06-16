@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.plugins.java.api.semantic.Type;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -58,6 +59,17 @@ class JTypeSymbolTest {
         assertThat(cu.sema.typeSymbol(javaLangObject.createArrayType(1)).superClass())
           .isSameAs(cu.sema.type(javaLangObject))
     );
+  }
+
+  @Test
+  void testSuperClassWhenSemanticCanNotResolveObjectType() {
+    var cu = test("interface I{}");
+    var i = (ClassTreeImpl) cu.types().get(0);
+
+    JSema sematicThatCanNotResolveObjectType = spy(cu.sema);
+    when(sematicThatCanNotResolveObjectType.resolveType("java.lang.Object")).thenReturn(null);
+    var typeSymbol = new JTypeSymbol(sematicThatCanNotResolveObjectType, i.typeBinding);
+    assertThat(typeSymbol.superClass()).isSameAs(Type.UNKNOWN);
   }
 
   @Test
