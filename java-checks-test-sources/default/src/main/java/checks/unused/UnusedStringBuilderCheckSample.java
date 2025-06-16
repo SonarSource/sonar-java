@@ -123,6 +123,18 @@ public class UnusedStringBuilderCheckSample {
     list.add(5);
   }
 
+  String usedManyChainedCalls() {
+    StringBuilder sb = new StringBuilder();
+    return sb.append("a").append("b").toString();
+  }
+
+  String unusedManyChainedCalls() {
+    StringBuilder sb = new StringBuilder(); // Noncompliant {{Consume or remove this unused StringBuilder}}
+//                ^^
+    sb.append("a").append("b");
+    return "ab";
+  }
+
   static class UnusedField1 {
     // FN, because it is not implemented (initialization in the constructor).
     StringBuilder stringBuilder;
@@ -134,7 +146,7 @@ public class UnusedStringBuilderCheckSample {
     void appendHello() {
       stringBuilder.append("Hello");
     }
-  sb.append("a").append("b").toString()
+  }
 
   static class UnusedFieldPrivate {
     private StringBuilder stringBuilder = new StringBuilder(); // Noncompliant
