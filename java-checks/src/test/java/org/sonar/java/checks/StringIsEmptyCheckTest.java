@@ -32,6 +32,15 @@ class StringIsEmptyCheckTest {
   }
 
   @Test
+  void charSequence() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CharSequenceIsEmptyCheckSample.java"))
+      .withCheck(new StringIsEmptyCheck())
+      .withJavaVersion(15)
+      .verifyIssues();
+  }
+
+  @Test
   void testOlderJavaVersion() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/StringIsEmptyCheckSample.java"))

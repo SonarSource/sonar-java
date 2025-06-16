@@ -102,4 +102,12 @@ public class StringIsEmptyCheckSample {
 
     return b;
   }
+
+  public boolean charSequence(CharSequence s, StringBuilder sb, StringBuffer buf){
+    boolean b;
+    b = s.length() == 0; // compliant only apply from java 15
+    b = sb.length() == 0; // compliant only apply from java 15
+    b = buf.length() == 0; // compliant only apply from java 15
+    return b;
+  }
 }

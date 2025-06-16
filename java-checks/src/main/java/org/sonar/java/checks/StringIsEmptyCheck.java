@@ -26,6 +26,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -37,14 +38,20 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 /**
- * Implement rule that <pre>String.length() == 0</pre> should be replaced with
- * <pre>String.isEmpty()</pre>.
+ * Implement rule that <pre>CharSequence.length() == 0</pre> should be replaced with
+ * <pre>CharSequence.isEmpty()</pre>.
  */
 @Rule(key = "S7158")
 public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
-  private static final MethodMatchers LENGTH_METHOD = MethodMatchers.create()
+  private static final MethodMatchers STRING_LENGTH_METHOD = MethodMatchers.create()
     .ofTypes("java.lang.String")
+    .names("length")
+    .addWithoutParametersMatcher()
+    .build();
+
+  private static final MethodMatchers CHARSEQUENCE_LENGTH_METHOD = MethodMatchers.create()
+    .ofSubTypes("java.lang.CharSequence")
     .names("length")
     .addWithoutParametersMatcher()
     .build();
@@ -71,10 +78,18 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     return comparisonType == ComparisonType.IS_EMPTY || comparisonType == ComparisonType.IS_NOT_EMPTY;
   }
 
-  // `String.isEmpty()` is available since Java 6.
+  private int javaVersionAsInt;
+
+  // `String.isEmpty()` is available since Java 6, but `CharSequence.isEmpty()` since Java 15
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
     return version.isJava6Compatible();
+  }
+  
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    javaVersionAsInt = context.getJavaVersion().asInt();
+    super.setContext(context);
   }
 
   @Override
@@ -112,7 +127,7 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
         .newIssue(context)
         .forRule(this)
         .onTree(tree)
-        .withMessage("Use isEmpty() to check whether a string is empty or not.")
+        .withMessage("Use \"isEmpty()\" to check whether a \"CharSequence\" is empty or not.")
         .withQuickFix(() -> getQuickFix(tree, lengthCall, comparisonType))
         .report();
     }
@@ -145,9 +160,11 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
   }
 
   @Nullable
-  private static MethodInvocationTree getLengthCall(ExpressionTree tree) {
-    if (tree instanceof MethodInvocationTree mit && LENGTH_METHOD.matches(mit)) {
-      return mit;
+  private MethodInvocationTree getLengthCall(ExpressionTree tree) {
+    if (tree instanceof MethodInvocationTree mit) {
+      if (STRING_LENGTH_METHOD.matches(mit) || (javaVersionAsInt >= 15 && CHARSEQUENCE_LENGTH_METHOD.matches(mit))) {
+        return mit;
+      }
     }
     return null;
   }
