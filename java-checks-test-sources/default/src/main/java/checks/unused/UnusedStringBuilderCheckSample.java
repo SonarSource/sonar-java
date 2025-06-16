@@ -134,7 +134,7 @@ public class UnusedStringBuilderCheckSample {
     void appendHello() {
       stringBuilder.append("Hello");
     }
-  }
+  sb.append("a").append("b").toString()
 
   static class UnusedFieldPrivate {
     private StringBuilder stringBuilder = new StringBuilder(); // Noncompliant
