@@ -6,7 +6,7 @@ public class UseIsEmptyToTestEmptinessOfStringBuilderCheckSample {
     StringBuilder sb = new StringBuilder();
 
     if ("".equals(sb.toString())) { // Noncompliant {{Replace "equals()" with "isEmpty()".}}
-     // ^^^^^^^^^^^^^^^^^^^^^^^^
+    //  ^^^^^^^^^^^^^^^^^^^^^^^^
       System.out.println("Empty StringBuilder");
     }
 
@@ -17,7 +17,7 @@ public class UseIsEmptyToTestEmptinessOfStringBuilderCheckSample {
     }
 
     if (sb.toString().length() == 0) { // Noncompliant {{Replace "toString().length()" with "isEmpty()".}}
-     // ^^^^^^^^^^^^^^^^^^^^^^
+    //  ^^^^^^^^^^^^^^^^^^^^^^
       System.out.println("Empty StringBuilder");
     }
 
@@ -35,7 +35,7 @@ public class UseIsEmptyToTestEmptinessOfStringBuilderCheckSample {
     boolean inExpression = "".equals(sb.toString()); // Noncompliant
 
     if (sb.toString().equals("")) { // Noncompliant {{Replace "equals()" with "isEmpty()".}}
-     // ^^^^^^^^^^^^^^^^^^^^^^^^
+    //  ^^^^^^^^^^^^^^^^^^^^^^^^
       System.out.println("Empty StringBuilder using equals reversed");
     }
 

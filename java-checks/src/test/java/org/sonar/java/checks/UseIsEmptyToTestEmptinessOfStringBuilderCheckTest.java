@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class UseIsEmptyToTestEmptinessOfStringBuilderCheckTest {
 
@@ -30,6 +31,15 @@ class UseIsEmptyToTestEmptinessOfStringBuilderCheckTest {
       .withCheck(new UseIsEmptyToTestEmptinessOfStringBuilderCheck())
       .withJavaVersion(15)
       .verifyIssues();
+  }
+
+  @Test
+  void string_builder() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("java/lang/StringBuilder.java"))
+      .withCheck(new UseIsEmptyToTestEmptinessOfStringBuilderCheck())
+      .withJavaVersion(15)
+      .verifyNoIssues();
   }
 
   @Test

@@ -86,8 +86,8 @@ public class UseIsEmptyToTestEmptinessOfStringBuilderCheck extends AbstractMetho
 
     if (STRING_EQUALS.matches(mit) && isEqualsWithEmptyString(mit)) {
       reportIssue(mit, MESSAGE_EQUALS);
-    } else if (STRING_IS_EMPTY.matches(mit)) {
-      var operator = ((MemberSelectExpressionTree) toStringInvocation.methodSelect()).operatorToken();
+    } else if (STRING_IS_EMPTY.matches(mit) && toStringInvocation.methodSelect() instanceof MemberSelectExpressionTree sel) {
+      var operator = sel.operatorToken();
       var edit = JavaTextEdit.replaceBetweenTree(operator, mit, ".isEmpty()");
 
       QuickFixHelper.newIssue(context)
