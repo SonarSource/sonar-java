@@ -7,40 +7,12 @@ USER root
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# The current image is `FROM public.ecr.aws/docker/library/eclipse-temurin:17-jammy`
-# Use a similar method to install Java 23 copied from https://github.com/adoptium/containers/blob/main/22/jdk/ubuntu/jammy/Dockerfile
+# Copy openjdk from https://github.com/adoptium/containers/blob/main/24/jdk/ubuntu/noble/Dockerfile
+COPY --from=eclipse-temurin:24.0.1_9-jdk-noble /opt/java/openjdk /opt/java/openjdk-latest
 
-ENV JAVA_LATEST_HOME /opt/java/openjdk23
-ENV JAVA_LATEST_VERSION jdk-23.0.1+11
-
-RUN set -eux; \
-    ARCH="$(dpkg --print-architecture)"; \
-    case "${ARCH}" in \
-       amd64) \
-         ESUM='2400267e4e9c0f6ae880a4d763af6caf18c673714bdee5debf8388b0b5d52886'; \
-         BINARY_URL='https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jdk_x64_linux_hotspot_23.0.1_11.tar.gz'; \
-         ;; \
-       arm64) \
-         ESUM='0b498a5b673cb50fe9cfd0a13bd39c7259b4fad4d930d614e1563aeb8bca7f0e'; \
-         BINARY_URL='https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23.0.1%2B11/OpenJDK23U-jre_aarch64_linux_hotspot_23.0.1_11.tar.gz'; \
-         ;; \
-       *) \
-         echo "Unsupported arch: ${ARCH}"; \
-         exit 1; \
-         ;; \
-    esac; \
-    wget --progress=dot:giga -O /tmp/openjdk.tar.gz ${BINARY_URL}; \
-    echo "${ESUM} */tmp/openjdk.tar.gz" | sha256sum -c -; \
-    mkdir -p "${JAVA_LATEST_HOME}"; \
-    tar --extract \
-        --file /tmp/openjdk.tar.gz \
-        --directory "${JAVA_LATEST_HOME}" \
-        --strip-components 1 \
-        --no-same-owner \
-    ; \
-    rm -f /tmp/openjdk.tar.gz "${JAVA_LATEST_HOME}/lib/src.zip"; \
-    # https://github.com/docker-library/openjdk/issues/331#issuecomment-498834472
-    find "${JAVA_LATEST_HOME}/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+# https://github.com/docker-library/openjdk/issues/331#issuecomment-498834472
+RUN find "/opt/java/openjdk-latest/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
     ldconfig; \
     # https://github.com/docker-library/openjdk/issues/212#issuecomment-420979840
     # https://openjdk.java.net/jeps/341

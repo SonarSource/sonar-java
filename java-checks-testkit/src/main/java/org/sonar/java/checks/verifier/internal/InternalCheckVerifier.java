@@ -17,9 +17,6 @@
 package org.sonar.java.checks.verifier.internal;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,7 +47,6 @@ import org.sonar.java.caching.DummyCache;
 import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
@@ -79,14 +75,6 @@ import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribut
 public class InternalCheckVerifier implements CheckVerifier {
 
   private static final JavaVersion DEFAULT_JAVA_VERSION = new JavaVersionImpl();
-  private static final List<File> DEFAULT_CLASSPATH;
-
-  static {
-    Path path = Paths.get(FilesUtils.DEFAULT_TEST_CLASSPATH_FILE.replace('/', File.separatorChar));
-    // Because of 'java-custom-rules-example' module, we silently use an empty classpath if the file does not exist
-    DEFAULT_CLASSPATH = Files.exists(path) ? TestClasspathUtils.loadFromFile(path.toString()) : new ArrayList<>();
-    Optional.of(new File(FilesUtils.DEFAULT_TEST_CLASSES_DIRECTORY)).filter(File::exists).ifPresent(DEFAULT_CLASSPATH::add);
-  }
 
   private boolean withoutSemantic = false;
 
@@ -299,7 +287,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     if (withoutSemantic) {
       visitorsBridge = new VisitorsBridgeForTests(visitors, sonarComponents, actualVersion);
     } else {
-      List<File> actualClasspath = classpath == null ? DEFAULT_CLASSPATH : classpath;
+      List<File> actualClasspath = classpath == null ? TestClasspathUtils.DEFAULT_MODULE.getClassPath() : classpath;
       visitorsBridge = new VisitorsBridgeForTests(visitors, actualClasspath, sonarComponents, actualVersion);
     }
 

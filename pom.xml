@@ -105,6 +105,11 @@
 
     <!-- Overrides parent pom to use a more recent version of jacoco -->
     <version.jacoco.plugin>0.8.13</version.jacoco.plugin>
+
+    <mockito-core.version>5.18.0</mockito-core.version>
+    <test-java-agent-directory>${project.build.directory}/test-java-agent-libs</test-java-agent-directory>
+    <jacoco-agent-jar>org.jacoco.agent-${version.jacoco.plugin}-runtime.jar</jacoco-agent-jar>
+    <mockito-agent-jar>mockito-core-${mockito-core.version}.jar</mockito-agent-jar>
   </properties>
 
   <distributionManagement>
@@ -239,13 +244,13 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>5.14.2</version>
+        <version>${mockito-core.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-junit-jupiter</artifactId>
-        <version>5.14.2</version>
+        <version>${mockito-core.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -363,12 +368,45 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>download-jacoco-agent</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.jacoco</groupId>
+                  <artifactId>org.jacoco.agent</artifactId>
+                  <version>${version.jacoco.plugin}</version>
+                  <classifier>runtime</classifier>
+                  <outputDirectory>${test-java-agent-directory}</outputDirectory>
+                  <destFileName>${jacoco-agent-jar}</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.mockito</groupId>
+                  <artifactId>mockito-core</artifactId>
+                  <version>${mockito-core.version}</version>
+                  <outputDirectory>${test-java-agent-directory}</outputDirectory>
+                  <destFileName>${mockito-agent-jar}</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <runOrder>alphabetical</runOrder>
           <environmentVariables>
             <M2_REPO>${settings.localRepository}</M2_REPO>
           </environmentVariables>
+          <argLine> -Dnet.bytebuddy.experimental=true -javaagent:"${test-java-agent-directory}/${jacoco-agent-jar}=destfile=${project.build.directory}/jacoco.exec" -javaagent:"${test-java-agent-directory}/${mockito-agent-jar}" </argLine>
         </configuration>
       </plugin>
     </plugins>

@@ -31,8 +31,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.checks.CommonConstants.AWS_CLASSPATH;
-import static org.sonar.java.checks.CommonConstants.AWS_MODULE;
+import static org.sonar.java.test.classpath.TestClasspathUtils.AWS_MODULE;
 
 class HardCodedCredentialsShouldNotBeUsedCheckTest {
   @RegisterExtension
@@ -134,7 +133,7 @@ class HardCodedCredentialsShouldNotBeUsedCheckTest {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPathInModule(AWS_MODULE, "checks/security/HardCodedCredentialsShouldNotBeUsedCheckSample.java"))
       .withCheck(new HardCodedCredentialsShouldNotBeUsedCheck())
-      .withClassPath(AWS_CLASSPATH)
+      .withClassPath(AWS_MODULE.getClassPath())
       .verifyIssues();
   }
 
@@ -143,7 +142,7 @@ class HardCodedCredentialsShouldNotBeUsedCheckTest {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/security/HardCodedCredentialsShouldNotBeUsedCheckSample.java"))
       .withCheck(new HardCodedCredentialsShouldNotBeUsedCheck())
-      .withClassPath(AWS_CLASSPATH)
+      .withClassPath(AWS_MODULE.getClassPath())
       .verifyIssues();
   }
 

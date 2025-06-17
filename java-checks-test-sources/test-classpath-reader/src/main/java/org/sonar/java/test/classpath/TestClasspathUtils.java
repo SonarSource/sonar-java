@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.UnaryOperator;
+import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
@@ -36,8 +37,69 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.unmodifiableList;
 
 public final class TestClasspathUtils {
+
+  private static final String PATH_NOT_FOUND = "";
+
+  public static final Module AWS_MODULE = new Module("java-checks-test-sources/aws");
+  public static final Module DEFAULT_MODULE = new Module("java-checks-test-sources/default");
+  public static final Module JAVA_17_MODULE = new Module("java-checks-test-sources/java-17");
+  public static final Module SPRING_32_MODULE = new Module("java-checks-test-sources/spring-3.2");
+  public static final Module SPRING_WEB_40_MODULE = new Module("java-checks-test-sources/spring-web-4.0");
+
+  public static class Module {
+    private final String relativePath;
+    private String path;
+    private List<File> classPath;
+
+    public Module(String relativePath) {
+      this.relativePath = relativePath;
+    }
+
+    @Nullable
+    public String getPath() {
+      if (path == null) {
+        path =  findAncestorExistingSibling(relativePath);
+      }
+      return path.equals(PATH_NOT_FOUND) ? null : path;
+    }
+
+    public List<File> getClassPath() {
+      if (classPath == null) {
+        var fileList = new ArrayList<File>();
+        String existingPath = getPath();
+        if (existingPath != null) {
+          File targetClassesDirectory = new File(existingPath, Path.of("target", "classes").toString());
+          if (targetClassesDirectory.exists()) {
+            fileList.add(targetClassesDirectory);
+          }
+          Path classpathFilePath = toPath(existingPath + "/target/test-classpath.txt");
+          if (Files.exists(classpathFilePath)) {
+            fileList.addAll(loadFromFile(classpathFilePath.toString()));
+          }
+          classPath = unmodifiableList(fileList);
+        } else {
+          return List.of();
+        }
+      }
+      return classPath;
+    }
+
+    private static String findAncestorExistingSibling(String relativePath) {
+      Path siglingPath = toPath(relativePath);
+      Path lookUpPath = Path.of(System.getProperty("user.dir"));
+      do {
+        Path siblingPath = lookUpPath.resolve(siglingPath);
+        if (Files.exists(siblingPath)) {
+          return siblingPath.toString();
+        }
+        lookUpPath = Files.exists(lookUpPath.resolve("sonarpedia.json")) ? null : lookUpPath.getParent();
+      } while (lookUpPath != null);
+      return PATH_NOT_FOUND;
+    }
+  }
 
   private TestClasspathUtils() {
     // utility class
@@ -125,8 +187,7 @@ public final class TestClasspathUtils {
     return repository;
   }
 
-  // VisibleForTesting
-  static String fixSeparator(String path) {
+  public static String fixSeparator(String path) {
     return path.replace(File.separatorChar == '/' ? '\\' : '/', File.separatorChar == '/' ? '/' : '\\');
   }
 

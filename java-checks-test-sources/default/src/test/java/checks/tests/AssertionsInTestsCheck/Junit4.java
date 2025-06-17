@@ -135,7 +135,7 @@ abstract class Junit4Test {
 
   @Test
   public void mockito_assertion_verify_zero_interactions() {
-    Mockito.verifyZeroInteractions(Mockito.mock(List.class));
+    Mockito.verifyNoInteractions(Mockito.mock(List.class));
   }
 
   @Test
