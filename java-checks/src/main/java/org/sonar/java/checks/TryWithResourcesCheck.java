@@ -88,7 +88,7 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
     }
 
     if (blockParent != null) {
-      CFG cfg = CFG.buildCFG(Collections.singletonList(blockParent), true);
+      CFG cfg = CFG.buildCFG(Collections.singletonList(blockParent));
       if (!cfg.blocks().isEmpty()) {
         return newFollowedByTryStatement(cfg.blocks().get(0));
       }
