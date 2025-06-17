@@ -79,4 +79,14 @@ public class CharSequenceIsEmptyCheckSample {
     
     return b;
   }
+
+  public void nonRelated(Foo f){
+    boolean b = f.length() == 0;
+  }
+
+  static class Foo {
+    int length(){
+      return 0;
+    }
+  }
 }

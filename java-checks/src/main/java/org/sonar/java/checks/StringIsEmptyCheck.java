@@ -16,6 +16,9 @@
  */
 package org.sonar.java.checks;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
