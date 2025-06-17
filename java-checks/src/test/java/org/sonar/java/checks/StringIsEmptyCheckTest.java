@@ -24,7 +24,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 class StringIsEmptyCheckTest {
 
   @Test
-  void test() {
+  void stringBuilder() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/StringIsEmptyCheckSample.java"))
       .withCheck(new StringIsEmptyCheck())
@@ -32,12 +32,30 @@ class StringIsEmptyCheckTest {
   }
 
   @Test
-  void charSequence() {
+  void stringBuilder_15() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringIsEmptyCheckSample.java"))
+      .withCheck(new StringIsEmptyCheck())
+      .withJavaVersion(15)
+      .verifyIssues();
+  }
+
+  @Test
+  void charSequence_15() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/CharSequenceIsEmptyCheckSample.java"))
       .withCheck(new StringIsEmptyCheck())
       .withJavaVersion(15)
       .verifyIssues();
+  }
+
+  @Test
+  void charSequence_8() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CharSequenceIsEmptyCheckSample.java"))
+      .withCheck(new StringIsEmptyCheck())
+      .withJavaVersion(8)
+      .verifyNoIssues();
   }
 
   @Test

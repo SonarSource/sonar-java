@@ -5,28 +5,11 @@ import java.nio.CharBuffer;
 public class CharSequenceIsEmptyCheckSample {
   
 
-  public boolean testString(String s1, String s2) {
-    boolean b;
-
-    b = s1.length() == 0; // Noncompliant {{Use "isEmpty()" to check whether a "CharSequence" is empty or not.}}
-    //  ^^^^^^^^^^^^^^^^
-    b = s2.length() != 0; // Noncompliant [[quickfixes=qf1]]
-    // fix@qf1 {{Replace with "isEmpty()"}}
-    // edit@qf1 [[sc=9;ec=9]]{{!}}
-    // edit@qf1 [[sc=12;ec=25]]{{isEmpty()}}
-    
-
-    b = 0 == s1.length(); // Noncompliant
-    b = 0 < s2.length();  // Noncompliant
-    
-    return b;
-  }
-  
 
   public boolean testStringBuilder(StringBuilder sb1, StringBuilder sb2) {
     boolean b;
 
-    b = sb1.length() == 0; // Noncompliant {{Use "isEmpty()" to check whether a "CharSequence" is empty or not.}}
+    b = sb1.length() == 0; // Noncompliant {{Use "isEmpty()" to check whether a "AbstractStringBuilder" is empty or not.}}
     //  ^^^^^^^^^^^^^^^^^
     b = sb2.length() <= 0; // Noncompliant [[quickfixes=qf2]]
     // fix@qf2 {{Replace with "isEmpty()"}}
@@ -43,7 +26,7 @@ public class CharSequenceIsEmptyCheckSample {
   public boolean testStringBuffer(StringBuffer buf1, StringBuffer buf2) {
     boolean b;
 
-    b = buf1.length() == 0;  // Noncompliant {{Use "isEmpty()" to check whether a "CharSequence" is empty or not.}}
+    b = buf1.length() == 0;  // Noncompliant {{Use "isEmpty()" to check whether a "StringBuffer" is empty or not.}}
     //  ^^^^^^^^^^^^^^^^^^
     b = buf2.length() < 1; // Noncompliant [[quickfixes=qf3]]
     // fix@qf3 {{Replace with "isEmpty()"}}
@@ -60,7 +43,7 @@ public class CharSequenceIsEmptyCheckSample {
     boolean b;
     
 
-    b = cb1.length() == 0; // Noncompliant {{Use "isEmpty()" to check whether a "CharSequence" is empty or not.}}
+    b = cb1.length() == 0; // Noncompliant {{Use "isEmpty()" to check whether a "CharBuffer" is empty or not.}}
     //  ^^^^^^^^^^^^^^^^^
     b = cb2.length() > 0;  // Noncompliant [[quickfixes=qf4]]
     // fix@qf4 {{Replace with "isEmpty()"}}
