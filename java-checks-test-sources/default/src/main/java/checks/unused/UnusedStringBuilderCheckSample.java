@@ -134,7 +134,11 @@ public class UnusedStringBuilderCheckSample {
     sb.append("a").append("b");
     return "ab";
   }
-
+ String unusedManyChainedCallsAssign() {
+    StringBuilder sb = new StringBuilder();
+    StringBuilder sb2 = sb.append("a").append("b");
+    return "ab";
+  }
   static class UnusedField1 {
     // FN, because it is not implemented (initialization in the constructor).
     StringBuilder stringBuilder;
