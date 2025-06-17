@@ -42,7 +42,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.sonar.java.cfg.CFGTestUtils.buildCFG;
 import static org.sonar.java.cfg.CFGTestUtils.buildCFGFromLambda;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.ARRAY_ACCESS_EXPRESSION;
@@ -3278,6 +3277,9 @@ class CFGTest {
 
     assertCompleteSemantic("void foo() { Runnable ignoredLambdaContent = () -> { Unknown x; };  }", true);
     assertCompleteSemantic("void foo() { class IgnoredNestedClass { void foo() { Unknown x; } } }", true);
+
+    assertCompleteSemantic("void foo(int b) { break; }", false, "Incomplete Semantic, 'break' statement not in loop or switch statement 'break' line 1 col 29");
+    assertCompleteSemantic("void foo(int b) { continue; }", false, "Incomplete Semantic, 'continue' statement not in loop or switch statement 'continue' line 1 col 29");
   }
 
 
@@ -3300,16 +3302,15 @@ class CFGTest {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {" + methodCode + "}");
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
     List<StatementTree> body = methodTree.block().body();
-    CFG cfg = CFG.buildCFG(body, true);
+
+    logTester.setLevel(Level.DEBUG);
+    logTester.clear();
+    CFG cfg = CFG.buildCFG(body);
     cfg.setMethodSymbol(methodTree.symbol());
     assertThat(cfg.blocks()).hasSize(5);
     assertThat(cfg.methodSymbol()).isSameAs(methodTree.symbol());
-
-    try {
-      CFG.buildCFG(body, false);
-      fail("IllegalStateException should have been thrown");
-    } catch (IllegalStateException iae) {
-      assertThat(iae).hasMessage("'"+breakOrContinue+"' statement not in loop or switch statement");
-    }
+    assertThat(cfg.hasCompleteSemantic()).isFalse();
+    assertThat(logTester.logs(Level.DEBUG))
+      .containsExactly("Incomplete Semantic, '" + breakOrContinue + "' statement not in loop or switch statement '" + breakOrContinue + "' " + "line 1 col 80");
   }
 }

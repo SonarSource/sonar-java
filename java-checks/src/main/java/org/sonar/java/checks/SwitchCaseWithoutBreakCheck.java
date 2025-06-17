@@ -47,7 +47,7 @@ public class SwitchCaseWithoutBreakCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
     Set<CaseGroupTree> caseGroupTrees = new HashSet<>(switchStatementTree.cases());
-    CFG cfg = CFG.buildCFG(Collections.singletonList(tree), true);
+    CFG cfg = CFG.buildCFG(Collections.singletonList(tree));
     Set<CFG.Block> switchSuccessors = cfg.entryBlock().successors();
 
     Map<CFG.Block, CaseGroupTree> cfgBlockToCaseGroupMap = createMapping(switchSuccessors, caseGroupTrees);

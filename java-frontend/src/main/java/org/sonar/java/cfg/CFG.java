@@ -97,7 +97,6 @@ public class CFG implements ControlFlowGraph {
 
   private static final Logger LOG = LoggerFactory.getLogger(CFG.class);
 
-  private final boolean ignoreBreakAndContinue;
   @Nullable
   private Symbol.MethodSymbol methodSymbol;
   private Block currentBlock;
@@ -135,12 +134,11 @@ public class CFG implements ControlFlowGraph {
   private Map<String, Block> labelsBreakTarget = new HashMap<>();
   private Map<String, Block> labelsContinueTarget = new HashMap<>();
 
-  private CFG(List<? extends Tree> trees, @Nullable MethodTree tree, boolean ignoreBreakAndContinue) {
+  private CFG(List<? extends Tree> trees, @Nullable MethodTree tree) {
     if (tree != null) {
       methodSymbol = tree.symbol();
       checkSymbolSemantic(methodSymbol, "method definition", tree.simpleName().identifierToken());
     }
-    this.ignoreBreakAndContinue = ignoreBreakAndContinue;
     exitBlocks.add(createBlock());
     currentBlock = createBlock(exitBlock());
     outerTry = new TryStatement();
@@ -493,18 +491,14 @@ public class CFG implements ControlFlowGraph {
     return result;
   }
 
-  public static CFG buildCFG(List<? extends Tree> trees, boolean ignoreBreak) {
-    return new CFG(trees, null, ignoreBreak);
-  }
-
   public static CFG buildCFG(List<? extends Tree> trees) {
-    return new CFG(trees, null, false);
+    return new CFG(trees, null);
   }
 
   public static CFG build(MethodTree tree) {
     BlockTree block = tree.block();
     Preconditions.checkArgument(block != null, "Cannot build CFG for method with no body.");
-    return new CFG(block.body(), tree, false);
+    return new CFG(block.body(), tree);
   }
 
   private void build(ListTree<? extends Tree> trees) {
@@ -922,9 +916,7 @@ public class CFG implements ControlFlowGraph {
     Block targetBlock = null;
     if (label == null) {
       if (breakTargets.isEmpty()) {
-        if (!ignoreBreakAndContinue) {
-          throw new IllegalStateException("'break' statement not in loop or switch statement");
-        }
+        markSemanticAsIncomplete("'break' statement not in loop or switch statement", tree.firstToken());
       } else {
         targetBlock = breakTargets.getLast();
       }
@@ -953,9 +945,7 @@ public class CFG implements ControlFlowGraph {
     Block targetBlock = null;
     if (label == null) {
       if (continueTargets.isEmpty()) {
-        if (!ignoreBreakAndContinue) {
-          throw new IllegalStateException("'continue' statement not in loop or switch statement");
-        }
+        markSemanticAsIncomplete("'continue' statement not in loop or switch statement", tree.firstToken());
       } else {
         targetBlock = continueTargets.getLast();
       }
