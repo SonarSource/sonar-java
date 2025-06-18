@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
@@ -58,8 +59,8 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
       && !isSwitchCaseChild(terminator)) {
 
       successorWithoutJump = nonEmptySuccessor(successorWithoutJump);
-      Block successor = nonEmptySuccessor(block.successors().iterator().next());
-      if (successorWithoutJump.equals(successor)) {
+      Iterator<Block> successors = block.successors().iterator();
+      if (successors.hasNext() && nonEmptySuccessor(successors.next()).equals(successorWithoutJump)) {
         reportIssue(terminator, "Remove this redundant jump.");
       }
     }
