@@ -96,9 +96,6 @@ public class StringIsEmptyCheckSample {
 
     b = 1 < 0;
 
-    // StringBuilder does not have `isEmpty()`
-    StringBuilder stringBuilder = new StringBuilder();
-    b = stringBuilder.length() == 0;
 
     return b;
   }

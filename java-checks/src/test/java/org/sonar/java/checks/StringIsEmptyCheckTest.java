@@ -20,15 +20,43 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class StringIsEmptyCheckTest {
 
   @Test
-  void test() {
+  void string() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/StringIsEmptyCheckSample.java"))
       .withCheck(new StringIsEmptyCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void string_15() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringIsEmptyCheckSample.java"))
+      .withCheck(new StringIsEmptyCheck())
+      .withJavaVersion(15)
+      .verifyIssues();
+  }
+
+  @Test
+  void charSequence_15() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CharSequenceIsEmptyCheckSample.java"))
+      .withCheck(new StringIsEmptyCheck())
+      .withJavaVersion(15)
+      .verifyIssues();
+  }
+
+  @Test
+  void charSequence_8() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CharSequenceIsEmptyCheckSample.java"))
+      .withCheck(new StringIsEmptyCheck())
+      .withJavaVersion(8)
+      .verifyNoIssues();
   }
 
   @Test
@@ -38,5 +66,13 @@ class StringIsEmptyCheckTest {
       .withCheck(new StringIsEmptyCheck())
       .withJavaVersion(5)
       .verifyNoIssues();
+  }
+
+  @Test
+  void without_explicit_receiver() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("java/lang/String.java"))
+      .withCheck(new StringIsEmptyCheck())
+      .verifyIssues();
   }
 }

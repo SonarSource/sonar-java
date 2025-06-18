@@ -32,19 +32,26 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 /**
- * Implement rule that <pre>String.length() == 0</pre> should be replaced with
- * <pre>String.isEmpty()</pre>.
+ * Implement rule that <pre>CharSequence.length() == 0</pre> should be replaced with
+ * <pre>CharSequence.isEmpty()</pre>.
  */
 @Rule(key = "S7158")
 public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
-  private static final MethodMatchers LENGTH_METHOD = MethodMatchers.create()
+  private static final MethodMatchers STRING_LENGTH_METHOD = MethodMatchers.create()
     .ofTypes("java.lang.String")
+    .names("length")
+    .addWithoutParametersMatcher()
+    .build();
+
+  private static final MethodMatchers CHARSEQUENCE_LENGTH_METHOD = MethodMatchers.create()
+    .ofSubTypes("java.lang.CharSequence")
     .names("length")
     .addWithoutParametersMatcher()
     .build();
@@ -71,11 +78,13 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     return comparisonType == ComparisonType.IS_EMPTY || comparisonType == ComparisonType.IS_NOT_EMPTY;
   }
 
-  // `String.isEmpty()` is available since Java 6.
+
+  // `String.isEmpty()` is available since Java 6, but `CharSequence.isEmpty()` since Java 15
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
     return version.isJava6Compatible();
   }
+
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -112,7 +121,7 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
         .newIssue(context)
         .forRule(this)
         .onTree(tree)
-        .withMessage("Use isEmpty() to check whether a string is empty or not.")
+        .withMessage("Use \"isEmpty()\" to check whether a \"" + ownerName(lengthCall) + "\" is empty or not.")
         .withQuickFix(() -> getQuickFix(tree, lengthCall, comparisonType))
         .report();
     }
@@ -144,10 +153,20 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     return builder.build();
   }
 
+  private static String ownerName(MethodInvocationTree lengthCall) {
+    if (lengthCall.methodSelect() instanceof MemberSelectExpressionTree sel) {
+      return sel.expression().symbolType().name();
+    } else {
+      return lengthCall.methodSymbol().owner().name();
+    }
+  }
+
   @Nullable
-  private static MethodInvocationTree getLengthCall(ExpressionTree tree) {
-    if (tree instanceof MethodInvocationTree mit && LENGTH_METHOD.matches(mit)) {
-      return mit;
+  private MethodInvocationTree getLengthCall(ExpressionTree tree) {
+    if (tree instanceof MethodInvocationTree mit) {
+      if (STRING_LENGTH_METHOD.matches(mit) || (context.getJavaVersion().isJava15Compatible() && CHARSEQUENCE_LENGTH_METHOD.matches(mit))) {
+        return mit;
+      }
     }
     return null;
   }
