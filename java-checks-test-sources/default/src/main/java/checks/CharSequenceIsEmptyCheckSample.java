@@ -3,8 +3,6 @@ package checks;
 import java.nio.CharBuffer;
 
 public class CharSequenceIsEmptyCheckSample {
-  
-
 
   public boolean testStringBuilder(StringBuilder sb1, StringBuilder sb2) {
     boolean b;
@@ -41,7 +39,6 @@ public class CharSequenceIsEmptyCheckSample {
 
   public boolean testCharBuffer(CharBuffer cb1, CharBuffer cb2) {
     boolean b;
-    
 
     b = cb1.length() == 0; // Noncompliant {{Use "isEmpty()" to check whether a "CharBuffer" is empty or not.}}
     //  ^^^^^^^^^^^^^^^^^

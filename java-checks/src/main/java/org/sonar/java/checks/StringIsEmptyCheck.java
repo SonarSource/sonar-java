@@ -120,7 +120,7 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
         .newIssue(context)
         .forRule(this)
         .onTree(tree)
-        .withMessage("Use \"isEmpty()\" to check whether a \""+lengthCall.methodSymbol().owner().name()+"\" is empty or not.")
+        .withMessage("Use \"isEmpty()\" to check whether a \"" + lengthCall.methodSymbol().owner().name() + "\" is empty or not.")
         .withQuickFix(() -> getQuickFix(tree, lengthCall, comparisonType))
         .report();
     }
