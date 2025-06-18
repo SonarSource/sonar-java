@@ -38,7 +38,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  */
 @Rule(key = "S3063")
 public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
-  private static final Set<String> TERMINAL_METHODS = Set.of("toString", "substring");
+  private static final Set<String> TERMINAL_METHODS = Set.of("getChars", "substring", "toString");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -114,7 +114,7 @@ public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
           .filter(UnusedStringBuilderCheck::isConsumed)
           .isPresent();
       }
-    } else if (parent instanceof ReturnStatementTree || parent instanceof ArgumentListTreeImpl) {
+    } else if (parent instanceof ReturnStatementTree || parent instanceof ArgumentListTreeImpl || parent instanceof ExpressionTree) {
       return true;
     }
     return false;

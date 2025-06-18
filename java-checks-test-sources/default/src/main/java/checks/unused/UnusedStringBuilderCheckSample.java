@@ -28,6 +28,28 @@ public class UnusedStringBuilderCheckSample {
     return sb.toString();
   }
 
+  public String usedInExpression() {
+    StringBuilder inExpr = new StringBuilder();
+    inExpr.append("two ");
+    inExpr.append("three ");
+    return "one" + inExpr + "four";
+  }
+
+  public void usedInException() {
+    StringBuilder exceptionMessage = new StringBuilder();
+    exceptionMessage.append("message");
+    throw new IllegalStateException("message:" + exceptionMessage);
+  }
+
+  public char[] usedGetChars() {
+    StringBuilder buf = new StringBuilder();
+    buf.append("Hello ");
+    buf.append("World!");
+    char[] chars = new char[5];
+    buf.getChars(6, 11, chars, 0);
+    return chars;
+  }
+
   public void unused() {
     StringBuilder sb = new StringBuilder(); // Noncompliant {{Consume or remove this unused StringBuilder}}
 //                ^^
