@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -109,7 +110,7 @@ public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
           .filter(UnusedStringBuilderCheck::isConsumed)
           .isPresent();
       }
-    } else if (parent instanceof ReturnStatementTree || parent instanceof ArgumentListTreeImpl || parent instanceof ExpressionTree) {
+    } else if (parent instanceof ReturnStatementTree || parent instanceof ArgumentListTreeImpl || parent instanceof BinaryExpressionTree) {
       return true;
     }
     return false;
