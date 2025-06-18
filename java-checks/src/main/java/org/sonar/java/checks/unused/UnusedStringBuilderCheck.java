@@ -51,10 +51,9 @@ public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
       Symbol symbol = variableTree.symbol();
       String typeName = getStringBuilderOrStringBuffer(symbol.type());
 
-      // Exclude non-local variables with non-private visibility,
-      // because they can be changed in a way that is hard to track.
+      // Exclude non-local variables, because they can be changed in a way that is hard to track.
       if (typeName != null && isInitializedByConstructor(variableTree.initializer()) &&
-        isLocalOrPrivate(symbol) &&
+        symbol.isLocalVariable() &&
         symbol.usages().stream().noneMatch(UnusedStringBuilderCheck::isUsedInAssignment) &&
         symbol.usages().stream().noneMatch(UnusedStringBuilderCheck::isConsumed)) {
         reportIssue(variableTree.simpleName(), "Consume or remove this unused %s".formatted(typeName));
@@ -81,10 +80,6 @@ public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
    */
   private static boolean isInitializedByConstructor(@Nullable ExpressionTree initializer) {
     return initializer instanceof NewClassTree;
-  }
-
-  private static boolean isLocalOrPrivate(Symbol symbol) {
-    return symbol.isLocalVariable() || symbol.isPrivate();
   }
 
   /**

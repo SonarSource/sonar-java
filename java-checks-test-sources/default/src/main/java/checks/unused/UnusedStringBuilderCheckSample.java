@@ -178,8 +178,8 @@ public class UnusedStringBuilderCheckSample {
   }
 
   static class UnusedFieldPrivate {
-    private StringBuilder stringBuilder = new StringBuilder(); // Noncompliant
-//                        ^^^^^^^^^^^^^
+    // FN: Ideally we should report this one, but there are some FPs when analyzing fields, so we skip them.
+    private StringBuilder stringBuilder = new StringBuilder();
 
     void appendHello() {
       stringBuilder.append("Hello");
@@ -196,7 +196,7 @@ public class UnusedStringBuilderCheckSample {
   }
 
   static class UsedFieldPrivate {
-    private StringBuilder stringBuilder = new StringBuilder(); // Compliant
+    private StringBuilder stringBuilder = new StringBuilder();
 
     void appendHello() {
       stringBuilder.append("Hello");
