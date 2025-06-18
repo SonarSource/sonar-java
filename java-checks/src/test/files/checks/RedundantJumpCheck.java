@@ -120,4 +120,11 @@ abstract class A {
 
   public abstract void abstract_method();
 
+  void undefinedLabel(int values[]) {
+    for (int v: values) {
+      if (v == 2) {
+        continue label; // this should be a compiler error, but we want to test that the check does not crash
+      }
+    }
+  }
 }
