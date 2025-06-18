@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -38,7 +39,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  */
 @Rule(key = "S3063")
 public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
-  private static final Set<String> TERMINAL_METHODS = Set.of("toString", "substring");
+  private static final Set<String> TERMINAL_METHODS = Set.of("getChars", "substring", "toString");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -51,10 +52,9 @@ public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
       Symbol symbol = variableTree.symbol();
       String typeName = getStringBuilderOrStringBuffer(symbol.type());
 
-      // Exclude non-local variables with non-private visibility,
-      // because they can be changed in a way that is hard to track.
+      // Exclude non-local variables, because they can be changed in a way that is hard to track.
       if (typeName != null && isInitializedByConstructor(variableTree.initializer()) &&
-        isLocalOrPrivate(symbol) &&
+        symbol.isLocalVariable() &&
         symbol.usages().stream().noneMatch(UnusedStringBuilderCheck::isUsedInAssignment) &&
         symbol.usages().stream().noneMatch(UnusedStringBuilderCheck::isConsumed)) {
         reportIssue(variableTree.simpleName(), "Consume or remove this unused %s".formatted(typeName));
@@ -81,10 +81,6 @@ public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
    */
   private static boolean isInitializedByConstructor(@Nullable ExpressionTree initializer) {
     return initializer instanceof NewClassTree;
-  }
-
-  private static boolean isLocalOrPrivate(Symbol symbol) {
-    return symbol.isLocalVariable() || symbol.isPrivate();
   }
 
   /**
@@ -114,7 +110,7 @@ public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
           .filter(UnusedStringBuilderCheck::isConsumed)
           .isPresent();
       }
-    } else if (parent instanceof ReturnStatementTree || parent instanceof ArgumentListTreeImpl) {
+    } else if (parent instanceof ReturnStatementTree || parent instanceof ArgumentListTreeImpl || parent instanceof BinaryExpressionTree) {
       return true;
     }
     return false;

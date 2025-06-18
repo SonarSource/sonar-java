@@ -28,6 +28,28 @@ public class UnusedStringBuilderCheckSample {
     return sb.toString();
   }
 
+  public String usedInExpression() {
+    StringBuilder inExpr = new StringBuilder();
+    inExpr.append("two ");
+    inExpr.append("three ");
+    return "one" + inExpr + "four";
+  }
+
+  public void usedInException() {
+    StringBuilder exceptionMessage = new StringBuilder();
+    exceptionMessage.append("message");
+    throw new IllegalStateException("message:" + exceptionMessage);
+  }
+
+  public char[] usedGetChars() {
+    StringBuilder buf = new StringBuilder();
+    buf.append("Hello ");
+    buf.append("World!");
+    char[] chars = new char[5];
+    buf.getChars(6, 11, chars, 0);
+    return chars;
+  }
+
   public void unused() {
     StringBuilder sb = new StringBuilder(); // Noncompliant {{Consume or remove this unused StringBuilder}}
 //                ^^
@@ -156,8 +178,8 @@ public class UnusedStringBuilderCheckSample {
   }
 
   static class UnusedFieldPrivate {
-    private StringBuilder stringBuilder = new StringBuilder(); // Noncompliant
-//                        ^^^^^^^^^^^^^
+    // FN: Ideally we should report this one, but there are some FPs when analyzing fields, so we skip them.
+    private StringBuilder stringBuilder = new StringBuilder();
 
     void appendHello() {
       stringBuilder.append("Hello");
@@ -174,7 +196,7 @@ public class UnusedStringBuilderCheckSample {
   }
 
   static class UsedFieldPrivate {
-    private StringBuilder stringBuilder = new StringBuilder(); // Compliant
+    private StringBuilder stringBuilder = new StringBuilder();
 
     void appendHello() {
       stringBuilder.append("Hello");
