@@ -7,7 +7,7 @@ public class CharSequenceIsEmptyCheckSample {
   public boolean testStringBuilder(StringBuilder sb1, StringBuilder sb2) {
     boolean b;
 
-    b = sb1.length() == 0; // Noncompliant {{Use "isEmpty()" to check whether a "AbstractStringBuilder" is empty or not.}}
+    b = sb1.length() == 0; // Noncompliant {{Use "isEmpty()" to check whether a "StringBuilder" is empty or not.}}
     //  ^^^^^^^^^^^^^^^^^
     b = sb2.length() <= 0; // Noncompliant [[quickfixes=qf2]]
     // fix@qf2 {{Replace with "isEmpty()"}}

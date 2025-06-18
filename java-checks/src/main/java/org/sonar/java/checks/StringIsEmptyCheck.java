@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -120,7 +121,7 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
         .newIssue(context)
         .forRule(this)
         .onTree(tree)
-        .withMessage("Use \"isEmpty()\" to check whether a \"" + lengthCall.methodSymbol().owner().name() + "\" is empty or not.")
+        .withMessage("Use \"isEmpty()\" to check whether a \"" + ownerName(lengthCall) + "\" is empty or not.")
         .withQuickFix(() -> getQuickFix(tree, lengthCall, comparisonType))
         .report();
     }
@@ -150,6 +151,14 @@ public class StringIsEmptyCheck extends IssuableSubscriptionVisitor implements J
     ));
 
     return builder.build();
+  }
+
+  private static String ownerName(MethodInvocationTree lengthCall) {
+    if (lengthCall.methodSelect() instanceof MemberSelectExpressionTree sel) {
+      return sel.expression().symbolType().name();
+    } else {
+      return lengthCall.methodSymbol().owner().name();
+    }
   }
 
   @Nullable
