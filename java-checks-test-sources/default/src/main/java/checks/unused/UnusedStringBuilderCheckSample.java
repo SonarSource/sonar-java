@@ -50,6 +50,35 @@ public class UnusedStringBuilderCheckSample {
     return chars;
   }
 
+  public char usedChatAt() {
+    // FP
+    StringBuilder buf = new StringBuilder(); // Noncompliant
+    buf.append("Hello ");
+    buf.append("World!");
+    char c = buf.charAt(8);
+    return c;
+  }
+
+  public void usedInArray() {
+    // FP
+    StringBuilder buf = new StringBuilder(); // Noncompliant
+    buf.append("Hello");
+    buf.append("World!");
+    System.out.println("%s: %s".formatted(new Object[]{"Message", buf}));
+  }
+
+  public void usedInMethodReference() {
+    // FP
+    StringBuilder buf = new StringBuilder(); // Noncompliant
+    buf.append("Hello");
+    buf.append("World!");
+    myLog(buf::toString);
+  }
+
+  private void myLog(Supplier<String> messageSupplier) {
+    System.out.println(messageSupplier.get());
+  }
+
   public void unused() {
     StringBuilder sb = new StringBuilder(); // Noncompliant {{Consume or remove this unused StringBuilder}}
 //                ^^
