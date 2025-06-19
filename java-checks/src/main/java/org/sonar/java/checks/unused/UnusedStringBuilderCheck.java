@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
+import org.sonar.java.ast.parser.InitializerListTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -29,6 +30,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -39,7 +41,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  */
 @Rule(key = "S3063")
 public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
-  private static final Set<String> TERMINAL_METHODS = Set.of("getChars", "substring", "toString");
+  private static final Set<String> TERMINAL_METHODS = Set.of("charAt", "getChars", "substring", "toString");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -110,7 +112,9 @@ public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
           .filter(UnusedStringBuilderCheck::isConsumed)
           .isPresent();
       }
-    } else if (parent instanceof ReturnStatementTree || parent instanceof ArgumentListTreeImpl || parent instanceof BinaryExpressionTree) {
+    } else if (parent instanceof ReturnStatementTree || parent instanceof ArgumentListTreeImpl
+      || parent instanceof BinaryExpressionTree || parent instanceof MethodReferenceTree
+      || parent instanceof InitializerListTreeImpl) {
       return true;
     }
     return false;
