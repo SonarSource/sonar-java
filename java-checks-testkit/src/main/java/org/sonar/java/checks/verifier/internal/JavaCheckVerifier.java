@@ -17,7 +17,6 @@
 package org.sonar.java.checks.verifier.internal;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -27,7 +26,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
@@ -41,7 +39,6 @@ import org.sonar.java.caching.DummyCache;
 import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -67,7 +64,6 @@ import static org.sonar.java.checks.verifier.internal.CheckVerifierUtils.require
 public class JavaCheckVerifier implements CheckVerifier {
 
   private static final JavaVersion DEFAULT_JAVA_VERSION = new JavaVersionImpl();
-  private static final List<File> DEFAULT_CLASSPATH;
   private static final int COMMENT_PREFIX_LENGTH = 2;
   private static final int COMMENT_SUFFIX_LENGTH = 0;
 
@@ -76,13 +72,6 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   public static JavaCheckVerifier newInstance() {
     return new JavaCheckVerifier();
-  }
-
-  static {
-    Path path = Paths.get(FilesUtils.DEFAULT_TEST_CLASSPATH_FILE.replace('/', File.separatorChar));
-    // Because of 'java-custom-rules-example' module, we silently use an empty classpath if the file does not exist
-    DEFAULT_CLASSPATH = Files.exists(path) ? TestClasspathUtils.loadFromFile(path.toString()) : new ArrayList<>();
-    Optional.of(new File(FilesUtils.DEFAULT_TEST_CLASSES_DIRECTORY)).filter(File::exists).ifPresent(DEFAULT_CLASSPATH::add);
   }
 
   private List<JavaFileScanner> checks = null;
@@ -104,7 +93,7 @@ public class JavaCheckVerifier implements CheckVerifier {
     MultiFileVerifier verifier = MultiFileVerifier.create(Paths.get(files.get(0).uri()), UTF_8);
 
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
-    List<File> actualClasspath = classpath == null ? DEFAULT_CLASSPATH : classpath;
+    List<File> actualClasspath = classpath == null ? TestClasspathUtils.DEFAULT_MODULE.getClassPath() : classpath;
 
     List<JavaFileScanner> visitors = new ArrayList<>(checks);
     CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();

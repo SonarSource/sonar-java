@@ -19,9 +19,8 @@ package org.sonar.java.checks.aws;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.CommonConstants.AWS_CLASSPATH;
-import static org.sonar.java.checks.CommonConstants.AWS_MODULE;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModule;
+import static org.sonar.java.test.classpath.TestClasspathUtils.AWS_MODULE;
 
 class AwsLongTermAccessKeysCheckTest {
   @Test
@@ -29,7 +28,7 @@ class AwsLongTermAccessKeysCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsLongTermAccessKeysCheckSample.java"))
       .withCheck(new AwsLongTermAccessKeysCheck())
-      .withClassPath(AWS_CLASSPATH)
+      .withClassPath(AWS_MODULE.getClassPath())
       .verifyIssues();
   }
 }

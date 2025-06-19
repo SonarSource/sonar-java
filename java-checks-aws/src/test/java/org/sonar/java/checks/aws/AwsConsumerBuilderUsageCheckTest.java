@@ -19,8 +19,7 @@ package org.sonar.java.checks.aws;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.CommonConstants.AWS_CLASSPATH;
-import static org.sonar.java.checks.CommonConstants.AWS_MODULE;
+import static org.sonar.java.test.classpath.TestClasspathUtils.AWS_MODULE;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModule;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPathInModule;
 
@@ -31,7 +30,7 @@ class AwsConsumerBuilderUsageCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPathInModule(AWS_MODULE, "checks/aws/AwsConsumerBuilderUsageCheckSample.java"))
       .withCheck(new AwsConsumerBuilderUsageCheck())
-      .withClassPath(AWS_CLASSPATH)
+      .withClassPath(AWS_MODULE.getClassPath())
       .verifyIssues();
   }
 
@@ -40,7 +39,7 @@ class AwsConsumerBuilderUsageCheckTest {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPathInModule(AWS_MODULE, "checks/aws/AwsConsumerBuilderUsageCheckSample.java"))
       .withCheck(new AwsConsumerBuilderUsageCheck())
-      .withClassPath(AWS_CLASSPATH)
+      .withClassPath(AWS_MODULE.getClassPath())
       .verifyIssues();
   }
 

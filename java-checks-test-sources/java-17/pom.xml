@@ -19,6 +19,7 @@
     <forbiddenapis.skip>true</forbiddenapis.skip>
     <skipTests>true</skipTests>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <mockito-core.version>3.9.0</mockito-core.version>
   </properties>
 
   <!--
@@ -30,6 +31,34 @@
    3) Several plugins are disabled bellow to not generate jars
    -->
   <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito-core.version}</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito-core.version}</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <profiles>

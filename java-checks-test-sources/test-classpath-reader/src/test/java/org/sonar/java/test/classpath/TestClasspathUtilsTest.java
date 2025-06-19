@@ -37,6 +37,40 @@ import static org.sonar.java.test.classpath.TestClasspathUtils.xmlNodeValue;
 class TestClasspathUtilsTest {
 
   @Test
+  void test_modules_path() {
+    assertThat(Path.of(TestClasspathUtils.AWS_MODULE.getPath())).exists();
+    assertThat(Path.of(TestClasspathUtils.DEFAULT_MODULE.getPath())).exists();
+    assertThat(Path.of(TestClasspathUtils.JAVA_17_MODULE.getPath())).exists();
+    assertThat(Path.of(TestClasspathUtils.SPRING_32_MODULE.getPath())).exists();
+    assertThat(Path.of(TestClasspathUtils.SPRING_WEB_40_MODULE.getPath())).exists();
+
+    TestClasspathUtils.Module unknowModule = new TestClasspathUtils.Module("unknow");
+    assertThat(unknowModule.getPath()).isNull();
+  }
+
+  @Test
+  void test_modules_path_is_cached() {
+    assertThat(TestClasspathUtils.AWS_MODULE.getPath()).isSameAs(TestClasspathUtils.AWS_MODULE.getPath());
+  }
+
+  @Test
+  void test_modules_classpath() {
+    assertThat(TestClasspathUtils.AWS_MODULE.getClassPath()).hasSizeGreaterThan(800);
+    assertThat(TestClasspathUtils.DEFAULT_MODULE.getClassPath()).hasSizeGreaterThan(500);
+    assertThat(TestClasspathUtils.JAVA_17_MODULE.getClassPath()).hasSizeGreaterThan(5);
+    assertThat(TestClasspathUtils.SPRING_32_MODULE.getClassPath()).hasSizeGreaterThan(15);
+    assertThat(TestClasspathUtils.SPRING_WEB_40_MODULE.getClassPath()).hasSizeGreaterThan(5);
+
+    TestClasspathUtils.Module unknowModule = new TestClasspathUtils.Module("unknow");
+    assertThat(unknowModule.getClassPath()).isEmpty();
+  }
+
+  @Test
+  void test_modules_classpath_is_cached() {
+    assertThat(TestClasspathUtils.AWS_MODULE.getClassPath()).isSameAs(TestClasspathUtils.AWS_MODULE.getClassPath());
+  }
+
+  @Test
   void collect_jars_from_classpath_file() {
     List<File> actual = TestClasspathUtils.loadFromFile("src/test/resources/classpath-example.txt");
     assertThat(actual).hasSize(1);

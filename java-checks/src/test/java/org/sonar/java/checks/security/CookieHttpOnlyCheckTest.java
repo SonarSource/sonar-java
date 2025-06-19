@@ -17,13 +17,12 @@
 package org.sonar.java.checks.security;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.Constants;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.security.SecureCookieCheckTest.SPRING_3_2_CLASSPATH;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModule;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.test.classpath.TestClasspathUtils.SPRING_32_MODULE;
 
 class CookieHttpOnlyCheckTest {
 
@@ -42,9 +41,9 @@ class CookieHttpOnlyCheckTest {
   @Test
   void test_with_sprint_3_2() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPathInModule(Constants.SPRING_3_2, "checks/CookieHttpOnlyCheckSample.java"))
+      .onFile(mainCodeSourcesPathInModule(SPRING_32_MODULE, "checks/CookieHttpOnlyCheckSample.java"))
       .withCheck(new CookieHttpOnlyCheck())
-      .withClassPath(SPRING_3_2_CLASSPATH)
+      .withClassPath(SPRING_32_MODULE.getClassPath())
       .verifyIssues();
   }
 

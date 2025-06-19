@@ -33,15 +33,6 @@ public final class FilesUtils {
   private FilesUtils() {
   }
 
-  public static final String TEST_SOURCES_ROOT = "../java-checks-test-sources/";
-  public static final String TARGET_TEST_CLASSPATH_FILE = "/target/test-classpath.txt";
-  public static final String TARGET_CLASSES = "/target/classes";
-  /**
-   * Default location of the jars/zips to be taken into account when performing the analysis.
-   */
-  public static final String DEFAULT_TEST_CLASSPATH_FILE = TEST_SOURCES_ROOT + "default" + TARGET_TEST_CLASSPATH_FILE;
-  public static final String DEFAULT_TEST_CLASSES_DIRECTORY = TEST_SOURCES_ROOT + "default" + TARGET_CLASSES;
-
   @VisibleForTesting
   public static List<File> getFilesRecursively(Path root, String... extensions) {
     final List<File> files = new ArrayList<>();
