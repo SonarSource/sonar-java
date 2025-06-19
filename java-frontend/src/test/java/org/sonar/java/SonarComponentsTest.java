@@ -1372,4 +1372,17 @@ class SonarComponentsTest {
 
     assertThat(sonarComponentsWithSonarLintCache02.sonarLintCache()).isSameAs(sonarLintCache);
   }
+
+  @Test
+  void test_getConfiguration() {
+    var settings = new MapSettings();
+    var sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+
+    var configuration = sonarComponents.getConfiguration();
+    assertThat(configuration)
+      .isNotNull()
+      .isInstanceOf(Configuration.class);
+  }
+
 }
