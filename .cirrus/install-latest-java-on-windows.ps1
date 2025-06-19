@@ -1,6 +1,6 @@
-$javaVersion    = "23.0.1+11"
-$sha256_x64     = "eb1bc62060f17566b160fae8ce876ada5d639e2fd4781009a1219e971b9937dd"
-$sha256_aarch64 = "00ea8896d42ac26cb6887eef08cd6e3b2a54f30e9e87b0fc965e66813567ac87"
+$javaVersion    = "24.0.1+9"
+$sha256_x64     = "2ef7f20c00577747d23999c7b29a0d35d73aeeb9d67aec0aa9825e59084447c3"
+$sha256_aarch64 = "aarch64 platform is currently unavailable, see https://adoptium.net/en-GB/news/2025/04/eclipse-temurin-8u452-11027-17015-2107-2401-available/"
 
 Write-Output "Installing Java ${javaVersion}"
 

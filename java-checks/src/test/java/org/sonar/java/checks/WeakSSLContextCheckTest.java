@@ -16,18 +16,14 @@
  */
 package org.sonar.java.checks;
 
-import java.io.File;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.test.classpath.TestClasspathUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModule;
+import static org.sonar.java.test.classpath.TestClasspathUtils.SPRING_32_MODULE;
 
 class WeakSSLContextCheckTest {
-
-  private static final List<File> SPRING_3_2_CLASSPATH = TestClasspathUtils.loadFromFile(Constants.SPRING_3_2_CLASSPATH);
 
   @Test
   void test() {
@@ -58,9 +54,9 @@ class WeakSSLContextCheckTest {
   @Test
   void test_with_spring_3_2() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPathInModule(Constants.SPRING_3_2, "checks/WeakSSLContextCheckSample.java"))
+      .onFile(mainCodeSourcesPathInModule(SPRING_32_MODULE, "checks/WeakSSLContextCheckSample.java"))
       .withCheck(new WeakSSLContextCheck())
-      .withClassPath(SPRING_3_2_CLASSPATH)
+      .withClassPath(SPRING_32_MODULE.getClassPath())
       .verifyIssues();
   }
 

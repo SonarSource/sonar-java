@@ -52,7 +52,6 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.model.JParserConfig;
-import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -65,16 +64,15 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModu
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPathInModule;
 import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
+import static org.sonar.java.test.classpath.TestClasspathUtils.AWS_MODULE;
+import static org.sonar.java.test.classpath.TestClasspathUtils.DEFAULT_MODULE;
 
 class SanityTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(SanityTest.class);
-  public static final String DEFAULT_MODULE = "default";
 
   @RegisterExtension
   public final LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
-
-  private static final String AWS_MODULE = "aws";
 
   private static final String[] COMPILING_FILE_DIRECTORIES = {
     mainCodeSourcesPath(""),
@@ -164,8 +162,8 @@ class SanityTest {
 
   private static List<File> getClasspath() {
     Set<File> classpathSet = new LinkedHashSet<>();
-    appendModuleClassPath(classpathSet, DEFAULT_MODULE);
-    appendModuleClassPath(classpathSet, AWS_MODULE);
+    classpathSet.addAll(DEFAULT_MODULE.getClassPath());
+    classpathSet.addAll(AWS_MODULE.getClassPath());
     assertThat(classpathSet).isNotEmpty();
     return classpathSet.stream().toList();
   }
@@ -228,11 +226,6 @@ class SanityTest {
 
   private static boolean isNotParsingErrorFile(String filename) {
     return !(filename.contains("ParsingError") || filename.contains("ParseError"));
-  }
-
-  private static void appendModuleClassPath(Set<File> classpath, String module) {
-    classpath.addAll(TestClasspathUtils.loadFromFile(FilesUtils.TEST_SOURCES_ROOT + module + FilesUtils.TARGET_TEST_CLASSPATH_FILE));
-    classpath.add(new File(FilesUtils.TEST_SOURCES_ROOT + module + FilesUtils.TARGET_CLASSES).getAbsoluteFile());
   }
 
   private static List<SanityCheckException> scanFiles(File moduleBaseDir, List<InputFile> inputFiles, List<JavaCheck> checks, List<File> classpath) {

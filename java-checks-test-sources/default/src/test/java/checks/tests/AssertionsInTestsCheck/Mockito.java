@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 class MockitoTest {
 
@@ -41,14 +41,14 @@ class MockitoTest {
   @Test
   public void verify_zero_interaction() { // Compliant
     A a = mock(A.class);
-    verifyZeroInteractions(a);
+    verifyNoInteractions(a);
   }
 
   @Test
   public void verify_zero_interaction_multiple_params() { // Compliant
     A a = mock(A.class);
     MockitoTest m = mock(MockitoTest.class);
-    org.mockito.Mockito.verifyZeroInteractions(a, m, mock(Object.class));
+    org.mockito.Mockito.verifyNoInteractions(a, m, mock(Object.class));
   }
 
   @Test

@@ -181,7 +181,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>3.9.0</version>
+      <version>${mockito-core.version}</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
@@ -863,7 +863,7 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
-      <version>3.9.0</version>
+      <version>${mockito-core.version}</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
@@ -1028,9 +1028,9 @@
           <compilerArgs>
             <arg>-Xlint:-deprecation</arg>
           </compilerArgs>
-          <release>23</release>
-          <source>23</source>
-          <target>23</target>
+          <release>24</release>
+          <source>24</source>
+          <target>24</target>
           <annotationProcessorPaths>
             <path>
               <groupId>org.projectlombok</groupId>

@@ -19,15 +19,17 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPathInModule;
+import static org.sonar.java.test.classpath.TestClasspathUtils.JAVA_17_MODULE;
 
 class MockitoAnnotatedObjectsShouldBeInitializedCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/MockitoAnnotatedObjectsShouldBeInitialized.java"))
+      .onFile(testCodeSourcesPathInModule(JAVA_17_MODULE, "checks/tests/MockitoAnnotatedObjectsShouldBeInitialized.java"))
       .withCheck(new MockitoAnnotatedObjectsShouldBeInitializedCheck())
+      .withClassPath(JAVA_17_MODULE.getClassPath())
       .verifyIssues();
   }
 }

@@ -56,7 +56,7 @@ public class AssertionsCompletenessCheckSample {
     Mockito.verify(mockedList).add("one");
     Mockito.verify(mockedList, Mockito.times(0)).clear();
     Mockito.verifyNoMoreInteractions(mockedList);
-    Mockito.verifyZeroInteractions(mockedList);
+    Mockito.verifyNoInteractions(mockedList);
   }
 
   @Test
