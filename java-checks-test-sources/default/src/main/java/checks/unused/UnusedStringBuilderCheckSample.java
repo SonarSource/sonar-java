@@ -51,8 +51,7 @@ public class UnusedStringBuilderCheckSample {
   }
 
   public char usedChatAt() {
-    // FP
-    StringBuilder buf = new StringBuilder(); // Noncompliant
+    StringBuilder buf = new StringBuilder();
     buf.append("Hello ");
     buf.append("World!");
     char c = buf.charAt(8);
@@ -60,16 +59,14 @@ public class UnusedStringBuilderCheckSample {
   }
 
   public void usedInArray() {
-    // FP
-    StringBuilder buf = new StringBuilder(); // Noncompliant
+    StringBuilder buf = new StringBuilder();
     buf.append("Hello");
     buf.append("World!");
     System.out.println("%s: %s".formatted(new Object[]{"Message", buf}));
   }
 
   public void usedInMethodReference() {
-    // FP
-    StringBuilder buf = new StringBuilder(); // Noncompliant
+    StringBuilder buf = new StringBuilder();
     buf.append("Hello");
     buf.append("World!");
     myLog(buf::toString);
