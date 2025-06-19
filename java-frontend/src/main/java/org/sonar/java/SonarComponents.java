@@ -594,7 +594,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
       contentHashCache.writeToCache(inputFile);
       return false;
     }
-    return contentHashCache.hasSameHashCached(inputFile);
+    return inputFile.status() == InputFile.Status.SAME && contentHashCache.hasSameHashCached(inputFile);
   }
 
   public InputComponent project() {
