@@ -127,6 +127,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   private SensorContext context;
   private UnaryOperator<List<JavaCheck>> checkFilter = UnaryOperator.identity();
   private final Set<RuleKey> additionalAutoScanCompatibleRuleKeys;
+  private Configuration configuration;
 
   private boolean alreadyLoggedSkipStatus = false;
 
@@ -683,4 +684,13 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   public SonarLintCache sonarLintCache() {
     return sonarLintCache;
   }
+
+  public void setConfiguration(Configuration settings) {
+    this.configuration = settings;
+  }
+
+  public Configuration getConfiguration() {
+    return configuration;
+  }
+  
 }

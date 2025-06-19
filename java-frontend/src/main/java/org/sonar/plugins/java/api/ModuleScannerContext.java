@@ -21,6 +21,7 @@ import javax.annotation.CheckForNull;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputComponent;
+import org.sonar.api.config.Configuration;
 import org.sonar.plugins.java.api.caching.CacheContext;
 
 public interface ModuleScannerContext {
@@ -88,4 +89,10 @@ public interface ModuleScannerContext {
    */
   @CheckForNull
   SonarProduct sonarProduct();
+
+  /**
+   * @return The configuration used for the analysis.
+   */
+  Configuration getConfiguration();
+
 }

@@ -101,6 +101,7 @@ public class JavaSensor implements Sensor {
 
     sonarComponents.setSensorContext(context);
     sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
+    sonarComponents.setConfiguration(settings);
 
     Measurer measurer = new Measurer(context, noSonarFilter);
 
