@@ -103,7 +103,6 @@ public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
    */
   private static boolean isConsumed(Tree tree) {
     Tree parent = tree.parent();
-    var line =  tree.firstToken().range().start().line();
     if (parent instanceof MemberSelectExpressionTree mset) {
       if (TERMINAL_METHODS.contains(mset.identifier().name())) {
         return true;
@@ -113,7 +112,9 @@ public class UnusedStringBuilderCheck extends IssuableSubscriptionVisitor {
           .filter(UnusedStringBuilderCheck::isConsumed)
           .isPresent();
       }
-    } else if (parent instanceof ReturnStatementTree || parent instanceof ArgumentListTreeImpl || parent instanceof BinaryExpressionTree || parent instanceof MethodReferenceTree || parent instanceof InitializerListTreeImpl) {
+    } else if (parent instanceof ReturnStatementTree || parent instanceof ArgumentListTreeImpl
+      || parent instanceof BinaryExpressionTree || parent instanceof MethodReferenceTree
+      || parent instanceof InitializerListTreeImpl) {
       return true;
     }
     return false;
