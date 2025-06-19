@@ -150,6 +150,13 @@ public class UnusedStringBuilderCheckSample {
     return "Hello!";
   }
 
+  private String unusedConstructorAndAppend() {
+    // FN due to chained method, which we do not support.
+    StringBuilder sb = new StringBuilder().append("Hello");
+    sb.append("!");
+    return "Hello!";
+  }
+
   public void usedStringBufferTerminalMethod() {
     StringBuffer stringBuffer = new StringBuffer();
     stringBuffer.append("Hello");
