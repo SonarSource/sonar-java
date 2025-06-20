@@ -1,0 +1,25 @@
+<h2>Why is this an issue?</h2>
+<p>If a collection is declared and populated but its values are never read anywhere in the code, it can be considered unused. This often arises from
+incomplete refactoring, copy-pasting errors, or typos. Unused collections can lead to wasted memory and degraded application performance.
+Additionally, their presence makes the code harder to read and understand.</p>
+<h2>How to fix it</h2>
+<p>Remove unused collection.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+int getLength(String a, String b, String c) {
+  List&lt;String&gt; strings = new ArrayList&lt;&gt;();  // Noncompliant: List is declared and populated but never read.
+  strings.add(a);
+  strings.add(b);
+  strings.add(c);
+
+  return a.length() + b.length() + c.length();
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+int getLength(String a, String b, String c) {
+  return a.length() + b.length() + c.length();
+}
+</pre>
+
