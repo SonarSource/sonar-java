@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -35,7 +35,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
@@ -44,25 +43,49 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
  * <code>stringBuilder.append("text1").append("text2")</code>.
  */
 @Rule(key = "S3024")
-public class StringBufferAndBuilderConcatenationCheck extends AbstractMethodDetection {
+public class StringBufferAndBuilderConcatenationCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
 
+  private static final MethodMatchers APPEND_MATCHER = MethodMatchers.create()
+    .ofTypes("java.lang.StringBuffer", "java.lang.StringBuilder")
+    .names("append")
+    .addParametersMatcher(JAVA_LANG_STRING)
+    .build();
+
+  private int loopNesting = 0;
+
   @Override
-  protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.create()
-      .ofTypes("java.lang.StringBuffer", "java.lang.StringBuilder")
-      .names("append")
-      .addParametersMatcher(JAVA_LANG_STRING)
-      .build();
+  public List<Tree.Kind> nodesToVisit() {
+    return List.of(
+      Tree.Kind.METHOD_INVOCATION,
+      Tree.Kind.FOR_STATEMENT,
+      Tree.Kind.FOR_EACH_STATEMENT,
+      Tree.Kind.WHILE_STATEMENT,
+      Tree.Kind.DO_STATEMENT);
   }
 
   @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+  public void visitNode(Tree tree) {
+    if (isLoopNode(tree)) {
+      loopNesting++;
+    } else if (tree instanceof MethodInvocationTree mit && APPEND_MATCHER.matches(mit) && loopNesting > 0) {
+      onAppendInvocationFound(mit);
+    }
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    if (isLoopNode(tree)) {
+      loopNesting--;
+    }
+  }
+
+  private void onAppendInvocationFound(MethodInvocationTree mit) {
     ExpressionTree arg = mit.arguments().get(0);
     BinaryExpressionTree binaryExpressionTree = getConcatenationTree(arg);
 
-    if (binaryExpressionTree != null && isInsideLoop(mit)) {
+    if (binaryExpressionTree != null) {
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(arg)
@@ -72,18 +95,9 @@ public class StringBufferAndBuilderConcatenationCheck extends AbstractMethodDete
     }
   }
 
-  private static boolean isInsideLoop(Tree tree) {
-    while (tree != null) {
-      if (tree instanceof ForStatementTree || tree instanceof ForEachStatement
-        || tree instanceof WhileStatementTree || tree instanceof DoWhileStatementTree) {
-        return true;
-      }
-      if (tree instanceof MethodTree) {
-        break;
-      }
-      tree = tree.parent();
-    }
-    return false;
+  private static boolean isLoopNode(Tree tree) {
+    return tree instanceof ForStatementTree || tree instanceof ForEachStatement
+      || tree instanceof WhileStatementTree || tree instanceof DoWhileStatementTree;
   }
 
   /**

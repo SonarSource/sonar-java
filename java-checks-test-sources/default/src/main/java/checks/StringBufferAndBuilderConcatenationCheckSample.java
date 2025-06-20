@@ -19,6 +19,31 @@ public class StringBufferAndBuilderConcatenationCheckSample {
     return sb.toString();
   }
 
+  public String nestedLoops() {
+    StringBuffer sbOutside = new StringBuffer();
+    StringBuffer sbInside1 = new StringBuffer();
+    StringBuffer sbInside2 = new StringBuffer();
+    StringBuffer sbInside21 = new StringBuffer();
+
+    sbInside1.append("text1" + "text2");
+    for (int i = 0; i < 5; i++) {
+      sbInside1.append("i = " + i); // Noncompliant
+      for (int j = 0; j < 5; j++) {
+        sbInside2.append("j = " + j); // Noncompliant
+        if (i == j) {
+          sbInside21.append("i eq j = " + i); // Noncompliant
+        }
+      }
+    }
+
+    return new StringBuilder()
+      .append(sbOutside)
+      .append(sbInside1)
+      .append(sbInside2)
+      .append(sbInside21)
+      .toString();
+  }
+
   public String loopWhile() {
     StringBuffer sb = new StringBuffer();
     int i = 0;
