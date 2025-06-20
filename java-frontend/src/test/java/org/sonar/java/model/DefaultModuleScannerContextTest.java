@@ -24,6 +24,7 @@ import org.sonar.api.SonarProduct;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.config.Configuration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.DummyCache;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -248,5 +249,21 @@ class DefaultModuleScannerContextTest {
 
     assertThat(context.sonarProduct())
       .isNull();
+  }
+
+  @Test
+  void test_getConfiguration() {
+    var sonarComponents = mock(SonarComponents.class);
+    var configuration = mock(Configuration.class);
+    doReturn(configuration).when(sonarComponents).getConfiguration();
+
+    var context = new DefaultModuleScannerContext(
+      sonarComponents,
+      JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION,
+      false,
+      null
+    );
+
+    assertThat(context.getConfiguration()).isSameAs(configuration);
   }
 }

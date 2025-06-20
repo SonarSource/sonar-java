@@ -683,4 +683,9 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   public SonarLintCache sonarLintCache() {
     return sonarLintCache;
   }
+
+  public Configuration getConfiguration() {
+    return context.config();
+  }
+  
 }
