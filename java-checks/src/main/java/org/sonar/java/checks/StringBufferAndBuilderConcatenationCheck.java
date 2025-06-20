@@ -69,7 +69,7 @@ public class StringBufferAndBuilderConcatenationCheck extends IssuableSubscripti
   public void visitNode(Tree tree) {
     if (isLoopNode(tree)) {
       loopNesting++;
-    } else if (tree instanceof MethodInvocationTree mit && APPEND_MATCHER.matches(mit) && loopNesting > 0) {
+    } else if (loopNesting > 0 && tree instanceof MethodInvocationTree mit && APPEND_MATCHER.matches(mit)) {
       onAppendInvocationFound(mit);
     }
   }
