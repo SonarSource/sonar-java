@@ -52,6 +52,7 @@ public class UnusedCollectionCheck extends IssuableSubscriptionVisitor {
       if (symbol.type().isSubtypeOf("java.util.Collection") &&
         symbol.isLocalVariable() &&
         isInitializedByConstructor(variableTree.initializer()) &&
+        !symbol.usages().isEmpty() && // no usage could be caused by unreliable data, so do not raise
         symbol.usages().stream().allMatch(UnusedCollectionCheck::isWriteOnly)) {
         reportIssue(variableTree.simpleName(), "Consume or remove this unused collection");
       }

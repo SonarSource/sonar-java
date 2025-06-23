@@ -17,6 +17,13 @@ public class UnusedCollectionCheckSample {
     return a.length() + b.length() + c.length();
   }
 
+  int getLengthNoUsageAtAll(String a, String b, String c) {
+    // Do not report in this case: lack of usage may indicate unreliable data about the symbol
+    // and this case should be another rule anyway.
+    List<String> strings = new ArrayList<>();
+    return a.length() + b.length() + c.length();
+  }
+
   int getLengthCompTested(String a, String b, String c) {
     List<String> strings = new ArrayList<>();
     strings.add(a);
