@@ -53,7 +53,7 @@ public class UnusedCollectionCheck extends IssuableSubscriptionVisitor {
         symbol.isLocalVariable() &&
         isInitializedByConstructor(variableTree.initializer()) &&
         // Do not raise without any usage: usages() may be unreliable,
-        // and it should be handled as a regular unused variable (different rule).
+        // moreover, this case is in scope of S1481 and S1854 (unused variable and assignment)
         !symbol.usages().isEmpty() &&
         symbol.usages().stream().allMatch(UnusedCollectionCheck::isWriteOnly)) {
         reportIssue(variableTree.simpleName(), "Consume or remove this unused collection");

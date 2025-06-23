@@ -19,7 +19,7 @@ public class UnusedCollectionCheckSample {
 
   int getLengthNoUsageAtAll(String a, String b, String c) {
     // Do not report in this case: lack of usage may indicate unreliable data about the symbol
-    // and this case should be covered by S1481 and S1854.
+    // and this case should also be covered by S1481 and S1854.
     List<String> strings = new ArrayList<>();
     return a.length() + b.length() + c.length();
   }
