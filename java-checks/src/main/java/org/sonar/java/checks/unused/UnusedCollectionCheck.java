@@ -33,7 +33,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 /**
- * Check for collections that are new read, that is the only operations are adding and removing elements.
+ * Check for collections whose content is not used,
+ * that is, the only operations on them are adding and removing elements.
  */
 @Rule(key = "S4030")
 public class UnusedCollectionCheck extends IssuableSubscriptionVisitor {
@@ -52,6 +53,9 @@ public class UnusedCollectionCheck extends IssuableSubscriptionVisitor {
       if (symbol.type().isSubtypeOf("java.util.Collection") &&
         symbol.isLocalVariable() &&
         isInitializedByConstructor(variableTree.initializer()) &&
+        // Do not raise without any usage: usages() may be unreliable,
+        // moreover, this case is in scope of S1481 and S1854 (unused variable and assignment)
+        !symbol.usages().isEmpty() &&
         symbol.usages().stream().allMatch(UnusedCollectionCheck::isWriteOnly)) {
         reportIssue(variableTree.simpleName(), "Consume or remove this unused collection");
       }
