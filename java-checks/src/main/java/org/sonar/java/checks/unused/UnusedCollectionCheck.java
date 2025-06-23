@@ -33,7 +33,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 /**
- * Check for collections that are new read, that is the only operations are adding and removing elements.
+ * Check for collections whose content is not used,
+ * that is, the only operations on them are adding and removing elements.
  */
 @Rule(key = "S4030")
 public class UnusedCollectionCheck extends IssuableSubscriptionVisitor {
