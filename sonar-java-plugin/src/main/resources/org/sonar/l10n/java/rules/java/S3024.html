@@ -3,12 +3,10 @@
 when you perform a large number of appends. Using <code>String</code> concatenation within <code>StringBuilder.append</code> defeats the purpose of
 the <code>StringBuilder</code>. If you concatenate only a few strings, use direct <code>String</code> concatenation. Otherwise, replace
 <code>String</code> concatenation with calls to <code>append</code>.</p>
+<p>This rule applies to String concatenations performed repeatedly, inside loops. In such scenarios, the performance penalty associated with
+inefficient StringBuilder.append usage can multiply significantly.</p>
 <h3>Noncompliant code example</h3>
 <pre data-diff-id="1" data-diff-type="noncompliant">
-StringBuilder sb = new StringBuilder();
-String s = sb.append("foo is: " + getFoo()).toString(); // Noncompliant
-</pre>
-<pre data-diff-id="2" data-diff-type="noncompliant">
 StringBuilder sb = new StringBuilder();
 for (String name : names) {
   sb.append("Hello : " + name); // Noncompliant
@@ -16,9 +14,6 @@ for (String name : names) {
 </pre>
 <h3>Compliant solution</h3>
 <pre data-diff-id="1" data-diff-type="compliant">
-String s = "foo is: " + getFoo();
-</pre>
-<pre data-diff-id="2" data-diff-type="compliant">
 StringBuilder sb = new StringBuilder();
 for (String name : names) {
   sb.append("Hello : ").append(name);

@@ -1,6 +1,7 @@
 <h2>Why is this an issue?</h2>
 <p>Calling <code>String.isEmpty()</code> clearly communicates the code’s intention, which is to test if the string is empty. Using
-<code>String.length() == 0</code> is less direct and makes the code less readable.</p>
+<code>String.length() == 0</code> is less direct and makes the code less readable. This preference for <code>isEmpty()</code> extends to all
+<code>CharSequence</code> objects, including <code>StringBuilder</code> and <code>StringBuffer</code>.</p>
 <h2>How to fix it</h2>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -9,11 +10,21 @@ if ("string".length() == 0) { /* … */ } // Noncompliant
 
 if ("string".length() &gt; 0) { /* … */ } // Noncompliant
 </pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+StringBuilder sb = new StringBuilder();
+...
+if (sb.length() == 0) { /* … */ } // Noncompliant
+</pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 if ("string".isEmpty()){ /* … */ }
 
 if (!"string".isEmpty()){ /* … */ }
+</pre>
+<pre data-diff-id="2" data-diff-type="compliant">
+StringBuilder sb = new StringBuilder();
+...
+if (sb.isEmpty()) { /* … */ }
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>

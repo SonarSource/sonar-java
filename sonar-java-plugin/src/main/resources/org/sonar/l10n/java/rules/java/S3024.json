@@ -10,9 +10,15 @@
     "performance",
     "clumsy"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-3024",
   "sqKey": "S3024",
   "scope": "Main",
-  "quickfix": "unknown"
+  "quickfix": "covered",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  }
 }

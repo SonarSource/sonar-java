@@ -2,8 +2,8 @@
 applications that are distributed or that are open-source.</p>
 <p>In the past, it has led to the following vulnerabilities:</p>
 <ul>
-  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-25510">CVE-2022-25510</a> </li>
-  <li> <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-42635">CVE-2021-42635</a> </li>
+  <li> <a href="https://www.cve.org/CVERecord?id=CVE-2022-25510">CVE-2022-25510</a> </li>
+  <li> <a href="https://www.cve.org/CVERecord?id=CVE-2021-42635">CVE-2021-42635</a> </li>
 </ul>
 <p>Secrets should be stored outside of the source code in a configuration file or a management service for secrets.</p>
 <p>This rule detects variables/fields having a name matching a list of words (secret, token, credential, auth, api[_.-]?key) being assigned a
@@ -87,6 +87,8 @@ public static void doSomething(SecretClient secretClient, String secretName) {
   <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">Top 10 2017 Category A2 - Broken Authentication</a>
   </li>
   <li> CWE - <a href="https://cwe.mitre.org/data/definitions/798">CWE-798 - Use of Hard-coded Credentials</a> </li>
+  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m1-improper-credential-usage.html">Mobile Top 10 2024 Category M1 -
+  Improper Credential Usage</a> </li>
   <li> MSC - <a href="https://wiki.sei.cmu.edu/confluence/x/OjdGBQ">MSC03-J - Never hard code sensitive information</a> </li>
 </ul>
 
