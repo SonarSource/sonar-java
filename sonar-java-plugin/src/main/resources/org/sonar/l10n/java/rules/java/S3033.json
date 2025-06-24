@@ -1,6 +1,12 @@
 {
-  "title": "\".length\" should be used to test for the emptiness of StringBuffers",
+  "title": "\".isEmpty\" should be used to test for the emptiness of StringBuffers\/Builders",
   "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -10,9 +16,9 @@
     "performance",
     "clumsy"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-3033",
   "sqKey": "S3033",
   "scope": "Main",
-  "quickfix": "unknown"
+  "quickfix": "partial"
 }

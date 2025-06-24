@@ -33,6 +33,9 @@
     "OWASP Top 10 2021": [
       "A7"
     ],
+    "OWASP Mobile Top 10 2024": [
+      "M1"
+    ],
     "PCI DSS 3.2": [
       "6.5.10"
     ],
