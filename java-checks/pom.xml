@@ -11,6 +11,7 @@
   <artifactId>java-checks</artifactId>
 
   <name>SonarQube Java :: Checks</name>
+  <description>Code Analyzer for Java :: Analyzer's checks</description>
 
   <dependencies>
     <dependency>
