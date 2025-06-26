@@ -14,6 +14,7 @@
   <packaging>pom</packaging>
 
   <name>SonarQube Java :: Checks Test Sources :: Parent Pom</name>
+  <description>Code Analyzer for Java :: Checks Test Sources :: Parent POM</description>
 
   <modules>
     <module>aws</module>

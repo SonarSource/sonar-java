@@ -11,6 +11,7 @@
 
   <artifactId>test-classpath-reader</artifactId>
   <name>SonarQube Java :: Checks Test Sources :: Test Classpath Reader</name>
+  <description>Code Analyzer for Java :: Test Classpath Reader</description>
 
   <dependencies>
     <dependency>

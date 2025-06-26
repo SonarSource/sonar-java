@@ -11,6 +11,7 @@
   <artifactId>java-checks-aws</artifactId>
 
   <name>SonarQube Java :: AWS Checks</name>
+  <description>Code Analyzer for Java :: Analyzer's checks for AWS</description>
 
   <dependencies>
     <dependency>

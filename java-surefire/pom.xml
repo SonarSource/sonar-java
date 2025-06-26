@@ -11,6 +11,7 @@
   <artifactId>java-surefire</artifactId>
 
   <name>SonarQube Java :: Surefire</name>
+  <description>Code Analyzer for Java :: Plugin to import JUnit report files</description>
 
   <dependencies>
     <dependency>
