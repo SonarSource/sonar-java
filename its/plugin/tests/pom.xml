@@ -16,6 +16,7 @@
     <!-- default values for linux, overridden by below profiles for windows and mac -->
     <openjdk8.url>https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u265-b01/OpenJDK8U-jre_x64_linux_hotspot_8u265b01.tar.gz</openjdk8.url>
     <openjdk8.sha256>9bce39f63d24626da75778f240294fa466a0ed117e32db798164621fe30b0723</openjdk8.sha256>
+    <maven.deploy.skip>true</maven.deploy.skip>
   </properties>
 
   <dependencies>

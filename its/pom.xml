@@ -22,7 +22,6 @@
 
   <properties>
     <skipTests>true</skipTests>
-    <maven.deploy.skip>true</maven.deploy.skip>
   </properties>
 
 </project>
