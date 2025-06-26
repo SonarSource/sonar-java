@@ -179,7 +179,7 @@ class JavaFrontendTest {
 
   @Test
   void scanning_empty_project_should_be_logged_in_batch() {
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(Telemetry.class), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
     assertThat(logTester.logs(Level.INFO)).containsExactly(
@@ -252,6 +252,7 @@ class JavaFrontendTest {
       new JavaVersionImpl(),
       specificSonarComponents,
       mock(Measurer.class),
+      mock(Telemetry.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
     );
@@ -285,6 +286,7 @@ class JavaFrontendTest {
       new JavaVersionImpl(),
       specificSonarComponents,
       mock(Measurer.class),
+      mock(Telemetry.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
     );
@@ -318,6 +320,7 @@ class JavaFrontendTest {
       new JavaVersionImpl(),
       specificSonarComponents,
       mock(Measurer.class),
+      mock(Telemetry.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
     );
@@ -350,6 +353,7 @@ class JavaFrontendTest {
       new JavaVersionImpl(),
       specificSonarComponents,
       mock(Measurer.class),
+      mock(Telemetry.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
     );
@@ -382,6 +386,7 @@ class JavaFrontendTest {
       new JavaVersionImpl(),
       specificSonarComponents,
       mock(Measurer.class),
+      mock(Telemetry.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
     );
@@ -407,6 +412,7 @@ class JavaFrontendTest {
       new JavaVersionImpl(),
       null,
       mock(Measurer.class),
+      mock(Telemetry.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
     );
@@ -424,7 +430,7 @@ class JavaFrontendTest {
 
   @Test
   void test_getters_with_null_sonarComponents() {
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(Telemetry.class), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
     assertThat(frontend.isAutoScan()).isFalse();
     assertThat(frontend.isFileByFileEnabled()).isFalse();
     assertThat(frontend.analysisCancelled()).isFalse();
@@ -771,7 +777,7 @@ class JavaFrontendTest {
     JavaVersion javaVersion = settings.asConfig().get(JavaVersion.SOURCE_VERSION)
       .map(JavaVersionImpl::fromString)
       .orElse(new JavaVersionImpl());
-    JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class),
+    JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(Telemetry.class), mock(JavaResourceLocator.class),
       null, sonarComponents.mainChecks().toArray(new JavaCheck[0]));
     frontend.scan(inputFiles, Collections.emptyList(), Collections.emptyList());
 
