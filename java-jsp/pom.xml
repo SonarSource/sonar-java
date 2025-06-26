@@ -12,6 +12,7 @@
   <artifactId>java-jsp</artifactId>
 
   <name>SonarQube Java :: JSP</name>
+  <description>Code Analyzer for Java :: JSP parser</description>
 
   <dependencies>
     <dependency>

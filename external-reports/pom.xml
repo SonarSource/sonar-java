@@ -11,6 +11,7 @@
   <artifactId>external-reports</artifactId>
 
   <name>SonarQube Java :: External Reports Sensor</name>
+  <description>Code Analyzer for Java :: External Reports Plugin</description>
 
   <dependencies>
     <dependency>
