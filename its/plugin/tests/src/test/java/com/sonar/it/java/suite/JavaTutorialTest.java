@@ -69,6 +69,7 @@ public class JavaTutorialTest {
     assertThat(issuesForRule(issues, "mycompany-java:SecurityAnnotationMandatory")).hasSize(2);
     assertThat(issuesForRule(issues, "mycompany-java:SpringControllerRequestMappingEntity")).hasSize(1);
 
+    assertThat(buildResult.getLogs()).containsOnlyOnce("java.telemetry_version=1");
     assertThat(buildResult.getLogs()).containsOnlyOnce("java.scanner_app=ScannerMaven");
   }
 
