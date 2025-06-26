@@ -12,6 +12,7 @@
   <packaging>pom</packaging>
 
   <name>SonarQube Java :: ITs :: Plugin :: Plugins</name>
+  <description>Code Analyzer for Java :: Plugin :: Integration Tests parent</description>
 
   <modules>
     <module>java-extension-plugin</module>

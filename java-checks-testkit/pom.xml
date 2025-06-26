@@ -11,6 +11,7 @@
   <artifactId>java-checks-testkit</artifactId>
 
   <name>SonarQube Java :: Checks Test tool kit</name>
+  <description>Code Analyzer for Java :: Checks Test tool kit</description>
 
   <dependencies>
     <dependency>

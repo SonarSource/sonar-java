@@ -12,6 +12,7 @@
   <packaging>pom</packaging>
 
   <name>SonarQube Java :: Documentation</name>
+  <description>Code Analyzer for Java :: Documentation Parent POM</description>
 
   <modules>
     <module>java-custom-rules-example</module>

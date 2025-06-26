@@ -12,12 +12,8 @@
   <packaging>pom</packaging>
 
   <name>SonarQube Java :: ITs :: Plugin</name>
+  <description>Code Analyzer for Java :: Integration Tests :: Plugin :: Parent POM</description>
   <inceptionYear>2013</inceptionYear>
-
-  <organization>
-    <name>SonarSource</name>
-    <url>http://www.sonarsource.com</url>
-  </organization>
 
   <modules>
     <module>plugins</module>

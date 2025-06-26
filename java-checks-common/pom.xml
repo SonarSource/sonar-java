@@ -11,6 +11,7 @@
   <artifactId>java-checks-common</artifactId>
 
   <name>SonarQube Java :: Checks Common</name>
+  <description>Code Analyzer for Java :: Common utilities for analyzer's checks</description>
 
   <dependencies>
     <dependency>

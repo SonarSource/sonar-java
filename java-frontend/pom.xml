@@ -11,6 +11,7 @@
   <artifactId>java-frontend</artifactId>
 
   <name>SonarQube Java :: Front-end</name>
+  <description>Code Analyzer for Java :: Front-end (Java Parser)</description>
 
   <dependencies>
     <dependency>
