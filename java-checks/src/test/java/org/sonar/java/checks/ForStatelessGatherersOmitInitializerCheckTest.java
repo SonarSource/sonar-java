@@ -20,13 +20,22 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
-class ForStatelessGatherersOmitInitialiserCheckTest {
+class ForStatelessGatherersOmitInitializerCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/ForStatelessGatherersOmitInitialiserCheckSample.java"))
-      .withCheck(new ForStatelessGatherersOmitInitialiserCheck())
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ForStatelessGatherersOmitInitializerCheckSample.java"))
+      .withCheck(new ForStatelessGatherersOmitInitializerCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ForStatelessGatherersOmitInitializerCheckSample.java"))
+      .withCheck(new ForStatelessGatherersOmitInitializerCheck())
+      .withoutSemantic()
       .verifyIssues();
   }
   
