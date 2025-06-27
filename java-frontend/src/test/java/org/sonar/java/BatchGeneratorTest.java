@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.InputFileUtils.addFile;
 
 @EnableRuleMigrationSupport
-public class BatchGeneratorTest {
+class BatchGeneratorTest {
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
