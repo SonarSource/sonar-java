@@ -56,8 +56,8 @@ public class JavaFrontend {
   private static final String BATCH_ERROR_MESSAGE = "Batch Mode failed, analysis of Java Files stopped.";
 
   private static final String JAVA_SERVER_CACHING_ENABLED = "java.server.caching.enabled";
-  private static final String JAVA_SERVER_CACHING_USED = "java.server.caching.used";
-  private static final String JAVA_SERVER_CACHING_TOTAL = "java.server.caching.total";
+  private static final String JAVA_SERVER_CACHING_USED = "java.server.caching.files_used";
+  private static final String JAVA_SERVER_CACHING_TOTAL = "java.server.caching.files_total";
 
   private final JavaVersion javaVersion;
   private final SonarComponents sonarComponents;

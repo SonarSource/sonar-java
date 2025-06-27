@@ -108,7 +108,7 @@ public class JavaSensor implements Sensor {
     SensorTelemetry sensorTelemetry = new SensorTelemetry(context);
 
     // TODO will we be able to join the data across rows?
-    sensorTelemetry.addMetric("java.telemetryVersion", TELEMETRY_VERSION);
+    sensorTelemetry.addMetric("java.telemetry_version", TELEMETRY_VERSION);
 
     JavaVersion javaVersion = getJavaVersion();
     context.addTelemetryProperty("java.language.version", javaVersion.toString());
@@ -117,7 +117,7 @@ public class JavaSensor implements Sensor {
     sensorTelemetry.addMetric("java.autoscan", sonarComponents.isAutoScan());
 
     // TODO can "none" be the actual value?
-    sensorTelemetry.addMetric("java.scannerApp", settings.get("sonar.scanner.app").orElse("none"));
+    sensorTelemetry.addMetric("java.scanner_app", settings.get("sonar.scanner.app").orElse("none"));
 
     JavaFrontend frontend = new JavaFrontend(
       javaVersion,
