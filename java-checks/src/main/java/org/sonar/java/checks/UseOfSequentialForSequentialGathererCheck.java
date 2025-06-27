@@ -17,23 +17,101 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.function.Function;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 
 
 @Rule(key = "S7481")
 public class UseOfSequentialForSequentialGathererCheck extends IssuableSubscriptionVisitor {
+  /**
+   * utility classes
+   */
+
+  /**
+   * Contains all information necessary to find out if a method invocation should be replaced by another method invocation.
+   */
+  private record Case(MethodMatchers matcher, ArgumentPredicate pred, String msg) {
+  }
+
+  private record ArgumentPredicate(int argIdx, Function<ExpressionTree, List<? extends Tree>> predicate) {
+  }
+
+  /**
+   * constants
+   */
+  private static final String GATHERER = "java.util.stream.Gatherer";
+  private static final String SUPPLIER = "java.util.function.Supplier";
+  private static final String INTEGRATOR = "java.util.stream.Gatherer$Integrator";
+  private static final String BI_CONSUMER = "java.util.function.BiConsumer";
+  private static final String BINARY_OPERATOR = "java.util.function.BinaryOperator";
+
+
+  private static final MethodMatchers DEFAULT_COMBINER = MethodMatchers.create()
+    .ofTypes(GATHERER)
+    .names("defaultCombiner")
+    .addWithoutParametersMatcher()
+    .build();
+  private static final MethodMatchers GATHERER_OF = MethodMatchers.create()
+    .ofTypes(GATHERER)
+    .names("of")
+    .addParametersMatcher(SUPPLIER, INTEGRATOR, BINARY_OPERATOR, BI_CONSUMER)
+    .build();
+
+  private static final ArgumentPredicate SEQUENTIAL_PREDICATE = new ArgumentPredicate(2, UseOfSequentialForSequentialGathererCheck::isSequentialGatherer);
+  private static final List<Case> CASES = List.of(
+    new Case(GATHERER_OF, SEQUENTIAL_PREDICATE, "")
+  );
+
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    // TODO: Specify the kind of nodes you want to be called to visit here.
-    return List.of();
+    return List.of(Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    MethodInvocationTree mit = (MethodInvocationTree) tree;
+
+    for (Case c : CASES) {
+      if (!c.matcher.matches(mit)) {
+        continue;
+      }
+      var argPredicate = c.pred;
+      var issues = argPredicate.predicate.apply(mit.arguments().get(argPredicate.argIdx));
+      if (!issues.isEmpty()) {
+
+        var secondaries = issues.subList(1, issues.size())
+          .stream()
+          .map(element -> new JavaFileScannerContext.Location("", element))
+          .toList();
+
+        context.reportIssue(this, issues.get(0), c.msg, secondaries, null);
+        return;
+      }
+    }
+
   }
-  
+
+  private static List<? extends Tree> isSequentialGatherer(ExpressionTree expr) {
+
+    if (expr instanceof LambdaExpressionTree lambda && lambda.body() instanceof BlockTree block) {
+      if (block.body().size() == 1 && block.body().get(0).is(Tree.Kind.THROW_STATEMENT)) {
+        ThrowStatementTree throwStmt = (ThrowStatementTree) block.body().get(0);
+        return List.of(throwStmt);
+      }
+    } else if (expr instanceof MethodInvocationTree mit && DEFAULT_COMBINER.matches(mit)) {
+      return List.of(mit);
+    }
+
+    return List.of();
+  }
 }

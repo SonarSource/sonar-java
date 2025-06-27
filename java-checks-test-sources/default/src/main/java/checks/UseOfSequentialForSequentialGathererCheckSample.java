@@ -17,8 +17,8 @@ public class UseOfSequentialForSequentialGathererCheckSample {
     Gatherer<Integer, AtomicInteger, Integer> throwException = Gatherer.of(
       AtomicInteger::new,
       (state, element, downstream) -> downstream.push(element - state.getAndSet(element)),
-      (s1, s2) -> {                         // Noncompliant
-        throw new IllegalStateException();
+      (s1, s2) -> {
+        throw new IllegalStateException();              // Noncompliant
       },
       Gatherer.defaultFinisher());
 
@@ -26,30 +26,24 @@ public class UseOfSequentialForSequentialGathererCheckSample {
   }
 
 
-
-  // Compliant: meaningful non-default combiner, Gatherer.of is appropriate
-  void compliant() {
-    Gatherer<Integer, AtomicInteger, Integer> combine = Gatherer.of(
+  void compliant(boolean b) {
+    Gatherer<Integer, AtomicInteger, Integer> noThrow = Gatherer.of(
       AtomicInteger::new,
       (state, element, downstream) -> {
-        state.addAndGet(element);          // accumulate sum
-        return true;                       // nothing pushed downstream
+        state.addAndGet(element);
+        return true;
       },
-      (left, right) -> {                   // proper combiner
+      (left, right) -> {
         left.addAndGet(right.get());
         return left;
       },
-      AtomicInteger::get                   // finisher returns the sum
+      AtomicInteger::get
     );
 
-  }
-
-  // Noncompliant: one branch of the combiner throws, indicating sequential intent
-  void nonCompliantBranchThrowsCombiner(boolean shouldFail) {
-    Gatherer<Integer, AtomicInteger, Integer> g = Gatherer.of(
+    Gatherer<Integer, AtomicInteger, Integer> severalBranchAndThrow = Gatherer.of(
       AtomicInteger::new,
       (state, element, downstream) -> downstream.push(element - state.getAndSet(element)),
-      (left, right) -> {                  // Noncompliant
+      (left, right) -> {
         if (shouldFail) {
           throw new IllegalStateException();
         }
@@ -58,7 +52,5 @@ public class UseOfSequentialForSequentialGathererCheckSample {
       },
       AtomicInteger::get
     );
-    int result = Stream.of(1, 2, 3).gather(g).findFirst().orElse(0);
-    System.out.println(result);
   }
 }
