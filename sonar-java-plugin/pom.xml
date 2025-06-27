@@ -16,16 +16,18 @@
   <description>Code Analyzer for Java</description>
 
   <!--
-    Do not remove. Without <url> and <scm>, maven uses the values from the parent and wrongly appends
-    "/sonar-java-plugin" at the end. The "sonar-packaging-maven-plugin" uses these values to define in
-    META-INF/MANIFEST.MF "Plugin-Homepage" from <url> and "Plugin-SourcesUrl" from <scm><url>.
+    The <url> and <scm> elements are mandatory for "Sonatype deployment" and "sonar-packaging-maven-plugin".
+    If they are declared only in the parent pom, maven wrongly appends "/sonar-java-plugin" at the end of the URL.
+    And if there are declared in this pom, Sonatype does not evaluate expression like:
+    <url>${project.parent.url}</url> or <scm><url>${project.parent.scm.url}</url></scm>
+    This is why we duplicate the values of the parent.
   -->
-  <url>${project.parent.url}</url>
+  <url>https://redirect.sonarsource.com/plugins/java.html</url>
   <scm>
-    <connection>${project.parent.scm.connection}</connection>
-    <developerConnection>${project.parent.scm.developerConnection}</developerConnection>
-    <url>${project.parent.scm.url}</url>
-    <tag>${project.parent.scm.tag}</tag>
+    <connection>scm:git:git@github.com:SonarSource/sonar-java.git</connection>
+    <developerConnection>scm:git:git@github.com:SonarSource/sonar-java.git</developerConnection>
+    <url>https://github.com/SonarSource/sonar-java</url>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencies>

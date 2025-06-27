@@ -14,11 +14,11 @@
   <packaging>pom</packaging>
   <name>SonarJava</name>
   <description>Code Analyzer for Java :: Parent POM</description>
-  <url>http://redirect.sonarsource.com/plugins/java.html</url>
+  <url>https://redirect.sonarsource.com/plugins/java.html</url>
   <inceptionYear>2012</inceptionYear>
   <organization>
     <name>SonarSource</name>
-    <url>http://www.sonarsource.com</url>
+    <url>https://www.sonarsource.com</url>
   </organization>
   <licenses>
     <license>
