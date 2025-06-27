@@ -62,6 +62,8 @@ public class JavaSensor implements Sensor {
   private static final String PERFORMANCE_MEASURE_FILE_PATH_PROPERTY = "sonar.java.performance.measure.path";
   private static final String PERFORMANCE_MEASURE_DESTINATION_FILE = "sonar.java.performance.measure.json";
 
+  private static int TELEMETRY_VERSION = 1;
+
   private final SonarComponents sonarComponents;
   private final FileSystem fs;
   private final JavaResourceLocator javaResourceLocator;
@@ -103,11 +105,27 @@ public class JavaSensor implements Sensor {
     sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
 
     Measurer measurer = new Measurer(context, noSonarFilter);
+    SensorTelemetry sensorTelemetry = new SensorTelemetry(context);
+
+    // TODO will we be able to join the data across rows?
+    sensorTelemetry.addMetric("java.telemetry_version", TELEMETRY_VERSION);
 
     JavaVersion javaVersion = getJavaVersion();
     context.addTelemetryProperty("java.language.version", javaVersion.toString());
 
-    JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
+    // TODO should we use "0", "1"
+    sensorTelemetry.addMetric("java.autoscan", sonarComponents.isAutoScan());
+
+    // TODO can "none" be the actual value?
+    sensorTelemetry.addMetric("java.scanner_app", settings.get("sonar.scanner.app").orElse("none"));
+
+    JavaFrontend frontend = new JavaFrontend(
+      javaVersion,
+      sonarComponents,
+      measurer,
+      sensorTelemetry,
+      javaResourceLocator,
+      postAnalysisIssueFilter,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));
     frontend.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 
@@ -187,5 +205,4 @@ public class JavaSensor implements Sensor {
   public String toString() {
     return getClass().getSimpleName();
   }
-
 }

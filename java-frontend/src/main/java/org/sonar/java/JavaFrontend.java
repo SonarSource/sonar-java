@@ -55,17 +55,23 @@ public class JavaFrontend {
   private static final Logger LOG = LoggerFactory.getLogger(JavaFrontend.class);
   private static final String BATCH_ERROR_MESSAGE = "Batch Mode failed, analysis of Java Files stopped.";
 
+  private static final String JAVA_SERVER_CACHING_ENABLED = "java.server.caching.enabled";
+  private static final String JAVA_SERVER_CACHING_USED = "java.server.caching.files_used";
+  private static final String JAVA_SERVER_CACHING_TOTAL = "java.server.caching.files_total";
+
   private final JavaVersion javaVersion;
   private final SonarComponents sonarComponents;
+  private final Telemetry telemetry;
   private final List<File> globalClasspath;
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
   private final JavaAstScanner astScannerForGeneratedFiles;
 
-  public JavaFrontend(JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-                      JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
+  public JavaFrontend(JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer, Telemetry telemetry,
+    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
     this.javaVersion = javaVersion;
     this.sonarComponents = sonarComponents;
+    this.telemetry = telemetry;
     List<JavaCheck> commonVisitors = new ArrayList<>();
     commonVisitors.add(javaResourceLocator);
     if (postAnalysisIssueFilter != null) {
@@ -110,6 +116,8 @@ public class JavaFrontend {
     //AstScanner for generated files
     astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents);
     astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, jspClasspath, javaVersion, sonarComponents, inAndroidContext));
+
+    telemetry.addMetric("java.android", inAndroidContext);
   }
 
   private static VisitorsBridge createVisitorBridge(
@@ -141,14 +149,20 @@ public class JavaFrontend {
 
       total += StreamSupport.stream(generatedFiles.spliterator(), false).count();
 
+      telemetry.addMetric(JAVA_SERVER_CACHING_ENABLED, "yes");
+      telemetry.addMetric(JAVA_SERVER_CACHING_USED, successfullyScanned);
+      telemetry.addMetric(JAVA_SERVER_CACHING_TOTAL, total);
       LOG.info(
         "Server-side caching is enabled. The Java analyzer was able to leverage cached data from previous analyses for {} out of {} files. These files will not be parsed.",
         successfullyScanned,
         total
       );
     } else if (isCacheEnabled()) {
+      // TODO: better choice of names?
+      telemetry.addMetric(JAVA_SERVER_CACHING_ENABLED, "unused");
       LOG.info("Server-side caching is enabled. The Java analyzer will not try to leverage data from a previous analysis.");
     } else {
+      telemetry.addMetric(JAVA_SERVER_CACHING_ENABLED, "no");
       LOG.info("Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
     }
 
