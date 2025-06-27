@@ -1,6 +1,7 @@
 package checks;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BinaryOperator;
 import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
@@ -11,17 +12,18 @@ public class UseOfSequentialForSequentialGathererCheckSample {
     Gatherer<Integer, AtomicInteger, Integer> defaultCombiner = Gatherer.of(
       AtomicInteger::new,
       (state, element, downstream) -> downstream.push(element - state.getAndSet(element)),
-      Gatherer.defaultCombiner(),           // Noncompliant
+      Gatherer.defaultCombiner(),  // Noncompliant {{Replace `Gatherer.of(initializer, integrator, combiner, finisher)` with `ofSequential(initializer, integrator, finisher)` }}
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^
       Gatherer.defaultFinisher());
 
     Gatherer<Integer, AtomicInteger, Integer> throwException = Gatherer.of(
       AtomicInteger::new,
       (state, element, downstream) -> downstream.push(element - state.getAndSet(element)),
       (s1, s2) -> {
-        throw new IllegalStateException();              // Noncompliant
+        throw new IllegalStateException(); // Noncompliant
+    //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       },
       Gatherer.defaultFinisher());
-
 
   }
 
@@ -52,5 +54,39 @@ public class UseOfSequentialForSequentialGathererCheckSample {
       },
       AtomicInteger::get
     );
+  }
+
+  void falseNegatives() {
+    Gatherer<Integer, AtomicInteger, Integer> twoStmtBody = Gatherer.of(
+      AtomicInteger::new,
+      (state, element, downstream) -> downstream.push(element - state.getAndSet(element)),
+      (s1, s2) -> {
+        System.out.println("sequential gatherer");
+        throw new IllegalStateException(); // FN
+      },
+      Gatherer.defaultFinisher());
+
+    Gatherer<Integer, AtomicInteger, Integer> methodRef = Gatherer.of(
+      AtomicInteger::new,
+      (state, element, downstream) -> downstream.push(element - state.getAndSet(element)),
+      UseOfSequentialForSequentialGathererCheckSample::methodRefNotSupported, // FN
+      Gatherer.defaultFinisher());
+
+    Gatherer<Integer, AtomicInteger, Integer> methodInvocation = Gatherer.of(
+      AtomicInteger::new,
+      (state, element, downstream) -> downstream.push(element - state.getAndSet(element)),
+      noSupported(), // FN
+      Gatherer.defaultFinisher());
+  }
+
+
+  static AtomicInteger methodRefNotSupported() {
+    throw new IllegalStateException();
+  }
+
+  static BinaryOperator<AtomicInteger> noSupported() {
+    return (left, right) -> {
+      throw new IllegalStateException();
+    };
   }
 }
