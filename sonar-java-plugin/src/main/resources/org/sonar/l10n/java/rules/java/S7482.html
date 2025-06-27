@@ -1,0 +1,41 @@
+<h2>Why is this an issue?</h2>
+<p>Stateless stream gatherers, which process each element of the stream independently, don’t need an initializer function. That’s because the role of
+the initializer function is to set up the gatherer’s private state object.</p>
+<p>The gatherer interface provides factory methods that create gatherers without taking an initializer as an argument:</p>
+<ul>
+  <li> <code>ofSequential(Gatherer.Integrator&lt;Void,T,R&gt; integrator)</code> </li>
+  <li> <code>ofSequential(Gatherer.Integrator&lt;Void,T,R&gt; integrator, BiConsumer&lt;Void, Gatherer.Downstream&lt;? super R&gt;&gt;
+  finisher)</code> </li>
+</ul>
+<p>Using these specific factory methods to create stateless gatherers is preferable because it clearly communicates their stateless nature.</p>
+<p>This rule reports the use of <code>ofSequential(Gatherer.Integrator&lt;Void,T,R&gt; integrator, BiConsumer&lt;Void, Gatherer.Downstream&lt;? super
+R&gt;&gt; finisher)</code> when it returns a stateless gatherer.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+private static Gatherer inRange(int start, int end) {
+    return Gatherer.&lt;Integer, Void, Integer&gt;ofSequential(
+      () -&gt; null, // Noncompliant: unnecessary initializer
+      (_, element, downstream) -&gt; {
+        if (element &gt;= start &amp;&amp; element &lt;= end)
+          return downstream.push(element - start);
+        return !downstream.isRejecting();
+      },
+      (_, downstream) -&gt; downstream.push(-1)
+    );
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+private static Gatherer inRange(int start, int end) {
+    return Gatherer.&lt;Integer, Integer&gt;ofSequential(
+      (_, element, downstream) -&gt; {
+        if (element &gt;= start &amp;&amp; element &lt;= end)
+          return downstream.push(element - start);
+        return !downstream.isRejecting();
+      },
+      (_, downstream) -&gt; downstream.push(-1)
+    );
+}
+</pre>
+

@@ -1,0 +1,23 @@
+{
+  "title": "Don\u0027t provide an initializer for a stateless stream gatherer",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java24"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-7482",
+  "sqKey": "S7482",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
