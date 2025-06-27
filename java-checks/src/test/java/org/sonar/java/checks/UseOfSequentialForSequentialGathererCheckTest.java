@@ -29,5 +29,14 @@ class UseOfSequentialForSequentialGathererCheckTest {
       .withCheck(new UseOfSequentialForSequentialGathererCheck())
       .verifyIssues();
   }
+
+  @Test
+  void without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/UseOfSequentialForSequentialGathererCheckSample.java"))
+      .withCheck(new UseOfSequentialForSequentialGathererCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
   
 }
