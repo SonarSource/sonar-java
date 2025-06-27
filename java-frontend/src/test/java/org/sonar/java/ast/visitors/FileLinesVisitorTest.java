@@ -25,6 +25,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.java.JavaFrontend;
+import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaVersionImpl;
@@ -49,7 +50,7 @@ class FileLinesVisitorTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.fileLinesContextFor(Mockito.any(InputFile.class))).thenReturn(context);
 
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, null, null, null, new FileLinesVisitor(sonarComponents));
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, mock(Measurer.class), null, null, new FileLinesVisitor(sonarComponents));
 
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }

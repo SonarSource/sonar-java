@@ -62,7 +62,7 @@ public class JavaFrontend {
   private final JavaAstScanner astScannerForTests;
   private final JavaAstScanner astScannerForGeneratedFiles;
 
-  public JavaFrontend(JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
+  public JavaFrontend(JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, Measurer measurer,
                       JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
     this.javaVersion = javaVersion;
     this.sonarComponents = sonarComponents;
@@ -74,11 +74,9 @@ public class JavaFrontend {
 
     Iterable<JavaCheck> codeVisitors = ListUtils.concat(commonVisitors, Arrays.asList(visitors));
     Collection<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
-    if (measurer != null) {
-      Iterable<JavaCheck> measurers = Collections.singletonList(measurer);
-      codeVisitors = ListUtils.concat(measurers, codeVisitors);
-      testCodeVisitors.add(measurer.new TestFileMeasurer());
-    }
+    Iterable<JavaCheck> measurers = Collections.singletonList(measurer);
+    codeVisitors = ListUtils.concat(measurers, codeVisitors);
+    testCodeVisitors.add(measurer.new TestFileMeasurer());
     List<File> classpath = new ArrayList<>();
     List<File> testClasspath = new ArrayList<>();
     List<JavaCheck> jspCodeVisitors = new ArrayList<>();
