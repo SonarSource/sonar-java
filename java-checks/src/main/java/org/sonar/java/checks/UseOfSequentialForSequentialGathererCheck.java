@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S7481")
 public class UseOfSequentialForSequentialGathererCheck extends IssuableSubscriptionVisitor {
   /**
-   * utility classes
+   * inner classes
    */
 
   /**
@@ -42,6 +42,9 @@ public class UseOfSequentialForSequentialGathererCheck extends IssuableSubscript
   private record Case(MethodMatchers matcher, ArgumentPredicate pred, String msg) {
   }
 
+  /**
+   * @param predicate return locations of the issue if empty no issue must be reported
+   */
   private record ArgumentPredicate(int argIdx, Function<ExpressionTree, List<? extends Tree>> predicate) {
   }
 
@@ -66,7 +69,7 @@ public class UseOfSequentialForSequentialGathererCheck extends IssuableSubscript
     .addParametersMatcher(SUPPLIER, INTEGRATOR, BINARY_OPERATOR, BI_CONSUMER)
     .build();
 
-  private static final ArgumentPredicate SEQUENTIAL_PREDICATE = new ArgumentPredicate(2, UseOfSequentialForSequentialGathererCheck::isSequentialGatherer);
+  private static final ArgumentPredicate SEQUENTIAL_PREDICATE = new ArgumentPredicate(2, UseOfSequentialForSequentialGathererCheck::isSequentialCombiner);
   private static final List<Case> CASES = List.of(
     new Case(
       GATHERER_OF,
@@ -104,7 +107,7 @@ public class UseOfSequentialForSequentialGathererCheck extends IssuableSubscript
 
   }
 
-  private static List<? extends Tree> isSequentialGatherer(ExpressionTree expr) {
+  private static List<? extends Tree> isSequentialCombiner(ExpressionTree expr) {
 
     if (expr instanceof LambdaExpressionTree lambda && lambda.body() instanceof BlockTree block) {
       if (block.body().size() == 1 && block.body().get(0) instanceof ThrowStatementTree throwStmt) {
