@@ -1,0 +1,23 @@
+{
+  "title": "Gatherer.ofSequential() should be used to build sequential gathers",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1min"
+  },
+  "tags": [
+    "java24"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-7481",
+  "sqKey": "S7481",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  }
+}
