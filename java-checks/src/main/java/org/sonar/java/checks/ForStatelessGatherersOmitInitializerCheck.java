@@ -132,7 +132,7 @@ public class ForStatelessGatherersOmitInitializerCheck extends IssuableSubscript
         }
       }
     } else if (initializer instanceof MethodInvocationTree mit && DEFAULT_INITIALIZER.matches(mit)) {
-      return List.of(mit.methodSelect());
+      return List.of(mit);
     }
 
     return List.of();

@@ -18,7 +18,7 @@ public class ForStatelessGatherersOmitInitializerCheckSample {
 
     Gatherer<Integer, ?, Integer> defaultInitializer = Gatherer.<Integer, Void, Integer>ofSequential(
       Gatherer.defaultInitializer(), // Noncompliant
-    //^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       (_, element, downstream) -> downstream.push(element)
     );
     Stream.of(1, 2, 3).gather(lambdaNull).forEach(System.out::println);
