@@ -18,14 +18,15 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.TestUtils;
+
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class UseOfSequentialForSequentialGathererCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/UseOfSequentialForSequentialGathererCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/UseOfSequentialForSequentialGathererCheckSample.java"))
       .withCheck(new UseOfSequentialForSequentialGathererCheck())
       .verifyIssues();
   }
@@ -33,7 +34,7 @@ class UseOfSequentialForSequentialGathererCheckTest {
   @Test
   void without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/UseOfSequentialForSequentialGathererCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/UseOfSequentialForSequentialGathererCheckSample.java"))
       .withCheck(new UseOfSequentialForSequentialGathererCheck())
       .withoutSemantic()
       .verifyIssues();

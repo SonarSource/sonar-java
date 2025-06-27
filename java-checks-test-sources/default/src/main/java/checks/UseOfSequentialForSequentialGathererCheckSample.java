@@ -29,46 +29,39 @@ public class UseOfSequentialForSequentialGathererCheckSample {
 
 
   void compliant(boolean b) {
-    Gatherer<Integer, AtomicInteger, Integer> noBlock = Gatherer.of(
+    Gatherer<Integer, AtomicInteger, Integer> noBlock = Gatherer.<Integer, AtomicInteger, Integer>of(
       AtomicInteger::new,
-      (state, element, downstream) -> {
-        state.addAndGet(element);
-        return true;
-      },
+      (state, element, downstream) -> true,
       (left, right) -> new AtomicInteger(0),
-      AtomicInteger::get
+      (res, _) -> res.get()
     );
 
     Gatherer<Integer, AtomicInteger, Integer> blockOneStmt = Gatherer.of(
       AtomicInteger::new,
-      (state, element, downstream) -> {
-        state.addAndGet(element);
-        return true;
-      },
+      (state, element, downstream) -> true,
       (left, right) -> {
         return new AtomicInteger(0);
       },
-      AtomicInteger::get
+      (res, _) -> res.get()
     );
 
-    Gatherer<Integer, AtomicInteger, Integer> severalBranchAndThrow = Gatherer.of(
+    Gatherer<Integer, AtomicInteger, Integer> severalBranchAndThrow = Gatherer.<Integer, AtomicInteger, Integer>of(
       AtomicInteger::new,
-      (state, element, downstream) -> downstream.push(element - state.getAndSet(element)),
+      (state, element, downstream) -> true,
       (left, right) -> {
-        if (shouldFail) {
+        if (b) {
           throw new IllegalStateException();
         }
-        left.addAndGet(right.get());
         return left;
       },
-      AtomicInteger::get
+      (res, _) -> res.get()
     );
   }
 
   void falseNegatives() {
-    Gatherer<Integer, AtomicInteger, Integer> twoStmtBody = Gatherer.of(
+    Gatherer<Integer, AtomicInteger, Integer> twoStmtBody = Gatherer.<Integer, AtomicInteger, Integer>of(
       AtomicInteger::new,
-      (state, element, downstream) -> downstream.push(element - state.getAndSet(element)),
+      (state, element, downstream) -> true,
       (s1, s2) -> {
         System.out.println("sequential gatherer");
         throw new IllegalStateException(); // FN
@@ -77,19 +70,19 @@ public class UseOfSequentialForSequentialGathererCheckSample {
 
     Gatherer<Integer, AtomicInteger, Integer> methodRef = Gatherer.of(
       AtomicInteger::new,
-      (state, element, downstream) -> downstream.push(element - state.getAndSet(element)),
+      (state, element, downstream) -> true,
       UseOfSequentialForSequentialGathererCheckSample::methodRefNotSupported, // FN
       Gatherer.defaultFinisher());
 
     Gatherer<Integer, AtomicInteger, Integer> methodInvocation = Gatherer.of(
       AtomicInteger::new,
-      (state, element, downstream) -> downstream.push(element - state.getAndSet(element)),
+      (state, element, downstream) -> true,
       noSupported(), // FN
       Gatherer.defaultFinisher());
   }
 
 
-  static AtomicInteger methodRefNotSupported() {
+  static AtomicInteger methodRefNotSupported(AtomicInteger a, AtomicInteger b) {
     throw new IllegalStateException();
   }
 
