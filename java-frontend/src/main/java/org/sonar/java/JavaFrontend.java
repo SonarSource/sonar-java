@@ -116,6 +116,8 @@ public class JavaFrontend {
     //AstScanner for generated files
     astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents);
     astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, jspClasspath, javaVersion, sonarComponents, inAndroidContext));
+
+    telemetry.addMetric("java.android", inAndroidContext);
   }
 
   private static VisitorsBridge createVisitorBridge(
