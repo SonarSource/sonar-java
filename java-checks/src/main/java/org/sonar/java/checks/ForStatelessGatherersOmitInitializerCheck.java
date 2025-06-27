@@ -97,7 +97,9 @@ public class ForStatelessGatherersOmitInitializerCheck extends IssuableSubscript
       if (!c.matcher.matches(mit)) {
         continue;
       }
-      var issues = INITIALIZER_PREDICATE.predicate.apply(mit.arguments().get(INITIALIZER_PREDICATE.argIdx));
+
+      var argPredicate = c.pred;
+      var issues = argPredicate.predicate.apply(mit.arguments().get(argPredicate.argIdx));
       if (!issues.isEmpty()) {
 
         var secondaries = issues.subList(1, issues.size())
