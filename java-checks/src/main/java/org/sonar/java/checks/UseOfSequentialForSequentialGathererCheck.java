@@ -104,8 +104,7 @@ public class UseOfSequentialForSequentialGathererCheck extends IssuableSubscript
   private static List<? extends Tree> isSequentialGatherer(ExpressionTree expr) {
 
     if (expr instanceof LambdaExpressionTree lambda && lambda.body() instanceof BlockTree block) {
-      if (block.body().size() == 1 && block.body().get(0).is(Tree.Kind.THROW_STATEMENT)) {
-        ThrowStatementTree throwStmt = (ThrowStatementTree) block.body().get(0);
+      if (block.body().size() == 1 && block.body().get(0) instanceof ThrowStatementTree throwStmt) {
         return List.of(throwStmt);
       }
     } else if (expr instanceof MethodInvocationTree mit && DEFAULT_COMBINER.matches(mit)) {
