@@ -35,7 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S7482")
 public class ForStatelessGatherersOmitInitializerCheck extends IssuableSubscriptionVisitor {
   /**
-   * utility classes
+   * inner classes
    */
 
   /**
