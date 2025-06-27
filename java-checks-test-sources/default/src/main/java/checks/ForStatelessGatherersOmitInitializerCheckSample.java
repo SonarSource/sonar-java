@@ -3,23 +3,31 @@ package checks;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 import java.util.stream.Stream;
 
 public class ForStatelessGatherersOmitInitializerCheckSample {
   void nonCompliantSingleReturnNull() {
-    Gatherer<Integer, ?, Integer> trivial = Gatherer.<Integer, Void, Integer>ofSequential(
+    Gatherer<Integer, ?, Integer> lambdaNull = Gatherer.<Integer, Void, Integer>ofSequential(
       () -> null, // Noncompliant  {{Replace `Gatherer.ofSequential(initializer, integrator)` with `Gatherer.ofSequential(integrator)`}}
-      //    ^^^^
+    //      ^^^^
       (_, element, downstream) -> downstream.push(element)
     );
-    Stream.of(1, 2, 3).gather(trivial).forEach(System.out::println);
+    Stream.of(1, 2, 3).gather(lambdaNull).forEach(System.out::println);
+
+    Gatherer<Integer, ?, Integer> defaultInitializer = Gatherer.<Integer, Void, Integer>ofSequential(
+      Gatherer.defaultInitializer(), // Noncompliant
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      (_, element, downstream) -> downstream.push(element)
+    );
+    Stream.of(1, 2, 3).gather(lambdaNull).forEach(System.out::println);
 
     Gatherer<Integer, ?, Integer> lambdaWithBody = Gatherer.<Integer, Void, Integer>ofSequential(
       () -> {
         System.out.println("initializer");
         return null; // Noncompliant
-      //^^^^^^^^^^^^
+    //  ^^^^^^^^^^^^
       },
       (_, element, downstream) -> downstream.push(element)
     );
@@ -30,7 +38,7 @@ public class ForStatelessGatherersOmitInitializerCheckSample {
   void nonCompliantSingleReturnOptional() {
     Gatherer<Integer, ?, Integer> trivial = Gatherer.<Integer, Optional<Object>, Integer>ofSequential(
       () -> Optional.empty(), // Noncompliant
-      //    ^^^^^^^^^^^^^^^^
+    //      ^^^^^^^^^^^^^^^^
       (_, element, downstream) -> downstream.push(element)
     );
     Stream.of(1, 2, 3).gather(trivial).forEach(System.out::println);
@@ -106,6 +114,25 @@ public class ForStatelessGatherersOmitInitializerCheckSample {
       (_, element, downstream) -> downstream.push(element)
     );
     Stream.of(1, 2, 3).gather(g).forEach(System.out::println);
+  }
+
+  void falseNegatives() {
+    Gatherer<Integer, ?, Integer> methodReference = Gatherer.<Integer, Integer, Integer>ofSequential(
+      ForStatelessGatherersOmitInitializerCheckSample::initialState, // FN we do not check method reference
+      (_, element, downstream) -> downstream.push(element)
+    );
+    Gatherer<Integer, ?, Integer> makeInitializer = Gatherer.<Integer, Integer, Integer>ofSequential(
+      createInitializer(), // FN we do not go inside method call
+      (_, element, downstream) -> downstream.push(element)
+    );
+  }
+
+  static Supplier<Integer> createInitializer(){
+    return () -> null;
+  }
+
+  static Integer initialState() {
+    return null;
   }
 
 }

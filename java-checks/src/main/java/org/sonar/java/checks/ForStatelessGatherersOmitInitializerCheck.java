@@ -55,9 +55,14 @@ public class ForStatelessGatherersOmitInitializerCheck extends IssuableSubscript
   private static final String INTEGRATOR = "java.util.stream.Gatherer$Integrator";
   private static final String BI_CONSUMER = "java.util.function.BiConsumer";
 
-  private static final MethodMatchers EMPTY = MethodMatchers.create()
+  private static final MethodMatchers OPTIONAL_EMPTY = MethodMatchers.create()
     .ofTypes("java.util.Optional")
     .names("empty")
+    .addWithoutParametersMatcher()
+    .build();
+  private static final MethodMatchers DEFAULT_INITIALIZER = MethodMatchers.create()
+    .ofTypes(GATHERER)
+    .names("defaultInitializer")
     .addWithoutParametersMatcher()
     .build();
   private static final MethodMatchers OF_SEQUENTIAL_WITHOUT_FINISHER = MethodMatchers.create()
@@ -124,13 +129,16 @@ public class ForStatelessGatherersOmitInitializerCheck extends IssuableSubscript
           return all;
         }
       }
+    } else if (initializer instanceof MethodInvocationTree mit && DEFAULT_INITIALIZER.matches(mit)) {
+      return List.of(mit.methodSelect());
     }
+
     return List.of();
   }
 
   private static boolean isStateless(Tree tree) {
     return tree.is(Tree.Kind.NULL_LITERAL)
-      || (tree instanceof MethodInvocationTree mit && EMPTY.matches(mit));
+      || (tree instanceof MethodInvocationTree mit && OPTIONAL_EMPTY.matches(mit));
   }
 
   /**
