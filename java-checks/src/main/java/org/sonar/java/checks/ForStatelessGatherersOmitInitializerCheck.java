@@ -19,7 +19,6 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -35,6 +34,22 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S7482")
 public class ForStatelessGatherersOmitInitializerCheck extends IssuableSubscriptionVisitor {
+  /**
+   * utility classes
+   */
+
+  /**
+   * Contains all information necessary to find out if a method invocation should be replaced by another method invocation.
+   */
+  private record Case(MethodMatchers matcher, ArgumentPredicate pred, String msg) {
+  }
+
+  private record ArgumentPredicate(int argIdx, Function<ExpressionTree, List<? extends Tree>> predicate) {
+  }
+
+  /**
+   * constants
+   */
   private static final String GATHERER = "java.util.stream.Gatherer";
   private static final String SUPPLIER = "java.util.function.Supplier";
   private static final String INTEGRATOR = "java.util.stream.Gatherer$Integrator";
@@ -45,56 +60,23 @@ public class ForStatelessGatherersOmitInitializerCheck extends IssuableSubscript
     .names("empty")
     .addWithoutParametersMatcher()
     .build();
-  private static final MethodMatchers TRIVIAL = MethodMatchers.create()
+  private static final MethodMatchers OF_SEQUENTIAL_WITHOUT_FINISHER = MethodMatchers.create()
     .ofTypes(GATHERER)
     .names("ofSequential")
     .addParametersMatcher(SUPPLIER, INTEGRATOR)
     .build();
-  private static final MethodMatchers WITH_FINISHER = MethodMatchers.create()
+  private static final MethodMatchers OF_SEQUENTIAL_WITH_FINISHER = MethodMatchers.create()
     .ofTypes(GATHERER)
     .names("ofSequential")
     .addParametersMatcher(SUPPLIER, INTEGRATOR, BI_CONSUMER)
     .build();
 
-
-  private static final Predicate<Tree> STATELESS = tree -> tree.is(Tree.Kind.NULL_LITERAL)
-    || (tree instanceof MethodInvocationTree mit && EMPTY.matches(mit));
-  private static final Function<ExpressionTree, List<? extends Tree>> STATELESS_INITIALIZER = tree -> {
-    if (tree instanceof LambdaExpressionTree lambda) {
-      var body = lambda.body();
-      if (STATELESS.test(body)) {
-        return List.of(body);
-      }
-
-
-      if (body instanceof BlockTree block) {
-        List<ReturnStatementTree> all = ReturnStatementCollector.collect(block);
-        List<ReturnStatementTree> stateless = all
-          .stream()
-          .filter(rs -> STATELESS.test(rs.expression()))
-          .toList();
-
-        if (stateless.size() == all.size()) {
-          return all;
-        } else {
-          return List.of();
-        }
-      }
-    }
-    return List.of();
-  };
-
-
-  private static final ArgumentPredicate INITIALIZER_PREDICATE = new ArgumentPredicate(0, STATELESS_INITIALIZER);
+  private static final ArgumentPredicate INITIALIZER_PREDICATE = new ArgumentPredicate(0, ForStatelessGatherersOmitInitializerCheck::isStatelessInitializer);
   private static final List<Case> CASES = List.of(
-    new Case(TRIVIAL, INITIALIZER_PREDICATE, "Replace of `Gatherer.ofSequential(initializer, integrator)` with `Gatherer.ofSequential(integrator)`"),
-    new Case(WITH_FINISHER, INITIALIZER_PREDICATE, "Replace of `Gatherer.ofSequential(initializer, integrator, finisher)` with `Gatherer.ofSequential(integrator, finisher)`")
+    new Case(OF_SEQUENTIAL_WITHOUT_FINISHER, INITIALIZER_PREDICATE, "Replace `Gatherer.ofSequential(initializer, integrator)` with `Gatherer.ofSequential(integrator)`"),
+    new Case(OF_SEQUENTIAL_WITH_FINISHER, INITIALIZER_PREDICATE, "Replace `Gatherer.ofSequential(initializer, integrator, finisher)` with `Gatherer.ofSequential(integrator, " +
+      "finisher)`")
   );
-
-
-  private record Case(MethodMatchers matcher, ArgumentPredicate pred, String msg) {}
-  private record ArgumentPredicate(int argIdx, Function<ExpressionTree, List<? extends Tree>> predicate) {
-  }
 
 
   @Override
@@ -106,7 +88,7 @@ public class ForStatelessGatherersOmitInitializerCheck extends IssuableSubscript
   public void visitNode(Tree tree) {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
 
-    for(Case c : CASES) {
+    for (Case c : CASES) {
       if (!c.matcher.matches(mit)) {
         continue;
       }
@@ -122,6 +104,33 @@ public class ForStatelessGatherersOmitInitializerCheck extends IssuableSubscript
         return;
       }
     }
+  }
+
+  /**
+   * Checks if the given initializer function always return a stateless value.
+   * An initializer is a Supplier<A> where A is not void.
+   */
+  private static List<? extends Tree> isStatelessInitializer(ExpressionTree initializer) {
+    if (initializer instanceof LambdaExpressionTree lambda) {
+      var body = lambda.body();
+      if (isStateless(body)) {
+        return List.of(body);
+      }
+
+      if (body instanceof BlockTree block) {
+        List<ReturnStatementTree> all = ReturnStatementCollector.collect(block);
+
+        if (all.stream().allMatch(rs -> isStateless(rs.expression()))) {
+          return all;
+        }
+      }
+    }
+    return List.of();
+  }
+
+  private static boolean isStateless(Tree tree) {
+    return tree.is(Tree.Kind.NULL_LITERAL)
+      || (tree instanceof MethodInvocationTree mit && EMPTY.matches(mit));
   }
 
   /**

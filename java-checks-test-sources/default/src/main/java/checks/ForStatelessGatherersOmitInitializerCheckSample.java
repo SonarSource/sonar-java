@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 public class ForStatelessGatherersOmitInitializerCheckSample {
   void nonCompliantSingleReturnNull() {
     Gatherer<Integer, ?, Integer> trivial = Gatherer.<Integer, Void, Integer>ofSequential(
-      () -> null, // Noncompliant  {{Replace of `Gatherer.ofSequential(initializer, integrator)` with `Gatherer.ofSequential(integrator)`}}
+      () -> null, // Noncompliant  {{Replace `Gatherer.ofSequential(initializer, integrator)` with `Gatherer.ofSequential(integrator)`}}
       //    ^^^^
       (_, element, downstream) -> downstream.push(element)
     );
@@ -36,7 +36,7 @@ public class ForStatelessGatherersOmitInitializerCheckSample {
     Stream.of(1, 2, 3).gather(trivial).forEach(System.out::println);
 
     Gatherer<Integer, ?, Integer> finisher = Gatherer.<Integer, Optional<Long>, Integer>ofSequential(
-      () -> Optional.empty(), // Noncompliant {{Replace of `Gatherer.ofSequential(initializer, integrator, finisher)` with `Gatherer.ofSequential(integrator, finisher)`}}
+      () -> Optional.empty(), // Noncompliant {{Replace `Gatherer.ofSequential(initializer, integrator, finisher)` with `Gatherer.ofSequential(integrator, finisher)`}}
       (_, element, downstream) -> downstream.push(element),
       (_, downstream) -> System.out.println("finisher")
     );
@@ -84,7 +84,7 @@ public class ForStatelessGatherersOmitInitializerCheckSample {
     Gatherer<Integer, ?, Integer> g = Gatherer.<Integer, Void, Integer>ofSequential(
       () -> {
         if (condition) {
-          return null; // Noncompliant {{Replace of `Gatherer.ofSequential(initializer, integrator)` with `Gatherer.ofSequential(integrator)`}}
+          return null; // Noncompliant {{Replace `Gatherer.ofSequential(initializer, integrator)` with `Gatherer.ofSequential(integrator)`}}
       //  ^^^^^^^^^^^^
         }
         return null;
