@@ -12,7 +12,7 @@ public class UseOfSequentialForSequentialGathererCheckSample {
     Gatherer<Integer, AtomicInteger, Integer> defaultCombiner = Gatherer.of(
       AtomicInteger::new,
       (state, element, downstream) -> downstream.push(element - state.getAndSet(element)),
-      Gatherer.defaultCombiner(),  // Noncompliant {{Replace `Gatherer.of(initializer, integrator, combiner, finisher)` with `ofSequential(initializer, integrator, finisher)` }}
+      Gatherer.defaultCombiner(),  // Noncompliant {{Replace `Gatherer.of(initializer, integrator, combiner, finisher)` with `ofSequential(initializer, integrator, finisher)`}}
     //^^^^^^^^^^^^^^^^^^^^^^^^^^
       Gatherer.defaultFinisher());
 
@@ -29,15 +29,24 @@ public class UseOfSequentialForSequentialGathererCheckSample {
 
 
   void compliant(boolean b) {
-    Gatherer<Integer, AtomicInteger, Integer> noThrow = Gatherer.of(
+    Gatherer<Integer, AtomicInteger, Integer> noBlock = Gatherer.of(
+      AtomicInteger::new,
+      (state, element, downstream) -> {
+        state.addAndGet(element);
+        return true;
+      },
+      (left, right) -> new AtomicInteger(0),
+      AtomicInteger::get
+    );
+
+    Gatherer<Integer, AtomicInteger, Integer> blockOneStmt = Gatherer.of(
       AtomicInteger::new,
       (state, element, downstream) -> {
         state.addAndGet(element);
         return true;
       },
       (left, right) -> {
-        left.addAndGet(right.get());
-        return left;
+        return new AtomicInteger(0);
       },
       AtomicInteger::get
     );

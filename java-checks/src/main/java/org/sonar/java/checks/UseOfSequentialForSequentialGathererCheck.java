@@ -26,8 +26,8 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 
 @Rule(key = "S7481")
@@ -68,7 +68,10 @@ public class UseOfSequentialForSequentialGathererCheck extends IssuableSubscript
 
   private static final ArgumentPredicate SEQUENTIAL_PREDICATE = new ArgumentPredicate(2, UseOfSequentialForSequentialGathererCheck::isSequentialGatherer);
   private static final List<Case> CASES = List.of(
-    new Case(GATHERER_OF, SEQUENTIAL_PREDICATE, "")
+    new Case(
+      GATHERER_OF,
+      SEQUENTIAL_PREDICATE,
+      "Replace `Gatherer.of(initializer, integrator, combiner, finisher)` with `ofSequential(initializer, integrator, finisher)`")
   );
 
 
