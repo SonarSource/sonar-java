@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -322,53 +321,6 @@ public class JavaFrontend {
       scanner.endOfAnalysis();
     }
 
-  }
-
-  static class BatchGenerator {
-    public final long batchSizeInBytes;
-    private final Iterator<InputFile> source;
-    private InputFile buffer = null;
-
-
-    public BatchGenerator(Iterator<InputFile> source, long batchSizeInBytes) {
-      this.source = source;
-      this.batchSizeInBytes = batchSizeInBytes;
-    }
-
-    public boolean hasNext() {
-      return buffer != null || source.hasNext();
-    }
-
-    public List<InputFile> next() {
-      List<InputFile> batch = clearBuffer();
-      long batchSize = batch.isEmpty() ? 0L : batch.get(0).file().length();
-      while (source.hasNext() && batchSize <= batchSizeInBytes) {
-        buffer = source.next();
-        batchSize += buffer.file().length();
-        if (batchSize > batchSizeInBytes) {
-          // If the batch is empty, we clear the value from the buffer and add it to the batch
-          if (batch.isEmpty()) {
-            batch.add(buffer);
-            buffer = null;
-          }
-          // If the last inputFile does not fit into the non-empty batch, we keep it in the buffer for the next call
-          return batch;
-        }
-        batch.add(buffer);
-      }
-      buffer = null;
-      return batch;
-    }
-
-    private List<InputFile> clearBuffer() {
-      if (buffer == null) {
-        return new ArrayList<>();
-      }
-      List<InputFile> batch = new ArrayList<>();
-      batch.add(buffer);
-      buffer = null;
-      return batch;
-    }
   }
 
   @VisibleForTesting
