@@ -1,0 +1,49 @@
+<h2>Why is this an issue?</h2>
+<p>When a method uses a <code>Gatherer.of(…​)</code> factory and provides a combiner function that always throws an exception, this implicitly signals
+that the gatherer is designed for sequential processing. The <code>java.util.stream.Gatherer</code> API provides
+<code>Gatherer.ofSequential(…​)</code> factories which clearly indicates that the gatherer is intended for sequential streams. Using such a factory
+improves code clarity, makes the intended processing model explicit, and avoids the need for a dummy or throwing combiner.</p>
+<h2>How to fix it</h2>
+<p>Use <code>Gatherer.ofSequential</code> instead of <code>Gatherer.of</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+  public static List&lt;Integer&gt; diffWithFirstPositive(List&lt;Integer&gt; list) {
+    Gatherer&lt;Integer, AtomicInteger, Integer&gt; gatherer = Gatherer.of(
+      () -&gt; new AtomicInteger(-1),
+      (state, number, downstream) -&gt; {
+        if (state.get() &lt; 0) {
+          state.set(number);
+          return true;
+        }
+        return downstream.push(number - state.get());
+      },
+      (_, _) -&gt; {
+        throw new IllegalStateException();
+      },
+      Gatherer.defaultFinisher());
+    return list.stream().gather(gatherer).toList();
+  }
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+  public static List&lt;Integer&gt; diffWithFirstPositive(List&lt;Integer&gt; list) {
+    Gatherer&lt;Integer, AtomicInteger, Integer&gt; gatherer = Gatherer.ofSequential(
+      () -&gt; new AtomicInteger(-1),
+      (state, number, downstream) -&gt; {
+        if (state.get() &lt; 0) {
+          state.set(number);
+          return true;
+        }
+        return downstream.push(number - state.get());
+      },
+      Gatherer.defaultFinisher());
+    return list.stream().gather(gatherer).toList();
+  }
+</pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/stream/Gatherer.html">Gatherer API</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/24/core/stream-gatherers.html">Stream gatherers documentation</a> </li>
+</ul>
+
