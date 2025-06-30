@@ -21,7 +21,7 @@ public class ClassNameInClassTransformCheckSample {
     ClassFile classFile = ClassFile.of();
     ClassModel classModel = classFile.parse(path);
     return classFile.transformClass(classModel,
-      classModel.thisClass(), // Noncompliant
+      classModel.thisClass(), // Noncompliant {{Use `transformClass` overload without the class name.}}
 //    ^^^^^^^^^^^^^^^^^^^^^^
       classTransform);
   }
@@ -30,7 +30,7 @@ public class ClassNameInClassTransformCheckSample {
     ClassFile classFile = ClassFile.of();
     ClassModel classModel = classFile.parse(path);
     return classFile.transformClass(classModel,
-      classModel.thisClass().asSymbol(), // Noncompliant
+      classModel.thisClass().asSymbol(), // Noncompliant {{Use `transformClass` overload without the class name.}}
 //    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       classTransform);
   }
@@ -39,7 +39,7 @@ public class ClassNameInClassTransformCheckSample {
     ClassFile classFile = ClassFile.of();
     ClassModel classModel = classFile.parse(path);
     return classFile.transformClass(classModel,
-      ClassDesc.ofInternalName(classModel.thisClass().asInternalName()), // Noncompliant
+      ClassDesc.ofInternalName(classModel.thisClass().asInternalName()), // Noncompliant {{Use `transformClass` overload without the class name.}}
 //    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       classTransform);
   }
@@ -48,7 +48,7 @@ public class ClassNameInClassTransformCheckSample {
     ClassFile classFile = ClassFile.of();
     ClassModel classModel = classFile.parse(path);
     return classFile.transformClass(classModel,
-      ClassDesc.ofInternalName(classModel.thisClass().name().stringValue()), // Noncompliant
+      ClassDesc.ofInternalName(classModel.thisClass().name().stringValue()), // Noncompliant {{Use `transformClass` overload without the class name.}}
 //    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       classTransform);
   }
@@ -57,7 +57,7 @@ public class ClassNameInClassTransformCheckSample {
     ClassFile classFile = ClassFile.of();
     ClassModel classModel = classFile.parse(path);
     return classFile.transformClass(classModel,
-      ClassDesc.ofDescriptor(classModel.thisClass().asSymbol().descriptorString()), // Noncompliant
+      ClassDesc.ofDescriptor(classModel.thisClass().asSymbol().descriptorString()), // Noncompliant {{Use `transformClass` overload without the class name.}}
 //    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       classTransform);
   }

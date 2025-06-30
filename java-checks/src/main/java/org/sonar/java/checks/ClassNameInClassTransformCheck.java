@@ -166,7 +166,7 @@ public class ClassNameInClassTransformCheck extends IssuableSubscriptionVisitor 
       ExpressionTree classDesc = mit.arguments().get(1);
       if (classModel instanceof IdentifierTree classModelId &&
         (isThisClassOf(classModelId).test(classDesc) || isDescriptorOf(classModelId).test(classDesc))) {
-        context.reportIssue(this, classDesc, "Drop new class name in transformClass call.");
+        context.reportIssue(this, classDesc, "Use `transformClass` overload without the class name.");
       }
     }
   }
