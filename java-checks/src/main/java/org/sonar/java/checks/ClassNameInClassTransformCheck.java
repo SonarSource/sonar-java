@@ -99,7 +99,7 @@ public class ClassNameInClassTransformCheck extends IssuableSubscriptionVisitor 
 
   static class ExpressionMatcher {
     @Nullable
-    ExpressionTree expressionTree;
+    private final ExpressionTree expressionTree;
 
     ExpressionMatcher(@Nullable ExpressionTree expressionTree) {
       this.expressionTree = expressionTree;

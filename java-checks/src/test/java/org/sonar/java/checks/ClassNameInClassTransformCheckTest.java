@@ -29,5 +29,13 @@ class ClassNameInClassTransformCheckTest {
       .withCheck(new ClassNameInClassTransformCheck())
       .verifyIssues();
   }
-  
+
+  @Test
+  void testWithoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ClassNameInClassTransformCheckSample.java"))
+      .withCheck(new ClassNameInClassTransformCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }
