@@ -1,0 +1,23 @@
+{
+  "title": "Class name should be omitted when unchanged by class transform",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java24"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-7477",
+  "sqKey": "S7477",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  }
+}
