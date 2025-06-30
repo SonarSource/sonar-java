@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +44,6 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
 
@@ -76,8 +74,7 @@ public class JavaFrontend {
     codeVisitors.addAll(commonVisitors);
     codeVisitors.addAll(Arrays.asList(visitors));
 
-    List<JavaCheck> testCodeVisitors = new ArrayList<>();
-    testCodeVisitors.addAll(commonVisitors);
+    List<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
     testCodeVisitors.add(measurer.new TestFileMeasurer());
 
     List<File> classpath = new ArrayList<>();
@@ -85,9 +82,11 @@ public class JavaFrontend {
     List<JavaCheck> jspCodeVisitors = new ArrayList<>();
     List<File> jspClasspath = new ArrayList<>();
     boolean inAndroidContext = false;
+
     if (sonarComponents != null) {
       if (!sonarComponents.isSonarLintContext()) {
-        codeVisitors = ListUtils.concat(codeVisitors, Arrays.asList(new FileLinesVisitor(sonarComponents), new SyntaxHighlighterVisitor(sonarComponents)));
+        codeVisitors.add(new FileLinesVisitor(sonarComponents));
+        codeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
         testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
       }
       classpath = sonarComponents.getJavaClasspath();
@@ -97,27 +96,21 @@ public class JavaFrontend {
       jspCodeVisitors = sonarComponents.jspChecks();
       inAndroidContext = sonarComponents.inAndroidContext();
     }
+
     globalClasspath = Stream.of(classpath, testClasspath, jspClasspath)
       .flatMap(Collection::stream).distinct().toList();
 
     //AstScanner for main files
     astScanner = new JavaAstScanner(sonarComponents);
-    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, javaVersion, sonarComponents, inAndroidContext));
+    astScanner.setVisitorBridge(new VisitorsBridge(codeVisitors, classpath, sonarComponents, javaVersion, inAndroidContext));
 
     //AstScanner for test files
     astScannerForTests = new JavaAstScanner(sonarComponents);
-    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, javaVersion, sonarComponents, inAndroidContext));
+    astScannerForTests.setVisitorBridge(new VisitorsBridge(testCodeVisitors, testClasspath, sonarComponents, javaVersion, inAndroidContext));
 
     //AstScanner for generated files
     astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents);
-    astScannerForGeneratedFiles.setVisitorBridge(createVisitorBridge(jspCodeVisitors, jspClasspath, javaVersion, sonarComponents, inAndroidContext));
-  }
-
-  private static VisitorsBridge createVisitorBridge(
-    Iterable<JavaCheck> codeVisitors, List<File> classpath, JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, boolean inAndroidContext) {
-    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents, javaVersion);
-    visitorsBridge.setInAndroidContext(inAndroidContext);
-    return visitorsBridge;
+    astScannerForGeneratedFiles.setVisitorBridge(new VisitorsBridge(jspCodeVisitors, jspClasspath, sonarComponents, javaVersion, inAndroidContext));
   }
 
   @VisibleForTesting
