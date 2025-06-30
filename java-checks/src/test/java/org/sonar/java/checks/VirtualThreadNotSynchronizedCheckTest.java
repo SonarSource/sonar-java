@@ -40,4 +40,13 @@ class VirtualThreadNotSynchronizedCheckTest {
       .withJavaVersion(20)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_since_java24() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/VirtualThreadNotSynchronizedCheckSample.java"))
+      .withCheck(new VirtualThreadNotSynchronizedCheck())
+      .withJavaVersion(24)
+      .verifyNoIssues();
+  }
 }

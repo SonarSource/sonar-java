@@ -44,7 +44,7 @@ public class VirtualThreadNotSynchronizedCheck extends IssuableSubscriptionVisit
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.isJava21Compatible();
+    return version.isJava21Compatible() && !version.isJava24Compatible();
   }
 
   @Override
