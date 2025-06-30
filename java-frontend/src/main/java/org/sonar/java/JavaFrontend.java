@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -36,6 +38,7 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.caching.CacheContextImpl;
+import org.sonar.java.classpath.DependencyVersionInference;
 import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
@@ -44,6 +47,7 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.Version;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
 
@@ -51,6 +55,11 @@ public class JavaFrontend {
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaFrontend.class);
   private static final String BATCH_ERROR_MESSAGE = "Batch Mode failed, analysis of Java Files stopped.";
+
+  /** List of libraries, whose presence or absence we want to report. */
+  private static final List<String> TELEMETRY_SELECTED_DEPENDENCIES = List.of("lombok", "spring-boot");
+
+  private static final String JAVA_DEPENDENCY_DOT = "java.dependency.";
 
   private static final String JAVA_SERVER_CACHING_ENABLED = "java.server.caching.enabled";
   private static final String JAVA_SERVER_CACHING_USED = "java.server.caching.files_used";
@@ -171,6 +180,13 @@ public class JavaFrontend {
       scanAsBatch(new DefaultBatchModeContext(astScanner, "Main"), sourceFiles);
       scanAsBatch(new DefaultBatchModeContext(astScannerForTests, "Test"), testFiles);
       scanAsBatch(new DefaultBatchModeContext(astScannerForGeneratedFiles, "Generated"), generatedFiles);
+    }
+
+    DependencyVersionInference dependencyService = new DependencyVersionInference();
+    for (String tmDependency: TELEMETRY_SELECTED_DEPENDENCIES) {
+      Optional<Version> version = dependencyService.infer(tmDependency, globalClasspath);
+      String versionValue = version.map(Objects::toString).orElse("none");
+      telemetry.addMetric(JAVA_DEPENDENCY_DOT + tmDependency, versionValue);
     }
   }
 
