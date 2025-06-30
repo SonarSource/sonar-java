@@ -256,7 +256,7 @@ class JavaFrontendTest {
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
       specificSonarComponents,
-      null,
+      mock(Measurer.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
     );
@@ -289,7 +289,7 @@ class JavaFrontendTest {
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
       specificSonarComponents,
-      null,
+      mock(Measurer.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
     );
@@ -322,7 +322,7 @@ class JavaFrontendTest {
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
       specificSonarComponents,
-      null,
+      mock(Measurer.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
     );
@@ -354,7 +354,7 @@ class JavaFrontendTest {
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
       specificSonarComponents,
-      null,
+      mock(Measurer.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
     );
@@ -386,7 +386,7 @@ class JavaFrontendTest {
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
       specificSonarComponents,
-      null,
+      mock(Measurer.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
     );
@@ -411,7 +411,7 @@ class JavaFrontendTest {
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
       null,
-      null,
+      mock(Measurer.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
     );
