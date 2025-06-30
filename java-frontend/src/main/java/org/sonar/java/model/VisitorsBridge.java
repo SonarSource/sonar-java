@@ -93,7 +93,8 @@ public class VisitorsBridge {
     this(visitors, projectClasspath, sonarComponents, new JavaVersionImpl());
   }
 
-  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext) {
+  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
+    boolean inAndroidContext) {
     this(visitors, projectClasspath, sonarComponents, javaVersion);
     setInAndroidContext(inAndroidContext);
   }
