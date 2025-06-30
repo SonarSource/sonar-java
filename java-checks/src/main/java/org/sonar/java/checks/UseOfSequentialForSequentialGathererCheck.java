@@ -87,12 +87,12 @@ public class UseOfSequentialForSequentialGathererCheck extends IssuableSubscript
   public void visitNode(Tree tree) {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
 
-    for (Case c : CASES) {
-      if (!c.matcher.matches(mit)) {
+    for (Case caze : CASES) {
+      if (!caze.matcher.matches(mit)) {
         continue;
       }
-      var argPredicate = c.pred;
-      var issues = argPredicate.predicate.apply(mit.arguments().get(argPredicate.argIdx));
+      var argumentPredicate = caze.pred;
+      var issues = argumentPredicate.predicate.apply(mit.arguments().get(argumentPredicate.argIdx));
       if (!issues.isEmpty()) {
 
         var secondaries = issues.subList(1, issues.size())
@@ -100,7 +100,7 @@ public class UseOfSequentialForSequentialGathererCheck extends IssuableSubscript
           .map(element -> new JavaFileScannerContext.Location("", element))
           .toList();
 
-        context.reportIssue(this, issues.get(0), c.msg, secondaries, null);
+        context.reportIssue(this, issues.get(0), caze.msg, secondaries, null);
         return;
       }
     }
