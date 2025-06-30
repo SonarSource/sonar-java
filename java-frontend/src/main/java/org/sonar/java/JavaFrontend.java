@@ -71,11 +71,15 @@ public class JavaFrontend {
       commonVisitors.add(postAnalysisIssueFilter);
     }
 
-    Iterable<JavaCheck> codeVisitors = ListUtils.concat(commonVisitors, Arrays.asList(visitors));
-    Collection<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
-    Iterable<JavaCheck> measurers = Collections.singletonList(measurer);
-    codeVisitors = ListUtils.concat(measurers, codeVisitors);
+    List<JavaCheck> codeVisitors = new ArrayList<>();
+    codeVisitors.add(measurer);
+    codeVisitors.addAll(commonVisitors);
+    codeVisitors.addAll(Arrays.asList(visitors));
+
+    List<JavaCheck> testCodeVisitors = new ArrayList<>();
+    testCodeVisitors.addAll(commonVisitors);
     testCodeVisitors.add(measurer.new TestFileMeasurer());
+
     List<File> classpath = new ArrayList<>();
     List<File> testClasspath = new ArrayList<>();
     List<JavaCheck> jspCodeVisitors = new ArrayList<>();
