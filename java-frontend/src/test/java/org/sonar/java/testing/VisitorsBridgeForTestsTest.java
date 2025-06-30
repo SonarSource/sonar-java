@@ -17,6 +17,7 @@
 package org.sonar.java.testing;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
@@ -46,13 +47,18 @@ class VisitorsBridgeForTestsTest {
     sonarComponents.setSensorContext(context);
 
     Tree parse = JParserTestUtils.parse("class A{}");
-    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(new DummyVisitor()), sonarComponents, new JavaVersionImpl());
+    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests.Builder(new DummyVisitor())
+      .withSonarComponents(sonarComponents)
+      .build();
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
     visitorsBridgeForTests.visitFile(parse, false);
     assertThat(visitorsBridgeForTests.lastCreatedTestContext().getSemanticModel()).isNull();
 
     parse = JParserTestUtils.parse("class A{}");
-    visitorsBridgeForTests = new VisitorsBridgeForTests(new DummyVisitor(), sonarComponents);
+    visitorsBridgeForTests = new VisitorsBridgeForTests.Builder(new DummyVisitor())
+      .withSonarComponents(sonarComponents)
+      .enableSemanticWithProjectClasspath(new ArrayList<>())
+      .build();
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
     visitorsBridgeForTests.visitFile(parse, false);
     assertThat(visitorsBridgeForTests.lastCreatedTestContext().getSemanticModel()).isNotNull();
@@ -66,7 +72,9 @@ class VisitorsBridgeForTestsTest {
 
     Tree parse = JParserTestUtils.parse("class A{}");
     DummyVisitor javaCheck = new DummyVisitor();
-    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(javaCheck), sonarComponents, new JavaVersionImpl());
+    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests.Builder(javaCheck)
+      .withSonarComponents(sonarComponents)
+      .build();
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
     visitorsBridgeForTests.visitFile(parse, false);
     JavaFileScannerContextForTests lastContext = visitorsBridgeForTests.lastCreatedTestContext();
@@ -88,7 +96,9 @@ class VisitorsBridgeForTestsTest {
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponents.setSensorContext(context);
     DummyVisitor javaCheck = new DummyVisitor();
-    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests(Collections.singletonList(javaCheck), sonarComponents, new JavaVersionImpl());
+    VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests.Builder(javaCheck)
+      .withSonarComponents(sonarComponents)
+      .build();
     var inputFile = mock(InputFile.class);
 
     var expectedTestContext =
@@ -99,7 +109,9 @@ class VisitorsBridgeForTestsTest {
 
   @Test
   void lastCreatedModuleContext_returns_last_created_module_context() {
-    var bridge = new VisitorsBridgeForTests(Collections.emptyList(), mock(SonarComponents.class), new JavaVersionImpl());
+    var bridge = new VisitorsBridgeForTests.Builder(Collections.emptyList())
+      .withSonarComponents(mock(SonarComponents.class))
+      .build();
     var firstModuleContext = bridge.createScannerContext(null, new JavaVersionImpl(), false, null);
     var secondAndExpectedModuleContext = bridge.createScannerContext(null, new JavaVersionImpl(), false, null);
     var firstTestContext = bridge.createScannerContext((CompilationUnitTree) null, null, null, false);

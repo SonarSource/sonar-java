@@ -39,21 +39,51 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
   private JavaFileScannerContextForTests testContext;
   private JavaFileScannerContextForTests moduleContext;
-  private boolean enableSemantic = true;
+  private boolean enableSemantic;
 
-
-  @VisibleForTesting
-  public VisitorsBridgeForTests(JavaFileScanner visitor, SonarComponents sonarComponents) {
-    this(Collections.singletonList(visitor), Collections.emptyList(), sonarComponents, new JavaVersionImpl());
+  private VisitorsBridgeForTests(Builder builder) {
+    super(builder.visitors, builder.projectClasspath, builder.sonarComponents, builder.javaVersion);
+    enableSemantic = builder.enableSemantic;
   }
 
-  public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
-    super(visitors, Collections.emptyList(), sonarComponents, javaVersion);
-    enableSemantic = false;
-  }
+  public static class Builder {
+    Iterable<? extends JavaCheck> visitors;
+    List<File> projectClasspath;
+    boolean enableSemantic;
+    SonarComponents sonarComponents;
+    JavaVersion javaVersion;
 
-  public VisitorsBridgeForTests(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
-    super(visitors, projectClasspath, sonarComponents, javaVersion);
+    public Builder(JavaFileScanner visitor) {
+      this(Collections.singletonList(visitor));
+    }
+
+    public Builder(Iterable<? extends JavaCheck> visitors) {
+      this.visitors = visitors;
+      this.sonarComponents = null;
+      this.javaVersion = new JavaVersionImpl();
+      this.projectClasspath = Collections.emptyList();
+      this.enableSemantic = false;
+    }
+
+    public Builder withJavaVersion(JavaVersion javaVersion) {
+      this.javaVersion = javaVersion;
+      return this;
+    }
+
+    public Builder withSonarComponents(SonarComponents sonarComponents) {
+      this.sonarComponents = sonarComponents;
+      return this;
+    }
+
+    public Builder enableSemanticWithProjectClasspath(List<File> projectClasspath) {
+      this.projectClasspath = projectClasspath;
+      this.enableSemantic = true;
+      return this;
+    }
+
+    public VisitorsBridgeForTests build() {
+      return new VisitorsBridgeForTests(this);
+    }
   }
 
   @Override

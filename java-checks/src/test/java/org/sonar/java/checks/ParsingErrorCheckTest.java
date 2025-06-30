@@ -36,7 +36,9 @@ class ParsingErrorCheckTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.inputFileContents(any())).thenCallRealMethod();
 
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(new ParsingErrorCheck(), sonarComponents);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests.Builder(new ParsingErrorCheck())
+      .withSonarComponents(sonarComponents)
+      .build();
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/parsing/ParsingError.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(1);
@@ -54,7 +56,9 @@ class ParsingErrorCheckTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.inputFileContents(any())).thenCallRealMethod();
 
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(new ParsingErrorCheck(), sonarComponents);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests.Builder(new ParsingErrorCheck())
+      .withSonarComponents(sonarComponents)
+      .build();
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/parsing/EmptyStatementsInImportsBug.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(1);

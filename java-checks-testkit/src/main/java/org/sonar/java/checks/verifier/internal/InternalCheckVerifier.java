@@ -282,14 +282,15 @@ public class InternalCheckVerifier implements CheckVerifier {
       visitors.add(expectations.parser());
     }
     SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, null);
-    VisitorsBridgeForTests visitorsBridge;
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
-    if (withoutSemantic) {
-      visitorsBridge = new VisitorsBridgeForTests(visitors, sonarComponents, actualVersion);
-    } else {
+    VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
+      .withJavaVersion(actualVersion)
+      .withSonarComponents(sonarComponents);
+    if (!withoutSemantic) {
       List<File> actualClasspath = classpath == null ? TestClasspathUtils.DEFAULT_MODULE.getClassPath() : classpath;
-      visitorsBridge = new VisitorsBridgeForTests(visitors, actualClasspath, sonarComponents, actualVersion);
+      visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
     }
+    VisitorsBridgeForTests visitorsBridge = visitorsBridgeBuilder.build();
 
     JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
     visitorsBridge.setInAndroidContext(inAndroidContext);

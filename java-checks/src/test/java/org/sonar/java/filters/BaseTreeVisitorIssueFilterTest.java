@@ -176,7 +176,7 @@ class BaseTreeVisitorIssueFilterTest {
   }
 
   private static void scanFile(JavaIssueFilter filter) {
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Collections.singletonList(filter), Collections.emptyList(), null, new JavaVersionImpl());
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests.Builder(filter).build();
     JavaAstScanner.scanSingleFileForTests(INPUT_FILE, visitorsBridge);
   }
 }
