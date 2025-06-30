@@ -716,27 +716,6 @@ class JavaFrontendTest {
   }
 
   @Test
-  void batch_generator_returns_at_most_one_item_per_batch_when_size_is_zero() throws IOException {
-    if (sensorContext != null) {
-      fail("sensorContext was already set");
-    }
-  }
-
-  @Test
-  void batch_generator_returns_batches_with_multiple_files_that_are_smaller_than_batch_size() throws IOException {
-    if (sensorContext != null) {
-      fail("sensorContext was already set");
-    }
-  }
-
-  @Test
-  void batch_generator_includes_file_excluded_from_previous_batch_into_next_batch() throws IOException {
-    if (sensorContext != null) {
-      fail("sensorContext was already set");
-    }
-  }
-
-  @Test
   void sonar_java_ignoreUnnamedModuleForSplitPackage_is_logged_at_debug_level_when_enabled() throws IOException {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "false");
