@@ -48,10 +48,11 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
   public static class Builder {
     Iterable<? extends JavaCheck> visitors;
-    List<File> projectClasspath;
-    boolean enableSemantic;
     SonarComponents sonarComponents;
     JavaVersion javaVersion;
+    List<File> projectClasspath;
+    boolean enableSemantic;
+    boolean inAndroidContext;
 
     public Builder(JavaFileScanner visitor) {
       this(Collections.singletonList(visitor));
@@ -63,6 +64,7 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
       this.javaVersion = new JavaVersionImpl();
       this.projectClasspath = Collections.emptyList();
       this.enableSemantic = false;
+      this.inAndroidContext = false;
     }
 
     public Builder withJavaVersion(JavaVersion javaVersion) {
@@ -78,6 +80,11 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     public Builder enableSemanticWithProjectClasspath(List<File> projectClasspath) {
       this.projectClasspath = projectClasspath;
       this.enableSemantic = true;
+      return this;
+    }
+
+    public Builder withAndroidContext(boolean inAndroidContext) {
+      this.inAndroidContext = inAndroidContext;
       return this;
     }
 

@@ -101,15 +101,14 @@ public class JavaCheckVerifier implements CheckVerifier {
     SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, rootDirectory);
     VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
       .withJavaVersion(actualVersion)
-      .withSonarComponents(sonarComponents);
+      .withSonarComponents(sonarComponents)
+      .withAndroidContext(inAndroidContext);
     if(!withoutSemantic) {
       visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
     }
 
     JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
     VisitorsBridgeForTests visitorsBridge = visitorsBridgeBuilder.build();
-    visitorsBridge.setInAndroidContext(inAndroidContext);
-
     astScanner.setVisitorBridge(visitorsBridge);
 
     List<InputFile> filesToParse = files;

@@ -285,7 +285,8 @@ public class InternalCheckVerifier implements CheckVerifier {
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
     VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
       .withJavaVersion(actualVersion)
-      .withSonarComponents(sonarComponents);
+      .withSonarComponents(sonarComponents)
+      .withAndroidContext(inAndroidContext);
     if (!withoutSemantic) {
       List<File> actualClasspath = classpath == null ? TestClasspathUtils.DEFAULT_MODULE.getClassPath() : classpath;
       visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
@@ -293,7 +294,6 @@ public class InternalCheckVerifier implements CheckVerifier {
     VisitorsBridgeForTests visitorsBridge = visitorsBridgeBuilder.build();
 
     JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
-    visitorsBridge.setInAndroidContext(inAndroidContext);
     astScanner.setVisitorBridge(visitorsBridge);
 
     List<InputFile> filesToParse = files;
