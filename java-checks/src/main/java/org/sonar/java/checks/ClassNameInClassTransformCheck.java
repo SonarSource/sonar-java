@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.TreeMatcher;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -28,11 +29,16 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
+import static org.sonar.java.matcher.TreeMatcher.calls;
+import static org.sonar.java.matcher.TreeMatcher.invokedOn;
+import static org.sonar.java.matcher.TreeMatcher.isIdentifier;
+import static org.sonar.java.matcher.TreeMatcher.matching;
+import static org.sonar.java.matcher.TreeMatcher.withArgument;
 
 @Rule(key = "S7477")
 public class ClassNameInClassTransformCheck extends IssuableSubscriptionVisitor {
@@ -139,13 +145,6 @@ public class ClassNameInClassTransformCheck extends IssuableSubscriptionVisitor 
       this.methodInvocationTree = methodInvocationTree;
     }
 
-    ExpressionMatcher onExpression() {
-      if (methodInvocationTree != null && methodInvocationTree.methodSelect() instanceof MemberSelectExpressionTree mset) {
-        return new ExpressionMatcher(mset.expression());
-      }
-      return new ExpressionMatcher(null);
-    }
-
     ExpressionMatcher withArgument(int argumentIndex) {
       if (methodInvocationTree != null && methodInvocationTree.arguments().size() >= argumentIndex) {
         return new ExpressionMatcher(methodInvocationTree.arguments().get(argumentIndex));
@@ -170,7 +169,7 @@ public class ClassNameInClassTransformCheck extends IssuableSubscriptionVisitor 
       ExpressionTree classModel = mit.arguments().get(0);
       ExpressionTree classDesc = mit.arguments().get(1);
       if (classModel instanceof IdentifierTree classModelId &&
-        (isThisClassOf(classModelId).test(classDesc) || isDescriptorOf(classModelId).test(classDesc))) {
+        (isThisClassOf(classModelId).or(isDescriptorOf(classModelId)).check(classDesc))) {
 
         QuickFixHelper.newIssue(context)
           .forRule(this)
@@ -191,9 +190,9 @@ public class ClassNameInClassTransformCheck extends IssuableSubscriptionVisitor 
   }
 
   /** The expression may be of the form `model.thisClass().asInternalName()` or `model.thisClass().name().stringValue(). */
-  private Predicate<ExpressionTree> isInternalNameOf(IdentifierTree classModel) {
-    return expression -> check(expression).calls(internalNameMatcher).onExpression().matches(isThisClassOf(classModel))
-      || check(expression).calls(stringValueMatcher).onExpression().calls(nameMatcher).onExpression().matches(isThisClassOf(classModel));
+  private TreeMatcher<ExpressionTree> isInternalNameOf(IdentifierTree classModel) {
+    return calls(internalNameMatcher, invokedOn(isThisClassOf(classModel)))
+            .or(calls(stringValueMatcher, invokedOn(calls(nameMatcher, invokedOn(isThisClassOf(classModel))))));
   }
 
   /** 
@@ -201,15 +200,20 @@ public class ClassNameInClassTransformCheck extends IssuableSubscriptionVisitor 
    *   - `model.thisClass().asSymbol()` 
    *   - or `Desc.ofInternalName(internalName)` where `internalName` is the result of `model.thisClass().asInternalName()`
    *   - or `Desc.ofDescriptorString(desc.descriptorString())` where `desc` itself has the form of a descriptor. */
-  private Predicate<ExpressionTree> isDescriptorOf(IdentifierTree classModel) {
-    return descTree -> check(descTree).calls(asSymbolMatcher).onExpression().matches(isThisClassOf(classModel))
-      || check(descTree).calls(ofInternalNameMatcher).withArgument(0).matches(isInternalNameOf(classModel))
-      || check(descTree).calls(ofDescriptorMatcher).withArgument(0)
-        .calls(descriptorStringMatcher).onExpression().matches(isDescriptorOf(classModel));
+  private TreeMatcher<ExpressionTree> isDescriptorOf(IdentifierTree classModel) {
+    // We set up the descriptor matcher in two steps because it needs to refer to itself.
+    TreeMatcher<ExpressionTree> descriptorMatcher = matching(tree -> false);
+    descriptorMatcher.setPredicate(
+      calls(asSymbolMatcher, invokedOn(isThisClassOf(classModel)))
+        .or(calls(ofInternalNameMatcher, withArgument(0, isInternalNameOf(classModel))))
+        .or(calls(ofDescriptorMatcher,
+          withArgument(0, calls(descriptorStringMatcher, invokedOn(descriptorMatcher)))))
+        .asPredicate());
+    return descriptorMatcher;
   }
 
   /** Check whether the given expression is of the form: `classModel.thisClass()`. */
-  private Predicate<ExpressionTree> isThisClassOf(IdentifierTree classModel) {
-    return expression -> check(expression).calls(thisClassMatcher).onExpression().isIdentifier(classModel);
+  private TreeMatcher<ExpressionTree> isThisClassOf(IdentifierTree classModel) {
+    return calls(thisClassMatcher, invokedOn(isIdentifier(classModel)));
   }
 }
