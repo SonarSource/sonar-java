@@ -21,8 +21,17 @@ import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.java.Telemetry;
 
-public record SensorTelemetry(SensorContext context) implements Telemetry {
+/**
+ * Wraps up {@link SensorContext} to allow passing it around without exposing other APIs.
+ */
+public class SensorTelemetry implements Telemetry {
   private static final Logger LOG = LoggerFactory.getLogger(SensorTelemetry.class);
+
+  private final SensorContext context;
+
+  public SensorTelemetry(SensorContext context) {
+    this.context = context;
+  }
 
   @Override
   public void addMetric(String key, String value) {

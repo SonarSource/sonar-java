@@ -62,7 +62,8 @@ public class JavaSensor implements Sensor {
   private static final String PERFORMANCE_MEASURE_FILE_PATH_PROPERTY = "sonar.java.performance.measure.path";
   private static final String PERFORMANCE_MEASURE_DESTINATION_FILE = "sonar.java.performance.measure.json";
 
-  private static int TELEMETRY_VERSION = 1;
+  /** Allows changing meaning of metrics without creating new keys. */
+  private static final int TELEMETRY_VERSION = 1;
 
   private final SonarComponents sonarComponents;
   private final FileSystem fs;
