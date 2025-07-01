@@ -38,11 +38,11 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
   private JavaFileScannerContextForTests testContext;
   private JavaFileScannerContextForTests moduleContext;
-  private boolean enableSemantic;
+  private final boolean enableSemantic;
 
   private VisitorsBridgeForTests(Builder builder) {
     super(builder.visitors, builder.projectClasspath, builder.sonarComponents, builder.javaVersion, builder.inAndroidContext);
-    enableSemantic = builder.enableSemantic;
+    this.enableSemantic = builder.enableSemantic;
   }
 
   public static class Builder {
