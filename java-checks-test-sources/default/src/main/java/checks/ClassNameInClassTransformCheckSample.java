@@ -20,23 +20,21 @@ public class ClassNameInClassTransformCheckSample {
   public byte[] transformClassFileNonCompliantDesc(Path path) throws IOException {
     ClassFile classFile = ClassFile.of();
     ClassModel classModel = classFile.parse(path);
-    return classFile.transformClass(classModel,
-      classModel.thisClass(), // Noncompliant {{Use `transformClass` overload without the class name.}} [[quickfixes=qf1]]
-//    ^^^^^^^^^^^^^^^^^^^^^^
+    return classFile.transformClass(classModel, classModel.thisClass(), classTransform); // Noncompliant {{Use `transformClass` overload without the class name.}} [[quickfixes=qf1]]
+//                                              ^^^^^^^^^^^^^^^^^^^^^^
 // fix@qf1 {{Remove second argument.}}
-// edit@qf1 [[sc=7;ec=29]] {{}}
-      classTransform);
+// edit@qf1 [[sc=47;ec=73]] {{, }}
+
   }
 
   public byte[] transformClassFileNonCompliant(Path path) throws IOException {
     ClassFile classFile = ClassFile.of();
     ClassModel classModel = classFile.parse(path);
-    return classFile.transformClass(classModel,
-      classModel.thisClass().asSymbol(), // Noncompliant {{Use `transformClass` overload without the class name.}} [[quickfixes=qf2]]
-//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    return classFile.transformClass(classModel, classModel.thisClass().asSymbol(), classTransform); // Noncompliant {{Use `transformClass` overload without the class name.}} [[quickfixes=qf2]]
+//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // fix@qf2 {{Remove second argument.}}
-// edit@qf2 [[sc=7;ec=40]] {{}}
-      classTransform);
+// edit@qf2 [[sc=47;ec=84]] {{, }}
+
   }
 
   public byte[] transformClassFileNonCompliantInternalName(Path path) throws IOException {

@@ -185,7 +185,8 @@ public class ClassNameInClassTransformCheck extends IssuableSubscriptionVisitor 
   private static JavaQuickFix computeQuickFix(Arguments arguments) {
     return JavaQuickFix
       .newQuickFix("Remove second argument.")
-      .addTextEdit(JavaTextEdit.removeTree(arguments.get(1)))
+      .addTextEdit(JavaTextEdit.replaceBetweenTree(
+              arguments.get(0), false, arguments.get(2), false, ", "))
       .build();
   }
 
