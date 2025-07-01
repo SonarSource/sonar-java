@@ -75,6 +75,7 @@ public class VisitorsBridge {
   protected InputFile currentFile;
   protected final JavaVersion javaVersion;
   private final List<File> classpath;
+  // `inAndroidContext` should be made private final
   protected boolean inAndroidContext = false;
   private int fullyScannedFileCount = 0;
   private int skippedFileCount = 0;
@@ -90,6 +91,12 @@ public class VisitorsBridge {
   @VisibleForTesting
   public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
     this(visitors, projectClasspath, sonarComponents, new JavaVersionImpl());
+  }
+
+  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
+    boolean inAndroidContext) {
+    this(visitors, projectClasspath, sonarComponents, javaVersion);
+    setInAndroidContext(inAndroidContext);
   }
 
   public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
