@@ -7220,7 +7220,6 @@
   {"cls":"org.springframework.ws.soap.security.support.KeyManagersFactoryBean","name":"setPassword","args":["java.lang.String"],"indices":[0]},
   {"cls":"org.springframework.ws.soap.security.support.KeyStoreFactoryBean","name":"setPassword","args":["java.lang.String"],"indices":[0]},
   {"cls":"org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor","name":"setSecurementPassword","args":["java.lang.String"],"indices":[0]},
-  {"cls":"org.springframework.ws.soap.security.wss4j2.Wss4jSecurityInterceptor","name":"setSecurementPasswordType","args":["java.lang.String"],"indices":[0]},
   {"cls":"org.springframework.ws.soap.security.wss4j2.callback.KeyStoreCallbackHandler","name":"setPrivateKeyPassword","args":["java.lang.String"],"indices":[0]},
   {"cls":"org.springframework.ws.soap.security.wss4j2.callback.KeyStoreCallbackHandler","name":"setSymmetricKeyPassword","args":["java.lang.String"],"indices":[0]},
   {"cls":"org.springframework.ws.soap.security.wss4j2.support.CryptoFactoryBean","name":"setKeyStorePassword","args":["java.lang.String"],"indices":[0]},
