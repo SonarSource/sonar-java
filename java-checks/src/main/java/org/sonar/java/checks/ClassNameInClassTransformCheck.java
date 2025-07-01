@@ -20,8 +20,12 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -35,6 +39,7 @@ public class ClassNameInClassTransformCheck extends IssuableSubscriptionVisitor 
   private static final String CLASS_ENTRY_CLASSNAME = "java.lang.classfile.constantpool.ClassEntry";
   private static final String CLASS_MODEL_CLASSNAME = "java.lang.classfile.ClassModel";
   private static final String CLASS_DESC_CLASSNAME = "java.lang.constant.ClassDesc";
+  private static final String ISSUE_MESSAGE = "Use `transformClass` overload without the class name.";
 
   MethodMatchers classTransformMatcher = MethodMatchers.create()
     .ofTypes("java.lang.classfile.ClassFile")
@@ -166,9 +171,22 @@ public class ClassNameInClassTransformCheck extends IssuableSubscriptionVisitor 
       ExpressionTree classDesc = mit.arguments().get(1);
       if (classModel instanceof IdentifierTree classModelId &&
         (isThisClassOf(classModelId).test(classDesc) || isDescriptorOf(classModelId).test(classDesc))) {
-        context.reportIssue(this, classDesc, "Use `transformClass` overload without the class name.");
+
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(classDesc)
+          .withMessage(ISSUE_MESSAGE)
+          .withQuickFix(() -> computeQuickFix(mit.arguments()))
+          .report();
       }
     }
+  }
+
+  private static JavaQuickFix computeQuickFix(Arguments arguments) {
+    return JavaQuickFix
+      .newQuickFix("Remove second argument.")
+      .addTextEdit(JavaTextEdit.removeTree(arguments.get(1)))
+      .build();
   }
 
   /** The expression may be of the form `model.thisClass().asInternalName()` or `model.thisClass().name().stringValue(). */

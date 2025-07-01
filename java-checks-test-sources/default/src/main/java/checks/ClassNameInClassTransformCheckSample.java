@@ -21,8 +21,10 @@ public class ClassNameInClassTransformCheckSample {
     ClassFile classFile = ClassFile.of();
     ClassModel classModel = classFile.parse(path);
     return classFile.transformClass(classModel,
-      classModel.thisClass(), // Noncompliant {{Use `transformClass` overload without the class name.}}
+      classModel.thisClass(), // Noncompliant {{Use `transformClass` overload without the class name.}} [[quickfixes=qf1]]
 //    ^^^^^^^^^^^^^^^^^^^^^^
+// fix@qf1 {{Remove second argument.}}
+// edit@qf1 [[sc=7;ec=29]] {{}}
       classTransform);
   }
 
@@ -30,8 +32,10 @@ public class ClassNameInClassTransformCheckSample {
     ClassFile classFile = ClassFile.of();
     ClassModel classModel = classFile.parse(path);
     return classFile.transformClass(classModel,
-      classModel.thisClass().asSymbol(), // Noncompliant {{Use `transformClass` overload without the class name.}}
+      classModel.thisClass().asSymbol(), // Noncompliant {{Use `transformClass` overload without the class name.}} [[quickfixes=qf2]]
 //    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+// fix@qf2 {{Remove second argument.}}
+// edit@qf2 [[sc=7;ec=40]] {{}}
       classTransform);
   }
 
