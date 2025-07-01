@@ -233,8 +233,9 @@ class SanityTest {
     JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
     JavaVersion javaVersion = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
     scanner.setVisitorBridge(new VisitorsBridgeForTests.Builder(checks)
-      .withJavaVersion(javaVersion)
+      .enableSemanticWithProjectClasspath(classpath)
       .withSonarComponents(sonarComponents)
+      .withJavaVersion(javaVersion)
       .build());
     List<SanityCheckException> exceptions = new ArrayList<>();
     AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
