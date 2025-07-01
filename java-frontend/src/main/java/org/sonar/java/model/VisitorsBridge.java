@@ -96,7 +96,8 @@ public class VisitorsBridge {
     this(visitors, projectClasspath, sonarComponents, javaVersion, false);
   }
 
-  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext) {
+  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
+    boolean inAndroidContext) {
     this.visitors = visitors;
     this.allScanners = new ArrayList<>();
     this.scannersThatCannotBeSkipped = new ArrayList<>();
