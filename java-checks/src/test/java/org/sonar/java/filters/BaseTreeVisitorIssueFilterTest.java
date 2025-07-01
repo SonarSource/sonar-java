@@ -29,7 +29,6 @@ import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
