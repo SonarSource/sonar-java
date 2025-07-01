@@ -29,5 +29,14 @@ class UseTransformClassInsteadOfBuildCheckTest {
       .withCheck(new UseTransformClassInsteadOfBuildCheck())
       .verifyIssues();
   }
-  
+
+  @Test
+  void testWithoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/UseTransformClassInsteadOfBuildCheckSample.java"))
+      .withCheck(new UseTransformClassInsteadOfBuildCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
 }
