@@ -124,6 +124,17 @@ class VisitorsBridgeForTestsTest {
       .isNotSameAs(secondTestContext);
   }
 
+  @Test
+  void test_builder() {
+    VisitorsBridgeForTests visitorsBridge =
+      new VisitorsBridgeForTests.Builder(Collections.emptyList())
+        .withJavaVersion(JavaVersionImpl.fromString("17"))
+        .withAndroidContext(true)
+        .build();
+    assertThat(visitorsBridge.getJavaVersion().asInt()).isEqualTo(17);
+    assertThat(visitorsBridge.inAndroidContext()).isTrue();
+  }
+
   private static class DummyVisitor implements JavaFileScanner {
     @Override
     public void scanFile(JavaFileScannerContext context) {

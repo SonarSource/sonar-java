@@ -22,6 +22,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -90,6 +91,11 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
     public VisitorsBridgeForTests build() {
       return new VisitorsBridgeForTests(this);
     }
+  }
+
+  @VisibleForTesting
+  boolean inAndroidContext() {
+    return inAndroidContext;
   }
 
   @Override
