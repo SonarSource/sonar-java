@@ -38,7 +38,7 @@ class IssuableSubscriptionVisitorTest {
 
   @Test
   void test_custom_rules_report_issues() {
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Collections.singletonList(new CustomRule()), new ArrayList<>(), null, new JavaVersionImpl());
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests.Builder(new CustomRule()).build();
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(8);

@@ -75,8 +75,7 @@ public class VisitorsBridge {
   protected InputFile currentFile;
   protected final JavaVersion javaVersion;
   private final List<File> classpath;
-  // `inAndroidContext` should be made private final
-  protected boolean inAndroidContext = false;
+  protected final boolean inAndroidContext;
   private int fullyScannedFileCount = 0;
   private int skippedFileCount = 0;
   @VisibleForTesting
@@ -85,29 +84,28 @@ public class VisitorsBridge {
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
-    this(Collections.singletonList(visitor), new ArrayList<>(), null, new JavaVersionImpl());
+    this(Collections.singletonList(visitor), new ArrayList<>(), null, new JavaVersionImpl(), false);
   }
 
   @VisibleForTesting
   public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    this(visitors, projectClasspath, sonarComponents, new JavaVersionImpl());
+    this(visitors, projectClasspath, sonarComponents, new JavaVersionImpl(), false);
+  }
+
+  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
+    this(visitors, projectClasspath, sonarComponents, javaVersion, false);
   }
 
   public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
     boolean inAndroidContext) {
-    this(visitors, projectClasspath, sonarComponents, javaVersion);
-    setInAndroidContext(inAndroidContext);
-  }
-
-  public VisitorsBridge(Iterable<? extends JavaCheck> visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, JavaVersion javaVersion) {
     this.visitors = visitors;
     this.allScanners = new ArrayList<>();
     this.scannersThatCannotBeSkipped = new ArrayList<>();
     this.classpath = projectClasspath;
     this.sonarComponents = sonarComponents;
     this.cacheContext = CacheContextImpl.of(sonarComponents);
-
     this.javaVersion = javaVersion;
+    this.inAndroidContext = inAndroidContext;
     dependencyService = new DependencyVersionInference();
     updateScanners();
   }
@@ -178,10 +176,6 @@ public class VisitorsBridge {
 
   public List<File> getClasspath() {
     return classpath;
-  }
-
-  public void setInAndroidContext(boolean inAndroidContext) {
-    this.inAndroidContext = inAndroidContext;
   }
 
   public void setCacheContext(CacheContext cacheContext) {

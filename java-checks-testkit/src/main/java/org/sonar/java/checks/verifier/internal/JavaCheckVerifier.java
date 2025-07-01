@@ -99,16 +99,16 @@ public class JavaCheckVerifier implements CheckVerifier {
     CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
     visitors.add(commentLinesVisitor);
     SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, rootDirectory);
-    VisitorsBridgeForTests visitorsBridge;
-    if (withoutSemantic) {
-      visitorsBridge = new VisitorsBridgeForTests(visitors, sonarComponents, actualVersion);
-    } else {
-      visitorsBridge = new VisitorsBridgeForTests(visitors, actualClasspath, sonarComponents, actualVersion);
+    VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
+      .withJavaVersion(actualVersion)
+      .withSonarComponents(sonarComponents)
+      .withAndroidContext(inAndroidContext);
+    if(!withoutSemantic) {
+      visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
     }
 
     JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
-    visitorsBridge.setInAndroidContext(inAndroidContext);
-
+    VisitorsBridgeForTests visitorsBridge = visitorsBridgeBuilder.build();
     astScanner.setVisitorBridge(visitorsBridge);
 
     List<InputFile> filesToParse = files;

@@ -232,7 +232,11 @@ class SanityTest {
     SonarComponents sonarComponents = sonarComponents(moduleBaseDir, inputFiles);
     JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
     JavaVersion javaVersion = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    scanner.setVisitorBridge(new VisitorsBridgeForTests(checks, classpath, sonarComponents, javaVersion));
+    scanner.setVisitorBridge(new VisitorsBridgeForTests.Builder(checks)
+      .enableSemanticWithProjectClasspath(classpath)
+      .withSonarComponents(sonarComponents)
+      .withJavaVersion(javaVersion)
+      .build());
     List<SanityCheckException> exceptions = new ArrayList<>();
     AnalysisProgress analysisProgress = new AnalysisProgress(inputFiles.size());
     JParserConfig.Mode.BATCH
