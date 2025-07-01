@@ -112,7 +112,6 @@ public class TreeMatcher<T extends Tree> {
     return new TreeMatcher<>(tree -> tree instanceof ExpressionTree expr && expressionMatcher.check(expr));
   }
 
-  // TODO: test with single statement lambda expressions
   public static TreeMatcher<Tree> hasSize(int size) {
     return new TreeMatcher<>(tree -> (tree instanceof BlockTree block && block.body().size() == size)
       || (tree instanceof StatementTree && size == 1));
