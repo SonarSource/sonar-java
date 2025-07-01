@@ -1,0 +1,45 @@
+<h2>Why is this an issue?</h2>
+<p>In the classfile API introduced by Java 24, there are several versions of the <code>transformClass</code> methods. In particular if the name of the
+transformed class is unchanged compared to the original class, then it is recommended to use the simplest version of the method that takes only 2
+arguments. This makes the code shorter, clearer, and reduces chances for mistakes.</p>
+<h2>How to fix it</h2>
+<p>Remove the class name argument of the <code>transformClass</code> call.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public static void transformClassFile(Path path) throws IOException {
+    ClassFile classFile = ClassFile.of();
+    ClassModel classModel = classFile.parse(path);
+    byte[] newBytes = classFile.transformClass(classModel,
+      classModel.thisClass().asSymbol(), // Noncompliant
+      (classBuilder, classElement) -&gt; {
+        if (!(classElement instanceof MethodModel methodModel &amp;&amp;
+            methodModel.methodName().stringValue().startsWith("debug"))) {
+            classBuilder.with(classElement);
+        }
+      });
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public static void transformClassFile(Path path) throws IOException {
+    ClassFile classFile = ClassFile.of();
+    ClassModel classModel = classFile.parse(path);
+    byte[] newBytes = classFile.transformClass(classModel,
+      (classBuilder, classElement) -&gt; {
+        if (!(classElement instanceof MethodModel methodModel &amp;&amp;
+            methodModel.methodName().stringValue().startsWith("debug"))) {
+            classBuilder.with(classElement);
+        }
+      });
+}
+</pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://openjdk.org/jeps/484">JEP 484: Class-File API</a> </li>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/classfile/ClassFile.html#transformClass(java.lang.classfile.ClassModel,java.lang.classfile.ClassTransform)">ClassFile API, transformClass(ClassModel, ClassTransform)</a> </li>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/classfile/ClassFile.html#transformClass(java.lang.classfile.ClassModel,java.lang.constant.ClassDesc,java.lang.classfile.ClassTransform)">ClassFile API, transformClass(ClassModel, ClassDesc, ClassTransform)</a> </li>
+</ul>
+

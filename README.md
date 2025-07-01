@@ -164,7 +164,7 @@ Make sure that the `java-checks-test-sources` module has been compiled (ie: the 
 
 In doubt, go the [`java-checks-test-sources`](java-checks-tests-sources) module and run:
 ```shell
-# Use java 23!
+# Use java 24!
 mvn clean compile
 ```
 
