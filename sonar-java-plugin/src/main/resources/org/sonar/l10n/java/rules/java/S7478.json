@@ -1,0 +1,23 @@
+{
+  "title": "\"transformClass\" method should be used instead of \"build\" when transforming a class",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java24"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-7478",
+  "sqKey": "S7478",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  }
+}
