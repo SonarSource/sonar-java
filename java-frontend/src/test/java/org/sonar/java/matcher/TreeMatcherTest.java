@@ -221,7 +221,7 @@ class TreeMatcherTest {
   void testHasSize() {
     CompilationUnitTree t = JParserTestUtils.parse("""
        class C {
-         Consumer<List<String>> lambda = s -> { 
+         Consumer<List<String>> lambda = s -> {
            int i = 0;
            for (String s1 : s) {
              i++;
@@ -247,7 +247,7 @@ class TreeMatcherTest {
   void testStatementAt() {
     CompilationUnitTree t = JParserTestUtils.parse("""
        class C {
-         Consumer<Integer> lambda = x -> { 
+         Consumer<Integer> lambda = x -> {
            int i = x;
            int j = x;
            k = i + j;
@@ -261,10 +261,13 @@ class TreeMatcherTest {
     assertTrue(statementAt(0, matching(VariableTree.class::isInstance)).check(block));
     assertFalse(statementAt(0, isInvocation(matching(s -> true)))
       .check(block));
+    assertFalse(statementAt(10, isInvocation(matching(s -> true)))
+      .check(block));
 
     assertTrue(statementAt(0, matching(ExpressionStatementTree.class::isInstance)).check(block.body().get(2)));
     assertFalse(statementAt(2, matching(ExpressionStatementTree.class::isInstance)).check(block.body().get(2)));
     assertFalse(statementAt(0, matching(VariableTree.class::isInstance)).check(block.body().get(2)));
+
   }
 
 }

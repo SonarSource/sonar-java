@@ -118,7 +118,8 @@ public class TreeMatcher<T extends Tree> {
   }
 
   public static TreeMatcher<Tree> statementAt(int index, TreeMatcher<StatementTree> statementMatcher) {
-    return new TreeMatcher<>(tree -> ((tree instanceof BlockTree block && statementMatcher.check(block.body().get(index)))
+    return new TreeMatcher<>(tree ->
+      ((tree instanceof BlockTree block && block.body().size() > index && statementMatcher.check(block.body().get(index)))
       || (tree instanceof ExpressionStatementTree statement && index == 0 && statementMatcher.check(statement))));
   }
 
