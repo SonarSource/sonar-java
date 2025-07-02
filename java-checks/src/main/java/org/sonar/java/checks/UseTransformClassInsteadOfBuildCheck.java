@@ -37,13 +37,19 @@ public class UseTransformClassInsteadOfBuildCheck extends IssuableSubscriptionVi
 
   private static final String CLASS_MODEL_CLASSNAME = "java.lang.classfile.ClassModel";
   private static final String CLASS_DESC_CLASSNAME = "java.lang.constant.ClassDesc";
+  private static final String CONSUMER_CLASSNAME = "java.util.function.Consumer";
+  private static final String CLASS_ENTRY_CLASSNAME = "java.lang.classfile.constantpool.ClassEntry";
 
   private final MethodMatchers classFileBuildMatcher = MethodMatchers.create()
     .ofTypes("java.lang.classfile.ClassFile")
     .names("build")
     .addParametersMatcher(
       CLASS_DESC_CLASSNAME,
-      "java.util.function.Consumer")
+      CONSUMER_CLASSNAME)
+    .addParametersMatcher(
+      CLASS_ENTRY_CLASSNAME,
+      "java.lang.classfile.constantpool.ConstantPoolBuilder",
+      CONSUMER_CLASSNAME)
     .build();
 
   /**
@@ -67,10 +73,11 @@ public class UseTransformClassInsteadOfBuildCheck extends IssuableSubscriptionVi
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree methodInvocation = (MethodInvocationTree) tree;
-    if (classFileBuildMatcher.matches(methodInvocation) &&
-      treeMatcher.check(methodInvocation.arguments().get(1))) {
-      reportIssue(methodInvocation.methodSelect(), "Replace this 'build()' call with 'transformClass()'.");
+    if (classFileBuildMatcher.matches(methodInvocation) && !methodInvocation.arguments().isEmpty()) {
+      ExpressionTree lastArgument = methodInvocation.arguments().get(methodInvocation.arguments().size() - 1);
+      if (treeMatcher.check(lastArgument)) {
+        reportIssue(methodInvocation.methodSelect(), "Replace this 'build()' call with 'transformClass()'.");
+      }
     }
   }
-
 }
