@@ -42,6 +42,11 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
     MethodMatchers.create().ofTypes("java.net.http.HttpClient").names("newHttpClient").addWithoutParametersMatcher().build()
   );
 
+  private static final MethodMatchers AUTOCLOSEABLE_FACTORY_MATCHER =
+    MethodMatchers.create().ofSubTypes("java.io.Reader")
+      .names("of")
+      .addParametersMatcher("java.lang.CharSequence").build();
+
   private final Deque<TryStatementTree> withinTry = new LinkedList<>();
   private final Deque<List<Tree>> toReport = new LinkedList<>();
 
@@ -78,7 +83,8 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
 
   private static boolean isNewAutocloseableOrBuilder(Tree tree, JavaFileScannerContext context) {
     return (tree instanceof NewClassTree newClass && newClass.symbolType().isSubtypeOf("java.lang.AutoCloseable")) ||
-      (context.getJavaVersion().isJava21Compatible() && tree instanceof MethodInvocationTree mit && AUTOCLOSEABLE_BUILDER_MATCHER.matches(mit));
+      (context.getJavaVersion().isJava21Compatible() && tree instanceof MethodInvocationTree mit && AUTOCLOSEABLE_BUILDER_MATCHER.matches(mit))||
+      (tree instanceof MethodInvocationTree mit2 && AUTOCLOSEABLE_FACTORY_MATCHER.matches(mit2));
   }
 
   private static boolean isFollowedByTryWithFinally(Tree tree) {
