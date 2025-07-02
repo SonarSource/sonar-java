@@ -1,0 +1,48 @@
+<h2>Why is this an issue?</h2>
+<p>The <code>ClassBuilder</code> API provides multiple ways to declare a method and its body, including <code>withMethod</code> and
+<code>withMethodBody</code>. While they can be used in very similar ways, <code>withMethodBody</code> reduces boilerplate code, lowers cognitive
+complexity and improves maintainability.</p>
+<h3>Exceptions</h3>
+<p>The rule will not raise on calls where the method under construction is abstract (eg: using the flag <code>ClassFile.ACC_ABSTRACT</code>).</p>
+<h2>How to fix it</h2>
+<p>Replace the invocation of <code>withMethod</code> with <code>withMethodBody</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+ClassBuilder addMethod(ClassBuilder builder) {
+    return builder
+        .withMethod("foo", MTD_void, ACC_PUBLIC | ACC_STATIC, methodBuilder -&gt; { // Noncompliant
+            methodBuilder.withCode(codeBuilder -&gt;
+                codeBuilder.getstatic(ClassDesc.of("java.lang.System"), "out", ClassDesc.of("java.io.PrintStream"))
+                    .ldc("Hello World")
+                    .invokevirtual(ClassDesc.of("java.io.PrintStream"), "println", MTD_void)
+                    .return_()
+            );
+        });
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+ClassBuilder addMethod(ClassBuilder builder) {
+    return builder
+        .withMethodBody("foo", MTD_void, ACC_PUBLIC | ACC_STATIC, codeBuilder -&gt;
+            codeBuilder.getstatic(ClassDesc.of("java.lang.System"), "out", ClassDesc.of("java.io.PrintStream"))
+                .ldc("Hello World")
+                .invokevirtual(ClassDesc.of("java.io.PrintStream"), "println", MTD_void)
+                .return_()
+        );
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/classfile/package-summary.html#writing-classfiles-heading">Writing
+  classfiles - classfile Javadoc</a> </li>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/classfile/ClassBuilder.html#withMethod(java.lang.classfile.constantpool.Utf8Entry,java.lang.classfile.constantpool.Utf8Entry,int,java.util.function.Consumer)">withMethod - ClassBuilder Javadoc</a> </li>
+  <li> <a
+  href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/classfile/ClassBuilder.html#withMethodBody(java.lang.classfile.constantpool.Utf8Entry,java.lang.classfile.constantpool.Utf8Entry,int,java.util.function.Consumer)">withMethodBody - ClassBuilder Javadoc</a> </li>
+  <li> <a href="https://openjdk.org/jeps/484">JEP 484: Class-File API</a> </li>
+</ul>
+
