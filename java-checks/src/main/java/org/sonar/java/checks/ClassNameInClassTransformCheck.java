@@ -37,7 +37,6 @@ import javax.annotation.Nullable;
 import static org.sonar.java.matcher.TreeMatcher.calls;
 import static org.sonar.java.matcher.TreeMatcher.invokedOn;
 import static org.sonar.java.matcher.TreeMatcher.isIdentifier;
-import static org.sonar.java.matcher.TreeMatcher.matching;
 import static org.sonar.java.matcher.TreeMatcher.withArgument;
 
 @Rule(key = "S7477")
@@ -201,15 +200,11 @@ public class ClassNameInClassTransformCheck extends IssuableSubscriptionVisitor 
    *   - or `Desc.ofInternalName(internalName)` where `internalName` is the result of `model.thisClass().asInternalName()`
    *   - or `Desc.ofDescriptorString(desc.descriptorString())` where `desc` itself has the form of a descriptor. */
   private TreeMatcher<ExpressionTree> isDescriptorOf(IdentifierTree classModel) {
-    // We set up the descriptor matcher in two steps because it needs to refer to itself.
-    TreeMatcher<ExpressionTree> descriptorMatcher = matching(tree -> false);
-    descriptorMatcher.setPredicate(
+    return TreeMatcher.recursive(self ->
       calls(asSymbolMatcher, invokedOn(isThisClassOf(classModel)))
         .or(calls(ofInternalNameMatcher, withArgument(0, isInternalNameOf(classModel))))
         .or(calls(ofDescriptorMatcher,
-          withArgument(0, calls(descriptorStringMatcher, invokedOn(descriptorMatcher)))))
-        .asPredicate());
-    return descriptorMatcher;
+          withArgument(0, calls(descriptorStringMatcher, invokedOn(self))))));
   }
 
   /** Check whether the given expression is of the form: `classModel.thisClass()`. */

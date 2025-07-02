@@ -108,7 +108,7 @@ class TreeMatcherTest {
   }
 
   @Test
-  void testSetPredicate() {
+  void testAsPredicate() {
     CompilationUnitTree t = JParserTestUtils.parse("""
       class C {
         int i = foo(x);
@@ -122,11 +122,24 @@ class TreeMatcherTest {
     TreeMatcher<Tree> matcher = isExpression(isCall(withArgument(0, isIdentifier("x"))));
     Predicate<Tree> predicate = matcher.asPredicate();
     assertTrue(predicate.test(expression));
+  }
 
-    TreeMatcher<Tree> emptyMatcher = TreeMatcher.matching(x -> false);
-    assertFalse(emptyMatcher.check(expression));
-    emptyMatcher.setPredicate(predicate);
-    assertTrue(emptyMatcher.check(expression));
+  @Test
+  void testRecursive() {
+    CompilationUnitTree t = JParserTestUtils.parse("""
+      class C {
+        int i = foo(x);
+      }
+      """);
+
+    // Match any number of calls to foo on itself or x
+    TreeMatcher<ExpressionTree> fooStarX = TreeMatcher
+      .recursive(self -> isIdentifier("x").or(isCall(withArgument(0, self))));
+
+    ClassTree c = (ClassTree) t.types().get(0);
+    VariableTree variableTree = (VariableTree) c.members().get(0);
+    ExpressionTree expression = variableTree.initializer();
+    assertTrue(fooStarX.check(expression));
   }
 
   @Test

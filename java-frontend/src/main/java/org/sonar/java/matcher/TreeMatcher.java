@@ -29,10 +29,12 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 public class TreeMatcher<T extends Tree> {
-  private Predicate<T> predicate;
+  private final Predicate<T> predicate;
 
   private TreeMatcher(Predicate<T> predicate) {
     this.predicate = predicate;
@@ -50,8 +52,13 @@ public class TreeMatcher<T extends Tree> {
     return new TreeMatcher<>(predicate.or(other.predicate));
   }
 
-  public void setPredicate(Predicate<T> newPredicate) {
-    this.predicate = newPredicate;
+  /** Method to allow defining a matcher that refers to itself. */
+  public static <T extends Tree> TreeMatcher<T> recursive(UnaryOperator<TreeMatcher<T>> treeMatcherMaker) {
+    AtomicReference<TreeMatcher<T>> treeMatcherWrapper = new AtomicReference<>();
+    TreeMatcher<T> matcherUsingWrapper = new TreeMatcher<>(tree -> treeMatcherWrapper.get().check(tree));
+    TreeMatcher<T> matcher = treeMatcherMaker.apply(matcherUsingWrapper);
+    treeMatcherWrapper.set(matcher);
+    return treeMatcherWrapper.get();
   }
 
   public static <U extends Tree> TreeMatcher<U> matching(Predicate<U> predicate) {
