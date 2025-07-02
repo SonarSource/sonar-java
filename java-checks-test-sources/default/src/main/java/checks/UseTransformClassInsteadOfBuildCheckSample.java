@@ -14,7 +14,7 @@ public class UseTransformClassInsteadOfBuildCheckSample {
   public static void transformClassFile(Path path) throws IOException {
     ClassFile classFile = ClassFile.of();
     ClassModel classModel = classFile.parse(path);
-    byte[] newBytes = classFile.build( // Noncompliant
+    byte[] newBytes = classFile.build( // Noncompliant {{Replace this 'build()' call with 'transformClass()'.}}
       //              ^^^^^^^^^^^^^^^
       classModel.thisClass().asSymbol(), classBuilder -> {
         for (ClassElement classElement : classModel) {
