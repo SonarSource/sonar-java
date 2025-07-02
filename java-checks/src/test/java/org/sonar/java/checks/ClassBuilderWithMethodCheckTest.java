@@ -29,5 +29,14 @@ class ClassBuilderWithMethodCheckTest {
       .withCheck(new ClassBuilderWithMethodCheck())
       .verifyIssues();
   }
+
+  @Test
+  void testWithoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ClassBuilderWithMethodCheckSample.java"))
+      .withCheck(new ClassBuilderWithMethodCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
   
 }
