@@ -38,4 +38,22 @@ public class UseTransformClassInsteadOfBuildCheckSample {
       });
     Files.write(path, newBytes);
   }
+
+  public static void transformClassFileFalseNegative(Path path) throws IOException {
+    var classFile = ClassFile.of();
+    var classModel = classFile.parse(path);
+    byte[] newBytes = classFile.build(
+      // False negative. We don't detect that we could use `transformClass` instead of
+      // `build` because the lambda contains several statements.
+      classModel.thisClass().asSymbol(), classBuilder -> {
+        var methodName = "debug";
+        for (ClassElement classElement : classModel) {
+          if (!(classElement instanceof MethodModel methodModel &&
+            methodModel.methodName().stringValue().startsWith(methodName))) {
+            classBuilder.with(classElement);
+          }
+        }
+      });
+    Files.write(path, newBytes);
+  }
 }
