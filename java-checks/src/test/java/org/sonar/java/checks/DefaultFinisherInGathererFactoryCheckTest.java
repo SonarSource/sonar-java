@@ -29,5 +29,14 @@ class DefaultFinisherInGathererFactoryCheckTest {
       .withCheck(new DefaultFinisherInGathererFactoryCheck())
       .verifyIssues();
   }
-  
+
+  @Test
+  void testWithoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/DefaultFinisherInGathererFactoryCheckSample.java"))
+      .withCheck(new DefaultFinisherInGathererFactoryCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
 }
