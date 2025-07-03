@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.sonar.java.TestUtils.mockSonarComponents;
 
 class JavaVersionAwareVisitorTest {
 
@@ -77,7 +78,7 @@ class JavaVersionAwareVisitorTest {
 
   private void checkIssues(JavaVersion version) {
     messages.clear();
-    JavaFrontend frontend = new JavaFrontend(version, null, mock(Measurer.class), null, null, javaChecks);
+    JavaFrontend frontend = new JavaFrontend(version, mockSonarComponents(), mock(Measurer.class), null, null, javaChecks);
     frontend.scan(Collections.singletonList(TestUtils.inputFile("src/test/files/JavaVersionAwareChecks.java")),
       Collections.emptyList(), Collections.emptyList());
   }

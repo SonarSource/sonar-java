@@ -47,6 +47,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.sonar.java.TestUtils.mockSonarComponents;
 
 @EnableRuleMigrationSupport
 class SyntaxHighlighterVisitorTest {
@@ -254,7 +255,7 @@ class SyntaxHighlighterVisitorTest {
 
   private void scan(InputFile inputFile) {
     JavaVersion javaVersion = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    JavaFrontend frontend = new JavaFrontend(javaVersion, null, mock(Measurer.class), null, null, syntaxHighlighterVisitor);
+    JavaFrontend frontend = new JavaFrontend(javaVersion, mockSonarComponents(), mock(Measurer.class), null, null, syntaxHighlighterVisitor);
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
 

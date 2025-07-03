@@ -19,14 +19,19 @@ package org.sonar.java;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.java.exceptions.ApiMismatchException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestUtils {
   private TestUtils() {
@@ -126,5 +131,17 @@ public class TestUtils {
 
   public static List<String> filterOutAnalysisProgressLogLines(List<String> logs) {
     return filterOutAnalysisProgressLogLines(logs.stream());
+  }
+
+  public static SonarComponents mockSonarComponents() {
+    SonarComponents mock = mock(SonarComponents.class);
+    when(mock.isSonarLintContext()).thenReturn(true);
+    when(mock.getBatchModeSizeInKB()).thenReturn(-1L);
+    when(mock.getJavaClasspath()).thenReturn(new ArrayList<>());
+    when(mock.getJavaTestClasspath()).thenReturn(new ArrayList<>());
+    when(mock.getJspClasspath()).thenReturn(new ArrayList<>());
+    when(mock.testChecks()).thenReturn(new ArrayList<>());
+    when(mock.jspChecks()).thenReturn(new ArrayList<>());
+    return mock;
   }
 }

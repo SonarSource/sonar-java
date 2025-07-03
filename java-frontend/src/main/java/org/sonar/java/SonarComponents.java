@@ -687,5 +687,4 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   public Configuration getConfiguration() {
     return context.config();
   }
-  
 }

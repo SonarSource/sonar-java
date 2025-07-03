@@ -79,6 +79,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.InputFileUtils.addFile;
+import static org.sonar.java.TestUtils.mockSonarComponents;
 
 @EnableRuleMigrationSupport
 class JavaFrontendTest {
@@ -179,7 +180,7 @@ class JavaFrontendTest {
 
   @Test
   void scanning_empty_project_should_be_logged_in_batch() {
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
     assertThat(logTester.logs(Level.INFO)).containsExactly(
@@ -405,7 +406,7 @@ class JavaFrontendTest {
 
     JavaFrontend frontend = new JavaFrontend(
       new JavaVersionImpl(),
-      null,
+      mockSonarComponents(),
       mock(Measurer.class),
       mock(JavaResourceLocator.class),
       mainCodeIssueScannerAndFilter
@@ -423,12 +424,12 @@ class JavaFrontendTest {
   }
 
   @Test
-  void test_getters_with_null_sonarComponents() {
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, new Measurer(sensorContext, mock(NoSonarFilter.class)), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
-    assertThat(frontend.isAutoScan()).isFalse();
-    assertThat(frontend.isFileByFileEnabled()).isFalse();
-    assertThat(frontend.analysisCancelled()).isFalse();
-    assertThat(frontend.getBatchModeSizeInKB()).isEqualTo(-1L);
+  void test_validate_mockSonarComponents() {
+    SonarComponents mock = mockSonarComponents();
+    assertThat(mock.isAutoScan()).isFalse();
+    assertThat(mock.isFileByFileEnabled()).isFalse();
+    assertThat(mock.analysisCancelled()).isFalse();
+    assertThat(mock.getBatchModeSizeInKB()).isEqualTo(-1L);
   }
 
   @Test

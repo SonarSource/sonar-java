@@ -31,7 +31,6 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
@@ -59,7 +58,7 @@ public class JavaFrontend {
   private final JavaAstScanner astScannerForTests;
   private final JavaAstScanner astScannerForGeneratedFiles;
 
-  public JavaFrontend(JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, Measurer measurer,
+  public JavaFrontend(JavaVersion javaVersion, SonarComponents sonarComponents, Measurer measurer,
                       JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
     this.javaVersion = javaVersion;
     this.sonarComponents = sonarComponents;
@@ -77,25 +76,17 @@ public class JavaFrontend {
     List<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
     testCodeVisitors.add(measurer.new TestFileMeasurer());
 
-    List<File> classpath = new ArrayList<>();
-    List<File> testClasspath = new ArrayList<>();
-    List<JavaCheck> jspCodeVisitors = new ArrayList<>();
-    List<File> jspClasspath = new ArrayList<>();
-    boolean inAndroidContext = false;
-
-    if (sonarComponents != null) {
-      if (!sonarComponents.isSonarLintContext()) {
-        codeVisitors.add(new FileLinesVisitor(sonarComponents));
-        codeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
-        testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
-      }
-      classpath = sonarComponents.getJavaClasspath();
-      testClasspath = sonarComponents.getJavaTestClasspath();
-      jspClasspath = sonarComponents.getJspClasspath();
-      testCodeVisitors.addAll(sonarComponents.testChecks());
-      jspCodeVisitors = sonarComponents.jspChecks();
-      inAndroidContext = sonarComponents.inAndroidContext();
+    if (!sonarComponents.isSonarLintContext()) {
+      codeVisitors.add(new FileLinesVisitor(sonarComponents));
+      codeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
+      testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents));
     }
+    List<File> classpath = sonarComponents.getJavaClasspath();
+    List<File> testClasspath = sonarComponents.getJavaTestClasspath();
+    List<File> jspClasspath = sonarComponents.getJspClasspath();
+    testCodeVisitors.addAll(sonarComponents.testChecks());
+    List<JavaCheck> jspCodeVisitors = sonarComponents.jspChecks();
+    boolean inAndroidContext = sonarComponents.inAndroidContext();
 
     globalClasspath = Stream.of(classpath, testClasspath, jspClasspath)
       .flatMap(Collection::stream).distinct().toList();
@@ -111,11 +102,6 @@ public class JavaFrontend {
     //AstScanner for generated files
     astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents);
     astScannerForGeneratedFiles.setVisitorBridge(new VisitorsBridge(jspCodeVisitors, jspClasspath, sonarComponents, javaVersion, inAndroidContext));
-  }
-
-  @VisibleForTesting
-  boolean analysisCancelled() {
-    return sonarComponents != null && sonarComponents.analysisCancelled();
   }
 
   public void scan(Iterable<InputFile> sourceFiles, Iterable<InputFile> testFiles, Iterable<? extends InputFile> generatedFiles) {
@@ -147,13 +133,12 @@ public class JavaFrontend {
     }
 
     // SonarLint is not compatible with batch mode, it needs InputFile#contents() and batch mode use InputFile#absolutePath()
-    boolean isSonarLint = sonarComponents != null && sonarComponents.isSonarLintContext();
-    boolean fileByFileMode = isSonarLint || isFileByFileEnabled();
+    boolean fileByFileMode = sonarComponents.isSonarLintContext() || sonarComponents.isFileByFileEnabled();
     if (fileByFileMode) {
       scanAndMeasureTask(sourceFiles, astScanner::scan, "Main");
       scanAndMeasureTask(testFiles, astScannerForTests::scan, "Test");
       scanAndMeasureTask(generatedFiles, astScannerForGeneratedFiles::scan, "Generated");
-    } else if (isAutoScan()) {
+    } else if (sonarComponents.isAutoScan()) {
       scanAsBatch(new AutoScanBatchContext(), sourceFiles, testFiles);
     } else {
       scanAsBatch(new DefaultBatchModeContext(astScanner, "Main"), sourceFiles);
@@ -204,7 +189,7 @@ public class JavaFrontend {
   private void scanInBatches(BatchModeContext context, List<InputFile> allInputFiles) {
     String logUsingBatch = String.format("Using ECJ batch to parse %d %s java source files", allInputFiles.size(), context.descriptor());
     AnalysisProgress analysisProgress = new AnalysisProgress(allInputFiles.size());
-    long batchModeSizeInKB = getBatchModeSizeInKB();
+    long batchModeSizeInKB = sonarComponents.getBatchModeSizeInKB();
     if (batchModeSizeInKB < 0L || batchModeSizeInKB >= Long.MAX_VALUE / 1_000L) {
       LOG.info("{} in a single batch.", logUsingBatch);
       scanBatch(context, allInputFiles, analysisProgress);
@@ -222,10 +207,9 @@ public class JavaFrontend {
   private <T extends InputFile> void scanBatch(BatchModeContext context, List<T> batchFiles, AnalysisProgress analysisProgress) {
     analysisProgress.startBatch(batchFiles.size());
     Set<Runnable> environmentsCleaners = new HashSet<>();
-    boolean shouldIgnoreUnnamedModuleForSplitPackage = sonarComponents!= null && sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage();
     JParserConfig.Mode.BATCH
-      .create(javaVersion, context.getClasspath(), shouldIgnoreUnnamedModuleForSplitPackage)
-      .parse(batchFiles, this::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsCleaners));
+      .create(javaVersion, context.getClasspath(), sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage())
+      .parse(batchFiles, sonarComponents::analysisCancelled, analysisProgress, (input, result) -> scanAsBatchCallback(input, result, context, environmentsCleaners));
     // Due to a bug in ECJ, JAR files remain locked after the analysis on Windows, we unlock them manually, at the end of each batches. See SONARJAVA-3609.
     environmentsCleaners.forEach(Runnable::run);
     analysisProgress.endBatch();
@@ -320,28 +304,13 @@ public class JavaFrontend {
 
   }
 
-  @VisibleForTesting
-  boolean isFileByFileEnabled() {
-    return sonarComponents != null && sonarComponents.isFileByFileEnabled();
-  }
-
-  @VisibleForTesting
-  boolean isAutoScan() {
-    return sonarComponents != null && sonarComponents.isAutoScan();
-  }
-
-  @VisibleForTesting
-  long getBatchModeSizeInKB() {
-    return sonarComponents == null ? -1L : sonarComponents.getBatchModeSizeInKB();
-  }
-
   private boolean isCacheEnabled() {
-    return sonarComponents != null && CacheContextImpl.of(sonarComponents).isCacheEnabled();
+    return CacheContextImpl.of(sonarComponents).isCacheEnabled();
   }
 
   private boolean canOptimizeScanning() {
     try {
-      return sonarComponents != null && sonarComponents.canSkipUnchangedFiles() && isCacheEnabled();
+      return sonarComponents.canSkipUnchangedFiles() && isCacheEnabled();
     } catch (ApiMismatchException e) {
       return false;
     }
