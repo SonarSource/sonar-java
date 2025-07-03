@@ -1,0 +1,37 @@
+<h2>Why is this an issue?</h2>
+<p>Passing an empty finisher to <code>Gatherer.of</code> or to <code>Gatherer.ofSequential</code> provides no additional value and removing the
+finisher clearly communicates that no finisher is applied.</p>
+<h2>How to fix it</h2>
+<p>Call the overload of <code>Gatherer.of</code> or <code>Gatherer.ofSequential</code> that does not take a finisher.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+Gatherer&lt;Integer, AtomicInteger, Integer&gt; gatherer = Gatherer.ofSequential(
+  () -&gt; new AtomicInteger(-1),
+  (state, number, downstream) -&gt; {
+    if (state.get() &lt; 0) {
+      state.set(number);
+      return true;
+    }
+    return downstream.push(number - state.get());
+  },
+  Gatherer.defaultFinisher()); // Noncompliant: useless finisher
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+Gatherer&lt;Integer, AtomicInteger, Integer&gt; gatherer = Gatherer.ofSequential(
+  () -&gt; new AtomicInteger(-1),
+  (state, number, downstream) -&gt; {
+    if (state.get() &lt; 0) {
+      state.set(number);
+      return true;
+    }
+    return downstream.push(number - state.get());
+  }); // Compliant
+</pre>
+<h2>Resources</h2>
+<ul>
+  <li> Oracle Documentation - <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/stream/Gatherer.html">Gatherer API</a>
+  </li>
+</ul>
+
