@@ -17,7 +17,6 @@
 package org.sonar.java.checks;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.TreeMatcher;
@@ -31,8 +30,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
 
 import static org.sonar.java.matcher.TreeMatcher.calls;
 import static org.sonar.java.matcher.TreeMatcher.invokedOn;
@@ -106,55 +103,6 @@ public class ClassNameInClassTransformCheck extends IssuableSubscriptionVisitor 
     .names("descriptorString")
     .addWithoutParametersMatcher()
     .build();
-
-  static class ExpressionMatcher {
-    @Nullable
-    private final ExpressionTree expressionTree;
-
-    ExpressionMatcher(@Nullable ExpressionTree expressionTree) {
-      this.expressionTree = expressionTree;
-    }
-
-    CallMatcher calls(MethodMatchers methodMatchers) {
-      if (expressionTree instanceof MethodInvocationTree mit && methodMatchers.matches(mit)) {
-        return new CallMatcher(mit);
-      }
-      return new CallMatcher(null);
-    }
-
-    boolean isIdentifier(IdentifierTree identifier) {
-      if (expressionTree instanceof IdentifierTree id) {
-        return id.symbol().equals(identifier.symbol());
-      }
-      return false;
-    }
-
-    boolean matches(Predicate<ExpressionTree> predicate) {
-      return expressionTree != null && predicate.test(expressionTree);
-    }
-  }
-
-  static class CallMatcher {
-
-    /** When {@link #methodInvocationTree} is null, the matcher doesn't match anything. */
-    @Nullable
-    private final MethodInvocationTree methodInvocationTree;
-
-    CallMatcher(@Nullable MethodInvocationTree methodInvocationTree) {
-      this.methodInvocationTree = methodInvocationTree;
-    }
-
-    ExpressionMatcher withArgument(int argumentIndex) {
-      if (methodInvocationTree != null && methodInvocationTree.arguments().size() >= argumentIndex) {
-        return new ExpressionMatcher(methodInvocationTree.arguments().get(argumentIndex));
-      }
-      return new ExpressionMatcher(null);
-    }
-  }
-
-  static ExpressionMatcher check(ExpressionTree expression) {
-    return new ExpressionMatcher(expression);
-  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
