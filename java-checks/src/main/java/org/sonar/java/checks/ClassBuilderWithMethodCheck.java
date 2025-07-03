@@ -70,7 +70,6 @@ public class ClassBuilderWithMethodCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodInvocationTree invocation = (MethodInvocationTree) tree;
     if (withMethod.matches(invocation)) {
-      assert !invocation.arguments().isEmpty() : "withMethod should have at least one argument";
       ExpressionTree lastArgument = invocation.arguments().get(invocation.arguments().size() - 1);
       if (matcher.check(lastArgument)) {
         reportIssue(findLocation(invocation), "Replace call with `ClassBuilder.withMethodBody`.");
