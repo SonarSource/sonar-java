@@ -3,8 +3,37 @@ package checks;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 
 class TryWithResourcesCheckSample {
+  String readerFactoryNonCompliant(String sequence) throws IOException {
+    char[] buf = new char[1024];
+    Reader reader = null;
+    try { // Noncompliant {{Change this "try" to a try-with-resources.}}
+//  ^^^
+      reader = Reader.of(sequence);
+//             ^^^^^^^^^^^^^^^^^^^<
+      reader.read(buf, 0, buf.length);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    } finally {
+      if (reader != null) {
+        reader.close();
+      }
+    }
+    return String.valueOf(buf);
+  }
+
+  String readerFactoryCompliant(String sequence) {
+    char[] buf = new char[1024];
+    try (Reader reader = Reader.of(sequence)) { // Compliant
+      reader.read(buf, 0, buf.length);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return String.valueOf(buf);
+  }
+
   String foo(String fileName) {
     FileReader fr = null;
     BufferedReader br = null;
@@ -32,7 +61,7 @@ class TryWithResourcesCheckSample {
     }
     try { // compliant, no finally block so let's rely on unclosed resource rule
       fr = new FileReader(fileName);
-    } catch (Exception e){
+    } catch (Exception e) {
 
     }
     try (
@@ -52,7 +81,7 @@ class TryWithResourcesCheckSample {
     try { // Noncompliant {{Change this "try" to a try-with-resources.}}
 //  ^^^
       a1.doSomething();
-    }  finally {
+    } finally {
       a1.close();
       a2.close();
     }
@@ -67,7 +96,7 @@ class TryWithResourcesCheckSample {
       a1 = new Auto();
 //         ^^^^^^^^^^<
       a1.doSomething();
-    }  finally {
+    } finally {
       a1.close();
       a2.close();
     }
@@ -78,30 +107,33 @@ class TryWithResourcesCheckSample {
     a.doSomething();
     try {
       a.doSomething();
-    }  finally {
+    } finally {
       a.close();
     }
   }
 
-  class B {}
+  class B {
+  }
 
   void unknownNewBetweenNewAndTry() {
     Auto a = new Auto();
     B b = new B();
     try {
       a.doSomething();
-    }  finally {
+    } finally {
       a.close();
     }
   }
 
-  Auto passThrough(Auto a) { return a; }
+  Auto passThrough(Auto a) {
+    return a;
+  }
 
   void newInsideMethodInvocation() {
     Auto a = passThrough(new Auto()); // Compliant, we do not know what happens in the method
     try {
       a.doSomething();
-    }  finally {
+    } finally {
       a.close();
     }
   }
@@ -110,7 +142,7 @@ class TryWithResourcesCheckSample {
     Auto a1 = new Auto();
     try (Auto a2 = new Auto()) {
       a1.doSomething();
-    }  finally {
+    } finally {
       a1.close();
     }
   }
@@ -128,7 +160,7 @@ class TryWithResourcesCheckSample {
       } finally {
         a2.close();
       }
-    }  finally {
+    } finally {
       a1.close();
     }
   }
@@ -144,8 +176,9 @@ class TryWithResourcesCheckSample {
       try {
         a2.doSomething();
         a2.close();
-      } catch (Exception e) {}
-    }  finally {
+      } catch (Exception e) {
+      }
+    } finally {
       a1.close();
     }
   }
@@ -161,10 +194,12 @@ class TryWithResourcesCheckSample {
   }
 
   static class Auto implements AutoCloseable {
-    public void doSomething() {}
+    public void doSomething() {
+    }
 
     @Override
-    public void close() {}
+    public void close() {
+    }
   }
 
 }
