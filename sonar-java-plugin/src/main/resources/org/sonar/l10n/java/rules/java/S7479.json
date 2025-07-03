@@ -1,0 +1,23 @@
+{
+  "title": "\"ClassBuilder.withMethodBody\" should be preferred to \"ClassBuilder.withMethod\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java24"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-7479",
+  "sqKey": "S7479",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  }
+}

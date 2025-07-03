@@ -39,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.matcher.TreeMatcher.any;
 import static org.sonar.java.matcher.TreeMatcher.forEachStatement;
 import static org.sonar.java.matcher.TreeMatcher.hasSize;
 import static org.sonar.java.matcher.TreeMatcher.invokedOn;
@@ -105,6 +106,23 @@ class TreeMatcherTest {
     assertTrue(lambdaWithStatementsMatcher.or(forEachInLambdaMatcher).check(lambda3));
     assertFalse(forEachInLambdaMatcher.check(lambda));
     assertFalse(forEachInLambdaMatcher.check(lambda2));
+  }
+
+  @Test
+  void testAny() {
+    CompilationUnitTree t = JParserTestUtils.parse("""
+            class C {
+              int i = foo(x);
+            }
+            """);
+
+    ClassTree c = (ClassTree) t.types().get(0);
+    VariableTree variableTree = (VariableTree) c.members().get(0);
+    ExpressionTree expression = variableTree.initializer();
+
+    assertTrue(any().check(c));
+    assertTrue(any().check(variableTree));
+    assertTrue(any().check(expression));
   }
 
   @Test

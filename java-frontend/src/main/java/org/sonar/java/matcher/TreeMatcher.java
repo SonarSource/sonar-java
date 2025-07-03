@@ -65,6 +65,10 @@ public class TreeMatcher<T extends Tree> {
     return new TreeMatcher<>(predicate);
   }
 
+  public static <U extends Tree> TreeMatcher<U> any() {
+    return new TreeMatcher<>(x -> true);
+  }
+
   public Predicate<T> asPredicate() {
     return predicate;
   }
