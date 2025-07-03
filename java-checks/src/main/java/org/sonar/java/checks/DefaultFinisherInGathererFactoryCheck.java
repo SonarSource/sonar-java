@@ -18,9 +18,13 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.matcher.TreeMatcher;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -32,6 +36,8 @@ import static org.sonar.java.matcher.TreeMatcher.withBody;
 
 @Rule(key = "S7629")
 public class DefaultFinisherInGathererFactoryCheck extends IssuableSubscriptionVisitor {
+
+  private static final String ISSUE_MESSAGE = "Remove the default finisher from this Gatherer factory.";
 
   private final MethodMatchers ofSequentialMatchers = MethodMatchers.create()
     .ofTypes("java.util.stream.Gatherer")
@@ -57,8 +63,22 @@ public class DefaultFinisherInGathererFactoryCheck extends IssuableSubscriptionV
       ExpressionTree lastArgument = mit.arguments().get(mit.arguments().size() - 1);
       if (TreeMatcher.calls(defaultFinisherMatchers)
         .or(isLambdaExpression(withBody(hasSize(0)))).check(lastArgument)) {
-        reportIssue(lastArgument, "Remove the default finisher from this Gatherer factory.");
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(lastArgument)
+          .withMessage(ISSUE_MESSAGE)
+          .withQuickFix(() -> computeQuickFix(mit.arguments()))
+          .report();
       }
     }
   }
+
+  private static JavaQuickFix computeQuickFix(Arguments arguments) {
+    return JavaQuickFix
+      .newQuickFix("Remove finisher argument.")
+      .addTextEdit(JavaTextEdit.replaceBetweenTree(
+        arguments.get(arguments.size() - 2), false, arguments.get(arguments.size() - 1), true, ""))
+      .build();
+  }
+
 }

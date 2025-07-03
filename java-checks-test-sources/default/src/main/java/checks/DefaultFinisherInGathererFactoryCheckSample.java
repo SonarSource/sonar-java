@@ -12,8 +12,11 @@ public class DefaultFinisherInGathererFactoryCheckSample {
         return true;
       }
       return downstream.push(number - state.get());
-    },
-    Gatherer.defaultFinisher()); // noncompliant {{Remove the default finisher from this Gatherer factory.}}
+    }, Gatherer.defaultFinisher()); // noncompliant {{Remove the default finisher from this Gatherer factory.}} [[quickfixes=qf1]]
+//     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+// fix@qf1 {{Remove finisher argument.}}
+// edit@qf1 [[sc=6;ec=34]] {{}}
+
 
   Gatherer<Integer, AtomicInteger, Integer> noncompliantGatherWithLambdaFinisher = Gatherer.ofSequential(
     () -> new AtomicInteger(-1),
@@ -23,8 +26,10 @@ public class DefaultFinisherInGathererFactoryCheckSample {
         return true;
       }
       return downstream.push(number - state.get());
-    },
-    (state, number) -> { }); // noncompliant {{Remove the default finisher from this Gatherer factory.}}
+    }, (state, number) -> { }); // noncompliant {{Remove the default finisher from this Gatherer factory.}} [[quickfixes=qf2]]
+//     ^^^^^^^^^^^^^^^^^^^^^^
+// fix@qf2 {{Remove finisher argument.}}
+// edit@qf2 [[sc=6;ec=30]] {{}}
 
   Gatherer<Integer, AtomicInteger, Integer> compliantGatherer = Gatherer.ofSequential(
     () -> new AtomicInteger(-1),
