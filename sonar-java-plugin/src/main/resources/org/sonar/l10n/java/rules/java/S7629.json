@@ -1,0 +1,23 @@
+{
+  "title": "When a defaultFinisher is passed to a Gatherer factory, use the overload that does not take a finisher",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java24"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-7629",
+  "sqKey": "S7629",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}

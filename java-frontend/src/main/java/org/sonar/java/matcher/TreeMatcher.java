@@ -80,6 +80,10 @@ public class TreeMatcher<T extends Tree> {
         && methodMatchers.matches(mit) && methodInvocationMatcher.check(mit)));
   }
 
+  public static TreeMatcher<ExpressionTree> calls(MethodMatchers methodMatchers) {
+    return calls(methodMatchers, any());
+  }
+
   public static TreeMatcher<ExpressionTree> isCall(TreeMatcher<MethodInvocationTree> methodInvocationMatcher) {
     return new TreeMatcher<>(
       expressionTree -> (expressionTree instanceof MethodInvocationTree mit
@@ -91,6 +95,10 @@ public class TreeMatcher<T extends Tree> {
     return new TreeMatcher<>(
       statementTree -> (statementTree instanceof ExpressionStatementTree exprStatement
         && calls(methodMatchers, methodInvocationMatcher).check(exprStatement.expression())));
+  }
+
+  public static TreeMatcher<StatementTree> isInvocationOf(MethodMatchers methodMatchers) {
+    return isInvocationOf(methodMatchers, any());
   }
 
   public static TreeMatcher<StatementTree> isInvocation(TreeMatcher<MethodInvocationTree> methodInvocationMatcher) {

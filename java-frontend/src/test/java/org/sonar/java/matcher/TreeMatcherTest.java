@@ -221,6 +221,7 @@ class TreeMatcherTest {
     MethodMatchers matchNone = mock(MethodMatchers.class);
     when(matchNone.matches(ArgumentMatchers.any(MethodInvocationTree.class))).thenReturn(false);
 
+    assertTrue(TreeMatcher.calls(matchAll).check(callOnX));
     assertTrue(TreeMatcher.calls(matchAll, invokedOn(isIdentifier("x"))).check(callOnX));
     assertFalse(TreeMatcher.calls(matchAll, invokedOn(isIdentifier("y"))).check(callOnX));
     assertFalse(TreeMatcher.calls(matchNone, invokedOn(isIdentifier("x"))).check(callOnX));
@@ -244,6 +245,7 @@ class TreeMatcherTest {
     when(matchNone.matches(ArgumentMatchers.any(MethodInvocationTree.class))).thenReturn(false);
 
     assertTrue(TreeMatcher.isInvocationOf(matchAll, invokedOn(isIdentifier("x"))).check(firstStatement));
+    assertTrue(TreeMatcher.isInvocationOf(matchAll).check(firstStatement));
     assertFalse(TreeMatcher.isInvocationOf(matchAll, invokedOn(isIdentifier("y"))).check(firstStatement));
     assertFalse(TreeMatcher.isInvocationOf(matchNone, invokedOn(isIdentifier("x"))).check(firstStatement));
   }
