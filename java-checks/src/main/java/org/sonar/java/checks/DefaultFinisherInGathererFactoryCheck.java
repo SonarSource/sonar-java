@@ -33,7 +33,6 @@ import static org.sonar.java.matcher.TreeMatcher.hasSize;
 import static org.sonar.java.matcher.TreeMatcher.isLambdaExpression;
 import static org.sonar.java.matcher.TreeMatcher.withBody;
 
-
 @Rule(key = "S7629")
 public class DefaultFinisherInGathererFactoryCheck extends IssuableSubscriptionVisitor {
 
@@ -42,7 +41,10 @@ public class DefaultFinisherInGathererFactoryCheck extends IssuableSubscriptionV
   private final MethodMatchers ofSequentialMatchers = MethodMatchers.create()
     .ofTypes("java.util.stream.Gatherer")
     .names("ofSequential")
-    .withAnyParameters()
+    .addParametersMatcher("java.util.function.Supplier",
+      "java.util.stream.Gatherer$Integrator", "java.util.function.BiConsumer")
+    .addParametersMatcher(
+      "java.util.stream.Gatherer$Integrator", "java.util.function.BiConsumer")
     .build();
 
   private final MethodMatchers defaultFinisherMatchers = MethodMatchers.create()
