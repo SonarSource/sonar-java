@@ -18,22 +18,47 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.TreeMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import static org.sonar.java.matcher.TreeMatcher.hasSize;
+import static org.sonar.java.matcher.TreeMatcher.isLambdaExpression;
+import static org.sonar.java.matcher.TreeMatcher.withBody;
 
 
 @Rule(key = "S7629")
 public class DefaultFinisherInGathererFactoryCheck extends IssuableSubscriptionVisitor {
 
+  private final MethodMatchers ofSequentialMatchers = MethodMatchers.create()
+    .ofTypes("java.util.stream.Gatherer")
+    .names("ofSequential")
+    .withAnyParameters()
+    .build();
+
+  private final MethodMatchers defaultFinisherMatchers = MethodMatchers.create()
+    .ofTypes("java.util.stream.Gatherer")
+    .names("defaultFinisher")
+    .addParametersMatcher()
+    .build();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    // TODO: Specify the kind of nodes you want to be called to visit here.
-    return List.of();
+    return List.of(Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    MethodInvocationTree mit = (MethodInvocationTree) tree;
+    if (ofSequentialMatchers.matches(mit)) {
+      ExpressionTree lastArgument = mit.arguments().get(mit.arguments().size() - 1);
+      if (TreeMatcher.calls(defaultFinisherMatchers)
+        .or(isLambdaExpression(withBody(hasSize(0)))).check(lastArgument)) {
+        reportIssue(lastArgument, "Remove the default finisher from this Gatherer factory.");
+      }
+    }
   }
-  
 }
