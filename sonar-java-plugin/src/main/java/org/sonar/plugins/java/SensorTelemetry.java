@@ -37,7 +37,6 @@ public class SensorTelemetry implements Telemetry {
   public void addMetric(String key, String value) {
     // TODO call `context.addTelemetryProperty` instead
 //    this.context.addTelemetryProperty(key, value);
-    LOG.error("{}={}", key, value);
-
+    LOG.debug("{}={}", key, value);
   }
 }

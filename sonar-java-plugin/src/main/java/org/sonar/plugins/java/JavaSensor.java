@@ -41,6 +41,7 @@ import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.Telemetry;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
@@ -106,25 +107,25 @@ public class JavaSensor implements Sensor {
     sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
 
     Measurer measurer = new Measurer(context, noSonarFilter);
-    SensorTelemetry sensorTelemetry = new SensorTelemetry(context);
+    Telemetry telemetry = new SensorTelemetry(context);
 
     // TODO will we be able to join the data across rows?
-    sensorTelemetry.addMetric("java.telemetry_version", TELEMETRY_VERSION);
+    telemetry.addMetric("java.telemetry_version", TELEMETRY_VERSION);
 
     JavaVersion javaVersion = getJavaVersion();
     context.addTelemetryProperty("java.language.version", javaVersion.toString());
 
     // TODO should we use "0", "1"
-    sensorTelemetry.addMetric("java.autoscan", sonarComponents.isAutoScan());
+    telemetry.addMetric("java.autoscan", sonarComponents.isAutoScan());
 
     // TODO can "none" be the actual value?
-    sensorTelemetry.addMetric("java.scanner_app", settings.get("sonar.scanner.app").orElse("none"));
+    telemetry.addMetric("java.scanner_app", settings.get("sonar.scanner.app").orElse("none"));
 
     JavaFrontend frontend = new JavaFrontend(
       javaVersion,
       sonarComponents,
       measurer,
-      sensorTelemetry,
+      telemetry,
       javaResourceLocator,
       postAnalysisIssueFilter,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));
