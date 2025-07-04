@@ -483,6 +483,13 @@
     "url": "https://checkstyle.sourceforge.net/checks/coding/parameterassignment.html#ParameterAssignment"
   },
   {
+    "key": "coding.PatternVariableAssignmentCheck",
+    "name": "Pattern Variable Assignment",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://checkstyle.sourceforge.net/checks/coding/patternvariableassignment.html#PatternVariableAssignment"
+  },
+  {
     "key": "coding.RequireThisCheck",
     "name": "Require This",
     "type": "CODE_SMELL",
@@ -530,6 +537,13 @@
     "type": "CODE_SMELL",
     "severity": "MAJOR",
     "url": "https://checkstyle.sourceforge.net/checks/coding/superfinalize.html#SuperFinalize"
+  },
+  {
+    "key": "coding.UnnecessaryNullCheckWithInstanceOfCheck",
+    "name": "Unnecessary Null Check With Instance Of",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://checkstyle.sourceforge.net/checks/coding/unnecessarynullcheckwithinstanceof.html#UnnecessaryNullCheckWithInstanceOf"
   },
   {
     "key": "coding.UnnecessaryParenthesesCheck",
@@ -677,6 +691,13 @@
     "type": "CODE_SMELL",
     "severity": "MAJOR",
     "url": "https://checkstyle.sourceforge.net/checks/header/header.html#Header"
+  },
+  {
+    "key": "header.MultiFileRegexpHeaderCheck",
+    "name": "Multi File Regexp Header",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://checkstyle.sourceforge.net/checks/header/multifileregexpheader.html#MultiFileRegexpHeader"
   },
   {
     "key": "header.RegexpHeaderCheck",
