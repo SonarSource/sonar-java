@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -36,6 +38,7 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.caching.CacheContextImpl;
+import org.sonar.java.classpath.DependencyVersionInference;
 import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
@@ -44,6 +47,7 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.Version;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
 
@@ -52,17 +56,28 @@ public class JavaFrontend {
   private static final Logger LOG = LoggerFactory.getLogger(JavaFrontend.class);
   private static final String BATCH_ERROR_MESSAGE = "Batch Mode failed, analysis of Java Files stopped.";
 
+  /** List of libraries, whose presence or absence we want to report. */
+  private static final List<String> TELEMETRY_SELECTED_DEPENDENCIES = List.of("lombok", "spring-boot");
+
+  private static final String JAVA_DEPENDENCY_DOT = "java.dependency.";
+
+  private static final String JAVA_SERVER_CACHING_ENABLED = "java.server.caching.enabled";
+  private static final String JAVA_SERVER_CACHING_USED = "java.server.caching.files_used";
+  private static final String JAVA_SERVER_CACHING_TOTAL = "java.server.caching.files_total";
+
   private final JavaVersion javaVersion;
   private final SonarComponents sonarComponents;
+  private final Telemetry telemetry;
   private final List<File> globalClasspath;
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
   private final JavaAstScanner astScannerForGeneratedFiles;
 
-  public JavaFrontend(JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, Measurer measurer,
-                      JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
+  public JavaFrontend(JavaVersion javaVersion, @Nullable SonarComponents sonarComponents, Measurer measurer, Telemetry telemetry,
+    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
     this.javaVersion = javaVersion;
     this.sonarComponents = sonarComponents;
+    this.telemetry = telemetry;
     List<JavaCheck> commonVisitors = new ArrayList<>();
     commonVisitors.add(javaResourceLocator);
     if (postAnalysisIssueFilter != null) {
@@ -135,14 +150,20 @@ public class JavaFrontend {
 
       total += StreamSupport.stream(generatedFiles.spliterator(), false).count();
 
+      telemetry.addMetric(JAVA_SERVER_CACHING_ENABLED, "yes");
+      telemetry.addMetric(JAVA_SERVER_CACHING_USED, successfullyScanned);
+      telemetry.addMetric(JAVA_SERVER_CACHING_TOTAL, total);
       LOG.info(
         "Server-side caching is enabled. The Java analyzer was able to leverage cached data from previous analyses for {} out of {} files. These files will not be parsed.",
         successfullyScanned,
         total
       );
     } else if (isCacheEnabled()) {
+      // TODO: better choice of names?
+      telemetry.addMetric(JAVA_SERVER_CACHING_ENABLED, "unused");
       LOG.info("Server-side caching is enabled. The Java analyzer will not try to leverage data from a previous analysis.");
     } else {
+      telemetry.addMetric(JAVA_SERVER_CACHING_ENABLED, "no");
       LOG.info("Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.");
     }
 
@@ -159,6 +180,13 @@ public class JavaFrontend {
       scanAsBatch(new DefaultBatchModeContext(astScanner, "Main"), sourceFiles);
       scanAsBatch(new DefaultBatchModeContext(astScannerForTests, "Test"), testFiles);
       scanAsBatch(new DefaultBatchModeContext(astScannerForGeneratedFiles, "Generated"), generatedFiles);
+    }
+
+    DependencyVersionInference dependencyService = new DependencyVersionInference();
+    for (String tmDependency: TELEMETRY_SELECTED_DEPENDENCIES) {
+      Optional<Version> version = dependencyService.infer(tmDependency, globalClasspath);
+      String versionValue = version.map(Objects::toString).orElse("none");
+      telemetry.addMetric(JAVA_DEPENDENCY_DOT + tmDependency, versionValue);
     }
   }
 

@@ -92,7 +92,7 @@ class MeasurerTest {
     context.fileSystem().add(inputFile);
 
     Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, measurer, null, null, new JavaCheck[0]);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, measurer, mock(Telemetry.class), null, null, new JavaCheck[0]);
 
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
 
