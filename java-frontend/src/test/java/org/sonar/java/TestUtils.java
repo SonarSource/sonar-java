@@ -19,7 +19,6 @@ package org.sonar.java;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.sonar.api.batch.fs.InputFile;
@@ -138,11 +137,11 @@ public class TestUtils {
     SonarComponents mock = mock(SonarComponents.class);
     when(mock.isSonarLintContext()).thenReturn(true);
     when(mock.getBatchModeSizeInKB()).thenReturn(-1L);
-    when(mock.getJavaClasspath()).thenReturn(new ArrayList<>());
-    when(mock.getJavaTestClasspath()).thenReturn(new ArrayList<>());
-    when(mock.getJspClasspath()).thenReturn(new ArrayList<>());
-    when(mock.testChecks()).thenReturn(new ArrayList<>());
-    when(mock.jspChecks()).thenReturn(new ArrayList<>());
+    when(mock.getJavaClasspath()).thenReturn(List.of());
+    when(mock.getJavaTestClasspath()).thenReturn(List.of());
+    when(mock.getJspClasspath()).thenReturn(List.of());
+    when(mock.testChecks()).thenReturn(List.of());
+    when(mock.jspChecks()).thenReturn(List.of());
     return mock;
   }
 }
