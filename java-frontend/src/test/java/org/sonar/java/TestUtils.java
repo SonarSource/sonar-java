@@ -21,12 +21,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Stream;
-
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestUtils {
   private TestUtils() {
@@ -126,5 +127,21 @@ public class TestUtils {
 
   public static List<String> filterOutAnalysisProgressLogLines(List<String> logs) {
     return filterOutAnalysisProgressLogLines(logs.stream());
+  }
+
+  /**
+   * Creates a Mockito test double for {@link SonarComponents}, pre-configured to avoid
+   * nulls in unit tests and remove the need for null checks in production code.
+   */
+  public static SonarComponents mockSonarComponents() {
+    SonarComponents mock = mock(SonarComponents.class);
+    when(mock.isSonarLintContext()).thenReturn(true);
+    when(mock.getBatchModeSizeInKB()).thenReturn(-1L);
+    when(mock.getJavaClasspath()).thenReturn(List.of());
+    when(mock.getJavaTestClasspath()).thenReturn(List.of());
+    when(mock.getJspClasspath()).thenReturn(List.of());
+    when(mock.testChecks()).thenReturn(List.of());
+    when(mock.jspChecks()).thenReturn(List.of());
+    return mock;
   }
 }

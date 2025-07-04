@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.sonar.java.TestUtils.mockSonarComponents;
 
 class FileLinesVisitorTest {
 
@@ -50,7 +51,7 @@ class FileLinesVisitorTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.fileLinesContextFor(Mockito.any(InputFile.class))).thenReturn(context);
 
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), null, mock(Measurer.class), null, null, new FileLinesVisitor(sonarComponents));
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), mock(Measurer.class), null, null, new FileLinesVisitor(sonarComponents));
 
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
