@@ -51,6 +51,7 @@ import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.scan.issue.filter.IssueFilterChain;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.Version;
+import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
@@ -423,6 +424,10 @@ class JavaFrontendTest {
       );
   }
 
+  /**
+   * Ensure that changes the mock, which may be needed when it is shared with other tests,
+   * do not affect JavaFrontendTest.
+   */
   @Test
   void test_validate_mockSonarComponents() {
     SonarComponents mock = mockSonarComponents();
@@ -430,6 +435,7 @@ class JavaFrontendTest {
     assertThat(mock.isFileByFileEnabled()).isFalse();
     assertThat(mock.analysisCancelled()).isFalse();
     assertThat(mock.getBatchModeSizeInKB()).isEqualTo(-1L);
+    assertThat(CacheContextImpl.of(mock).isCacheEnabled()).isFalse();
   }
 
   @Test

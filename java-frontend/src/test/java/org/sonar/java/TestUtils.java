@@ -130,6 +130,10 @@ public class TestUtils {
     return filterOutAnalysisProgressLogLines(logs.stream());
   }
 
+  /**
+   * Creates a Mockito test double for {@link SonarComponents}, pre-configured to avoid
+   * nulls in unit tests and remove the need for null checks in production code.
+   */
   public static SonarComponents mockSonarComponents() {
     SonarComponents mock = mock(SonarComponents.class);
     when(mock.isSonarLintContext()).thenReturn(true);
