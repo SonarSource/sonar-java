@@ -1,8 +1,10 @@
 package checks;
 
 import java.lang.classfile.ClassBuilder;
+import java.lang.classfile.MethodBuilder;
 import java.lang.classfile.attribute.ExceptionsAttribute;
 import java.lang.constant.ClassDesc;
+import java.util.function.Consumer;
 
 import static java.lang.classfile.ClassFile.ACC_PUBLIC;
 import static java.lang.classfile.ClassFile.ACC_STATIC;
@@ -63,5 +65,13 @@ public class ClassBuilderWithMethodCheckSample {
           .ldc("Hello World")
           .invokevirtual(ClassDesc.of("java.io.PrintStream"), "println", MTD_void)
           .return_()));
+  }
+
+  ClassBuilder addMethodFalseNegativeNotALambda(ClassBuilder builder) {
+    Consumer<MethodBuilder> consumer = methodBuilder -> methodBuilder
+      .withCode(codeBuilder -> {});
+    return builder
+      // False negative, because we don't support case where the last argument is not a lambda
+      .withMethod("foo", MTD_void, ACC_PUBLIC | ACC_STATIC, consumer);
   }
 }
