@@ -1,6 +1,7 @@
 package checks;
 
 import java.lang.classfile.ClassBuilder;
+import java.lang.classfile.attribute.ExceptionsAttribute;
 import java.lang.constant.ClassDesc;
 
 import static java.lang.classfile.ClassFile.ACC_PUBLIC;
@@ -52,5 +53,15 @@ public class ClassBuilderWithMethodCheckSample {
         .ldc("Hello World")
         .invokevirtual(ClassDesc.of("java.io.PrintStream"), "println", MTD_void)
         .return_());
+  }
+
+  ClassBuilder addMethodCompliantWithCall(ClassBuilder builder) {
+    return builder
+      // Compliant because `withCode` is not called directly on the `methodBuilder`
+      .withMethod("foo", MTD_void, ACC_PUBLIC | ACC_STATIC, methodBuilder -> methodBuilder.with(ExceptionsAttribute.ofSymbols(Exception.class.describeConstable().get()))
+        .withCode(codeBuilder -> codeBuilder.getstatic(ClassDesc.of("java.lang.System"), "out", ClassDesc.of("java.io.PrintStream"))
+          .ldc("Hello World")
+          .invokevirtual(ClassDesc.of("java.io.PrintStream"), "println", MTD_void)
+          .return_()));
   }
 }

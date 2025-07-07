@@ -22,17 +22,19 @@ import org.sonar.java.matcher.TreeMatcher;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.java.matcher.TreeMatcher.any;
 import static org.sonar.java.matcher.TreeMatcher.calls;
 import static org.sonar.java.matcher.TreeMatcher.hasSize;
+import static org.sonar.java.matcher.TreeMatcher.invokedOn;
 import static org.sonar.java.matcher.TreeMatcher.isExpression;
+import static org.sonar.java.matcher.TreeMatcher.isIdentifier;
 import static org.sonar.java.matcher.TreeMatcher.isInvocationOf;
 import static org.sonar.java.matcher.TreeMatcher.statementAt;
-import static org.sonar.java.matcher.TreeMatcher.withBody;
 
 @Rule(key = "S7479")
 public class ClassBuilderWithMethodCheck extends IssuableSubscriptionVisitor {
@@ -49,16 +51,16 @@ public class ClassBuilderWithMethodCheck extends IssuableSubscriptionVisitor {
     .withAnyParameters()
     .build();
 
-  /** Matches lambda expression composed of just a call to `MethodBuilder.withBody`. */
-  private final TreeMatcher<ExpressionTree> matcher = TreeMatcher
-    .isLambdaExpression(
-      withBody(
-        // Case with curly braces
-        hasSize(1)
-          .and(
-            statementAt(0, isInvocationOf(withCode, any())))
-          // Case with no curly braces
-          .or(isExpression(calls(withCode, any())))));
+  /** Matches lambda bodies composed of just a call to `MethodBuilder.withBody` on the given variable. */
+  private TreeMatcher<LambdaExpressionTree> makeMatcher(VariableTree variableCalledOn) {
+    return TreeMatcher.withBody(
+      // Case with curly braces
+      hasSize(1)
+        .and(
+          statementAt(0, isInvocationOf(withCode, invokedOn(isIdentifier(variableCalledOn.symbol())))))
+        // Case with no curly braces
+        .or(isExpression(calls(withCode, invokedOn(isIdentifier(variableCalledOn.symbol()))))));
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -71,8 +73,12 @@ public class ClassBuilderWithMethodCheck extends IssuableSubscriptionVisitor {
     MethodInvocationTree invocation = (MethodInvocationTree) tree;
     if (withMethod.matches(invocation)) {
       ExpressionTree lastArgument = invocation.arguments().get(invocation.arguments().size() - 1);
-      if (matcher.check(lastArgument)) {
-        reportIssue(findLocation(invocation), "Replace call with `ClassBuilder.withMethodBody`.");
+
+      if (lastArgument instanceof LambdaExpressionTree lambda) {
+        VariableTree parameter = lambda.parameters().get(0);
+        if (makeMatcher(parameter).check(lambda)) {
+          reportIssue(findLocation(invocation), "Replace call with `ClassBuilder.withMethodBody`.");
+        }
       }
     }
   }
