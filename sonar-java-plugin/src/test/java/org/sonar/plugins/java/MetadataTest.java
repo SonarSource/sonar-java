@@ -16,12 +16,12 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.io.FileNotFoundException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
@@ -35,7 +35,7 @@ class MetadataTest {
   @Test
   void ensure_sane_Sonar_way_profile() throws FileNotFoundException {
     var profilePath = Path.of("src/main/resources/" + JavaSonarWayProfile.SONAR_WAY_PATH);
-    var reader = Files.newReader(profilePath.toFile(), Charsets.UTF_8);
+    var reader = Files.newReader(profilePath.toFile(), StandardCharsets.UTF_8);
 
     Gson gson = new Gson();
     var json = gson.fromJson(reader, JsonObject.class);
