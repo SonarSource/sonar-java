@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.util.Locale;
 import org.hibernate.Session;
 import javax.persistence.EntityManager;
 
@@ -238,5 +239,64 @@ class SQLInjectionB {
     // field accessed without "this."
     tmpl.batchUpdate(user); // compliant
     tmpl.queryForObject(user, String.class); // compliant
+  }
+}
+
+class SQLFormat {
+  private final Statement stmt;
+
+  public SQLFormat(Statement stmt) {
+    this.stmt = stmt;
+  }
+
+  public void formatInline(String input) throws SQLException {
+    this.stmt.execute(String.format("SELECT %s", input)); // Noncompliant
+  }
+
+  public void formatInlineConst(String input) throws SQLException {
+    this.stmt.execute(String.format("SELECT %s","1"));
+  }
+
+  public void formatVar(String input) throws SQLException {
+    String query = String.format("SELECT %s", input);
+    this.stmt.execute(query); // Noncompliant
+  }
+
+  public void formatVarConst(String input) throws SQLException {
+    String query = String.format("SELECT %s", "1");
+    this.stmt.execute(query);
+  }
+
+  public void formatLocale(Locale locale, String input) throws SQLException {
+    String query = String.format(locale, "SELECT %s", input);
+    this.stmt.execute(query); // Noncompliant
+  }
+
+  public void formatLocaleConst(Locale locale, String input) throws SQLException {
+    String query = String.format(locale, "SELECT %s", "1");
+    this.stmt.execute(query);
+  }
+
+  public void formatted(Locale locale, String input) throws SQLException {
+    String query = "SELECT %s".formatted(input);
+    this.stmt.execute(query); // Noncompliant
+  }
+
+  public void formattedConst(Locale locale, String input) throws SQLException {
+    String query = "SELECT %s".formatted("1");
+    this.stmt.execute(query);
+  }
+
+  public void plusAssignment(String input) throws SQLException  {
+    String query = "SELECT";
+    query += String.format("WHERE col = %c", input);
+    this.stmt.execute(query); // Noncompliant
+  }
+
+  public void plusAssignmentConst() throws SQLException  {
+    // FP, but probably rare and not worth complicating the code to fix it.
+    String query = "SELECT";
+    query += String.format("WHERE col = \"%c\"", "value");
+    this.stmt.execute(query); // Noncompliant
   }
 }

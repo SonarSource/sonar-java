@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -112,6 +113,14 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       .withAnyParameters()
       .build());
 
+  private static final String JAVA_LANG_STRING = "java.lang.String";
+
+  private static final MethodMatchers FORMAT_METHODS = MethodMatchers.create()
+    .ofTypes(JAVA_LANG_STRING)
+    .names("format", "formatted")
+    .withAnyParameters()
+    .build();
+
   private static final String MAIN_MESSAGE = "Make sure using a dynamically formatted SQL query is safe here.";
 
   @Override
@@ -123,12 +132,12 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (anyMatch(tree)) {
       Optional<ExpressionTree> sqlStringArg = arguments(tree)
-        .filter(arg -> arg.symbolType().is("java.lang.String"))
+        .filter(arg -> arg.symbolType().is(JAVA_LANG_STRING))
         .findFirst();
 
       if (sqlStringArg.isPresent()) {
         ExpressionTree sqlArg = sqlStringArg.get();
-        if (isDynamicConcatenation(sqlArg)) {
+        if (isDynamicString(sqlArg)) {
           reportIssue(sqlArg, MAIN_MESSAGE);
         } else if (sqlArg.is(Tree.Kind.IDENTIFIER)) {
           IdentifierTree identifierTree = (IdentifierTree) sqlArg;
@@ -136,7 +145,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
           ExpressionTree initializerOrExpression = getInitializerOrExpression(symbol.declaration());
           List<AssignmentExpressionTree> reassignments = getReassignments(symbol.owner().declaration(), symbol.usages());
 
-          if ((initializerOrExpression != null && isDynamicConcatenation(initializerOrExpression)) ||
+          if ((initializerOrExpression != null && isDynamicString(initializerOrExpression)) ||
             reassignments.stream().anyMatch(SQLInjectionCheck::isDynamicPlusAssignment)) {
             reportIssue(sqlArg, MAIN_MESSAGE, secondaryLocations(initializerOrExpression, reassignments, identifierTree.name()), null);
           }
@@ -197,7 +206,26 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     return arg.is(Tree.Kind.PLUS_ASSIGNMENT) && !((AssignmentExpressionTree) arg).expression().asConstant().isPresent();
   }
 
+  private static boolean isDynamicString(ExpressionTree arg) {
+    return isDynamicConcatenation(arg) || isDynamicFormatting(arg);
+  }
+
   private static boolean isDynamicConcatenation(ExpressionTree arg) {
     return arg.is(Tree.Kind.PLUS) && !arg.asConstant().isPresent();
+  }
+
+  private static boolean isDynamicFormatting(Tree tree) {
+    return tree instanceof MethodInvocationTree mit
+      && FORMAT_METHODS.matches(mit)
+      && hasDynamicStringParameters(mit);
+  }
+
+  private static boolean hasDynamicStringParameters(MethodInvocationTree mit) {
+    for (ExpressionTree arg: mit.arguments()) {
+      if (arg.symbolType().is(JAVA_LANG_STRING) && arg.asConstant().isEmpty()) {
+        return true;
+      }
+    }
+    return false;
   }
 }
