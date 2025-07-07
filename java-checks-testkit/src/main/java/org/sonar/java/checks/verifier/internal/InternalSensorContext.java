@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.batch.fs.FileSystem;
@@ -200,5 +201,10 @@ public class InternalSensorContext extends InternalMockedSonarAPI implements Sen
   @Override
   public void addTelemetryProperty(String s, String s1) {
     throw notSupportedException("addTelemetryProperty(String,String)");
+  }
+
+  @Override
+  public void addAnalysisData(String s, String s1, InputStream inputStream) {
+    throw notSupportedException("addAnalysisData(String,String,InputStream)");
   }
 }
