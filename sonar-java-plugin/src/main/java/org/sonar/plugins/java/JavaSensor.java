@@ -53,6 +53,7 @@ import org.sonarsource.performance.measure.PerformanceMeasure;
 
 import static org.sonar.api.rules.RuleAnnotationUtils.getRuleKey;
 import static org.sonar.java.TelemetryKey.JAVA_LANGUAGE_VERSION;
+import static org.sonar.java.TelemetryKey.JAVA_SCANNER_APP;
 
 @Phase(name = Phase.Name.PRE)
 @DependedUpon("org.sonar.plugins.java.JavaSensor")
@@ -109,6 +110,8 @@ public class JavaSensor implements Sensor {
 
     JavaVersion javaVersion = getJavaVersion();
     telemetry.addMetric(JAVA_LANGUAGE_VERSION, javaVersion.toString());
+
+    telemetry.addMetric(JAVA_SCANNER_APP, settings.get("sonar.scanner.app").orElse("none"));
 
     JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));

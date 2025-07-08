@@ -20,7 +20,8 @@ package org.sonar.java;
  * Telemetry keys used by the Java analyzer.
  */
 public enum TelemetryKey {
-  JAVA_LANGUAGE_VERSION("java.language.version");
+  JAVA_LANGUAGE_VERSION("java.language.version"),
+  JAVA_SCANNER_APP("java.scanner_app");
 
   private final String key;
 
