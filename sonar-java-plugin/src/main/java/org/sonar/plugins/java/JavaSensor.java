@@ -41,6 +41,7 @@ import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.Telemetry;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
@@ -103,9 +104,10 @@ public class JavaSensor implements Sensor {
     sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
 
     Measurer measurer = new Measurer(context, noSonarFilter);
+    Telemetry telemetry = new SensorTelemetry(context);
 
     JavaVersion javaVersion = getJavaVersion();
-    context.addTelemetryProperty("java.language.version", javaVersion.toString());
+    telemetry.addMetric("java.language.version", javaVersion.toString());
 
     JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));
@@ -187,5 +189,4 @@ public class JavaSensor implements Sensor {
   public String toString() {
     return getClass().getSimpleName();
   }
-
 }
