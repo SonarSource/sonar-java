@@ -16,6 +16,9 @@
  */
 package org.sonar.java.checks.naming;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.serialization.SerializableContract;
@@ -27,10 +30,6 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "S00115", repositoryKey = "squid")
@@ -44,7 +43,14 @@ public class BadConstantNameCheck extends IssuableSubscriptionVisitor {
     defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 
+  @RuleProperty(
+    key = "enumFormat",
+    description = "Regular expression used to check the enum names against. "
+      + "If not set, then the format for other constants will be used.")
+  public String enumFormat = null;
+
   private Pattern pattern = null;
+  private Pattern enumPattern = null;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -55,6 +61,12 @@ public class BadConstantNameCheck extends IssuableSubscriptionVisitor {
   public void setContext(JavaFileScannerContext context) {
     if (pattern == null) {
       pattern = Pattern.compile(format, Pattern.DOTALL);
+    }
+    if (enumFormat == null) {
+      enumFormat = format;
+    }
+    if (enumPattern == null) {
+      enumPattern = Pattern.compile(enumFormat, Pattern.DOTALL);
     }
     super.setContext(context);
   }
@@ -67,10 +79,10 @@ public class BadConstantNameCheck extends IssuableSubscriptionVisitor {
         VariableTree variableTree = (VariableTree) member;
         Type symbolType = variableTree.type().symbolType();
         if (isConstantType(symbolType) && (classTree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) || isStaticFinal(variableTree))) {
-          checkName(variableTree);
+          checkName(variableTree, pattern, format);
         }
       } else if (member.is(Tree.Kind.ENUM_CONSTANT)) {
-        checkName((VariableTree) member);
+        checkName((VariableTree) member, enumPattern, enumFormat);
       }
     }
   }
@@ -79,7 +91,7 @@ public class BadConstantNameCheck extends IssuableSubscriptionVisitor {
     return symbolType.isPrimitive() || symbolType.is("java.lang.String") || symbolType.isPrimitiveWrapper();
   }
 
-  private void checkName(VariableTree variableTree) {
+  private void checkName(VariableTree variableTree, Pattern pattern, String format) {
     if (!SerializableContract.SERIAL_VERSION_UID_FIELD.equals(variableTree.simpleName().name()) && !pattern.matcher(variableTree.simpleName().name()).matches()) {
       reportIssue(variableTree.simpleName(), "Rename this constant name to match the regular expression '" + format + "'.");
     }

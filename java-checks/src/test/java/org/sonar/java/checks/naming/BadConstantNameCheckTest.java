@@ -18,6 +18,7 @@ package org.sonar.java.checks.naming;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.plugins.java.api.JavaFileScanner;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -48,5 +49,28 @@ class BadConstantNameCheckTest {
       .onFile("src/test/files/checks/naming/BadConstantName.java")
       .withCheck(check)
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_enum() {
+    BadConstantNameCheck check = new BadConstantNameCheck();
+
+    on(check, "checks/naming/BadConstantNameConstCaseEnum.java").verifyNoIssues();
+    on(check, "checks/naming/BadConstantNamePascalCaseEnum.java").verifyIssues();
+  }
+
+  @Test
+  void test_enum_custom() {
+    BadConstantNameCheck check = new BadConstantNameCheck();
+    check.enumFormat = "^([A-Z][a-zA-Z0-9]*)*$";
+
+    on(check, "checks/naming/BadConstantNameConstCaseEnum.java").verifyIssues();
+    on(check, "checks/naming/BadConstantNamePascalCaseEnum.java").verifyNoIssues();
+  }
+
+  private CheckVerifier on(JavaFileScanner check, String path) {
+    return CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(path))
+      .withCheck(check);
   }
 }
