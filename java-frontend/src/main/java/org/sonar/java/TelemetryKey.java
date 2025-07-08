@@ -14,24 +14,21 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.plugins.java;
-
-import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.java.Telemetry;
-import org.sonar.java.TelemetryKey;
+package org.sonar.java;
 
 /**
- * Wraps up {@link SensorContext} to allow passing it around without exposing other APIs.
+ * Telemetry keys used by the Java analyzer.
  */
-public class SensorTelemetry implements Telemetry {
-  private final SensorContext context;
+public enum TelemetryKey {
+  JAVA_LANGUAGE_VERSION("java.language.version");
 
-  public SensorTelemetry(SensorContext context) {
-    this.context = context;
+  private final String key;
+
+  TelemetryKey(String key) {
+    this.key = key;
   }
 
-  @Override
-  public void addMetric(TelemetryKey key, String value) {
-    this.context.addTelemetryProperty(key.key(), value);
+  public String key() {
+    return key;
   }
 }

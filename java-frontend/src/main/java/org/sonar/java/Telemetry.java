@@ -22,5 +22,5 @@ package org.sonar.java;
 public interface Telemetry {
   // `addMetric` will forward the call to `addTelemetryProperty`.
   // We chose a different name to make textual search for the real thing easier.
-  void addMetric(String key, String value);
+  void addMetric(TelemetryKey key, String value);
 }
