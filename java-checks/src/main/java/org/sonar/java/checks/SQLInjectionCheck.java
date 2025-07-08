@@ -206,14 +206,14 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDynamicString(ExpressionTree arg) {
-    return isDynamicConcatenation(arg) || isDynamicFormatting(arg);
+    return isDynamicConcatenation(arg) || isDynamicFormat(arg);
   }
 
   private static boolean isDynamicConcatenation(ExpressionTree arg) {
     return arg.is(Tree.Kind.PLUS) && !arg.asConstant().isPresent();
   }
 
-  private static boolean isDynamicFormatting(Tree tree) {
+  private static boolean isDynamicFormat(Tree tree) {
     return tree instanceof MethodInvocationTree mit
       && FORMAT_METHODS.matches(mit)
       && hasDynamicStringParameters(mit);
