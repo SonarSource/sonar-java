@@ -190,4 +190,5 @@ public class JavaSensor implements Sensor {
   public String toString() {
     return getClass().getSimpleName();
   }
+
 }
