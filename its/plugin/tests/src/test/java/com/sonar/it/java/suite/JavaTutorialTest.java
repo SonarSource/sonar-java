@@ -16,6 +16,7 @@
  */
 package com.sonar.it.java.suite;
 
+import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
 import java.util.List;
@@ -33,7 +34,10 @@ public class JavaTutorialTest {
 
   @Test
   public void test() {
-    MavenBuild build = TestUtils.createMavenBuild().setPom(TestUtils.projectPom("java-tutorial")).setCleanPackageSonarGoals();
+    MavenBuild build = TestUtils.createMavenBuild()
+      .setPom(TestUtils.projectPom("java-tutorial"))
+      .setCleanPackageSonarGoals()
+      .setDebugLogs(true);
     String projectKey = "org.sonarsource.it.projects:java-tutorial";
     TestUtils.provisionProject(orchestrator, projectKey, "java-tutorial", "java", "java-tutorial");
     executeAndAssertBuild(build, projectKey);
@@ -47,13 +51,14 @@ public class JavaTutorialTest {
       .setCleanPackageSonarGoals()
       .setProperty("sonar.projectKey", projectKey)
       .setProperty("sonar.projectName", projectName)
-      .setProperty("sonar.java.experimental.batchModeSizeInKB", "8000");
+      .setProperty("sonar.java.experimental.batchModeSizeInKB", "8000")
+      .setDebugLogs(true);
     TestUtils.provisionProject(orchestrator, projectKey, projectName, "java", "java-tutorial");
     executeAndAssertBuild(build, projectKey);
   }
 
   private void executeAndAssertBuild(MavenBuild build, String projectKey) {
-    orchestrator.executeBuild(build);
+    BuildResult buildResult = orchestrator.executeBuild(build);
 
     List<Issue> issues = TestUtils.issuesForComponent(orchestrator, projectKey);
     assertThat(issues).hasSize(31);
@@ -63,6 +68,8 @@ public class JavaTutorialTest {
     assertThat(issuesForRule(issues, "mycompany-java:AvoidBrandInMethodNames")).hasSize(2);
     assertThat(issuesForRule(issues, "mycompany-java:SecurityAnnotationMandatory")).hasSize(2);
     assertThat(issuesForRule(issues, "mycompany-java:SpringControllerRequestMappingEntity")).hasSize(1);
+
+    assertThat(buildResult.getLogs()).containsOnlyOnce("java.scanner_app=ScannerMaven");
   }
 
   private static Stream<String> issuesForRule(List<Issue> issues, String key) {

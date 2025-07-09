@@ -16,6 +16,8 @@
  */
 package org.sonar.plugins.java;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.java.Telemetry;
 import org.sonar.java.TelemetryKey;
@@ -24,6 +26,8 @@ import org.sonar.java.TelemetryKey;
  * Wraps up {@link SensorContext} to allow passing it around without exposing other APIs.
  */
 public class SensorTelemetry implements Telemetry {
+  private static final Logger LOG = LoggerFactory.getLogger(SensorTelemetry.class);
+
   private final SensorContext context;
 
   public SensorTelemetry(SensorContext context) {
@@ -32,6 +36,7 @@ public class SensorTelemetry implements Telemetry {
 
   @Override
   public void addMetric(TelemetryKey key, String value) {
+    LOG.debug("{}={}", key.key(), value);
     this.context.addTelemetryProperty(key.key(), value);
   }
 }
