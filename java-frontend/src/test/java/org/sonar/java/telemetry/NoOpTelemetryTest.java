@@ -14,22 +14,22 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java;
+package org.sonar.java.telemetry;
 
-/**
- * Telemetry keys used by the Java analyzer.
- */
-public enum TelemetryKey {
-  JAVA_LANGUAGE_VERSION("java.language.version"),
-  JAVA_SCANNER_APP("java.scanner_app");
+import org.junit.jupiter.api.Test;
 
-  private final String key;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
-  TelemetryKey(String key) {
-    this.key = key;
+class NoOpTelemetryTest {
+
+  @Test
+  void test_no_operation() {
+    var storage = new NoOpTelemetry();
+    storage.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
+    storage.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1);
+    assertThat(storage.toMap()).isEmpty();
+    assertThat(storage).hasToString("{}");
   }
 
-  public String key() {
-    return key;
-  }
 }

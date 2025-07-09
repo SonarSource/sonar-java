@@ -30,7 +30,8 @@ import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConstants;
 import org.sonar.java.SonarComponents;
-import org.sonar.plugins.java.api.caching.SonarLintCache;
+import org.sonar.java.telemetry.Telemetry;
+import org.sonar.java.telemetry.TelemetryStorage;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForMainForSonarLint;
 import org.sonar.java.classpath.ClasspathForTest;
@@ -38,6 +39,7 @@ import org.sonar.java.classpath.ClasspathProperties;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonar.plugins.surefire.SurefireExtensions;
 
 public class JavaPlugin implements Plugin {
@@ -48,11 +50,14 @@ public class JavaPlugin implements Plugin {
     List<Object> list = new ArrayList<>();
 
     if (context.getRuntime().getProduct() == SonarProduct.SONARLINT) {
+      list.add(Telemetry.class);
       list.add(ClasspathForMainForSonarLint.class);
       // Some custom rules (i.e. DBD) depend on the presence of SonarLintCache when executing in a SonarLint context.
       // Hence, we must provide it here.
       list.add(SonarLintCache.class);
     } else {
+      list.add(TelemetryStorage.class);
+      list.add(ProjectEndOfAnalysisSensor.class);
       list.addAll(SurefireExtensions.getExtensions());
       list.add(DroppedPropertiesSensor.class);
       list.add(JavaSonarWayProfile.class);
