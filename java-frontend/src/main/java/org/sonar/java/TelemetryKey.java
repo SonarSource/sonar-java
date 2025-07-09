@@ -21,7 +21,16 @@ package org.sonar.java;
  */
 public enum TelemetryKey {
   JAVA_LANGUAGE_VERSION("java.language.version"),
-  JAVA_SCANNER_APP("java.scanner_app");
+  JAVA_AUTOSCAN("java.autoscan"),
+  JAVA_SCANNER_APP("java.scanner_app"),
+
+  JAVA_SERVER_CACHING_ENABLED("java.server.caching.enabled"),
+  JAVA_SERVER_CACHING_FILES_USED("java.server.caching.files_used"),
+  JAVA_SERVER_CACHING_FILES_TOTAL("java.server.caching.files_total"),
+
+  // The last element of dependency keys should be the same as the name of its jar.
+  JAVA_DEPENDENCY_LOMBOK("java.dependency.lombok"),
+  JAVA_DEPENDENCY_SPRING_BOOT("java.dependency.spring-boot");
 
   private final String key;
 

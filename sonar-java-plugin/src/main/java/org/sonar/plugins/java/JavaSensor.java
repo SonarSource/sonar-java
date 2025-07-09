@@ -52,6 +52,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 
 import static org.sonar.api.rules.RuleAnnotationUtils.getRuleKey;
+import static org.sonar.java.TelemetryKey.JAVA_AUTOSCAN;
 import static org.sonar.java.TelemetryKey.JAVA_LANGUAGE_VERSION;
 import static org.sonar.java.TelemetryKey.JAVA_SCANNER_APP;
 
@@ -111,9 +112,18 @@ public class JavaSensor implements Sensor {
     JavaVersion javaVersion = getJavaVersion();
     telemetry.addMetric(JAVA_LANGUAGE_VERSION, javaVersion.toString());
 
+    // TODO test that we send true/false
+    telemetry.addMetric(JAVA_AUTOSCAN, sonarComponents.isAutoScan());
+
     telemetry.addMetric(JAVA_SCANNER_APP, settings.get("sonar.scanner.app").orElse("none"));
 
-    JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
+    JavaFrontend frontend = new JavaFrontend(
+      javaVersion,
+      sonarComponents,
+      measurer,
+      telemetry,
+      javaResourceLocator,
+      postAnalysisIssueFilter,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));
     frontend.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 

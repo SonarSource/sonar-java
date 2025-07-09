@@ -17,10 +17,23 @@
 package org.sonar.java;
 
 /**
+
  * Provides access to the APIs for reporting telemetry.
  */
 public interface Telemetry {
   // `addMetric` will forward the call to `addTelemetryProperty`.
   // We chose a different name to make textual search for the real thing easier.
   void addMetric(TelemetryKey key, String value);
+
+  default void addMetric(TelemetryKey key, boolean value) {
+    addMetric(key, String.valueOf(value));
+  }
+
+  default void addMetric(TelemetryKey key, int value) {
+    addMetric(key, String.valueOf(value));
+  }
+
+  default void addMetric(TelemetryKey key, long value) {
+    addMetric(key, String.valueOf(value));
+  }
 }

@@ -78,7 +78,7 @@ class JavaVersionAwareVisitorTest {
 
   private void checkIssues(JavaVersion version) {
     messages.clear();
-    JavaFrontend frontend = new JavaFrontend(version, mockSonarComponents(), mock(Measurer.class), null, null, javaChecks);
+    JavaFrontend frontend = new JavaFrontend(version, mockSonarComponents(), mock(Measurer.class), mock(Telemetry.class), null, null, javaChecks);
     frontend.scan(Collections.singletonList(TestUtils.inputFile("src/test/files/JavaVersionAwareChecks.java")),
       Collections.emptyList(), Collections.emptyList());
   }
