@@ -16,15 +16,14 @@
  */
 package org.sonar.plugins.java;
 
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.scanner.sensor.ProjectSensor;
-import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.jsp.Jasper;
+import org.sonar.java.telemetry.Telemetry;
 
 @Phase(name = Phase.Name.POST)
 public class ProjectEndOfAnalysisSensor implements ProjectSensor {
@@ -44,11 +43,10 @@ public class ProjectEndOfAnalysisSensor implements ProjectSensor {
 
   @Override
   public void execute(SensorContext context) {
-    Map<String, String> telemetryData = telemetry.toMap();
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("SonarJava Telemetry: {}", telemetryData);
-    }
-    telemetryData.forEach(context::addTelemetryProperty);
+    telemetry.toMap().forEach((key, value) -> {
+      LOG.debug("Telemetry {}: {}", key, value);
+      context.addTelemetryProperty(key, value);
+    });
   }
 
 }

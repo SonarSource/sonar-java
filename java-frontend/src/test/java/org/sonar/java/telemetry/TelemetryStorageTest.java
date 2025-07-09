@@ -19,6 +19,7 @@ package org.sonar.java.telemetry;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 class TelemetryStorageTest {
 
@@ -28,10 +29,8 @@ class TelemetryStorageTest {
     storage.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
     storage.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "17");
     storage.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
-    assertThat(storage).hasToString("""
-      {
-        "java.language.version": "17,21"
-      }""");
+    assertThat(storage.toMap()).containsExactly(
+      entry("java.language.version", "17,21"));
   }
 
   @Test
@@ -40,10 +39,8 @@ class TelemetryStorageTest {
     storage.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1L);
     storage.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1L);
     storage.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1L);
-    assertThat(storage).hasToString("""
-      {
-        "java.module_count": "3"
-      }""");
+    assertThat(storage.toMap()).containsExactly(
+      entry("java.module_count", "3"));
   }
 
   @Test
@@ -51,11 +48,9 @@ class TelemetryStorageTest {
     var storage = new TelemetryStorage();
     storage.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
     storage.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1L);
-    assertThat(storage).hasToString("""
-      {
-        "java.language.version": "21",
-        "java.module_count": "1"
-      }""");
+    assertThat(storage.toMap()).containsExactly(
+      entry("java.language.version", "21"),
+      entry("java.module_count", "1"));
   }
 
 }

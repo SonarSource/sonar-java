@@ -16,8 +16,6 @@
  */
 package org.sonar.java.telemetry;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -26,9 +24,8 @@ import java.util.TreeSet;
 
 public class TelemetryStorage implements Telemetry {
 
-  public static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-  private Map<String, Set<String>> sets = new HashMap<>();
-  private Map<String, Long> counters = new HashMap<>();
+  private final Map<String, Set<String>> sets = new HashMap<>();
+  private final Map<String, Long> counters = new HashMap<>();
 
   @Override
   public void aggregateAsSortedSet(TelemetryKey key, String value) {
@@ -46,14 +43,6 @@ public class TelemetryStorage implements Telemetry {
     sets.forEach((key, value) -> map.put(key, String.join(",", value)));
     counters.forEach((key, value) -> map.put(key, String.valueOf(value)));
     return map;
-  }
-
-  /**
-   * Used for testing purposes
-   */
-  @Override
-  public String toString() {
-    return GSON.toJson(toMap());
   }
 
 }

@@ -78,6 +78,7 @@ import org.sonar.plugins.java.api.JspCodeVisitor;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -139,35 +140,29 @@ class JavaSensorTest {
     JavaSensor jss = new JavaSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null, telemetry);
 
     jss.execute(context);
-    // argument 122 refers to the comment on line #118 in this file, each time this file changes, this argument should be updated
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(122));
+    // argument 123 refers to the comment on line #118 in this file, each time this file changes, this argument should be updated
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(123));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
     verify(context).addTelemetryProperty("java.language.version", "22");
     verify(context).addTelemetryProperty("java.scanner_app", "ScannerJavaSensorTest");
 
-    assertThat(telemetry).hasToString("""
-      {
-        "java.language.version": "22",
-        "java.module_count": "1"
-      }""");
+    assertThat(telemetry.toMap()).containsExactly(
+      entry("java.language.version", "22"),
+      entry("java.module_count", "1"));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
     jss.execute(context);
 
-    assertThat(telemetry).hasToString("""
-      {
-        "java.language.version": "22,none",
-        "java.module_count": "2"
-      }""");
+    assertThat(telemetry.toMap()).containsExactly(
+      entry("java.language.version", "22,none"),
+      entry("java.module_count", "2"));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "1.7");
     jss.execute(context);
 
-    assertThat(telemetry).hasToString("""
-      {
-        "java.language.version": "22,7,none",
-        "java.module_count": "3"
-      }""");
+    assertThat(telemetry.toMap()).containsExactly(
+      entry("java.language.version", "22,7,none"),
+      entry("java.module_count", "3"));
 
   }
 

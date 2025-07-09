@@ -19,7 +19,6 @@ package org.sonar.java.telemetry;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class NoOpTelemetryTest {
 
@@ -29,7 +28,6 @@ class NoOpTelemetryTest {
     storage.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
     storage.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1);
     assertThat(storage.toMap()).isEmpty();
-    assertThat(storage).hasToString("{}");
   }
 
 }
