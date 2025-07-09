@@ -143,26 +143,27 @@ class JavaSensorTest {
     // argument 123 refers to the comment on line #118 in this file, each time this file changes, this argument should be updated
     verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(123));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
-    verify(context).addTelemetryProperty("java.language.version", "22");
-    verify(context).addTelemetryProperty("java.scanner_app", "ScannerJavaSensorTest");
 
     assertThat(telemetry.toMap()).containsExactly(
       entry("java.language.version", "22"),
-      entry("java.module_count", "1"));
+      entry("java.module_count", "1"),
+      entry("java.scanner_app", "ScannerJavaSensorTest"));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
     jss.execute(context);
 
     assertThat(telemetry.toMap()).containsExactly(
       entry("java.language.version", "22,none"),
-      entry("java.module_count", "2"));
+      entry("java.module_count", "2"),
+      entry("java.scanner_app", "ScannerJavaSensorTest"));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "1.7");
     jss.execute(context);
 
     assertThat(telemetry.toMap()).containsExactly(
       entry("java.language.version", "22,7,none"),
-      entry("java.module_count", "3"));
+      entry("java.module_count", "3"),
+      entry("java.scanner_app", "ScannerJavaSensorTest"));
 
   }
 

@@ -52,9 +52,9 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 
 import static org.sonar.api.rules.RuleAnnotationUtils.getRuleKey;
-import static org.sonar.java.TelemetryKey.JAVA_SCANNER_APP;
 import static org.sonar.java.telemetry.TelemetryKey.JAVA_LANGUAGE_VERSION;
 import static org.sonar.java.telemetry.TelemetryKey.JAVA_MODULE_COUNT;
+import static org.sonar.java.telemetry.TelemetryKey.JAVA_SCANNER_APP;
 
 @Phase(name = Phase.Name.PRE)
 @DependedUpon("org.sonar.plugins.java.JavaSensor")
