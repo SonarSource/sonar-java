@@ -122,6 +122,8 @@ class JavaSensorTest {
   private void testIssueCreation(InputFile.Type onType, int expectedIssues) throws IOException {
     MapSettings settings = new MapSettings();
     settings.setProperty(JavaVersion.SOURCE_VERSION, "22");
+    settings.setProperty("sonar.scanner.app", "ScannerJavaSensorTest");
+
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     SensorContextTester context = spy(createContext(onType).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7))));
     DefaultFileSystem fs = context.fileSystem();
@@ -135,6 +137,7 @@ class JavaSensorTest {
     verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(118));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
     verify(context).addTelemetryProperty("java.language.version", "22");
+    verify(context).addTelemetryProperty("java.scanner_app", "ScannerJavaSensorTest");
 
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
