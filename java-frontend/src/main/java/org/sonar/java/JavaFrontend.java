@@ -23,8 +23,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -48,12 +46,12 @@ import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.Version;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
 
 import static org.sonar.java.telemetry.TelemetryKey.JAVA_DEPENDENCY_LOMBOK;
 import static org.sonar.java.telemetry.TelemetryKey.JAVA_DEPENDENCY_SPRING_BOOT;
+import static org.sonar.java.telemetry.TelemetryKey.JAVA_DEPENDENCY_SPRING_WEB;
 
 public class JavaFrontend {
 
@@ -63,7 +61,8 @@ public class JavaFrontend {
   /** List of libraries, whose presence or absence we want to report. */
   private static final Map<TelemetryKey, String> REPORTED_DEPENDENCIES = Map.of(
     JAVA_DEPENDENCY_LOMBOK, "lombok",
-    JAVA_DEPENDENCY_SPRING_BOOT, "spring-boot"
+    JAVA_DEPENDENCY_SPRING_BOOT, "spring-boot",
+    JAVA_DEPENDENCY_SPRING_WEB, "spring-web"
   );
 
   private final JavaVersion javaVersion;
