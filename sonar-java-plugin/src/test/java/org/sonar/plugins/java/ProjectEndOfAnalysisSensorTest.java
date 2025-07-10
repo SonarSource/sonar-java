@@ -21,8 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.event.Level;
+import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
+import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.telemetry.TelemetryStorage;
 
@@ -32,6 +34,15 @@ class ProjectEndOfAnalysisSensorTest {
 
   @RegisterExtension
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+
+  @Test
+  void test_describe() {
+    var sensor = new ProjectEndOfAnalysisSensor(new NoOpTelemetry());
+    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
+    sensor.describe(descriptor);
+    assertThat(descriptor.name()).isEqualTo("JavaProjectSensor");
+    assertThat(descriptor.languages()).containsExactly("java", "jsp");
+  }
 
   @Test
   void test_telemetry(@TempDir Path tempDir) {
