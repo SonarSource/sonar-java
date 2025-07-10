@@ -36,6 +36,12 @@ public interface Telemetry {
   void aggregateAsSortedSet(TelemetryKey key, String value);
 
   /**
+   * Same as {@link #aggregateAsSortedSet(TelemetryKey, String)}, but no value is added.
+   * If this is the only call for the key, then the final map will be empty for the key.
+   */
+  void aggregateAsSortedSet(TelemetryKey key);
+
+  /**
    * Aggregates all the given values as a sum for the given key.
    */
   void aggregateAsCounter(TelemetryKey key, long value);

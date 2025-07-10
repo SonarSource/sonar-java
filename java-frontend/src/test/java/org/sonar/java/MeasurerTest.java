@@ -25,6 +25,7 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.utils.PathUtils;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.telemetry.NoOpTelemetry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -92,7 +93,7 @@ class MeasurerTest {
     context.fileSystem().add(inputFile);
 
     Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), measurer, null, null);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), measurer, new NoOpTelemetry(), null, null);
 
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
 

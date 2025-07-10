@@ -29,6 +29,11 @@ public class NoOpTelemetry implements Telemetry {
   }
 
   @Override
+  public void aggregateAsSortedSet(TelemetryKey key) {
+    // no operation
+  }
+
+  @Override
   public void aggregateAsCounter(TelemetryKey key, long value) {
     // no operation
   }

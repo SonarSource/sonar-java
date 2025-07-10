@@ -31,7 +31,16 @@ public class DefaultTelemetry implements Telemetry {
 
   @Override
   public void aggregateAsSortedSet(TelemetryKey key, String value) {
-    sets.computeIfAbsent(key, k -> new TreeSet<>(ALPHA_NUMERIC_COMPARATOR)).add(value);
+    sets.computeIfAbsent(key, k -> makeSet()).add(value);
+  }
+
+  @Override
+  public void aggregateAsSortedSet(TelemetryKey key) {
+    sets.computeIfAbsent(key, k -> makeSet());
+  }
+
+  private static Set<String> makeSet() {
+    return new TreeSet<>(ALPHA_NUMERIC_COMPARATOR);
   }
 
   @Override
@@ -42,7 +51,7 @@ public class DefaultTelemetry implements Telemetry {
   @Override
   public Map<String, String> toMap() {
     Map<String, String> map = new TreeMap<>(ALPHA_NUMERIC_COMPARATOR);
-    sets.forEach((key, value) -> map.put(key.key(), String.join(",", value)));
+    sets.forEach((key, value) -> map.put(key.key(), value.isEmpty() ? "absent" : String.join(",", value)));
     counters.forEach((key, value) -> map.put(key.key(), String.valueOf(value)));
     return map;
   }

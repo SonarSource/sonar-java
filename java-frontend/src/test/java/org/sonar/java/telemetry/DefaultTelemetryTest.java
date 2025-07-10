@@ -16,6 +16,7 @@
  */
 package org.sonar.java.telemetry;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,33 +24,61 @@ import static org.assertj.core.api.Assertions.entry;
 
 class DefaultTelemetryTest {
 
+  private Telemetry telemetry;
+
+  @BeforeEach
+  void setUp() {
+    telemetry = new DefaultTelemetry();
+  }
+
   @Test
   void testAggregateAsSortedSet() {
-    var storage = new DefaultTelemetry();
-    storage.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
-    storage.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "17");
-    storage.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "8");
-    storage.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
-    assertThat(storage.toMap()).containsExactly(
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "17");
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "8");
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
+    assertThat(telemetry.toMap()).containsExactly(
       entry("java.language.version", "8,17,21"));
   }
 
   @Test
+  void testAggeregateAsSortedSetAbsent() {
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_DEPENDENCY_LOMBOK);
+    assertThat(telemetry.toMap()).containsExactly(
+      entry("java.dependency.lombok", "absent"));
+  }
+
+  @Test
+  void testAggeregateAsSortedSetOneValueAndAbsent() {
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_DEPENDENCY_SPRING_WEB, "7.0.0-M1");
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_DEPENDENCY_SPRING_WEB);
+    assertThat(telemetry.toMap()).containsExactly(
+      entry("java.dependency.spring-web", "7.0.0-M1"));
+  }
+
+  @Test
+  void testAggeregateAsSortedSetAbsentAndTwoValues() {
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_DEPENDENCY_LOMBOK);
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_DEPENDENCY_LOMBOK, "1.18.30");
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_DEPENDENCY_LOMBOK, "1.16.1");
+    assertThat(telemetry.toMap()).containsExactly(
+      entry("java.dependency.lombok", "1.16.1,1.18.30"));
+  }
+
+  @Test
   void testAggregateCounter() {
-    var storage = new DefaultTelemetry();
-    storage.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1L);
-    storage.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1L);
-    storage.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1L);
-    assertThat(storage.toMap()).containsExactly(
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1L);
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1L);
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1L);
+    assertThat(telemetry.toMap()).containsExactly(
       entry("java.module_count", "3"));
   }
 
   @Test
   void testAggregateDifferentTypes() {
-    var storage = new DefaultTelemetry();
-    storage.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
-    storage.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1L);
-    assertThat(storage.toMap()).containsExactly(
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1L);
+    assertThat(telemetry.toMap()).containsExactly(
       entry("java.language.version", "21"),
       entry("java.module_count", "1"));
   }
