@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -35,33 +37,48 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.caching.CacheContextImpl;
+import org.sonar.java.classpath.DependencyVersionInference;
 import org.sonar.java.collections.CollectionUtils;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.telemetry.Telemetry;
+import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.Version;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 import org.sonarsource.performance.measure.PerformanceMeasure.Duration;
+
+import static org.sonar.java.telemetry.TelemetryKey.JAVA_DEPENDENCY_LOMBOK;
+import static org.sonar.java.telemetry.TelemetryKey.JAVA_DEPENDENCY_SPRING_BOOT;
 
 public class JavaFrontend {
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaFrontend.class);
   private static final String BATCH_ERROR_MESSAGE = "Batch Mode failed, analysis of Java Files stopped.";
 
+  /** List of libraries, whose presence or absence we want to report. */
+  private static final Map<TelemetryKey, String> REPORTED_DEPENDENCIES = Map.of(
+    JAVA_DEPENDENCY_LOMBOK, "lombok",
+    JAVA_DEPENDENCY_SPRING_BOOT, "spring-boot"
+  );
+
   private final JavaVersion javaVersion;
   private final SonarComponents sonarComponents;
+  private final Telemetry telemetry;
   private final List<File> globalClasspath;
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
   private final JavaAstScanner astScannerForGeneratedFiles;
 
-  public JavaFrontend(JavaVersion javaVersion, SonarComponents sonarComponents, Measurer measurer,
+  public JavaFrontend(JavaVersion javaVersion, SonarComponents sonarComponents, Measurer measurer, Telemetry telemetry,
                       JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
     this.javaVersion = javaVersion;
     this.sonarComponents = sonarComponents;
+    this.telemetry = telemetry;
     List<JavaCheck> commonVisitors = new ArrayList<>();
     commonVisitors.add(javaResourceLocator);
     if (postAnalysisIssueFilter != null) {
@@ -144,6 +161,15 @@ public class JavaFrontend {
       scanAsBatch(new DefaultBatchModeContext(astScanner, "Main"), sourceFiles);
       scanAsBatch(new DefaultBatchModeContext(astScannerForTests, "Test"), testFiles);
       scanAsBatch(new DefaultBatchModeContext(astScannerForGeneratedFiles, "Generated"), generatedFiles);
+    }
+
+    DependencyVersionInference dependencyService = new DependencyVersionInference();
+    for (Map.Entry<TelemetryKey, String> dep : REPORTED_DEPENDENCIES.entrySet()) {
+      dependencyService
+        .infer(dep.getValue(), globalClasspath)
+        .ifPresent(version ->
+          telemetry.aggregateAsSortedSet(dep.getKey(), version.toString())
+        );
     }
   }
 
