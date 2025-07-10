@@ -161,7 +161,7 @@ class JavaSensorTest {
     jss.execute(context);
 
     assertThat(telemetry.toMap()).containsExactly(
-      entry("java.language.version", "22,7,none"),
+      entry("java.language.version", "7,22,none"),
       entry("java.module_count", "3"),
       entry("java.scanner_app", "ScannerJavaSensorTest"));
 
