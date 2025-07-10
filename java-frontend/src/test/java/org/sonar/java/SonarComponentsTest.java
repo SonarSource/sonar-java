@@ -140,7 +140,7 @@ class SonarComponentsTest {
   private SensorContext context;
 
   @RegisterExtension
-  public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
+  public ThreadLocalLogTester logTester = new ThreadLocalLogTester();
 
   @BeforeEach
   void setUp() {
@@ -980,6 +980,7 @@ class SonarComponentsTest {
   @ParameterizedTest
   @MethodSource("fileCanBeSkipped_only_logs_on_first_call_input")
   void fileCanBeSkipped_only_logs_on_the_first_call(SonarComponents sonarComponents, InputFile inputFile, String logMessage) throws IOException {
+    logTester.setLevel(Level.INFO);
     assertThat(logTester.logs(Level.INFO)).isEmpty();
 
     SensorContext contextMock = mock(SensorContext.class);
@@ -1087,6 +1088,7 @@ class SonarComponentsTest {
 
     @Test
     void log_only_50_undefined_types() {
+      logTester.setLevel(Level.DEBUG);
       String source = generateSource(26);
 
       // artificially populated the semantic errors with 26 unknown types and 52 errors
@@ -1131,6 +1133,7 @@ class SonarComponentsTest {
 
     @Test
     void log_all_undefined_types_if_less_than_threshold() {
+      logTester.setLevel(Level.DEBUG);
       String source = generateSource(1);
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
@@ -1155,6 +1158,7 @@ class SonarComponentsTest {
 
     @Test
     void suspicious_empty_libraries_should_be_logged() {
+      logTester.setLevel(Level.INFO);
       logUndefinedTypesWithOneMainAndOneTest();
 
       assertThat(logTester.logs(Level.WARN))
@@ -1166,6 +1170,7 @@ class SonarComponentsTest {
 
     @Test
     void suspicious_empty_libraries_should_not_be_logged_in_autoscan() {
+      logTester.setLevel(Level.INFO);
       // Enable autoscan with a property
       context.setSettings(new MapSettings().setProperty(SonarComponents.SONAR_AUTOSCAN, true));
 
@@ -1180,6 +1185,7 @@ class SonarComponentsTest {
 
     @Test
     void log_problems_with_list_of_paths_of_files_affected() {
+      logTester.setLevel(Level.DEBUG);
       String source = generateSource(1);
 
       // Add one test and one main file

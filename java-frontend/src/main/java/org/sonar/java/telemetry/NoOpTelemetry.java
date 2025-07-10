@@ -14,29 +14,28 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.plugins.java;
+package org.sonar.java.telemetry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.java.Telemetry;
-import org.sonar.java.TelemetryKey;
+import java.util.Map;
 
 /**
- * Wraps up {@link SensorContext} to allow passing it around without exposing other APIs.
+ * Placeholder for {@link Telemetry} that ignores all calls. Its main use is to satisfy a dependency in SonarQube for IDE, which does not send telemetry.
  */
-public class SensorTelemetry implements Telemetry {
-  private static final Logger LOG = LoggerFactory.getLogger(SensorTelemetry.class);
+public class NoOpTelemetry implements Telemetry {
 
-  private final SensorContext context;
-
-  public SensorTelemetry(SensorContext context) {
-    this.context = context;
+  @Override
+  public void aggregateAsSortedSet(TelemetryKey key, String value) {
+    // no operation
   }
 
   @Override
-  public void addMetric(TelemetryKey key, String value) {
-    LOG.debug("{}={}", key.key(), value);
-    this.context.addTelemetryProperty(key.key(), value);
+  public void aggregateAsCounter(TelemetryKey key, long value) {
+    // no operation
   }
+
+  @Override
+  public Map<String, String> toMap() {
+    return Map.of();
+  }
+
 }

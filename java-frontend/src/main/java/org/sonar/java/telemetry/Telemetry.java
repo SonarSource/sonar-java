@@ -14,13 +14,35 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java;
+package org.sonar.java.telemetry;
+
+import java.util.Map;
+import org.sonar.api.ExtensionPoint;
+import org.sonar.api.scanner.ScannerSide;
+import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**
  * Provides access to the APIs for reporting telemetry.
  */
+@ScannerSide
+@SonarLintSide
+@ExtensionPoint
 public interface Telemetry {
-  // `addMetric` will forward the call to `addTelemetryProperty`.
-  // We chose a different name to make textual search for the real thing easier.
-  void addMetric(TelemetryKey key, String value);
+
+  /**
+   * Aggregates all the given values as a sorted set for the given key.
+   * The final map will contain the key and a comma-separated list of sorted values.
+   */
+  void aggregateAsSortedSet(TelemetryKey key, String value);
+
+  /**
+   * Aggregates all the given values as a sum for the given key.
+   */
+  void aggregateAsCounter(TelemetryKey key, long value);
+
+  /**
+   * @return convert all the different kind of key / value pairs type into a string / string map.
+   */
+  Map<String, String> toMap();
+
 }

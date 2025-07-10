@@ -14,14 +14,20 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java;
+package org.sonar.java.telemetry;
 
 import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TelemetryKeyTest {
+class NoOpTelemetryTest {
+
   @Test
-  void test() {
-    assertThat(TelemetryKey.JAVA_LANGUAGE_VERSION.key()).isEqualTo("java.language.version");
+  void test_no_operation() {
+    var storage = new NoOpTelemetry();
+    storage.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
+    storage.aggregateAsCounter(TelemetryKey.JAVA_MODULE_COUNT, 1);
+    assertThat(storage.toMap()).isEmpty();
   }
+
 }
