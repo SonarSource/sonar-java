@@ -26,7 +26,7 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.TelemetryKey;
-import org.sonar.java.telemetry.TelemetryStorage;
+import org.sonar.java.telemetry.DefaultTelemetry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,7 +47,7 @@ class ProjectEndOfAnalysisSensorTest {
   @Test
   void test_telemetry(@TempDir Path tempDir) {
     logTester.setLevel(Level.DEBUG);
-    var telemetry = new TelemetryStorage();
+    var telemetry = new DefaultTelemetry();
     telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
     telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_MODULE_COUNT, "3");
     var sensor = new ProjectEndOfAnalysisSensor(telemetry);

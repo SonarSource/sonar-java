@@ -37,7 +37,7 @@ import org.sonar.java.classpath.ClasspathProperties;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.telemetry.NoOpTelemetry;
-import org.sonar.java.telemetry.TelemetryStorage;
+import org.sonar.java.telemetry.DefaultTelemetry;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonar.plugins.surefire.SurefireExtensions;
@@ -56,7 +56,7 @@ public class JavaPlugin implements Plugin {
       // Hence, we must provide it here.
       list.add(SonarLintCache.class);
     } else {
-      list.add(TelemetryStorage.class);
+      list.add(DefaultTelemetry.class);
       list.add(ProjectEndOfAnalysisSensor.class);
       list.addAll(SurefireExtensions.getExtensions());
       list.add(DroppedPropertiesSensor.class);

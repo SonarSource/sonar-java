@@ -16,26 +16,35 @@
  */
 package org.sonar.java.telemetry;
 
+import java.util.EnumMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
-/**
- * Placeholder for {@link Telemetry} that ignores all calls. Its main use is to satisfy a dependency in SonarQube for IDE, which does not send telemetry.
- */
-public class NoOpTelemetry implements Telemetry {
+public class DefaultTelemetry implements Telemetry {
+
+  private static final AlphaNumericComparator ALPHA_NUMERIC_COMPARATOR = new AlphaNumericComparator();
+
+  private final Map<TelemetryKey, Set<String>> sets = new EnumMap<>(TelemetryKey.class);
+  private final Map<TelemetryKey, Long> counters = new EnumMap<>(TelemetryKey.class);
 
   @Override
   public void aggregateAsSortedSet(TelemetryKey key, String value) {
-    // no operation
+    sets.computeIfAbsent(key, k -> new TreeSet<>(ALPHA_NUMERIC_COMPARATOR)).add(value);
   }
 
   @Override
   public void aggregateAsCounter(TelemetryKey key, long value) {
-    // no operation
+    counters.merge(key, value, Long::sum);
   }
 
   @Override
   public Map<String, String> toMap() {
-    return Map.of();
+    Map<String, String> map = new TreeMap<>(ALPHA_NUMERIC_COMPARATOR);
+    sets.forEach((key, value) -> map.put(key.key(), String.join(",", value)));
+    counters.forEach((key, value) -> map.put(key.key(), String.valueOf(value)));
+    return map;
   }
 
 }

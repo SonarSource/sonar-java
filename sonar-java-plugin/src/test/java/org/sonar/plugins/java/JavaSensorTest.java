@@ -66,7 +66,7 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.Telemetry;
-import org.sonar.java.telemetry.TelemetryStorage;
+import org.sonar.java.telemetry.DefaultTelemetry;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -136,7 +136,7 @@ class JavaSensorTest {
     fs.setWorkDir(tmp.newFolder().toPath());
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = createDefaultJavaResourceLocator(settings.asConfig(), fs);
-    Telemetry telemetry = new TelemetryStorage();
+    Telemetry telemetry = new DefaultTelemetry();
     JavaSensor jss = new JavaSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null, telemetry);
 
     jss.execute(context);

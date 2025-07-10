@@ -25,6 +25,10 @@ import org.sonar.api.scanner.sensor.ProjectSensor;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.telemetry.Telemetry;
 
+/**
+ * Sensor that runs at the end of the project's analysis to send telemetry data.
+ * Telemetry data is collected by several JavaSensor executions, one for each project's module, and aggregated in a shared Telemetry object.
+ */
 @Phase(name = Phase.Name.POST)
 public class ProjectEndOfAnalysisSensor implements ProjectSensor {
 
