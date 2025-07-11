@@ -49,7 +49,15 @@ class DefaultTelemetryTest {
   }
 
   @Test
-  void testAggeregateAsSortedSetAbsentAndValues() {
+  void testAggeregateAsSortedSetOneValueAndAbsent() {
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_DEPENDENCY_SPRING_WEB, "7.0.0-M1");
+    telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_DEPENDENCY_SPRING_WEB);
+    assertThat(telemetry.toMap()).containsExactly(
+      entry("java.dependency.spring-web", "7.0.0-M1"));
+  }
+
+  @Test
+  void testAggeregateAsSortedSetAbsentAndTwoValues() {
     telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_DEPENDENCY_LOMBOK);
     telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_DEPENDENCY_LOMBOK, "1.18.30");
     telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_DEPENDENCY_LOMBOK, "1.16.1");
