@@ -27,7 +27,7 @@ class DefaultTelemetryTest {
   private Telemetry telemetry;
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     telemetry = new DefaultTelemetry();
   }
 
