@@ -30,6 +30,7 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import static org.mockito.Mockito.mock;
@@ -50,7 +51,7 @@ public abstract class MeasurerTester {
       .forEach(fs::add);
 
     Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), measurer, mock(JavaResourceLocator.class), null);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), measurer, new NoOpTelemetry(), mock(JavaResourceLocator.class), null);
     List<InputFile> files = StreamSupport.stream(fs.inputFiles().spliterator(), false).toList();
     frontend.scan(files, Collections.emptyList(), Collections.emptyList());
   }

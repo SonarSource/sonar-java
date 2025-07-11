@@ -144,7 +144,8 @@ class JavaSensorTest {
     verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(123));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
-    assertThat(telemetry.toMap()).containsExactly(
+    // There are additional entries, but we do not test them.
+    assertThat(telemetry.toMap()).contains(
       entry("java.language.version", "22"),
       entry("java.module_count", "1"),
       entry("java.scanner_app", "ScannerJavaSensorTest"));
@@ -152,7 +153,7 @@ class JavaSensorTest {
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
     jss.execute(context);
 
-    assertThat(telemetry.toMap()).containsExactly(
+    assertThat(telemetry.toMap()).contains(
       entry("java.language.version", "22,none"),
       entry("java.module_count", "2"),
       entry("java.scanner_app", "ScannerJavaSensorTest"));
@@ -160,7 +161,7 @@ class JavaSensorTest {
     settings.setProperty(JavaVersion.SOURCE_VERSION, "1.7");
     jss.execute(context);
 
-    assertThat(telemetry.toMap()).containsExactly(
+    assertThat(telemetry.toMap()).contains(
       entry("java.language.version", "7,22,none"),
       entry("java.module_count", "3"),
       entry("java.scanner_app", "ScannerJavaSensorTest"));
