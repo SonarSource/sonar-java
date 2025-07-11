@@ -36,16 +36,13 @@ public class MultiModuleTelemetryTest {
       .setCleanPackageSonarGoals()
       .setDebugLogs(true);
 
-    String projectKey = "com.example:java-tutorial:parent-project";
-    TestUtils.provisionProject(orchestrator, projectKey, "multi-module", "java", "multi-module");
-
     BuildResult buildResult = orchestrator.executeBuild(build);
 
     assertThat(buildResult.getLogs())
-      .containsOnlyOnce("Telemetry java.language.version: 17")
-      .containsOnlyOnce("Telemetry java.module_count: 1")
+      .containsOnlyOnce("Telemetry java.language.version: 8")
+      .containsOnlyOnce("Telemetry java.module_count: 2")
       .containsOnlyOnce("Telemetry java.scanner_app: ScannerMaven")
-      .containsOnlyOnce("Telemetry java.dependency.spring-web: 5.3.18")
-      .containsOnlyOnce("Telemetry java.dependency.lombok: absent");
+      .containsOnlyOnce("Telemetry java.dependency.lombok: 1.16.20,1.18.30")
+      .containsOnlyOnce("Telemetry java.fail.for.testing: true");
   }
 }
