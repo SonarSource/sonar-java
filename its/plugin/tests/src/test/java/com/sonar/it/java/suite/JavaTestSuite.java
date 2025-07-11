@@ -84,7 +84,8 @@ public class JavaTestSuite {
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-package-info.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings-pmd.xml"))
-      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-depends-on-jdk-types.xml"));
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-depends-on-jdk-types.xml"))
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-multi-module.xml"));
     ORCHESTRATOR = orchestratorBuilder.build();
   }
 

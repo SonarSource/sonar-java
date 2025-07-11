@@ -36,6 +36,9 @@ public class MultiModuleTelemetryTest {
       .setCleanPackageSonarGoals()
       .setDebugLogs(true);
 
+    String projectKey = "org.sonarsource.it.projects:mm-parent-project";
+    TestUtils.provisionProject(orchestrator, projectKey, "multi-module", "java", "multi-module");
+
     BuildResult buildResult = orchestrator.executeBuild(build);
 
     assertThat(buildResult.getLogs())
@@ -44,4 +47,5 @@ public class MultiModuleTelemetryTest {
       .containsOnlyOnce("Telemetry java.scanner_app: ScannerMaven")
       .containsOnlyOnce("Telemetry java.dependency.lombok: 1.16.20,1.18.30");
   }
+
 }
