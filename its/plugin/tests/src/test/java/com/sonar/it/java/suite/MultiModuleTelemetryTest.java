@@ -42,7 +42,6 @@ public class MultiModuleTelemetryTest {
       .containsOnlyOnce("Telemetry java.language.version: 8")
       .containsOnlyOnce("Telemetry java.module_count: 2")
       .containsOnlyOnce("Telemetry java.scanner_app: ScannerMaven")
-      .containsOnlyOnce("Telemetry java.dependency.lombok: 1.16.20,1.18.30")
-      .containsOnlyOnce("Telemetry java.fail.for.testing: true");
+      .containsOnlyOnce("Telemetry java.dependency.lombok: 1.16.20,1.18.30");
   }
 }
