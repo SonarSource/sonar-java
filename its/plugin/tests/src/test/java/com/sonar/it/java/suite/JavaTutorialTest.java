@@ -73,7 +73,8 @@ public class JavaTutorialTest {
       .containsOnlyOnce("Telemetry java.language.version: 17")
       .containsOnlyOnce("Telemetry java.module_count: 1")
       .containsOnlyOnce("Telemetry java.scanner_app: ScannerMaven")
-      .containsOnlyOnce("Telemetry java.dependency.spring-web: 5.3.18");
+      .containsOnlyOnce("Telemetry java.dependency.spring-web: 5.3.18")
+      .containsOnlyOnce("Telemetry java.dependency.lombok: absent");
   }
 
   private static Stream<String> issuesForRule(List<Issue> issues, String key) {

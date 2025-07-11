@@ -166,8 +166,9 @@ public class JavaFrontend {
     for (Map.Entry<TelemetryKey, String> dep : REPORTED_DEPENDENCIES.entrySet()) {
       dependencyService
         .infer(dep.getValue(), globalClasspath)
-        .ifPresent(version ->
-          telemetry.aggregateAsSortedSet(dep.getKey(), version.toString())
+        .ifPresentOrElse(
+          version -> telemetry.aggregateAsSortedSet(dep.getKey(), version.toString()),
+          () -> telemetry.aggregateAsSortedSet(dep.getKey())
         );
     }
   }
