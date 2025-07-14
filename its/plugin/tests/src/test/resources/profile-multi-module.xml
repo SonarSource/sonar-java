@@ -3,10 +3,5 @@
   <name>multi-module</name>
   <language>java</language>
   <rules>
-    <rule>
-      <repositoryKey>java</repositoryKey>
-      <key>S110</key>
-      <priority>MAJOR</priority>
-    </rule>
   </rules>
 </profile>
