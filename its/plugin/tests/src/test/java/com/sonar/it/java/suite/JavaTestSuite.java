@@ -50,7 +50,8 @@ import static java.util.Collections.singletonList;
   SuppressWarningTest.class,
   SonarLintTest.class,
   ExternalReportTest.class,
-  DuplicationTest.class
+  DuplicationTest.class,
+  MultiModuleTelemetryTest.class
 })
 public class JavaTestSuite {
 
@@ -83,7 +84,8 @@ public class JavaTestSuite {
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-package-info.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings-pmd.xml"))
-      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-depends-on-jdk-types.xml"));
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-depends-on-jdk-types.xml"))
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-multi-module.xml"));
     ORCHESTRATOR = orchestratorBuilder.build();
   }
 
