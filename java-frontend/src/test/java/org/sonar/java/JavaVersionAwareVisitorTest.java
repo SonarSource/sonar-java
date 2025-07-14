@@ -22,6 +22,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -78,7 +79,7 @@ class JavaVersionAwareVisitorTest {
 
   private void checkIssues(JavaVersion version) {
     messages.clear();
-    JavaFrontend frontend = new JavaFrontend(version, mockSonarComponents(), mock(Measurer.class), null, null, javaChecks);
+    JavaFrontend frontend = new JavaFrontend(version, mockSonarComponents(), mock(Measurer.class), new NoOpTelemetry(), null, null, javaChecks);
     frontend.scan(Collections.singletonList(TestUtils.inputFile("src/test/files/JavaVersionAwareChecks.java")),
       Collections.emptyList(), Collections.emptyList());
   }

@@ -29,6 +29,7 @@ import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.telemetry.NoOpTelemetry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -51,7 +52,7 @@ class FileLinesVisitorTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.fileLinesContextFor(Mockito.any(InputFile.class))).thenReturn(context);
 
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), mock(Measurer.class), null, null, new FileLinesVisitor(sonarComponents));
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), mock(Measurer.class), new NoOpTelemetry(), null, null, new FileLinesVisitor(sonarComponents));
 
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }

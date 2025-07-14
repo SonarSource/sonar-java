@@ -40,6 +40,7 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.model.JParserConfig;
+import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.plugins.java.api.JavaVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -255,7 +256,7 @@ class SyntaxHighlighterVisitorTest {
 
   private void scan(InputFile inputFile) {
     JavaVersion javaVersion = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    JavaFrontend frontend = new JavaFrontend(javaVersion, mockSonarComponents(), mock(Measurer.class), null, null, syntaxHighlighterVisitor);
+    JavaFrontend frontend = new JavaFrontend(javaVersion, mockSonarComponents(), mock(Measurer.class), new NoOpTelemetry(), null, null, syntaxHighlighterVisitor);
     frontend.scan(Collections.singletonList(inputFile), Collections.emptyList(), Collections.emptyList());
   }
 

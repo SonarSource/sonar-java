@@ -116,7 +116,12 @@ public class JavaSensor implements Sensor {
 
     telemetry.aggregateAsSortedSet(JAVA_SCANNER_APP, settings.get("sonar.scanner.app").orElse("none"));
 
-    JavaFrontend frontend = new JavaFrontend(javaVersion, sonarComponents, measurer, javaResourceLocator, postAnalysisIssueFilter,
+    JavaFrontend frontend = new JavaFrontend(javaVersion,
+      sonarComponents,
+      measurer,
+      telemetry,
+      javaResourceLocator,
+      postAnalysisIssueFilter,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));
     frontend.scan(getSourceFiles(), getTestFiles(), runJasper(context));
 
