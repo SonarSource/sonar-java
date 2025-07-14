@@ -39,6 +39,11 @@ public class NoOpTelemetry implements Telemetry {
   }
 
   @Override
+  public void aggregateAsFlag(TelemetryKey key, boolean value) {
+    // no operation
+  }
+
+  @Override
   public Map<String, String> toMap() {
     return Map.of();
   }

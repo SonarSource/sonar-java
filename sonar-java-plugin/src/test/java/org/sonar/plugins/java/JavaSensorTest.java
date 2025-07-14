@@ -148,7 +148,8 @@ class JavaSensorTest {
     assertThat(telemetry.toMap()).contains(
       entry("java.language.version", "22"),
       entry("java.module_count", "1"),
-      entry("java.scanner_app", "ScannerJavaSensorTest"));
+      entry("java.scanner_app", "ScannerJavaSensorTest"),
+      entry("java.is_autoscan", "false"));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "wrongFormat");
     jss.execute(context);
@@ -156,7 +157,8 @@ class JavaSensorTest {
     assertThat(telemetry.toMap()).contains(
       entry("java.language.version", "22,none"),
       entry("java.module_count", "2"),
-      entry("java.scanner_app", "ScannerJavaSensorTest"));
+      entry("java.scanner_app", "ScannerJavaSensorTest"),
+      entry("java.is_autoscan", "false"));
 
     settings.setProperty(JavaVersion.SOURCE_VERSION, "1.7");
     jss.execute(context);
@@ -164,7 +166,8 @@ class JavaSensorTest {
     assertThat(telemetry.toMap()).contains(
       entry("java.language.version", "7,22,none"),
       entry("java.module_count", "3"),
-      entry("java.scanner_app", "ScannerJavaSensorTest"));
+      entry("java.scanner_app", "ScannerJavaSensorTest"),
+      entry("java.is_autoscan", "false"));
 
   }
 

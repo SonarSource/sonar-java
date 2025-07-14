@@ -83,4 +83,26 @@ class DefaultTelemetryTest {
       entry("java.module_count", "1"));
   }
 
+
+  @Test
+  void testAggregateFlagFalse() {
+    telemetry.aggregateAsFlag(TelemetryKey.JAVA_IS_AUTOSCAN, false);
+    telemetry.aggregateAsFlag(TelemetryKey.JAVA_IS_AUTOSCAN, false);
+    assertThat(telemetry.toMap()).containsExactly(entry("java.is_autoscan", "false"));
+  }
+
+  @Test
+  void testAggregateFlagTrue() {
+    telemetry.aggregateAsFlag(TelemetryKey.JAVA_IS_AUTOSCAN, true);
+    telemetry.aggregateAsFlag(TelemetryKey.JAVA_IS_AUTOSCAN, true);
+    assertThat(telemetry.toMap()).containsExactly(entry("java.is_autoscan", "true"));
+  }
+
+  @Test
+  void testAggregateFlagBoth() {
+    telemetry.aggregateAsFlag(TelemetryKey.JAVA_IS_AUTOSCAN, true);
+    telemetry.aggregateAsFlag(TelemetryKey.JAVA_IS_AUTOSCAN, false);
+    telemetry.aggregateAsFlag(TelemetryKey.JAVA_IS_AUTOSCAN, true);
+    assertThat(telemetry.toMap()).containsExactly(entry("java.is_autoscan", "mixed"));
+  }
 }
