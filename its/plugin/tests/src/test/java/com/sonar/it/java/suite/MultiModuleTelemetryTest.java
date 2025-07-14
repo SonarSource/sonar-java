@@ -23,6 +23,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class MultiModuleTelemetryTest {
 
@@ -46,6 +47,8 @@ public class MultiModuleTelemetryTest {
       .containsOnlyOnce("Telemetry java.module_count: 2")
       .containsOnlyOnce("Telemetry java.scanner_app: ScannerMaven")
       .containsOnlyOnce("Telemetry java.dependency.lombok: 1.18.30,1.18.38");
+
+    fail("Validating the test");
   }
 
 }
