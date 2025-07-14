@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -61,6 +62,18 @@ class InputFileUtilsTest {
     assertThatThrownBy(() -> InputFileUtils.hash(bytes, "invalid-algorithm", 32))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("invalid-algorithm not supported");
+  }
+
+  @Test
+  void char_count() throws IOException {
+    when(inputFile.contents()).thenReturn("1234");
+    assertThat(InputFileUtils.charCount(inputFile, -1)).isEqualTo(4);
+  }
+
+  @Test
+  void char_count_on_error() throws IOException {
+    when(inputFile.contents()).thenThrow(new IOException("Boom!"));
+    assertThat(InputFileUtils.charCount(inputFile, 42)).isEqualTo(42);
   }
 
 }

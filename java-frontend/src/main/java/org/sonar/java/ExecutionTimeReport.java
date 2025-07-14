@@ -16,7 +16,6 @@
  */
 package org.sonar.java;
 
-import java.io.IOException;
 import java.time.Clock;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -25,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.model.InputFileUtils;
 
 public class ExecutionTimeReport {
   private static final Logger LOG = LoggerFactory.getLogger(ExecutionTimeReport.class);
@@ -81,14 +81,8 @@ public class ExecutionTimeReport {
       LOG.debug("Analysis time of {} ({}ms)", currentFile, currentAnalysisTime);
     }
     if (currentAnalysisTime >= minRecordedOrderedExecutionTime) {
-      long currentFileLengthInBytes;
-      try {
-        currentFileLengthInBytes = currentFile.contents().length();
-      } catch (IOException ignored) {
-        // Ignore and use the default size
-        currentFileLengthInBytes = -1;
-      }
-      recordedOrderedExecutionTime.add(new ExecutionTime(currentFile.toString(), currentAnalysisTime, currentFileLengthInBytes));
+      long currentFileLength = InputFileUtils.charCount(currentFile, -1);
+      recordedOrderedExecutionTime.add(new ExecutionTime(currentFile.toString(), currentAnalysisTime, currentFileLength));
       recordedOrderedExecutionTime.sort(ORDER_BY_ANALYSIS_TIME_DESCENDING_AND_FILE_ASCENDING);
       if (recordedOrderedExecutionTime.size() > MAX_REPORTED_FILES) {
         recordedOrderedExecutionTime.removeLast();

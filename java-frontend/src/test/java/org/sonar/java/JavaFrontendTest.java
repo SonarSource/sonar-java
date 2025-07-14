@@ -160,7 +160,7 @@ class JavaFrontendTest {
     settings.setProperty("sonar.java.fileByFile", "true");
     scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
 
-    assertThat(logTester.logs(Level.INFO)).containsExactly(
+    assertThat(filterOutAnalysisProgress(logTester.logs(Level.INFO))).containsExactly(
       "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
@@ -172,7 +172,7 @@ class JavaFrontendTest {
   void scanning_empty_project_should_be_logged_in_file_by_file_sonarlint() {
     scan(new MapSettings(), SONARLINT_RUNTIME, Collections.emptyList());
 
-    assertThat(logTester.logs(Level.INFO)).containsExactly(
+    assertThat(filterOutAnalysisProgress(logTester.logs(Level.INFO))).containsExactly(
       "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
@@ -185,7 +185,7 @@ class JavaFrontendTest {
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), new Measurer(sensorContext, mock(NoSonarFilter.class)), new NoOpTelemetry(), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
-    assertThat(logTester.logs(Level.INFO)).containsExactly(
+    assertThat(filterOutAnalysisProgress(logTester.logs(Level.INFO))).containsExactly(
       "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main\" source files to scan.",
       "No \"Test\" source files to scan.",
@@ -231,7 +231,7 @@ class JavaFrontendTest {
     settings.setProperty("sonar.internal.analysis.autoscan", "true");
     scan(settings, SONARQUBE_RUNTIME, Collections.emptyList());
 
-    assertThat(logTester.logs(Level.INFO)).containsExactly(
+    assertThat(filterOutAnalysisProgress(logTester.logs(Level.INFO))).containsExactly(
       "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main and Test\" source files to scan."
     );
@@ -261,7 +261,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    assertThat(logTester.logs(Level.INFO))
+    assertThat(filterOutAnalysisProgress(logTester.logs(Level.INFO)))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is enabled. The Java analyzer was able to leverage cached data from previous analyses for 0 out of 0 files. These files will not be parsed.",
@@ -295,7 +295,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    assertThat(logTester.logs(Level.INFO))
+    assertThat(filterOutAnalysisProgress(logTester.logs(Level.INFO)))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is enabled. The Java analyzer will not try to leverage data from a previous analysis.",
@@ -329,7 +329,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    assertThat(logTester.logs(Level.INFO))
+    assertThat(filterOutAnalysisProgress(logTester.logs(Level.INFO)))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is enabled. The Java analyzer will not try to leverage data from a previous analysis.",
@@ -362,7 +362,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    assertThat(logTester.logs(Level.INFO))
+    assertThat(filterOutAnalysisProgress(logTester.logs(Level.INFO)))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
@@ -395,7 +395,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    assertThat(logTester.logs(Level.INFO))
+    assertThat(filterOutAnalysisProgress(logTester.logs(Level.INFO)))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
@@ -421,7 +421,7 @@ class JavaFrontendTest {
     );
 
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    assertThat(logTester.logs(Level.INFO))
+    assertThat(filterOutAnalysisProgress(logTester.logs(Level.INFO)))
       .isNotEmpty()
       .containsExactly(
         "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
@@ -429,6 +429,10 @@ class JavaFrontendTest {
         "No \"Test\" source files to scan.",
         "No \"Generated\" source files to scan."
       );
+  }
+
+  private static List<String> filterOutAnalysisProgress(List<String> logs) {
+    return logs.stream().filter(str -> !str.matches("\\d+% analyzed")).toList();
   }
 
   /**

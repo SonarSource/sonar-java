@@ -20,9 +20,13 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 
 public final class InputFileUtils {
+
+  private static final Logger LOG = LoggerFactory.getLogger(InputFileUtils.class);
 
   private InputFileUtils() {
     // utility class
@@ -49,6 +53,15 @@ public final class InputFileUtils {
     String suffix = new BigInteger(1,md.digest()).toString(16);
     String prefix = "0".repeat(expectedLength - suffix.length());
     return prefix + suffix;
+  }
+
+  public static int charCount(InputFile inputFile, int defaultOnError) {
+    try {
+      return inputFile.contents().length();
+    } catch (IOException e) {
+      LOG.debug("Error, failed to get content size for: {}, {}: {}" , inputFile, e.getClass().getSimpleName(), e.getMessage());
+      return defaultOnError;
+    }
   }
 
 }

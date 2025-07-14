@@ -23,12 +23,51 @@ public enum TelemetryKey {
   JAVA_LANGUAGE_VERSION("java.language.version"),
   JAVA_SCANNER_APP("java.scanner_app"),
   JAVA_IS_AUTOSCAN("java.is_autoscan"),
+  JAVA_ANALYSIS_MAIN_SUCCESS_SIZE_CHARS("java.analysis.main.success.size_chars"),
+  JAVA_ANALYSIS_MAIN_SUCCESS_TIME_MS("java.analysis.main.success.time_ms"),
+  JAVA_ANALYSIS_MAIN_PARSE_ERRORS_SIZE_CHARS("java.analysis.main.parse_errors.size_chars"),
+  JAVA_ANALYSIS_MAIN_PARSE_ERRORS_TIME_MS("java.analysis.main.parse_errors.time_ms"),
+  JAVA_ANALYSIS_MAIN_EXCEPTIONS_SIZE_CHARS("java.analysis.main.exceptions.size_chars"),
+  JAVA_ANALYSIS_MAIN_EXCEPTIONS_TIME_MS("java.analysis.main.exceptions.time_ms"),
+  JAVA_ANALYSIS_TEST_SUCCESS_SIZE_CHARS("java.analysis.test.success.size_chars"),
+  JAVA_ANALYSIS_TEST_SUCCESS_TIME_MS("java.analysis.test.success.time_ms"),
+  JAVA_ANALYSIS_TEST_PARSE_ERRORS_SIZE_CHARS("java.analysis.test.parse_errors.size_chars"),
+  JAVA_ANALYSIS_TEST_PARSE_ERRORS_TIME_MS("java.analysis.test.parse_errors.time_ms"),
+  JAVA_ANALYSIS_TEST_EXCEPTIONS_SIZE_CHARS("java.analysis.test.exceptions.size_chars"),
+  JAVA_ANALYSIS_TEST_EXCEPTIONS_TIME_MS("java.analysis.test.exceptions.time_ms"),
+  JAVA_ANALYSIS_GENERATED_SUCCESS_SIZE_CHARS("java.analysis.generated.success.size_chars"),
+  JAVA_ANALYSIS_GENERATED_SUCCESS_TIME_MS("java.analysis.generated.success.time_ms"),
+  JAVA_ANALYSIS_GENERATED_PARSE_ERRORS_SIZE_CHARS("java.analysis.generated.parse_errors.size_chars"),
+  JAVA_ANALYSIS_GENERATED_PARSE_ERRORS_TIME_MS("java.analysis.generated.parse_errors.time_ms"),
+  JAVA_ANALYSIS_GENERATED_EXCEPTIONS_SIZE_CHARS("java.analysis.generated.exceptions.size_chars"),
+  JAVA_ANALYSIS_GENERATED_EXCEPTIONS_TIME_MS("java.analysis.generated.exceptions.time_ms"),
   JAVA_MODULE_COUNT("java.module_count"),
 
   // The last element of dependency keys should be the same as the name of its jar.
   JAVA_DEPENDENCY_LOMBOK("java.dependency.lombok"),
   JAVA_DEPENDENCY_SPRING_BOOT("java.dependency.spring-boot"),
   JAVA_DEPENDENCY_SPRING_WEB("java.dependency.spring-web");
+
+  public record SpeedKeys(TelemetryKey sizeCharsKey, TelemetryKey timeMsKey) {
+  }
+
+  public record JavaAnalysisKeys(SpeedKeys success, SpeedKeys parseErrors, SpeedKeys exceptions) {
+  }
+
+  public static final JavaAnalysisKeys JAVA_ANALYSIS_MAIN = new JavaAnalysisKeys(
+    new SpeedKeys(JAVA_ANALYSIS_MAIN_SUCCESS_SIZE_CHARS, JAVA_ANALYSIS_MAIN_SUCCESS_TIME_MS),
+    new SpeedKeys(JAVA_ANALYSIS_MAIN_PARSE_ERRORS_SIZE_CHARS, JAVA_ANALYSIS_MAIN_PARSE_ERRORS_TIME_MS),
+    new SpeedKeys(JAVA_ANALYSIS_MAIN_EXCEPTIONS_SIZE_CHARS, JAVA_ANALYSIS_MAIN_EXCEPTIONS_TIME_MS));
+
+  public static final JavaAnalysisKeys JAVA_ANALYSIS_TEST = new JavaAnalysisKeys(
+    new SpeedKeys(JAVA_ANALYSIS_TEST_SUCCESS_SIZE_CHARS, JAVA_ANALYSIS_TEST_SUCCESS_TIME_MS),
+    new SpeedKeys(JAVA_ANALYSIS_TEST_PARSE_ERRORS_SIZE_CHARS, JAVA_ANALYSIS_TEST_PARSE_ERRORS_TIME_MS),
+    new SpeedKeys(JAVA_ANALYSIS_TEST_EXCEPTIONS_SIZE_CHARS, JAVA_ANALYSIS_TEST_EXCEPTIONS_TIME_MS));
+
+  public static final JavaAnalysisKeys JAVA_ANALYSIS_GENERATED = new JavaAnalysisKeys(
+    new SpeedKeys(JAVA_ANALYSIS_GENERATED_SUCCESS_SIZE_CHARS, JAVA_ANALYSIS_GENERATED_SUCCESS_TIME_MS),
+    new SpeedKeys(JAVA_ANALYSIS_GENERATED_PARSE_ERRORS_SIZE_CHARS, JAVA_ANALYSIS_GENERATED_PARSE_ERRORS_TIME_MS),
+    new SpeedKeys(JAVA_ANALYSIS_GENERATED_EXCEPTIONS_SIZE_CHARS, JAVA_ANALYSIS_GENERATED_EXCEPTIONS_TIME_MS));
 
   private final String key;
 

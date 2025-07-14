@@ -176,7 +176,7 @@ sanity_task:
   eks_container:
     <<: *CONTAINER_WITH_DOCKER_DEFINITION
     cpu: 4
-    memory: 4G
+    memory: 16G
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
   env:

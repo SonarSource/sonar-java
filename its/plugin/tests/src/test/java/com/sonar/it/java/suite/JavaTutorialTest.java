@@ -25,6 +25,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.sonarqube.ws.Issues.Issue;
 
+import static com.sonar.it.java.suite.TestUtils.extractTelemetryLogs;
+import static com.sonar.it.java.suite.TestUtils.patternWithLiteralDot;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavaTutorialTest {
@@ -69,12 +71,18 @@ public class JavaTutorialTest {
     assertThat(issuesForRule(issues, "mycompany-java:SecurityAnnotationMandatory")).hasSize(2);
     assertThat(issuesForRule(issues, "mycompany-java:SpringControllerRequestMappingEntity")).hasSize(1);
 
-    assertThat(buildResult.getLogs())
-      .containsOnlyOnce("Telemetry java.language.version: 17")
-      .containsOnlyOnce("Telemetry java.module_count: 1")
-      .containsOnlyOnce("Telemetry java.scanner_app: ScannerMaven")
-      .containsOnlyOnce("Telemetry java.dependency.spring-web: 5.3.18")
-      .containsOnlyOnce("Telemetry java.dependency.lombok: absent");
+    assertThat(extractTelemetryLogs(buildResult))
+      .matches(patternWithLiteralDot("""
+        Telemetry java.analysis.main.success.size_chars: \\d{4}
+        Telemetry java.analysis.main.success.time_ms: \\d+
+        Telemetry java.dependency.lombok: absent
+        Telemetry java.dependency.spring-boot: absent
+        Telemetry java.dependency.spring-web: 5.3.18
+        Telemetry java.is_autoscan: false
+        Telemetry java.language.version: 17
+        Telemetry java.module_count: 1
+        Telemetry java.scanner_app: ScannerMaven
+        """));
   }
 
   private static Stream<String> issuesForRule(List<Issue> issues, String key) {

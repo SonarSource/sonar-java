@@ -18,6 +18,7 @@ package com.sonar.it.java;
 
 import com.sonar.it.java.suite.JavaTestSuite;
 import com.sonar.it.java.suite.TestUtils;
+import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.container.Edition;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
@@ -30,6 +31,8 @@ import java.util.List;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import static com.sonar.it.java.suite.TestUtils.extractTelemetryLogs;
+import static com.sonar.it.java.suite.TestUtils.patternWithLiteralDot;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JspTest {
@@ -72,7 +75,7 @@ public class JspTest {
       .setDebugLogs(true)
       .setProperty("sonar.scm.disabled", "true");
     TestUtils.provisionProject(ENTERPRISE_ORCHESTRATOR_OR_NULL, "org.sonarsource.it.projects:" + PROJECT, PROJECT, "java", "jsp");
-    ENTERPRISE_ORCHESTRATOR_OR_NULL.executeBuild(build);
+    BuildResult buildResult = ENTERPRISE_ORCHESTRATOR_OR_NULL.executeBuild(build);
 
     Path visitTest = TestUtils.projectDir(PROJECT).toPath().resolve("target/sonar/visit.txt");
     List<String> visitTestLines = Files.readAllLines(visitTest);
@@ -87,5 +90,23 @@ public class JspTest {
     assertThat(actual).containsExactlyInAnyOrder("index.jsp 1:6",
       "include.jsp 3:3",
       "test_include.jsp 7:7");
+
+    // size of the generated files varies depending on the environment line endings
+    assertThat(extractTelemetryLogs(buildResult))
+      .matches(patternWithLiteralDot("""
+        Telemetry java.analysis.generated.success.size_chars: \\d{5}
+        Telemetry java.analysis.generated.success.time_ms: \\d+
+        Telemetry java.analysis.main.success.size_chars: 969
+        Telemetry java.analysis.main.success.time_ms: \\d+
+        Telemetry java.analysis.test.success.size_chars: 20
+        Telemetry java.analysis.test.success.time_ms: \\d+
+        Telemetry java.dependency.lombok: absent
+        Telemetry java.dependency.spring-boot: absent
+        Telemetry java.dependency.spring-web: absent
+        Telemetry java.is_autoscan: false
+        Telemetry java.language.version: 8
+        Telemetry java.module_count: 1
+        Telemetry java.scanner_app: ScannerMaven
+        """));
   }
 }

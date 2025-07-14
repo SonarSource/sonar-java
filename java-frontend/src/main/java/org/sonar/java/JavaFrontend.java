@@ -108,15 +108,15 @@ public class JavaFrontend {
       .flatMap(Collection::stream).distinct().toList();
 
     //AstScanner for main files
-    astScanner = new JavaAstScanner(sonarComponents);
+    astScanner = new JavaAstScanner(sonarComponents, telemetry, TelemetryKey.JAVA_ANALYSIS_MAIN);
     astScanner.setVisitorBridge(new VisitorsBridge(codeVisitors, classpath, sonarComponents, javaVersion, inAndroidContext));
 
     //AstScanner for test files
-    astScannerForTests = new JavaAstScanner(sonarComponents);
+    astScannerForTests = new JavaAstScanner(sonarComponents, telemetry, TelemetryKey.JAVA_ANALYSIS_TEST);
     astScannerForTests.setVisitorBridge(new VisitorsBridge(testCodeVisitors, testClasspath, sonarComponents, javaVersion, inAndroidContext));
 
     //AstScanner for generated files
-    astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents);
+    astScannerForGeneratedFiles = new JavaAstScanner(sonarComponents, telemetry, TelemetryKey.JAVA_ANALYSIS_GENERATED);
     astScannerForGeneratedFiles.setVisitorBridge(new VisitorsBridge(jspCodeVisitors, jspClasspath, sonarComponents, javaVersion, inAndroidContext));
   }
 
