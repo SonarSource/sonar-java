@@ -33,6 +33,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.issue.NoSonarFilter;
@@ -54,6 +55,8 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.notchecks.VisitorNotInChecksPackage;
+import org.sonar.java.telemetry.NoOpTelemetry;
+import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -151,7 +154,7 @@ class JavaAstScannerTest {
   @Test
   void should_not_fail_whole_analysis_upon_parse_error_and_notify_audit_listeners() {
     FakeAuditListener listener = spy(new FakeAuditListener());
-    JavaAstScanner scanner = new JavaAstScanner(null);
+    JavaAstScanner scanner = new JavaAstScanner(null, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     scanner.setVisitorBridge(new VisitorsBridge(listener));
 
     scanner.scan(Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerParseError.txt")));
@@ -268,7 +271,7 @@ class JavaAstScannerTest {
 
   @Test
   void should_swallow_log_and_report_checks_exceptions() {
-    JavaAstScanner scanner = new JavaAstScanner(null);
+    JavaAstScanner scanner = new JavaAstScanner(null, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     SonarComponents sonarComponent = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponent.setSensorContext(context);
     scanner.setVisitorBridge(new VisitorsBridge(Collections.singleton(new CheckThrowingException(new NullPointerException("foo"))), new ArrayList<>(), sonarComponent));
@@ -289,7 +292,7 @@ class JavaAstScannerTest {
 
   @Test
   void should_propagate_SOError() {
-    JavaAstScanner scanner = new JavaAstScanner(null);
+    JavaAstScanner scanner = new JavaAstScanner(null, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingSOError()));
     List<InputFile> files = Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt"));
     try {
@@ -371,7 +374,7 @@ class JavaAstScannerTest {
 
   @Test
   void should_report_analysis_error_in_sonarLint_context_withSQ_6_0() {
-    JavaAstScanner scanner = new JavaAstScanner(null);
+    JavaAstScanner scanner = new JavaAstScanner(null, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     FakeAuditListener listener = spy(new FakeAuditListener());
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.reportAnalysisError(any(RecognitionException.class), any(InputFile.class))).thenReturn(true);
@@ -386,7 +389,7 @@ class JavaAstScannerTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
     doReturn(true).when(sonarComponents).fileCanBeSkipped(any());
-    JavaAstScanner jas = new JavaAstScanner(sonarComponents);
+    JavaAstScanner jas = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
 
     VisitorThatCanBeSkipped skippable = spy(new VisitorThatCanBeSkipped());
     VisitorNotInChecksPackage unskippable = spy(new VisitorNotInChecksPackage());
@@ -397,7 +400,7 @@ class JavaAstScannerTest {
     );
     jas.setVisitorBridge(visitorsBridge);
 
-    InputFile inputFile = mock(InputFile.class);
+    InputFile inputFile = new TestInputFileBuilder("class A {}", "file.java").build();
     jas.simpleScan(inputFile, mock(JParserConfig.Result.class), ignored -> {});
 
     verify(skippable, never()).visitNode(any());
@@ -409,7 +412,7 @@ class JavaAstScannerTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     VisitorsBridge visitorsBridge = mock(VisitorsBridge.class);
     doReturn(false).when(visitorsBridge).scanWithoutParsing(any());
-    JavaAstScanner javaAstScanner = new JavaAstScanner(sonarComponents);
+    JavaAstScanner javaAstScanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     javaAstScanner.setVisitorBridge(visitorsBridge);
 
     Map<Boolean, List<InputFile>> expectedEmpty = Map.of(
@@ -436,7 +439,7 @@ class JavaAstScannerTest {
     doReturn(true).when(visitorsBridge).scanWithoutParsing(any());
     doReturn(false).when(visitorsBridge).scanWithoutParsing(unsuccessful);
 
-    JavaAstScanner javaAstScanner = new JavaAstScanner(mock(SonarComponents.class));
+    JavaAstScanner javaAstScanner = new JavaAstScanner(mock(SonarComponents.class), new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     javaAstScanner.setVisitorBridge(visitorsBridge);
 
     Map<Boolean, List<InputFile>> actual = javaAstScanner.scanWithoutParsing(files);
@@ -463,7 +466,7 @@ class JavaAstScannerTest {
       Collections.emptyList(),
       null);
 
-    JavaAstScanner scanner = new JavaAstScanner(null);
+    JavaAstScanner scanner = new JavaAstScanner(null, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     scanner.setVisitorBridge(visitorsBridge);
     scanner.scanForTesting(Collections.singletonList(trivialCompilationUnit), compilationUnit -> {
       var clazz = (ClassTreeImpl) ((JavaTree.CompilationUnitTreeImpl) compilationUnit).types().get(0);
@@ -509,7 +512,7 @@ class JavaAstScannerTest {
     ClasspathForTest classpathForTest = new ClasspathForTest(context.config(), fileSystem);
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null, null);
     sonarComponents.setSensorContext(context);
-    JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
+    JavaAstScanner scanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     VisitorsBridge visitorBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents, new JavaVersionImpl(javaVersion));
     scanner.setVisitorBridge(visitorBridge);
     scanner.scan(inputFiles);

@@ -37,12 +37,19 @@ import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.model.InputFileUtils;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.telemetry.NoOpTelemetry;
+import org.sonar.java.telemetry.Telemetry;
+import org.sonar.java.telemetry.TelemetryKey;
+import org.sonar.java.telemetry.TelemetryKey.JavaAnalysisKeys;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+
+import static java.lang.System.currentTimeMillis;
 
 public class JavaAstScanner {
   private static final Logger LOG = LoggerFactory.getLogger(JavaAstScanner.class);
@@ -54,11 +61,15 @@ public class JavaAstScanner {
     + " Such files only exist in Java9+ projects.";
 
   private final SonarComponents sonarComponents;
+  private final Telemetry telemetry;
+  private final JavaAnalysisKeys javaAnalysisKeys;
   private VisitorsBridge visitor;
   private boolean reportedMisconfiguredVersion = false;
 
-  public JavaAstScanner(@Nullable SonarComponents sonarComponents) {
+  public JavaAstScanner(@Nullable SonarComponents sonarComponents, Telemetry telemetry, JavaAnalysisKeys javaAnalysisKeys) {
     this.sonarComponents = sonarComponents;
+    this.telemetry = telemetry;
+    this.javaAnalysisKeys = javaAnalysisKeys;
   }
 
   public List<File> getClasspath() {
@@ -149,7 +160,9 @@ public class JavaAstScanner {
   // modifyCompilationUnit should be used for testing.
   public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp,
     Consumer<CompilationUnitTree> modifyCompilationUnit) {
+    long startTime = currentTimeMillis();
     visitor.setCurrentFile(inputFile);
+    var telemetryAnalysisKeys = javaAnalysisKeys.exceptions();
     try {
       JavaTree.CompilationUnitTreeImpl ast = result.get();
       modifyCompilationUnit.accept(ast);
@@ -157,12 +170,14 @@ public class JavaAstScanner {
       String path = inputFile.toString();
       collectUndefinedTypes(path, ast.sema.undefinedTypes());
       cleanUp.accept(ast);
+      telemetryAnalysisKeys = javaAnalysisKeys.success();
     } catch (RecognitionException e) {
       checkInterrupted(e);
       LOG.error(String.format(LOG_ERROR_UNABLE_TO_PARSE_FILE, inputFile));
       LOG.error(e.getMessage());
 
       parseErrorWalkAndVisit(e, inputFile);
+      telemetryAnalysisKeys = javaAnalysisKeys.parseErrors();
     } catch (AnalysisException e) {
       throw e;
     } catch (Exception e) {
@@ -171,6 +186,9 @@ public class JavaAstScanner {
     } catch (StackOverflowError error) {
       LOG.error(String.format(LOG_ERROR_STACKOVERFLOW, inputFile), error);
       throw error;
+    } finally {
+      telemetry.aggregateAsCounter(telemetryAnalysisKeys.sizeCharsKey(), InputFileUtils.charCount(inputFile, 0));
+      telemetry.aggregateAsCounter(telemetryAnalysisKeys.timeMsKey(), currentTimeMillis() - startTime);
     }
   }
 
@@ -237,7 +255,7 @@ public class JavaAstScanner {
 
   @VisibleForTesting
   public static void scanSingleFileForTests(InputFile inputFile, VisitorsBridge visitorsBridge, @Nullable SonarComponents sonarComponents) {
-    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
+    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     astScanner.setVisitorBridge(visitorsBridge);
     astScanner.scan(Collections.singleton(inputFile));
   }

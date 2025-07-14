@@ -52,6 +52,8 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.java.telemetry.NoOpTelemetry;
+import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
@@ -293,7 +295,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
     VisitorsBridgeForTests visitorsBridge = visitorsBridgeBuilder.build();
 
-    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
+    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     astScanner.setVisitorBridge(visitorsBridge);
 
     List<InputFile> filesToParse = files;

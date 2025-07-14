@@ -42,6 +42,8 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.telemetry.NoOpTelemetry;
+import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.JavaFileScannerContextForTests;
 import org.sonar.java.testing.VisitorsBridgeForTests;
@@ -107,7 +109,7 @@ public class JavaCheckVerifier implements CheckVerifier {
       visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
     }
 
-    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
+    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     VisitorsBridgeForTests visitorsBridge = visitorsBridgeBuilder.build();
     astScanner.setVisitorBridge(visitorsBridge);
 

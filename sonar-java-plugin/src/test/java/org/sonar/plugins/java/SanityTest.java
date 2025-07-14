@@ -52,6 +52,8 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.model.JParserConfig;
+import org.sonar.java.telemetry.NoOpTelemetry;
+import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -230,7 +232,7 @@ class SanityTest {
 
   private static List<SanityCheckException> scanFiles(File moduleBaseDir, List<InputFile> inputFiles, List<JavaCheck> checks, List<File> classpath) {
     SonarComponents sonarComponents = sonarComponents(moduleBaseDir, inputFiles);
-    JavaAstScanner scanner = new JavaAstScanner(sonarComponents);
+    JavaAstScanner scanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     JavaVersion javaVersion = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
     scanner.setVisitorBridge(new VisitorsBridgeForTests.Builder(checks)
       .enableSemanticWithProjectClasspath(classpath)
