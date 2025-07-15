@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class SerializableObjectInSessionCheckTest {
 
@@ -29,6 +30,14 @@ class SerializableObjectInSessionCheckTest {
       .onFile(mainCodeSourcesPath("checks/serialization/SerializableObjectInSessionCheckSample.java"))
       .withCheck(new SerializableObjectInSessionCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_missing_import() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/serialization/SerializableObjectInSessionCheckMissingImportSample.java"))
+      .withCheck(new SerializableObjectInSessionCheck())
+      .verifyNoIssues();
   }
 
   @Test
