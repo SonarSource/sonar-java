@@ -28,6 +28,34 @@ public class DefaultTelemetry implements Telemetry {
 
   private final Map<TelemetryKey, Set<String>> sets = new EnumMap<>(TelemetryKey.class);
   private final Map<TelemetryKey, Long> counters = new EnumMap<>(TelemetryKey.class);
+  private final Map<TelemetryKey, Flag> flags = new EnumMap<>(TelemetryKey.class);
+
+  /**
+   * Stores a set of booleans, which can have three possible states:
+   * all true, all false, or mixed.
+   */
+  enum Flag {
+    ALL_TRUE,
+    ALL_FALSE,
+    MIXED;
+
+    static Flag of(boolean value) {
+      return value ? ALL_TRUE : ALL_FALSE;
+    }
+
+    Flag aggregate(Flag that) {
+      return this == that ? this : MIXED;
+    }
+
+    @Override
+    public String toString() {
+      return switch (this) {
+        case ALL_TRUE -> "true";
+        case ALL_FALSE -> "false";
+        case MIXED -> "mixed";
+      };
+    }
+  }
 
   @Override
   public void aggregateAsSortedSet(TelemetryKey key, String value) {
@@ -49,11 +77,17 @@ public class DefaultTelemetry implements Telemetry {
   }
 
   @Override
+  public void aggregateAsFlag(TelemetryKey key, boolean value) {
+    Flag f = Flag.of(value);
+    flags.merge(key, f, Flag::aggregate);
+  }
+
+  @Override
   public Map<String, String> toMap() {
     Map<String, String> map = new TreeMap<>(ALPHA_NUMERIC_COMPARATOR);
     sets.forEach((key, value) -> map.put(key.key(), value.isEmpty() ? "absent" : String.join(",", value)));
     counters.forEach((key, value) -> map.put(key.key(), String.valueOf(value)));
+    flags.forEach((key, value) -> map.put(key.key(), String.valueOf(value)));
     return map;
   }
-
 }

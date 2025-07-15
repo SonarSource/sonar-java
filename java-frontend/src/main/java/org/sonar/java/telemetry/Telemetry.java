@@ -46,6 +46,8 @@ public interface Telemetry {
    */
   void aggregateAsCounter(TelemetryKey key, long value);
 
+  void aggregateAsFlag(TelemetryKey key, boolean value);
+
   /**
    * @return convert all the different kind of key / value pairs type into a string / string map.
    */

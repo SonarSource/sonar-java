@@ -22,6 +22,7 @@ package org.sonar.java.telemetry;
 public enum TelemetryKey {
   JAVA_LANGUAGE_VERSION("java.language.version"),
   JAVA_SCANNER_APP("java.scanner_app"),
+  JAVA_IS_AUTOSCAN("java.is_autoscan"),
   JAVA_MODULE_COUNT("java.module_count"),
 
   // The last element of dependency keys should be the same as the name of its jar.
