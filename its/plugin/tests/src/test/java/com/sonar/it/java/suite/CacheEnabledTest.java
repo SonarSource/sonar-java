@@ -25,12 +25,15 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class CacheEnabledTest {
   @Rule  public OrchestratorRule orchestrator = initServer();
 
   @Test
   public void test_cache_is_enabled() {
+    fail("Fail to validate that the test runs");
+
     SonarScanner build = TestUtils.createSonarScanner()
       .setProjectDir(TestUtils.projectDir("java-tutorial"))
       .setProperty("sonar.projectKey", "org.sonarsource.it.projects:java-tutorial")
