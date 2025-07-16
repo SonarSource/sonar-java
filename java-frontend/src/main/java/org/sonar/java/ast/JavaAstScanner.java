@@ -168,9 +168,11 @@ public class JavaAstScanner {
       modifyCompilationUnit.accept(ast);
       visitor.visitFile(ast, sonarComponents != null && sonarComponents.fileCanBeSkipped(inputFile));
       String path = inputFile.toString();
-      collectUndefinedTypes(path, ast.sema.undefinedTypes());
+      Set<JProblem> undefinedTypes = ast.sema.undefinedTypes();
+      collectUndefinedTypes(path, undefinedTypes);
       cleanUp.accept(ast);
       telemetryAnalysisKeys = javaAnalysisKeys.success();
+      telemetry.aggregateAsCounter(javaAnalysisKeys.success().typeErrorCountKey(), undefinedTypes.size());
     } catch (RecognitionException e) {
       checkInterrupted(e);
       LOG.error(String.format(LOG_ERROR_UNABLE_TO_PARSE_FILE, inputFile));
