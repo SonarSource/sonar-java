@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
@@ -32,6 +31,7 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.telemetry.NoOpTelemetry;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,7 +50,7 @@ class FileLinesVisitorTest {
     InputFile inputFile = TestUtils.inputFile(new File(baseDir, filename));
 
     SonarComponents sonarComponents = mock(SonarComponents.class);
-    when(sonarComponents.fileLinesContextFor(Mockito.any(InputFile.class))).thenReturn(context);
+    when(sonarComponents.fileLinesContextFor(any(InputFile.class))).thenReturn(context);
 
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), mock(Measurer.class), new NoOpTelemetry(), null, null, new FileLinesVisitor(sonarComponents));
 

@@ -18,15 +18,18 @@ package org.sonar.java.model;
 
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 class InputFileUtilsTest {
+
+  private InputFile inputFile = mock(InputFile.class);
 
   @Test
   void md5_hash_from_bytes() {
@@ -38,17 +41,15 @@ class InputFileUtilsTest {
 
   @Test
   void md5_hash_from_input_file() throws Exception {
-    InputFile inputFile = Mockito.mock(InputFile.class);
-    Mockito.when(inputFile.contents()).thenReturn("abc");
-    Mockito.when(inputFile.charset()).thenReturn(UTF_8);
+    when(inputFile.contents()).thenReturn("abc");
+    when(inputFile.charset()).thenReturn(UTF_8);
     assertEquals("900150983cd24fb0d6963f7d28e17f72", InputFileUtils.md5Hash(inputFile));
   }
 
   @Test
   void md5_hash_from_invalid_input_file() throws Exception {
-    InputFile inputFile = Mockito.mock(InputFile.class);
-    Mockito.when(inputFile.contents()).thenThrow(new IOException("Boom!"));
-    Mockito.when(inputFile.charset()).thenReturn(UTF_8);
+    when(inputFile.contents()).thenThrow(new IOException("Boom!"));
+    when(inputFile.charset()).thenReturn(UTF_8);
     assertThatThrownBy(() -> InputFileUtils.md5Hash(inputFile))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("java.io.IOException: Boom!");

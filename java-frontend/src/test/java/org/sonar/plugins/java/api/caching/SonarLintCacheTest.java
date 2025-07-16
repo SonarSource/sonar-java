@@ -20,10 +20,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class SonarLintCacheTest {
   @Test
@@ -59,8 +60,8 @@ class SonarLintCacheTest {
 
   @Test
   void write_non_valid_input_stream() throws IOException {
-    InputStream inputStream = Mockito.mock(InputStream.class);
-    Mockito.when(inputStream.readAllBytes()).thenThrow(IOException.class);
+    InputStream inputStream = mock(InputStream.class);
+    when(inputStream.readAllBytes()).thenThrow(IOException.class);
 
     SonarLintCache sonarLintCache = new SonarLintCache();
     assertThatThrownBy(() -> sonarLintCache.write("foo", inputStream)).isInstanceOf(IllegalStateException.class).hasCauseInstanceOf(IOException.class);

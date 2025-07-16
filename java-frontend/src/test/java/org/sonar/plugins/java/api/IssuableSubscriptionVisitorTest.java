@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -32,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 class IssuableSubscriptionVisitorTest {
 
@@ -45,7 +45,7 @@ class IssuableSubscriptionVisitorTest {
 
   @Test
   void check_issuable_subscription_visitor_does_not_visit_tree_on_its_own() {
-    CompilationUnitTree tree = Mockito.mock(CompilationUnitTree.class);
+    CompilationUnitTree tree = mock(CompilationUnitTree.class);
     CustomRule visitor = new CustomRule();
     assertThatThrownBy(() -> visitor.scanTree(tree))
       .isInstanceOf(UnsupportedOperationException.class)
@@ -55,7 +55,7 @@ class IssuableSubscriptionVisitorTest {
   @Test
   void issuable_subscription_visitor_does_not_visit_file_on_its_own() {
     CustomRule visitor = new CustomRule();
-    JavaFileScannerContext context = Mockito.mock(JavaFileScannerContext.class);
+    JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     assertThatThrownBy(() -> visitor.scanFile(context))
       .isInstanceOf(UnsupportedOperationException.class)
       .hasMessage("IssuableSubscriptionVisitor should not drive visit of file. Use leaveFile() instead.");

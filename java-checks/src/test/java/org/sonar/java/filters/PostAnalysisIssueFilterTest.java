@@ -21,7 +21,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
@@ -34,6 +33,8 @@ import org.sonar.plugins.java.api.semantic.Sema;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class PostAnalysisIssueFilterTest {
@@ -105,7 +106,7 @@ class PostAnalysisIssueFilterTest {
   @Test
   void issue_filter_should_scan_file_with_all_filters() {
     postAnalysisIssueFilter.scanFile(context);
-    Mockito.verify(context, Mockito.times(6)).getInputFile();
+    verify(context, times(6)).getInputFile();
   }
 
 }

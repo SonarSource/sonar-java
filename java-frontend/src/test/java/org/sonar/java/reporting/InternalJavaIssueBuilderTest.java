@@ -31,7 +31,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.event.Level;
@@ -73,6 +72,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 class InternalJavaIssueBuilderTest {
@@ -371,7 +371,7 @@ class InternalJavaIssueBuilderTest {
 
     @BeforeEach
     void setup() {
-      sct = Mockito.spy(SensorContextTester.create(new File("")));
+      sct = spy(SensorContextTester.create(new File("")));
       when(sct.newIssue()).thenReturn(new MockSonarLintIssue(sct));
 
       sc = mock(SonarComponents.class);

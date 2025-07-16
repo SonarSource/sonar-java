@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
@@ -34,6 +33,9 @@ import org.sonar.api.rule.RuleKey;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
 class JavaIssueTest {
@@ -49,7 +51,7 @@ class JavaIssueTest {
     DefaultIssue newIssue = new DefaultIssue(project, storage);
     DefaultIssue newIssueOnFile = new DefaultIssue(project, storage);
     DefaultIssue newIssueOnLine = new DefaultIssue(project, storage);
-    Mockito.when(sensorContext.newIssue()).thenReturn(newIssue, newIssueOnFile, newIssueOnLine);
+    when(sensorContext.newIssue()).thenReturn(newIssue, newIssueOnFile, newIssueOnLine);
 
     // issue with secondary locations
     JavaIssue javaIssue = JavaIssue.create(sensorContext, ruleKey, null);
@@ -58,7 +60,7 @@ class JavaIssueTest {
     javaIssue.addSecondaryLocation(inputFile, 3, 1, 3, 5, "secondary message 2");
     javaIssue.save();
 
-    Mockito.verify(storage, Mockito.times(1)).store(newIssue);
+    verify(storage, times(1)).store(newIssue);
 
     assertThat(newIssue.ruleKey()).isEqualTo(ruleKey);
     assertLocation(newIssue.primaryLocation(), inputFile, "main message", 1, 2, 1, 6);
@@ -71,7 +73,7 @@ class JavaIssueTest {
     javaIssue.setPrimaryLocationOnComponent(inputFile, "file message");
     javaIssue.save();
 
-    Mockito.verify(storage, Mockito.times(1)).store(newIssueOnFile);
+    verify(storage, times(1)).store(newIssueOnFile);
     assertThat(newIssueOnFile.ruleKey()).isEqualTo(ruleKey);
     IssueLocation location = newIssueOnFile.primaryLocation();
     assertThat(location.inputComponent()).isEqualTo(inputFile);
@@ -83,7 +85,7 @@ class JavaIssueTest {
     javaIssue.setPrimaryLocation(inputFile, "line message", 2, -1, 2, -1);
     javaIssue.save();
 
-    Mockito.verify(storage, Mockito.times(1)).store(newIssueOnLine);
+    verify(storage, times(1)).store(newIssueOnLine);
     assertLocation(newIssueOnLine.primaryLocation(), inputFile, "line message", 2, 0, 2, 4);
   }
 
@@ -95,13 +97,13 @@ class JavaIssueTest {
     SensorStorage storage = mock(SensorStorage.class);
     DefaultIssue newIssueEmptyFlow = new DefaultIssue(project, storage);
     DefaultIssue newIssueWithFlow = new DefaultIssue(project, storage);
-    Mockito.when(sensorContext.newIssue()).thenReturn(newIssueEmptyFlow, newIssueWithFlow);
+    when(sensorContext.newIssue()).thenReturn(newIssueEmptyFlow, newIssueWithFlow);
 
     JavaIssue javaIssue1 = JavaIssue.create(sensorContext, ruleKey, null);
     javaIssue1.setPrimaryLocation(inputFile, "main message", 1, 2, 1, 6);
     javaIssue1.addFlow(inputFile, new ArrayList<>());
     javaIssue1.save();
-    Mockito.verify(storage, Mockito.times(1)).store(newIssueEmptyFlow);
+    verify(storage, times(1)).store(newIssueEmptyFlow);
     assertThat(newIssueEmptyFlow.flows()).isEmpty();
 
     JavaIssue javaIssue2 = JavaIssue.create(sensorContext, ruleKey, null);
@@ -115,7 +117,7 @@ class JavaIssueTest {
         new AnalyzerMessage(null, inputFile, new AnalyzerMessage.TextSpan(3), "flow message 2", 0)));
     javaIssue2.addFlow(inputFile, flows);
     javaIssue2.save();
-    Mockito.verify(storage, Mockito.times(1)).store(newIssueWithFlow);
+    verify(storage, times(1)).store(newIssueWithFlow);
     assertThat(newIssueWithFlow.flows()).hasSize(2);
   }
 
