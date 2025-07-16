@@ -263,6 +263,11 @@ class SQLFormat {
     this.stmt.execute(query); // Noncompliant
   }
 
+  public void formatVarObject(Object input) throws SQLException {
+    String query = String.format("SELECT %s", input);
+    this.stmt.execute(query); // Noncompliant
+  }
+
   public void formatVarConst() throws SQLException {
     String query = String.format("SELECT %s", "1");
     this.stmt.execute(query);
@@ -275,6 +280,16 @@ class SQLFormat {
 
   public void formatLocaleConst(Locale locale) throws SQLException {
     String query = String.format(locale, "SELECT %s", "1");
+    this.stmt.execute(query);
+  }
+
+  public void formatPrimitiveVar(int input) throws SQLException {
+    String query = String.format("SELECT %s", input);
+    this.stmt.execute(query);
+  }
+
+  public void formatPrimitiveConst() throws SQLException {
+    String query = String.format("SELECT %s", 1);
     this.stmt.execute(query);
   }
 

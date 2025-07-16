@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -219,11 +220,20 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       && hasDynamicStringParameters(mit);
   }
 
+  /**
+   * Checks if parameters to format/formatted are dynamic variables susceptible to SQL injection.
+   */
   private static boolean hasDynamicStringParameters(MethodInvocationTree mit) {
+    boolean firstArg = true;
     for (ExpressionTree arg: mit.arguments()) {
-      if (arg.symbolType().is(JAVA_LANG_STRING) && arg.asConstant().isEmpty()) {
+      Type type = arg.symbolType();
+      // `format` has a variant with Locale as the first argument - we do not need to check that parameter.
+      boolean isFirstLocaleArgument = firstArg && !type.isUnknown() && type.is("java.util.Locale");
+      // Primitives will not lead to SQL injection, so the code is compliant.
+      if (!isFirstLocaleArgument && !type.isPrimitive() && arg.asConstant().isEmpty()) {
         return true;
       }
+      firstArg = false;
     }
     return false;
   }
