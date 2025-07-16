@@ -20,7 +20,6 @@ import java.io.File;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockito.Mockito;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
@@ -30,6 +29,8 @@ import org.sonar.java.testing.ThreadLocalLogTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 class ClasspathForTestTest {
 
@@ -54,9 +55,9 @@ class ClasspathForTestTest {
    */
   @Test
   void no_interaction_with_FileSystem_at_initialization() {
-    fs = Mockito.spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
+    fs = spy(new DefaultFileSystem(new File("src/test/files/classpath/")));
     javaTestClasspath = new ClasspathForTest(settings.asConfig(), fs);
-    Mockito.verifyNoInteractions(fs);
+    verifyNoInteractions(fs);
   }
 
   @Test

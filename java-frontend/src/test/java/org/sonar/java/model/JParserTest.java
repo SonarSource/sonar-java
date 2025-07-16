@@ -93,6 +93,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -166,8 +168,8 @@ class JParserTest {
     BiConsumer<InputFile, JParserConfig.Result> consumer = (inputFile, result) -> {
       throw expected;
     };
-    InputFile inputFile = Mockito.mock(InputFile.class);
-    Mockito.doReturn("/tmp/Example.java")
+    InputFile inputFile = mock(InputFile.class);
+    doReturn("/tmp/Example.java")
       .when(inputFile).absolutePath();
 
     Set<InputFile> inputFiles = Collections.singleton(inputFile);
@@ -184,9 +186,8 @@ class JParserTest {
     List<JParserConfig.Result> results = new ArrayList<>();
     BiConsumer<InputFile, JParserConfig.Result> consumer = (inputFile, result) -> results.add(result);
 
-    InputFile inputFile = Mockito.mock(InputFile.class);
-    Mockito
-      .doReturn("/tmp/Example.java")
+    InputFile inputFile = mock(InputFile.class);
+    doReturn("/tmp/Example.java")
       .when(inputFile).absolutePath();
     Mockito
       .doThrow(IOException.class)
@@ -872,7 +873,7 @@ class JParserTest {
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
       .parse(inputFiles, isCanceled, new AnalysisProgress(inputFiles.size()), action);
 
-    InOrder inOrder = Mockito.inOrder(action, isCanceled);
+    InOrder inOrder = inOrder(action, isCanceled);
     inOrder.verify(isCanceled).getAsBoolean();
     inOrder.verify(action).accept(any(), any());
     inOrder.verify(isCanceled).getAsBoolean();
