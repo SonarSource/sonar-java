@@ -293,6 +293,16 @@ class SQLFormat {
     this.stmt.execute(query);
   }
 
+  public void formatPrimitiveWrapperVar(Long input) throws SQLException {
+    String query = String.format("SELECT %s", input);
+    this.stmt.execute(query);
+  }
+
+  public void formatPrimitiveWrapperConst() throws SQLException {
+    String query = String.format("SELECT %s", Long.valueOf(4));
+    this.stmt.execute(query);
+  }
+
   public void formatted(String input) throws SQLException {
     String query = "SELECT %s".formatted(input);
     this.stmt.execute(query); // Noncompliant
