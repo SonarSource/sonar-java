@@ -96,10 +96,13 @@ public class JspTest {
       .matches(patternWithLiteralDot("""
         Telemetry java.analysis.generated.success.size_chars: \\d{5}
         Telemetry java.analysis.generated.success.time_ms: \\d+
+        Telemetry java.analysis.generated.success.type_error_count: 0
         Telemetry java.analysis.main.success.size_chars: 969
         Telemetry java.analysis.main.success.time_ms: \\d+
+        Telemetry java.analysis.main.success.type_error_count: 0
         Telemetry java.analysis.test.success.size_chars: 20
         Telemetry java.analysis.test.success.time_ms: \\d+
+        Telemetry java.analysis.test.success.type_error_count: 0
         Telemetry java.dependency.lombok: absent
         Telemetry java.dependency.spring-boot: absent
         Telemetry java.dependency.spring-web: absent

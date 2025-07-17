@@ -75,6 +75,7 @@ public class JavaTutorialTest {
       .matches(patternWithLiteralDot("""
         Telemetry java.analysis.main.success.size_chars: \\d{4}
         Telemetry java.analysis.main.success.time_ms: \\d+
+        Telemetry java.analysis.main.success.type_error_count: 0
         Telemetry java.dependency.lombok: absent
         Telemetry java.dependency.spring-boot: absent
         Telemetry java.dependency.spring-web: 5.3.18

@@ -33,6 +33,7 @@ import org.mockito.ArgumentCaptor;
 import org.slf4j.event.Level;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -123,6 +124,7 @@ class JavaSensorTest {
     assertThat(telemetryMap).containsOnlyKeys(
       "java.analysis.main.success.size_chars",
       "java.analysis.main.success.time_ms",
+      "java.analysis.main.success.type_error_count",
       "java.dependency.lombok",
       "java.dependency.spring-boot",
       "java.dependency.spring-web",
@@ -132,9 +134,11 @@ class JavaSensorTest {
       "java.scanner_app");
     assertThat(telemetryMap.get("java.analysis.main.success.size_chars")).matches("\\d{5}");
     assertThat(telemetryMap.get("java.analysis.main.success.time_ms")).matches("\\d+");
+    assertThat(telemetryMap).containsEntry("java.analysis.main.success.type_error_count", "199");
   }
 
   @Test
+  // Renaming this method will break lineNumberOfTheMethodWithNoSonar(fs). The name is used to locate the line number.
   void test_issues_creation_on_test_file() throws IOException { // NOSONAR required to test NOSONAR reporting on test files
     testIssueCreation(InputFile.Type.TEST, 0);
 
@@ -142,6 +146,7 @@ class JavaSensorTest {
     assertThat(telemetryMap).containsOnlyKeys(
       "java.analysis.test.success.size_chars",
       "java.analysis.test.success.time_ms",
+      "java.analysis.test.success.type_error_count",
       "java.dependency.lombok",
       "java.dependency.spring-boot",
       "java.dependency.spring-web",
@@ -151,6 +156,15 @@ class JavaSensorTest {
       "java.scanner_app");
     assertThat(telemetryMap.get("java.analysis.test.success.size_chars")).matches("\\d{5}");
     assertThat(telemetryMap.get("java.analysis.test.success.time_ms")).matches("\\d+");
+    assertThat(telemetryMap).containsEntry("java.analysis.test.success.type_error_count", "199");
+  }
+
+  private static int lineNumberOfTheMethodWithNoSonar(FileSystem fs) throws IOException {
+    String[] lines = fs.inputFile(fs.predicates().hasPath("org/sonar/plugins/java/JavaSensorTest.java")).contents().split("\n");
+    int zeroBasedLineIndex = (int) Stream.of(lines)
+      .takeWhile(line -> !line.contains("test_issues_creation_on_test_file"))
+      .count();
+    return zeroBasedLineIndex + 1;
   }
 
   private void testIssueCreation(InputFile.Type onType, int expectedIssues) throws IOException {
@@ -169,8 +183,8 @@ class JavaSensorTest {
     JavaSensor jss = new JavaSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null, telemetry);
 
     jss.execute(context);
-    // argument 138 refers to the comment on line #138 in this file, each time this file changes, this argument should be updated
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(138));
+    int expectedNoSonarLine = lineNumberOfTheMethodWithNoSonar(fs);
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(expectedNoSonarLine));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     // There are additional entries, but we do not test them.
