@@ -28,6 +28,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 
+import static org.sonar.java.checks.helpers.logic.HelperPredicates.isUsed;
+
 @Rule(key = "S2326")
 public class UnusedTypeParameterCheck extends IssuableSubscriptionVisitor {
 
@@ -43,7 +45,7 @@ public class UnusedTypeParameterCheck extends IssuableSubscriptionVisitor {
     TypeParameters typeParameters = tree.is(Tree.Kind.METHOD) ? ((MethodTree) tree).typeParameters() : ((ClassTree) tree).typeParameters();
     for (TypeParameterTree typeParameter : typeParameters) {
       Symbol symbol = typeParameter.symbol();
-      if (!symbol.isUnknown() && symbol.usages().isEmpty()) {
+      if(isUsed(symbol).isFalse()) {
         String message = String.format(ISSUE_MESSAGE, symbol.name(), tree.kind().name().toLowerCase(Locale.ROOT));
         reportIssue(typeParameter.identifier(), message);
       }
