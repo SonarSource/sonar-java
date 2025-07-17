@@ -173,23 +173,23 @@ public class ExpressionsHelper {
   /**
    * Checks if the expression is non-serializable.
    *
-   * @param defaultOnUnknown It will be returned if the result cannot be determined
-   *                         due to incomplete semantics.
+   * <p> If the result cannot be determined due to incomplete semantics,
+   * the method returns false.
    */
-  public static boolean isNotSerializable(ExpressionTree expression, boolean defaultOnUnknown) {
+  public static boolean isNotSerializable(ExpressionTree expression) {
     Type symbolType = expression.symbolType();
     if (symbolType.isUnknown()) {
       return false;
     }
-    return isNonSerializable(symbolType, defaultOnUnknown)
-      || isAssignedToNonSerializable(expression, defaultOnUnknown);
+    return isNonSerializable(symbolType)
+      || isAssignedToNonSerializable(expression);
   }
 
-  private static boolean isNonSerializable(Type type, boolean defaultOnUnknown) {
+  private static boolean isNonSerializable(Type type) {
     if (type.isArray()) {
-      return isNonSerializable(((Type.ArrayType) type).elementType(), defaultOnUnknown);
+      return isNonSerializable(((Type.ArrayType) type).elementType());
     }
-    if (type.typeArguments().stream().anyMatch(t -> isNonSerializable(t, defaultOnUnknown))) {
+    if (type.typeArguments().stream().anyMatch(ExpressionsHelper::isNonSerializable)) {
       return true;
     }
     if (type.isPrimitive() ||
@@ -205,18 +205,18 @@ public class ExpressionsHelper {
       return false;
     }
     if(hasUnknownTypeInHierarchy(type.symbol())) {
-      return defaultOnUnknown;
+      return false;
     }
     Type erasedType = type.erasure();
-    return erasedType.equals(type) || isNonSerializable(erasedType, defaultOnUnknown);
+    return erasedType.equals(type) || isNonSerializable(erasedType);
   }
 
-  private static boolean isAssignedToNonSerializable(ExpressionTree expression, boolean defaultOnUnknown) {
+  private static boolean isAssignedToNonSerializable(ExpressionTree expression) {
     return ExpressionUtils.extractIdentifierSymbol(expression)
       .filter(symbol -> initializedAndAssignedExpressionStream(symbol)
         .map(ExpressionTree::symbolType)
         .filter(Predicate.not(Type::isUnknown))
-        .anyMatch(t -> isNonSerializable(t, defaultOnUnknown)))
+        .anyMatch(ExpressionsHelper::isNonSerializable))
       .isPresent();
   }
 
