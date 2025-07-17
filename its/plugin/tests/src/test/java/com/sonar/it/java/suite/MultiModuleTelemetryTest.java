@@ -46,6 +46,7 @@ public class MultiModuleTelemetryTest {
       .containsOnlyOnce("Telemetry java.module_count: 2")
       .containsOnlyOnce("Telemetry java.scanner_app: ScannerMaven")
       .containsOnlyOnce("Telemetry java.is_autoscan: false")
+      .containsOnlyOnce("Telemetry java.is_android: false")
       .containsOnlyOnce("Telemetry java.dependency.lombok: 1.18.30,1.18.38");
   }
 

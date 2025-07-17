@@ -23,6 +23,7 @@ public enum TelemetryKey {
   JAVA_LANGUAGE_VERSION("java.language.version"),
   JAVA_SCANNER_APP("java.scanner_app"),
   JAVA_IS_AUTOSCAN("java.is_autoscan"),
+  JAVA_IS_ANDROID("java.is_android"),
   JAVA_ANALYSIS_MAIN_SUCCESS_SIZE_CHARS("java.analysis.main.success.size_chars"),
   JAVA_ANALYSIS_MAIN_SUCCESS_TIME_MS("java.analysis.main.success.time_ms"),
   JAVA_ANALYSIS_MAIN_PARSE_ERRORS_SIZE_CHARS("java.analysis.main.parse_errors.size_chars"),

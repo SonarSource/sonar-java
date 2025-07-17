@@ -127,6 +127,7 @@ class JavaSensorTest {
       "java.dependency.spring-boot",
       "java.dependency.spring-web",
       "java.is_autoscan",
+      "java.is_android",
       "java.language.version",
       "java.module_count",
       "java.scanner_app");
@@ -146,6 +147,7 @@ class JavaSensorTest {
       "java.dependency.spring-boot",
       "java.dependency.spring-web",
       "java.is_autoscan",
+      "java.is_android",
       "java.language.version",
       "java.module_count",
       "java.scanner_app");
@@ -169,8 +171,8 @@ class JavaSensorTest {
     JavaSensor jss = new JavaSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null, telemetry);
 
     jss.execute(context);
-    // argument 138 refers to the comment on line #138 in this file, each time this file changes, this argument should be updated
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(138));
+    // argument 139 refers to the comment on line #139 in this file, each time this file changes, this argument should be updated
+    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(139));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     // There are additional entries, but we do not test them.
@@ -179,6 +181,7 @@ class JavaSensorTest {
       entry("java.dependency.spring-boot", "absent"),
       entry("java.dependency.spring-web", "absent"),
       entry("java.is_autoscan", "false"),
+      entry("java.is_android", "false"),
       entry("java.language.version", "22"),
       entry("java.module_count", "1"),
       entry("java.scanner_app", "ScannerJavaSensorTest"));
