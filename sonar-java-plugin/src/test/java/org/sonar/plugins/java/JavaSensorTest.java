@@ -138,6 +138,7 @@ class JavaSensorTest {
   }
 
   @Test
+  // Renaming this method will break lineNumberOfTheMethodWithNoSonar(fs). The name is used to locate the line number.
   void test_issues_creation_on_test_file() throws IOException { // NOSONAR required to test NOSONAR reporting on test files
     testIssueCreation(InputFile.Type.TEST, 0);
 

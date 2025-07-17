@@ -53,13 +53,14 @@ public enum TelemetryKey {
 
   public interface SpeedKeys {
     TelemetryKey sizeCharsKey();
+
     TelemetryKey timeMsKey();
   }
 
   public record SizeAndTimeKeys(TelemetryKey sizeCharsKey, TelemetryKey timeMsKey) implements SpeedKeys {
   }
 
-  public record SizeTimeAndTypeErrorKeys(TelemetryKey sizeCharsKey, TelemetryKey timeMsKey, TelemetryKey typeErrorCountKey)  implements SpeedKeys {
+  public record SizeTimeAndTypeErrorKeys(TelemetryKey sizeCharsKey, TelemetryKey timeMsKey, TelemetryKey typeErrorCountKey) implements SpeedKeys {
   }
 
   public record JavaAnalysisKeys(SizeTimeAndTypeErrorKeys success, SpeedKeys parseErrors, SpeedKeys exceptions) {
