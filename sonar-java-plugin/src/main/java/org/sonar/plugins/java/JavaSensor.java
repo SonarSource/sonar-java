@@ -52,6 +52,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 
 import static org.sonar.api.rules.RuleAnnotationUtils.getRuleKey;
+import static org.sonar.java.telemetry.TelemetryKey.JAVA_IS_ANDROID;
 import static org.sonar.java.telemetry.TelemetryKey.JAVA_IS_AUTOSCAN;
 import static org.sonar.java.telemetry.TelemetryKey.JAVA_LANGUAGE_VERSION;
 import static org.sonar.java.telemetry.TelemetryKey.JAVA_MODULE_COUNT;
@@ -117,6 +118,7 @@ public class JavaSensor implements Sensor {
 
     telemetry.aggregateAsSortedSet(JAVA_SCANNER_APP, settings.get("sonar.scanner.app").orElse("none"));
     telemetry.aggregateAsFlag(JAVA_IS_AUTOSCAN, sonarComponents.isAutoScan());
+    telemetry.aggregateAsFlag(JAVA_IS_ANDROID, sonarComponents.inAndroidContext());
 
     JavaFrontend frontend = new JavaFrontend(javaVersion,
       sonarComponents,

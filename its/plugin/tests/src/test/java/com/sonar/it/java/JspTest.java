@@ -104,6 +104,7 @@ public class JspTest {
         Telemetry java.dependency.spring-boot: absent
         Telemetry java.dependency.spring-web: absent
         Telemetry java.is_autoscan: false
+        Telemetry java.is_android: false
         Telemetry java.language.version: 8
         Telemetry java.module_count: 1
         Telemetry java.scanner_app: ScannerMaven
