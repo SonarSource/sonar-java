@@ -228,9 +228,9 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     for (ExpressionTree arg: mit.arguments()) {
       Type type = arg.symbolType();
       // `format` has a variant with Locale as the first argument - we do not need to check that parameter.
-      boolean isFirstLocaleArgument = firstArg && !type.isUnknown() && type.is("java.util.Locale");
+      boolean isFirstLocaleArgument = firstArg && type.is("java.util.Locale");
       // Primitives will not lead to SQL injection, so the code is compliant.
-      if (!isFirstLocaleArgument && !type.isPrimitive() && !type.isPrimitiveWrapper() && arg.asConstant().isEmpty()) {
+      if (!isFirstLocaleArgument && !type.isUnknown() && !type.isPrimitive() && !type.isPrimitiveWrapper() && arg.asConstant().isEmpty()) {
         return true;
       }
       firstArg = false;
