@@ -47,6 +47,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.checks.helpers.ReassignmentFinder.getInitializerOrExpression;
 import static org.sonar.java.checks.helpers.ReassignmentFinder.getReassignments;
+import static org.sonar.java.model.JUtils.hasUnknownTypeInHierarchy;
 
 public class ExpressionsHelper {
 
@@ -169,6 +170,12 @@ public class ExpressionsHelper {
     }
   }
 
+  /**
+   * Checks if the expression is non-serializable.
+   *
+   * <p> If the result cannot be determined due to incomplete semantics,
+   * the method returns false.
+   */
   public static boolean isNotSerializable(ExpressionTree expression) {
     Type symbolType = expression.symbolType();
     if (symbolType.isUnknown()) {
@@ -195,6 +202,9 @@ public class ExpressionsHelper {
     if (type.isSubtypeOf("java.lang.Iterable") ||
       type.isSubtypeOf("java.util.Map") ||
       type.isSubtypeOf("java.util.Enumeration")) {
+      return false;
+    }
+    if(hasUnknownTypeInHierarchy(type.symbol())) {
       return false;
     }
     Type erasedType = type.erasure();

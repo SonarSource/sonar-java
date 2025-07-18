@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class NonSerializableWriteCheckTest {
 
@@ -29,6 +30,14 @@ class NonSerializableWriteCheckTest {
       .onFile(mainCodeSourcesPath("checks/serialization/NonSerializableWriteCheckSample.java"))
       .withCheck(new NonSerializableWriteCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_missing_import() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/serialization/NonSerializableWriteCheckMissingImportSample.java"))
+      .withCheck(new NonSerializableWriteCheck())
+      .verifyNoIssues();
   }
 
   @Test
