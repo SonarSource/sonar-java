@@ -174,7 +174,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       Symbol exception = tree.parameter().symbol();
       usageStatusStack.addFirst(new UsageStatus(exception.usages()));
       super.visitCatch(tree);
-      if (usageStatusStack.pop().isInvalid()) {
+      if (usageStatusStack.pop().isInvalid() && !exception.isUnknown()) {
         context.reportIssue(this, tree.parameter(), "Either log or rethrow this exception.");
       }
     }

@@ -58,4 +58,12 @@ class CatchUsesExceptionWithContextCheckTest {
       .withCheck(check)
       .verifyIssues();
   }
+
+  @Test
+  void lombok() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CatchUsesExceptionWithContextCheckLombokSample.java"))
+      .withCheck(new CatchUsesExceptionWithContextCheck())
+      .verifyIssues();
+  }
 }
