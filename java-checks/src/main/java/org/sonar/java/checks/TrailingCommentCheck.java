@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.LineUtils;
@@ -102,7 +102,7 @@ public class TrailingCommentCheck extends IssuableSubscriptionVisitor {
 
   private static boolean containsExcludedPattern(String comment) {
     for (String excludePattern : EXCLUDED_PATTERNS) {
-      if (StringUtils.containsIgnoreCase(comment, excludePattern)) {
+      if (Strings.CI.contains(comment, excludePattern)) {
         return true;
       }
     }

@@ -26,6 +26,7 @@ import java.util.Objects;
 import javax.annotation.CheckForNull;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.ScannerSide;
@@ -107,7 +108,7 @@ public class SurefireJavaParser {
 
   private static void sanitize(UnitTestIndex index) {
     for (String classname : index.getClassnames()) {
-      if (StringUtils.contains(classname, "$")) {
+      if (Strings.CS.contains(classname, "$")) {
         // Surefire reports classes whereas sonar supports files
         String parentClassName = StringUtils.substringBefore(classname, "$");
         index.merge(classname, parentClassName);

@@ -19,7 +19,7 @@ package org.sonar.plugins.surefire.data;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 public final class UnitTestClassReport {
   private int errors = 0;
@@ -42,7 +42,7 @@ public final class UnitTestClassReport {
   public UnitTestClassReport add(UnitTestResult result) {
     initResults();
     boolean hasName = results.stream().map(UnitTestResult::getName).anyMatch(result.getName()::equals);
-    if (hasName && StringUtils.contains(result.getName(), "$")) {
+    if (hasName && Strings.CS.contains(result.getName(), "$")) {
       return this;
     }
     results.add(result);

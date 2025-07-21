@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.LineUtils;
@@ -156,7 +156,7 @@ public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
    * A JSNI comment block begins with the exact token {@link #START_JSNI} and ends with the exact token {@link #END_JSNI}.
    */
   private static boolean isJSNI(String comment) {
-    return StringUtils.startsWith(comment, START_JSNI) && StringUtils.endsWith(comment, END_JSNI);
+    return Strings.CS.startsWith(comment, START_JSNI) && Strings.CS.endsWith(comment, END_JSNI);
   }
 
 }
