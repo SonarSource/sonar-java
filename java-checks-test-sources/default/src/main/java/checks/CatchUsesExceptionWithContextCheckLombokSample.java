@@ -5,17 +5,18 @@ import lombok.Data;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
-// Lombok annotation here is what confuses the parser.
+// Lombok annotation here is what confuses the parser:
+// if this class had a getter, then `ex` in `example()` below would not be unknown.
 @Data
-class ApprovalInfo {
+class Info {
   private String id;
 }
 
-class ApprovalControllerAllInOne {
+class CatchUsesExceptionWithContextCheckLombokSample {
   public void decoy() {
     // Verify that we find a problem when it is there.
     try {
-    } catch (Exception ex1) { // Noncompliant
+    } catch (Exception ex) { // Noncompliant
       throw new RuntimeException("message");
     }
   }
@@ -24,9 +25,9 @@ class ApprovalControllerAllInOne {
     return null;
   }
 
-  public void example(ApprovalInfo approvalInfo) {
-    worker(() -> approvalInfo.getId())
-      .thenAccept(approval -> {
+  public void example(Info info) {
+    worker(() -> info.getId())
+      .thenAccept(id -> {
         try {
         } catch (Exception ex) {
           throw new RuntimeException(ex);
