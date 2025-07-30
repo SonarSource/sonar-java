@@ -43,6 +43,9 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+/**
+ * Provides information about tags in JavaDoc and Markdown documentation comments.
+ */
 public final class Javadoc {
   private enum BlockTag {
     RETURN(Pattern.compile("^@return(\\s++)?(?<descr>.+)?"), false),
@@ -247,10 +250,11 @@ public final class Javadoc {
       // Empty or malformed javadoc. for instance: '/**/'
       return Collections.emptyList();
     }
-    // remove start and end of Javadoc as well as stars
+    // remove start and end of Javadoc as well as stars (JavaDoc) and tripple slashes (MarkDown)
     String[] lines = trimmedJavadoc
       .substring(3, trimmedJavadoc.length() - 2)
       .replaceAll("(?m)^\\s*\\*", "")
+      .replaceAll("(?m)^\\s*///", "")
       .trim()
       .split("\\r?\\n");
     return Arrays.stream(lines).map(String::trim).toList();

@@ -47,6 +47,17 @@ class UndocumentedApiCheckTest {
   }
 
   @Test
+  void java_23() {
+    UndocumentedApiCheck check = new UndocumentedApiCheck();
+    assertThat(check.forClasses).isEqualTo("**.api.**");
+    assertThat(check.exclusion).isEqualTo("**.internal.**");
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiJava23.java")
+      .withCheck(check)
+      .verifyIssues();
+  }
+
+  @Test
   void testMissingConfiguration() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = null;
