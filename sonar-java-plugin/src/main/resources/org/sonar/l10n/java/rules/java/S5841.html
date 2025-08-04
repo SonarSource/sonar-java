@@ -1,5 +1,5 @@
 <h2>Why is this an issue?</h2>
-<p>AssertJ assertions <code>allMatch</code> and <code>doesNotContains</code> on an empty list always&nbsp;returns true whatever the content of the
+<p>AssertJ assertions <code>allMatch</code> and <code>doesNotContain</code> on an empty list always&nbsp;returns true whatever the content of the
 predicate. Despite being correct, you should make explicit if you expect an empty list or not, by adding
 <code>isEmpty()</code>/<code>isNotEmpty()</code> in addition to calling the assertion, or by testing the list’s content further. It will justify the
 useless predicate to improve clarity or increase the reliability of the test.</p>
