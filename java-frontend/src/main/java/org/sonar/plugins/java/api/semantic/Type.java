@@ -282,4 +282,8 @@ public interface Type {
 
   }
 
+  boolean isIntersectionType();
+
+  Type[] getIntersectionTypes();
+
 }

@@ -449,5 +449,15 @@ public class Symbols {
     public List<Type> typeArguments() {
       return Collections.emptyList();
     }
+
+    @Override
+    public boolean isIntersectionType() {
+      return false;
+    }
+
+    @Override
+    public Type[] getIntersectionTypes() {
+      return new Type[] { this };
+    }
   }
 }
