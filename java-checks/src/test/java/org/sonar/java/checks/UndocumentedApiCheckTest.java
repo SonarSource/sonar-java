@@ -21,6 +21,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class UndocumentedApiCheckTest {
 
@@ -30,7 +31,7 @@ class UndocumentedApiCheckTest {
     assertThat(check.forClasses).isEqualTo("**.api.**");
     assertThat(check.exclusion).isEqualTo("**.internal.**");
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java")
+      .onFile(nonCompilingTestSourcesPath("checks/api/undocumentedAPI/UndocumentedApi.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -52,7 +53,7 @@ class UndocumentedApiCheckTest {
     assertThat(check.forClasses).isEqualTo("**.api.**");
     assertThat(check.exclusion).isEqualTo("**.internal.**");
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiJava23.java")
+      .onFile(mainCodeSourcesPath("checks/api/undocumentedAPI/UndocumentedApiJava23.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -63,7 +64,7 @@ class UndocumentedApiCheckTest {
     check.forClasses = null;
     check.exclusion = null;
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java")
+      .onFile(nonCompilingTestSourcesPath("checks/api/undocumentedAPI/UndocumentedApi.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -72,7 +73,7 @@ class UndocumentedApiCheckTest {
   void no_issue_without_Semantic() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApi.java")
+      .onFile(nonCompilingTestSourcesPath("checks/api/undocumentedAPI/UndocumentedApi.java"))
       .withCheck(check)
       .withoutSemantic()
       .verifyNoIssues();
@@ -84,7 +85,7 @@ class UndocumentedApiCheckTest {
     check.forClasses = "**.open.**";
     check.exclusion = "";
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiCustom.java")
+      .onFile(nonCompilingTestSourcesPath("checks/api/undocumentedAPI/UndocumentedApiCustom.java"))
       .withCheck(check)
       .verifyNoIssues();
   }
@@ -95,7 +96,7 @@ class UndocumentedApiCheckTest {
     check.forClasses = "";
     check.exclusion = "**.internal.**";
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiExclusion.java")
+      .onFile(nonCompilingTestSourcesPath("checks/api/undocumentedAPI/UndocumentedApiExclusion.java"))
       .withCheck(check)
       .verifyNoIssues();
   }
@@ -105,7 +106,7 @@ class UndocumentedApiCheckTest {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiIncomplete.java")
+      .onFile(nonCompilingTestSourcesPath("checks/api/undocumentedAPI/UndocumentedApiIncomplete.java"))
       .withCheck(check)
       .verifyIssues();
   }
@@ -115,7 +116,7 @@ class UndocumentedApiCheckTest {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/UndocumentedApiCheck/UndocumentedApiInvalidException.java")
+      .onFile(nonCompilingTestSourcesPath("checks/api/undocumentedAPI/UndocumentedApiInvalidException.java"))
       .withCheck(check)
       .verifyNoIssues();
   }
