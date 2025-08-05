@@ -241,23 +241,35 @@ public final class Javadoc {
     }
   }
 
-  private static List<String> cleanLines(@Nullable String javadoc) {
+  private static final Pattern JAVADOC_LINE_CLEANUP = Pattern.compile("(?m)^\\s*\\*");
+  private static final Pattern MARKDOWN_LINE_CLEANUP = Pattern.compile("(?m)^\\s*///");
+  private static final Pattern LINE_SPLIT = Pattern.compile("\\r?\\n");
+
+  @VisibleForTesting
+  static List<String> cleanLines(@Nullable String javadoc) {
     if (javadoc == null) {
       return Collections.emptyList();
     }
-    String trimmedJavadoc = javadoc.trim();
-    if (trimmedJavadoc.length() <= 4) {
+
+    String clean = javadoc.trim();
+    if (clean.length() <= 4) {
       // Empty or malformed javadoc. for instance: '/**/'
       return Collections.emptyList();
     }
-    // remove start and end of Javadoc as well as stars (JavaDoc) and tripple slashes (MarkDown)
-    String[] lines = trimmedJavadoc
-      .substring(3, trimmedJavadoc.length() - 2)
-      .replaceAll("(?m)^\\s*\\*", "")
-      .replaceAll("(?m)^\\s*///", "")
-      .trim()
-      .split("\\r?\\n");
-    return Arrays.stream(lines).map(String::trim).toList();
+
+    boolean isClassicJavadoc = clean.startsWith("/**");
+    // Remove initial "/**" (or "///") and "*/" at the end.
+    clean = isClassicJavadoc
+      ? clean.substring(3, clean.length() - 2)
+      : clean.substring(3);
+
+    // Remove leading "*" or "///".
+    Pattern cleanupRegex = isClassicJavadoc ? JAVADOC_LINE_CLEANUP : MARKDOWN_LINE_CLEANUP;
+    clean = cleanupRegex.matcher(clean).replaceAll("").trim();
+
+    return Arrays.stream(LINE_SPLIT.split(clean))
+      .map(String::trim)
+      .toList();
   }
 
   private static String getDescription(List<String> lines, int lineIndex, @Nullable String currentValue) {

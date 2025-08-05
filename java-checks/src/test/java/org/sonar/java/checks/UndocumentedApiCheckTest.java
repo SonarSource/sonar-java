@@ -47,6 +47,9 @@ class UndocumentedApiCheckTest {
       .verifyIssues();
   }
 
+  /**
+   * Test on Markdown documentation introduced in Java 23.
+   */
   @Test
   void java_23() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();

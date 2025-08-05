@@ -135,4 +135,35 @@ class JavadocTest {
     assertThat(classNoJavadoc.undocumentedParameters()).isEmpty();
     assertThat(classNoJavadoc.undocumentedThrownExceptions()).isEmpty();
   }
+
+  @Test
+  void test_clean_lines() {
+    assertThat(Javadoc.cleanLines("""
+      /// Valid descriptions.
+          /// @param value Valid descriptions."""))
+      .containsExactly(
+        "Valid descriptions.",
+        "@param value Valid descriptions.");
+
+    assertThat(Javadoc.cleanLines("""
+      /**
+        * Valid descriptions.
+        * @param value Valid descriptions.
+        */"""))
+      .containsExactly(
+        "Valid descriptions.",
+        "@param value Valid descriptions.");
+  }
+
+  @Test
+  void test_clean_lines_oneliner() {
+    assertThat(Javadoc.cleanLines("/** One-liner. */")).containsExactly("One-liner.");
+    assertThat(Javadoc.cleanLines("/// One-liner. ")).containsExactly("One-liner.");
+  }
+
+  @Test
+  void test_clean_lines_malformed() {
+    assertThat(Javadoc.cleanLines("/**    ")).isEmpty();
+    assertThat(Javadoc.cleanLines("///    ")).isEmpty();
+  }
 }
