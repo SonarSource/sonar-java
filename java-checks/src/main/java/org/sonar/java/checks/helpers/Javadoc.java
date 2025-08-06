@@ -253,7 +253,7 @@ public final class Javadoc {
 
     String clean = javadoc.trim();
     if (clean.length() <= 4) {
-      // Empty or malformed javadoc. for instance: '/**/'
+      // Empty or malformed javadoc, for instance: '/**/' or '///'
       return Collections.emptyList();
     }
 

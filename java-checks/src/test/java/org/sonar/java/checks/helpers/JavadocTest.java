@@ -165,5 +165,7 @@ class JavadocTest {
   void test_clean_lines_malformed() {
     assertThat(Javadoc.cleanLines("/**    ")).isEmpty();
     assertThat(Javadoc.cleanLines("///    ")).isEmpty();
+    assertThat(Javadoc.cleanLines("/**/")).isEmpty();
+    assertThat(Javadoc.cleanLines("///")).isEmpty();
   }
 }
