@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.TreeSet;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.slf4j.Logger;
@@ -210,24 +211,51 @@ final class JType implements Type, Type.ArrayType {
   }
 
   private static String fullyQualifiedName(ITypeBinding typeBinding) {
+    String qualifiedName;
     if (typeBinding.isNullType()) {
-      return "<nulltype>";
+      qualifiedName = "<nulltype>";
     } else if (typeBinding.isPrimitive()) {
-      return typeBinding.getName();
+      qualifiedName = typeBinding.getName();
     } else if (typeBinding.isArray()) {
-      return fullyQualifiedName(typeBinding.getComponentType()) + "[]";
+      qualifiedName = fullyQualifiedName(typeBinding.getComponentType()) + "[]";
     } else if (typeBinding.isCapture()) {
-      return "!capture!";
+      qualifiedName = "!capture!";
     } else if (typeBinding.isTypeVariable()) {
-      return typeBinding.getName();
+      qualifiedName = typeBinding.getName();
     } else {
-      String binaryName = typeBinding.getBinaryName();
-      if (binaryName == null) {
+      qualifiedName = typeBinding.getBinaryName();
+      if (qualifiedName == null) {
         // e.g. anonymous class in unreachable code
-        return typeBinding.getKey();
+        qualifiedName = typeBinding.getKey();
       }
-      return binaryName;
     }
+    if (typeBinding.isIntersectionType()) {
+      TreeSet<String> intersectionTypes = new TreeSet<>();
+      intersectionTypes.add(qualifiedName);
+      for (ITypeBinding typeBound : typeBinding.getTypeBounds()) {
+        intersectionTypes.add(fullyQualifiedName(typeBound));
+      }
+      qualifiedName = String.join(" & ", intersectionTypes);
+    }
+    return qualifiedName;
+  }
+
+  @Override
+  public boolean isIntersectionType() {
+    return typeBinding.isIntersectionType();
+  }
+
+  @Override
+  public Type[] getIntersectionTypes() {
+    if (!isIntersectionType()) {
+      return new Type[] { this };
+    }
+    ITypeBinding[] bounds = typeBinding.getTypeBounds();
+    Type[] types = new Type[bounds.length];
+    for (int i = 0; i < bounds.length; i++) {
+      types[i] = sema.type(bounds[i]);
+    }
+    return types;
   }
 
   /**

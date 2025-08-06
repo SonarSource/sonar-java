@@ -191,8 +191,12 @@ class SymbolsTest {
     assertThat(unknownSymbol.usages()).isEmpty();
 
     assertThat(unknownSymbol.metadata()).isEqualTo(Symbols.EMPTY_METADATA);
-    assertThat(unknownSymbol.type()).isEqualTo(Type.UNKNOWN);
     assertThat(unknownSymbol.enclosingClass()).isEqualTo(Symbol.TypeSymbol.UNKNOWN_TYPE);
+    Type unknowType = unknownSymbol.type();
+    assertThat(unknowType).isEqualTo(Type.UNKNOWN);
+    assertThat(unknowType.isIntersectionType()).isFalse();
+    assertThat(unknowType.getIntersectionTypes()).extracting(Type::fullyQualifiedName).containsExactly("!Unknown!");
+
   }
 
   @Test

@@ -86,6 +86,7 @@ import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.YieldStatementTree;
@@ -1486,13 +1487,59 @@ class JParserSemanticTest {
 
   @Test
   void type_union() {
-    CompilationUnitTree cu = test("class C { void m() { try { } catch (E1 | E2 v) { } } }");
+    CompilationUnitTree cu = test("class C { void m() { try { } catch (MatchException | NumberFormatException v) { } } }");
     ClassTree c = (ClassTree) cu.types().get(0);
     MethodTree m = (MethodTree) c.members().get(0);
     TryStatementTree s = (TryStatementTree) m.block().body().get(0);
     VariableTreeImpl v = (VariableTreeImpl) s.catches().get(0).parameter();
     AbstractTypedTree t = (AbstractTypedTree) v.type();
     assertThat(t.typeBinding).isNotNull();
+    Type symbolType = t.symbolType();
+    assertThat(symbolType).isNotNull();
+    assertThat(symbolType.isUnknown()).isFalse();
+    // "fullyQualifiedName()" should be unique for each different type, like for example "java.lang.MatchException | java.lang.NumberFormatException"
+    // this will be fixed by SONARJAVA-5718
+    assertThat(symbolType.fullyQualifiedName()).isEqualTo("java.lang.RuntimeException");
+    assertThat(symbolType.getIntersectionTypes()).extracting(Type::fullyQualifiedName)
+      .containsExactly("java.lang.RuntimeException");
+  }
+
+  @Test
+  void type_intersection_in_cast_expression() {
+    CompilationUnitTree cu = test("class C { void m(Object o) { var x = (AutoCloseable & Cloneable & Comparable<? extends Runnable>) o; } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) m.block().body().get(0);
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    assertThat(t.typeBinding).isNotNull();
+    Type symbolType = t.symbolType();
+    assertThat(symbolType).isNotNull();
+    assertThat(symbolType.fullyQualifiedName()).isEqualTo("java.lang.AutoCloseable & java.lang.Cloneable & java.lang.Comparable");
+    assertThat(symbolType.isSubtypeOf("java.lang.AutoCloseable")).isTrue();
+    assertThat(symbolType.isSubtypeOf("java.lang.Cloneable")).isTrue();
+    assertThat(symbolType.isSubtypeOf("java.lang.Comparable")).isTrue();
+    assertThat(symbolType.isSubtypeOf("java.lang.Number")).isFalse();
+    assertThat(symbolType.isIntersectionType()).isTrue();
+    assertThat(symbolType.getIntersectionTypes()).extracting(Type::fullyQualifiedName)
+      .containsExactly(
+      "java.lang.AutoCloseable",
+      "java.lang.Cloneable",
+      "java.lang.Comparable");
+  }
+
+  @Test
+  void type_intersection_in_generic() {
+    CompilationUnitTree cu = test("class C<T extends AutoCloseable & Cloneable> { }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    TypeParameterTree typeParameterTree = c.typeParameters().get(0);
+    Type symbolType =  typeParameterTree.symbol().type();
+    assertThat(symbolType.isParameterized()).isFalse();
+    assertThat(symbolType.fullyQualifiedName()).isEqualTo("T");
+    assertThat(symbolType.isSubtypeOf("java.lang.AutoCloseable")).isTrue();
+    assertThat(symbolType.isSubtypeOf("java.lang.Cloneable")).isTrue();
+    assertThat(symbolType.isSubtypeOf("java.lang.Number")).isFalse();
+    assertThat(symbolType.isIntersectionType()).isFalse();
+    assertThat(symbolType.getIntersectionTypes()).extracting(Type::fullyQualifiedName).containsExactly("T");
   }
 
   /**
@@ -1544,6 +1591,11 @@ class JParserSemanticTest {
     assertThat(s.isTypeSymbol())
       .isEqualTo(i.symbol().isTypeSymbol())
       .isFalse();
+
+    assertThat(i.symbolType().isIntersectionType()).isFalse();
+    assertThat(i.symbolType().getIntersectionTypes())
+      .extracting(Type::fullyQualifiedName)
+      .containsExactly("Recovered#typeBindingLUnknownInterface;0");
   }
 
   @Test
