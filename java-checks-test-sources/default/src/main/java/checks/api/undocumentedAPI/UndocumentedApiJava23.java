@@ -5,7 +5,7 @@ public class UndocumentedApiJava23 {
 
   public class BadNested {} // Noncompliant {{Document this public class by adding an explicit description.}}
 
-  ///  Documentated.
+  ///  Documented.
   public class GoodNested {} // Compliant
 
   public String badField; // Noncompliant {{Document this public field by adding an explicit description.}}
