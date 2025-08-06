@@ -10,7 +10,7 @@ public class UndocumentedApiJava23 {
 
   public String badField; // Noncompliant {{Document this public field by adding an explicit description.}}
 
-  /// Documentated.
+  /// Documented.
   public String goodField; // Compliant
 
   public void bad(int value) { // Noncompliant {{Document this public method by adding an explicit description.}}
