@@ -125,7 +125,7 @@ class HardCodedCredentialsShouldNotBeUsedCheckTest {
         .orElse(0);
     // There are three potential intersections we know of. We have checked manually that there are no actual method in the intersection.
     assertThat(intersectCount).isEqualTo(3);
-    assertThat(methods).hasSize(2729);
+    assertThat(methods).hasSize(2730);
   }
 
   @Test
