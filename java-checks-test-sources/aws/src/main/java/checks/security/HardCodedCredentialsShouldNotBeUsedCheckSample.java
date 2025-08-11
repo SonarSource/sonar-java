@@ -6,6 +6,7 @@ import com.google.api.client.json.Json;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
+import io.jsonwebtoken.security.Keys;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -152,6 +153,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheckSample {
     };
 
     byte[] secretBytes = FINAL_SECRET_STRING.getBytes("UTF-8");
+
+    Keys.hmacShaKeyFor(secretBytes); // Noncompliant
 
     Jwts.builder()
       .signWith(SignatureAlgorithm.HS256, secretBytes); // Noncompliant
