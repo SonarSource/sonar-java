@@ -25,7 +25,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.StringLiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -44,8 +44,8 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
 
   private static final int DEFAULT_THRESHOLD = 3;
 
-  // String literals include quotes, so this means length 5 as defined in RSPEC
-  private static final int MINIMAL_LITERAL_LENGTH = 7;
+  // String literals content without quotes
+  private static final int MINIMAL_LITERAL_LENGTH = 5;
 
   @RuleProperty(
     key = "threshold",
@@ -114,10 +114,9 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
 
   @Override
   public void visitLiteral(LiteralTree tree) {
-    if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
-      String literal = tree.value();
-      if (literal.length() >= MINIMAL_LITERAL_LENGTH && !isStringLiteralFragment(tree)) {
-        String stringValue = LiteralUtils.getAsStringValue(tree).replace("\\n", "\n");
+    if (tree instanceof StringLiteralTree stringLiteralTree) {
+      String stringValue = stringLiteralTree.stringValue();
+      if (stringValue.length() >= MINIMAL_LITERAL_LENGTH && !isStringLiteralFragment(tree)) {
         occurrences.computeIfAbsent(stringValue, key -> new ArrayList<>()).add(tree);
       }
     }
@@ -170,8 +169,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     ExpressionTree initializer = tree.initializer();
     if (initializer != null && initializer.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)
       && ModifiersUtils.hasAll(tree.modifiers(), Modifier.STATIC, Modifier.FINAL)) {
-      String stringValue = LiteralUtils.getAsStringValue((LiteralTree) initializer).replace("\\n", "\n");
-      constants.putIfAbsent(stringValue, tree);
+      constants.putIfAbsent(((StringLiteralTree) initializer).stringValue(), tree);
       return;
     }
     super.visitVariable(tree);

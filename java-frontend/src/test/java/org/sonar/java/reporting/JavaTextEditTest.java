@@ -20,7 +20,7 @@ import java.io.File;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.model.JParserTestUtils;
-import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.java.model.expression.NullLiteralTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -62,7 +62,7 @@ class JavaTextEditTest {
 
   @Test
   void test_insert_before_no_token_tree() {
-    LiteralTree brokenLiteral = new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, null);
+    LiteralTree brokenLiteral = new NullLiteralTreeImpl(/* unexpected missing token */ null);
     assertThatThrownBy(() -> JavaTextEdit.insertBeforeTree(brokenLiteral, "replacement"))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Trying to insert a quick fix before a Tree without token.");
@@ -77,7 +77,7 @@ class JavaTextEditTest {
 
   @Test
   void test_insert_after_no_token_tree() {
-    LiteralTree brokenLiteral = new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, null);
+    LiteralTree brokenLiteral = new NullLiteralTreeImpl(/* unexpected missing token */ null);
     assertThatThrownBy(() -> JavaTextEdit.insertAfterTree(brokenLiteral, "replacement"))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Trying to insert a quick fix after a Tree without token.");

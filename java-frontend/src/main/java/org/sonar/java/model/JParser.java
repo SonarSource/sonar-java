@@ -183,19 +183,27 @@ import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.model.expression.BooleanLiteralTreeImpl;
+import org.sonar.java.model.expression.CharLiteralTreeImpl;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
+import org.sonar.java.model.expression.DoubleLiteralTreeImpl;
+import org.sonar.java.model.expression.FloatLiteralTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InstanceOfTreeImpl;
+import org.sonar.java.model.expression.IntLiteralTreeImpl;
 import org.sonar.java.model.expression.InternalPostfixUnaryExpression;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.java.model.expression.LongLiteralTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.MethodReferenceTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
+import org.sonar.java.model.expression.NullLiteralTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
+import org.sonar.java.model.expression.StringLiteralTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.expression.VarTypeTreeImpl;
@@ -270,6 +278,8 @@ public class JParser {
     !WRONGLY_CATEGORIZED_AS_SYNTAX_ERROR.contains(error.getID());
 
   private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
+
+  private static final java.util.regex.Pattern EMPTY_TEXT_BLOCK_PATTERN = java.util.regex.Pattern.compile("\"\"\"\\R[ \t\f]++\"\"\"");
 
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}
@@ -2448,7 +2458,7 @@ public class JParser {
   }
 
   private LiteralTreeImpl convertLiteral(NullLiteral e) {
-    return new LiteralTreeImpl(Tree.Kind.NULL_LITERAL, firstTokenIn(e, TerminalToken.TokenNamenull));
+    return new NullLiteralTreeImpl(firstTokenIn(e, TerminalToken.TokenNamenull));
   }
 
   private ExpressionTree convertLiteral(NumberLiteral e) {
@@ -2462,16 +2472,16 @@ public class JParser {
     ExpressionTree result;
     switch (tokenType) {
       case TokenNameIntegerLiteral:
-        result = new LiteralTreeImpl(Tree.Kind.INT_LITERAL, createSyntaxToken(tokenIndex));
+        result = new IntLiteralTreeImpl(createSyntaxToken(tokenIndex));
         break;
       case TokenNameLongLiteral:
-        result = new LiteralTreeImpl(Tree.Kind.LONG_LITERAL, createSyntaxToken(tokenIndex));
+        result = new LongLiteralTreeImpl(createSyntaxToken(tokenIndex));
         break;
       case TokenNameFloatingPointLiteral:
-        result = new LiteralTreeImpl(Tree.Kind.FLOAT_LITERAL, createSyntaxToken(tokenIndex));
+        result = new FloatLiteralTreeImpl(createSyntaxToken(tokenIndex));
         break;
       case TokenNameDoubleLiteral:
-        result = new LiteralTreeImpl(Tree.Kind.DOUBLE_LITERAL, createSyntaxToken(tokenIndex));
+        result = new DoubleLiteralTreeImpl(createSyntaxToken(tokenIndex));
         break;
       default:
         throw new IllegalStateException();
@@ -2484,20 +2494,23 @@ public class JParser {
   }
 
   private LiteralTreeImpl convertLiteral(CharacterLiteral e) {
-    return new LiteralTreeImpl(Tree.Kind.CHAR_LITERAL, firstTokenIn(e, TerminalToken.TokenNameCharacterLiteral));
+    return new CharLiteralTreeImpl(firstTokenIn(e, TerminalToken.TokenNameCharacterLiteral), e.charValue());
   }
 
   private LiteralTreeImpl convertLiteral(BooleanLiteral e) {
     InternalSyntaxToken value = firstTokenIn(e, e.booleanValue() ? TerminalToken.TokenNametrue : TerminalToken.TokenNamefalse);
-    return new LiteralTreeImpl(Tree.Kind.BOOLEAN_LITERAL, value);
+    return new BooleanLiteralTreeImpl(value, e.booleanValue());
   }
 
   private LiteralTreeImpl convertLiteral(StringLiteral e) {
-    return new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, firstTokenIn(e, TerminalToken.TokenNameStringLiteral));
+    return new StringLiteralTreeImpl(Tree.Kind.STRING_LITERAL, firstTokenIn(e, TerminalToken.TokenNameStringLiteral), e.getLiteralValue());
   }
 
   private LiteralTreeImpl convertTextBlock(TextBlock e) {
-    return new LiteralTreeImpl(Tree.Kind.TEXT_BLOCK, firstTokenIn(e, TerminalToken.TokenNameTextBlock));
+    InternalSyntaxToken token = firstTokenIn(e, TerminalToken.TokenNameTextBlock);
+    boolean isECJProblematicEmptyTextBlock = EMPTY_TEXT_BLOCK_PATTERN.matcher(token.text()).matches();
+    String literalValue = isECJProblematicEmptyTextBlock ? "" : e.getLiteralValue();
+    return new StringLiteralTreeImpl(Tree.Kind.TEXT_BLOCK, token, literalValue);
   }
 
   private AnnotationTreeImpl convertAnnotation(Annotation e) {

@@ -91,6 +91,7 @@ class ConstantAlreadyDefined {
 //                     ^[sl=89;el=90;ec=15]<
     System.out.println("""
       blabla           """);
+//                     ^[sl=92;el=93;ec=26]<
     System.out.println("""
       blabla           
       """);

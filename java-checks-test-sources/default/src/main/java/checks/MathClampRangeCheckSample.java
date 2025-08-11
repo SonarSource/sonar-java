@@ -44,8 +44,8 @@ public class MathClampRangeCheckSample {
     Math.clamp(0, i2, 10); // Noncompliant {{Change the "clamp(value,min,max)"'s arguments so "value" is not always less than "max".}}
     Math.clamp(10L, 0, l3); // Noncompliant {{Change the "clamp(value,min,max)"'s arguments so "min" is not always less than "value".}}
 
-    Math.clamp(d1, 10.0d, 0.0d); // FN limitation, ExpressionTree.asConstant() does not support "double"
-    Math.clamp(0.0f, f2, 10.0f); // FN limitation, ExpressionTree.asConstant() does not support "float"
+    Math.clamp(d1, 10.0d, 0.0d); // Noncompliant {{Change the "clamp(value,min,max)"'s arguments so "max" is not always less than "min".}}
+    Math.clamp(0.0f, f2, 10.0f); // Noncompliant {{Change the "clamp(value,min,max)"'s arguments so "value" is not always less than "max".}}
   }
 
   int unknownValue() {

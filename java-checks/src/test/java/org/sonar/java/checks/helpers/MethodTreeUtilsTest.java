@@ -19,7 +19,9 @@ package org.sonar.java.checks.helpers;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.java.model.expression.NullLiteralTreeImpl;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -38,6 +40,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.sonar.java.checks.helpers.MethodTreeUtils.lamdaArgumentAt;
 import static org.sonar.java.checks.helpers.MethodTreeUtils.parentMethodInvocationOfArgumentAtPos;
 
@@ -164,7 +167,7 @@ class MethodTreeUtilsTest {
     LiteralTree literal3 = (LiteralTree) mathMax.arguments().get(1);
     NewClassTree newThread = (NewClassTree) ((VariableTree) members.get(2)).initializer();
     LiteralTree literal4 = (LiteralTree) newThread.arguments().get(0);
-    LiteralTreeImpl expressionWithoutParent = new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, null);
+    LiteralTreeImpl expressionWithoutParent = new NullLiteralTreeImpl(mock(InternalSyntaxToken.class));
 
     assertThat(parentMethodInvocationOfArgumentAtPos(null, 0)).isNull();
     assertThat(parentMethodInvocationOfArgumentAtPos(expressionWithoutParent, 0)).isNull();

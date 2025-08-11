@@ -68,8 +68,9 @@ class RegexPatternsNeedlesslyCheckSample {
     param.split("\\"); // Noncompliant
     param.split("/a"); // Noncompliant
     param.split("\\a"); // Noncompliant
+    param.split("\\^"); // Compliant
+    param.split("\\$"); // Compliant
 
-    param.split("\\a"); // Noncompliant
     param.split("\\2"); // Noncompliant
     param.split("\\-"); // Compliant  -- second character is not a letter or digit
     param.split("\\*"); // Compliant    * is a metacharacter

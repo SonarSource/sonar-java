@@ -17,7 +17,6 @@
 package org.sonar.java.checks;
 
 import java.util.Optional;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
@@ -98,8 +97,7 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
    * (2) two-char String and the first char is the backslash and the second is not the ascii digit or ascii letter.
    *
    */
-  private static boolean exceptionSplitMethod(String argValue) {
-    String regex = StringEscapeUtils.unescapeJava(argValue);
+  private static boolean exceptionSplitMethod(String regex) {
     char ch;
     return ((regex.length() == 1 && ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) ||
       (regex.length() == 2 &&

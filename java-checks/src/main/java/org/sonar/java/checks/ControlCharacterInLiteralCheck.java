@@ -22,7 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -68,16 +67,15 @@ public class ControlCharacterInLiteralCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public void visitNode(Tree tree) {
-    LiteralTree literal = (LiteralTree) tree;
-    String literalValue = LiteralUtils.getAsStringValue(literal);
-    Matcher matcher = null;
+    String literalValue = ((LiteralTree) tree).unquotedValue();
+    Matcher matcher;
     if (allowTabsInTextBlocks && tree.is(Tree.Kind.TEXT_BLOCK)) {
       matcher = CONTROL_CHARACTERS_WITHOUT_TABS_PATTERN.matcher(literalValue);
     } else {
       matcher = CONTROL_CHARACTERS_PATTERN.matcher(literalValue);
     }
     if (matcher.find()) {
-      reportIssue(literal,  String.format(MESSAGE_FORMAT, literalValue.codePointAt(matcher.start())));
+      reportIssue(tree,  String.format(MESSAGE_FORMAT, literalValue.codePointAt(matcher.start())));
     }
   }
 

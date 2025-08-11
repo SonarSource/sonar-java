@@ -20,14 +20,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.StringLiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6806")
@@ -66,7 +65,7 @@ public class ModelAttributeNamingConventionForSpELCheck extends AbstractMethodDe
 
   private void checkExpression(ExpressionTree argumentTree, ExpressionTree reportTree) {
     if (argumentTree.is(Tree.Kind.STRING_LITERAL)) {
-      checkStringLiteralAndReport(argumentTree, reportTree);
+      checkStringLiteralAndReport((StringLiteralTree) argumentTree, reportTree);
     } else if (argumentTree.is(Tree.Kind.IDENTIFIER)) {
       checkIdentifier((IdentifierTree) argumentTree);
     } else if (argumentTree.is(Tree.Kind.MEMBER_SELECT)) {
@@ -76,10 +75,8 @@ public class ModelAttributeNamingConventionForSpELCheck extends AbstractMethodDe
     }
   }
 
-  private void checkStringLiteralAndReport(ExpressionTree tree, ExpressionTree reportTree) {
-    LiteralTree literalTree = (LiteralTree) tree;
-    String literalValue = LiteralUtils.getAsStringValue(literalTree);
-    Matcher matcher = pattern.matcher(literalValue);
+  private void checkStringLiteralAndReport(StringLiteralTree tree, ExpressionTree reportTree) {
+    Matcher matcher = pattern.matcher(tree.stringValue());
     if (!matcher.matches()) {
       reportIssue(reportTree,
         "Attribute names must begin with a letter (a-z, A-Z), underscore (_), or dollar sign ($) and can be followed by letters, digits, underscores, or dollar signs.");

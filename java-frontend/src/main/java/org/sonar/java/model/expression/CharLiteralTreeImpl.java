@@ -16,48 +16,35 @@
  */
 package org.sonar.java.model.expression;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.tree.CharLiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-public abstract class LiteralTreeImpl extends AssessableExpressionTree implements LiteralTree {
+public class CharLiteralTreeImpl extends LiteralTreeImpl implements CharLiteralTree {
 
-  private final Kind kind;
-  private final InternalSyntaxToken token;
+  private final String unquotedValue;
+  private final char charValue;
 
-  protected LiteralTreeImpl(Kind kind, InternalSyntaxToken token) {
-    this.kind = Objects.requireNonNull(kind);
-    this.token = token;
+  public CharLiteralTreeImpl(InternalSyntaxToken token, char charValue) {
+    super(Tree.Kind.CHAR_LITERAL, token);
+    this.unquotedValue = LiteralUtils.unwrapIfPresent(token.text(), '\'');
+    this.charValue = charValue;
   }
 
   @Override
-  public Kind kind() {
-    return kind;
+  public String unquotedValue() {
+    return unquotedValue;
   }
 
   @Override
-  public String value() {
-    return token.text();
+  public char charValue() {
+    return charValue;
   }
 
   @Override
-  public SyntaxToken token() {
-    return token;
-  }
-
-  @Override
-  public void accept(TreeVisitor visitor) {
-    visitor.visitLiteral(this);
-  }
-
-  @Override
-  public List<Tree> children() {
-    return Collections.<Tree>singletonList(token);
+  public Object parsedValue() {
+    return charValue;
   }
 
 }
