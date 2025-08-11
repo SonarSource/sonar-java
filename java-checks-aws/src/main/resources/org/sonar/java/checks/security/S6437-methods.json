@@ -2849,6 +2849,7 @@
   {"cls":"io.jsonwebtoken.impl.security.KeysBridge","name":"password","args":["char[]"],"indices":[0]},
   {"cls":"io.jsonwebtoken.impl.security.PasswordSpec","name":"PasswordSpec","args":["char[]"],"indices":[0]},
   {"cls":"io.jsonwebtoken.security.Keys","name":"password","args":["char[]"],"indices":[0]},
+  {"cls":"io.jsonwebtoken.security.Keys","name":"hmacShaKeyFor","args":["byte[]"],"indices":[0]},
   {"cls":"io.lettuce.core.AbstractRedisAsyncCommands","name":"auth","args":["char[]"],"indices":[0]},
   {"cls":"io.lettuce.core.AbstractRedisAsyncCommands","name":"auth","args":["java.lang.CharSequence"],"indices":[0]},
   {"cls":"io.lettuce.core.AbstractRedisAsyncCommands","name":"auth","args":["java.lang.String","char[]"],"indices":[1]},

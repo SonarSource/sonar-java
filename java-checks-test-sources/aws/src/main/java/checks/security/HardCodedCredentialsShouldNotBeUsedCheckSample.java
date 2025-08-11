@@ -6,6 +6,7 @@ import com.google.api.client.json.Json;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
+import io.jsonwebtoken.security.Keys;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -73,19 +74,19 @@ public class HardCodedCredentialsShouldNotBeUsedCheckSample {
     request.login("user", new String("secret")); // Noncompliant
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, 0, 7)); // Noncompliant
 //                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@36<
-//                                          ^^^^^^^^^@34<
+//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@37<
+//                                          ^^^^^^^^^@35<
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, encoding)); // Noncompliant
 //                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@36<
-//                                          ^^^^^^^^^@34<
+//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@37<
+//                                          ^^^^^^^^^@35<
 
     String conditionalButPredictable = condition ? FINAL_SECRET_STRING : plainTextSecret;
 //                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
     request.login("user", conditionalButPredictable); // Noncompliant
 //                        ^^^^^^^^^^^^^^^^^^^^^^^^^
-//                                          ^^^^^^^^^@34<
-//                           ^^^^^^^^^^^^^^^^^^@69<
+//                                          ^^^^^^^^^@35<
+//                           ^^^^^^^^^^^^^^^^^^@70<
     request.login("user", Json.MEDIA_TYPE); // Noncompliant
 //                        ^^^^^^^^^^^^^^^
     String concatenatedPassword = "abc" + true + ":" + 12 + ":" + 43L + ":" + 'a' + ":" + 0.2f + ":" + 0.2d;
@@ -152,6 +153,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheckSample {
     };
 
     byte[] secretBytes = FINAL_SECRET_STRING.getBytes("UTF-8");
+
+    Keys.hmacShaKeyFor(secretBytes); // Noncompliant
 
     Jwts.builder()
       .signWith(SignatureAlgorithm.HS256, secretBytes); // Noncompliant
