@@ -128,3 +128,17 @@ interface SelfAssignmentCheckE {
     a = b; // Compliant
   }
 }
+
+record SelfAssignmentCheckSampleRecord(int x) {
+  void method(int a) {
+    a = a; // Noncompliant
+  }
+}
+
+
+enum SelfAssignmentCheckSampleEnum {
+  A, B;
+  void method(int a) {
+    a = a; // Noncompliant
+  }
+}
