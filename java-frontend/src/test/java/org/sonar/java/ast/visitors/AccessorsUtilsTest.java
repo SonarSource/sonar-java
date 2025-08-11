@@ -111,7 +111,7 @@ class AccessorsUtilsTest {
   }
 
   @Test
-  void setter_body_is_an_assignement_statement_referencing_private_var() {
+  void setter_body_is_an_assignment_statement_referencing_private_var() {
     assertThat(isAccessor("class T { private int a; public void setA(int a) { a++; } }")).isFalse();
     assertThat(isAccessor("class T { private int a; public void setA(int a) { b=0; } }")).isFalse();
     assertThat(isAccessor("class T { private int a; public void setA(int a) { b = a; } }")).isFalse();

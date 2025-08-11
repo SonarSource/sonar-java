@@ -517,8 +517,8 @@ class JMethodSymbolTest {
     assertFalse(fooSymbol.isLambda());
     assertThat(fooSymbol.toString()).isNotEmpty();
 
-    var barAssignement = (VariableTree) a.members().get(1);
-    var initializer = (LambdaExpressionTree) barAssignement.initializer();
+    var barAssignment = (VariableTree) a.members().get(1);
+    var initializer = (LambdaExpressionTree) barAssignment.initializer();
     var lambdaSymbol = (JMethodSymbol) initializer.symbol();
     assertTrue(lambdaSymbol.isLambda());
     assertThat(lambdaSymbol.toString()).isNotEmpty();

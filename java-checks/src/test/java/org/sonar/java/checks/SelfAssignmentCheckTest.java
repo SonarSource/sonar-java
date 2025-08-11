@@ -21,13 +21,13 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-class SelfAssignementCheckTest {
+class SelfAssignmentCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SelfAssignementCheckSample.java"))
-      .withCheck(new SelfAssignementCheck())
+      .onFile(mainCodeSourcesPath("checks/SelfAssignmentCheckSample.java"))
+      .withCheck(new SelfAssignmentCheck())
       .verifyIssues();
   }
 

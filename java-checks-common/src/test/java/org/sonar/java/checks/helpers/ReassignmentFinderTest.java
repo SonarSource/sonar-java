@@ -103,7 +103,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
   }
 
   @Test
-  void assignement() {
+  void assignment() {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -112,12 +112,12 @@ class ReassignmentFinderTest extends JParserTestUtils {
       "}");
 
     List<StatementTree> statements = methodBody(code);
-    ExpressionTree aAssignmentExpression = assignementExpressionFromStatement(statements.get(1));
+    ExpressionTree aAssignmentExpression = assignmentExpressionFromStatement(statements.get(1));
     assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, aAssignmentExpression);
   }
 
   @Test
-  void assignement_with_other_variable() {
+  void assignment_with_other_variable() {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -128,12 +128,12 @@ class ReassignmentFinderTest extends JParserTestUtils {
       "}");
 
     List<StatementTree> statements = methodBody(code);
-    ExpressionTree aAssignmentExpression = assignementExpressionFromStatement(statements.get(2));
+    ExpressionTree aAssignmentExpression = assignmentExpressionFromStatement(statements.get(2));
     assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, aAssignmentExpression);
   }
 
   @Test
-  void assignement_with_parenthesis() {
+  void assignment_with_parenthesis() {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -143,12 +143,12 @@ class ReassignmentFinderTest extends JParserTestUtils {
       "}");
 
     List<StatementTree> statements = methodBody(code);
-    ExpressionTree aAssignmentExpression = assignementExpressionFromStatement(statements.get(1));
+    ExpressionTree aAssignmentExpression = assignmentExpressionFromStatement(statements.get(1));
     assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, aAssignmentExpression);
   }
 
   @Test
-  void last_assignement() {
+  void last_assignment() {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -158,12 +158,12 @@ class ReassignmentFinderTest extends JParserTestUtils {
       "}");
 
     List<StatementTree> statements = methodBody(code);
-    ExpressionTree secondAssignment = assignementExpressionFromStatement(statements.get(2));
+    ExpressionTree secondAssignment = assignmentExpressionFromStatement(statements.get(2));
     assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, secondAssignment);
   }
 
   @Test
-  void last_assignement_on_same_line() {
+  void last_assignment_on_same_line() {
     String code = newCode(
       "int foo() {",
       "  int a;",
@@ -172,7 +172,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
       "}");
 
     List<StatementTree> statements = methodBody(code);
-    ExpressionTree secondAssignment = assignementExpressionFromStatement(statements.get(2));
+    ExpressionTree secondAssignment = assignmentExpressionFromStatement(statements.get(2));
     assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, secondAssignment);
   }
 
@@ -256,7 +256,7 @@ class ReassignmentFinderTest extends JParserTestUtils {
 
     List<StatementTree> statements = methodBody(code);
     StatementTree elseAssignment = ((BlockTree) ((IfStatementTree) statements.get(1)).elseStatement()).body().get(0);
-    ExpressionTree expression = assignementExpressionFromStatement(elseAssignment);
+    ExpressionTree expression = assignmentExpressionFromStatement(elseAssignment);
     assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, expression);
   }
 

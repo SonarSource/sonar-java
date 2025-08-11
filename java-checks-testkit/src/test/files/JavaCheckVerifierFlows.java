@@ -13,7 +13,7 @@ class A {
 
   // failing tests blowup above, so they do not validate below this line
 
-  void reassignement() {
+  void reassignment() {
     Object a = null; // flow@reass {{msg}}
     Object b = new Object();
     b = a; // flow@reass

@@ -1,6 +1,6 @@
 package checks;
 
-class SelfAssignementCheckSample {
+class SelfAssignmentCheckSample {
   static int staticField = 0;
   
   static {
@@ -33,7 +33,7 @@ class SelfAssignementCheckSample {
     b[fun()] = b[fun()]; // Noncompliant
   }
 
-  void method2(SelfAssignementCheckSample c, int a) {
+  void method2(SelfAssignmentCheckSample c, int a) {
     this.a = c.a;
     this.a = a;
   }
@@ -43,13 +43,13 @@ class SelfAssignementCheckSample {
   }
 }
 
-class SelfAssignementCheckSampleB {
+class SelfAssignmentCheckSampleB {
   static int b;
   int foo;
 
-  class SelfAssignementCheckSampleC {
+  class SelfAssignmentCheckSampleC {
     void fun() {
-      SelfAssignementCheckSampleB.b = b; // Noncompliant
+      SelfAssignmentCheckSampleB.b = b; // Noncompliant
     }
   }
 
@@ -57,7 +57,7 @@ class SelfAssignementCheckSampleB {
     this.foo = foo;
   }
 
-  SelfAssignementCheckSampleB(SelfAssignementCheckSampleB bInstance) {
+  SelfAssignmentCheckSampleB(SelfAssignmentCheckSampleB bInstance) {
     foo = bInstance.foo;
   }
 }

@@ -1485,7 +1485,7 @@ class CFGTest {
   }
 
   @Test
-  void assignement_order_of_evaluation() {
+  void assignment_order_of_evaluation() {
     CFG cfg = buildCFG("""
         void foo() {
           int[] a = {4,4};

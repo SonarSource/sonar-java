@@ -70,7 +70,7 @@ class ExpressionsHelperTest extends JParserTestUtils {
   }
 
   @Test
-  void andAssignement() {
+  void andAssignment() {
     String code = newCode( "int foo() {",
       "boolean a;",
       "a &= false;",
