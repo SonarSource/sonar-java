@@ -16,6 +16,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
@@ -35,11 +39,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
@@ -63,30 +62,24 @@ public class SelfAssignmentCheck extends IssuableSubscriptionVisitor {
     }
     AssignmentExpressionTree node = (AssignmentExpressionTree) tree;
     if (SyntacticEquivalence.areEquivalent(node.expression(), node.variable())) {
-      if (node.parent().is(Tree.Kind.VARIABLE) || node.parent().is(Tree.Kind.ASSIGNMENT)) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
-          .onTree(reportTree(node))
-          .withMessage(ISSUE_MESSAGE)
-          .report();
-      } else {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
-          .onTree(reportTree(node))
-          .withMessage(ISSUE_MESSAGE)
-          .withQuickFix(() -> getQuickFix(node))
-          .report();
+      var issueBuilder = QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(reportTree(node))
+        .withMessage(ISSUE_MESSAGE);
+      if (!node.parent().is(Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT)) {
+        issueBuilder.withQuickFix(() -> getQuickFix(node));
       }
+      issueBuilder.report();
       updateWarnings(node);
     }
   }
 
   private static JavaQuickFix getQuickFix(AssignmentExpressionTree tree) {
-    ClassTree classParent = (ClassTree) ExpressionUtils.getParentOfType(tree, Tree.Kind.CLASS, Tree.Kind.INTERFACE);
+    ClassTree classParent = (ClassTree) ExpressionUtils.getParentOfType(tree, Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD, Tree.Kind.ENUM);
     MethodTree methodParent = (MethodTree) ExpressionUtils.getParentOfType(tree, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
     String name = getName(tree.variable());
 
-    boolean isMethodParameter = methodParent != null && methodParent.parameters().stream()
+    boolean isMethodParameter = classParent != null && methodParent != null && methodParent.parameters().stream()
       .map(p -> p.simpleName().name())
       .anyMatch(p -> p.equals(name));
 
