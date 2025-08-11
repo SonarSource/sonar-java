@@ -35,7 +35,7 @@ public abstract class JParserTestUtils {
     return (IdentifierTree) ((ReturnStatementTree) statements.get(statements.size() - 1)).expression();
   }
 
-  static ExpressionTree assignementExpressionFromStatement(StatementTree statement) {
+  static ExpressionTree assignmentExpressionFromStatement(StatementTree statement) {
     return ((AssignmentExpressionTree) ((ExpressionStatementTree) statement).expression()).expression();
   }
 

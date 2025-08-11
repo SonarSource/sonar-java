@@ -435,7 +435,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
       }
     }
 
-    return !assignementsOfMutableType(symbol.usages());
+    return !assignmentsOfMutableType(symbol.usages());
   }
 
   private static boolean isEmptyArray(ExpressionTree initializer) {
@@ -452,7 +452,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     return integer != null && integer == 0;
   }
 
-  private static boolean assignementsOfMutableType(List<IdentifierTree> usages) {
+  private static boolean assignmentsOfMutableType(List<IdentifierTree> usages) {
     for (IdentifierTree usage : usages) {
       Tree current = usage;
       Tree parent = usage.parent();

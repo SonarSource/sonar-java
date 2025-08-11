@@ -50,10 +50,10 @@ public class AccessorsUtils {
 
   private static boolean isSetter(ClassTree classTree, MethodTree methodTree) {
     return methodTree.simpleName().name().startsWith("set") && methodTree.parameters().size() == 1
-        && returnTypeIs(methodTree, "void") && hasOneAssignementStatement(methodTree, classTree);
+        && returnTypeIs(methodTree, "void") && hasOneAssignmentStatement(methodTree, classTree);
   }
 
-  private static boolean hasOneAssignementStatement(MethodTree methodTree, ClassTree classTree) {
+  private static boolean hasOneAssignmentStatement(MethodTree methodTree, ClassTree classTree) {
     List<StatementTree> body = methodTree.block().body();
     return body.size() == 1 && body.get(0).is(Tree.Kind.EXPRESSION_STATEMENT) && ((ExpressionStatementTree) body.get(0)).expression().is(Tree.Kind.ASSIGNMENT)
         && referencePrivateProperty((AssignmentExpressionTree) ((ExpressionStatementTree) body.get(0)).expression(), classTree);

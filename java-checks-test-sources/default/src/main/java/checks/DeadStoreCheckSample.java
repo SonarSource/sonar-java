@@ -149,7 +149,7 @@ class DeadStoreCheckSample {
     }
   }
 
-  void parenthesis_identifier_in_assignement() {
+  void parenthesis_identifier_in_assignment() {
     int i = 0;
     System.out.println(i);
     (i) = 12; // Noncompliant

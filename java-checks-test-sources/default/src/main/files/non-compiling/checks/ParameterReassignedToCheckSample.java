@@ -75,7 +75,7 @@ class A {
     b++;
     this.a++;
   }
-  @Annotation(param="value") //raise issue because this param is considered as a reassignement of method parameter.
+  @Annotation(param="value") //raise issue because this param is considered as a reassignment of method parameter.
   void foo(String param) {}
 
   void meth() {

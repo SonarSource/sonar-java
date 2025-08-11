@@ -44,7 +44,7 @@ import java.util.Set;
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
 @Rule(key = "S1656")
-public class SelfAssignementCheck extends IssuableSubscriptionVisitor {
+public class SelfAssignmentCheck extends IssuableSubscriptionVisitor {
 
   private static final String ISSUE_MESSAGE = "Remove or correct this useless self-assignment.";
   private final Set<JWarning> warnings = new HashSet<>();
