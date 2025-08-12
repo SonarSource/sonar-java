@@ -17,6 +17,8 @@
 package org.sonar.java.checks.helpers;
 
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonarsource.analyzer.commons.HumanLanguageDetector;
+import org.sonarsource.analyzer.commons.ShannonEntropy;
 
 public class RandomnessDetector {
   private static final int MIN_SECRET_LENGTH_FOR_GIVEN_ENTROPY = 25;
@@ -52,6 +54,6 @@ public class RandomnessDetector {
 
   @VisibleForTesting
   boolean hasLowLanguageScore(String literal) {
-    return LatinAlphabetLanguagesHelper.humanLanguageScore(literal) < maxLanguageScore;
+    return HumanLanguageDetector.humanLanguageScore(literal) < maxLanguageScore;
   }
 }

@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -220,6 +221,16 @@ public final class MethodTreeUtils {
     public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
       // Skip lambdas
     }
+  }
+
+  public static IdentifierTree getIdentifier(MethodInvocationTree mit) {
+    IdentifierTree id;
+    if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
+      id = (IdentifierTree) mit.methodSelect();
+    } else {
+      id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
+    }
+    return id;
   }
 
 }

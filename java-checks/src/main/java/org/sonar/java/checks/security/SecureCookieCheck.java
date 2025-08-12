@@ -40,6 +40,8 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.MethodTreeUtils.getIdentifier;
+
 @Rule(key = "S2092")
 public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
@@ -221,16 +223,6 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isCookieClass(Type type) {
     return COOKIES.stream().anyMatch(type::isSubtypeOf);
-  }
-
-  private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
-    IdentifierTree id;
-    if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
-      id = (IdentifierTree) mit.methodSelect();
-    } else {
-      id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
-    }
-    return id;
   }
 
 }

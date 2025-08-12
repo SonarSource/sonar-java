@@ -47,6 +47,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.MethodTreeUtils.getIdentifier;
+
 @Rule(key = "S3330")
 public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
   private final Set<Symbol.VariableSymbol> ignoredVariables = new HashSet<>();
@@ -387,13 +389,4 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
     return booleanValue == null || booleanValue;
   }
 
-  private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
-    IdentifierTree id;
-    if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
-      id = (IdentifierTree) mit.methodSelect();
-    } else {
-      id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
-    }
-    return id;
-  }
 }

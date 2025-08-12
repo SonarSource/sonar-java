@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -34,7 +34,6 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4602")
@@ -71,7 +70,7 @@ public class SpringScanDefaultPackageCheck extends IssuableSubscriptionVisitor {
     if (scanPackageAttributeNames != null) {
       List<ExpressionTree> scanPackageAttributeValues = annotation.arguments().stream()
         .filter(argument -> scanPackageAttributeNames.contains(attributeName(argument)))
-        .flatMap(SpringScanDefaultPackageCheck::extractValues)
+        .flatMap(ExpressionUtils::extractValues)
         .toList();
 
       checkAnnotationPackageAttributes(annotation, scanPackageAttributeValues);
@@ -103,18 +102,6 @@ public class SpringScanDefaultPackageCheck extends IssuableSubscriptionVisitor {
       return ((IdentifierTree) assignment.variable()).name();
     }
     return DEFAULT_ATTRIBUTE;
-  }
-
-  private static Stream<ExpressionTree> extractValues(ExpressionTree argument) {
-    ExpressionTree expression = argument;
-    if (expression.is(Tree.Kind.ASSIGNMENT)) {
-      expression = ((AssignmentExpressionTree) expression).expression();
-    }
-    if (expression.is(Tree.Kind.NEW_ARRAY)) {
-      return ((NewArrayTree) expression).initializers().stream()
-        .flatMap(SpringScanDefaultPackageCheck::extractValues);
-    }
-    return Stream.of(expression);
   }
 
   private static Optional<ExpressionTree> findEmptyString(ExpressionTree expression) {

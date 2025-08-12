@@ -18,6 +18,7 @@ package org.sonar.java.model;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -388,6 +390,18 @@ public final class ExpressionUtils {
       return leftInt | rightInt;
     }
     return null;
+  }
+
+  public static Stream<ExpressionTree> extractValues(ExpressionTree argument) {
+    ExpressionTree expression = argument;
+    if (expression.is(Tree.Kind.ASSIGNMENT)) {
+      expression = ((AssignmentExpressionTree) expression).expression();
+    }
+    if (expression.is(Tree.Kind.NEW_ARRAY)) {
+      return ((NewArrayTree) expression).initializers().stream()
+        .flatMap(ExpressionUtils::extractValues);
+    }
+    return Stream.of(expression);
   }
 
 }

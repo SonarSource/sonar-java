@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.sonarsource.analyzer.commons.HumanLanguageDetector;
+import org.sonarsource.analyzer.commons.ShannonEntropy;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -95,7 +97,7 @@ class RandomnessDetectorTest {
   void test_is_random_high_sensibility() {
     String str = "xxx_xxx_xxx_xxx_xxx_xxx_xxx_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     System.out.println(ShannonEntropy.calculate(str));
-    System.out.println(LatinAlphabetLanguagesHelper.humanLanguageScore(str));
+    System.out.println(HumanLanguageDetector.humanLanguageScore(str));
     RandomnessDetector current = new RandomnessDetector(7);
     // Low entropy, high language score
     assertFalse(current.isRandom("the_the_the_the_the_the_the"));
@@ -111,7 +113,7 @@ class RandomnessDetectorTest {
   void test_is_random_low_sensibility() {
     String str = "my package";
     System.out.println(ShannonEntropy.calculate(str));
-    System.out.println(LatinAlphabetLanguagesHelper.humanLanguageScore(str));
+    System.out.println(HumanLanguageDetector.humanLanguageScore(str));
     RandomnessDetector current = new RandomnessDetector(1);
     assertTrue(current.isRandom("my package"));
     assertTrue(current.isRandom("xxx_xxx_xxx_xxx_xxx_xxx_xxx"));

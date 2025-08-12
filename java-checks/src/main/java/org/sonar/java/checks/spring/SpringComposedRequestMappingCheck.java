@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -34,7 +34,6 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S4488")
@@ -63,7 +62,7 @@ public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisit
     if (annotation.symbolType().is("org.springframework.web.bind.annotation.RequestMapping")) {
       List<ExpressionTree> methodValues = annotation.arguments().stream()
         .filter(argument -> "method".equals(attributeName(argument)))
-        .flatMap(SpringComposedRequestMappingCheck::extractValues)
+        .flatMap(ExpressionUtils::extractValues)
         .toList();
 
       if (methodValues.size() == 1) {
@@ -101,18 +100,6 @@ public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisit
       return ((IdentifierTree) assignment.variable()).name();
     }
     return "value";
-  }
-
-  private static Stream<ExpressionTree> extractValues(ExpressionTree argument) {
-    ExpressionTree expression = argument;
-    if (expression.is(Tree.Kind.ASSIGNMENT)) {
-      expression = ((AssignmentExpressionTree) expression).expression();
-    }
-    if (expression.is(Tree.Kind.NEW_ARRAY)) {
-      return ((NewArrayTree) expression).initializers().stream()
-        .flatMap(SpringComposedRequestMappingCheck::extractValues);
-    }
-    return Stream.of(expression);
   }
 
   @Override
