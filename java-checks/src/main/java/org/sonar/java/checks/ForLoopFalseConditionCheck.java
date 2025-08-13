@@ -17,7 +17,6 @@
 package org.sonar.java.checks;
 
 import javax.annotation.CheckForNull;
-import org.apache.commons.lang3.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -40,11 +39,11 @@ public class ForLoopFalseConditionCheck extends AbstractForLoopRule {
 
   private static boolean isAlwaysFalseCondition(ExpressionTree expression) {
     if (expression.is(Tree.Kind.BOOLEAN_LITERAL)) {
-      return BooleanUtils.isFalse(booleanLiteralValue(expression));
+      return Boolean.FALSE.equals(booleanLiteralValue(expression));
     }
     if (expression.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
       ExpressionTree subExpression = ((UnaryExpressionTree) expression).expression();
-      return BooleanUtils.isTrue(booleanLiteralValue(subExpression));
+      return Boolean.TRUE.equals(booleanLiteralValue(subExpression));
     }
     return false;
   }

@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import org.apache.commons.lang3.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LineUtils;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
@@ -144,7 +143,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private static boolean requiresParenthesis(Tree.Kind kind1, Tree.Kind kind2) {
-    return BooleanUtils.isTrue(OPERATORS_RELATION_TABLE.get(new OperatorRelation(kind1, kind2)));
+    return Boolean.TRUE.equals(OPERATORS_RELATION_TABLE.get(new OperatorRelation(kind1, kind2)));
   }
 
   @Override
