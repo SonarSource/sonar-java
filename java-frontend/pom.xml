@@ -35,6 +35,7 @@
       <artifactId>sonar-plugin-api-test-fixtures</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api-impl</artifactId>
@@ -117,6 +118,11 @@
       <artifactId>jol-core</artifactId>
       <version>0.16</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>java-common</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
