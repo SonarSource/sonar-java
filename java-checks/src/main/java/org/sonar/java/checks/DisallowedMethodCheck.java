@@ -16,10 +16,10 @@
  */
 package org.sonar.java.checks;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.common.StringUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;

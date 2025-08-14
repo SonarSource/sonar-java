@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
-import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
@@ -29,6 +28,7 @@ import org.sonar.api.rule.RuleScope;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.Beta;
+import org.sonar.java.common.StringUtils;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**

@@ -20,4 +20,75 @@ public class StringUtils {
   public static boolean isEmpty(String string) {
     return string == null || string.isEmpty();
   }
+
+  public static boolean isNotEmpty(String string) {
+    return !isEmpty(string);
+  }
+
+  public static boolean isBlank(String string) {
+    return string == null || string.isBlank();
+  }
+
+  public static boolean isNotBlank(String string) {
+    return !isBlank(string);
+  }
+
+  public static String trim(String string) {
+    return string == null ? null : string.trim();
+  }
+
+  public static String repeat(String string, int count) {
+    if (string == null) {
+      return null;
+    }
+    if (count <= 0) {
+      return "";
+    }
+    return string.repeat(count);
+    // return org.apache.commons.lang3.StringUtils.repeat(string, count);
+  }
+
+  public static String[] split(String string, char separator) {
+    return org.apache.commons.lang3.StringUtils.split(string, separator);
+  }
+
+  public static String[] split(String string, String separator) {
+    return org.apache.commons.lang3.StringUtils.split(string, separator);
+  }
+
+  public static int countMatches(String string, char ch) {
+    return org.apache.commons.lang3.StringUtils.countMatches(string, ch);
+  }
+
+  public static int countMatches(String s1, String s2) {
+    return org.apache.commons.lang3.StringUtils.countMatches(s1, s2);
+  }
+
+  public static boolean contains(String string, int ch) {
+    return org.apache.commons.lang3.StringUtils.contains(string, ch);
+  }
+
+  public static String stripAccents(String string) {
+    return org.apache.commons.lang3.StringUtils.stripAccents(string);
+  }
+
+  public static String capitalize(String string) {
+    return org.apache.commons.lang3.StringUtils.capitalize(string);
+  }
+
+  public static String substringBefore(String input, String mark) {
+    return org.apache.commons.lang3.StringUtils.substringBefore(input, mark);
+  }
+
+  public static String substringAfter(String input, String mark) {
+    return org.apache.commons.lang3.StringUtils.substringAfter(input, mark);
+  }
+
+  public static String substringBetween(String input, String start, String end) {
+    return org.apache.commons.lang3.StringUtils.substringBetween(input, start, end);
+  }
+
+  public static String defaultIfBlank(String string, String defaultValue) {
+    return org.apache.commons.lang3.StringUtils.defaultIfBlank(string, defaultValue);
+  }
 }

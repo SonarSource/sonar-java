@@ -16,8 +16,8 @@
  */
 package org.sonar.java.checks;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.utils.WildcardPattern;
+import org.sonar.java.common.StringUtils;
 
 public final class PatternUtils {
 
