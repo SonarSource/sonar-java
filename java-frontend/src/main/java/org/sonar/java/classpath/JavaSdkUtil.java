@@ -25,12 +25,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.commons.lang3.SystemUtils;
 import org.sonar.java.annotations.VisibleForTesting;
 
 /**
@@ -45,7 +45,8 @@ public class JavaSdkUtil {
   }
 
   public static List<File> getJdkClassesRoots(Path home) {
-    return getJdkClassesRoots(home, SystemUtils.IS_OS_MAC);
+    boolean isMac = System.getProperty("os.name").toLowerCase(Locale.ROOT).startsWith("mac");
+    return getJdkClassesRoots(home, isMac);
   }
 
   @VisibleForTesting

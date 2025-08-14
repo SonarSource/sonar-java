@@ -25,7 +25,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import org.apache.commons.lang3.SystemUtils;
+import java.util.Locale;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -259,7 +260,7 @@ public class JavaClasspathTest {
 
   private static Path getJdk8() {
     Path jre8Home = Paths.get("target/jre/jdk8u265-b01-jre");
-    if (SystemUtils.IS_OS_MAC_OSX) {
+    if (System.getProperty("os.name").toLowerCase(Locale.ROOT).startsWith("mac")) {
       return jre8Home.resolve("Contents/Home");
     }
     return jre8Home;
