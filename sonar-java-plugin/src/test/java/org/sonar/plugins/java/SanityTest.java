@@ -18,6 +18,8 @@ package org.sonar.plugins.java;
 
 import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +52,6 @@ import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.FilesUtils;
-import org.sonar.java.common.MiscUtils;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.TelemetryKey;
@@ -273,8 +274,7 @@ class SanityTest {
       if (realCause == null) {
         return null;
       }
-      String stackTrace = MiscUtils.getStackTrace(realCause);
-      return Arrays.stream(stackTrace.split("\n"))
+      return Arrays.stream(SanityTest.getStackTrace(realCause).split("\n"))
         // try to retrieve the rule class name in 'checks' package
         .filter(line -> line.contains("org.sonar.java.checks."))
         // check that it's a rule
@@ -311,5 +311,12 @@ class SanityTest {
     } catch (Exception e) {
       throw new IllegalStateException(String.format("Unable to lead file '%s", file.getAbsolutePath()));
     }
+  }
+
+  private static String getStackTrace(Throwable throwable) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw, true);
+    throwable.printStackTrace(pw);
+    return sw.toString();
   }
 }

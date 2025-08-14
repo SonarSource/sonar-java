@@ -24,9 +24,4 @@ public class MiscUtils {
   public static Throwable getRootCause(Exception exception) {
     return org.apache.commons.lang3.exception.ExceptionUtils.getRootCause(exception);
   }
-
-  // easy to remove
-  public static String getStackTrace(Throwable throwable) {
-    return org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(throwable);
-  }
 }
