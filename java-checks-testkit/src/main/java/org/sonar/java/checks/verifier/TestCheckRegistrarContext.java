@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rule.RuleScope;
 import org.sonar.api.rules.RuleAnnotationUtils;
@@ -94,7 +93,7 @@ public class TestCheckRegistrarContext extends CheckRegistrar.RegistrarContext {
                                                 List<Class<? extends JavaCheck>> destCheckClasses,
                                                 List<JavaCheck> destCheckInstances,
                                                 List<RuleKey> destRuleKeys) {
-    if (StringUtils.isBlank(repositoryKey)) {
+    if (repositoryKey == null || repositoryKey.isBlank()) {
       throw new IllegalArgumentException("Please specify a non blank repository key");
     }
     for (Object javaCheckClassOrInstance : javaCheckClassesAndInstances) {
