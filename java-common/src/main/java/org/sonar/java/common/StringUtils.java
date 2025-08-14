@@ -38,6 +38,8 @@ public class StringUtils {
   }
 
   public static String repeat(String string, int count) {
+    // apache.commons.lang3 and Java SDK have slightly different semantics
+
     if (string == null) {
       return null;
     }
