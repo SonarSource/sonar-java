@@ -29,10 +29,6 @@ public class Strings {
     return org.apache.commons.lang3.Strings.CI.indexOf(string, search);
   }
 
-  public static boolean equalsSensitive(String s, String t) {
-    return org.apache.commons.lang3.Strings.CS.equals(s, t);
-  }
-
   public static boolean startsWithSensitive(String string, String prefix) {
     return org.apache.commons.lang3.Strings.CS.startsWith(string, prefix);
   }
