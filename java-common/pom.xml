@@ -11,9 +11,14 @@
   <artifactId>java-common</artifactId>
 
   <name>SonarQube Java :: Common</name>
-  <description>Code Analyzer for Java :: Common utilities for Sonar Java</description>
+  <description>Code Analyzer for Java :: Common Utilities for Sonar Java</description>
 
   <dependencies>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.18.0</version>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>

@@ -16,10 +16,11 @@
  */
 package org.sonar.java.checks.helpers;
 
+import org.sonar.java.common.StringUtils;
+
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.lang3.StringUtils;
 
 public class LatinAlphabetLanguagesHelper {
 

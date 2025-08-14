@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.sonar.api.internal.apachecommons.lang3.StringUtils;
+import org.sonar.java.common.StringUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.PackageDeclarationTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
