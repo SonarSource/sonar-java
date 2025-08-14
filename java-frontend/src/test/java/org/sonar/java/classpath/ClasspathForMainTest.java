@@ -18,7 +18,6 @@ package org.sonar.java.classpath;
 
 import java.io.File;
 import java.util.List;
-import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -70,7 +69,7 @@ class ClasspathForMainTest {
       public String[] getStringArray(String key) {
         return get(key)
           .map(v -> MultivalueProperty.parseAsCsv(key, v))
-          .orElse(ArrayUtils.EMPTY_STRING_ARRAY);
+          .orElse(new String[0]);
       }
     };
     analysisWarnings = mock(AnalysisWarningsWrapper.class);
