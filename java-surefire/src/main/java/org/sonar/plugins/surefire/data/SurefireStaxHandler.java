@@ -19,13 +19,13 @@ package org.sonar.plugins.surefire.data;
 import java.text.ParseException;
 import java.util.Locale;
 import javax.xml.stream.XMLStreamException;
-import org.apache.commons.lang3.Strings;
 import org.codehaus.staxmate.in.ElementFilter;
 import org.codehaus.staxmate.in.SMEvent;
 import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.codehaus.staxmate.in.SMInputCursor;
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.java.common.StringUtils;
+import org.sonar.java.common.Strings;
 
 public class SurefireStaxHandler {
 
@@ -128,7 +128,7 @@ public class SurefireStaxHandler {
   private static String getTestCaseName(SMInputCursor testCaseCursor) throws XMLStreamException {
     String classname = testCaseCursor.getAttrValue("classname");
     String name = testCaseCursor.getAttrValue("name");
-    if (Strings.CS.contains(classname, "$")) {
+    if (Strings.containsSensitive(classname, "$")) {
       return StringUtils.substringAfter(classname, "$") + "/" + name;
     }
     return name;

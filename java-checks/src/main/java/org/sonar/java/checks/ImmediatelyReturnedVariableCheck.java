@@ -19,9 +19,9 @@ package org.sonar.java.checks;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.CheckForNull;
-import org.apache.commons.lang3.Strings;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.common.Strings;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -74,7 +74,7 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
       String lastStatementIdentifier = getReturnOrThrowIdentifier(lastStatement);
       if (lastStatementIdentifier != null) {
         String identifier = variableTree.simpleName().name();
-        if (Strings.CS.equals(lastStatementIdentifier, identifier)) {
+        if (Strings.equalsSensitive(lastStatementIdentifier, identifier)) {
           ExpressionTree initializer = variableTree.initializer();
           if (initializer == null) {
             // Can only happen for non-compilable code, still, we should not report anything.

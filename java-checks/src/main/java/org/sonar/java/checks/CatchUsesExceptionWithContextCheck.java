@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.apache.commons.lang3.Strings;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.common.Strings;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -136,7 +136,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   }
 
   private static boolean containsLogIgnoreCase(String name) {
-    return Strings.CI.contains(name, "log");
+    return Strings.containsInsensitive(name, "log");
   }
 
   private static class EnumValueOfVisitor extends BaseTreeVisitor {

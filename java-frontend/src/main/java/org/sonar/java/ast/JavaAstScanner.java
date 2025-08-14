@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
@@ -37,6 +36,7 @@ import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.common.MiscUtils;
 import org.sonar.java.model.InputFileUtils;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JProblem;
@@ -225,7 +225,7 @@ public class JavaAstScanner {
   }
 
   public void checkInterrupted(Exception e) {
-    Throwable cause = ExceptionUtils.getRootCause(e);
+    Throwable cause = MiscUtils.getRootCause(e);
     if (cause instanceof InterruptedException
       || cause instanceof InterruptedIOException
       || cause instanceof CancellationException

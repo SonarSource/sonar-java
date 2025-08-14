@@ -17,4 +17,27 @@
 package org.sonar.java.common;
 
 public class Strings {
+  public static boolean containsSensitive(String string, String search) {
+    return org.apache.commons.lang3.Strings.CS.contains(string, search);
+  }
+
+  public static boolean containsInsensitive(String string, String search) {
+    return org.apache.commons.lang3.Strings.CI.contains(string, search);
+  }
+
+  public static int indexOfInsensitive(String string, String search) {
+    return org.apache.commons.lang3.Strings.CI.indexOf(string, search);
+  }
+
+  public static boolean equalsSensitive(String s, String t) {
+    return org.apache.commons.lang3.Strings.CS.equals(s, t);
+  }
+
+  public static boolean startsWithSensitive(String string, String prefix) {
+    return org.apache.commons.lang3.Strings.CS.startsWith(string, prefix);
+  }
+
+  public static boolean endsWithSensitive(String string, String suffix) {
+    return org.apache.commons.lang3.Strings.CS.endsWith(string, suffix);
+  }
 }
