@@ -62,7 +62,7 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
       } else {
         String[] trimmedArgs = new String[args.length];
         for (int i = 0; i < trimmedArgs.length; i++) {
-          trimmedArgs[i] = StringUtils.trim(args[i]);
+          trimmedArgs[i] = args[i].trim();
         }
         return parametersBuilder.addParametersMatcher(trimmedArgs).build();
       }
