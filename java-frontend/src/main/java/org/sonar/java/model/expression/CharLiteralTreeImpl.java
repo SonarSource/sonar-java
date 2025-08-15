@@ -28,7 +28,7 @@ public class CharLiteralTreeImpl extends LiteralTreeImpl implements CharLiteralT
 
   public CharLiteralTreeImpl(InternalSyntaxToken token, char charValue) {
     super(Tree.Kind.CHAR_LITERAL, token);
-    this.unquotedValue = LiteralUtils.unwrapIfPresent(token.text(), '\'');
+    this.unquotedValue = LiteralUtils.unquote(token.text(), '\'');
     this.charValue = charValue;
   }
 

@@ -29,6 +29,9 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 public class LiteralUtils {
 
+  public static final String TEXT_BLOCK_QUOTE = "\"\"\"";
+  public static final int TEXT_BLOCK_QUOTE_LEN = TEXT_BLOCK_QUOTE.length();
+
   private LiteralUtils() {
     // This class only contains static methods
   }
@@ -154,7 +157,7 @@ public class LiteralUtils {
   }
 
   public static boolean isTextBlock(String value) {
-    return value.startsWith("\"\"\"");
+    return value.startsWith(TEXT_BLOCK_QUOTE);
   }
 
   public static String trimLongSuffix(String longString) {
@@ -198,12 +201,12 @@ public class LiteralUtils {
     return tree.is(Kind.UNARY_MINUS) && isOne(((UnaryExpressionTree) tree).expression());
   }
 
-
-  public static String unwrapIfPresent(String token, char delimiter) {
+  public static String unquote(String token, char quoteChar) {
     int len = token.length();
-    int start = (len > 0 && token.charAt(0) == delimiter) ? 1 : 0;
-    int end = ((len - start) > 0 && token.charAt(len - 1) == delimiter) ? (len - 1) : len;
-    return token.substring(start, end);
+    if (len < 2 || token.charAt(0) != quoteChar || token.charAt(len - 1) != quoteChar) {
+      throw new IllegalArgumentException("Unexpected token, can't unwrap character " + quoteChar + " around token: " + token);
+    }
+    return token.substring(1, len -1);
   }
 
   /**
@@ -211,40 +214,21 @@ public class LiteralUtils {
    * See <a href="https://docs.oracle.com/javase/specs/jls/se24/html/jls-3.html#jls-3.10.6">jls-3.10.6</a> for details.
    */
   public static String removeTextBlockQuoteIndentationAndTrailingWhitespaces(String token) {
-    int start = 0;
-    int end = token.length();
-    if (end == 0) {
-      return token;
+    if (token.length() < TEXT_BLOCK_QUOTE_LEN * 2 || !token.startsWith(TEXT_BLOCK_QUOTE) || !token.endsWith(TEXT_BLOCK_QUOTE)) {
+      throw new IllegalArgumentException("Unexpected token, can't unwrap text block quotes " + TEXT_BLOCK_QUOTE + " from: " + token);
     }
-    // remove leading """
-    start = moveIndexIfMatches(token, start, end, 1, 3, '"');
+    int start = TEXT_BLOCK_QUOTE_LEN;
+    int end = token.length() - TEXT_BLOCK_QUOTE_LEN;
     // ignore whitespaces after the leading """
     start = moveIndexWhileWhiteSpaces(token, start, end);
     // ignore the first new line \r?\n|\r
-    start = moveIndexIfMatches(token, start, end, 1, 1, '\r');
-    start = moveIndexIfMatches(token, start, end, 1, 1, '\n');
-    // remove ending """
-    if (end > start) {
-      end = moveIndexIfMatches(token, end - 1, start, -1, 3, '"') + 1;
+    if (start < end && (token.charAt(start) == '\r')) {
+      start++;
+    }
+    if (start < end && (token.charAt(start) == '\n')) {
+      start++;
     }
     return token.substring(start, end).stripIndent();
-  }
-
-  /**
-   * Moves the index in the given direction while the character at the index matches the given value.
-   * @param token the string to check
-   * @param index the starting index
-   * @param direction 1 for forward, -1 for backward
-   * @param count max move count or -1 for no limit
-   * @param value character to match
-   * @return the new index after moving
-   */
-  private static int moveIndexIfMatches(String token, int index, int limit, int direction, int count, char value) {
-    while (count != 0 && index != limit && (token.charAt(index) == value)) {
-      index += direction;
-      count--;
-    }
-    return index;
   }
 
   private static int moveIndexWhileWhiteSpaces(String token, int index, int limit) {

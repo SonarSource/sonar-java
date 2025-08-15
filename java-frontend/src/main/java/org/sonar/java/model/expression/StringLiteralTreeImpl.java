@@ -30,7 +30,7 @@ public class StringLiteralTreeImpl extends LiteralTreeImpl implements StringLite
     if (kind == Kind.TEXT_BLOCK) {
       this.unquotedValue = LiteralUtils.removeTextBlockQuoteIndentationAndTrailingWhitespaces(token.text());
     } else {
-      this.unquotedValue = LiteralUtils.unwrapIfPresent(token.text(), '"');
+      this.unquotedValue = LiteralUtils.unquote(token.text(), '"');
     }
     this.stringValue = stringValue;
   }

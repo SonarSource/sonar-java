@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sonar.java.model.LiteralUtils.parseJavaLiteralLong;
 
 class LiteralUtilsTest {
@@ -343,20 +344,19 @@ class LiteralUtilsTest {
 
   @Test
   void remove_quote_and_indentation_for_string() {
+    UnaryOperator<String> convert = LiteralUtils::removeTextBlockQuoteIndentationAndTrailingWhitespaces;
 
-    UnaryOperator<String> convert = code ->  LiteralUtils.removeTextBlockQuoteIndentationAndTrailingWhitespaces(getLiteral(code).value());
+    assertThatThrownBy(() -> convert.apply("123"))
+      .hasMessage("Unexpected token, can't unwrap text block quotes \"\"\" from: 123");
 
-    String intLiteral = convert.apply("123");
-    assertThat(intLiteral).isEqualTo("123");
+    assertThatThrownBy(() -> convert.apply("\"\"\" missing end quotes"))
+      .hasMessage("Unexpected token, can't unwrap text block quotes \"\"\" from: \"\"\" missing end quotes");
 
-    String stringLiteral = convert.apply("\"ABC\"");
-    assertThat(stringLiteral).isEqualTo("ABC");
-    
+    assertThatThrownBy(() -> convert.apply(" missing heading quotes \"\"\""))
+      .hasMessage("Unexpected token, can't unwrap text block quotes \"\"\" from:  missing heading quotes \"\"\"");
+
     String textBlock = convert.apply("\"\"\"\nABC\"\"\"");
     assertThat(textBlock).isEqualTo("ABC");
-    
-    String multilineString = convert.apply("\"ABC\\nABC\"");
-    assertThat(multilineString).isEqualTo("ABC\\nABC");
     
     String multilineTextBlockLF = convert.apply("\"\"\"\n      ABC\n      ABC\"\"\"");
     assertThat(multilineTextBlockLF).isEqualTo("ABC\nABC");
@@ -423,6 +423,33 @@ class LiteralUtilsTest {
     assertThat(parseJavaLiteralLong("0101")).isEqualTo(65);
     assertThat(parseJavaLiteralLong("+0b0101L")).isEqualTo(5);
     assertThat(parseJavaLiteralLong("#0F")).isEqualTo(15);
+
+    // max long in decimal format
+    assertThat(parseJavaLiteralLong("9223372036854775807L")).isEqualTo(9223372036854775807L);
+    // max long + 1, it is expected to be negative due to overflow
+    assertThat(parseJavaLiteralLong("9223372036854775808")).isEqualTo(-9223372036854775808L);
+    // with the ninus sign the is now overflow
+    assertThat(parseJavaLiteralLong("-9223372036854775808")).isEqualTo(-9223372036854775808L);
+    // -(max long + 1) overflow the positive long value, but after negation everything is fine
+    assertThat(-parseJavaLiteralLong("9223372036854775808")).isEqualTo(-9223372036854775808L);
+
+    assertThatThrownBy(() -> parseJavaLiteralLong("0invalid"))
+      .isInstanceOf(NumberFormatException.class);
+  }
+
+  @Test
+  void parse_java_literal_long_casted_to_int() {
+    // parsed long should be compatible with int
+    assertThat((int) parseJavaLiteralLong("0")).isZero();
+    assertThat((int) parseJavaLiteralLong("32")).isEqualTo(32);
+    assertThat((int) parseJavaLiteralLong("-32")).isEqualTo(-32);
+    assertThat((int) parseJavaLiteralLong("040")).isEqualTo(32);
+    assertThat((int) parseJavaLiteralLong("0x20")).isEqualTo(32);
+    assertThat((int) parseJavaLiteralLong("-2147483648")).isEqualTo(-2147483648);
+    assertThat((int) parseJavaLiteralLong("0x80000000")).isEqualTo(-2147483648);
+    assertThat((int) parseJavaLiteralLong("2147483647")).isEqualTo(2147483647);
+    assertThat((int) parseJavaLiteralLong("0x7fffffff")).isEqualTo(2147483647);
+    assertThat((int) parseJavaLiteralLong("0xffffffff")).isEqualTo(0xffffffff).isEqualTo(-1);
   }
 
   @Test
@@ -432,11 +459,24 @@ class LiteralUtilsTest {
     assertThat(LiteralUtils.lineCount("a\nb")).isEqualTo(2);
     assertThat(LiteralUtils.lineCount("a\nb\n")).isEqualTo(3);
     assertThat(LiteralUtils.lineCount("a\nb\nc")).isEqualTo(3);
+    assertThat(LiteralUtils.lineCount("\n\n")).isEqualTo(3);
   }
 
   @Test
-  void unwrap() {
-    assertThat(LiteralUtils.unwrapIfPresent("'a'", '\'')).isEqualTo("a");
+  void unquote() {
+    assertThat(LiteralUtils.unquote("'a'", '\'')).isEqualTo("a");
+    assertThatThrownBy(() -> LiteralUtils.unquote("'a'", '"'))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Unexpected token, can't unwrap character \" around token: 'a'");
+    assertThatThrownBy(() -> LiteralUtils.unquote("", '"'))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Unexpected token, can't unwrap character \" around token: ");
+    assertThatThrownBy(() -> LiteralUtils.unquote("\"a", '"'))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Unexpected token, can't unwrap character \" around token: \"a");
+    assertThatThrownBy(() -> LiteralUtils.unquote("a\"", '"'))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Unexpected token, can't unwrap character \" around token: a\"");
   }
 
   private ExpressionTree getFirstExpression(String code) {
@@ -456,8 +496,4 @@ class LiteralUtilsTest {
     return (ClassTree) compilationUnitTree.types().get(0);
   }
 
-  private LiteralTree getLiteral(String code) {
-    ClassTree classTree = getClassTree("Object o = " + code + ";");
-    return (LiteralTree) ((VariableTree) classTree.members().get(0)).initializer();
-  }
 }
