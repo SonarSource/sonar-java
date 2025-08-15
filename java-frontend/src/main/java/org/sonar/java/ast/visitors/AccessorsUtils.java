@@ -16,7 +16,7 @@
  */
 package org.sonar.java.ast.visitors;
 
-import org.apache.commons.lang3.StringUtils;
+import org.sonar.java.common.StringUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;

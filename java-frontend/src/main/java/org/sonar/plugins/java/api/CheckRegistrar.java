@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
-import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
@@ -88,7 +87,7 @@ public interface CheckRegistrar {
      * @param testCheckClasses classes of checks for test sources
      */
     public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses, Iterable<Class<? extends JavaCheck>> testCheckClasses) {
-      Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
+      Preconditions.checkArgument(!repositoryKey.isBlank(), "Please specify a valid repository key to register your custom rules");
       this.repositoryKey = repositoryKey;
       this.mainCheckClassList = checkClasses;
       this.testCheckClassList = testCheckClasses;

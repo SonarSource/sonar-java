@@ -14,23 +14,14 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks;
+package org.sonar.java.common;
 
-import org.sonar.api.utils.WildcardPattern;
-import org.sonar.java.common.StringUtils;
-
-public final class PatternUtils {
-
-  private PatternUtils() {
+public class MiscUtils {
+  public static String unescapeJava(String string) {
+    return org.apache.commons.lang3.StringEscapeUtils.unescapeJava(string);
   }
 
-  public static WildcardPattern[] createPatterns(String patterns) {
-    String[] p = StringUtils.split(patterns, ',');
-    WildcardPattern[] result = new WildcardPattern[p.length];
-    for (int i = 0; i < result.length; i++) {
-      result[i] = WildcardPattern.create(p[i].trim(), ".");
-    }
-    return result;
+  public static Throwable getRootCause(Exception exception) {
+    return org.apache.commons.lang3.exception.ExceptionUtils.getRootCause(exception);
   }
-
 }

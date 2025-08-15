@@ -17,9 +17,9 @@
 package org.sonar.java.checks;
 
 import java.util.Optional;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.common.MiscUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -99,7 +99,7 @@ public class RegexPatternsNeedlesslyCheck extends AbstractMethodDetection {
    *
    */
   private static boolean exceptionSplitMethod(String argValue) {
-    String regex = StringEscapeUtils.unescapeJava(argValue);
+    String regex = MiscUtils.unescapeJava(argValue);
     char ch;
     return ((regex.length() == 1 && ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) ||
       (regex.length() == 2 &&

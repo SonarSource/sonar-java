@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Fail;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -472,9 +471,9 @@ public class JavaRulingTest {
       .filter(qualityProfile -> "rules".equals(qualityProfile.getName()))
       .map(QualityProfile::getKey)
       .findFirst()
-      .orElse(null);
+      .orElse("");
 
-    if (StringUtils.isEmpty(profileKey)) {
+    if (profileKey.isEmpty()) {
       LOG.error("Could not retrieve profile key : Template rule " + ruleTemplateKey + " has not been activated");
     } else {
       String ruleKey = "java:" + instantiationKey;

@@ -22,7 +22,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
@@ -77,11 +76,11 @@ class TreeTokenCompletenessTest {
           " because the last position is already after at " + lastEndPosition + " for token: " + text);
       }
       int numberOfNewLineToAdd = range.start().line() - lastEndPosition.line();
-      resultBuilder.append(StringUtils.repeat("\n", numberOfNewLineToAdd));
+      resultBuilder.append("\n".repeat(numberOfNewLineToAdd));
 
       int newLastColumn = (numberOfNewLineToAdd == 0 ? lastEndPosition.column() : Position.FIRST_COLUMN);
       int numberOfSpaceToAdd = range.start().column() - newLastColumn;
-      resultBuilder.append(StringUtils.repeat(" ", numberOfSpaceToAdd));
+      resultBuilder.append(" ".repeat(numberOfSpaceToAdd));
 
       resultBuilder.append(text);
       lastEndPosition = range.end();
