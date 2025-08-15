@@ -28,7 +28,7 @@ class UnnecessaryBitOperationCheck {
     resultLong = bitMaskLong & returnLong(); // Compliant
     resultLong = bitMaskLong & 0x0F; // Compliant
     
-    resultLong = bitMaskLong & 0xFFFFFFFFFFFFFFFFL; // Compliant
+    resultLong = bitMaskLong & 0xFFFFFFFFFFFFFFFFL; // Noncompliant {{Remove this unnecessary bit operation.}}
     resultLong = bitMaskLong & 0xFFFFFFFFFFFFFFFEL; // Compliant
     resultLong = bitMaskLong & 0x8000000000000000L; // Compliant
     resultLong = 0x8000000000000000L & bitMaskLong; // Compliant
