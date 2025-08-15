@@ -42,7 +42,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
 
 @Rule(key = "S2699")
@@ -192,7 +191,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
       List<MethodMatchers> customMethodMatchers = new ArrayList<>(fullyQualifiedMethodSymbols.length);
       for (String fullyQualifiedMethodSymbol : fullyQualifiedMethodSymbols) {
         String[] methodMatcherParts = fullyQualifiedMethodSymbol.split("#");
-        if (methodMatcherParts.length == 2 && !isEmpty(methodMatcherParts[0].trim()) && !isEmpty(methodMatcherParts[1].trim())) {
+        if (methodMatcherParts.length == 2 && !methodMatcherParts[0].isBlank() && !methodMatcherParts[1].isBlank()) {
           String methodName = methodMatcherParts[1].trim();
           Predicate<String> namePredicate;
           if (methodName.endsWith("*")) {
