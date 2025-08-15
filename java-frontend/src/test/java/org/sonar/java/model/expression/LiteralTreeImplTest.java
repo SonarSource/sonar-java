@@ -24,11 +24,18 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BooleanLiteralTree;
+import org.sonar.plugins.java.api.tree.CharLiteralTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.DoubleLiteralTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.FloatLiteralTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.IntLiteralTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.LongLiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.StringLiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,13 +46,10 @@ class LiteralTreeImplTest {
 
   @Test
   void null_literal() {
-    var literal = parseTree(null).asLiteral();
-    assertThat(literal.value())
-      .isEqualTo("null");
-    assertThat(literal.unquotedValue())
-      .isEqualTo("null");
-    assertThat(literal.parsedValue())
-      .isNull();
+    var literal = (LiteralTree) parseTree(null).tree();
+    assertThat(literal.value()).isEqualTo("null");
+    assertThat(literal.unquotedValue()).isEqualTo("null");
+    assertThat(literal.parsedValue()).isNull();
   }
 
   @Test
@@ -57,23 +61,17 @@ class LiteralTreeImplTest {
 
   @Test
   void boolean_literal() {
-    var falseLiteral = parseTree(false).asLiteral();
-    assertThat(falseLiteral.value())
-      .isEqualTo("false");
-    assertThat(falseLiteral.unquotedValue())
-      .isEqualTo("false");
-    assertThat(falseLiteral.parsedValue())
-      .isInstanceOf(Boolean.class)
-      .isSameAs(Boolean.FALSE);
+    var falseLiteral = (BooleanLiteralTree) parseTree(false).tree();
+    assertThat(falseLiteral.value()).isEqualTo("false");
+    assertThat(falseLiteral.unquotedValue()).isEqualTo("false");
+    assertThat(falseLiteral.parsedValue()).isInstanceOf(Boolean.class).isSameAs(Boolean.FALSE);
+    assertThat(falseLiteral.booleanValue()).isFalse();
 
-    var trueLiteral = parseTree(true).asLiteral();
-    assertThat(trueLiteral.value())
-      .isEqualTo("true");
-    assertThat(trueLiteral.unquotedValue())
-      .isEqualTo("true");
-    assertThat(trueLiteral.parsedValue())
-      .isInstanceOf(Boolean.class)
-      .isSameAs(Boolean.TRUE);
+    var trueLiteral = (BooleanLiteralTree) parseTree(true).tree();
+    assertThat(trueLiteral.value()).isEqualTo("true");
+    assertThat(trueLiteral.unquotedValue()).isEqualTo("true");
+    assertThat(trueLiteral.parsedValue()).isInstanceOf(Boolean.class).isSameAs(Boolean.TRUE);
+    assertThat(trueLiteral.booleanValue()).isTrue();
   }
 
   @Test
@@ -96,14 +94,11 @@ class LiteralTreeImplTest {
 
   @Test
   void int_literal() {
-    var literal = parseTree(1_000).asLiteral();
-    assertThat(literal.value())
-      .isEqualTo("1_000");
-    assertThat(literal.unquotedValue())
-      .isEqualTo("1_000");
-    assertThat(literal.parsedValue())
-      .isInstanceOf(Integer.class)
-      .isEqualTo(1000);
+    var literal = (IntLiteralTree) parseTree(1_000).tree();
+    assertThat(literal.value()).isEqualTo("1_000");
+    assertThat(literal.unquotedValue()).isEqualTo("1_000");
+    assertThat(literal.parsedValue()).isInstanceOf(Integer.class).isEqualTo(1000);
+    assertThat(literal.intValue()).isEqualTo(1000);
   }
 
   @Test
@@ -155,14 +150,11 @@ class LiteralTreeImplTest {
 
   @Test
   void long_literal() {
-    var literal = parseTree(1_000L).asLiteral();
-    assertThat(literal.value())
-      .isEqualTo("1_000L");
-    assertThat(literal.unquotedValue())
-      .isEqualTo("1_000L");
-    assertThat(literal.parsedValue())
-      .isInstanceOf(Long.class)
-      .isEqualTo(1000L);
+    var literal = (LongLiteralTree) parseTree(1_000L).tree();
+    assertThat(literal.value()).isEqualTo("1_000L");
+    assertThat(literal.unquotedValue()).isEqualTo("1_000L");
+    assertThat(literal.parsedValue()).isInstanceOf(Long.class).isEqualTo(1000L);
+    assertThat(literal.longValue()).isEqualTo(1000L);
   }
 
   @Test
@@ -217,14 +209,11 @@ class LiteralTreeImplTest {
 
   @Test
   void float_literal() {
-    var literal = parseTree(1_000.0000f).asLiteral();
-    assertThat(literal.value())
-      .isEqualTo("1_000.0000f");
-    assertThat(literal.unquotedValue())
-      .isEqualTo("1_000.0000f");
-    assertThat(literal.parsedValue())
-      .isInstanceOf(Float.class)
-      .isEqualTo(1000.0f);
+    var literal = (FloatLiteralTree) parseTree(1_000.0000f).tree();
+    assertThat(literal.value()).isEqualTo("1_000.0000f");
+    assertThat(literal.unquotedValue()).isEqualTo("1_000.0000f");
+    assertThat(literal.parsedValue()).isInstanceOf(Float.class).isEqualTo(1000.0f);
+    assertThat(literal.floatValue()).isEqualTo(1000.0f);
   }
 
   @Test
@@ -270,14 +259,11 @@ class LiteralTreeImplTest {
 
   @Test
   void double_literal() {
-    var literal = parseTree(1_000.0000d).asLiteral();
-    assertThat(literal.value())
-      .isEqualTo("1_000.0000d");
-    assertThat(literal.unquotedValue())
-      .isEqualTo("1_000.0000d");
-    assertThat(literal.parsedValue())
-      .isInstanceOf(Double.class)
-      .isEqualTo(1000.0);
+    var literal = (DoubleLiteralTree) parseTree(1_000.0000d).tree();
+    assertThat(literal.value()).isEqualTo("1_000.0000d");
+    assertThat(literal.unquotedValue()).isEqualTo("1_000.0000d");
+    assertThat(literal.parsedValue()).isInstanceOf(Double.class).isEqualTo(1000.0);
+    assertThat(literal.doubleValue()).isEqualTo(1000.0);
   }
 
   @Test
@@ -326,25 +312,29 @@ class LiteralTreeImplTest {
 
   @Test
   void char_literal() {
-    var lit = parseTree('a').asLiteral();
-    assertThat(lit.value()/*        */).isEqualTo("'a'");
-    assertThat(lit.unquotedValue()/**/).isEqualTo("a");
-    assertThat(lit.parsedValue()/*  */).isEqualTo('a').isInstanceOf(Character.class);
+    var lit = (CharLiteralTree) parseTree('a').tree();
+    assertThat(lit.value()).isEqualTo("'a'");
+    assertThat(lit.unquotedValue()).isEqualTo("a");
+    assertThat(lit.parsedValue()).isEqualTo('a').isInstanceOf(Character.class);
+    assertThat(lit.charValue()).isEqualTo('a');
 
-    lit = parseTree('\b').asLiteral();
-    assertThat(lit.value()/*        */).isEqualTo("'\\b'");
-    assertThat(lit.unquotedValue()/**/).isEqualTo("\\b");
-    assertThat(lit.parsedValue()/*  */).isEqualTo('\b').isInstanceOf(Character.class);
+    lit = (CharLiteralTree) parseTree('\b').tree();
+    assertThat(lit.value()).isEqualTo("'\\b'");
+    assertThat(lit.unquotedValue()).isEqualTo("\\b");
+    assertThat(lit.parsedValue()).isEqualTo('\b').isInstanceOf(Character.class);
+    assertThat(lit.charValue()).isEqualTo('\b');
 
-    lit = parseTree('\u0041').asLiteral();
-    assertThat(lit.value()/*        */).isEqualTo("'\\u0041'");
-    assertThat(lit.unquotedValue()/**/).isEqualTo("\\u0041");
-    assertThat(lit.parsedValue()/*  */).isEqualTo('A').isInstanceOf(Character.class);
+    lit = (CharLiteralTree) parseTree('\u0041').tree();
+    assertThat(lit.value()).isEqualTo("'\\u0041'");
+    assertThat(lit.unquotedValue()).isEqualTo("\\u0041");
+    assertThat(lit.parsedValue()).isEqualTo('A').isInstanceOf(Character.class);
+    assertThat(lit.charValue()).isEqualTo('A');
 
-    lit = parseTree('\101').asLiteral();
-    assertThat(lit.value()/*        */).isEqualTo("'\\101'");
-    assertThat(lit.unquotedValue()/**/).isEqualTo("\\101");
-    assertThat(lit.parsedValue()/*  */).isEqualTo('A').isInstanceOf(Character.class);
+    lit = (CharLiteralTree) parseTree('\101').tree();
+    assertThat(lit.value()).isEqualTo("'\\101'");
+    assertThat(lit.unquotedValue()).isEqualTo("\\101");
+    assertThat(lit.parsedValue()).isEqualTo('A').isInstanceOf(Character.class);
+    assertThat(lit.charValue()).isEqualTo('A');
   }
 
   @Test
@@ -380,55 +370,44 @@ class LiteralTreeImplTest {
 
   @Test
   void string_literal() {
-    var empty = parseTree("").asLiteral();
-    assertThat(empty.value())
-      .isEqualTo("\"\"");
-    assertThat(empty.unquotedValue())
-      .isEmpty();
-    assertThat(empty.parsedValue())
-      .isEqualTo("");
+    var empty = (StringLiteralTree) parseTree("").tree();
+    assertThat(empty.value()).isEqualTo("\"\"");
+    assertThat(empty.unquotedValue()).isEmpty();
+    assertThat(empty.parsedValue()).isEqualTo("");
+    assertThat(empty.stringValue()).isEmpty();
 
-    var letters = parseTree("abcdef").asLiteral();
-    assertThat(letters.value())
-      .isEqualTo("\"abcdef\"");
-    assertThat(letters.unquotedValue())
-      .isEqualTo("abcdef");
-    assertThat(letters.parsedValue())
-      .isEqualTo("abcdef");
+    var letters = (StringLiteralTree) parseTree("abcdef").tree();
+    assertThat(letters.value()).isEqualTo("\"abcdef\"");
+    assertThat(letters.unquotedValue()).isEqualTo("abcdef");
+    assertThat(letters.parsedValue()).isEqualTo("abcdef");
+    assertThat(letters.stringValue()).isEqualTo("abcdef");
 
-    var newLine = parseTree(" abc '\s'\n def\n").asLiteral();
-    assertThat(newLine.value())
-      .isEqualTo("\" abc '\\s'\\n def\\n\"");
-    assertThat(newLine.unquotedValue())
-      .isEqualTo(" abc '\\s'\\n def\\n");
-    assertThat(newLine.parsedValue())
-      .isEqualTo("""
-         abc ' '
-         def
-        """);
+    var newLine = (StringLiteralTree) parseTree(" abc '\s'\n def\n").tree();
+    assertThat(newLine.value()).isEqualTo("\" abc '\\s'\\n def\\n\"");
+    assertThat(newLine.unquotedValue()).isEqualTo(" abc '\\s'\\n def\\n");
+    assertThat(newLine.parsedValue()).isEqualTo(" abc ' '\n def\n");
+    assertThat(newLine.stringValue()).isEqualTo(" abc ' '\n def\n");
 
-    var unicodeEscape = parseTree(" \u0061 \u0062 \u0063 ").asLiteral();
-    assertThat(unicodeEscape.value())
-      .isEqualTo("\" \\u0061 \\u0062 \\u0063 \"");
-    assertThat(unicodeEscape.unquotedValue())
-      .isEqualTo(" \\u0061 \\u0062 \\u0063 ");
-    assertThat(unicodeEscape.parsedValue())
-      .isEqualTo(" a b c ");
+    var unicodeEscape = (StringLiteralTree) parseTree(" \u0061 \u0062 \u0063 ").tree();
+    assertThat(unicodeEscape.value()).isEqualTo("\" \\u0061 \\u0062 \\u0063 \"");
+    assertThat(unicodeEscape.unquotedValue()).isEqualTo(" \\u0061 \\u0062 \\u0063 ");
+    assertThat(unicodeEscape.parsedValue()).isEqualTo(" a b c ");
+    assertThat(unicodeEscape.stringValue()).isEqualTo(" a b c ");
 
-    var octalEscape = parseTree(" \101 \102 \103 ").asLiteral();
-    assertThat(octalEscape.value())
-      .isEqualTo("\" \\101 \\102 \\103 \"");
-    assertThat(octalEscape.unquotedValue())
-      .isEqualTo(" \\101 \\102 \\103 ");
-    assertThat(octalEscape.parsedValue())
-      .isEqualTo(" A B C ");
+    var octalEscape = (StringLiteralTree) parseTree(" \101 \102 \103 ").tree();
+    assertThat(octalEscape.value()).isEqualTo("\" \\101 \\102 \\103 \"");
+    assertThat(octalEscape.unquotedValue()).isEqualTo(" \\101 \\102 \\103 ");
+    assertThat(octalEscape.parsedValue()).isEqualTo(" A B C ");
+    assertThat(octalEscape.stringValue()).isEqualTo(" A B C ");
 
-    var escapeLimits = parseTree(" \b \s \t \n \f \r \" \' \\ \0 \00 \000 \377 \u0000 \uffff ").asLiteral();
+    var escapeLimits = (StringLiteralTree) parseTree(" \b \s \t \n \f \r \" \' \\ \0 \00 \000 \377 \u0000 \uffff ").tree();
     assertThat(escapeLimits.value())
       .isEqualTo("\" \\b \\s \\t \\n \\f \\r \\\" \\' \\\\ \\0 \\00 \\000 \\377 \\u0000 \\uffff \"");
     assertThat(escapeLimits.unquotedValue())
       .isEqualTo(" \\b \\s \\t \\n \\f \\r \\\" \\' \\\\ \\0 \\00 \\000 \\377 \\u0000 \\uffff ");
     assertThat(escapeLimits.parsedValue())
+      .isEqualTo(" \b \s \t \n \f \r \" \' \\ \0 \00 \000 \377 \u0000 \uffff ");
+    assertThat(escapeLimits.stringValue())
       .isEqualTo(" \b \s \t \n \f \r \" \' \\ \0 \00 \000 \377 \u0000 \uffff ");
   }
 
@@ -459,17 +438,15 @@ class LiteralTreeImplTest {
 
   @Test
   void text_block_literal() {
-    var empty = parseTree("""
-      """).asLiteral();
-    assertThat(empty.value())
-      .isEqualTo("\"\"\"\n      \"\"\"");
-    assertThat(empty.unquotedValue())
-      .isEmpty();
-    assertThat(empty.parsedValue())
-      .isEqualTo("");
+    var empty = (StringLiteralTree) parseTree("""
+      """).tree();
+    assertThat(empty.value()).isEqualTo("\"\"\"\n      \"\"\"");
+    assertThat(empty.unquotedValue()).isEmpty();
+    assertThat(empty.parsedValue()).isEqualTo("");
+    assertThat(empty.stringValue()).isEmpty();
 
-    var letters = parseTree("""
-      abcdef  """).asLiteral();
+    var letters = (StringLiteralTree) parseTree("""
+      abcdef  """).tree();
     assertThat(letters.value())
       .isEqualTo("\"\"\"\n      abcdef  \"\"\"");
     assertThat(letters.unquotedValue())
@@ -477,10 +454,10 @@ class LiteralTreeImplTest {
     assertThat(letters.parsedValue())
       .isEqualTo("abcdef");
 
-    var severalLines = parseTree("""
+    var severalLines = (StringLiteralTree) parseTree("""
         abc '\s'
         def
-      """).asLiteral();
+      """).tree();
     assertThat(severalLines.value())
       .isEqualTo("\"\"\"\n        abc '\\s'\n        def\n      \"\"\"");
     assertThat(severalLines.unquotedValue())
@@ -488,10 +465,10 @@ class LiteralTreeImplTest {
     assertThat(severalLines.parsedValue())
       .isEqualTo("  abc ' '\n  def\n");
 
-    var lineContinuation = parseTree("""
+    var lineContinuation = (StringLiteralTree) parseTree("""
        abc \
        def \
-      """).asLiteral();
+      """).tree();
     assertThat(lineContinuation.value())
       .isEqualTo("\"\"\"\n       abc \\\n       def \\\n      \"\"\"");
     assertThat(lineContinuation.unquotedValue())
@@ -500,31 +477,35 @@ class LiteralTreeImplTest {
     assertThat(lineContinuation.parsedValue())
       .isEqualTo(" abc  def ");
 
-    var unicodeEscape = parseTree("""
-      \u0061 \u0062 \u0063""").asLiteral();
+    var unicodeEscape = (StringLiteralTree) parseTree("""
+      \u0061 \u0062 \u0063""").tree();
     assertThat(unicodeEscape.value())
       .isEqualTo("\"\"\"\n      \\u0061 \\u0062 \\u0063\"\"\"");
     assertThat(unicodeEscape.unquotedValue())
       .isEqualTo("\\u0061 \\u0062 \\u0063");
     assertThat(unicodeEscape.parsedValue())
       .isEqualTo("a b c");
+    assertThat(unicodeEscape.stringValue())
+      .isEqualTo("a b c");
   }
 
   @Test
   void text_block_literal_escapes() {
 
-    var octalEscape = parseTree("""
-      \101 \102 \103""").asLiteral();
+    var octalEscape = (StringLiteralTree) parseTree("""
+      \101 \102 \103""").tree();
     assertThat(octalEscape.value())
       .isEqualTo("\"\"\"\n      \\101 \\102 \\103\"\"\"");
     assertThat(octalEscape.unquotedValue())
       .isEqualTo("\\101 \\102 \\103");
     assertThat(octalEscape.parsedValue())
       .isEqualTo("A B C");
+    assertThat(octalEscape.stringValue())
+      .isEqualTo("A B C");
 
     TreeAndValue ecjBug1 = parseTree("""
       before \'\" after""");
-    var ecjBug1Literal = ecjBug1.asLiteral();
+    var ecjBug1Literal = (StringLiteralTree) ecjBug1.tree();
     assertThat(ecjBug1Literal.value())
       .isEqualTo("\"\"\"\n      before \\'\\\" after\"\"\"");
     assertThat(ecjBug1Literal.unquotedValue())
@@ -538,7 +519,7 @@ class LiteralTreeImplTest {
     TreeAndValue ecjBug2 = parseTree("""
         \
       """);
-    var ecjBug2Literal = ecjBug2.asLiteral();
+    var ecjBug2Literal = (StringLiteralTree) ecjBug2.tree();
     assertThat(ecjBug2Literal.value())
       .isEqualTo("\"\"\"\n        \\\n      \"\"\"");
     assertThat(ecjBug2Literal.unquotedValue())
@@ -640,10 +621,6 @@ class LiteralTreeImplTest {
   }
 
   record TreeAndValue(ExpressionTree tree, Object value) {
-    public LiteralTree asLiteral() {
-      return (LiteralTree) tree;
-    }
-
     @Override
     public String toString() {
       return "At line " + lineOf(tree) +

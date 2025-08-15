@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.LiteralUtils.parseJavaLiteralLong;
 
 class LiteralUtilsTest {
 
@@ -405,6 +406,32 @@ class LiteralUtilsTest {
     assertThat(LiteralUtils.indentationOfTextBlock(withEmptyLine)).isEqualTo(4);
     String[] withIndentedEmptyLine = {"\"\"\"", "    abc", " \t\f", "    \"\"\""};
     assertThat(LiteralUtils.indentationOfTextBlock(withIndentedEmptyLine)).isEqualTo(4);
+  }
+
+  @Test
+  void parse_java_literal_long() {
+    assertThat(parseJavaLiteralLong("")).isZero();
+    assertThat(parseJavaLiteralLong("0")).isZero();
+    assertThat(parseJavaLiteralLong("+0l")).isZero();
+    assertThat(parseJavaLiteralLong("-0L")).isZero();
+
+    assertThat(parseJavaLiteralLong("2")).isEqualTo(2);
+    assertThat(parseJavaLiteralLong("+2L")).isEqualTo(2);
+    assertThat(parseJavaLiteralLong("-2")).isEqualTo(-2);
+
+    assertThat(parseJavaLiteralLong("0xFF")).isEqualTo(255);
+    assertThat(parseJavaLiteralLong("0101")).isEqualTo(65);
+    assertThat(parseJavaLiteralLong("+0b0101L")).isEqualTo(5);
+    assertThat(parseJavaLiteralLong("#0F")).isEqualTo(15);
+  }
+
+  @Test
+  void line_count() {
+    assertThat(LiteralUtils.lineCount("a")).isEqualTo(1);
+    assertThat(LiteralUtils.lineCount("a\n")).isEqualTo(2);
+    assertThat(LiteralUtils.lineCount("a\nb")).isEqualTo(2);
+    assertThat(LiteralUtils.lineCount("a\nb\n")).isEqualTo(3);
+    assertThat(LiteralUtils.lineCount("a\nb\nc")).isEqualTo(3);
   }
 
   @Test
