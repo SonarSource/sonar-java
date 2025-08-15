@@ -279,7 +279,7 @@ public class JParser {
 
   private static final Predicate<IProblem> IS_UNDEFINED_TYPE_ERROR = error -> (error.getID() & IProblem.UndefinedType) != 0;
 
-  private static final java.util.regex.Pattern EMPTY_TEXT_BLOCK_PATTERN = java.util.regex.Pattern.compile("\"\"\"\\R[ \t\f]++\"\"\"");
+  private static final java.util.regex.Pattern EMPTY_TEXT_BLOCK_PATTERN = java.util.regex.Pattern.compile("\"\"\"\\R[ \t\f]*+(\\\\\\R[ \t\f]*+)?\"\"\"");
 
   /**
    * @param unitName see {@link ASTParser#setUnitName(String)}

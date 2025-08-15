@@ -21,7 +21,7 @@ public class SingleCharacterAlternationWithTextBlocks {
       (?x)(
       a|b
       )"""); // Noncompliant@-1 [[sc=7;ec=10]]
-    // Equivalent to "a|b|\n " - note the space
+    // Equivalent to "a|b|\n" - note the space
     str.matches("""
       a|b|
        """); // Noncompliant@-1 [[sc=7;ec=10]]
