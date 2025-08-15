@@ -93,6 +93,7 @@
      -->
     <sonar.plugin.api.version>13.0.0.3026</sonar.plugin.api.version>
     <sonarlint.plugin.api.version>10.13.0.79996</sonarlint.plugin.api.version>
+    <sonar.sca.exclusions>its/**,java-checks-test-sources/**</sonar.sca.exclusions>
     <analyzer.commons.version>2.18.0.3393</analyzer.commons.version>
     <orchestrator.version>5.6.2.2625</orchestrator.version>
     <sslr.version>1.24.0.633</sslr.version>
