@@ -18,22 +18,33 @@ package org.sonar.java.common;
 
 public class Strings {
   public static boolean containsSensitive(String string, String search) {
-    return org.apache.commons.lang3.Strings.CS.contains(string, search);
+    if (string == null || search == null) {
+      return false;
+    }
+    return string.contains(search);
+//    return org.apache.commons.lang3.Strings.CS.contains(string, search);
   }
 
   public static boolean containsInsensitive(String string, String search) {
-    return org.apache.commons.lang3.Strings.CI.contains(string, search);
+    if (string == null || search == null) {
+      return false;
+    }
+    return string.toLowerCase().contains(search.toLowerCase());
+//    return org.apache.commons.lang3.Strings.CI.contains(string, search);
   }
 
   public static int indexOfInsensitive(String string, String search) {
-    return org.apache.commons.lang3.Strings.CI.indexOf(string, search);
+    return string.toLowerCase().indexOf(search.toLowerCase());
+//    return org.apache.commons.lang3.Strings.CI.indexOf(string, search);
   }
 
   public static boolean startsWithSensitive(String string, String prefix) {
-    return org.apache.commons.lang3.Strings.CS.startsWith(string, prefix);
+    return string.startsWith(prefix);
+//    return org.apache.commons.lang3.Strings.CS.startsWith(string, prefix);
   }
 
   public static boolean endsWithSensitive(String string, String suffix) {
-    return org.apache.commons.lang3.Strings.CS.endsWith(string, suffix);
+    return string.endsWith(suffix);
+//    return org.apache.commons.lang3.Strings.CS.endsWith(string, suffix);
   }
 }

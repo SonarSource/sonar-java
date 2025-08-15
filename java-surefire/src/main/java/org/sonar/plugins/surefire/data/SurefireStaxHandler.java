@@ -71,7 +71,10 @@ public class SurefireStaxHandler {
 //
 //    return testClassName;
 
-    return StringUtils.defaultIfBlank(testClassName, defaultClassname);
+    if ( testClassName == null || testClassName.isBlank() ) {
+      return defaultClassname;
+    }
+    return testClassName;
   }
 
   private static void parseTestCase(SMInputCursor testCaseCursor, String testSuiteClassName, UnitTestClassReport report) throws XMLStreamException {
