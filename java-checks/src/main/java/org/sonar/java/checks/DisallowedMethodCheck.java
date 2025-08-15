@@ -16,9 +16,9 @@
  */
 package org.sonar.java.checks;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.StringUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -46,7 +46,7 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
     }
     MethodMatchers.TypeBuilder typeBuilder = MethodMatchers.create();
     MethodMatchers.NameBuilder nameBuilder;
-    if (StringUtils.isNotEmpty(className)) {
+    if (!StringUtils.isEmpty(className)) {
       nameBuilder = typeBuilder.ofTypes(className);
     } else {
       nameBuilder = typeBuilder.ofAnyType();
@@ -62,7 +62,7 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
       } else {
         String[] trimmedArgs = new String[args.length];
         for (int i = 0; i < trimmedArgs.length; i++) {
-          trimmedArgs[i] = StringUtils.trim(args[i]);
+          trimmedArgs[i] = args[i].trim();
         }
         return parametersBuilder.addParametersMatcher(trimmedArgs).build();
       }

@@ -204,7 +204,7 @@ public abstract class AbstractClasspath {
   }
 
   private static Set<File> getMatchingDirs(String pattern, Path dir) throws IOException {
-    if (!StringUtils.isEmpty(pattern)) {
+    if (pattern != null && !pattern.isEmpty()) {
       // find all dirs and subdirs that match the pattern
       PathMatcher matcher = FileSystems.getDefault().getPathMatcher(getGlob(dir, pattern));
       return new DirFinder().find(dir, matcher);
