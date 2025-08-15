@@ -64,6 +64,13 @@ public class SurefireStaxHandler {
         testClassName = testClassName.substring(0, openParenthesisIndex);
       }
     }
+
+//    if (testClassName == null || testClassName.isBlank()) {
+//      return defaultClassname;
+//    }
+//
+//    return testClassName;
+
     return StringUtils.defaultIfBlank(testClassName, defaultClassname);
   }
 

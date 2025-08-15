@@ -81,7 +81,7 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
       return;
     }
     String datePattern = literal.get();
-    if (StringUtils.contains(datePattern, 'w')) {
+    if (datePattern.contains("w")) {
       return;
     }
     int start = datePattern.indexOf('Y');
