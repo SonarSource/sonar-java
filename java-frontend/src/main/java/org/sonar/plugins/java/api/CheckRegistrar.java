@@ -28,7 +28,6 @@ import org.sonar.api.rule.RuleScope;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.Beta;
-import org.sonar.java.common.StringUtils;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**
@@ -88,7 +87,7 @@ public interface CheckRegistrar {
      * @param testCheckClasses classes of checks for test sources
      */
     public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses, Iterable<Class<? extends JavaCheck>> testCheckClasses) {
-      Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
+      Preconditions.checkArgument(!repositoryKey.isBlank(), "Please specify a valid repository key to register your custom rules");
       this.repositoryKey = repositoryKey;
       this.mainCheckClassList = checkClasses;
       this.testCheckClassList = testCheckClasses;
