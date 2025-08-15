@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.commons.lang3.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -51,7 +50,7 @@ public class ThreadStartedInConstructorCheck extends IssuableSubscriptionVisitor
       inMethodOrStaticInitializerOrFinalClass.push(((ClassTree) tree).symbol().isFinal());
     } else if (tree.is(Tree.Kind.METHOD, Tree.Kind.STATIC_INITIALIZER)) {
       inMethodOrStaticInitializerOrFinalClass.push(Boolean.TRUE);
-    } else if (BooleanUtils.isFalse(inMethodOrStaticInitializerOrFinalClass.peek()) && THREAD_START.matches((MethodInvocationTree) tree)) {
+    } else if (Boolean.FALSE.equals(inMethodOrStaticInitializerOrFinalClass.peek()) && THREAD_START.matches((MethodInvocationTree) tree)) {
       reportIssue(ExpressionUtils.methodName((MethodInvocationTree) tree), "Move this \"start\" call to another method.");
     }
   }
