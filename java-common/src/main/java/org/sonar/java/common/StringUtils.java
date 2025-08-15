@@ -41,9 +41,9 @@ public class StringUtils {
     return org.apache.commons.lang3.StringUtils.countMatches(s1, s2);
   }
 
-  public static boolean contains(String string, int ch) {
-    return org.apache.commons.lang3.StringUtils.contains(string, ch);
-  }
+//  public static boolean contains(String string, int ch) {
+//    return org.apache.commons.lang3.StringUtils.contains(string, ch);
+//  }
 
   public static String stripAccents(String string) {
     return org.apache.commons.lang3.StringUtils.stripAccents(string);
@@ -65,7 +65,7 @@ public class StringUtils {
     return org.apache.commons.lang3.StringUtils.substringBetween(input, start, end);
   }
 
-  public static String defaultIfBlank(String string, String defaultValue) {
-    return org.apache.commons.lang3.StringUtils.defaultIfBlank(string, defaultValue);
-  }
+//  public static String defaultIfBlank(String string, String defaultValue) {
+//    return org.apache.commons.lang3.StringUtils.defaultIfBlank(string, defaultValue);
+//  }
 }
