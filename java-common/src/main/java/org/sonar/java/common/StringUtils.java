@@ -25,14 +25,6 @@ public class StringUtils {
     return !isEmpty(string);
   }
 
-  public static boolean isBlank(String string) {
-    return string == null || string.isBlank();
-  }
-
-  public static boolean isNotBlank(String string) {
-    return !isBlank(string);
-  }
-
   public static String[] split(String string, char separator) {
     return org.apache.commons.lang3.StringUtils.split(string, separator);
   }
