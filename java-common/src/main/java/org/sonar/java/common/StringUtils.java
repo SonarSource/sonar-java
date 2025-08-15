@@ -33,23 +33,6 @@ public class StringUtils {
     return !isBlank(string);
   }
 
-  public static String trim(String string) {
-    return string == null ? null : string.trim();
-  }
-
-  public static String repeat(String string, int count) {
-    // apache.commons.lang3 and Java SDK have slightly different semantics
-
-    if (string == null) {
-      return null;
-    }
-    if (count <= 0) {
-      return "";
-    }
-    return string.repeat(count);
-    // return org.apache.commons.lang3.StringUtils.repeat(string, count);
-  }
-
   public static String[] split(String string, char separator) {
     return org.apache.commons.lang3.StringUtils.split(string, separator);
   }
