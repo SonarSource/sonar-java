@@ -27,7 +27,6 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.common.StringUtils;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.location.Range;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -77,11 +76,11 @@ class TreeTokenCompletenessTest {
           " because the last position is already after at " + lastEndPosition + " for token: " + text);
       }
       int numberOfNewLineToAdd = range.start().line() - lastEndPosition.line();
-      resultBuilder.append(StringUtils.repeat("\n", numberOfNewLineToAdd));
+      resultBuilder.append("\n".repeat(numberOfNewLineToAdd));
 
       int newLastColumn = (numberOfNewLineToAdd == 0 ? lastEndPosition.column() : Position.FIRST_COLUMN);
       int numberOfSpaceToAdd = range.start().column() - newLastColumn;
-      resultBuilder.append(StringUtils.repeat(" ", numberOfSpaceToAdd));
+      resultBuilder.append(" ".repeat(numberOfSpaceToAdd));
 
       resultBuilder.append(text);
       lastEndPosition = range.end();
