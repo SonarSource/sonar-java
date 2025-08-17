@@ -18,7 +18,6 @@ package org.sonar.java.checks.sustainability;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -38,7 +37,7 @@ public class AndroidFusedLocationProviderClientCheck extends AbstractMethodDetec
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
     var nameArg = tree.arguments().get(0);
-    if ("location".equals(ExpressionUtils.resolveAsConstant(nameArg))) {
+    if ("location".equals(nameArg.asConstant().orElse(null))) {
       reportIfInAndroidContext(nameArg);
     }
   }

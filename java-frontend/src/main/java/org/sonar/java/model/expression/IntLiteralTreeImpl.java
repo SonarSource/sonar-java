@@ -16,8 +16,9 @@
  */
 package org.sonar.java.model.expression;
 
+import java.util.Optional;
+import javax.annotation.Nonnull;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.IntLiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -25,13 +26,10 @@ public class IntLiteralTreeImpl extends LiteralTreeImpl implements IntLiteralTre
 
   private final int intValue;
 
-  public IntLiteralTreeImpl(InternalSyntaxToken token) {
-    this(token, (int) LiteralUtils.parseJavaLiteralLong(token.text()));
-  }
-
   public IntLiteralTreeImpl(InternalSyntaxToken token, int intValue) {
     super(Tree.Kind.INT_LITERAL, token);
     this.intValue = intValue;
+    constant = Optional.of(intValue);
   }
 
   @Override
@@ -40,6 +38,7 @@ public class IntLiteralTreeImpl extends LiteralTreeImpl implements IntLiteralTre
   }
 
   @Override
+  @Nonnull
   public Object parsedValue() {
     return intValue;
   }

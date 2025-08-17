@@ -16,8 +16,12 @@
  */
 package org.sonar.java.model;
 
+import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.Optional;
-import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -27,13 +31,11 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 public final class ExpressionUtils {
@@ -224,45 +226,6 @@ public final class ExpressionUtils {
     return newExpression.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) newExpression).name());
   }
 
-  @CheckForNull
-  public static Object resolveAsConstant(ExpressionTree tree) {
-    ExpressionTree expression = tree;
-    while (expression.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      expression = ((ParenthesizedTree) expression).expression();
-    }
-    if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      expression = ((MemberSelectExpressionTree) expression).identifier();
-    }
-    if (expression.is(Tree.Kind.IDENTIFIER)) {
-      return resolveIdentifier((IdentifierTree) expression);
-    }
-    if (expression instanceof UnaryExpressionTree unaryExpressionTree) {
-      return resolveUnaryExpression(unaryExpressionTree);
-    }
-    if (expression instanceof LiteralTree literalTree) {
-      return literalTree.parsedValue();
-    }
-    if (expression.is(Tree.Kind.PLUS)) {
-      return resolvePlus((BinaryExpressionTree) expression);
-    }
-    if (expression.is(Tree.Kind.OR)) {
-      return resolveOr((BinaryExpressionTree) expression);
-    }
-    if (expression.is(Tree.Kind.MINUS)) {
-      return resolveArithmeticOperation((BinaryExpressionTree) expression, (a, b) -> a - b, (a, b) -> a - b);
-    }
-    if (expression.is(Tree.Kind.MULTIPLY)) {
-      return resolveArithmeticOperation((BinaryExpressionTree) expression, (a, b) -> a * b, (a, b) -> a * b);
-    }
-    if (expression.is(Tree.Kind.DIVIDE)) {
-      return resolveArithmeticOperation((BinaryExpressionTree) expression, (a, b) -> a / b, (a, b) -> a / b);
-    }
-    if (expression.is(Tree.Kind.REMAINDER)) {
-      return resolveArithmeticOperation((BinaryExpressionTree) expression, (a, b) -> a % b, (a, b) -> a % b);
-    }
-    return null;
-  }
-
   public static boolean areVariablesSame(Tree tree1, Tree tree2, boolean defaultValue) {
     Symbol symbol1 = getSymbol(tree1);
     Symbol symbol2 = getSymbol(tree2);
@@ -283,102 +246,389 @@ public final class ExpressionUtils {
     return symbol;
   }
 
-  @CheckForNull
-  private static Object resolveUnaryExpression(UnaryExpressionTree unaryExpression) {
-    Object value = resolveAsConstant(unaryExpression.expression());
-    if (unaryExpression.is(Tree.Kind.UNARY_PLUS)) {
-      return value;
-    } else if (unaryExpression.is(Tree.Kind.UNARY_MINUS)) {
-      if (value instanceof Long longValue) {
-        return -longValue;
-      } else if (value instanceof Integer intValue) {
-        return -intValue;
+  public enum UnaryOperation {
+    POSTFIX_INCREMENT(
+      Tree.Kind.POSTFIX_INCREMENT,
+      value -> value),
+    POSTFIX_DECREMENT(
+      Tree.Kind.POSTFIX_DECREMENT,
+      value -> value),
+    PREFIX_INCREMENT(
+      Tree.Kind.PREFIX_INCREMENT,
+      value -> BinaryOperation.PLUS.apply(value, 1)),
+    PREFIX_DECREMENT(
+      Tree.Kind.PREFIX_DECREMENT,
+      value -> BinaryOperation.MINUS.apply(value, 1)),
+    UNARY_PLUS(
+      Tree.Kind.UNARY_PLUS,
+      value -> value),
+    UNARY_MINUS(
+      Tree.Kind.UNARY_MINUS,
+      value -> {
+        // This operation does not support Boolean, String
+        if (value instanceof Integer num) {
+          return -num;
+        } else if (value instanceof Long num) {
+          return -num;
+        } else if (value instanceof Character num) {
+          return -num;
+        } else if (value instanceof Float num) {
+          return -num;
+        } else if (value instanceof Double num) {
+          return -num;
+        } else if (value instanceof Byte num) {
+          return -num;
+        } else if (value instanceof Short num) {
+          return -num;
+        } else {
+          return null;
+        }
+      }),
+    BITWISE_COMPLEMENT(
+      Tree.Kind.BITWISE_COMPLEMENT,
+      value -> {
+        // This operation does not support Boolean, String, Float, Double
+        if (value instanceof Integer num) {
+          return ~num;
+        } else if (value instanceof Long num) {
+          return ~num;
+        } else if (value instanceof Character num) {
+          return ~num;
+        } else if (value instanceof Byte num) {
+          return ~num;
+        } else if (value instanceof Short num) {
+          return ~num;
+        } else {
+          return null;
+        }
+      }),
+    LOGICAL_COMPLEMENT(
+      Tree.Kind.LOGICAL_COMPLEMENT,
+      value -> {
+        // This operation does not support String, Character, Byte, Short, Integer, Long, Float, Double
+        if (value instanceof Boolean num) {
+          return !num;
+        } else {
+          return null;
+        }
+      });
+
+    private final Tree.Kind operationKind;
+    private final UnaryOperator<Object> operation;
+
+    private static final EnumMap<Tree.Kind, UnaryOperation> OPERATION_MAP = Arrays.stream(UnaryOperation.values())
+      .collect(Collectors.toMap(e -> e.operationKind, Function.identity(),
+        (a, b) -> {
+          throw new IllegalStateException("Duplicate operation kind: " + a.operationKind + " for " + a + " and " + b);
+        },
+        () -> new EnumMap<>(Tree.Kind.class)));
+
+    UnaryOperation(Tree.Kind operationKind, UnaryOperator<Object> operation) {
+      this.operationKind = operationKind;
+      this.operation = operation;
+    }
+
+    /**
+     * Applies the unary operation to the given operand.
+     * If the operation is not applicable to the given operand, returns null.
+     *
+     * @param operationKind The kind of operation to apply
+     * @param operand The operand to apply the operation to
+     * @return The result of the operation, or null if the operation is not applicable
+     */
+    @Nullable
+    public static Object apply(Tree.Kind operationKind, @Nullable Object operand) {
+      if (operand == null) {
+        return  null;
       }
-    } else if (unaryExpression.is(Tree.Kind.BITWISE_COMPLEMENT)) {
-      if (value instanceof Long longValue) {
-        return ~longValue;
-      } else if (value instanceof Integer intValue) {
-        return ~intValue;
-      }
-    } else if (unaryExpression.is(Tree.Kind.LOGICAL_COMPLEMENT) && value instanceof Boolean bool) {
-      return !bool;
+      UnaryOperation operation = OPERATION_MAP.get(operationKind);
+      return operation == null ? null : operation.apply(operand);
     }
-    return null;
-  }
 
-  @CheckForNull
-  private static Object resolveIdentifier(IdentifierTree tree) {
-    Symbol symbol = tree.symbol();
-    if (!symbol.isVariableSymbol()) {
-      return null;
-    }
-    Symbol owner = symbol.owner();
-    if (owner.isTypeSymbol() && owner.type().is("java.lang.Boolean")) {
-      if ("TRUE".equals(symbol.name())) {
-        return Boolean.TRUE;
-      } else if ("FALSE".equals(symbol.name())) {
-        return Boolean.FALSE;
+    @Nullable
+    public Object apply(@Nullable Object operand) {
+      if (operand == null) {
+        return  null;
+      }
+      try {
+        return operation.apply(operand);
+      } catch (ArithmeticException e) {
+        LOG.debug("Arithmetic exception while resolving arithmetic operation value", e);
+        return null;
       }
     }
-    return ((Symbol.VariableSymbol) symbol).constantValue().orElse(null);
+
   }
 
-  @CheckForNull
-  private static Object resolvePlus(BinaryExpressionTree binaryExpression) {
-    Object left = resolveAsConstant(binaryExpression.leftOperand());
-    Object right = resolveAsConstant(binaryExpression.rightOperand());
-    if (left == null || right == null) {
-      return null;
-    } else if (left instanceof String leftString) {
-      return leftString + right;
-    } else if (right instanceof String rightString) {
-      return left + rightString;
+  public enum BinaryOperation {
+    MULTIPLY(
+      Tree.Kind.MULTIPLY,
+      null,
+      null,
+      (a, b) -> a * b,
+      (a, b) -> a * b,
+      (a, b) -> a * b,
+      (a, b) -> a * b),
+    DIVIDE(
+      Tree.Kind.DIVIDE,
+      null,
+      null,
+      (a, b) -> (b == 0 ? null : (a / b)),
+      (a, b) -> (b == 0L ? null : (a / b)),
+      (a, b) -> a / b,
+      (a, b) -> a / b),
+    REMAINDER(
+      Tree.Kind.REMAINDER,
+      null,
+      null,
+      (a, b) -> (b == 0 ? null : (a % b)),
+      (a, b) -> (b == 0L ? null : (a % b)),
+      (a, b) -> a % b,
+      (a, b) -> a % b),
+    PLUS(
+      Tree.Kind.PLUS,
+      null,
+      (a, b) -> a + b,
+      (a, b) -> a + b,
+      (a, b) -> a + b,
+      (a, b) -> a + b,
+      (a, b) -> a + b),
+    MINUS(
+      Tree.Kind.MINUS,
+      null,
+      null,
+      (a, b) -> a - b,
+      (a, b) -> a - b,
+      (a, b) -> a - b,
+      (a, b) -> a - b),
+    LEFT_SHIFT(
+      Tree.Kind.LEFT_SHIFT,
+      null,
+      null,
+      (a, b) -> a << b,
+      (a, b) -> a << b,
+      null,
+      null),
+    RIGHT_SHIFT(
+      Tree.Kind.RIGHT_SHIFT,
+      null,
+      null,
+      (a, b) -> a >> b,
+      (a, b) -> a >> b,
+      null,
+      null),
+    UNSIGNED_RIGHT_SHIFT(
+      Tree.Kind.UNSIGNED_RIGHT_SHIFT,
+      null,
+      null,
+      (a, b) -> a >>> b,
+      (a, b) -> a >>> b,
+      null,
+      null),
+    LESS_THAN(
+      Tree.Kind.LESS_THAN,
+      null,
+      null,
+      (a, b) -> a < b,
+      (a, b) -> a < b,
+      (a, b) -> a < b,
+      (a, b) -> a < b),
+    GREATER_THAN(
+      Tree.Kind.GREATER_THAN,
+      null,
+      null,
+      (a, b) -> a > b,
+      (a, b) -> a > b,
+      (a, b) -> a > b,
+      (a, b) -> a > b),
+    LESS_THAN_OR_EQUAL_TO(
+      Tree.Kind.LESS_THAN_OR_EQUAL_TO,
+      null,
+      null,
+      (a, b) -> a <= b,
+      (a, b) -> a <= b,
+      (a, b) -> a <= b,
+      (a, b) -> a <= b),
+    GREATER_THAN_OR_EQUAL_TO(
+      Tree.Kind.GREATER_THAN_OR_EQUAL_TO,
+      null,
+      null,
+      (a, b) -> a >= b,
+      (a, b) -> a >= b,
+      (a, b) -> a >= b,
+      (a, b) -> a >= b),
+    EQUAL_TO(
+      Tree.Kind.EQUAL_TO,
+      (a, b) -> a == b,
+      null,
+      (a, b) -> a == b,
+      (a, b) -> a == b,
+      (a, b) -> a == b,
+      (a, b) -> a == b),
+    NOT_EQUAL_TO(
+      Tree.Kind.NOT_EQUAL_TO,
+      (a, b) -> a != b,
+      null,
+      (a, b) -> a != b,
+      (a, b) -> a != b,
+      (a, b) -> a != b,
+      (a, b) -> a != b),
+    AND(
+      Tree.Kind.AND,
+      (a, b) -> a & b,
+      null,
+      (a, b) -> a & b,
+      (a, b) -> a & b,
+      null,
+      null),
+    XOR(
+      Tree.Kind.XOR,
+      (a, b) -> a ^ b,
+      null,
+      (a, b) -> a ^ b,
+      (a, b) -> a ^ b,
+      null,
+      null),
+    OR(
+      Tree.Kind.OR,
+      (a, b) -> a | b,
+      null,
+      (a, b) -> a | b,
+      (a, b) -> a | b,
+      null,
+      null),
+    CONDITIONAL_AND(
+      Tree.Kind.CONDITIONAL_AND,
+      (a, b) -> a && b,
+      null,
+      null,
+      null,
+      null,
+      null),
+    CONDITIONAL_OR(
+      Tree.Kind.CONDITIONAL_OR,
+      (a, b) -> a || b,
+      null,
+      null,
+      null,
+      null,
+      null);
+
+    private final Tree.Kind operationKind;
+    @Nullable
+    private final BooleanBinaryOperator booleanOp;
+    @Nullable
+    private final StringBinaryOperator stringOp;
+    @Nullable
+    private final IntBinaryOperator intOp;
+    @Nullable
+    private final LongBinaryOperator longOp;
+    @Nullable
+    private final FloatBinaryOperator floatOp;
+    @Nullable
+    private final DoubleBinaryOperator doubleOp;
+
+    private static final EnumMap<Tree.Kind, BinaryOperation> OPERATION_MAP = Arrays.stream(BinaryOperation.values())
+        .collect(Collectors.toMap(e -> e.operationKind, Function.identity(),
+          (a, b) -> {
+            throw new IllegalStateException("Duplicate operation kind: " + a.operationKind + " for " + a + " and " + b);
+          },
+          () -> new EnumMap<>(Tree.Kind.class)));
+
+    BinaryOperation(
+      Tree.Kind operationKind,
+      @Nullable BooleanBinaryOperator booleanOp,
+      @Nullable StringBinaryOperator stringOp,
+      @Nullable IntBinaryOperator intOp,
+      @Nullable LongBinaryOperator longOp,
+      @Nullable FloatBinaryOperator floatOp,
+      @Nullable DoubleBinaryOperator doubleOp) {
+      this.operationKind = operationKind;
+      this.booleanOp = booleanOp;
+      this.stringOp = stringOp;
+      this.intOp = intOp;
+      this.longOp = longOp;
+      this.floatOp = floatOp;
+      this.doubleOp = doubleOp;
     }
-    return resolveArithmeticOperation(left, right, Long::sum, Integer::sum);
-  }
-
-  @CheckForNull
-  private static Object resolveArithmeticOperation(BinaryExpressionTree binaryExpression,
-                                                   BiFunction<Long, Long, Object> longOperation,
-                                                   BiFunction<Integer, Integer, Object> intOperation) {
-    Object left = resolveAsConstant(binaryExpression.leftOperand());
-    Object right = resolveAsConstant(binaryExpression.rightOperand());
-    if (left == null || right == null) {
-      return null;
-    }
-    return resolveArithmeticOperation(left, right, longOperation, intOperation);
-  }
-
-  @CheckForNull
-  private static Object resolveArithmeticOperation(Object left, Object right, BiFunction<Long, Long, Object> longOperation, BiFunction<Integer, Integer, Object> intOperation) {
-    try {
-      if (left instanceof Integer leftInt && right instanceof Integer rightInt) {
-        return intOperation.apply(leftInt, rightInt);
-      } else if ((left instanceof Long || right instanceof Long) && (left instanceof Integer || right instanceof Integer)) {
-        return longOperation.apply(((Number) left).longValue(), ((Number) right).longValue());
+    /**
+     * Applies the binary operation to the given operands.
+     * If the operation is not applicable to the given operands, returns null.
+     *
+     * @param operationKind The kind of operation to apply
+     * @param leftOperand The left operand
+     * @param rightOperand The right operand
+     * @return The result of the operation, or null if the operation is not applicable
+     */
+    @Nullable
+    public static Object apply(Tree.Kind operationKind, @Nullable Object leftOperand, @Nullable Object rightOperand) {
+      if (leftOperand == null || rightOperand == null) {
+        return  null;
       }
-    } catch (ArithmeticException e) {
-      LOG.debug("Arithmetic exception while resolving arithmetic operation value", e);
+      BinaryOperation operation = OPERATION_MAP.get(operationKind);
+      return operation == null ? null : operation.apply(leftOperand, rightOperand);
     }
-    return null;
-  }
 
-  @CheckForNull
-  private static Object resolveOr(BinaryExpressionTree binaryExpression) {
-    Object left = resolveAsConstant(binaryExpression.leftOperand());
-    Object right = resolveAsConstant(binaryExpression.rightOperand());
-    if (left == null || right == null) {
-      return null;
-    } else if (left instanceof Long leftLong && right instanceof Long rightLong) {
-      return leftLong | rightLong;
-    } else if (left instanceof Long leftLong && right instanceof Integer rightInt) {
-      return leftLong | rightInt;
-    } else if (left instanceof Integer leftInt && right instanceof Long rightLong) {
-      return leftInt | rightLong;
-    } else if (left instanceof Integer leftInt && right instanceof Integer rightInt) {
-      return leftInt | rightInt;
+    @Nullable
+    public Object apply(@Nullable Object leftOperand, @Nullable Object rightOperand) {
+      if (leftOperand == null || rightOperand == null) {
+        return  null;
+      }
+      try {
+        if (leftOperand instanceof String || rightOperand instanceof String) {
+          return stringOp != null ? stringOp.applyAsString(leftOperand.toString(), rightOperand.toString()) : null;
+        } else if (leftOperand instanceof Number left && rightOperand instanceof Number right) {
+          // resolve numeric promotion
+          if (left instanceof Double || right instanceof Double) {
+            return doubleOp != null ? doubleOp.applyAsDouble(left.doubleValue(), right.doubleValue()) : null;
+          } else if (left instanceof Float || right instanceof Float) {
+            return floatOp != null ? floatOp.applyAsFloat(left.floatValue(), right.floatValue()) : null;
+          } else if (left instanceof Long || right instanceof Long) {
+            return longOp != null ? longOp.applyAsLong(left.longValue(), right.longValue()) : null;
+          } else {
+            return intOp != null ? intOp.applyAsInt(left.intValue(), right.intValue()) : null;
+          }
+        } else if (leftOperand instanceof Boolean left && rightOperand instanceof Boolean right) {
+          return booleanOp != null ? booleanOp.applyAsBoolean(left, right) : null;
+        } else {
+          return null;
+        }
+      } catch (ArithmeticException e) {
+        LOG.debug("Arithmetic exception while resolving arithmetic operation value", e);
+        return null;
+      }
     }
-    return null;
+
+    @FunctionalInterface
+    interface BooleanBinaryOperator {
+      Object applyAsBoolean(boolean left, boolean right);
+    }
+
+    @FunctionalInterface
+    interface StringBinaryOperator {
+      Object applyAsString(String left, String right);
+    }
+
+    @FunctionalInterface
+    interface IntBinaryOperator {
+      Object applyAsInt(int left, int right);
+    }
+
+    @FunctionalInterface
+    interface LongBinaryOperator {
+      Object applyAsLong(long left, long right);
+    }
+
+    @FunctionalInterface
+    interface FloatBinaryOperator {
+      Object applyAsFloat(float left, float right);
+    }
+
+    @FunctionalInterface
+    interface DoubleBinaryOperator {
+      Object applyAsDouble(double left, double right);
+    }
+
   }
 
 }

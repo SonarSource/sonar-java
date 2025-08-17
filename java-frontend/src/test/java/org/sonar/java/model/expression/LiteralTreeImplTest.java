@@ -19,8 +19,9 @@ package org.sonar.java.model.expression;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -43,6 +44,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LiteralTreeImplTest {
 
   private static CompilationUnitTree currentSourceCodeCache;
+
+  @BeforeAll
+  static void setUp() {
+    Path thisJavaFilePath = Path.of("src", "test", "java",
+      LiteralTreeImplTest.class.getName().replace('.', '/').concat(".java"));
+    currentSourceCodeCache = JParserTestUtils.parse(thisJavaFilePath.toFile());
+  }
 
   @Test
   void null_literal() {
@@ -77,19 +85,19 @@ class LiteralTreeImplTest {
   @Test
   void boolean_literal_values() {
     assertResolveAsConstantMatch(parseTrees(
-      !true,
-      !false));
+      !true, !false,
+      true && true, true && false, false && true, false && false,
+      true || true, true || false, false || true, false || false,
+      true == true, true == false, false == true, false == false,
+      true != true, true != false, false != true, false != false,
+      true ^ true, true ^ false, false ^ true, false ^ false,
+      (true && true),
+      !(true && true)));
 
+    boolean nonFinal = true;
     // limitation, not yet supported:
     assertResolveAsConstantIsNull(parseTrees(
-      true && true,
-      true && false,
-      false && true,
-      false && false,
-      true || true,
-      true || false,
-      false || true,
-      false || false));
+      nonFinal));
   }
 
   @Test
@@ -174,15 +182,16 @@ class LiteralTreeImplTest {
       0xffffffffffffffffL));
     assertResolveAsConstantMatch(parseTrees(
       0L,
+      0L + 0L,
+      1L + 1L,
+      10L - 2L,
       1L,
       -1L,
       1_000_000L,
       -1_000_000L,
       4_000_000_000_000_000_000L,
-      // Integer.MIN_VALUE,
       0x8000000000000000L,
       -9223372036854775808L,
-      // Long.MAX_VALUE,
       0x7fffffffffffffffL,
       -0x7fffffffffffffffL,
       0x7fFfFfFfFfFfFfFfL,
@@ -191,20 +200,18 @@ class LiteralTreeImplTest {
       -9223372036854775807L,
       0xfffffffffffffffeL,
       -0xfffffffffffffffeL,
-      // -1
-      0xffffffffffffffffL));
+      0xffffffffffffffffL - 1L,
+      0xffffffffffffffffL + 1L,
+      0xffffffffffffffffL * 2L,
+      0xffffffffffffffffL,
+      0xffffffffffffffffL * 0xffffffffffffffffL,
+      2L * -3L,
+      (1L + (1L))));
 
+    long nonFinal = 1L;
     // limitation, not yet supported:
     assertResolveAsConstantIsNull(parseTrees(
-      0L + 0L,
-      1L + 1L,
-      (1L + (1L)),
-      0xffffffffffffffffL + 1L,
-      0xffffffffffffffffL - 1L,
-      10L - 2L,
-      2L * -3L,
-      0xffffffffffffffffL * 2L,
-      0xffffffffffffffffL * 0xffffffffffffffffL));
+      nonFinal));
   }
 
   @Test
@@ -233,28 +240,28 @@ class LiteralTreeImplTest {
       1.1f,
       .0f));
     assertResolveAsConstantMatch(parseTrees(
-      (1.1f)));
-
-    // limitation, not yet supported:
-    assertResolveAsConstantIsNull(parseTrees(
+      0.0f + 0.0f,
+      1.0f + 1.0f,
+      3.4028235e+38f + 1.0e+38f,
+      1.4e-45f - 1.0e-45f,
+      -.0f,
       -0.0f,
       -1f,
       -1_000_000.0f,
-      // Float.MIN_VALUE,
       -0x0.000002P-126f,
       -1.4e-45f,
-      // Float.MAX_VALUE,
+      3.4028235e+38f * -2.0f,
       -0x1.fffffeP+127f,
       -3.4028235e+38f,
       -1.1f,
       (-1.1f),
-      -.0f,
-      0.0f + 0.0f,
-      1.0f + 1.0f,
-      (1.0f + (1.0f)),
-      3.4028235e+38f + 1.0e+38f,
-      1.4e-45f - 1.0e-45f,
-      3.4028235e+38f * -2.0f));
+      (1.1f),
+      (1.0f + (1.0f))));
+
+    float nonFinal = 1.0f;
+    // limitation, not yet supported:
+    assertResolveAsConstantIsNull(parseTrees(
+      nonFinal));
   }
 
   @Test
@@ -286,28 +293,28 @@ class LiteralTreeImplTest {
       1.1d,
       .0f));
     assertResolveAsConstantMatch(parseTrees(
-      (1.1d)));
-
-    // limitation, not yet supported:
-    assertResolveAsConstantIsNull(parseTrees(
       -0.0d,
-      -1d,
-      -1_000_000.0d,
-      // Long.MIN_VALUE,
-      -0x0.000002P-126d,
-      -1.4e-45d,
-      // Long.MAX_VALUE,
-      -0x1.fffffeP+127d,
-      -3.4028235e+38d,
-      -1.1d,
-      (-1.1d),
       -.0d,
       0.0d + 0.0d,
       1.0d + 1.0d,
-      (1.0d + (1.0d)),
       3.4028235e+38d + 1.0e+38d,
       1.4e-45d - 1.0e-45d,
-      3.4028235e+38d * -2.0d));
+      -1d,
+      -1.1d,
+      -1_000_000.0d,
+      -0x0.000002P-126d,
+      -1.4e-45d,
+      -0x1.fffffeP+127d,
+      -3.4028235e+38d,
+      (1.1d),
+      (-1.1d),
+      3.4028235e+38d * -2.0d,
+      (1.0d + (1.0d))));
+
+    double nonFinal = 1.0d;
+    // limitation, not yet supported:
+    assertResolveAsConstantIsNull(parseTrees(
+      nonFinal));
   }
 
   @Test
@@ -339,7 +346,6 @@ class LiteralTreeImplTest {
 
   @Test
   void char_literal_values() {
-    // limitation: Bug in the ECJ parser, it fails to parse this file if we add in the following arguments the char literal '\s'
     assertLiteralParsedValuesAndResolveAsConstantMatch(parseTrees(
       '0',
       'a',
@@ -349,6 +355,7 @@ class LiteralTreeImplTest {
       '\n',
       '\f',
       '\r',
+      '\s',
       '\"',
       '\'',
       '\\',
@@ -360,12 +367,14 @@ class LiteralTreeImplTest {
       '\u1234',
       '\uffff'));
     assertResolveAsConstantMatch(parseTrees(
+      'a' + 'a',
+      'a' - 2,
+      ('a' - 2),
       ('a')));
 
     // limitation, not yet supported:
     assertResolveAsConstantIsNull(parseTrees(
-      'a' + 'a',
-      'a' - 2));
+      ('0' - ('a' - 2))));
   }
 
   @Test
@@ -464,6 +473,10 @@ class LiteralTreeImplTest {
       .isEqualTo("  abc '\\s'\n  def\n");
     assertThat(severalLines.parsedValue())
       .isEqualTo("  abc ' '\n  def\n");
+  }
+
+  @Test
+  void text_block_literal_escapes() {
 
     var lineContinuation = (StringLiteralTree) parseTree("""
        abc \
@@ -477,6 +490,28 @@ class LiteralTreeImplTest {
     assertThat(lineContinuation.parsedValue())
       .isEqualTo(" abc  def ");
 
+    TreeAndValue lineContinuationWithOnlySpaces = parseTree("""
+        \
+      """);
+    var lineContinuationWithOnlySpacesLiteral = (StringLiteralTree) lineContinuationWithOnlySpaces.tree();
+    assertThat(lineContinuationWithOnlySpacesLiteral.value())
+      .isEqualTo("\"\"\"\n        \\\n      \"\"\"");
+    assertThat(lineContinuationWithOnlySpacesLiteral.unquotedValue())
+      .isEqualTo("  \\\n");
+    assertThat(lineContinuationWithOnlySpacesLiteral.parsedValue())
+      .isEqualTo("  ");
+
+    TreeAndValue emptyLineContinuation = parseTree("""
+      \
+      """);
+    var emptyLineContinuationLiteral = (StringLiteralTree) emptyLineContinuation.tree();
+    assertThat(emptyLineContinuationLiteral.value())
+      .isEqualTo("\"\"\"\n      \\\n      \"\"\"");
+    assertThat(emptyLineContinuationLiteral.unquotedValue())
+      .isEqualTo("\\\n");
+    assertThat(emptyLineContinuationLiteral.parsedValue())
+      .isEqualTo("");
+
     var unicodeEscape = (StringLiteralTree) parseTree("""
       \u0061 \u0062 \u0063""").tree();
     assertThat(unicodeEscape.value())
@@ -487,10 +522,6 @@ class LiteralTreeImplTest {
       .isEqualTo("a b c");
     assertThat(unicodeEscape.stringValue())
       .isEqualTo("a b c");
-  }
-
-  @Test
-  void text_block_literal_escapes() {
 
     var octalEscape = (StringLiteralTree) parseTree("""
       \101 \102 \103""").tree();
@@ -515,20 +546,6 @@ class LiteralTreeImplTest {
       .isNotEqualTo(ecjBug1.value()).isEqualTo("before \'\\after");
     // Knowing the Java parses it correctly
     assertThat(ecjBug1.value()).isEqualTo("before \'\" after");
-
-    TreeAndValue ecjBug2 = parseTree("""
-        \
-      """);
-    var ecjBug2Literal = (StringLiteralTree) ecjBug2.tree();
-    assertThat(ecjBug2Literal.value())
-      .isEqualTo("\"\"\"\n        \\\n      \"\"\"");
-    assertThat(ecjBug2Literal.unquotedValue())
-      .isEqualTo("  \\\n");
-    assertThat(ecjBug2Literal.parsedValue())
-      // BUG in the ECJ parser, it does not keep the 2 spaces
-      .isNotEqualTo(ecjBug2.value()).isEqualTo("");
-    // Knowing the Java parses it as 2 spaces
-    assertThat(ecjBug2.value()).isEqualTo("  ");
   }
 
   @Test
@@ -605,19 +622,23 @@ class LiteralTreeImplTest {
   }
 
   private void assertResolveAsConstantMatch(List<TreeAndValue> treeAndValues) {
-    for (TreeAndValue treeAndValue : treeAndValues) {
-      assertThat(ExpressionUtils.resolveAsConstant(treeAndValue.tree()))
-        .describedAs(treeAndValue.toString())
-        .isEqualTo(treeAndValue.value());
-    }
+    SoftAssertions.assertSoftly(softly -> {
+      for (TreeAndValue treeAndValue : treeAndValues) {
+        softly.assertThat(treeAndValue.tree().asConstant().orElse(null))
+          .describedAs(treeAndValue.toString())
+          .isEqualTo(treeAndValue.value());
+      }
+    });
   }
 
   private void assertResolveAsConstantIsNull(List<TreeAndValue> treeAndValues) {
-    for (TreeAndValue treeAndValue : treeAndValues) {
-      assertThat(ExpressionUtils.resolveAsConstant(treeAndValue.tree()))
-        .describedAs(treeAndValue.toString())
-        .isNull();
-    }
+    SoftAssertions.assertSoftly(softly -> {
+      for (TreeAndValue treeAndValue : treeAndValues) {
+        softly.assertThat(treeAndValue.tree().asConstant().orElse(null))
+          .describedAs(treeAndValue.toString())
+          .isNull();
+      }
+    });
   }
 
   record TreeAndValue(ExpressionTree tree, Object value) {
@@ -659,7 +680,7 @@ class LiteralTreeImplTest {
 
   private static Arguments findArgumentsOfMethod(int line, String methodName) {
     var array = new ArrayList<Arguments>();
-    parseCurrentSourceCode().accept(new BaseTreeVisitor() {
+    currentSourceCodeCache.accept(new BaseTreeVisitor() {
       @Override
       public void visitMethodInvocation(MethodInvocationTree tree) {
         if (tree.methodSelect() instanceof IdentifierTree identifier && identifier.name().equals(methodName) && lineOf(identifier) == line) {
@@ -676,15 +697,6 @@ class LiteralTreeImplTest {
 
   private static int lineOf(Tree tree) {
     return tree.firstToken().range().start().line();
-  }
-
-  private static CompilationUnitTree parseCurrentSourceCode() {
-    if (currentSourceCodeCache == null) {
-      Path thisJavaFilePath = Path.of("src", "test", "java",
-        LiteralTreeImplTest.class.getName().replace('.', '/').concat(".java"));
-      currentSourceCodeCache = JParserTestUtils.parse(thisJavaFilePath.toFile());
-    }
-    return currentSourceCodeCache;
   }
 
   private static int callerLineNumber() {

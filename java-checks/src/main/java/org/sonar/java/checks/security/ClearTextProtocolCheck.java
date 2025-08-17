@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -102,7 +101,7 @@ public class ClearTextProtocolCheck extends IssuableSubscriptionVisitor {
   }
 
   private void reportIfAlwaysAllow(ExpressionTree setMixedContentModeArgument) {
-    if (MIXED_CONTENT_ALWAYS_ALLOW.equals(ExpressionUtils.resolveAsConstant(setMixedContentModeArgument))) {
+    if (MIXED_CONTENT_ALWAYS_ALLOW.equals(setMixedContentModeArgument.asConstant().orElse(null))) {
       reportIssue(setMixedContentModeArgument, MESSAGE_ANDROID_MIXED_CONTENT);
     }
   }

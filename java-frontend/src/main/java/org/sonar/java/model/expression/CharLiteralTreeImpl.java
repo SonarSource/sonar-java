@@ -16,6 +16,8 @@
  */
 package org.sonar.java.model.expression;
 
+import java.util.Optional;
+import javax.annotation.Nonnull;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.CharLiteralTree;
@@ -30,6 +32,7 @@ public class CharLiteralTreeImpl extends LiteralTreeImpl implements CharLiteralT
     super(Tree.Kind.CHAR_LITERAL, token);
     this.unquotedValue = LiteralUtils.unquote(token.text(), '\'');
     this.charValue = charValue;
+    constant = Optional.of(charValue);
   }
 
   @Override
@@ -43,6 +46,7 @@ public class CharLiteralTreeImpl extends LiteralTreeImpl implements CharLiteralT
   }
 
   @Override
+  @Nonnull
   public Object parsedValue() {
     return charValue;
   }

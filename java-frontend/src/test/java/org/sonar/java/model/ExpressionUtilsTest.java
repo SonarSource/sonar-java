@@ -362,7 +362,7 @@ class ExpressionUtilsTest {
 
   @Test
   void resolve_as_constant_not_yet_supported() {
-    assertResolveAsConstant("true || true", null);
+    assertResolveAsConstant("true || true", true);
   }
 
   @Test
@@ -381,15 +381,15 @@ class ExpressionUtilsTest {
   void resolve_as_constant_division_by_zero() {
     assertResolveAsConstant("5 / 0", null);
     assertResolveAsConstant("5L / 0", null);
-    assertResolveAsConstant("5D / 0", null);
+    assertResolveAsConstant("5D / 0", Double.POSITIVE_INFINITY);
 
     assertResolveAsConstant("5 / 0L", null);
     assertResolveAsConstant("5L / 0L", null);
-    assertResolveAsConstant("5D / 0L", null);
+    assertResolveAsConstant("5D / 0L", Double.POSITIVE_INFINITY);
 
-    assertResolveAsConstant("5 / 0D", null);
-    assertResolveAsConstant("5L / 0D", null);
-    assertResolveAsConstant("5D / 0D", null);
+    assertResolveAsConstant("5 / 0D", Double.POSITIVE_INFINITY);
+    assertResolveAsConstant("5L / 0D", Double.POSITIVE_INFINITY);
+    assertResolveAsConstant("5D / 0D", Double.POSITIVE_INFINITY);
   }
 
   @Test
@@ -405,7 +405,7 @@ class ExpressionUtilsTest {
   private void assertResolveAsConstant(String code, @Nullable Object expected) {
     CompilationUnitTree unit = JParserTestUtils.parse("class A { Object f = " + code + "; }");
     ExpressionTree expression = ((VariableTree) ((ClassTree) unit.types().get(0)).members().get(0)).initializer();
-    Object actual = ExpressionUtils.resolveAsConstant(expression);
+    Object actual = expression.asConstant().orElse(null);
     if (expected == null) {
       assertThat(actual).isNull();
     } else {

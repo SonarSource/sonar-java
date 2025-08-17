@@ -16,6 +16,7 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import javax.annotation.Nullable;
 import org.sonar.java.annotations.Beta;
 
 /**
@@ -62,6 +63,7 @@ public interface LiteralTree extends ExpressionTree {
    * {@link BooleanLiteralTree#booleanValue()}, {@link StringLiteralTree#stringValue()}, {@link CharLiteralTree#charValue()},
    * {@link LongLiteralTree#longValue()}, {@link IntLiteralTree#intValue()}.
    */
+  @Nullable
   Object parsedValue();
 
   SyntaxToken token();

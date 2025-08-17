@@ -19,7 +19,6 @@ package org.sonar.java.checks;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -43,7 +42,7 @@ public class AvoidHighFrameratesOnMobileCheck extends IssuableSubscriptionVisito
     var mit = (MethodInvocationTree) tree;
     FRAME_RATE_SETTERS.entrySet().stream().filter(e -> e.getKey().matches(mit)).findFirst().ifPresent(e -> {
       var frameRateArg = mit.arguments().get(e.getValue());
-      var frameRateArgVal = ExpressionUtils.resolveAsConstant(frameRateArg);
+      var frameRateArgVal = frameRateArg.asConstant().orElse(null);
 
       if (frameRateArgVal instanceof Number frameRateNumber && frameRateNumber.intValue() > DEFAULT_THRESHOLD) {
         reportIssue(frameRateArg, "Avoid setting high frame rates higher than " + DEFAULT_THRESHOLD + " on mobile devices.");

@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -50,7 +49,7 @@ public class WebViewsFileAccessCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree argument = mit.arguments().get(0);
-    if (Boolean.TRUE.equals(ExpressionUtils.resolveAsConstant(argument))) {
+    if (Boolean.TRUE.equals(argument.asConstant().orElse(null))) {
       reportIssue(argument, "Make sure that enabling file access is safe here.");
     }
   }

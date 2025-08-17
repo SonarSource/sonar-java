@@ -19,9 +19,9 @@ package org.sonar.java.model.expression;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ListTree;
@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public class TypeCastExpressionTreeImpl extends AssessableExpressionTree implements TypeCastTree {
 
@@ -103,6 +104,40 @@ public class TypeCastExpressionTreeImpl extends AssessableExpressionTree impleme
       andToken == null ? Collections.<Tree>emptyList() : Collections.singletonList(andToken()),
       Arrays.asList(bounds, closeParenToken, expression)
     );
+  }
+
+  @Override
+  public Optional<Object> asConstant() {
+    if (constant == NOT_INITIALIZED) {
+      constant = expression.asConstant();
+      Object value = constant.orElse(null);
+      if (value != null) {
+        String typeName = type.symbolType().name();
+        if (value instanceof Number number) {
+          constant = switch (typeName) {
+            case "byte" -> Optional.of(number.byteValue());
+            case "short" -> Optional.of(number.shortValue());
+            case "int" -> Optional.of(number.intValue());
+            case "long" -> Optional.of(number.longValue());
+            case "float" -> Optional.of(number.floatValue());
+            case "double" -> Optional.of(number.doubleValue());
+            case "char" -> Optional.of((char) number.intValue());
+            default -> constant;
+          };
+        } else if (value instanceof Character ch) {
+          constant = switch (typeName) {
+            case "byte" -> Optional.of((byte) (int) ch);
+            case "short" -> Optional.of((short) (int) ch);
+            case "int" -> Optional.of((int) ch);
+            case "long" -> Optional.of((long) ch);
+            case "float" -> Optional.of((float) ch);
+            case "double" -> Optional.of((double) ch);
+            default -> constant;
+          };
+        }
+      }
+    }
+    return constant;
   }
 
 }

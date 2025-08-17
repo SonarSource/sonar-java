@@ -19,6 +19,9 @@ package org.sonar.java.model.expression;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import javax.annotation.Nullable;
+import org.sonar.java.model.ExpressionUtils.BinaryOperation;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -34,11 +37,14 @@ public class BinaryExpressionTreeImpl extends AssessableExpressionTree implement
   private final InternalSyntaxToken operator;
   private final ExpressionTree rightOperand;
 
-  public BinaryExpressionTreeImpl(Kind kind, ExpressionTree leftOperand, InternalSyntaxToken operator, ExpressionTree rightOperand) {
+  public BinaryExpressionTreeImpl(Kind kind, ExpressionTree leftOperand, InternalSyntaxToken operator, ExpressionTree rightOperand, @Nullable Object constantValue) {
     this.kind = Objects.requireNonNull(kind);
     this.leftOperand = Objects.requireNonNull(leftOperand);
     this.operator = operator;
     this.rightOperand = Objects.requireNonNull(rightOperand);
+    if (constantValue != null) {
+      constant = Optional.of(constantValue);
+    }
   }
 
   @Override
@@ -72,6 +78,17 @@ public class BinaryExpressionTreeImpl extends AssessableExpressionTree implement
       leftOperand,
       operator,
       rightOperand);
+  }
+
+  @Override
+  public Optional<Object> asConstant() {
+    if (constant == NOT_INITIALIZED) {
+      constant = Optional.ofNullable(BinaryOperation.apply(
+        kind,
+        leftOperand.asConstant().orElse(null),
+        rightOperand.asConstant().orElse(null)));
+    }
+    return constant;
   }
 
 }

@@ -62,7 +62,7 @@ public class AndroidExactAlarmCheck extends AbstractMethodDetection {
   private void onSetWindowInvocation(MethodInvocationTree tree) {
     if (tree.arguments().size() < 3) return;
     var windowLengthMillisArg = tree.arguments().get(2);
-    var windowLengthMillis = ExpressionUtils.resolveAsConstant(windowLengthMillisArg);
+    var windowLengthMillis = windowLengthMillisArg.asConstant().orElse(null);
 
     if (windowLengthMillis instanceof Number num && num.longValue() < SUGGESTED_MIN_LENGTH_MILLIS) {
       reportIfInAndroidContext(windowLengthMillisArg, "Use alarm windows of 10 minutes or more instead.");

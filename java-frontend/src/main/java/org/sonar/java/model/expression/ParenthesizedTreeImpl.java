@@ -18,14 +18,14 @@ package org.sonar.java.model.expression;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
-
-import java.util.Objects;
 
 public class ParenthesizedTreeImpl extends AssessableExpressionTree implements ParenthesizedTree {
   private final InternalSyntaxToken openParenToken;
@@ -69,6 +69,14 @@ public class ParenthesizedTreeImpl extends AssessableExpressionTree implements P
       openParenToken,
       expression,
       closeParenToken);
+  }
+
+  @Override
+  public Optional<Object> asConstant() {
+    if (constant == NOT_INITIALIZED) {
+      constant = expression.asConstant();
+    }
+    return constant;
   }
 
 }

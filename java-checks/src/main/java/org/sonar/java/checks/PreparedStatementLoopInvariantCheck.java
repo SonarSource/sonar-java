@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.TreeHelper;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -100,7 +99,7 @@ public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVis
       if (arg.is(Tree.Kind.IDENTIFIER)) {
         identifierArguments.add(((IdentifierTree) arg).name());
       } else {
-        var argValue = ExpressionUtils.resolveAsConstant(arg);
+        var argValue = arg.asConstant().orElse(null);
         if (argValue == null) return null;
       }
     }

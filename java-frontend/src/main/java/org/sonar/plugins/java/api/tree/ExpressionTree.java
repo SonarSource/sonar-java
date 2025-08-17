@@ -31,5 +31,7 @@ public interface ExpressionTree extends Tree {
 
   Optional<Object> asConstant();
 
+  boolean isConstantInitialized();
+
   <T> Optional<T> asConstant(Class<T> type);
 }

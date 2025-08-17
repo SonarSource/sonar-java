@@ -16,8 +16,9 @@
  */
 package org.sonar.java.model.expression;
 
+import java.util.Optional;
+import javax.annotation.Nonnull;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.FloatLiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -25,13 +26,10 @@ public class FloatLiteralTreeImpl extends LiteralTreeImpl implements FloatLitera
 
   private final float floatValue;
 
-  public FloatLiteralTreeImpl(InternalSyntaxToken token) {
-    this(token, (float) LiteralUtils.parseJavaLiteralDouble(token.text()));
-  }
-
   public FloatLiteralTreeImpl(InternalSyntaxToken token, float floatValue) {
     super(Tree.Kind.FLOAT_LITERAL, token);
     this.floatValue = floatValue;
+    constant = Optional.of(floatValue);
   }
 
   @Override
@@ -40,6 +38,7 @@ public class FloatLiteralTreeImpl extends LiteralTreeImpl implements FloatLitera
   }
 
   @Override
+  @Nonnull
   public Object parsedValue() {
     return floatValue;
   }

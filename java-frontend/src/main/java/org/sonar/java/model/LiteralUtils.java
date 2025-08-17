@@ -220,7 +220,9 @@ public class LiteralUtils {
     int start = TEXT_BLOCK_QUOTE_LEN;
     int end = token.length() - TEXT_BLOCK_QUOTE_LEN;
     // ignore whitespaces after the leading """
-    start = moveIndexWhileWhiteSpaces(token, start, end);
+    while (start != end && isWhiteSpace(token.charAt(start))) {
+      start++;
+    }
     // ignore the first new line \r?\n|\r
     if (start < end && (token.charAt(start) == '\r')) {
       start++;
@@ -229,13 +231,6 @@ public class LiteralUtils {
       start++;
     }
     return token.substring(start, end).stripIndent();
-  }
-
-  private static int moveIndexWhileWhiteSpaces(String token, int index, int limit) {
-    while (index != limit && isWhiteSpace(token.charAt(index))) {
-      index++;
-    }
-    return index;
   }
 
   public static int indentationOfTextBlock(String[] lines) {

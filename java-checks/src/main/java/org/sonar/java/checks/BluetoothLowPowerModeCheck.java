@@ -16,7 +16,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
@@ -57,7 +56,7 @@ public class BluetoothLowPowerModeCheck extends AbstractMethodDetection {
 
   private static boolean firstArgumentNotEqualsTo(MethodInvocationTree mit, String methodName, int expectedValue) {
     return methodName.equals(ExpressionUtils.methodName(mit).name())
-      && Optional.ofNullable(ExpressionUtils.resolveAsConstant(mit.arguments().get(0)))
+      && mit.arguments().get(0).asConstant()
         .filter(Integer.class::isInstance)
         .map(Integer.class::cast)
         .filter(value -> value != expectedValue)

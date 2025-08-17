@@ -48,6 +48,11 @@ public class NullPatternTreeImpl extends AbstractPatternTree implements NullPatt
   }
 
   @Override
+  public boolean isConstantInitialized() {
+    return true;
+  }
+
+  @Override
   public <T> Optional<T> asConstant(Class<T> type) {
     return nullLiteral.asConstant(type);
   }

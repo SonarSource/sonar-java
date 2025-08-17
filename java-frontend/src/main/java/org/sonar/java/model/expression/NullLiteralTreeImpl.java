@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model.expression;
 
+import java.util.Optional;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -23,6 +24,7 @@ public class NullLiteralTreeImpl extends LiteralTreeImpl {
 
   public NullLiteralTreeImpl(InternalSyntaxToken token) {
     super(Tree.Kind.NULL_LITERAL, token);
+    constant = Optional.empty();
   }
 
   @Override

@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -101,7 +100,7 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
       if (argument instanceof MethodInvocationTree methodInvocation) {
         List<JavaFileScannerContext.Location> secondaryLocations = methodInvocation.arguments().stream()
           .filter(arg -> {
-            var argValue = ExpressionUtils.resolveAsConstant(arg);
+            var argValue = arg.asConstant().orElse(null);
             return argValue != null && WEAK_FOR_SET_ENABLED_PROTOCOLS.contains(argValue);
           })
           .map(arg -> new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, arg))

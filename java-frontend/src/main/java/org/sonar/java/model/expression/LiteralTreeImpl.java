@@ -19,6 +19,7 @@ package org.sonar.java.model.expression;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -58,6 +59,14 @@ public abstract class LiteralTreeImpl extends AssessableExpressionTree implement
   @Override
   public List<Tree> children() {
     return Collections.<Tree>singletonList(token);
+  }
+
+  @Override
+  public Optional<Object> asConstant() {
+    if (constant == NOT_INITIALIZED) {
+      constant = Optional.ofNullable(parsedValue());
+    }
+    return constant;
   }
 
 }

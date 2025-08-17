@@ -16,6 +16,8 @@
  */
 package org.sonar.java.model.expression;
 
+import java.util.Optional;
+import javax.annotation.Nonnull;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.BooleanLiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -27,6 +29,7 @@ public class BooleanLiteralTreeImpl extends LiteralTreeImpl implements BooleanLi
   public BooleanLiteralTreeImpl(InternalSyntaxToken token, boolean booleanValue) {
     super(Tree.Kind.BOOLEAN_LITERAL, token);
     this.booleanValue = booleanValue;
+    constant = Optional.of(booleanValue);
   }
 
   @Override
@@ -35,6 +38,7 @@ public class BooleanLiteralTreeImpl extends LiteralTreeImpl implements BooleanLi
   }
 
   @Override
+  @Nonnull
   public Object parsedValue() {
     return booleanValue;
   }

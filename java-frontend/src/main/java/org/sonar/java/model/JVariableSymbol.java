@@ -31,12 +31,13 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
-  // cache for this.constantValue()
-  private boolean constantValueComputed = false;
+  public static final Optional<Object> NOT_INITIALIZED = Optional.of(new Object());
+
   private Optional<Object> constantValue;
 
   JVariableSymbol(JSema sema, IVariableBinding variableBinding) {
     super(sema, variableBinding);
+    constantValue = NOT_INITIALIZED;
   }
 
   @Nullable
@@ -52,20 +53,11 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
 
   @Override
   public Optional<Object> constantValue() {
-    if (!constantValueComputed) {
-      constantValueComputed = true;
-      if (!isFinal() || !isStatic()) {
-        constantValue = Optional.empty();
+    if (constantValue == NOT_INITIALIZED) {
+      if (isFinal()) {
+        constantValue = Optional.ofNullable(((IVariableBinding) binding).getConstantValue());
       } else {
-        Object c = ((IVariableBinding) binding).getConstantValue();
-        if (c instanceof Short shortValue) {
-          c = Integer.valueOf(shortValue);
-        } else if (c instanceof Byte byteValue) {
-          c = Integer.valueOf(byteValue);
-        } else if (c instanceof Character characterValue) {
-          c = Integer.valueOf(characterValue);
-        }
-        constantValue = Optional.ofNullable(c);
+        constantValue = Optional.empty();
       }
     }
     return constantValue;

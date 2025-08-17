@@ -57,6 +57,11 @@ public abstract class AbstractPatternTree extends JavaTree implements PatternTre
   }
 
   @Override
+  public boolean isConstantInitialized() {
+    return true;
+  }
+
+  @Override
   public Tree.Kind kind() {
     return kind;
   }

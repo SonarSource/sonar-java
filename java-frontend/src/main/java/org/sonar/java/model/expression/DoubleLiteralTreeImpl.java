@@ -16,8 +16,9 @@
  */
 package org.sonar.java.model.expression;
 
+import java.util.Optional;
+import javax.annotation.Nonnull;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.DoubleLiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -25,13 +26,10 @@ public class DoubleLiteralTreeImpl extends LiteralTreeImpl implements DoubleLite
 
   private final double doubleValue;
 
-  public DoubleLiteralTreeImpl(InternalSyntaxToken token) {
-    this(token, LiteralUtils.parseJavaLiteralDouble(token.text()));
-  }
-
   public DoubleLiteralTreeImpl(InternalSyntaxToken token, double doubleValue) {
     super(Tree.Kind.DOUBLE_LITERAL, token);
     this.doubleValue = doubleValue;
+    constant = Optional.of(doubleValue);
   }
 
   @Override
@@ -40,6 +38,7 @@ public class DoubleLiteralTreeImpl extends LiteralTreeImpl implements DoubleLite
   }
 
   @Override
+  @Nonnull
   public Object parsedValue() {
     return doubleValue;
   }
