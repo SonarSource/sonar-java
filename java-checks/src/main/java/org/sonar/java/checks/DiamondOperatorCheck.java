@@ -16,11 +16,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.apache.commons.lang3.ArrayUtils;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
@@ -55,13 +56,21 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S2293")
 public class DiamondOperatorCheck extends SubscriptionVisitor implements JavaVersionAwareVisitor {
 
+  /** Nodes to check in Java 7. */
   private static final Tree.Kind[] JAVA_7_KINDS = new Tree.Kind[] {
     Tree.Kind.VARIABLE,
     Tree.Kind.TYPE_CAST,
     Tree.Kind.RETURN_STATEMENT,
     Tree.Kind.ASSIGNMENT
   };
-  private static final Tree.Kind[] JAVA_8_KINDS = ArrayUtils.add(JAVA_7_KINDS, Tree.Kind.CONDITIONAL_EXPRESSION);
+
+  /** Nodes to check in Java 8 and up. */
+  private static final Tree.Kind[] JAVA_8_KINDS =
+    Stream.concat(
+      Arrays.stream(JAVA_7_KINDS),
+      Stream.of(Tree.Kind.CONDITIONAL_EXPRESSION)
+    ).toArray(Tree.Kind[]::new);
+
   private Tree.Kind[] expressionKindsToCheck = JAVA_7_KINDS;
 
   @Override
