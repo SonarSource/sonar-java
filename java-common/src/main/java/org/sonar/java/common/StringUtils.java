@@ -152,4 +152,11 @@ public class StringUtils {
 //  public static String defaultIfBlank(String string, String defaultValue) {
 //    return org.apache.commons.lang3.StringUtils.defaultIfBlank(string, defaultValue);
 //  }
+
+  public static String repeat(String string, int count) {
+    if (isEmpty(string) || count <= 0) {
+      return "";
+    }
+    return string.repeat(count);
+  }
 }
