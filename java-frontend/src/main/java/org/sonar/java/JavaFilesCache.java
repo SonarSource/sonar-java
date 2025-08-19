@@ -20,7 +20,6 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
-import org.apache.commons.lang3.StringUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.PackageDeclarationTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -73,7 +72,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
 
   private String getClassKey(String className) {
     String key = className;
-    if (StringUtils.isNotEmpty(currentPackage)) {
+    if (currentPackage != null && !currentPackage.isEmpty()) {
       key = currentPackage + "/" + className;
     }
     if ("".equals(className) || (parent.peek() != null && parent.peek().is(Tree.Kind.METHOD))) {

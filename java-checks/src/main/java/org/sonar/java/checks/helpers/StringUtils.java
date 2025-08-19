@@ -26,6 +26,11 @@ public class StringUtils {
     return s == null || s.isEmpty();
   }
 
+  /** Opposite of {@link #isEmpty(String)}. */
+  public static boolean isNotEmpty(@Nullable String s) {
+    return !isEmpty(s);
+  }
+
   /** Count non-overlapping occurrences of <code>pattern</code> in the <code>string</code>. */
   public static int countMatches(@Nullable String string, @Nullable String pattern) {
     if (isEmpty(string) || isEmpty(pattern)) {
@@ -40,5 +45,14 @@ public class StringUtils {
     }
 
     return count;
+  }
+
+  /**
+   * Calls {@link org.apache.commons.lang3.StringUtils#split(String, String)}.
+   *
+   * <p>This method exists to avoid name clash between two <code>StringUtils</code> classes.
+   */
+  public static String[] split(String string, String separator) {
+    return org.apache.commons.lang3.StringUtils.split(string, separator);
   }
 }

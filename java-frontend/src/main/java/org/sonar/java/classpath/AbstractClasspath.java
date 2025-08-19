@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.ScannerSide;
@@ -204,7 +203,7 @@ public abstract class AbstractClasspath {
   }
 
   private static Set<File> getMatchingDirs(String pattern, Path dir) throws IOException {
-    if (!StringUtils.isEmpty(pattern)) {
+    if (pattern != null && !pattern.isEmpty()) {
       // find all dirs and subdirs that match the pattern
       PathMatcher matcher = FileSystems.getDefault().getPathMatcher(getGlob(dir, pattern));
       return new DirFinder().find(dir, matcher);
