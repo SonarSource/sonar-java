@@ -39,6 +39,7 @@ class StringUtilsTest {
     assertThat(StringUtils.countMatches("abababab", "cccc")).isZero();
     assertThat(StringUtils.countMatches("abababab", "ab")).isEqualTo(4);
 
+    assertThat(StringUtils.countMatches("abaTaba", "aba")).isEqualTo(2);
     assertThat(StringUtils.countMatches("abababa", "aba")).isEqualTo(2);
   }
 }
