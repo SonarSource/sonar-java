@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -156,8 +157,12 @@ public class StringToPrimitiveConversionCheck extends IssuableSubscriptionVisito
     }
 
     private String parseMethodName() {
-      return className + ".parse" + StringUtils.capitalize(primitiveName);
+      return className + ".parse" + capitalize(primitiveName);
     }
   }
 
+  @VisibleForTesting
+  static String capitalize(String input) {
+    return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+  }
 }

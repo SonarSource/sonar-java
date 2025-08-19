@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
@@ -38,5 +39,12 @@ class StringToPrimitiveConversionCheckTest {
       .onFile(nonCompilingTestSourcesPath("checks/StringToPrimitiveConversionCheckSample.java"))
       .withCheck(new StringToPrimitiveConversionCheck())
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_capitalize() {
+    assertThat(StringToPrimitiveConversionCheck.capitalize("hello world")).isEqualTo("Hello world");
+    assertThat(StringToPrimitiveConversionCheck.capitalize("Hello world")).isEqualTo("Hello world");
+    assertThat(StringToPrimitiveConversionCheck.capitalize(" hello world")).isEqualTo(" hello world");
   }
 }
