@@ -94,7 +94,8 @@ class ShiftOnIntOrLongCheckSample {
     a = 0xfffffffffffffffeL << 7;
     a = 0xffffffffffffffffL << 7;
     a = 0x8000000000000000L << 7;
-    a = 1 << 0x8000000000000000L;
+    // 0x8000000000000000L == -9223372036854775808 == Long.MIN_VALUE
+    a = 1 << 0x8000000000000000L; // Noncompliant {{Remove this useless shift}}
   }
 
   public int returnInt() {

@@ -236,20 +236,11 @@ public final class ExpressionUtils {
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       return resolveIdentifier((IdentifierTree) expression);
     }
-    if (expression.is(Tree.Kind.BOOLEAN_LITERAL)) {
-      return Boolean.parseBoolean(((LiteralTree) expression).value());
-    }
-    if (expression.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
-      return LiteralUtils.getAsStringValue((LiteralTree) expression);
-    }
     if (expression instanceof UnaryExpressionTree unaryExpressionTree) {
       return resolveUnaryExpression(unaryExpressionTree);
     }
-    if (expression.is(Tree.Kind.INT_LITERAL)) {
-      return LiteralUtils.intLiteralValue(expression);
-    }
-    if (expression.is(Tree.Kind.LONG_LITERAL)) {
-      return LiteralUtils.longLiteralValue(expression);
+    if (expression instanceof LiteralTree literalTree) {
+      return literalTree.parsedValue();
     }
     if (expression.is(Tree.Kind.PLUS)) {
       return resolvePlus((BinaryExpressionTree) expression);

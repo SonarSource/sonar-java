@@ -57,9 +57,9 @@ public class PubliclyWritableDirectoriesCheck extends IssuableSubscriptionVisito
     "/Users/Shared",
     "/private/tmp",
     "/private/var/tmp",
-    "\\\\Windows\\\\Temp",
-    "\\\\Temp",
-    "\\\\TMP");
+    "\\Windows\\Temp",
+    "\\Temp",
+    "\\TMP");
 
   private static final Set<String> TMP_DIR_ENV = SetUtils.immutableSetOf("TMP", "TMPDIR");
 

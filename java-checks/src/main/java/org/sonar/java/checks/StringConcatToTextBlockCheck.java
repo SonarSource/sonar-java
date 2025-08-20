@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
@@ -39,8 +37,6 @@ public class StringConcatToTextBlockCheck extends IssuableSubscriptionVisitor im
   private static final String MESSAGE = "Replace this String concatenation with Text block.";
   public static final int MINIMAL_CONTENT_LENGTH = 19;
   public static final int MINIMAL_NUMBER_OF_LINES = 2;
-  // matches '\n' characters, but skips '\\n'
-  public static final Pattern EOL = Pattern.compile("(?<!\\\\)\\\\n");
   private final Set<Tree> visitedNodes = new HashSet<>();
 
   @Override
@@ -61,20 +57,10 @@ public class StringConcatToTextBlockCheck extends IssuableSubscriptionVisitor im
     StringBuilder builder = new StringBuilder();
     if (concatStringLiterals(builder, tree)) {
       String content = builder.toString();
-      if (content.length() >= MINIMAL_CONTENT_LENGTH
-        && isMultiline(content)) {
+      if (content.length() >= MINIMAL_CONTENT_LENGTH && LiteralUtils.lineCount(content) > MINIMAL_NUMBER_OF_LINES) {
         reportIssue(tree, MESSAGE);
       }
     }
-  }
-
-  private static boolean isMultiline(String line) {
-    Matcher matcher = EOL.matcher(line);
-    int matches = 0;
-    while (matcher.find() && matches < MINIMAL_NUMBER_OF_LINES) {
-      matches++;
-    }
-    return matches == MINIMAL_NUMBER_OF_LINES;
   }
 
   private boolean concatStringLiterals(StringBuilder concatenatedContent, Tree tree) {
@@ -84,8 +70,7 @@ public class StringConcatToTextBlockCheck extends IssuableSubscriptionVisitor im
       return concatStringLiterals(concatenatedContent, ExpressionUtils.skipParentheses(binaryExpression.leftOperand())) &&
         concatStringLiterals(concatenatedContent, ExpressionUtils.skipParentheses(binaryExpression.rightOperand()));
     } else if (tree instanceof LiteralTree literalTree) {
-      String treeValue = LiteralUtils.getAsStringValue(literalTree);
-      concatenatedContent.append(treeValue);
+      concatenatedContent.append(literalTree.parsedValue());
       return true;
     } else {
       return false;
@@ -96,6 +81,12 @@ public class StringConcatToTextBlockCheck extends IssuableSubscriptionVisitor im
   public void setContext(JavaFileScannerContext context) {
     visitedNodes.clear();
     super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    visitedNodes.clear();
+    super.leaveFile(context);
   }
 
 }
