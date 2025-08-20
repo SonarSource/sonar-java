@@ -16,24 +16,39 @@
  */
 package org.sonar.java.model.expression;
 
-import java.util.Arrays;
-import java.util.List;
-import javax.annotation.Nullable;
+import java.util.Optional;
+import javax.annotation.Nonnull;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.tree.CharLiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class InternalPrefixUnaryExpression extends InternalUnaryExpression {
+public class CharLiteralTreeImpl extends LiteralTreeImpl implements CharLiteralTree {
 
-  public InternalPrefixUnaryExpression(Kind kind, InternalSyntaxToken operatorToken, ExpressionTree expression, @Nullable Object constantValue) {
-    super(kind, operatorToken, expression, constantValue);
+  private final String unquotedValue;
+  private final char charValue;
+
+  public CharLiteralTreeImpl(InternalSyntaxToken token, char charValue) {
+    super(Tree.Kind.CHAR_LITERAL, token);
+    this.unquotedValue = LiteralUtils.unquote(token.text(), '\'');
+    this.charValue = charValue;
+    constant = Optional.of(charValue);
   }
 
   @Override
-  public List<Tree> children() {
-    return Arrays.asList(
-      operatorToken,
-      expression
-    );
+  public String unquotedValue() {
+    return unquotedValue;
   }
+
+  @Override
+  public char charValue() {
+    return charValue;
+  }
+
+  @Override
+  @Nonnull
+  public Object parsedValue() {
+    return charValue;
+  }
+
 }

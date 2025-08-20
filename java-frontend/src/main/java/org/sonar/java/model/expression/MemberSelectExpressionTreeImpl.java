@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
+import java.util.Optional;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public class MemberSelectExpressionTreeImpl extends AssessableExpressionTree implements MemberSelectExpressionTree, JavaTree.AnnotatedTypeTree {
 
@@ -90,4 +91,13 @@ public class MemberSelectExpressionTreeImpl extends AssessableExpressionTree imp
         dotToken,
         identifier));
   }
+
+  @Override
+  public Optional<Object> asConstant() {
+    if (constant == NOT_INITIALIZED) {
+      constant = identifier.asConstant();
+    }
+    return constant;
+  }
+
 }

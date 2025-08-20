@@ -14,24 +14,33 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.java.model.expression;
 
-import org.sonar.java.annotations.Beta;
 import java.util.Optional;
-import org.sonar.plugins.java.api.semantic.Type;
+import javax.annotation.Nonnull;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.plugins.java.api.tree.DoubleLiteralTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
-/**
- * Common interface for all types of expressions.
- *
- * JLS 15
- */
-@Beta
-public interface ExpressionTree extends Tree {
-  Type symbolType();
+public class DoubleLiteralTreeImpl extends LiteralTreeImpl implements DoubleLiteralTree {
 
-  Optional<Object> asConstant();
+  private final double doubleValue;
 
-  boolean isConstantInitialized();
+  public DoubleLiteralTreeImpl(InternalSyntaxToken token, double doubleValue) {
+    super(Tree.Kind.DOUBLE_LITERAL, token);
+    this.doubleValue = doubleValue;
+    constant = Optional.of(doubleValue);
+  }
 
-  <T> Optional<T> asConstant(Class<T> type);
+  @Override
+  public double doubleValue() {
+    return doubleValue;
+  }
+
+  @Override
+  @Nonnull
+  public Object parsedValue() {
+    return doubleValue;
+  }
+
 }

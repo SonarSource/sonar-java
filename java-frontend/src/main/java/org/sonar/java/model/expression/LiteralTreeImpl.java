@@ -16,22 +16,22 @@
  */
 package org.sonar.java.model.expression;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Collections;
-import java.util.Objects;
-
-public class LiteralTreeImpl extends AssessableExpressionTree implements LiteralTree {
+public abstract class LiteralTreeImpl extends AssessableExpressionTree implements LiteralTree {
 
   private final Kind kind;
   private final InternalSyntaxToken token;
 
-  public LiteralTreeImpl(Kind kind, InternalSyntaxToken token) {
+  protected LiteralTreeImpl(Kind kind, InternalSyntaxToken token) {
     this.kind = Objects.requireNonNull(kind);
     this.token = token;
   }
@@ -59,6 +59,14 @@ public class LiteralTreeImpl extends AssessableExpressionTree implements Literal
   @Override
   public List<Tree> children() {
     return Collections.<Tree>singletonList(token);
+  }
+
+  @Override
+  public Optional<Object> asConstant() {
+    if (constant == NOT_INITIALIZED) {
+      constant = Optional.ofNullable(parsedValue());
+    }
+    return constant;
   }
 
 }

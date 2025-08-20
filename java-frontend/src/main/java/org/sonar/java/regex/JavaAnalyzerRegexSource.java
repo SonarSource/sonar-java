@@ -42,16 +42,14 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
   public JavaAnalyzerRegexSource(List<LiteralTree> stringLiterals) {
     super(literalsToString(stringLiterals));
     for (LiteralTree literal : stringLiterals) {
-      String text = getString(literal);
-      indexToTextSpan.addLiteral(literal, text.length());
+      indexToTextSpan.addLiteral(literal);
     }
   }
 
   private static String literalsToString(List<LiteralTree> stringLiterals) {
     StringBuilder sb = new StringBuilder();
     for (LiteralTree literal : stringLiterals) {
-      String text = getString(literal);
-      sb.append(text);
+      sb.append(literal.unquotedValue());
     }
     return sb.toString();
   }
@@ -109,37 +107,31 @@ public class JavaAnalyzerRegexSource extends JavaRegexSource {
     return textSpan.endLine != lastLine;
   }
 
-  private static String getString(LiteralTree literal) {
-    return literal.asConstant(String.class)
-      .orElseThrow(() -> new IllegalArgumentException("Only string literals allowed"));
-
-  }
-
   private static class TextSpanTracker {
     final NavigableMap<Integer, TextSpan> indexToTextSpan = new TreeMap<>();
     final Map<TextSpan, LiteralTree> textSpanToLiteral = new HashMap<>();
     int index = 0;
 
-    void addLiteral(LiteralTree literal, int length) {
+    void addLiteral(LiteralTree literal) {
       if (literal.is(Tree.Kind.TEXT_BLOCK)) {
         addTextBlock(literal);
       } else {
-        addStringLiteral(literal, length);
+        addStringLiteral(literal);
       }
     }
 
-    void addStringLiteral(LiteralTree literal, int length) {
+    void addStringLiteral(LiteralTree literal) {
       TextSpan literalSpan = AnalyzerMessage.textSpanFor(literal);
       // Create a text span for the string with the quotes stripped out
       TextSpan textSpan = new TextSpan(literalSpan.startLine, literalSpan.startCharacter + 1, literalSpan.endLine, literalSpan.endCharacter - 1);
       indexToTextSpan.put(index, textSpan);
       textSpanToLiteral.put(textSpan, literal);
-      index += length;
+      index += literal.unquotedValue().length();
     }
 
     void addTextBlock(LiteralTree literal) {
-      String[] literalTreeLines = literal.value().split("\n");
-      String[] stringLines = getString(literal).split("(?<=\r?\n)");
+      String[] literalTreeLines = literal.value().split("\r?\n|\r");
+      String[] stringLines = literal.unquotedValue().split("(?<=\n)");
 
       int indent = LiteralUtils.indentationOfTextBlock(literalTreeLines);
       int textBlockLine = LineUtils.startLine(literal.token());

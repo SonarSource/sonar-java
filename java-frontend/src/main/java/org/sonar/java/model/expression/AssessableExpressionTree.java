@@ -18,7 +18,6 @@ package org.sonar.java.model.expression;
 
 import java.util.Optional;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 
 /**
@@ -26,9 +25,21 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
  */
 public abstract class AssessableExpressionTree extends AbstractTypedTree implements ExpressionTree {
 
+  protected static final Optional<Object> NOT_INITIALIZED = Optional.of(new Object());
+
+  protected Optional<Object> constant = NOT_INITIALIZED;
+
+  @Override
+  public final boolean isConstantInitialized() {
+    return constant != NOT_INITIALIZED;
+  }
+
   @Override
   public Optional<Object> asConstant() {
-    return Optional.ofNullable(ExpressionUtils.resolveAsConstant(this));
+    if (constant == NOT_INITIALIZED) {
+      constant = Optional.empty();
+    }
+    return constant;
   }
 
   @Override

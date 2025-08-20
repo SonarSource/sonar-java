@@ -19,6 +19,7 @@ package org.sonar.java.model.expression;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
@@ -117,6 +118,30 @@ public class IdentifierTreeImpl extends AssessableExpressionTree implements Iden
   @Override
   public List<AnnotationTree> annotations() {
     return annotations;
+  }
+
+  @Override
+  public Optional<Object> asConstant() {
+    if (constant == NOT_INITIALIZED) {
+      constant = lazyComputeConstantValue();
+    }
+    return constant;
+  }
+  
+  private Optional<Object> lazyComputeConstantValue() {
+    Symbol symbol = symbol();
+    if (!symbol.isVariableSymbol()) {
+      return Optional.empty();
+    } 
+    Symbol owner = symbol.owner();
+    if (owner != null && owner.isTypeSymbol() && owner.type().is("java.lang.Boolean")) {
+      if ("TRUE".equals(symbol.name())) {
+        return Optional.of(Boolean.TRUE);
+      } else if ("FALSE".equals(symbol.name())) {
+        return Optional.of(Boolean.FALSE);
+      }
+    }
+    return ((Symbol.VariableSymbol) symbol).constantValue();
   }
 
 }

@@ -17,6 +17,9 @@
 package org.sonar.java.model.expression;
 
 import java.util.Objects;
+import java.util.Optional;
+import javax.annotation.Nullable;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -29,10 +32,13 @@ public abstract class InternalUnaryExpression extends AssessableExpressionTree i
   protected final InternalSyntaxToken operatorToken;
   protected final ExpressionTree expression;
 
-  InternalUnaryExpression(Kind kind, InternalSyntaxToken operatorToken, ExpressionTree expression) {
+  InternalUnaryExpression(Kind kind, InternalSyntaxToken operatorToken, ExpressionTree expression, @Nullable Object constantValue) {
     this.kind = Objects.requireNonNull(kind);
     this.operatorToken = operatorToken;
     this.expression = Objects.requireNonNull(expression);
+    if (constantValue != null) {
+      constant = Optional.of(constantValue);
+    }
   }
 
   @Override
@@ -54,4 +60,15 @@ public abstract class InternalUnaryExpression extends AssessableExpressionTree i
   public void accept(TreeVisitor visitor) {
     visitor.visitUnaryExpression(this);
   }
+
+  @Override
+  public Optional<Object> asConstant() {
+    if (constant == NOT_INITIALIZED) {
+      constant = Optional.ofNullable(ExpressionUtils.UnaryOperation.apply(
+        kind,
+        expression.asConstant().orElse(null)));
+    }
+    return constant;
+  }
+
 }

@@ -16,22 +16,11 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.sonar.java.annotations.Beta;
-import java.util.Optional;
-import org.sonar.plugins.java.api.semantic.Type;
+public interface StringLiteralTree extends LiteralTree {
 
-/**
- * Common interface for all types of expressions.
- *
- * JLS 15
- */
-@Beta
-public interface ExpressionTree extends Tree {
-  Type symbolType();
+  /**
+   * @return the unescaped, unindented and unquoted content of the string literal
+   */
+  String stringValue();
 
-  Optional<Object> asConstant();
-
-  boolean isConstantInitialized();
-
-  <T> Optional<T> asConstant(Class<T> type);
 }

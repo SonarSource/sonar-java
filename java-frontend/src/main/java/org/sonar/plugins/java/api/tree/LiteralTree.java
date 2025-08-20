@@ -16,6 +16,7 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import javax.annotation.Nullable;
 import org.sonar.java.annotations.Beta;
 
 /**
@@ -42,7 +43,29 @@ import org.sonar.java.annotations.Beta;
 @Beta
 public interface LiteralTree extends ExpressionTree {
 
+  /**
+   * @return the raw source code value of the literal (the parsed token), including quotes for string literals.
+   */
   String value();
 
+  /**
+   * @return The source code value of the literal without the surrounding quotes around char or string literals.
+   * The escaped characters stay escaped, {@link String#translateEscapes()} is not used.
+   * If the string literal is a text block, indentation, first line break and all trailing whitespaces are also removed.
+   */
+  default String unquotedValue() {
+    return value();
+  }
+
+  /**
+   * @return the literal runtime value. It could be: null, Boolean, String, Character, Long, Integer.
+   * Note, you can access the matching return type and support primitives by using the subtypes of {@link LiteralTree}:
+   * {@link BooleanLiteralTree#booleanValue()}, {@link StringLiteralTree#stringValue()}, {@link CharLiteralTree#charValue()},
+   * {@link LongLiteralTree#longValue()}, {@link IntLiteralTree#intValue()}.
+   */
+  @Nullable
+  Object parsedValue();
+
   SyntaxToken token();
+
 }

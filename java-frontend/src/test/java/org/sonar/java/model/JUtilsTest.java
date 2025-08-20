@@ -386,18 +386,18 @@ class JUtilsTest {
 
       Symbol.VariableSymbol shortConstant = specificCu.sema.variableSymbol(firstField(specificC).variableBinding);
       assertThat(shortConstant.constantValue().orElseThrow(AssertionError::new))
-        .isInstanceOf(Integer.class)
-        .isEqualTo(42);
+        .isInstanceOf(Short.class)
+        .isEqualTo((short) 42);
 
       Symbol.VariableSymbol charConstant = specificCu.sema.variableSymbol(nthField(specificC, 1).variableBinding);
       assertThat(charConstant.constantValue().orElseThrow(AssertionError::new))
-        .isInstanceOf(Integer.class)
-        .isEqualTo(42);
+        .isInstanceOf(Character.class)
+        .isEqualTo((char) 42);
 
       Symbol.VariableSymbol byteConstant = specificCu.sema.variableSymbol(nthField(specificC, 2).variableBinding);
       assertThat(byteConstant.constantValue().orElseThrow(AssertionError::new))
-        .isInstanceOf(Integer.class)
-        .isEqualTo(42);
+        .isInstanceOf(Byte.class)
+        .isEqualTo((byte) 42);
 
       Symbol.VariableSymbol booleanConstant = specificCu.sema.variableSymbol(nthField(specificC, 3).variableBinding);
       assertThat(booleanConstant.constantValue().orElseThrow(AssertionError::new))

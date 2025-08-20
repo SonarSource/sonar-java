@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -183,19 +184,27 @@ import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.ArrayAccessExpressionTreeImpl;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
+import org.sonar.java.model.expression.BooleanLiteralTreeImpl;
+import org.sonar.java.model.expression.CharLiteralTreeImpl;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
+import org.sonar.java.model.expression.DoubleLiteralTreeImpl;
+import org.sonar.java.model.expression.FloatLiteralTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.InstanceOfTreeImpl;
+import org.sonar.java.model.expression.IntLiteralTreeImpl;
 import org.sonar.java.model.expression.InternalPostfixUnaryExpression;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.java.model.expression.LongLiteralTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.MethodReferenceTreeImpl;
 import org.sonar.java.model.expression.NewArrayTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
+import org.sonar.java.model.expression.NullLiteralTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
+import org.sonar.java.model.expression.StringLiteralTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.java.model.expression.TypeCastExpressionTreeImpl;
 import org.sonar.java.model.expression.VarTypeTreeImpl;
@@ -2211,21 +2220,18 @@ public class JParser {
 
   private BinaryExpressionTreeImpl convertInfixExpression(InfixExpression e) {
     Op op = operators.get(e.getOperator());
-    BinaryExpressionTreeImpl t = new BinaryExpressionTreeImpl(
-      op.kind,
-      convertExpression(e.getLeftOperand()),
-      firstTokenAfter(e.getLeftOperand(), op.tokenType),
-      convertExpression(e.getRightOperand())
-    );
+    ExpressionTree left = convertExpression(e.getLeftOperand());
+    InternalSyntaxToken operator = firstTokenAfter(e.getLeftOperand(), op.tokenType);
+    ExpressionTree right = convertExpression(e.getRightOperand());
+    Object constantValue = convertBinaryExpressionConstant(e, left, right);
+    BinaryExpressionTreeImpl t = new BinaryExpressionTreeImpl(op.kind, left, operator, right, constantValue);
     for (Object o : e.extendedOperands()) {
-      Expression e2 = (Expression) o;
+      Expression next = (Expression) o;
       t.typeBinding = e.resolveTypeBinding();
-      t = new BinaryExpressionTreeImpl(
-        op.kind,
-        t,
-        firstTokenBefore(e2, op.tokenType),
-        convertExpression(e2)
-      );
+      InternalSyntaxToken nextOperator = firstTokenBefore(next, op.tokenType);
+      ExpressionTree newRight = convertExpression(next);
+      Object nextConstantValue = convertBinaryExpressionConstant(next, left, right);
+      t = new BinaryExpressionTreeImpl(op.kind, t, nextOperator, newRight, nextConstantValue);
     }
     return t;
   }
@@ -2316,20 +2322,18 @@ public class JParser {
 
   private InternalPostfixUnaryExpression convertPostfixExpression(PostfixExpression e) {
     Op op = operators.get(e.getOperator());
-    return new InternalPostfixUnaryExpression(
-      op.kind,
-      convertExpression(e.getOperand()),
-      firstTokenAfter(e.getOperand(), op.tokenType)
-    );
+    ExpressionTree operand = convertExpression(e.getOperand());
+    Object constantValue = operand.isConstantInitialized() ? e.resolveConstantExpressionValue() : null;
+    InternalSyntaxToken token = firstTokenAfter(e.getOperand(), op.tokenType);
+    return new InternalPostfixUnaryExpression(op.kind, operand, token, constantValue);
   }
 
   private InternalPrefixUnaryExpression convertPrefixExpression(PrefixExpression e) {
     Op op = operators.get(e.getOperator());
-    return new InternalPrefixUnaryExpression(
-      op.kind,
-      firstTokenIn(e, op.tokenType),
-      convertExpression(e.getOperand())
-    );
+    InternalSyntaxToken token = firstTokenIn(e, op.tokenType);
+    ExpressionTree operand = convertExpression(e.getOperand());
+    Object constantValue = operand.isConstantInitialized() ? e.resolveConstantExpressionValue() : null;
+    return new InternalPrefixUnaryExpression(op.kind, token, operand, constantValue);
   }
 
   private InstanceOfTreeImpl convertInstanceOf(InstanceofExpression e) {
@@ -2448,56 +2452,101 @@ public class JParser {
   }
 
   private LiteralTreeImpl convertLiteral(NullLiteral e) {
-    return new LiteralTreeImpl(Tree.Kind.NULL_LITERAL, firstTokenIn(e, TerminalToken.TokenNamenull));
+    return new NullLiteralTreeImpl(firstTokenIn(e, TerminalToken.TokenNamenull));
   }
 
   private ExpressionTree convertLiteral(NumberLiteral e) {
     int tokenIndex = tokenManager.findIndex(e.getStartPosition(), ANY_TOKEN, true);
     TerminalToken tokenType = tokenManager.get(tokenIndex).tokenType;
     boolean unaryMinus = tokenType == TerminalToken.TokenNameMINUS;
+    Object constant = e.resolveConstantExpressionValue();
+    Object minusConstant = null;
     if (unaryMinus) {
       tokenIndex++;
       tokenType = tokenManager.get(tokenIndex).tokenType;
+      minusConstant = constant;
+      constant = ExpressionUtils.UnaryOperation.UNARY_MINUS.apply(minusConstant);
     }
     ExpressionTree result;
+    InternalSyntaxToken token = createSyntaxToken(tokenIndex);
     switch (tokenType) {
       case TokenNameIntegerLiteral:
-        result = new LiteralTreeImpl(Tree.Kind.INT_LITERAL, createSyntaxToken(tokenIndex));
+        int intValue = convertFromConstant(constant, Integer.class, () -> (int) LiteralUtils.parseJavaLiteralLong(token.text()));
+        if (unaryMinus && !(minusConstant instanceof Integer)) {
+          minusConstant = -intValue;
+        }
+        result = new IntLiteralTreeImpl(token, intValue);
         break;
       case TokenNameLongLiteral:
-        result = new LiteralTreeImpl(Tree.Kind.LONG_LITERAL, createSyntaxToken(tokenIndex));
+        long longValue = convertFromConstant(constant, Long.class, () -> LiteralUtils.parseJavaLiteralLong(token.text()));
+        if (unaryMinus && !(minusConstant instanceof Long)) {
+          minusConstant = -longValue;
+        }
+        result = new LongLiteralTreeImpl(token, longValue);
         break;
       case TokenNameFloatingPointLiteral:
-        result = new LiteralTreeImpl(Tree.Kind.FLOAT_LITERAL, createSyntaxToken(tokenIndex));
+        float floatValue = convertFromConstant(constant, Float.class, () -> (float) LiteralUtils.parseJavaLiteralDouble(token.text()));
+        if (unaryMinus && !(minusConstant instanceof Float)) {
+          minusConstant = -floatValue;
+        }
+        result = new FloatLiteralTreeImpl(token, floatValue);
         break;
       case TokenNameDoubleLiteral:
-        result = new LiteralTreeImpl(Tree.Kind.DOUBLE_LITERAL, createSyntaxToken(tokenIndex));
+        double doubleValue = convertFromConstant(constant, Double.class, () -> LiteralUtils.parseJavaLiteralDouble(token.text()));
+        if (unaryMinus && !(minusConstant instanceof Double)) {
+          minusConstant = -doubleValue;
+        }
+        result = new DoubleLiteralTreeImpl(token, doubleValue);
         break;
       default:
         throw new IllegalStateException();
     }
     ((LiteralTreeImpl) result).typeBinding = e.resolveTypeBinding();
     if (unaryMinus) {
-      return new InternalPrefixUnaryExpression(Tree.Kind.UNARY_MINUS, createSyntaxToken(tokenIndex - 1), result);
+      return new InternalPrefixUnaryExpression(Tree.Kind.UNARY_MINUS, createSyntaxToken(tokenIndex - 1), result, minusConstant);
     }
     return result;
   }
 
   private LiteralTreeImpl convertLiteral(CharacterLiteral e) {
-    return new LiteralTreeImpl(Tree.Kind.CHAR_LITERAL, firstTokenIn(e, TerminalToken.TokenNameCharacterLiteral));
+    InternalSyntaxToken token = firstTokenIn(e, TerminalToken.TokenNameCharacterLiteral);
+    // Note: e.charValue() does not support \s
+    char charValue = convertFromConstant(e, Character.class, () -> "'\\s'".equals(token.text()) ? ' ' : e.charValue());
+    return new CharLiteralTreeImpl(token, charValue);
   }
 
   private LiteralTreeImpl convertLiteral(BooleanLiteral e) {
     InternalSyntaxToken value = firstTokenIn(e, e.booleanValue() ? TerminalToken.TokenNametrue : TerminalToken.TokenNamefalse);
-    return new LiteralTreeImpl(Tree.Kind.BOOLEAN_LITERAL, value);
+    return new BooleanLiteralTreeImpl(value, e.booleanValue());
   }
 
   private LiteralTreeImpl convertLiteral(StringLiteral e) {
-    return new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, firstTokenIn(e, TerminalToken.TokenNameStringLiteral));
+    InternalSyntaxToken token = firstTokenIn(e, TerminalToken.TokenNameStringLiteral);
+    String literalValue = convertFromConstant(e, String.class, e::getLiteralValue);
+    return new StringLiteralTreeImpl(Tree.Kind.STRING_LITERAL, token, literalValue);
   }
 
   private LiteralTreeImpl convertTextBlock(TextBlock e) {
-    return new LiteralTreeImpl(Tree.Kind.TEXT_BLOCK, firstTokenIn(e, TerminalToken.TokenNameTextBlock));
+    InternalSyntaxToken token = firstTokenIn(e, TerminalToken.TokenNameTextBlock);
+    String literalValue = convertFromConstant(e, String.class, e::getLiteralValue);
+    return new StringLiteralTreeImpl(Tree.Kind.TEXT_BLOCK, token, literalValue);
+  }
+
+  @Nullable
+  private static Object convertBinaryExpressionConstant(Expression expression, ExpressionTree left, ExpressionTree right) {
+    // do not resolve the constant expression if the left or right operand has not been initialized.
+    if (left.isConstantInitialized() && right.isConstantInitialized()) {
+      return expression.resolveConstantExpressionValue();
+    }
+    return null;
+  }
+
+  private static <T> T convertFromConstant(Expression expression, Class<T> type, Supplier<T> fallbackSupplier) {
+    return convertFromConstant(expression.resolveConstantExpressionValue(), type, fallbackSupplier);
+  }
+
+  private static <T> T convertFromConstant(@Nullable Object value, Class<T> type, Supplier<T> fallbackSupplier) {
+    return type.isInstance(value) ? type.cast(value) : fallbackSupplier.get();
   }
 
   private AnnotationTreeImpl convertAnnotation(Annotation e) {

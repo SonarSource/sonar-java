@@ -18,14 +18,15 @@ package org.sonar.java.model.expression;
 
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class InternalPostfixUnaryExpression extends InternalUnaryExpression {
 
-  public InternalPostfixUnaryExpression(Kind kind, ExpressionTree expression, InternalSyntaxToken operatorToken) {
-    super(kind, operatorToken, expression);
+  public InternalPostfixUnaryExpression(Kind kind, ExpressionTree expression, InternalSyntaxToken operatorToken, @Nullable Object constantValue) {
+    super(kind, operatorToken, expression, constantValue);
   }
 
   @Override

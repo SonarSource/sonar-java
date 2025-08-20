@@ -16,24 +16,31 @@
  */
 package org.sonar.java.model.expression;
 
-import java.util.Arrays;
-import java.util.List;
-import javax.annotation.Nullable;
+import java.util.Optional;
+import javax.annotation.Nonnull;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.BooleanLiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class InternalPrefixUnaryExpression extends InternalUnaryExpression {
+public class BooleanLiteralTreeImpl extends LiteralTreeImpl implements BooleanLiteralTree {
 
-  public InternalPrefixUnaryExpression(Kind kind, InternalSyntaxToken operatorToken, ExpressionTree expression, @Nullable Object constantValue) {
-    super(kind, operatorToken, expression, constantValue);
+  private final boolean booleanValue;
+
+  public BooleanLiteralTreeImpl(InternalSyntaxToken token, boolean booleanValue) {
+    super(Tree.Kind.BOOLEAN_LITERAL, token);
+    this.booleanValue = booleanValue;
+    constant = Optional.of(booleanValue);
   }
 
   @Override
-  public List<Tree> children() {
-    return Arrays.asList(
-      operatorToken,
-      expression
-    );
+  public boolean booleanValue() {
+    return booleanValue;
   }
+
+  @Override
+  @Nonnull
+  public Object parsedValue() {
+    return booleanValue;
+  }
+
 }

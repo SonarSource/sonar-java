@@ -16,22 +16,11 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.sonar.java.annotations.Beta;
-import java.util.Optional;
-import org.sonar.plugins.java.api.semantic.Type;
+public interface BooleanLiteralTree extends LiteralTree {
 
-/**
- * Common interface for all types of expressions.
- *
- * JLS 15
- */
-@Beta
-public interface ExpressionTree extends Tree {
-  Type symbolType();
+  /**
+   * @return the parsed boolean value
+   */
+  boolean booleanValue();
 
-  Optional<Object> asConstant();
-
-  boolean isConstantInitialized();
-
-  <T> Optional<T> asConstant(Class<T> type);
 }

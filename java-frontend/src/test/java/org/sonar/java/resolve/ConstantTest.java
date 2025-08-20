@@ -61,7 +61,7 @@ class ConstantTest {
     assertThat(valuesByFieldName)
       .containsKeys("CONST1", "nonStatic", "nonFinal", "BOOLEAN_TRUE", "BOOLEAN_FALSE")
       .containsEntry("CONST1", "CONST_VALUE")
-      .containsEntry("nonStatic", null)
+      .containsEntry("nonStatic", "xxx")
       .containsEntry("nonFinal", null)
       .containsEntry("BOOLEAN_TRUE", Boolean.TRUE)
       .containsEntry("BOOLEAN_FALSE", Boolean.FALSE);
@@ -71,11 +71,11 @@ class ConstantTest {
     assertThat(valuesByFieldName.get("INT"))
       .isInstanceOf(Integer.class);
     assertThat(valuesByFieldName.get("SHORT"))
-      .isInstanceOf(Integer.class);
+      .isInstanceOf(Short.class);
     assertThat(valuesByFieldName.get("CHAR"))
-      .isInstanceOf(Integer.class);
+      .isInstanceOf(Character.class);
     assertThat(valuesByFieldName.get("BYTE"))
-      .isInstanceOf(Integer.class);
+      .isInstanceOf(Byte.class);
 
     assertThat(valuesByFieldName.get("FLOAT"))
       .isInstanceOf(Float.class);

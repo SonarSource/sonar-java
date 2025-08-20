@@ -20,6 +20,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -35,6 +36,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.sonar.java.model.LiteralUtils.parseJavaLiteralLong;
 
 class LiteralUtilsTest {
 
@@ -123,36 +126,43 @@ class LiteralUtilsTest {
 
   @Test
   void test_int_and_long_value() {
-    Integer[] expectedIntegerValues = {42, -7, 3, null, null, 0xff, 0b0100, 5678, 0xFF, 0b1100110, 0xff000000};
-    Long[] expectedLongValues = {42L, 42L, -7L, -7L, +3L, +3L, null, null, 0xFFL, null, null, null,
-      Long.MAX_VALUE, Long.MAX_VALUE, 0b11010010_01101001_10010100_10010010L, 10010L, 0xFFL, 0b1100110L};
+    Integer[] expectedIntegerValues = {   42, -7, +3, null, null, 0xff, 0b0100, 56_78, 0XFF, 0B1100110, 0xff000000};
+    Long[] expectedLongValues = {(long) 42, 42L, (long) -7, -7L, (long) +3, +3L, null, null, 0xFFL, 0xFFFFFFFFFFFFFFFFL, 0xFFFFFFFFFFFFFFFEL, 0x8000000000000000L,
+      0x7FFFFFFFFFFFFFFFL, 0x7FFF_FFFF_FFFF_FFFFL, (long) 0b11010010_01101001_10010100_10010010, (long) 100_10, 0XFFL, 0B1100110L};
     int i = 0;
     int j = 0;
 
     for (VariableTree variableTree : variables) {
-      if (variableTree.simpleName().name().startsWith("x")) {
-        assertThat(LiteralUtils.intLiteralValue(variableTree.initializer())).isEqualTo(expectedIntegerValues[i++]);
-      } else if (variableTree.simpleName().name().startsWith("y")) {
-        assertThat(LiteralUtils.longLiteralValue(variableTree.initializer())).isEqualTo(expectedLongValues[j++]);
+      String variableName = variableTree.simpleName().name();
+      if (variableName.startsWith("x")) {
+        assertThat(LiteralUtils.intLiteralValue(variableTree.initializer()))
+          .describedAs(variableName)
+          .isEqualTo(expectedIntegerValues[i++]);
+      } else if (variableName.startsWith("y")) {
+        assertThat(LiteralUtils.longLiteralValue(variableTree.initializer()))
+          .describedAs(variableName)
+          .isEqualTo(expectedLongValues[j++]);
       }
     }
   }
 
   @Test
   void test_float_value() {
-    Double[] expectedValues = {0d, 0.d, 123.45d, 1_000_000D, 1_000_000_000_000_000_000d, -1_000_000d, -.9d, 0x1.2p3d, 123_456e-7d, null, null, null};
+    Float[] expectedValues = {0f, 0.f, 123.45f, 1_000_000F, +1_000_000_000_000_000_000f, -1_000_000F, -.9f, 0x1.2p3f, 123_456e-7f, null, (float)0, null};
     int idx = 0;
-
     for (VariableTree variableTree : variables) {
       if (variableTree.simpleName().name().startsWith("f")) {
-        assertThat(LiteralUtils.doubleLiteralValue(variableTree.initializer())).isEqualTo(expectedValues[idx++]);
+        Float floatExpectedValue = expectedValues[idx++];
+        Double doubleExpectedValue = floatExpectedValue == null ? null : floatExpectedValue.doubleValue();
+        assertThat(LiteralUtils.doubleLiteralValue(variableTree.initializer())).isEqualTo(doubleExpectedValue);
       }
     }
   }
 
   @Test
   void test_double_value() {
-    Double[] expectedValues = {0., 1.d, 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001, -1_000_000D, +1_000_000_000_000_000_000d, 23_456e-7d, 0x1.2p3, null , null};
+    Double[] expectedValues = {0., 1.d, 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001, -1_000_000D,
+     +1_000_000_000_000_000_000d, 23_456e-7d, 0x1.2p3, (double) 0, null};
     int idx = 0;
 
     for (VariableTree variableTree : variables) {
@@ -333,43 +343,53 @@ class LiteralUtilsTest {
   }
 
   @Test
-  void getAsStringValue_for_string() {
+  void remove_quote_and_indentation_for_string() {
+    UnaryOperator<String> convert = LiteralUtils::removeTextBlockQuoteIndentationAndTrailingWhitespaces;
 
-    LiteralTree intLiteral = getLiteral("123");
-    assertThat(LiteralUtils.getAsStringValue(intLiteral)).isEqualTo("123");
+    assertThatThrownBy(() -> convert.apply("123"))
+      .hasMessage("Unexpected token, can't unwrap text block quotes \"\"\" from: 123");
 
-    LiteralTree stringLiteral = getLiteral("\"ABC\"");
-    assertThat(LiteralUtils.getAsStringValue(stringLiteral)).isEqualTo("ABC");
-    
-    LiteralTree textBlock = getLiteral("\"\"\"\nABC\"\"\"");
-    assertThat(LiteralUtils.getAsStringValue(textBlock)).isEqualTo("ABC");
-    
-    LiteralTree multilineString = getLiteral("\"ABC\\nABC\"");
-    assertThat(LiteralUtils.getAsStringValue(multilineString)).isEqualTo("ABC\\nABC");
-    
-    LiteralTree multilineTB = getLiteral("\"\"\"\n      ABC\n      ABC\"\"\"");
-    assertThat(LiteralUtils.getAsStringValue(multilineTB)).isEqualTo("ABC\nABC");
-    
-    LiteralTree multilineIndentInTB = getLiteral("\"\"\"\n      ABC\n    ABC\"\"\"");
-    assertThat(LiteralUtils.getAsStringValue(multilineIndentInTB)).isEqualTo("  ABC\nABC");
-    
-    LiteralTree textBlockWithTab = getLiteral("\"\"\"\n      \tABC\"\"\"");
-    assertThat(LiteralUtils.getAsStringValue(textBlockWithTab)).isEqualTo("ABC");
-    
-    LiteralTree textBlockWithEmptyLines = getLiteral("\"\"\"\n\n\n      \tABC\"\"\"");
-    assertThat(LiteralUtils.getAsStringValue(textBlockWithEmptyLines)).isEqualTo("\n\nABC");
-    
-    LiteralTree textBlockWithNewLines = getLiteral("\"\"\"\n\n\n      \tABC\\n\"\"\"");
-    assertThat(LiteralUtils.getAsStringValue(textBlockWithNewLines)).isEqualTo("\n\nABC\\n");
-    
-    LiteralTree textBlockWithTrailingSpaces = getLiteral("\"\"\"\n\n\n      \tABC                  \"\"\"");
-    assertThat(LiteralUtils.getAsStringValue(textBlockWithTrailingSpaces)).isEqualTo("\n\nABC                  ");
-    
-    LiteralTree textBlockWithTrailingAndLeadingSpaces = getLiteral("\"\"\"\n\n\n      \tABC   \n       ABC     ABC                  \"\"\"");
-    assertThat(LiteralUtils.getAsStringValue(textBlockWithTrailingAndLeadingSpaces)).isEqualTo("\n\nABC\nABC     ABC                  ");
+    assertThatThrownBy(() -> convert.apply("\"\"\" missing end quotes"))
+      .hasMessage("Unexpected token, can't unwrap text block quotes \"\"\" from: \"\"\" missing end quotes");
 
-    LiteralTree textBlockWithQuotesOnNewLine = getLiteral("\"\"\"\n     ABC\n     ABC\n  \"\"\"");
-    assertThat(LiteralUtils.getAsStringValue(textBlockWithQuotesOnNewLine)).isEqualTo("   ABC\n   ABC\n");
+    assertThatThrownBy(() -> convert.apply(" missing heading quotes \"\"\""))
+      .hasMessage("Unexpected token, can't unwrap text block quotes \"\"\" from:  missing heading quotes \"\"\"");
+
+    String textBlock = convert.apply("\"\"\"\nABC\"\"\"");
+    assertThat(textBlock).isEqualTo("ABC");
+    
+    String multilineTextBlockLF = convert.apply("\"\"\"\n      ABC\n      ABC\"\"\"");
+    assertThat(multilineTextBlockLF).isEqualTo("ABC\nABC");
+    
+    String emptyTextBlock = convert.apply("\"\"\"\n      \"\"\"");
+    assertThat(emptyTextBlock).isEmpty();
+
+    String multilineTextBlockCRLF = convert.apply("\"\"\"\r\n      ABC\r\n      ABC\"\"\"");
+    assertThat(multilineTextBlockCRLF).isEqualTo("ABC\nABC");
+
+    String multilineTextBlockCR = convert.apply("\"\"\"\r\n      ABC\r      ABC\"\"\"");
+    assertThat(multilineTextBlockCR).isEqualTo("ABC\nABC");
+
+    String multilineIndentInTB = convert.apply("\"\"\"\n      ABC\n    ABC\"\"\"");
+    assertThat(multilineIndentInTB).isEqualTo("  ABC\nABC");
+    
+    String textBlockWithTab = convert.apply("\"\"\"\n      \tABC\"\"\"");
+    assertThat(textBlockWithTab).isEqualTo("ABC");
+    
+    String textBlockWithEmptyLines = convert.apply("\"\"\"\n\n\n      \tABC\"\"\"");
+    assertThat(textBlockWithEmptyLines).isEqualTo("\n\nABC");
+    
+    String textBlockWithNewLines = convert.apply("\"\"\"\n\n\n      \tABC\\n\"\"\"");
+    assertThat(textBlockWithNewLines).isEqualTo("\n\nABC\\n");
+    
+    String textBlockWithTrailingSpaces = convert.apply("\"\"\"  \t \f  \n\n\n      \tABC   \t       \f      \"\"\"");
+    assertThat(textBlockWithTrailingSpaces).isEqualTo("\n\nABC");
+    
+    String textBlockWithTrailingAndLeadingSpaces = convert.apply("\"\"\"\n\n\n      \tABC   \n       ABC     ABC                  \"\"\"");
+    assertThat(textBlockWithTrailingAndLeadingSpaces).isEqualTo("\n\nABC\nABC     ABC");
+
+    String textBlockWithQuotesOnNewLine = convert.apply("\"\"\"\n     ABC\n     ABC\n  \"\"\"");
+    assertThat(textBlockWithQuotesOnNewLine).isEqualTo("   ABC\n   ABC\n");
   }
 
   @Test
@@ -386,6 +406,77 @@ class LiteralUtilsTest {
     assertThat(LiteralUtils.indentationOfTextBlock(withEmptyLine)).isEqualTo(4);
     String[] withIndentedEmptyLine = {"\"\"\"", "    abc", " \t\f", "    \"\"\""};
     assertThat(LiteralUtils.indentationOfTextBlock(withIndentedEmptyLine)).isEqualTo(4);
+  }
+
+  @Test
+  void parse_java_literal_long() {
+    assertThat(parseJavaLiteralLong("")).isZero();
+    assertThat(parseJavaLiteralLong("0")).isZero();
+    assertThat(parseJavaLiteralLong("+0l")).isZero();
+    assertThat(parseJavaLiteralLong("-0L")).isZero();
+
+    assertThat(parseJavaLiteralLong("2")).isEqualTo(2);
+    assertThat(parseJavaLiteralLong("+2L")).isEqualTo(2);
+    assertThat(parseJavaLiteralLong("-2")).isEqualTo(-2);
+
+    assertThat(parseJavaLiteralLong("0xFF")).isEqualTo(255);
+    assertThat(parseJavaLiteralLong("0101")).isEqualTo(65);
+    assertThat(parseJavaLiteralLong("+0b0101L")).isEqualTo(5);
+    assertThat(parseJavaLiteralLong("#0F")).isEqualTo(15);
+
+    // max long in decimal format
+    assertThat(parseJavaLiteralLong("9223372036854775807L")).isEqualTo(9223372036854775807L);
+    // max long + 1, it is expected to be negative due to overflow
+    assertThat(parseJavaLiteralLong("9223372036854775808")).isEqualTo(-9223372036854775808L);
+    // with the ninus sign the is now overflow
+    assertThat(parseJavaLiteralLong("-9223372036854775808")).isEqualTo(-9223372036854775808L);
+    // -(max long + 1) overflow the positive long value, but after negation everything is fine
+    assertThat(-parseJavaLiteralLong("9223372036854775808")).isEqualTo(-9223372036854775808L);
+
+    assertThatThrownBy(() -> parseJavaLiteralLong("0invalid"))
+      .isInstanceOf(NumberFormatException.class);
+  }
+
+  @Test
+  void parse_java_literal_long_casted_to_int() {
+    // parsed long should be compatible with int
+    assertThat((int) parseJavaLiteralLong("0")).isZero();
+    assertThat((int) parseJavaLiteralLong("32")).isEqualTo(32);
+    assertThat((int) parseJavaLiteralLong("-32")).isEqualTo(-32);
+    assertThat((int) parseJavaLiteralLong("040")).isEqualTo(32);
+    assertThat((int) parseJavaLiteralLong("0x20")).isEqualTo(32);
+    assertThat((int) parseJavaLiteralLong("-2147483648")).isEqualTo(-2147483648);
+    assertThat((int) parseJavaLiteralLong("0x80000000")).isEqualTo(-2147483648);
+    assertThat((int) parseJavaLiteralLong("2147483647")).isEqualTo(2147483647);
+    assertThat((int) parseJavaLiteralLong("0x7fffffff")).isEqualTo(2147483647);
+    assertThat((int) parseJavaLiteralLong("0xffffffff")).isEqualTo(0xffffffff).isEqualTo(-1);
+  }
+
+  @Test
+  void line_count() {
+    assertThat(LiteralUtils.lineCount("a")).isEqualTo(1);
+    assertThat(LiteralUtils.lineCount("a\n")).isEqualTo(2);
+    assertThat(LiteralUtils.lineCount("a\nb")).isEqualTo(2);
+    assertThat(LiteralUtils.lineCount("a\nb\n")).isEqualTo(3);
+    assertThat(LiteralUtils.lineCount("a\nb\nc")).isEqualTo(3);
+    assertThat(LiteralUtils.lineCount("\n\n")).isEqualTo(3);
+  }
+
+  @Test
+  void unquote() {
+    assertThat(LiteralUtils.unquote("'a'", '\'')).isEqualTo("a");
+    assertThatThrownBy(() -> LiteralUtils.unquote("'a'", '"'))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Unexpected token, can't unwrap character \" around token: 'a'");
+    assertThatThrownBy(() -> LiteralUtils.unquote("", '"'))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Unexpected token, can't unwrap character \" around token: ");
+    assertThatThrownBy(() -> LiteralUtils.unquote("\"a", '"'))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Unexpected token, can't unwrap character \" around token: \"a");
+    assertThatThrownBy(() -> LiteralUtils.unquote("a\"", '"'))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Unexpected token, can't unwrap character \" around token: a\"");
   }
 
   private ExpressionTree getFirstExpression(String code) {
@@ -405,8 +496,4 @@ class LiteralUtilsTest {
     return (ClassTree) compilationUnitTree.types().get(0);
   }
 
-  private LiteralTree getLiteral(String code) {
-    ClassTree classTree = getClassTree("Object o = " + code + ";");
-    return (LiteralTree) ((VariableTree) classTree.members().get(0)).initializer();
-  }
 }

@@ -49,15 +49,15 @@ class ClassesLayoutTest {
   @Test
   void identifier() {
     assertAll(
-      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64)).isEqualTo(88),
-      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
+      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64)).isEqualTo(96),
+      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64_COOPS)).isEqualTo(56)
     );
   }
 
   @Test
   void literal() {
     assertAll(
-      () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64)).isEqualTo(64),
+      () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64)).isEqualTo(72),
       () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64_COOPS)).isEqualTo(40)
     );
   }
@@ -73,7 +73,7 @@ class ClassesLayoutTest {
   @Test
   void member_select() {
     assertAll(
-      () -> assertThat(instanceSize(MemberSelectExpressionTreeImpl.class, X86_64)).isEqualTo(80),
+      () -> assertThat(instanceSize(MemberSelectExpressionTreeImpl.class, X86_64)).isEqualTo(88),
       () -> assertThat(instanceSize(MemberSelectExpressionTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
@@ -81,7 +81,7 @@ class ClassesLayoutTest {
   @Test
   void method_invocation() {
     assertAll(
-      () -> assertThat(instanceSize(MethodInvocationTreeImpl.class, X86_64)).isEqualTo(80),
+      () -> assertThat(instanceSize(MethodInvocationTreeImpl.class, X86_64)).isEqualTo(88),
       () -> assertThat(instanceSize(MethodInvocationTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
     );
   }
@@ -113,7 +113,7 @@ class ClassesLayoutTest {
   @Test
   void symbol_variable() {
     assertAll(
-      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64)).isEqualTo(72),
+      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64)).isEqualTo(64),
       () -> assertThat(instanceSize(JVariableSymbol.class, X86_64_COOPS)).isEqualTo(40)
     );
   }

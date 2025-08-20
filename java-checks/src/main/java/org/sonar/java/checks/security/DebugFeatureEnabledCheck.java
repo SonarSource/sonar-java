@@ -94,7 +94,7 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isSetWebContentsDebuggingEnabled(MethodInvocationTree mit) {
     return SET_WEB_CONTENTS_DEBUGGING_ENABLED.matches(mit) &&
-      Boolean.TRUE.equals(ExpressionUtils.resolveAsConstant(mit.arguments().get(0)));
+      Boolean.TRUE.equals(mit.arguments().get(0).asConstant().orElse(null));
   }
 
   private static boolean isDebugWithTrueArgument(MethodInvocationTree mit){
