@@ -16,7 +16,6 @@
  */
 package org.sonar.java.ast.visitors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -89,7 +88,7 @@ public class AccessorsUtils {
     } else if (expression.is(Tree.Kind.IDENTIFIER)) {
       variableName = ((IdentifierTree) expression).name();
     }
-    return !StringUtils.isEmpty(variableName) && referencePrivateProperty(variableName, classTree);
+    return variableName != null && !variableName.isEmpty() && referencePrivateProperty(variableName, classTree);
   }
 
   private static boolean referencePrivateProperty(ExpressionTree expression, ClassTree classTree) {
@@ -99,7 +98,7 @@ public class AccessorsUtils {
     } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
       variableReturned = ((MemberSelectExpressionTree) expression).identifier().name();
     }
-    return !StringUtils.isEmpty(variableReturned) && referencePrivateProperty(variableReturned, classTree);
+    return variableReturned != null && !variableReturned.isEmpty() && referencePrivateProperty(variableReturned, classTree);
   }
 
   private static boolean referencePrivateProperty(String variableName, ClassTree classTree) {
