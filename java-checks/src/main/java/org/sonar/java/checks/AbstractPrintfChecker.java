@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
-
 import org.sonar.java.checks.helpers.StringUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.LiteralUtils;

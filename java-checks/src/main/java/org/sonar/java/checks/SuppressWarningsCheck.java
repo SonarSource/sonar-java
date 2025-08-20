@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.LiteralUtils;
@@ -85,7 +84,7 @@ public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
     }
 
     allowedWarnings = Arrays.stream(warningsCommaSeparated.split(","))
-      .filter(StringUtils::isNotBlank)
+      .filter(s -> !s.isBlank())
       .map(SuppressWarningsCheck::replaceFormerRepositoryPrefix)
       .collect(Collectors.toSet());
 

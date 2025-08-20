@@ -16,7 +16,7 @@
  */
 package org.sonar.java.checks;
 
-import org.apache.commons.lang3.Strings;
+import org.sonar.java.common.Strings;
 import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -34,7 +34,7 @@ public class CommentContainsPatternChecker {
   }
 
   private static boolean isLetterAround(String line, String pattern) {
-    int start = Strings.CI.indexOf(line, pattern);
+    int start = Strings.indexOfInsensitive(line, pattern);
     int end = start + pattern.length();
 
     boolean pre = start > 0 && Character.isLetter(line.charAt(start - 1));
@@ -45,10 +45,10 @@ public class CommentContainsPatternChecker {
 
   public void checkTrivia(SyntaxTrivia syntaxTrivia) {
     String comment = syntaxTrivia.comment();
-    if (Strings.CI.contains(comment, pattern)) {
+    if (Strings.containsInsensitive(comment, pattern)) {
       String[] lines = comment.split("\r\n?|\n");
       for (int i = 0; i < lines.length; i++) {
-        if (Strings.CI.contains(lines[i], pattern) && !isLetterAround(lines[i], pattern)) {
+        if (Strings.containsInsensitive(lines[i], pattern) && !isLetterAround(lines[i], pattern)) {
           newCheck.addIssue(LineUtils.startLine(syntaxTrivia) + i, message);
         }
       }

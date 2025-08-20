@@ -16,10 +16,11 @@
  */
 package org.sonar.plugins.surefire.data;
 
+import org.sonar.java.common.Strings;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.lang3.Strings;
 
 public final class UnitTestClassReport {
   private int errors = 0;
@@ -42,7 +43,7 @@ public final class UnitTestClassReport {
   public UnitTestClassReport add(UnitTestResult result) {
     initResults();
     boolean hasName = results.stream().map(UnitTestResult::getName).anyMatch(result.getName()::equals);
-    if (hasName && Strings.CS.contains(result.getName(), "$")) {
+    if (hasName && Strings.containsSensitive(result.getName(), "$")) {
       return this;
     }
     results.add(result);

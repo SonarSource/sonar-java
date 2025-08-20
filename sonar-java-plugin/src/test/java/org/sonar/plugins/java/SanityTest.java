@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -51,6 +50,7 @@ import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.FilesUtils;
+import org.sonar.java.common.MiscUtils;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.TelemetryKey;
@@ -273,7 +273,7 @@ class SanityTest {
       if (realCause == null) {
         return null;
       }
-      String stackTrace = ExceptionUtils.getStackTrace(realCause);
+      String stackTrace = MiscUtils.getStackTrace(realCause);
       return Arrays.stream(stackTrace.split("\n"))
         // try to retrieve the rule class name in 'checks' package
         .filter(line -> line.contains("org.sonar.java.checks."))

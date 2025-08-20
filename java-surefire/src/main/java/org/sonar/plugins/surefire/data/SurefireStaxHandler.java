@@ -19,13 +19,13 @@ package org.sonar.plugins.surefire.data;
 import java.text.ParseException;
 import java.util.Locale;
 import javax.xml.stream.XMLStreamException;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.codehaus.staxmate.in.ElementFilter;
 import org.codehaus.staxmate.in.SMEvent;
 import org.codehaus.staxmate.in.SMHierarchicCursor;
 import org.codehaus.staxmate.in.SMInputCursor;
 import org.sonar.api.utils.ParsingUtils;
+import org.sonar.java.common.StringUtils;
+import org.sonar.java.common.Strings;
 
 public class SurefireStaxHandler {
 
@@ -58,13 +58,23 @@ public class SurefireStaxHandler {
 
   private static String getClassname(SMInputCursor testCaseCursor, String defaultClassname) throws XMLStreamException {
     String testClassName = testCaseCursor.getAttrValue("classname");
-    if (StringUtils.isNotBlank(testClassName) && testClassName.endsWith(")")) {
+    if (testClassName != null && !testClassName.isBlank() && testClassName.endsWith(")")) {
       int openParenthesisIndex = testClassName.indexOf('(');
       if (openParenthesisIndex > 0) {
         testClassName = testClassName.substring(0, openParenthesisIndex);
       }
     }
-    return StringUtils.defaultIfBlank(testClassName, defaultClassname);
+
+//    if (testClassName == null || testClassName.isBlank()) {
+//      return defaultClassname;
+//    }
+//
+//    return testClassName;
+
+    if ( testClassName == null || testClassName.isBlank() ) {
+      return defaultClassname;
+    }
+    return testClassName;
   }
 
   private static void parseTestCase(SMInputCursor testCaseCursor, String testSuiteClassName, UnitTestClassReport report) throws XMLStreamException {
@@ -128,7 +138,7 @@ public class SurefireStaxHandler {
   private static String getTestCaseName(SMInputCursor testCaseCursor) throws XMLStreamException {
     String classname = testCaseCursor.getAttrValue("classname");
     String name = testCaseCursor.getAttrValue("name");
-    if (Strings.CS.contains(classname, "$")) {
+    if (Strings.containsSensitive(classname, "$")) {
       return StringUtils.substringAfter(classname, "$") + "/" + name;
     }
     return name;

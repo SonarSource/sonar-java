@@ -18,10 +18,10 @@ package org.sonar.java.checks;
 
 import java.util.Locale;
 import java.util.Optional;
-import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.common.StringUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -81,7 +81,7 @@ public class DateFormatWeekYearCheck extends AbstractMethodDetection {
       return;
     }
     String datePattern = literal.get();
-    if (StringUtils.contains(datePattern, 'w')) {
+    if (datePattern.contains("w")) {
       return;
     }
     int start = datePattern.indexOf('Y');
