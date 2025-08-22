@@ -8,7 +8,7 @@ env:
 jobs:
   UpdateRuleMetadata_job:
     name: Update Rule Metadata
-    runs-on: ubuntu-latest-large
+    runs-on: github-ubuntu-latest-s
     permissions:
       pull-requests: write
       contents: write

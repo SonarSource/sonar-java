@@ -6,7 +6,7 @@ on:
 jobs:
   ToggleLockBranch_job:
     name: Toggle lock branch
-    runs-on: ubuntu-latest-large
+    runs-on: github-ubuntu-latest-s
     permissions:
       id-token: write
     steps:

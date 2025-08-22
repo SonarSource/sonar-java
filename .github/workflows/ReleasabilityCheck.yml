@@ -10,7 +10,7 @@ name: Releasability Check
 
 jobs:
   update_releasability_status:
-    runs-on: ubuntu-latest-large
+    runs-on: github-ubuntu-latest-s
     name: Releasability Check
     permissions:
       id-token: write
