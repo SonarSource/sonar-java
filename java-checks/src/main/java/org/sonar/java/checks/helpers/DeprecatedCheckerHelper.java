@@ -16,11 +16,9 @@
  */
 package org.sonar.java.checks.helpers;
 
-import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.sonar.java.ast.visitors.PublicApiChecker;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -102,25 +100,23 @@ public class DeprecatedCheckerHelper {
   }
 
   /**
-   * @param tree          The element annotated with @Deprecated
-   * @param expectedValue the expected value we are looking for in the forRemoval attribute
-   * @return true if the element is annotated with @Deprecated(forRemoval = expectedValue)
+   * @param annotationTree The annotation tree to check
+   * @param attributeName  The attribute name of the attribute to get the value for
+   * @return an Optional containing the value of the attribute if found, otherwise an empty Optional
    */
-  public static boolean isMarkedForRemoval(Tree tree, boolean expectedValue) {
-    var annotationTree = deprecatedAnnotation(tree);
-    if (annotationTree == null) {
-      return false;
-    }
-    Optional<ExpressionTree> forRemovalAttribute = annotationTree.arguments().stream()
-      .filter(argument -> "forRemoval".equals(annotationAttributeName(argument)))
-      .map(argument -> ((AssignmentExpressionTreeImpl) argument).expression())
+  public static <T> Optional<T> getAnnotationAttributeValue(AnnotationTree annotationTree, String attributeName, Class<T> valueType) {
+    Optional<ExpressionTree> valueExpression = annotationTree.arguments().stream()
+      .filter(argument -> attributeName.equals(annotationAttributeName(argument)))
+      .map(argument -> {
+        // arguments of an annotation are either an assignment (name=value) or an expression (ofter a literal value)
+        if (argument.is(Kind.ASSIGNMENT)) {
+          return ((AssignmentExpressionTreeImpl) argument).expression();
+        } else {
+          return argument;
+        }
+      })
       .findFirst();
-    if (forRemovalAttribute.isEmpty()) {
-      // forRemoval was not specified
-      return false;
-    }
-    Boolean forRemovalValue = (Boolean) ExpressionUtils.resolveAsConstant(forRemovalAttribute.get());
-    return Objects.equals(forRemovalValue, expectedValue);
+    return valueExpression.flatMap(expressionTree -> expressionTree.asConstant(valueType));
   }
 
 }
