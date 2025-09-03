@@ -1,5 +1,11 @@
 class Foo {
 
+  @Deprecated(forRemoval = true)
+  public String getName; // Noncompliant
+
+  @Deprecated(forRemoval = false)
+  public String getName; // Compliant
+
   @Deprecated
   public int foo; // Noncompliant {{Do not forget to remove this deprecated code someday.}}
 //           ^^^

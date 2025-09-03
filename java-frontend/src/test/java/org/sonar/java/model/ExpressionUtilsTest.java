@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
 import static org.sonar.java.model.ExpressionUtils.skipParenthesesUpwards;
@@ -467,6 +468,24 @@ class ExpressionUtilsTest {
     assertThat(ExpressionUtils.areVariablesSame(condition.rightOperand(), initializer.trueExpression(), false)).isFalse();
     assertThat(ExpressionUtils.areVariablesSame(initializer.trueExpression(), condition.leftOperand(), false)).isFalse();
     assertThat(ExpressionUtils.areVariablesSame(initializer.falseExpression(), condition.rightOperand(), false)).isFalse();
+  }
+
+  @Test
+  void testAnnotationAttributeName(){
+    var unit = JParserTestUtils.parse("""
+      interface A {
+        @Deprecated(forRemoval = true)
+        void m();
+        @MyAnnotation("noArgName")
+        void m2();
+      }""");
+    var classTree = (ClassTree) unit.types().get(0);
+    var methodTree = (MethodTree) classTree.members().get(0);
+    var annotation = methodTree.modifiers().annotations().get(0).arguments().get(0);
+    assertEquals("forRemoval", ExpressionUtils.annotationAttributeName(annotation));
+    methodTree = (MethodTree) classTree.members().get(1);
+    annotation = methodTree.modifiers().annotations().get(0).arguments().get(0);
+    assertEquals("value", ExpressionUtils.annotationAttributeName(annotation));
   }
 
 }

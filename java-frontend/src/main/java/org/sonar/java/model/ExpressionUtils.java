@@ -390,4 +390,13 @@ public final class ExpressionUtils {
     return null;
   }
 
+  public static String annotationAttributeName(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.ASSIGNMENT)) {
+      AssignmentExpressionTree assignment = (AssignmentExpressionTree) expression;
+      // assignment.variable() in annotation is always a Tree.Kind.IDENTIFIER
+      return ((IdentifierTree) assignment.variable()).name();
+    }
+    return "value";
+  }
+
 }

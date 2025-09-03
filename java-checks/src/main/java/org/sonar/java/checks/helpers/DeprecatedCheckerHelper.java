@@ -16,15 +16,20 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.java.model.ExpressionUtils.annotationAttributeName;
 
 public class DeprecatedCheckerHelper {
 
@@ -92,6 +97,26 @@ public class DeprecatedCheckerHelper {
   private static boolean isDeprecated(AnnotationTree tree) {
     return tree.annotationType().is(Kind.IDENTIFIER) &&
       "Deprecated".equals(((IdentifierTree) tree.annotationType()).name());
+  }
+
+  /**
+   * @param annotationTree The annotation tree to check
+   * @param attributeName  The attribute name of the attribute to get the value for
+   * @return an Optional containing the value of the attribute if found, otherwise an empty Optional
+   */
+  public static <T> Optional<T> getAnnotationAttributeValue(AnnotationTree annotationTree, String attributeName, Class<T> valueType) {
+    Optional<ExpressionTree> valueExpression = annotationTree.arguments().stream()
+      .filter(argument -> attributeName.equals(annotationAttributeName(argument)))
+      .map(argument -> {
+        // arguments of an annotation are either an assignment (name=value) or an expression (ofter a literal value)
+        if (argument.is(Kind.ASSIGNMENT)) {
+          return ((AssignmentExpressionTreeImpl) argument).expression();
+        } else {
+          return argument;
+        }
+      })
+      .findFirst();
+    return valueExpression.flatMap(expressionTree -> expressionTree.asConstant(valueType));
   }
 
 }
