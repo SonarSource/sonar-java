@@ -302,7 +302,7 @@ public class PrintfMisuseCheck extends AbstractPrintfChecker {
     }
     Symbol symbol = ((IdentifierTree) lastArgument).symbol();
     VariableTree declaration = symbol.isVariableSymbol() ? ((Symbol.VariableSymbol) symbol).declaration() : null;
-    if (declaration == null) {
+    if (declaration == null || declaration.type() == null) {
       return false;
     }
     TypeTree declarationType = declaration.type();
