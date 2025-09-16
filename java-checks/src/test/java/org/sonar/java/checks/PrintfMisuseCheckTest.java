@@ -47,4 +47,13 @@ class PrintfMisuseCheckTest {
       .withCheck(new PrintfMisuseCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_enums() {
+    // see SONARJAVA-5759
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PrintfMisuseCheckEnumsSample.java"))
+      .withCheck(new PrintfMisuseCheck())
+      .verifyIssues();
+  }
 }
