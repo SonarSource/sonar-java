@@ -89,6 +89,32 @@ build_task:
     - regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-web-4.0'
   cleanup_before_cache_script: cleanup_maven_repository
 
+sonar_shadow_scan_and_issue_replication_task:
+  <<: *COMMON_BUILD_DEFINITION
+  depends_on:
+    - build
+  # Only run when triggered by the cirrus-ci cron job named "nightly"
+  only_if: $CIRRUS_CRON == "nightly"
+  env:
+    SONAR_PROJECT_KEY: "org.sonarsource.java:java"
+    SHADOW_ORGANIZATION: "sonarsource"
+    SHADOW_PROJECT_KEY: "SonarSource_sonar-java"
+    # to replicate issue states from next
+    SONAR_TOKEN: VAULT[development/kv/data/next data.token]
+    SONAR_HOST_URL: https://next.sonarqube.com/sonarqube
+    matrix:
+      - name: "sonarcloud.io"
+        SHADOW_SONAR_TOKEN: VAULT[development/kv/data/sonarcloud data.token]
+        SHADOW_SONAR_HOST_URL: "https://sonarcloud.io"
+      - name: "sonarqube.us"
+        SHADOW_SONAR_TOKEN: VAULT[development/kv/data/sonarqube-us data.token]
+        SHADOW_SONAR_HOST_URL: "https://sonarqube.us"
+  build_and_shadow_scan_script:
+    - *log_develocity_url_script
+    - source cirrus-env BUILD
+    - ./shadow-scan-and-issue-replication.sh -Dsonar.analysisCache.enabled=true -Dsonar.sca.exclusions="**/test/files/**, **/test/resources/**, its/plugin/projects/**, java-checks-test-sources/**, its/sources/**,"
+  cleanup_before_cache_script: cleanup_maven_repository
+
 test_analyze_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
@@ -282,6 +308,7 @@ autoscan_task:
 promote_task:
   depends_on:
     - build
+    - sonar_shadow_scan_and_issue_replication
     - test_analyze
     - qa_os_win
     - sanity
