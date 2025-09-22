@@ -94,7 +94,7 @@ sonar_shadow_scan_and_issue_replication_task:
   depends_on:
     - build
   # Only run when triggered by the cirrus-ci cron job named "nightly"
-  # TODO only_if: $CIRRUS_CRON == "nightly"
+  only_if: $CIRRUS_CRON == "nightly"
   env:
     SONAR_PROJECT_KEY: "org.sonarsource.java:java"
     SHADOW_ORGANIZATION: "sonarsource"
