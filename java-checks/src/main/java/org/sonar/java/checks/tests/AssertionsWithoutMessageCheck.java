@@ -82,7 +82,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
     return MethodMatchers.or(
       MethodMatchers.create()
         .ofTypes("org.junit.jupiter.api.Assertions", "org.junit.Assert", "junit.framework.Assert", "org.fest.assertions.Fail",
-          "org.assertj.core.api.Fail")
+          "org.assertj.core.api.Fail", "org.testng.Assert", "org.testng.AssertJUnit")
         .name(name -> name.startsWith(ASSERT) || "fail".equals(name)).withAnyParameters().build(),
       FEST_LIKE_ABSTRACT_ASSERT
       );
