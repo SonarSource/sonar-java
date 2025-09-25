@@ -35,6 +35,62 @@ function download_iris() {
       --output "${IRIS_JAR_PATH}" "${IRIS_JAR_URL}"
 }
 
+function sonarcloud_compute_engine_status_for_given_project() {
+  local PROJECT_KEY="$1"
+  local RESPONSE
+  RESPONSE="$(
+    curl --silent --fail-with-body --location --request GET \
+      --header "Authorization: Bearer ${SHADOW_SONAR_TOKEN}" \
+      --output - \
+      "${SHADOW_SONAR_HOST_URL}/api/ce/component?component=${PROJECT_KEY}"
+  )"
+  local STATUS
+  # we first check if there is one or more 'PENDING' tasks in the queue
+  STATUS="$(echo "${RESPONSE}" | jq -r '.queue[].status')"
+  if [[ "${STATUS}" == "null" ]]; then
+    STATUS=""
+  fi
+  if [[ -z "${STATUS}" ]]; then
+    # otherwise we get the status of the current task
+    STATUS="$(echo "${RESPONSE}" | jq -r '.current.status')"
+  fi
+  echo -n "${STATUS}"
+}
+
+function wait_for_sonarcloud_compute_engine_to_finish() {
+  local MAX_WAIT_TIME_SECONDS="300"  # Default to 5 minutes
+  local SLEEP_INTERVAL_SECONDS="1"
+  local ELAPSED_TIME=0
+  local LAST_STATUS=""
+  local STATUS
+
+  echo "Waiting for SonarCloud compute engine to finish for project key: ${SHADOW_PROJECT_KEY}"
+  while (( ELAPSED_TIME < MAX_WAIT_TIME_SECONDS )); do
+    STATUS=$(sonarcloud_compute_engine_status_for_given_project "${SHADOW_PROJECT_KEY}")
+    if [[ "${STATUS}" != "${LAST_STATUS}" ]]; then
+      echo -n " ${STATUS} "
+      LAST_STATUS="${STATUS}"
+    fi
+
+    if [[ "${STATUS}" == "PENDING" || "${STATUS}" == "IN_PROGRESS" ]]; then
+      echo -n "."
+    elif [[ "${STATUS}" == "FAILED" || "${STATUS}" == "CANCELED" ]]; then
+      echo -e "\nERROR: SonarCloud compute engine finished with status: ${STATUS}"
+      return 1
+    elif [[ "${STATUS}" == "SUCCESS" ]]; then
+      echo -e "\nSonarCloud compute engine finished successfully."
+      return 0
+    else
+      echo -e "\nERROR: Unknown status: ${STATUS}"
+      return 1
+    fi
+    sleep "${SLEEP_INTERVAL_SECONDS}"
+    ELAPSED_TIME=$((ELAPSED_TIME + SLEEP_INTERVAL_SECONDS))
+  done
+  echo -e "\nERROR: Timeout reached after ${MAX_WAIT_TIME_SECONDS} seconds."
+  return 1
+}
+
 function run_iris() {
   local DRY_RUN="$1"
   java \
@@ -70,4 +126,5 @@ function run_iris_with_and_without_dry_run() {
 
 build_and_analyze_the_project "$@"
 download_iris
+wait_for_sonarcloud_compute_engine_to_finish
 run_iris_with_and_without_dry_run
