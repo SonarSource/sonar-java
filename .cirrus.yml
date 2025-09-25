@@ -121,7 +121,7 @@ test_analyze_task:
     - *log_develocity_url_script
     - source cirrus-env BUILD
     # ignore duplications in the SE engine plugin, as it will be moved away from sonar-java at some point
-    - PULL_REQUEST_SHA=$GIT_SHA1 regular_mvn_build_deploy_analyze -P-deploy-sonarsource,-release,-sign -Dmaven.deploy.skip=true -Dsonar.analysisCache.enabled=true -Dsonar.sca.exclusions="**/test/files/**, **/test/resources/**, its/plugin/projects/**, java-checks-test-sources/**, its/sources/**,"
+    - PULL_REQUEST_SHA=$GIT_SHA1 regular_mvn_build_deploy_analyze -P-deploy-sonarsource,-release,-sign -Dmaven.deploy.skip=true -Dsonar.analysisCache.enabled=true
     - cd docs/java-custom-rules-example
     - mvn clean package -f pom_SQ_10_6_LATEST.xml --batch-mode
     - cd "${CIRRUS_WORKING_DIR}"
