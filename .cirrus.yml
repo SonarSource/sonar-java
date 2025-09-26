@@ -128,28 +128,6 @@ test_analyze_task:
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
 
-ws_scan_task:
-  <<: *ONLY_SONARSOURCE_QA
-  eks_container:
-    <<: *CONTAINER_WITH_DOCKER_DEFINITION
-    cpu: 4
-    memory: 4G
-  # run only on master and long-term branches
-  only_if: $CIRRUS_USER_COLLABORATOR == 'true' && ($CIRRUS_BRANCH == "master" || $CIRRUS_BRANCH =~ "branch-.*" || $CIRRUS_BRANCH =~ "mend-.*")
-  env:
-    WS_APIKEY: VAULT[development/kv/data/mend data.apikey]
-  maven_cache:
-    folder: ${CIRRUS_WORKING_DIR}/.m2/repository
-  whitesource_script:
-    - source cirrus-env QA
-    - source set_maven_build_version $BUILD_NUMBER
-    - mvn clean install --batch-mode -Dmaven.test.skip=true -pl '!java-checks-test-sources,!java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-3.2,!java-checks-test-sources/spring-web-4.0'
-    - source ws_scan.sh
-  allow_failures: "true"
-  always:
-    ws_artifacts:
-      path: "whitesource/**/*"
-
 qa_os_win_task:
   ec2_instance:
     image: base-windows-jdk21-v*
