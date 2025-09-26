@@ -17,118 +17,117 @@
 package org.sonar.java.model;
 
 import org.junit.jupiter.api.Test;
-import org.openjdk.jol.datamodel.Model64;
-import org.openjdk.jol.datamodel.Model64_COOPS_CCPS;
-import org.openjdk.jol.info.ClassLayout;
-import org.openjdk.jol.layouters.HotSpotLayouter;
-import org.openjdk.jol.layouters.Layouter;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashSet;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
+/**
+ * This test warns you if you are changing classes which have a big impact
+ * on memory consumption. If the change is intentional, just update the failing tests.
+ *
+ * <p>We used to test the size in bytes of instance using jol-core,
+ * but it was removed due to licensing.
+ */
 class ClassesLayoutTest {
-
-  private static final int JDK_VERSION = 11;
-
-  private static final Layouter X86_64 = new HotSpotLayouter(new Model64(), JDK_VERSION);
-  private static final Layouter X86_64_COOPS = new HotSpotLayouter(new Model64_COOPS_CCPS(), JDK_VERSION);
 
   @Test
   void token() {
-    assertAll(
-      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64)).isEqualTo(72),
-      () -> assertThat(instanceSize(InternalSyntaxToken.class, X86_64_COOPS)).isEqualTo(40)
-    );
+    assertThat(countFields(InternalSyntaxToken.class)).isEqualTo(7);
   }
 
   @Test
   void identifier() {
-    assertAll(
-      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64)).isEqualTo(88),
-      () -> assertThat(instanceSize(IdentifierTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
-    );
+    assertThat(countFields(IdentifierTreeImpl.class)).isEqualTo(9);
   }
 
   @Test
   void literal() {
-    assertAll(
-      () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64)).isEqualTo(64),
-      () -> assertThat(instanceSize(LiteralTreeImpl.class, X86_64_COOPS)).isEqualTo(40)
-    );
+    assertThat(countFields(LiteralTreeImpl.class)).isEqualTo(6);
   }
 
   @Test
   void variable_declaration() {
-    assertAll(
-      () -> assertThat(instanceSize(VariableTreeImpl.class, X86_64)).isEqualTo(96),
-      () -> assertThat(instanceSize(VariableTreeImpl.class, X86_64_COOPS)).isEqualTo(56)
-    );
+    assertThat(countFields(VariableTreeImpl.class)).isEqualTo(10);
   }
 
   @Test
   void member_select() {
-    assertAll(
-      () -> assertThat(instanceSize(MemberSelectExpressionTreeImpl.class, X86_64)).isEqualTo(80),
-      () -> assertThat(instanceSize(MemberSelectExpressionTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
-    );
+    assertThat(countFields(MemberSelectExpressionTreeImpl.class)).isEqualTo(8);
   }
 
   @Test
   void method_invocation() {
-    assertAll(
-      () -> assertThat(instanceSize(MethodInvocationTreeImpl.class, X86_64)).isEqualTo(80),
-      () -> assertThat(instanceSize(MethodInvocationTreeImpl.class, X86_64_COOPS)).isEqualTo(48)
-    );
+    assertThat(countFields(MethodInvocationTreeImpl.class)).isEqualTo(8);
   }
 
   @Test
   void type() {
-    assertAll(
-      () -> assertThat(instanceSize(JType.class, X86_64)).isEqualTo(72),
-      () -> assertThat(instanceSize(JType.class, X86_64_COOPS)).isEqualTo(40)
-    );
+    assertThat(countFields(JType.class)).isEqualTo(7);
   }
 
   @Test
   void symbol_type() {
-    assertAll(
-      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64)).isEqualTo(104),
-      () -> assertThat(instanceSize(JTypeSymbol.class, X86_64_COOPS)).isEqualTo(56)
-    );
+    assertThat(countFields(JTypeSymbol.class)).isEqualTo(11);
   }
 
   @Test
   void symbol_method() {
-    assertAll(
-      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64)).isEqualTo(104),
-      () -> assertThat(instanceSize(JMethodSymbol.class, X86_64_COOPS)).isEqualTo(56)
-    );
+    assertThat(countFields(JMethodSymbol.class)).isEqualTo(11);
   }
 
   @Test
   void symbol_variable() {
-    assertAll(
-      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64)).isEqualTo(72),
-      () -> assertThat(instanceSize(JVariableSymbol.class, X86_64_COOPS)).isEqualTo(40)
-    );
+    assertThat(countFields(JVariableSymbol.class)).isEqualTo(7);
   }
 
   @Test
   void annotation() {
-    assertAll(
-      () -> assertThat(instanceSize(JSymbolMetadata.JAnnotationInstance.class, X86_64)).isEqualTo(40),
-      () -> assertThat(instanceSize(JSymbolMetadata.JAnnotationInstance.class, X86_64_COOPS)).isEqualTo(24)
-    );
+    assertThat(countFields(JSymbolMetadata.JAnnotationInstance.class)).isEqualTo(3);
   }
 
-  private static long instanceSize(Class<?> cls, Layouter layouter) {
-    ClassLayout classLayout = ClassLayout.parseClass(cls, layouter);
-    return classLayout.instanceSize();
+  /** Count number of fields in instances, including inherited fields. */
+  private static int countFields(Class<?> clazz) {
+    int count = 0;
+    while (clazz != Object.class) {
+      for (Field f : clazz.getDeclaredFields()) {
+        if (!Modifier.isStatic(f.getModifiers())) {
+          count++;
+        }
+      }
+      clazz = clazz.getSuperclass();
+    }
+    return count;
   }
 
+  static class C {
+    private int x;
+    public long y;
+    HashSet<Object> hashSet;
+
+    C(int x) {
+      this.x = x;
+    }
+  }
+
+  static class D extends C {
+    char z;
+    static String staticField;
+
+    D(int x) {
+      super(x);
+    }
+  }
+
+  @Test
+  void validateCountFields() {
+    assertThat(countFields(D.class)).isEqualTo(4);
+  }
 }
