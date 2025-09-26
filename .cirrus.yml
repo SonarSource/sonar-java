@@ -112,7 +112,7 @@ sonar_shadow_scan_and_issue_replication_task:
   build_and_shadow_scan_script:
     - *log_develocity_url_script
     - source cirrus-env BUILD
-    - ./shadow-scan-and-issue-replication.sh -Dsonar.analysisCache.enabled=true -Dsonar.sca.exclusions="**/test/files/**, **/test/resources/**, its/plugin/projects/**, java-checks-test-sources/**, its/sources/**,"
+    - ./shadow-scan-and-issue-replication.sh -Dsonar.analysisCache.enabled=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 test_analyze_task:
