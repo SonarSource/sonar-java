@@ -29,6 +29,13 @@ import java.util.HashSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * This test warns you if you are changing classes which have a big impact
+ * on memory consumption. If the change is intentional, just update the failing tests.
+ *
+ * <p>We used to test the size in bytes of instance using jol-core,
+ * but it was removed due to licensing.
+ */
 class ClassesLayoutTest {
 
   @Test
@@ -104,11 +111,19 @@ class ClassesLayoutTest {
     private int x;
     public long y;
     HashSet<Object> hashSet;
+
+    C(int x) {
+      this.x = x;
+    }
   }
 
   static class D extends C {
     char z;
     static String staticField;
+
+    D(int x) {
+      super(x);
+    }
   }
 
   @Test
