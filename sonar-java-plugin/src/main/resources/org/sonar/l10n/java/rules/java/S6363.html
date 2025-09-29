@@ -1,6 +1,5 @@
-<p>Exposing the Android file system to WebViews is security-sensitive.</p>
 <p>Granting file access to WebViews, particularly through the <code>file://</code> scheme, introduces a risk of local file inclusion vulnerabilities.
-The severity of this risk depends heavily on the specific <code>WebSettings</code> configured. Overly permissive settings can allow malicious scripts
+The severity of this risk depends heavily on the specific settings configured for the WebView. Overly permissive settings can allow malicious scripts
 to access a wide range of local files, potentially exposing sensitive data such as Personally Identifiable Information (PII) or private application
 data, leading to data breaches and other security compromises.</p>
 <h2>Ask Yourself Whether</h2>
@@ -11,8 +10,13 @@ data, leading to data breaches and other security compromises.</p>
 <p>There is a risk if you answered yes to any of these questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <p>Avoid opening <code>file://</code> URLs from external sources in WebView components. If your application accepts arbitrary URLs from external
-sources, do not enable this functionality. Instead, utilize <code>androidx.webkit.WebViewAssetLoader</code> to access files, including assets and
-resources, via <code>http(s)://</code> schemes.</p>
+sources, do not enable this functionality.</p>
+<p>On Android, it is recommended to use <code>androidx.webkit.WebViewAssetLoader</code> to access files, including assets and resources, via a custom,
+controllable scheme.</p>
+<p>On iOS, it is recommended to use Bundles to access local files, keeping access limited a controlled subset using the
+<code>allowingReadAccessTo</code> parameter of the <code>loadFileURL</code> method. If <code>allowFileAccessFromFileURLs</code> and
+<code>allowUniversalAccessFromFileURLs</code> are not enabled, it is not possible to access files outside the intended directory. It is also possible
+to create a custom scheme to access local files, but this is more complex and might lead to unintended security issues.</p>
 <p>For enhanced security, ensure that the options to load <code>file://</code> URLs are explicitly set to false.</p>
 <h2>Sensitive Code Example</h2>
 <pre>
