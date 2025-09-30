@@ -24,7 +24,7 @@ public class RawExceptionCheckSample {
 //            ^^^^^
   }
 
-  public void throws_Exception() throws Exception { // Noncompliant {{Define and throw a dedicated exception instead of using a generic one.}}
+  public void throws_Exception() throws Exception { // Noncompliant {{Replace generic exceptions with specific library exceptions or a custom exception.}}
     throw new Exception(); // Noncompliant
   }
 
@@ -63,7 +63,7 @@ public class RawExceptionCheckSample {
   public RawExceptionCheckSample() throws
      Throwable, // Noncompliant
      Error, // Noncompliant
-     Exception { // Noncompliant {{Define and throw a dedicated exception instead of using a generic one.}}
+     Exception { // Noncompliant {{Replace generic exceptions with specific library exceptions or a custom exception.}}
      throw new
          Throwable(); // Noncompliant
 
