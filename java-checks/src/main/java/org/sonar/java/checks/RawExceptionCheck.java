@@ -90,7 +90,7 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
     context.newIssue()
       .forRule(this)
       .onTree(tree)
-      .withMessage("Define and throw a dedicated exception instead of using a generic one.")
+      .withMessage("Replace generic exceptions with specific library exceptions or a custom exception.")
       .report();
   }
 
