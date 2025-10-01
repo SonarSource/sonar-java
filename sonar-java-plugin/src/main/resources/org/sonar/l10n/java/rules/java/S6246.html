@@ -1,6 +1,7 @@
+<p>This rule reports an issue when a lambda invokes another lambda synchronously.</p>
 <h2>Why is this an issue?</h2>
 <p>Invoking other Lambdas synchronously from a Lambda is a scalability anti-pattern. Lambdas have a maximum execution time before they timeout (15
-minutes as of May 2021). Having to wait for another Lambda to finish its execution could lead to a timeout.</p>
+minutes as of June 2025). Having to wait for another Lambda to finish its execution could lead to a timeout.</p>
 <p>A better solution is to generate&nbsp;events that can be consumed asynchronously by other Lambdas.</p>
 <h3>Noncompliant code example</h3>
 <p>With AWS SDKv1</p>

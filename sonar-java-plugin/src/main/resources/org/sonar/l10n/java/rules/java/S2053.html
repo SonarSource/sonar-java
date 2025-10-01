@@ -51,7 +51,7 @@ import javax.crypto.spec.PBEParameterSpec;
 
 public void hash() {
     SecureRandom random = new SecureRandom();
-    byte[] salt = new byte[32];
+    byte[] salt = new byte[16];
     random.nextBytes(salt);
 
     PBEParameterSpec cipherSpec = new PBEParameterSpec(salt, 10000);
@@ -59,7 +59,7 @@ public void hash() {
 </pre>
 <h3>How does this work?</h3>
 <p>This code ensures that each user’s password has a unique salt value associated with it. It generates a salt randomly and with a length that
-provides the required security level. It uses a salt length of at least 32 bytes (256 bits), as recommended by industry standards.</p>
+provides the required security level. It uses a salt length of at least 16 bytes (128 bits), as recommended by industry standards.</p>
 <p>Here, the compliant code example ensures the salt is random and has a sufficient length by calling the <code>nextBytes</code> method from the
 <code>SecureRandom</code> class with a salt buffer of 16 bytes. This class implements a cryptographically secure pseudo-random number generator.</p>
 <h2>Resources</h2>

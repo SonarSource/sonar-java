@@ -11,8 +11,8 @@ information, disrupt services or elevate privileges.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <p>The most restrictive possible permissions should be assigned to files and directories.</p>
 <h2>Sensitive Code Example</h2>
-<pre>
-    public void setPermissions(String filePath) {
+<pre data-diff-id="1" data-diff-type="noncompliant">
+    public void setPermissions(String filePath) throws IOException {
         Set&lt;PosixFilePermission&gt; perms = new HashSet&lt;PosixFilePermission&gt;();
         // user permission
         perms.add(PosixFilePermission.OWNER_READ);
@@ -29,20 +29,15 @@ information, disrupt services or elevate privileges.</p>
         Files.setPosixFilePermissions(Paths.get(filePath), perms);
     }
 </pre>
-<pre>
-    public void setPermissionsUsingRuntimeExec(String filePath) {
-        Runtime.getRuntime().exec("chmod 777 file.json"); // Sensitive
-    }
-</pre>
-<pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
     public void setOthersPermissionsHardCoded(String filePath ) {
         Files.setPosixFilePermissions(Paths.get(filePath), PosixFilePermissions.fromString("rwxrwxrwx")); // Sensitive
     }
 </pre>
 <h2>Compliant Solution</h2>
 <p>On operating systems that implement POSIX standard. This will throw a <code>UnsupportedOperationException</code> on Windows.</p>
-<pre>
-    public void setPermissionsSafe(String filePath) throws IOException {
+<pre data-diff-id="1" data-diff-type="compliant">
+    public void setPermissions(String filePath) throws IOException {
         Set&lt;PosixFilePermission&gt; perms = new HashSet&lt;PosixFilePermission&gt;();
         // user permission
         perms.add(PosixFilePermission.OWNER_READ);
@@ -52,11 +47,16 @@ information, disrupt services or elevate privileges.</p>
         perms.add(PosixFilePermission.GROUP_READ);
         perms.add(PosixFilePermission.GROUP_EXECUTE);
         // others permissions removed
-        perms.remove(PosixFilePermission.OTHERS_READ); // Compliant
-        perms.remove(PosixFilePermission.OTHERS_WRITE); // Compliant
-        perms.remove(PosixFilePermission.OTHERS_EXECUTE); // Compliant
+        perms.remove(PosixFilePermission.OTHERS_READ);
+        perms.remove(PosixFilePermission.OTHERS_WRITE);
+        perms.remove(PosixFilePermission.OTHERS_EXECUTE);
 
         Files.setPosixFilePermissions(Paths.get(filePath), perms);
+    }
+</pre>
+<pre data-diff-id="2" data-diff-type="compliant">
+    public void setOthersPermissionsHardCoded(String filePath ) {
+        Files.setPosixFilePermissions(Paths.get(filePath), PosixFilePermissions.fromString("rwxrwx---"));
     }
 </pre>
 <h2>See</h2>
