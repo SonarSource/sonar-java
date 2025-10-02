@@ -14,6 +14,7 @@ import static checks.tests.MyAbstractIsEqualTo.isEqualTo;
 
 class AssertionsWithoutMessageCheckSample {
   void foo() {
+    org.testng.Assert.assertTrue(true, "msg"); // Compliant
     org.testng.Assert.assertTrue(true); // Noncompliant
     org.testng.AssertJUnit.assertTrue(true); // Noncompliant
     org.assertj.core.api.Assertions.assertThat("").usingComparator(null).as("a").isEqualTo(222); // Compliant
