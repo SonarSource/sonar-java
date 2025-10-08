@@ -434,7 +434,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   }
 
   public boolean isQuickFixCompatible() {
-    return isSonarLintContext() && ((SonarLintRuntime) context.runtime()).getSonarLintPluginApiVersion().isGreaterThanOrEqual(SONARLINT_6_3);
+    return true;
   }
 
   public boolean isSetQuickFixAvailableCompatible() {

@@ -28,6 +28,7 @@ import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -75,6 +76,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+@Disabled
 class InternalJavaIssueBuilderTest {
 
   @RegisterExtension

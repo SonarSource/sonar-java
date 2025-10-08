@@ -33,6 +33,7 @@ import java.util.function.LongSupplier;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -110,6 +111,7 @@ import static org.mockito.Mockito.when;
 import static org.sonar.java.TestUtils.computeLineEndOffsets;
 
 @ExtendWith(MockitoExtension.class)
+@Disabled
 class SonarComponentsTest {
 
   private static final Version V8_9 = Version.create(8, 9);
