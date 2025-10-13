@@ -44,10 +44,16 @@ public interface SymbolMetadata {
   List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation);
 
   /**
-   * The list of annotations found on this symbol.
+   * The list of all annotations found on this symbol, including annotations that are present on the parametrized types.
    * @return A list of {@link AnnotationInstance}
    */
   List<AnnotationInstance> annotations();
+
+  /**
+   * The list of annotations that applies exactly on this symbol.
+   * @return A list of {@link AnnotationInstance}
+   */
+  List<AnnotationInstance> symbolAnnotations();
 
   /**
    * @return the nullability definition for metadata() of:

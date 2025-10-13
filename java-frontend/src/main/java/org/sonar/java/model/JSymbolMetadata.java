@@ -48,26 +48,34 @@ final class JSymbolMetadata implements SymbolMetadata {
   private final JSema sema;
   private final Symbol symbol;
   private final IAnnotationBinding[] annotationBindings;
+  private final IAnnotationBinding[] symbolAnnotation;
 
   /**
    * Cache for {@link #annotations()}.
    */
   private List<AnnotationInstance> annotations;
 
+  /**
+   * Cache for {@link #symbolAnnotations()}.
+   */
+  private List<AnnotationInstance> symbolAnnotations;
+
   private final Map<NullabilityTarget, NullabilityData> nullabilityCache = new EnumMap<>(NullabilityTarget.class);
 
   JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] annotationBindings) {
     this.sema = Objects.requireNonNull(sema);
     this.symbol = symbol;
+    this.symbolAnnotation = annotationBindings;
     this.annotationBindings = annotationBindings;
   }
 
-  JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] typeAnnotationBindings, IAnnotationBinding[] annotationBindings) {
+  JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] symbolAnnotation, IAnnotationBinding[] paramAnnotations) {
     this.sema = Objects.requireNonNull(sema);
     this.symbol = symbol;
-    this.annotationBindings = new IAnnotationBinding[typeAnnotationBindings.length + annotationBindings.length];
-    System.arraycopy(typeAnnotationBindings, 0, this.annotationBindings, 0, typeAnnotationBindings.length);
-    System.arraycopy(annotationBindings, 0, this.annotationBindings, typeAnnotationBindings.length, annotationBindings.length);
+    this.symbolAnnotation = symbolAnnotation;
+    this.annotationBindings = new IAnnotationBinding[symbolAnnotation.length + paramAnnotations.length];
+    System.arraycopy(symbolAnnotation, 0, this.annotationBindings, 0, symbolAnnotation.length);
+    System.arraycopy(paramAnnotations, 0, this.annotationBindings, symbolAnnotation.length, paramAnnotations.length);
   }
 
   private static NullabilityData[] forEachLevel(Function<NullabilityLevel, NullabilityData> initializer) {
@@ -90,6 +98,16 @@ final class JSymbolMetadata implements SymbolMetadata {
         .collect(Collectors.toList());
     }
     return annotations;
+  }
+
+  @Override
+  public List<AnnotationInstance> symbolAnnotations() {
+    if (symbolAnnotations == null) {
+      symbolAnnotations = Arrays.stream(symbolAnnotation)
+        .map(sema::annotation)
+        .collect(Collectors.toList());
+    }
+    return symbolAnnotations;
   }
 
   @Override

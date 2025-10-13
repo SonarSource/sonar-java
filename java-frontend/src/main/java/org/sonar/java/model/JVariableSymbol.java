@@ -98,8 +98,7 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
       metadata = new JSymbolMetadata(
         sema,
         this,
-        typeBinding.getTypeAnnotations(),
-        owner.getParameterAnnotations(index)
+        owner.getParameterAnnotations(index), typeBinding.getTypeAnnotations()
       );
     }
 

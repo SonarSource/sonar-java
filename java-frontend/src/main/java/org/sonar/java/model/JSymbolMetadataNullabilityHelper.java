@@ -317,7 +317,7 @@ public class JSymbolMetadataNullabilityHelper {
     TypesForAnnotations typeForAnnotations) {
     NullabilityType nullabilityType = NullabilityType.NO_ANNOTATION;
     AnnotationInstance annotationInstance = null;
-    for (AnnotationInstance annotation : metadata.annotations()) {
+    for (AnnotationInstance annotation : metadata.symbolAnnotations()) {
       NullabilityType typeFromAnnotation = typeForAnnotations.getTypeFromAnnotation(annotation);
       if (typeFromAnnotation.ordinal() > nullabilityType.ordinal()) {
         nullabilityType = typeFromAnnotation;

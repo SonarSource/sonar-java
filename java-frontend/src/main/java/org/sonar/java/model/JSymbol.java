@@ -383,29 +383,41 @@ abstract class JSymbol implements Symbol {
         return new JSymbolMetadata(sema, this, sema.resolvePackageAnnotations(binding.getName()));
       case IBinding.VARIABLE:
         ITypeBinding type = ((IVariableBinding) binding).getType();
-        return new JSymbolMetadata(
-          sema,
-          this,
-          type == null ? new IAnnotationBinding[0] : getAnnotations(type),
-          binding.getAnnotations());
+        if (type == null) {
+          return new JSymbolMetadata(sema, this, binding.getAnnotations());
+        }
+        return convertMetadata(type);
       case IBinding.METHOD:
         ITypeBinding returnType = ((IMethodBinding) binding).getReturnType();
         // In rare circumstances, when the semantic information is incomplete, returnType can be null.
         if (returnType == null) {
           return Symbols.EMPTY_METADATA;
         }
-        return new JSymbolMetadata(sema, this, getAnnotations(returnType), binding.getAnnotations());
+        return convertMetadata(returnType);
       default:
         return new JSymbolMetadata(sema, this, binding.getAnnotations());
     }
   }
 
-  private static IAnnotationBinding[] getAnnotations(ITypeBinding type) {
+  private SymbolMetadata convertMetadata(ITypeBinding type) {
+    var symbolAnnotations = new IAnnotationBinding[binding.getAnnotations().length + type.getTypeAnnotations().length];
+    System.arraycopy(binding.getAnnotations(), 0, symbolAnnotations, 0, binding.getAnnotations().length);
+    System.arraycopy(type.getTypeAnnotations(), 0, symbolAnnotations, binding.getAnnotations().length, type.getTypeAnnotations().length);
+
+    var parameterAnnotations = getParamAnnotations(type);
+
+    return new JSymbolMetadata(
+      sema,
+      this,
+      symbolAnnotations, parameterAnnotations
+    );
+  }
+
+  private static IAnnotationBinding[] getParamAnnotations(ITypeBinding type) {
     List<IAnnotationBinding> iAnnotationBindings = new ArrayList<>();
     for (ITypeBinding typeArgument : type.getTypeArguments()) {
       Collections.addAll(iAnnotationBindings, typeArgument.getTypeAnnotations());
     }
-    Collections.addAll(iAnnotationBindings, type.getTypeAnnotations());
     return iAnnotationBindings.toArray(new IAnnotationBinding[0]);
   }
 
