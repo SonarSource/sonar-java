@@ -105,18 +105,19 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
       checkFestLikeAssertion(mit, symbol, reportLocation);
     } else if (type.is("org.junit.jupiter.api.Assertions")) {
       checkJUnit5(mit, reportLocation);
-    } else if (mit.arguments().isEmpty() || expectedMessageArgIsNotString(mit, type) || isAssertingOnStringWithNoMessage(mit)) {
+    } else if (mit.arguments().isEmpty() || !hasMessageArg(mit, type) || isAssertingOnStringWithNoMessage(mit)) {
       reportIssue(reportLocation, MESSAGE);
     }
   }
 
-  private static boolean expectedMessageArgIsNotString(MethodInvocationTree mit, Type type) {
+  /**
+   * True if the call has a message argument. Such an argument is a string
+   * and it is the first of the last argument (depending on the assertion library).
+   */
+  private static boolean hasMessageArg(MethodInvocationTree mit, Type type) {
+    int expectedMessageArgIndex = (type.is("org.testng.Assert") || type.is("org.testng.AssertJUnit")) ? 1 : 0;
     List<ExpressionTree> args = mit.arguments();
-    int expectedMessageArgIndex = 0;
-    if(type.is("org.testng.Assert") || type.is("org.testng.AssertJUnit")){
-      expectedMessageArgIndex = 1;
-    }
-    return args.size() < expectedMessageArgIndex + 1 || !isString(args.get(expectedMessageArgIndex));
+    return expectedMessageArgIndex < args.size() && isString(args.get(expectedMessageArgIndex));
   }
 
   private void checkFestLikeAssertion(MethodInvocationTree mit, Symbol symbol, IdentifierTree reportLocation) {
