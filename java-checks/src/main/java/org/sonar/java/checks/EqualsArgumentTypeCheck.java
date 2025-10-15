@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
@@ -146,7 +147,14 @@ public class EqualsArgumentTypeCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitInstanceOf(InstanceOfTree tree) {
-      if (isArgument(tree.expression(), parameterSymbol)) {
+      if (isParameter(tree.expression())) {
+        typeChecked = true;
+      }
+    }
+
+    @Override
+    public void visitPatternInstanceOf(PatternInstanceOfTree tree) {
+      if (isParameter(tree.expression())) {
         typeChecked = true;
       }
     }
@@ -171,7 +179,7 @@ public class EqualsArgumentTypeCheck extends IssuableSubscriptionVisitor {
         }
       }
       for (ExpressionTree argument : tree.arguments()) {
-        if (isArgument(argument, parameterSymbol)) {
+        if (isParameter(argument)) {
           typeChecked = true;
           return;
         }
@@ -189,6 +197,9 @@ public class EqualsArgumentTypeCheck extends IssuableSubscriptionVisitor {
     private boolean isInvocationOnArgument(MethodInvocationTree tree) {
       return tree.methodSelect().is(Tree.Kind.MEMBER_SELECT) && isArgument(((MemberSelectExpressionTree) tree.methodSelect()).expression(), parameterSymbol);
     }
-  }
 
+    private boolean isParameter(ExpressionTree expressionTree) {
+      return isArgument(expressionTree, parameterSymbol);
+    }
+  }
 }
