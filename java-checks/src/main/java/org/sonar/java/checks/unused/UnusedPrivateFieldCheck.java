@@ -68,8 +68,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     "lombok.Data",
     "lombok.Getter",
     "lombok.Setter",
-    "lombok.AllArgsConstructor"
-  );
+    "lombok.AllArgsConstructor");
 
   private static final Tree.Kind[] ASSIGNMENT_KINDS = {
     Tree.Kind.ASSIGNMENT,
@@ -197,7 +196,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   private static boolean hasOwnerClassAllowedAnnotations(VariableTree variableTree) {
     var ownerClass = (ClassTree) variableTree.parent();
     var metadata = ownerClass.symbol().metadata();
-    for (String name: OWNER_CLASS_ALLOWED_ANNOTATIONS) {
+    for (String name : OWNER_CLASS_ALLOWED_ANNOTATIONS) {
       // If the annotation does not use a fully qualified name e.g. `@Getter`,
       // then only the identifier portion will be available in automatic analysis.
       if (metadata.isAnnotatedWith(name) || metadata.isAnnotatedWith(annotationTypeIdentifier(name))) {
@@ -291,8 +290,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
       ExpressionTree variable = assignment.variable();
       String replacement = computeReplacement(variable, i);
       edits.add(
-        JavaTextEdit.replaceBetweenTree(variable, true, assignment.expression(), false, replacement)
-      );
+        JavaTextEdit.replaceBetweenTree(variable, true, assignment.expression(), false, replacement));
     }
     return edits;
   }
