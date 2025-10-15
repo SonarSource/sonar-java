@@ -1,17 +1,19 @@
 package checks;
 
-import play.Logger;
-
+import io.vavr.control.Try;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.InetAddress;
+import java.util.function.Consumer;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.function.Consumer;
-import io.vavr.control.Try;
+import play.Logger;
+
+// @formatter:off
 
 // http://localhost:9090/securityapp/s1989/noncompliantvavr
 @WebServlet(urlPatterns = "/s1989/noncompliantvavr")
