@@ -146,3 +146,20 @@ class JakartaServletMethodsExceptionsThrownCheckSample extends jakarta.servlet.h
     }
   }
 }
+
+class ShouldNotRaiseIfOuterTryCatchesException extends HttpServlet {
+  @Override
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+    try (Writer writer = response.getWriter()) {
+      try {
+      } catch (ArrayIndexOutOfBoundsException e) {
+      }
+
+      // This is a regression test:
+      // There used to be an FP here because the handling of the inner catch erased the information about the outer one.
+      // There is no issue here, because the IOException thrown by the method below is caught by the outer try-catch
+      writer.write("Just writing stuff."); // Compliant
+    } catch (IOException e) {
+    }
+  }
+}
