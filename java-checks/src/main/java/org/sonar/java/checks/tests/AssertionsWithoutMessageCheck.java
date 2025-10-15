@@ -82,7 +82,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
     return MethodMatchers.or(
       MethodMatchers.create()
         .ofTypes("org.junit.jupiter.api.Assertions", "org.junit.Assert", "junit.framework.Assert", "org.fest.assertions.Fail",
-          "org.assertj.core.api.Fail")
+          "org.assertj.core.api.Fail", "org.testng.Assert", "org.testng.AssertJUnit")
         .name(name -> name.startsWith(ASSERT) || "fail".equals(name)).withAnyParameters().build(),
       FEST_LIKE_ABSTRACT_ASSERT
       );
@@ -105,9 +105,19 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
       checkFestLikeAssertion(mit, symbol, reportLocation);
     } else if (type.is("org.junit.jupiter.api.Assertions")) {
       checkJUnit5(mit, reportLocation);
-    } else if (mit.arguments().isEmpty() || !isString(mit.arguments().get(0)) || isAssertingOnStringWithNoMessage(mit)) {
+    } else if (mit.arguments().isEmpty() || !hasMessageArg(mit, type) || isAssertingOnStringWithNoMessage(mit)) {
       reportIssue(reportLocation, MESSAGE);
     }
+  }
+
+  /**
+   * True if the call has a message argument. Such an argument is a string
+   * and it is the first of the last argument (depending on the assertion library).
+   */
+  private static boolean hasMessageArg(MethodInvocationTree mit, Type type) {
+    int expectedMessageArgIndex = (type.is("org.testng.Assert") || type.is("org.testng.AssertJUnit")) ? 1 : 0;
+    List<ExpressionTree> args = mit.arguments();
+    return expectedMessageArgIndex < args.size() && isString(args.get(expectedMessageArgIndex));
   }
 
   private void checkFestLikeAssertion(MethodInvocationTree mit, Symbol symbol, IdentifierTree reportLocation) {
