@@ -1,6 +1,10 @@
 package checks;
 
+// @formatter:off
+
+import java.util.Objects;
 import java.util.Random;
+import org.hibernate.proxy.HibernateProxy;
 
 class EqualsArgumentType {
 
@@ -263,6 +267,24 @@ class EqualsArgumentType {
       return false;
     }
 
+  }
+
+  static class ShouldRecognizeInstanceOfPatterns {
+    abstract static class SONARJAVA5765RegressionTest {
+      abstract Object getId();
+
+      // We used to raise an FP for this method because the `instanceof <pattern>` checks were not recognized as type checks.
+      @Override
+      public final boolean equals(Object o) { // Compliant
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy oHibernateProxy ? oHibernateProxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy thisHibernateProxy ? thisHibernateProxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        SONARJAVA5765RegressionTest myEntity = (SONARJAVA5765RegressionTest) o;
+        return getId() != null && Objects.equals(getId(), myEntity.getId());
+      }
+    }
   }
 
   private static boolean condition() {
