@@ -1,7 +1,9 @@
 package checks;
 
 import io.vavr.control.Try;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.net.InetAddress;
 import java.util.function.Consumer;
@@ -149,6 +151,8 @@ class JakartaServletMethodsExceptionsThrownCheckSample extends jakarta.servlet.h
   }
 }
 
+// @formatter:on
+
 class ShouldNotRaiseIfOuterTryCatchesException extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) {
@@ -163,5 +167,170 @@ class ShouldNotRaiseIfOuterTryCatchesException extends HttpServlet {
       writer.write("Just writing stuff."); // Compliant
     } catch (IOException e) {
     }
+  }
+}
+
+class ShouldHandleNestedTryCatchConstructs {
+  static class ShouldDetectUncaughtExceptionInDoublyNestedTryCatch extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+      try {
+        try {
+          throwIOException(); // Noncompliant {{Handle the following exception that could be thrown by "throwIOException": IOException.}}
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+      } catch (IllegalArgumentException e) {
+      }
+    }
+  }
+
+  static class ShouldNotRaiseForCaughtExceptionInDoublyNestedTryCatch extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+      try {
+        try {
+          throwIOException(); // Compliant
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+      } catch (IOException e) {
+      }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+      try {
+        try {
+          throwIOException(); // Compliant
+        } catch (IOException e) {
+        }
+      } catch (ArrayIndexOutOfBoundsException e) {
+      }
+    }
+  }
+
+  static class ShouldDetectUncaughtExceptionIfTryCatchIsOnLowerLevel extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+      try {
+        throwIOException(); // Compliant
+      } catch (IOException e) {
+      }
+
+      throwIOException(); // Noncompliant {{Handle the following exception that could be thrown by "throwIOException": IOException.}}
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+      throwIOException(); // Noncompliant {{Handle the following exception that could be thrown by "throwIOException": IOException.}}
+
+      try {
+        throwIOException(); // Compliant
+      } catch (IOException e) {
+      }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+      try {
+        throwIOException(); // Noncompliant {{Handle the following exception that could be thrown by "throwIOException": IOException.}}
+
+        try {
+          throwIOException(); // Compliant
+        } catch (IOException e) {
+        }
+      } catch (ArrayIndexOutOfBoundsException e) {
+
+      }
+    }
+  }
+
+  static class ShouldDetectForMixedExceptions extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+      try {
+        try {
+          throwIOException(); // Compliant: Caught by inner try-catch
+          throwServletException(); // Compliant: Caught by outer try-catch
+        } catch (IOException e) {
+
+        }
+
+        throwIOException(); // Noncompliant {{Handle the following exception that could be thrown by "throwIOException": IOException.}}
+      } catch (ServletException e) {
+
+      }
+    }
+  }
+
+  static class ShouldDetectAcrossTryWithResources extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+      try {
+        throwServletException();
+        try (OutputStream stream = new ByteArrayOutputStream()) {
+          stream.write(42); // Noncompliant {{Handle the following exception that could be thrown by "write": IOException.}}
+        }
+      } catch (ServletException e) {
+
+      }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+      try {
+        try (OutputStream stream = new ByteArrayOutputStream()) {
+          stream.write(42); // Compliant: Caught by outer try-catch
+        }
+      } catch (IOException e) {
+
+      }
+    }
+
+    @Override
+    protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+      try (OutputStream stream = new ByteArrayOutputStream()) {
+        try {
+          stream.write(42); // Compliant
+        } catch (IOException e) {
+
+        }
+      }
+    }
+  }
+
+  private static void throwIOException() throws IOException {
+    throw new IOException();
+  }
+
+  private static void throwServletException() throws ServletException {
+    throw new ServletException();
+  }
+}
+
+class ShouldHandleMultipleCatchBlocksInSeries extends HttpServlet {
+  @Override
+  protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+    try {
+      throwIOException(); // Compliant: Caught by second catch block
+    } catch (IllegalArgumentException e) {
+
+    } catch (IOException e) {
+
+    }
+  }
+
+  @Override
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    try {
+      throwIOException(); // Noncompliant {{Handle the following exception that could be thrown by "throwIOException": IOException.}}
+    } catch (IllegalArgumentException e) {
+
+    } catch (IllegalStateException e) {
+
+    }
+  }
+
+  private static void throwIOException() throws IOException {
+    throw new IOException();
   }
 }
