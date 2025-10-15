@@ -28,7 +28,10 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
   static class SONARJAVA5464Reproducer {
-    private static final List<Arguments> multiArgs = List.of( // FP
+    // This is a regression test:
+    // An FP used to be raised on the field below because we would not recognize that the field is referenced by a string in the
+    // @FieldSource annotation below.
+    private static final List<Arguments> multiArgs = List.of( // Compliant
       arguments(3, 6),
       arguments(5, 10),
       arguments(7, 14));

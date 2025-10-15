@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.checks.unused.utils.AnnotationFieldReferenceFinder;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -168,30 +169,50 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkClassFields(ClassTree classTree) {
-    classTree.members().stream()
-      .filter(member -> member.is(Tree.Kind.VARIABLE))
-      .map(VariableTree.class::cast)
-      .forEach(this::checkIfUnused);
+  private boolean isPrivateFieldWithNoSymbolUsages(VariableTree variableTree) {
+    if (!hasOnlyIgnoredAnnotations(variableTree)) {
+      return false;
+    }
+
+    var symbol = variableTree.symbol();
+    if (!symbol.isPrivate()) {
+      return false;
+    }
+
+    var name = symbol.name();
+    return !"serialVersionUID".equals(name)
+      && !unknownIdentifiers.contains(name)
+      && onlyUsedInVariableAssignment(symbol)
+      && !hasOwnerClassAllowedAnnotations(variableTree);
   }
 
-  public void checkIfUnused(VariableTree tree) {
-    if (hasOnlyIgnoredAnnotations(tree)) {
-      Symbol symbol = tree.symbol();
-      String name = symbol.name();
-      if (symbol.isPrivate()
-        && onlyUsedInVariableAssignment(symbol)
-        && !"serialVersionUID".equals(name)
-        && !unknownIdentifiers.contains(name)
-        && !hasOwnerClassAllowedAnnotations(tree)) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
-          .onTree(tree.simpleName())
-          .withMessage("Remove this unused \"" + name + "\" private field.")
-          .withQuickFix(() -> computeQuickFix(tree, assignments.getOrDefault(symbol, Collections.emptyList())))
-          .report();
+  private void checkClassFields(ClassTree classTree) {
+    var privateFieldsWithNoSymbolUsages = new ArrayList<VariableTree>();
+
+    for (var member : classTree.members()) {
+      if (member instanceof VariableTree variableTree && isPrivateFieldWithNoSymbolUsages(variableTree)) {
+        privateFieldsWithNoSymbolUsages.add(variableTree);
       }
     }
+
+    var annotationFieldReferencesVisitor = AnnotationFieldReferenceFinder.findReferencesTo(privateFieldsWithNoSymbolUsages);
+    classTree.accept(annotationFieldReferencesVisitor);
+
+    for (var field : annotationFieldReferencesVisitor.fieldsNotReferencedInAnnotation()) {
+      raiseIssueForField(field);
+    }
+  }
+
+  private void raiseIssueForField(VariableTree variableTree) {
+    var symbol = variableTree.symbol();
+    var name = symbol.name();
+
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(variableTree.simpleName())
+      .withMessage("Remove this unused \"" + name + "\" private field.")
+      .withQuickFix(() -> computeQuickFix(variableTree, assignments.getOrDefault(symbol, Collections.emptyList())))
+      .report();
   }
 
   private static boolean hasOwnerClassAllowedAnnotations(VariableTree variableTree) {
