@@ -409,7 +409,8 @@ abstract class JSymbol implements Symbol {
     return new JSymbolMetadata(
       sema,
       this,
-      symbolAnnotations, parameterAnnotations
+      symbolAnnotations,
+      parameterAnnotations
     );
   }
 

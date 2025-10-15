@@ -69,9 +69,9 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
 
     // If the method from the parent claims to never return null, the method from the child
     // that can actually be executed at runtime should not return null.
-    NullabilityData overrideeNullability = overridee.metadata().nullabilityData();
+    NullabilityData overrideeNullability = overridee.metadata().oldNullabilityData();
     if (overrideeNullability.isNonNull(PACKAGE, false, false)) {
-      NullabilityData methodNullability = methodTree.symbol().metadata().nullabilityData();
+      NullabilityData methodNullability = methodTree.symbol().metadata().oldNullabilityData();
       if (methodNullability.isNullable(PACKAGE, false, false)) {
         // returnType() returns null in case of constructor: the rule does not support them.
         reportIssue(methodTree.returnType(), overrideeNullability, methodNullability);
@@ -81,9 +81,9 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
 
   private void checkParameter(VariableTree parameter, SymbolMetadata overrideeParamMetadata) {
     // Annotations on parameters is the opposite of return value: if arguments of the parent can be null, the child method has to accept null value.
-    NullabilityData overrideeParamNullability = overrideeParamMetadata.nullabilityData();
+    NullabilityData overrideeParamNullability = overrideeParamMetadata.oldNullabilityData();
     if (overrideeParamNullability.isNullable(PACKAGE, false, false)) {
-      NullabilityData paramNullability = parameter.symbol().metadata().nullabilityData();
+      NullabilityData paramNullability = parameter.symbol().metadata().oldNullabilityData();
       if (paramNullability.isNonNull(PACKAGE, false, false)) {
         reportIssue(parameter.simpleName(), overrideeParamNullability, paramNullability);
       }

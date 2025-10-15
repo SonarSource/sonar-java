@@ -115,7 +115,7 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
 
   private void checkSymbol(SymbolMetadata.NullabilityData classNullabilityData, Tree tree,
     SymbolMetadata.NullabilityLevel treeLevel, Symbol symbol, NULLABILITY_SCOPE scope) {
-    SymbolMetadata.NullabilityData symbolNullabilityData = symbol.metadata().nullabilityData();
+    SymbolMetadata.NullabilityData symbolNullabilityData = symbol.metadata().oldNullabilityData();
     if (symbolNullabilityData.isNonNull(treeLevel, false, false) &&
       scope.equals(NULLABILITY_SCOPE.NON_NULLABLE)) {
       reportIssue(tree, symbolNullabilityData, classNullabilityData);

@@ -280,18 +280,18 @@ public class JSymbolMetadataNullabilityHelper {
   /**
    * Return the Nullability data given the metadata of the current symbol, a level and a target.
    */
-  public static NullabilityData getNullabilityDataAtLevel(SymbolMetadata metadata, NullabilityTarget target, NullabilityLevel level) {
+  public static NullabilityData getNullabilityDataAtLevel(SymbolMetadata metadata, NullabilityTarget target, NullabilityLevel level, boolean useOldMethod) {
     TypesForAnnotations typeForAnnotations = configuration.get(new ConfigurationKey(target, level));
     if (typeForAnnotations != null) {
-      return getNullabilityDataAtLevel(new HashSet<>(), metadata, level, false, typeForAnnotations);
+      return getNullabilityDataAtLevel(new HashSet<>(), metadata, level, false, typeForAnnotations, useOldMethod);
     }
     return noNullabilityAnnotationAt(level);
   }
 
   private static NullabilityData getNullabilityDataAtLevel(Set<Type> knownTypes, SymbolMetadata metadata,
-    NullabilityLevel level, boolean isMetaAnnotated, TypesForAnnotations typeForAnnotations) {
+    NullabilityLevel level, boolean isMetaAnnotated, TypesForAnnotations typeForAnnotations, boolean useOldMethod) {
     // Check if the symbol is directly annotated
-    NullabilityData directlyAnnotated = getNullabilityData(metadata, level, isMetaAnnotated, typeForAnnotations);
+    NullabilityData directlyAnnotated = getNullabilityData(metadata, level, isMetaAnnotated, typeForAnnotations, useOldMethod);
     if (directlyAnnotated.type() != NO_ANNOTATION) {
       return directlyAnnotated;
     }
@@ -302,7 +302,7 @@ public class JSymbolMetadataNullabilityHelper {
         // Only do recursion when we face unknown annotations, as we already know the nullability impact and might contain contradicting
         // annotations.
         NullabilityData nullabilityData = getNullabilityDataAtLevel(knownTypes, annotationSymbol.metadata(), level,
-          true, typeForAnnotations);
+          true, typeForAnnotations, useOldMethod);
         if (nullabilityData.type() != NO_ANNOTATION) {
           return nullabilityData;
         }
@@ -314,10 +314,12 @@ public class JSymbolMetadataNullabilityHelper {
   private static NullabilityData getNullabilityData(SymbolMetadata metadata,
     NullabilityLevel level,
     boolean isMetaAnnotated,
-    TypesForAnnotations typeForAnnotations) {
+    TypesForAnnotations typeForAnnotations,
+    boolean useOldMethod) {
+
     NullabilityType nullabilityType = NullabilityType.NO_ANNOTATION;
     AnnotationInstance annotationInstance = null;
-    for (AnnotationInstance annotation : metadata.symbolAnnotations()) {
+    for (AnnotationInstance annotation : getAnnotations(metadata, useOldMethod)) {
       NullabilityType typeFromAnnotation = typeForAnnotations.getTypeFromAnnotation(annotation);
       if (typeFromAnnotation.ordinal() > nullabilityType.ordinal()) {
         nullabilityType = typeFromAnnotation;
@@ -331,6 +333,10 @@ public class JSymbolMetadataNullabilityHelper {
     }
     return new JSymbolMetadata.JNullabilityData(nullabilityType, level,
       annotationInstance, metadata.findAnnotationTree(annotationInstance), isMetaAnnotated);
+  }
+
+  private static List<AnnotationInstance> getAnnotations(SymbolMetadata metadata, boolean useOldMethod) {
+    return useOldMethod ? metadata.annotations() : metadata.symbolAnnotations();
   }
 
   private static NullabilityType getIfStrongNullable(AnnotationInstance annotation) {
