@@ -20,11 +20,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -57,7 +57,7 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
 
   @RuleProperty(key = "TestClassNamePattern",
     description = "Test class name pattern (regular expression)",
-    defaultValue = "" + DEFAULT_TEST_CLASS_NAME_PATTERN)
+    defaultValue = DEFAULT_TEST_CLASS_NAME_PATTERN)
   public String testClassNamePattern = DEFAULT_TEST_CLASS_NAME_PATTERN;
   private Pattern testClassNamePatternRegEx;
 
@@ -81,33 +81,43 @@ public class NoTestInTestClassCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkClass(ClassTree classTree) {
-    boolean hasUnknownParent = Optional.ofNullable(classTree.superClass())
-      .map(parent -> parent.symbolType().isUnknown())
-      // If the superClass is null, then the class has no parent, so has no unknownParent.
-      .orElse(false);
-    boolean knownImplementedInterfaces = classTree.superInterfaces().stream()
-      .noneMatch(i -> i.symbolType().isUnknown());
-
-    if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)
-      && !hasUnknownParent
-      && knownImplementedInterfaces
-    ) {
-      Symbol.TypeSymbol classSymbol = classTree.symbol();
-      Stream<Symbol> members = getAllMembers(classSymbol, checkRunWith(classSymbol, "Enclosed"));
-      IdentifierTree simpleName = classTree.simpleName();
-      if (classSymbol.metadata().isAnnotatedWith(TEST_NG_TEST)) {
-        checkTestNGmembers(simpleName, members);
-      } else {
-        boolean isJunit3TestClass = classSymbol.type().isSubtypeOf("junit.framework.TestCase");
-        List<Symbol> membersList = members.toList();
-        if (isJunit3TestClass && containsJUnit3Tests(membersList)) {
-          return;
-        }
-        if (isJunit3TestClass || isTestClassName(classSymbol.name())) {
-          checkJunit4AndAboveTestClass(simpleName, classSymbol, membersList);
-        }
-      }
+    if (ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)
+        || hasUnknownParent(classTree)) {
+      return;
     }
+
+    Symbol.TypeSymbol classSymbol = classTree.symbol();
+    Stream<Symbol> members = getAllMembers(classSymbol, checkRunWith(classSymbol, "Enclosed"));
+    IdentifierTree simpleName = classTree.simpleName();
+    if (classSymbol.metadata().isAnnotatedWith(TEST_NG_TEST)) {
+      checkTestNGmembers(simpleName, members);
+      return;
+    }
+
+    boolean isJunit3TestClass = classSymbol.type().isSubtypeOf("junit.framework.TestCase");
+    List<Symbol> membersList = members.toList();
+    if (isJunit3TestClass && containsJUnit3Tests(membersList)) {
+      return;
+    }
+    if (isJunit3TestClass || isTestClassName(classSymbol.name())) {
+      checkJunit4AndAboveTestClass(simpleName, classSymbol, membersList);
+    }
+  }
+
+  private static boolean hasUnknownParent(ClassTree classTree) {
+    return isTransitivelyUnknown(classTree.symbol().type());
+  }
+
+  private static boolean isTransitivelyUnknown(@Nullable Type type) {
+    if (type == null) {
+      return false;
+    }
+    // A type is unknown if it is unknown,
+    return type.isUnknown()
+           // any of its super type is unknown
+           || isTransitivelyUnknown(type.symbol().superClass())
+           // or any of its interfaces is unknown
+           || type.symbol().interfaces().stream().anyMatch(NoTestInTestClassCheck::isTransitivelyUnknown);
   }
 
   private boolean isTestClassName(String className) {

@@ -34,6 +34,14 @@ class NoTestInTestClassCheckTest {
   }
 
   @Test
+  void testUnknownParent() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/NoTestInTestClassCheckUnknownParent.java"))
+      .withCheck(new NoTestInTestClassCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void surefire_inclusions_class_name_pattern() {
     NoTestInTestClassCheck check = new NoTestInTestClassCheck();
     check.testClassNamePattern = "Test.*|.*(Test|Tests|TestCase)";
