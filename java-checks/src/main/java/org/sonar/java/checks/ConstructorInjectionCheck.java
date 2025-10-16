@@ -17,7 +17,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
-import org.sonar.java.checks.spring.FieldDependencyInjectionCheck;
+import org.sonar.java.checks.helpers.InjectionHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -45,7 +45,7 @@ public class ConstructorInjectionCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    if (FieldDependencyInjectionCheck.IGNORE_CLASSES.stream().anyMatch(ignoredType -> ct.symbol().type().isSubtypeOf(ignoredType))) {
+    if (InjectionHelper.classCannotUseConstructorInjection(ct)) {
       return;
     }
 

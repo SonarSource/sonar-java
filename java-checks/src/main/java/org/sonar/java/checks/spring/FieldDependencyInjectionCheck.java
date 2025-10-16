@@ -18,6 +18,7 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.InjectionHelper;
 import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -31,17 +32,6 @@ public class FieldDependencyInjectionCheck extends IssuableSubscriptionVisitor {
     "javax.inject.Inject",
     "jakarta.inject.Inject");
 
-  public static final List<String> IGNORE_CLASSES = List.of(
-    // SONARJAVA-5358: Ignore Android instantiated classes
-    "android.app.Activity",
-    "android.app.Application",
-    "android.app.Fragment",
-    "androidx.fragment.app.Fragment",
-    "android.app.Service",
-    "android.content.BroadcastReceiver",
-    "android.content.ContentProvider",
-    "android.view.View");
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.CLASS);
@@ -50,9 +40,7 @@ public class FieldDependencyInjectionCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     var ct = (ClassTree) tree;
-    if (IGNORE_CLASSES.stream().anyMatch(ignoredType -> ct.symbol().type().isSubtypeOf(ignoredType))) {
-      return;
-    }
+    if (InjectionHelper.classCannotUseConstructorInjection(ct)) return;
 
     ct.members().forEach(member -> {
       if (member.is(Tree.Kind.VARIABLE)) {
