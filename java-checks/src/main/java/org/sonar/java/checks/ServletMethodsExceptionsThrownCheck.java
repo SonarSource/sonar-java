@@ -60,10 +60,10 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
       shouldCheck.push(IS_SERVLET_DO_METHOD.matches((MethodTree) tree));
     } else if (shouldCheck()) {
       if (tree.is(Tree.Kind.TRY_STATEMENT)) {
-        tryCatches.add(getCaughtExceptions(((TryStatementTree) tree).catches()));
+        tryCatches.push(getCaughtExceptions(((TryStatementTree) tree).catches()));
       } else if (tree.is(Tree.Kind.CATCH)) {
         tryCatches.pop();
-        tryCatches.add(Collections.emptyList());
+        tryCatches.push(Collections.emptyList());
       } else if (tree.is(Tree.Kind.THROW_STATEMENT)) {
         addIssueIfNotCaught(((ThrowStatementTree) tree).expression().symbolType(), tree);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
