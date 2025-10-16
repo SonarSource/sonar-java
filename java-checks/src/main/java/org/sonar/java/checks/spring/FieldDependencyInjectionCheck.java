@@ -32,6 +32,7 @@ public class FieldDependencyInjectionCheck extends IssuableSubscriptionVisitor {
     "jakarta.inject.Inject");
 
   private static final List<String> IGNORE_CLASSES = List.of(
+    // SONARJAVA-5358: Ignore Android instantiated classes
     "android.app.Activity",
     "android.app.Application",
     "android.app.Fragment",
