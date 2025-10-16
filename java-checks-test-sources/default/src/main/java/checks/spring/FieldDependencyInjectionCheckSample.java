@@ -1,5 +1,6 @@
 package checks.spring;
 
+import io.micronaut.function.aws.MicronautRequestHandler;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,4 +41,18 @@ public class FieldDependencyInjectionCheckSample {
 
   @Nullable
   private String annotatedButNotInjected;
+
+  private class Handler extends MicronautRequestHandler<Object, Object> {
+    @Inject // Compliant : MicronautRequestHandler requires a no-arg constructor for AWS
+    private String injected;
+
+    public Handler() {
+      // Required no-arg constructor for AWS
+    }
+
+    @Override
+    public Object execute(Object input) {
+      return null;
+    }
+  }
 }
