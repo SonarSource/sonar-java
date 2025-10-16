@@ -18,6 +18,7 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.InjectionHelper;
 import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -39,6 +40,8 @@ public class FieldDependencyInjectionCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     var ct = (ClassTree) tree;
+    if (InjectionHelper.classCannotUseConstructorInjection(ct)) return;
+
     ct.members().forEach(member -> {
       if (member.is(Tree.Kind.VARIABLE)) {
         var vt = (VariableTree) member;

@@ -1,5 +1,6 @@
 package checks;
 
+import android.app.Activity;
 import javax.inject.Inject;
 
 class ConstructorInjectionCheckA {
@@ -32,4 +33,9 @@ class ConstructorInjectionCheckD {
   void foo() {}
   
   public ConstructorInjectionCheckD() {}
+}
+
+class AndroidActivityInjection extends Activity {
+  @Inject // Compliant : Activities are managed by the framework, one cannot use constructor injection
+  private String injected;
 }

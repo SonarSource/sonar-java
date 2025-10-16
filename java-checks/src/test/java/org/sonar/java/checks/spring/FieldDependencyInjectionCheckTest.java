@@ -31,6 +31,14 @@ class FieldDependencyInjectionCheckTest {
   }
 
   @Test
+  void testAndroid() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/android/FieldDependencyInjectionCheckSample.java"))
+      .withCheck(new FieldDependencyInjectionCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void testJakarta() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/spring/FieldDependencyInjectionCheckJakartaSample.java"))

@@ -17,6 +17,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.InjectionHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -37,11 +38,17 @@ public class ConstructorInjectionCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    List<Tree> members = ((ClassTree) tree).members();
+    var ct = (ClassTree) tree;
+    List<Tree> members = ct.members();
     Optional<Tree> first = members.stream().filter(t -> t.is(Tree.Kind.CONSTRUCTOR) && isPrivateConstructor((MethodTree) t)).findFirst();
     if(first.isPresent()) {
       return;
     }
+
+    if (InjectionHelper.classCannotUseConstructorInjection(ct)) {
+      return;
+    }
+
     members.stream()
       .filter(t -> t.is(Tree.Kind.VARIABLE) && isAnnotatedWithInject((VariableTree) t))
       .forEach(field -> reportIssue(((VariableTree) field).simpleName(), "Use constructor injection for this field.")
