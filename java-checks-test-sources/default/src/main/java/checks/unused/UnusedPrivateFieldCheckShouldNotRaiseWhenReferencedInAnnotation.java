@@ -41,4 +41,15 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
       // ...
     }
   }
+
+  static class ShouldNotRaiseForFieldsThatMatchTestName {
+    private static final List<Integer> test = List.of(1, 2, 3); // Compliant: Has same name as the test below
+    private static final List<Integer> unusedControlField = List.of(7, 8, 9); // Noncompliant {{Remove this unused "unusedControlField" private field.}}
+
+    @ParameterizedTest
+    @FieldSource
+    void test(int input) {
+      // ...
+    }
+  }
 }
