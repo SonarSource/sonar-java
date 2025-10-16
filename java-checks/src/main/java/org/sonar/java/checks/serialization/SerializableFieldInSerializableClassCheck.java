@@ -105,8 +105,7 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
       checkCollectionAssignments(variableTree.symbol().usages());
     } else {
       ExpressionTree initializer = variableTree.initializer();
-      Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) variableTree.symbol();
-      if (initializer == null || !(variableSymbol.isFinal() && implementsSerializable(initializer.symbolType()))) {
+      if (initializer == null || !(variableTree.symbol().isFinal() && implementsSerializable(initializer.symbolType()))) {
         reportIssue(simpleName);
       }
     }
