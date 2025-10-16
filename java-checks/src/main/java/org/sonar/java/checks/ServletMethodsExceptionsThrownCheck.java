@@ -43,7 +43,7 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
 
   private static final MethodMatchers IS_SERVLET_DO_METHOD = MethodMatchers.create()
     .ofSubTypes("javax.servlet.http.HttpServlet", "jakarta.servlet.http.HttpServlet")
-    .name(name -> name.startsWith("do"))
+    .names("doGet", "doPost", "doPut", "doDelete", "doHead", "doOptions", "doTrace")
     .withAnyParameters().build();
 
   private final Deque<Boolean> shouldCheck = new ArrayDeque<>();

@@ -17,6 +17,16 @@ import play.Logger;
 
 // @formatter:off
 
+
+class SONARJAVA4603 extends HttpServlet {
+  public void doGetSafely(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    handleGetRequest(req, resp);
+  }
+
+  protected void handleGetRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  }
+}
+
 // http://localhost:9090/securityapp/s1989/noncompliantvavr
 @WebServlet(urlPatterns = "/s1989/noncompliantvavr")
 class S1989noncompliantvavr extends HttpServlet {
