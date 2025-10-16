@@ -29,4 +29,16 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
       }
     }
   }
+
+  static class ShouldNotRaiseForMultipleFieldsReferencedInSameAnnotation {
+    private static final List<Integer> firstField = List.of(1, 2, 3); // Compliant: Used in annotation below
+    private static final List<Integer> secondField = List.of(4, 5, 6); // Compliant: Used in annotation below
+    private static final List<Integer> unusedControlField = List.of(7, 8, 9); // Noncompliant {{Remove this unused "unusedControlField" private field.}}
+
+    @ParameterizedTest
+    @FieldSource({"firstField", "secondField"})
+    void test(int input) {
+      // ...
+    }
+  }
 }
