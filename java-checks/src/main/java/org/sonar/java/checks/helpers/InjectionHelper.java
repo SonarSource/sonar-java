@@ -34,8 +34,9 @@ public final class InjectionHelper {
     "android.app.Service",
     "android.content.BroadcastReceiver",
     "android.content.ContentProvider",
-    "android.view.View"
-  );
+    "android.view.View",
+    // SONARJAVA-4753
+    "io.micronaut.function.aws.MicronautRequestHandler");
 
   public static boolean classCannotUseConstructorInjection(ClassTree ct) {
     return CLASS_PREVENTING_CONSTRUCTOR_INJECTION.stream()
