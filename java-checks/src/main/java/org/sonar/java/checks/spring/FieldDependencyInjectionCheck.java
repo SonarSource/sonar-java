@@ -31,6 +31,16 @@ public class FieldDependencyInjectionCheck extends IssuableSubscriptionVisitor {
     "javax.inject.Inject",
     "jakarta.inject.Inject");
 
+  private static final List<String> IGNORE_CLASSES = List.of(
+    "android.app.Activity",
+    "android.app.Application",
+    "android.app.Fragment",
+    "androidx.fragment.app.Fragment",
+    "android.app.Service",
+    "android.content.BroadcastReceiver",
+    "android.content.ContentProvider",
+    "android.view.View");
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.CLASS);
@@ -39,6 +49,10 @@ public class FieldDependencyInjectionCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     var ct = (ClassTree) tree;
+    if (IGNORE_CLASSES.stream().anyMatch(ignoredType -> ct.symbol().type().isSubtypeOf(ignoredType))) {
+      return;
+    }
+
     ct.members().forEach(member -> {
       if (member.is(Tree.Kind.VARIABLE)) {
         var vt = (VariableTree) member;
