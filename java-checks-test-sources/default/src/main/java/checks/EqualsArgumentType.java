@@ -1,6 +1,10 @@
 package checks;
 
+// @formatter:off
+
+import java.util.Objects;
 import java.util.Random;
+import org.hibernate.proxy.HibernateProxy;
 
 class EqualsArgumentType {
 
@@ -263,6 +267,71 @@ class EqualsArgumentType {
       return false;
     }
 
+  }
+
+  static class ShouldRecognizeInstanceOfPatterns {
+    // @formatter:on
+    static class DoNotRaiseIfSimpleInstanceOfPatternIsPresent {
+      int field;
+
+      @Override
+      public boolean equals(Object o) { // Compliant
+        if (!(o instanceof DoNotRaiseIfSimpleInstanceOfPatternIsPresent that)) {
+          return false;
+        }
+
+        return field == that.field;
+      }
+    }
+
+    static class DoRaiseIfNonParameterIsChecked {
+      Object field;
+
+      @Override
+      public boolean equals(Object o) { // Noncompliant {{Add a type test to this method.}}
+        var other = (OtherClass) o;
+
+        // This instanceof pattern check does not check the parameter, but a field of the parameter.
+        // Hence, this method is not compliant.
+        if (!(other.field instanceof DoRaiseIfNonParameterIsChecked that)) {
+          return false;
+        }
+
+        return field == that.field;
+      }
+
+      static class OtherClass {
+        Object field;
+      }
+    }
+
+    record DoNotRaiseIfRecordPatternIsPresent(int field) {
+      @Override
+      public boolean equals(Object o) { // Compliant
+        if (!(o instanceof DoNotRaiseIfRecordPatternIsPresent(var otherField))) {
+          return false;
+        }
+
+        return field == otherField;
+      }
+    }
+
+    // @formatter:off
+    abstract static class SONARJAVA5765RegressionTest {
+      abstract Object getId();
+
+      // We used to raise an FP for this method because the `instanceof <pattern>` checks were not recognized as type checks.
+      @Override
+      public final boolean equals(Object o) { // Compliant
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy oHibernateProxy ? oHibernateProxy.getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy thisHibernateProxy ? thisHibernateProxy.getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        SONARJAVA5765RegressionTest myEntity = (SONARJAVA5765RegressionTest) o;
+        return getId() != null && Objects.equals(getId(), myEntity.getId());
+      }
+    }
   }
 
   private static boolean condition() {
