@@ -193,14 +193,6 @@ class JSymbolMetadataTest {
   }
 
   @Test
-  void parametrized_type_level_nullability_old() throws IOException {
-    assertNullability(
-      NULLABILITY_SOURCE_DIR.resolve(Paths.get("no_default", "NullabilityOfParametrizedTypes_Old.java")),
-      true
-    );
-  }
-
-  @Test
   void unsupported_nullability() throws IOException {
     assertNullability(
       NULLABILITY_SOURCE_DIR.resolve(Paths.get("no_default", "UnsupportedNullability.java"))
@@ -360,10 +352,6 @@ class JSymbolMetadataTest {
   }
 
   void assertNullability(Path sourceFile) throws IOException {
-    assertNullability(sourceFile, false);
-  }
-
-  void assertNullability(Path sourceFile, boolean useOldMethod) throws IOException {
     CompilationUnitTree cut = JParserTestUtils.parse(sourceFile.toRealPath().toFile(), JParserTestUtils.checksTestClassPath());
     List<Symbol> idSymbols = collectIdentifiers(cut).stream()
       .filter(identifier -> identifier.name().startsWith("id"))
@@ -382,16 +370,16 @@ class JSymbolMetadataTest {
       String expectedLine = matcher.group("line");
       boolean metaAnnotation = matcher.group("meta") != null;
 
-      assertNullability(symbol, expectedType, expectedLevel, expectedLine, metaAnnotation, useOldMethod, "\nFile: " + sourceFile.toRealPath() + "\n");
+      assertNullability(symbol, expectedType, expectedLevel, expectedLine, metaAnnotation, "\nFile: " + sourceFile.toRealPath() + "\n");
     }
   }
 
   private static void assertNullability(Symbol symbol, NullabilityType expectedType,
                                         @Nullable NullabilityLevel expectedLevel, @Nullable String expectedLine,
-                                        boolean metaAnnotation, boolean useOldMethod, String context) {
+                                        boolean metaAnnotation, String context) {
 
     String symbolContext = "for symbol: " + symbol.name() + " in " + context;
-    SymbolMetadata.NullabilityData nullabilityData = (useOldMethod ? symbol.metadata().oldNullabilityData() : symbol.metadata().nullabilityData());
+    SymbolMetadata.NullabilityData nullabilityData = symbol.metadata().nullabilityData();
     assertThat(nullabilityData.type()).describedAs(symbolContext).isEqualTo(expectedType);
     if (expectedLevel != null) {
       assertThat(nullabilityData.level()).describedAs(symbolContext).isEqualTo(expectedLevel);
