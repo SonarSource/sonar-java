@@ -4,6 +4,7 @@ import java.util.List;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.FieldSource;
+import org.junit.jupiter.params.provider.FieldSources;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -67,6 +68,34 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
       void test(int input) {
         // ...
       }
+    }
+  }
+
+  static class ShouldNotRaiseForFieldsReferencedInNestedAnnotations {
+    private static final List<Integer> firstField = List.of(1, 2, 3); // Compliant: Used in annotation below
+    private static final List<Integer> secondField = List.of(4, 5, 6); // Compliant: Used in annotation below
+    private static final List<Integer> unusedControlField = List.of(7, 8, 9); // Noncompliant {{Remove this unused "unusedControlField" private field.}}
+
+    @ParameterizedTest
+    @FieldSources({
+      @FieldSource("firstField"),
+      @FieldSource("secondField")
+    })
+    void test(int input) {
+      // ...
+    }
+  }
+
+  static class ShouldNotRaiseForFieldsReferencedInRepeatedAnnotations {
+    private static final List<Integer> firstField = List.of(1, 2, 3); // Compliant: Used in annotation below
+    private static final List<Integer> secondField = List.of(4, 5, 6); // Compliant: Used in annotation below
+    private static final List<Integer> unusedControlField = List.of(7, 8, 9); // Noncompliant {{Remove this unused "unusedControlField" private field.}}
+
+    @ParameterizedTest
+    @FieldSource("firstField")
+    @FieldSource("secondField")
+    void test(int input) {
+      // ...
     }
   }
 }
