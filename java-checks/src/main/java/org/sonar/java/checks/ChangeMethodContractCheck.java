@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -53,7 +54,7 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
       return;
     }
     Symbol.MethodSymbol overridee = overriddenSymbols.get(0);
-    if (!overridee.isUnknown() && overridee.isMethodSymbol()) {
+    if (overridee.isMethodSymbol()) {
       checkContractChange(methodTree, overridee);
     }
   }
@@ -66,8 +67,7 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
 
     for (int i = 0; i < methodTree.parameters().size(); i++) {
       VariableTree parameter = methodTree.parameters().get(i);
-      var overriddenParam = overridee.declarationParameters().get(i);
-      checkParameter(parameter, overriddenParam.metadata());
+      checkParameter(parameter, JUtils.parameterAnnotations(overridee, i));
     }
 
     // If the method from the parent claims to never return null, the method from the child
