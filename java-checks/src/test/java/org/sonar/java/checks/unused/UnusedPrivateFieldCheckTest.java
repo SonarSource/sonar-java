@@ -95,4 +95,12 @@ class UnusedPrivateFieldCheckTest {
       .withCheck(new UnusedPrivateFieldCheck())
       .verifyIssues();
   }
+
+  @Test
+  void should_not_raise_when_referenced_in_annotation_noncompiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/unused/UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation.java"))
+      .withCheck(new UnusedPrivateFieldCheck())
+      .verifyIssues();
+  }
 }
