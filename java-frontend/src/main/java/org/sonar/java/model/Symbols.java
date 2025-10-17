@@ -60,12 +60,27 @@ public class Symbols {
     }
 
     @Override
+    public List<AnnotationInstance> symbolAnnotations() {
+      return Collections.emptyList();
+    }
+
+    @Override
     public NullabilityData nullabilityData() {
       return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
     }
 
     @Override
+    public NullabilityData oldNullabilityData() {
+      return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
+    }
+
+    @Override
     public NullabilityData nullabilityData(NullabilityTarget level) {
+      return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
+    }
+
+    @Override
+    public NullabilityData oldNullabilityData(NullabilityTarget level) {
       return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
     }
 
