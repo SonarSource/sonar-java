@@ -159,26 +159,24 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
   }
 
   static class ShouldNotRaiseWhenFieldIsReferencedByCustomAnnotation {
-    private static final List<Integer> firstField = List.of(1, 2, 3); // Compliant
-    // We only consider method annotations for now, hence, we intentionally raise for fields referenced in class annotations etc:
-    private static final List<Integer> secondField = List.of(1, 2, 3); // Noncompliant {{Remove this unused "secondField" private field.}}
-    private static final List<Integer> unusedControlField = List.of(7, 8, 9); // Noncompliant {{Remove this unused "unusedControlField" private field.}}
+    // The following is a potential FP:
+    // @CustomAnnotation might function similarly to @FieldSource, so we might not want to raise here.
+    // However, if we mute the rule for unknown annotations, we lose TPs on ruling. Hence, we only support FieldSource and FieldSources atm.
+    private static final List<Integer> field = List.of(1, 2, 3); // Noncompliant {{Remove this unused "field" private field.}}
 
     @ParameterizedTest
-    @CustomAnnotation("firstField")
+    @CustomAnnotation("field")
     void test(int input) {
       // ...
     }
+  }
 
-    @ParameterizedTest
-    // We expect the check to function normally in the presence of different literal types than String by ignoring such literals
-    @CustomAnnotationWithDifferentLiteralType(42)
-    void otherTest(int input) {
-      // ...
-    }
+  static class ShouldRaiseWhenFieldIsReferencedByNonMethodAnnotation {
+    // We only consider method annotations for now, hence, we intentionally raise for fields referenced in class annotations etc:
+    private static final List<Integer> field = List.of(1, 2, 3); // Noncompliant {{Remove this unused "field" private field.}}
 
     @org.junit.jupiter.api.Nested
-    @CustomAnnotation("secondField")
+    @FieldSource("field")
     class Nested {
       @ParameterizedTest
       void test(int input) {

@@ -63,6 +63,7 @@ public class AnnotationFieldReferenceFinder extends BaseTreeVisitor {
   // We are intentionally not using a fully qualified name of the annotation class here, as it might be missing in contexts with incomplete
   // semantics.
   private static final String FIELD_SOURCE_METHOD_ANNOTATION = "FieldSource";
+  private static final String FIELD_SOURCES_METHOD_ANNOTATION = "FieldSources";
 
   private AnnotationFieldReferenceFinder(HashMap<String, VariableTree> fieldNameToVariableTree) {
     this.fieldNameToVariableTree = fieldNameToVariableTree;
@@ -104,19 +105,26 @@ public class AnnotationFieldReferenceFinder extends BaseTreeVisitor {
   public void visitAnnotation(AnnotationTree annotationTree) {
     var annotatedMethod = findAnnotatedMethod(annotationTree);
     // We only want to handle annotations on (test) methods
-    if (annotatedMethod != null) {
-      // The @FieldAnnotation annotation can be used without arguments.
-      // In that case, the name of the annotated method is also the name of the field that is being referenced as input source.
-      if (FIELD_SOURCE_METHOD_ANNOTATION.equals(annotationTree.annotationType().symbolType().name())) {
-        fieldNameToVariableTree.remove(annotatedMethod.simpleName().name());
-      }
-
-      for (var argument : annotationTree.arguments()) {
-        argument.accept(stringLiteralFinder);
-      }
+    if (annotatedMethod == null) {
+      return;
     }
 
-    super.visitAnnotation(annotationTree);
+    var annotationName = annotationTree.annotationType().symbolType().name();
+    var isFieldSourceAnnotation = FIELD_SOURCE_METHOD_ANNOTATION.equals(annotationName);
+    var isFieldSourcesAnnotation = FIELD_SOURCES_METHOD_ANNOTATION.equals(annotationName);
+    if (!isFieldSourceAnnotation && !isFieldSourcesAnnotation) {
+      return;
+    }
+
+    if (isFieldSourceAnnotation) {
+      // The @FieldAnnotation annotation can be used without arguments.
+      // In that case, the name of the annotated method is also the name of the field that is being referenced as input source.
+      fieldNameToVariableTree.remove(annotatedMethod.simpleName().name());
+    }
+
+    for (var argument : annotationTree.arguments()) {
+      argument.accept(stringLiteralFinder);
+    }
   }
 
   @Override
