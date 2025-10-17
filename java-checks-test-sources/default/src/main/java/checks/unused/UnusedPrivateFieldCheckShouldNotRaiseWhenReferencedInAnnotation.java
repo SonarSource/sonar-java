@@ -52,4 +52,21 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
       // ...
     }
   }
+
+  static class ShouldNotRaiseForExternalFieldsReferencedInAnnotation {
+    // Accepted FP:
+    // This field is referenced using a fully qualified name in the @FieldSource annotation below and thus it is not unused.
+    // However, the additional logic we would need to track such fields with fully qualified names globally is not yet justified without
+    // having seen some real world impact. Hence, we accept this FP for now.
+    private static final List<Integer> externalField = List.of(1, 2, 3); // Noncompliant
+    private static final List<Integer> unusedControlField = List.of(7, 8, 9); // Noncompliant {{Remove this unused "unusedControlField" private field.}}
+
+    static class Nested {
+      @ParameterizedTest
+      @FieldSource("checks.unused.UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation$ShouldNotRaiseForExternalFieldsReferencedInAnnotation#externalField")
+      void test(int input) {
+        // ...
+      }
+    }
+  }
 }
