@@ -62,7 +62,6 @@ final class JSymbolMetadata implements SymbolMetadata {
   private List<AnnotationInstance> symbolAnnotations;
 
   private final Map<NullabilityTarget, NullabilityData> nullabilityCache = new EnumMap<>(NullabilityTarget.class);
-  private final Map<NullabilityTarget, NullabilityData> oldNullabilityCache = new EnumMap<>(NullabilityTarget.class);
 
   JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] annotationBindings) {
     this.sema = Objects.requireNonNull(sema);
@@ -156,7 +155,7 @@ final class JSymbolMetadata implements SymbolMetadata {
 
   @Nullable
   @Override
-  public final List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
+  public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
     for (AnnotationInstance a : annotations()) {
       if (a.symbol().type().is(fullyQualifiedNameOfAnnotation)) {
         // TODO what about repeating annotations?
@@ -176,22 +175,8 @@ final class JSymbolMetadata implements SymbolMetadata {
   }
 
   @Override
-  public NullabilityData oldNullabilityData() {
-    NullabilityTarget target = getTarget(symbol);
-    if (target == null) {
-      return unknownNullabilityAt(NullabilityLevel.UNKNOWN);
-    }
-    return oldNullabilityData(target);
-  }
-
-  @Override
   public NullabilityData nullabilityData(NullabilityTarget target) {
-    return nullabilityCache.computeIfAbsent(target, t -> resolveNullability(t, false));
-  }
-
-  @Override
-  public NullabilityData oldNullabilityData(NullabilityTarget target) {
-    return oldNullabilityCache.computeIfAbsent(target, t -> resolveNullability(t, true));
+    return nullabilityCache.computeIfAbsent(target, this::resolveNullability);
   }
 
   @Nullable
@@ -220,16 +205,16 @@ final class JSymbolMetadata implements SymbolMetadata {
     return null;
   }
 
-  private NullabilityData resolveNullability(NullabilityTarget target, boolean useOldMethod) {
+  private NullabilityData resolveNullability(NullabilityTarget target) {
     NullabilityLevel currentLevel = getLevel(symbol);
-    NullabilityData nullabilityDataAtLevel = getNullabilityDataAtLevel(this, target, currentLevel, useOldMethod);
+    NullabilityData nullabilityDataAtLevel = getNullabilityDataAtLevel(this, target, currentLevel);
     if (nullabilityDataAtLevel.type() != NullabilityType.NO_ANNOTATION) {
       return nullabilityDataAtLevel;
     }
 
     // Check nullability from the inheritance hierarchy
     if (symbol.isMethodSymbol()) {
-      NullabilityData nullabilityDataFromInheritance = getNullabilityDataFromInheritance((Symbol.MethodSymbol) symbol, target, useOldMethod);
+      NullabilityData nullabilityDataFromInheritance = getNullabilityDataFromInheritance((Symbol.MethodSymbol) symbol, target);
       if (nullabilityDataFromInheritance.type() != NullabilityType.NO_ANNOTATION) {
         return nullabilityDataFromInheritance;
       }
@@ -242,15 +227,15 @@ final class JSymbolMetadata implements SymbolMetadata {
     Symbol owner = getEffectiveOwner(symbol, currentLevel);
     if (owner == null) return unknownNullabilityAt(currentLevel);
     var metadata = owner.metadata();
-    return useOldMethod ? metadata.oldNullabilityData(target) : metadata.nullabilityData(target);
+    return metadata.nullabilityData(target);
   }
 
-  private static NullabilityData getNullabilityDataFromInheritance(Symbol.MethodSymbol methodSymbol, NullabilityTarget target, boolean useOldMethod) {
+  private static NullabilityData getNullabilityDataFromInheritance(Symbol.MethodSymbol methodSymbol, NullabilityTarget target) {
     List<Symbol.MethodSymbol> overriddenSymbols = methodSymbol.overriddenSymbols();
     NullabilityLevel level = NullabilityLevel.METHOD;
     for (Symbol.MethodSymbol overriddenSymbol : overriddenSymbols) {
       SymbolMetadata metadata = overriddenSymbol.metadata();
-      NullabilityData nullabilityData = getNullabilityDataAtLevel(metadata, target, level, useOldMethod);
+      NullabilityData nullabilityData = getNullabilityDataAtLevel(metadata, target, level);
       if (nullabilityData.type() != NullabilityType.NO_ANNOTATION && !nullabilityData.equals(unknownNullabilityAt(level))) {
         return nullabilityData;
       }
