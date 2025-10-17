@@ -1,13 +1,30 @@
 package checks.unused;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.util.List;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.FieldSource;
 import org.junit.jupiter.params.provider.FieldSources;
 
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+
+@Target({METHOD, TYPE})
+@Retention(RUNTIME)
+@interface CustomAnnotation {
+  String value();
+}
+
+@Target({METHOD})
+@Retention(RUNTIME)
+@interface CustomAnnotationWithDifferentLiteralType {
+  int value();
+}
 
 public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
   static class SONARJAVA5464Reproducer {
@@ -138,4 +155,32 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
     }
   }
 
+  static class ShouldNotRaiseWhenFieldIsReferencedByCustomAnnotation {
+    private static final List<Integer> firstField = List.of(1, 2, 3); // Compliant
+    // We only consider method annotations for now, hence, we intentionally raise for fields referenced in class annotations etc:
+    private static final List<Integer> secondField = List.of(1, 2, 3); // Noncompliant {{Remove this unused "secondField" private field.}}
+    private static final List<Integer> unusedControlField = List.of(7, 8, 9); // Noncompliant {{Remove this unused "unusedControlField" private field.}}
+
+    @ParameterizedTest
+    @CustomAnnotation("firstField")
+    void test(int input) {
+      // ...
+    }
+
+    @ParameterizedTest
+    // We expect the check to function normally in the presence of different literal types than String by ignoring such literals
+    @CustomAnnotationWithDifferentLiteralType(42)
+    void otherTest(int input) {
+      // ...
+    }
+
+    @org.junit.jupiter.api.Nested
+    @CustomAnnotation("secondField")
+    class Nested {
+      @ParameterizedTest
+      void test(int input) {
+        // ...
+      }
+    }
+  }
 }
