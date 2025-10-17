@@ -121,4 +121,21 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
       // ...
     }
   }
+
+  static class ShouldRaiseWhenFieldIsIncorrectlyReferencedInNestedClass {
+    // TP:
+    // The FieldSource in the nested class is always referencing local fields, unless the name is fully qualified.
+    // Hence, this field is indeed unused.
+    private static final List<Integer> field = List.of(1, 2, 3); // Noncompliant {{Remove this unused "field" private field.}}
+
+    @org.junit.jupiter.api.Nested
+    class Nested {
+      @ParameterizedTest
+      @FieldSource("field")
+      void test(int input) {
+        // ...
+      }
+    }
+  }
+
 }
