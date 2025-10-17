@@ -22,14 +22,15 @@ import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
-import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityData;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.sonar.java.checks.helpers.NullabilityDataUtils.nullabilityAsString;
@@ -52,7 +53,7 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
       return;
     }
     Symbol.MethodSymbol overridee = overriddenSymbols.get(0);
-    if (overridee.isMethodSymbol()) {
+    if (!overridee.isUnknown() && overridee.isMethodSymbol()) {
       checkContractChange(methodTree, overridee);
     }
   }
@@ -62,35 +63,61 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
       // Handled by S4454.
       return;
     }
+
     for (int i = 0; i < methodTree.parameters().size(); i++) {
       VariableTree parameter = methodTree.parameters().get(i);
-      checkParameter(parameter, JUtils.parameterAnnotations(overridee, i));
+      var overriddenParam = overridee.declarationParameters().get(i);
+      checkParameter(parameter, overriddenParam.metadata());
     }
 
     // If the method from the parent claims to never return null, the method from the child
     // that can actually be executed at runtime should not return null.
-    NullabilityData overrideeNullability = overridee.metadata().oldNullabilityData();
-    if (overrideeNullability.isNonNull(PACKAGE, false, false)) {
-      NullabilityData methodNullability = methodTree.symbol().metadata().oldNullabilityData();
-      if (methodNullability.isNullable(PACKAGE, false, false)) {
-        // returnType() returns null in case of constructor: the rule does not support them.
-        reportIssue(methodTree.returnType(), overrideeNullability, methodNullability);
+    var returnType = methodTree.returnType();
+    // returnType() returns null in case of constructor: the rule does not support them.
+    if (returnType == null) {
+      return;
+    }
+
+    compareNullability(returnType, methodTree.symbol().metadata(), overridee.metadata(), true);
+  }
+
+  private void compareNullability(TypeTree tree, SymbolMetadata upperBound, SymbolMetadata lowerBound, boolean overriddenIsLowerBound) {
+    // Check current level
+    if (upperBound.nullabilityData().isNullable(PACKAGE, false, false)) {
+      if (lowerBound.nullabilityData().isNonNull(PACKAGE, false, false)) {
+        reportIssue(tree, lowerBound.nullabilityData(), upperBound.nullabilityData(), overriddenIsLowerBound);
       }
+    }
+
+    // Check type parameters
+    var upperParams = upperBound.parameterMetadata();
+    var lowerParams = lowerBound.parameterMetadata();
+    if (upperParams.length != lowerParams.length) {
+      return;
+    }
+
+    // Compare parameters
+    for (var i = 0; i < upperParams.length; i++) {
+      compareNullability(getTypeArg(tree, i), upperParams[i], lowerParams[i], overriddenIsLowerBound);
     }
   }
 
-  private void checkParameter(VariableTree parameter, SymbolMetadata overrideeParamMetadata) {
-    // Annotations on parameters is the opposite of return value: if arguments of the parent can be null, the child method has to accept null value.
-    NullabilityData overrideeParamNullability = overrideeParamMetadata.oldNullabilityData();
-    if (overrideeParamNullability.isNullable(PACKAGE, false, false)) {
-      NullabilityData paramNullability = parameter.symbol().metadata().oldNullabilityData();
-      if (paramNullability.isNonNull(PACKAGE, false, false)) {
-        reportIssue(parameter.simpleName(), overrideeParamNullability, paramNullability);
-      }
+  private TypeTree getTypeArg(TypeTree tree, int index) {
+    if (tree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      return ((ParameterizedTypeTree) tree).typeArguments().get(index);
     }
+
+    return tree;
   }
 
-  private void reportIssue(Tree reportLocation, NullabilityData overrideeNullability, NullabilityData otherNullability) {
+  private void checkParameter(VariableTree parameter, SymbolMetadata overrideeParam) {
+    compareNullability(parameter.type(), overrideeParam, parameter.symbol().metadata(), false);
+  }
+
+  private void reportIssue(Tree reportLocation, NullabilityData upperBound, NullabilityData lowerBound, boolean overriddenIsLowerBound) {
+    NullabilityData otherNullability = overriddenIsLowerBound ? lowerBound : upperBound;
+    NullabilityData overrideeNullability = overriddenIsLowerBound ? upperBound : lowerBound;
+
     Optional<String> overrideeAsString = nullabilityAsString(otherNullability);
     Optional<String> otherAsString = nullabilityAsString(overrideeNullability);
     if (overrideeAsString.isPresent() && otherAsString.isPresent()) {

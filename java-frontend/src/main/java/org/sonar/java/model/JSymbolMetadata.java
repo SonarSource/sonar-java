@@ -47,8 +47,9 @@ final class JSymbolMetadata implements SymbolMetadata {
 
   private final JSema sema;
   private final Symbol symbol;
+  private final IAnnotationBinding[] symbolBindings;
+  private final SymbolMetadata[] parameterMetas;
   private final IAnnotationBinding[] annotationBindings;
-  private final IAnnotationBinding[] symbolAnnotation;
 
   /**
    * Cache for {@link #annotations()}.
@@ -66,17 +67,49 @@ final class JSymbolMetadata implements SymbolMetadata {
   JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] annotationBindings) {
     this.sema = Objects.requireNonNull(sema);
     this.symbol = symbol;
-    this.symbolAnnotation = annotationBindings;
+    this.symbolBindings = annotationBindings;
+    this.parameterMetas = new SymbolMetadata[0];
+
     this.annotationBindings = annotationBindings;
   }
 
-  JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] symbolAnnotation, IAnnotationBinding[] paramAnnotations) {
+  private JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] symbolAnnotations, JSymbolMetadata[] parameterMetaDatas) {
     this.sema = Objects.requireNonNull(sema);
     this.symbol = symbol;
-    this.symbolAnnotation = symbolAnnotation;
-    this.annotationBindings = new IAnnotationBinding[symbolAnnotation.length + paramAnnotations.length];
-    System.arraycopy(symbolAnnotation, 0, this.annotationBindings, 0, symbolAnnotation.length);
-    System.arraycopy(paramAnnotations, 0, this.annotationBindings, symbolAnnotation.length, paramAnnotations.length);
+    this.symbolBindings = symbolAnnotations;
+    this.parameterMetas = parameterMetaDatas;
+
+    int total = symbolBindings.length;
+    for (JSymbolMetadata parameterMetaData : parameterMetaDatas) {
+      total += parameterMetaData.annotationBindings.length;
+    }
+
+    this.annotationBindings = new IAnnotationBinding[total];
+    int current = symbolAnnotations.length;
+    System.arraycopy(symbolAnnotations, 0, this.annotationBindings, 0, symbolAnnotations.length);
+
+    for (JSymbolMetadata parameterMetaData : parameterMetaDatas) {
+      var paramBindings = parameterMetaData.annotationBindings;
+      System.arraycopy(paramBindings, 0, this.annotationBindings, current, paramBindings.length);
+      current += paramBindings.length;
+    }
+  }
+
+  public static JSymbolMetadata of(JSema sema, Symbol owner, ITypeBinding type, IAnnotationBinding[] externalAnnotations) {
+    var symbolAnnotations = new IAnnotationBinding[externalAnnotations.length + type.getTypeAnnotations().length];
+    System.arraycopy(externalAnnotations, 0, symbolAnnotations, 0, externalAnnotations.length);
+    System.arraycopy(type.getTypeAnnotations(), 0, symbolAnnotations, externalAnnotations.length, type.getTypeAnnotations().length);
+
+    var parameterMetaDatas = Arrays.stream(type.getTypeArguments())
+      .map(param -> of(sema, owner, param, new IAnnotationBinding[0]))
+      .toArray(JSymbolMetadata[]::new);
+
+    return new JSymbolMetadata(
+      sema,
+      owner,
+      symbolAnnotations,
+      parameterMetaDatas
+    );
   }
 
   private static NullabilityData[] forEachLevel(Function<NullabilityLevel, NullabilityData> initializer) {
@@ -104,7 +137,7 @@ final class JSymbolMetadata implements SymbolMetadata {
   @Override
   public List<AnnotationInstance> symbolAnnotations() {
     if (symbolAnnotations == null) {
-      symbolAnnotations = Arrays.stream(symbolAnnotation)
+      symbolAnnotations = Arrays.stream(symbolBindings)
         .map(sema::annotation)
         .collect(Collectors.toList());
     }
@@ -169,6 +202,11 @@ final class JSymbolMetadata implements SymbolMetadata {
       return findAnnotationTree(ModifiersUtils.getAnnotations(declaration), annotationInstance);
     }
     return null;
+  }
+
+  @Override
+  public SymbolMetadata[] parameterMetadata() {
+    return parameterMetas;
   }
 
   @Nullable

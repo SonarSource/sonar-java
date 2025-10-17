@@ -86,6 +86,12 @@ public interface SymbolMetadata {
   AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance);
 
   /**
+   *
+   * @return
+   */
+  SymbolMetadata[] parameterMetadata();
+
+  /**
    * Occurrence of an annotation on a symbol.
    */
   interface AnnotationInstance {

@@ -89,6 +89,11 @@ public class Symbols {
     public AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance) {
       return null;
     }
+
+    @Override
+    public SymbolMetadata[] parameterMetadata() {
+      return new SymbolMetadata[0];
+    }
   };
 
   public abstract static class DefaultSymbol implements Symbol {

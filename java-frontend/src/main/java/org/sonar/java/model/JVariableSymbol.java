@@ -16,10 +16,12 @@
  */
 package org.sonar.java.model;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
@@ -87,19 +89,13 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
     private final String name;
     private final Symbol owner;
     private final Type type;
-    private final JSymbolMetadata metadata;
-
+    private final SymbolMetadata metadata;
 
     ParameterPlaceholderSymbol(int index, JSema sema, IMethodBinding owner, ITypeBinding typeBinding) {
-      name = "arg" + index;
+      this.name = "arg" + index;
       this.owner = sema.methodSymbol(owner);
       this.type = sema.type(typeBinding);
-
-      metadata = new JSymbolMetadata(
-        sema,
-        this,
-        owner.getParameterAnnotations(index), typeBinding.getTypeAnnotations()
-      );
+      this.metadata = JSymbolMetadata.of(sema, this, typeBinding, owner.getParameterAnnotations(index));
     }
 
     @Override

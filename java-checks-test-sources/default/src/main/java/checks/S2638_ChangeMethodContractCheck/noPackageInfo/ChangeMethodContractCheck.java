@@ -1,5 +1,6 @@
 package checks.S2638_ChangeMethodContractCheck.noPackageInfo;
 
+import java.util.function.Function;
 import javax.annotation.meta.When;
 import java.util.List;
 
@@ -45,6 +46,8 @@ class ChangeMethodContractCheck {
   List<@org.jspecify.annotations.Nullable String> typeAnnotatedNullableJSpecify(Object a) { return List.of(); }
 
   List<@org.jspecify.annotations.NonNull String> typeAnnotatedNonNullJSpecify(Object a) { return List.of(); }
+
+  void typeAnnotatedNullableFunction(Function<@org.jspecify.annotations.Nullable Object, @org.jspecify.annotations.Nullable Object> func) { }
 }
 
 class ChangeMethodContractCheck_B extends ChangeMethodContractCheck {
@@ -95,6 +98,9 @@ class ChangeMethodContractCheck_B extends ChangeMethodContractCheck {
 
   List<@org.jspecify.annotations.Nullable String> typeAnnotatedNonNullJSpecify(Object a) { return List.of(); } // Noncompliant
 
+  @Override
+  void typeAnnotatedNullableFunction(Function<@org.jspecify.annotations.NonNull Object, @org.jspecify.annotations.NonNull Object> func) { } // Noncompliant 2
+
   public boolean equals(Object o) { return false; } // Compliant: no nullable annotation
 }
 
@@ -118,6 +124,9 @@ class ChangeMethodContractCheck_C extends ChangeMethodContractCheck {
 //^^^^^^^^^^^^^^^^^^^^^^^^^^>
   String annotatedNonNull(Object a) { return null; } // Noncompliant {{Fix the incompatibility of the annotation @Nullable to honor @Nonnull of the overridden method.}}
 //^^^^^^
+
+  @Override
+  void typeAnnotatedNullableFunction(Function func) { } // Compliant (and does not crash)
 
   public boolean equals(@javax.annotation.Nonnull Object o) { return false; } // Compliant, handled by S4454.
 }
@@ -253,7 +262,7 @@ class ChangeMethodContractCheck_FromExternalDependency {
     @Override
     @javax.annotation.Nonnull
     public String apply(@lombok.NonNull String s) { // Noncompliant {{Fix the incompatibility of the annotation @NonNull to honor @Nonnull(when=UNKNOWN) via meta-annotation of the overridden method.}}
-//                                             ^
+//                                      ^^^^^^
       return null;
     }
 
