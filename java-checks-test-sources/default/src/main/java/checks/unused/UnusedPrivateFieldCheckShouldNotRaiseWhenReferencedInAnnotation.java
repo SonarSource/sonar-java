@@ -98,4 +98,27 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
       // ...
     }
   }
+
+  static class ShouldNotRaiseForShadowedFields {
+    // This one is noncompliant, because the test in the nested class uses a different field that just has the same name
+    private static final List<Integer> firstField = List.of(1, 2, 3); // Noncompliant {{Remove this unused "firstField" private field.}}
+    private static final List<Integer> secondField = List.of(4, 5, 6); // Compliant: Used in an annotation within this class below
+
+    static class Nested {
+      private static final List<Integer> firstField = List.of(1, 2, 3); // Compliant: Used in annotation below
+      private static final List<Integer> secondField = List.of(4, 5, 6); // Noncompliant {{Remove this unused "secondField" private field.}}
+
+      @ParameterizedTest
+      @FieldSource("firstField")
+      void test(int input) {
+        // ...
+      }
+    }
+
+    @ParameterizedTest
+    @FieldSource("secondField")
+    void test(int input) {
+      // ...
+    }
+  }
 }
