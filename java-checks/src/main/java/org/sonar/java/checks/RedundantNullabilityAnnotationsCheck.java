@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -72,7 +71,7 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
       if (member.is(Tree.Kind.VARIABLE)) {
         // check field
         VariableTree variableTree = (VariableTree) member;
-        checkSymbol(classNullabilityData, variableTree, VARIABLE, variableTree.symbol(), scope);
+        checkSymbol(classNullabilityData, variableTree, VARIABLE, variableTree.symbol().metadata(), scope);
       } else if (member.is(Tree.Kind.METHOD)) {
         // check method
         checkMethod(classNullabilityData, (MethodTree) member, scope);
@@ -106,16 +105,17 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
   private void checkMethod(SymbolMetadata.NullabilityData classNullabilityData,
     MethodTree method, NULLABILITY_SCOPE scope) {
     // check return type at method level - do not look up hierarchy
-    checkSymbol(classNullabilityData, method, METHOD, method.symbol(), scope);
+    checkSymbol(classNullabilityData, method, METHOD, method.symbol().metadata(), scope);
     // check parameters at variable level - do not look up hierarchy
     method.parameters().forEach(parameter ->
-      checkSymbol(classNullabilityData, parameter, VARIABLE, parameter.symbol(), scope)
+      checkSymbol(classNullabilityData, parameter, VARIABLE, parameter.symbol().metadata(), scope)
     );
   }
 
   private void checkSymbol(SymbolMetadata.NullabilityData classNullabilityData, Tree tree,
-    SymbolMetadata.NullabilityLevel treeLevel, Symbol symbol, NULLABILITY_SCOPE scope) {
-    SymbolMetadata.NullabilityData symbolNullabilityData = symbol.metadata().oldNullabilityData();
+    SymbolMetadata.NullabilityLevel treeLevel, SymbolMetadata metadata, NULLABILITY_SCOPE scope) {
+    SymbolMetadata.NullabilityData symbolNullabilityData = metadata.nullabilityData();
+
     if (symbolNullabilityData.isNonNull(treeLevel, false, false) &&
       scope.equals(NULLABILITY_SCOPE.NON_NULLABLE)) {
       reportIssue(tree, symbolNullabilityData, classNullabilityData);
@@ -123,6 +123,11 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
     if (symbolNullabilityData.isNullable(treeLevel, false, false) &&
       scope.equals(NULLABILITY_SCOPE.NULLABLE)) {
       reportIssue(tree, symbolNullabilityData, classNullabilityData);
+    }
+
+    // Check parameter types nullability
+    for (var paramMetadata : metadata.parametersMetadata()) {
+      checkSymbol(classNullabilityData, tree, treeLevel, paramMetadata, scope);
     }
   }
 

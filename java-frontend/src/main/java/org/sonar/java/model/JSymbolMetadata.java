@@ -47,8 +47,9 @@ final class JSymbolMetadata implements SymbolMetadata {
 
   private final JSema sema;
   private final Symbol symbol;
+  private final IAnnotationBinding[] symbolBindings;
+  private final SymbolMetadata[] parameterMetas;
   private final IAnnotationBinding[] annotationBindings;
-  private final IAnnotationBinding[] symbolAnnotation;
 
   /**
    * Cache for {@link #annotations()}.
@@ -61,22 +62,53 @@ final class JSymbolMetadata implements SymbolMetadata {
   private List<AnnotationInstance> symbolAnnotations;
 
   private final Map<NullabilityTarget, NullabilityData> nullabilityCache = new EnumMap<>(NullabilityTarget.class);
-  private final Map<NullabilityTarget, NullabilityData> oldNullabilityCache = new EnumMap<>(NullabilityTarget.class);
 
   JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] annotationBindings) {
     this.sema = Objects.requireNonNull(sema);
     this.symbol = symbol;
-    this.symbolAnnotation = annotationBindings;
+    this.symbolBindings = annotationBindings;
+    this.parameterMetas = new SymbolMetadata[0];
+
     this.annotationBindings = annotationBindings;
   }
 
-  JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] symbolAnnotation, IAnnotationBinding[] paramAnnotations) {
+  private JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] symbolAnnotations, JSymbolMetadata[] parameterMetaDatas) {
     this.sema = Objects.requireNonNull(sema);
     this.symbol = symbol;
-    this.symbolAnnotation = symbolAnnotation;
-    this.annotationBindings = new IAnnotationBinding[symbolAnnotation.length + paramAnnotations.length];
-    System.arraycopy(symbolAnnotation, 0, this.annotationBindings, 0, symbolAnnotation.length);
-    System.arraycopy(paramAnnotations, 0, this.annotationBindings, symbolAnnotation.length, paramAnnotations.length);
+    this.symbolBindings = symbolAnnotations;
+    this.parameterMetas = parameterMetaDatas;
+
+    int total = symbolBindings.length;
+    for (JSymbolMetadata parameterMetaData : parameterMetaDatas) {
+      total += parameterMetaData.annotationBindings.length;
+    }
+
+    this.annotationBindings = new IAnnotationBinding[total];
+    int current = symbolAnnotations.length;
+    System.arraycopy(symbolAnnotations, 0, this.annotationBindings, 0, symbolAnnotations.length);
+
+    for (JSymbolMetadata parameterMetaData : parameterMetaDatas) {
+      var paramBindings = parameterMetaData.annotationBindings;
+      System.arraycopy(paramBindings, 0, this.annotationBindings, current, paramBindings.length);
+      current += paramBindings.length;
+    }
+  }
+
+  public static JSymbolMetadata of(JSema sema, Symbol owner, ITypeBinding type, IAnnotationBinding[] externalAnnotations) {
+    var symbolAnnotations = new IAnnotationBinding[externalAnnotations.length + type.getTypeAnnotations().length];
+    System.arraycopy(externalAnnotations, 0, symbolAnnotations, 0, externalAnnotations.length);
+    System.arraycopy(type.getTypeAnnotations(), 0, symbolAnnotations, externalAnnotations.length, type.getTypeAnnotations().length);
+
+    var parameterMetaDatas = Arrays.stream(type.getTypeArguments())
+      .map(param -> of(sema, owner, param, new IAnnotationBinding[0]))
+      .toArray(JSymbolMetadata[]::new);
+
+    return new JSymbolMetadata(
+      sema,
+      owner,
+      symbolAnnotations,
+      parameterMetaDatas
+    );
   }
 
   private static NullabilityData[] forEachLevel(Function<NullabilityLevel, NullabilityData> initializer) {
@@ -104,7 +136,7 @@ final class JSymbolMetadata implements SymbolMetadata {
   @Override
   public List<AnnotationInstance> symbolAnnotations() {
     if (symbolAnnotations == null) {
-      symbolAnnotations = Arrays.stream(symbolAnnotation)
+      symbolAnnotations = Arrays.stream(symbolBindings)
         .map(sema::annotation)
         .collect(Collectors.toList());
     }
@@ -123,7 +155,7 @@ final class JSymbolMetadata implements SymbolMetadata {
 
   @Nullable
   @Override
-  public final List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
+  public List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation) {
     for (AnnotationInstance a : annotations()) {
       if (a.symbol().type().is(fullyQualifiedNameOfAnnotation)) {
         // TODO what about repeating annotations?
@@ -143,22 +175,8 @@ final class JSymbolMetadata implements SymbolMetadata {
   }
 
   @Override
-  public NullabilityData oldNullabilityData() {
-    NullabilityTarget target = getTarget(symbol);
-    if (target == null) {
-      return unknownNullabilityAt(NullabilityLevel.UNKNOWN);
-    }
-    return oldNullabilityData(target);
-  }
-
-  @Override
   public NullabilityData nullabilityData(NullabilityTarget target) {
-    return nullabilityCache.computeIfAbsent(target, t -> resolveNullability(t, false));
-  }
-
-  @Override
-  public NullabilityData oldNullabilityData(NullabilityTarget target) {
-    return oldNullabilityCache.computeIfAbsent(target, t -> resolveNullability(t, true));
+    return nullabilityCache.computeIfAbsent(target, this::resolveNullability);
   }
 
   @Nullable
@@ -169,6 +187,11 @@ final class JSymbolMetadata implements SymbolMetadata {
       return findAnnotationTree(ModifiersUtils.getAnnotations(declaration), annotationInstance);
     }
     return null;
+  }
+
+  @Override
+  public SymbolMetadata[] parametersMetadata() {
+    return parameterMetas;
   }
 
   @Nullable
@@ -182,16 +205,16 @@ final class JSymbolMetadata implements SymbolMetadata {
     return null;
   }
 
-  private NullabilityData resolveNullability(NullabilityTarget target, boolean useOldMethod) {
+  private NullabilityData resolveNullability(NullabilityTarget target) {
     NullabilityLevel currentLevel = getLevel(symbol);
-    NullabilityData nullabilityDataAtLevel = getNullabilityDataAtLevel(this, target, currentLevel, useOldMethod);
+    NullabilityData nullabilityDataAtLevel = getNullabilityDataAtLevel(this, target, currentLevel);
     if (nullabilityDataAtLevel.type() != NullabilityType.NO_ANNOTATION) {
       return nullabilityDataAtLevel;
     }
 
     // Check nullability from the inheritance hierarchy
     if (symbol.isMethodSymbol()) {
-      NullabilityData nullabilityDataFromInheritance = getNullabilityDataFromInheritance((Symbol.MethodSymbol) symbol, target, useOldMethod);
+      NullabilityData nullabilityDataFromInheritance = getNullabilityDataFromInheritance((Symbol.MethodSymbol) symbol, target);
       if (nullabilityDataFromInheritance.type() != NullabilityType.NO_ANNOTATION) {
         return nullabilityDataFromInheritance;
       }
@@ -204,15 +227,15 @@ final class JSymbolMetadata implements SymbolMetadata {
     Symbol owner = getEffectiveOwner(symbol, currentLevel);
     if (owner == null) return unknownNullabilityAt(currentLevel);
     var metadata = owner.metadata();
-    return useOldMethod ? metadata.oldNullabilityData(target) : metadata.nullabilityData(target);
+    return metadata.nullabilityData(target);
   }
 
-  private static NullabilityData getNullabilityDataFromInheritance(Symbol.MethodSymbol methodSymbol, NullabilityTarget target, boolean useOldMethod) {
+  private static NullabilityData getNullabilityDataFromInheritance(Symbol.MethodSymbol methodSymbol, NullabilityTarget target) {
     List<Symbol.MethodSymbol> overriddenSymbols = methodSymbol.overriddenSymbols();
     NullabilityLevel level = NullabilityLevel.METHOD;
     for (Symbol.MethodSymbol overriddenSymbol : overriddenSymbols) {
       SymbolMetadata metadata = overriddenSymbol.metadata();
-      NullabilityData nullabilityData = getNullabilityDataAtLevel(metadata, target, level, useOldMethod);
+      NullabilityData nullabilityData = getNullabilityDataAtLevel(metadata, target, level);
       if (nullabilityData.type() != NullabilityType.NO_ANNOTATION && !nullabilityData.equals(unknownNullabilityAt(level))) {
         return nullabilityData;
       }

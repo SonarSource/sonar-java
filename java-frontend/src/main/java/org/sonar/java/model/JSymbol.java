@@ -16,13 +16,11 @@
  */
 package org.sonar.java.model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -400,26 +398,7 @@ abstract class JSymbol implements Symbol {
   }
 
   private SymbolMetadata convertMetadata(ITypeBinding type) {
-    var symbolAnnotations = new IAnnotationBinding[binding.getAnnotations().length + type.getTypeAnnotations().length];
-    System.arraycopy(binding.getAnnotations(), 0, symbolAnnotations, 0, binding.getAnnotations().length);
-    System.arraycopy(type.getTypeAnnotations(), 0, symbolAnnotations, binding.getAnnotations().length, type.getTypeAnnotations().length);
-
-    var parameterAnnotations = getParamAnnotations(type);
-
-    return new JSymbolMetadata(
-      sema,
-      this,
-      symbolAnnotations,
-      parameterAnnotations
-    );
-  }
-
-  private static IAnnotationBinding[] getParamAnnotations(ITypeBinding type) {
-    List<IAnnotationBinding> iAnnotationBindings = new ArrayList<>();
-    for (ITypeBinding typeArgument : type.getTypeArguments()) {
-      Collections.addAll(iAnnotationBindings, typeArgument.getTypeAnnotations());
-    }
-    return iAnnotationBindings.toArray(new IAnnotationBinding[0]);
+    return JSymbolMetadata.of(sema, this, type, binding.getAnnotations());
   }
 
   /**
