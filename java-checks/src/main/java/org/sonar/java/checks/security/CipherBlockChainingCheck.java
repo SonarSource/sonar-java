@@ -56,13 +56,17 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
       return;
     }
 
-    Tree mTree = ExpressionUtils.getEnclosingMethod(newClassTree);
-    if (mTree != null) {
-      MethodInvocationVisitor mitVisit = new MethodInvocationVisitor(newClassTree);
-      mTree.accept(mitVisit);
-      if (!mitVisit.secureRandomFound) {
-        reportIssue(newClassTree, "Use a dynamically-generated, random IV.");
-      }
+    var mTree = ExpressionUtils.getEnclosingMethod(newClassTree);
+    if (mTree == null) {
+      return;
+    }
+
+    var hasBeenSecurelyInitialized = SecureInitializationFinder
+      .forIvParameterSpecConstruction(newClassTree)
+      .appliesSecureInitialization(mTree);
+
+    if (!hasBeenSecurelyInitialized) {
+      reportIssue(newClassTree, "Use a dynamically-generated, random IV.");
     }
   }
 
@@ -87,12 +91,13 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
     return tree != null && tree.is(Tree.Kind.METHOD_INVOCATION) && SECURE_RANDOM_GENERATE_SEED.matches((MethodInvocationTree) tree);
   }
 
-  private static class MethodInvocationVisitor extends BaseTreeVisitor {
+  private static class SecureInitializationFinder extends BaseTreeVisitor {
 
-    private boolean secureRandomFound = false;
-    private final NewClassTree ivParameterSpecInstantiation;
+    private boolean hasBeenSecurelyInitialized = false;
+    private final ExpressionTree ivBytesExpression;
+    private final @Nullable NewClassTree ivParameterSpecInstantiation;
     // to be used in case of assignment to a variable
-    private final Symbol ivParameterSymbol;
+    private final @Nullable Symbol ivParameterSymbol;
 
     private static final MethodMatchers SECURE_RANDOM_NEXT_BYTES = MethodMatchers.create()
       .ofTypes("java.security.SecureRandom")
@@ -114,31 +119,47 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
     // value of javax.crypto.Cipher.DECRYPT_MODE
     private static final int CIPHER_INIT_DECRYPT_MODE = 2;
 
-    public MethodInvocationVisitor(NewClassTree newClassTree) {
-      ivParameterSpecInstantiation = newClassTree;
-      ivParameterSymbol = ivSymbol(newClassTree);
+    private SecureInitializationFinder(ExpressionTree ivBytesExpression, @Nullable NewClassTree ivParameterSpecTree) {
+      this.ivBytesExpression = ivBytesExpression;
+      this.ivParameterSpecInstantiation = ivParameterSpecTree;
+      this.ivParameterSymbol = ivParameterSpecTree != null ? ivSymbol(ivParameterSpecTree) : null;
+    }
+
+    public static SecureInitializationFinder forIvParameterSpecConstruction(NewClassTree ivParameterSpecInstantiation) {
+      var bytesExpression = ivParameterSpecInstantiation.arguments().get(0);
+
+      return new SecureInitializationFinder(bytesExpression, ivParameterSpecInstantiation);
+    }
+
+    public static SecureInitializationFinder forIvBytesExpression(ExpressionTree ivBytesExpression) {
+      return new SecureInitializationFinder(ivBytesExpression, null);
+    }
+
+    public boolean appliesSecureInitialization(Tree tree) {
+      tree.accept(this);
+      return hasBeenSecurelyInitialized;
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
       if (SECURE_RANDOM_NEXT_BYTES.matches(methodInvocation)) {
-        Symbol initVector = symbol(ivParameterSpecInstantiation.arguments().get(0));
+        Symbol initVector = symbol(ivBytesExpression);
         if (!initVector.isUnknown() && initVector.equals(symbol(methodInvocation.arguments().get(0)))) {
-          secureRandomFound = true;
+          hasBeenSecurelyInitialized = true;
         }
       }
       // make sure it is not used for decryption - in such case you need to reuse one
       if (CIPHER_INIT.matches(methodInvocation) && methodInvocation.arguments().size() > 2) {
         int opMode = methodInvocation.arguments().get(0).asConstant(Integer.class).orElse(-1);
         if (CIPHER_INIT_DECRYPT_MODE == opMode && isPartOfArguments(methodInvocation)) {
-          secureRandomFound = true;
+          hasBeenSecurelyInitialized = true;
         }
       }
       if (isInitVectorCopiedFromByteBuffer(methodInvocation)) {
-        secureRandomFound = true;
+        hasBeenSecurelyInitialized = true;
       }
       if (methodInvocation.methodSymbol().isUnknown()) {
-        secureRandomFound = true;
+        hasBeenSecurelyInitialized = true;
       }
 
       super.visitMethodInvocation(methodInvocation);
@@ -148,14 +169,18 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
       if (!BYTEBUFFER_GET.matches(methodInvocation)) {
         return false;
       }
-      Symbol initVector = symbol(ivParameterSpecInstantiation.arguments().get(0));
+      Symbol initVector = symbol(ivBytesExpression);
       return methodInvocation.arguments().stream()
-        .map(MethodInvocationVisitor::symbol)
+        .map(SecureInitializationFinder::symbol)
         .filter(argument -> argument.type().is("byte[]"))
         .anyMatch(initVector::equals);
     }
 
     private boolean isPartOfArguments(MethodInvocationTree methodInvocation) {
+      if (ivParameterSpecInstantiation == null || ivParameterSymbol == null) {
+        return false;
+      }
+
       return isPartOfArguments(methodInvocation, ivParameterSpecInstantiation)
         || (!ivParameterSymbol.isUnknown() && isPartOfArguments(methodInvocation, ivParameterSymbol));
     }
@@ -171,7 +196,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
       return methodInvocation.arguments()
         .stream()
         .map(ExpressionUtils::skipParentheses)
-        .map(MethodInvocationVisitor::symbol)
+        .map(SecureInitializationFinder::symbol)
         .anyMatch(ivParameterSymbol::equals);
     }
 
