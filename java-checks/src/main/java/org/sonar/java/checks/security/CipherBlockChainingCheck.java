@@ -38,6 +38,7 @@ import static org.sonar.java.checks.helpers.ReassignmentFinder.getReassignments;
 
 @Rule(key = "S3329")
 public class CipherBlockChainingCheck extends AbstractMethodDetection {
+  private final SecureByteArrayGeneratorDetector secureByteArrayGeneratorDetector = new SecureByteArrayGeneratorDetector();
 
   private static final MethodMatchers SECURE_RANDOM_GENERATE_SEED = MethodMatchers.create()
     .ofTypes("java.security.SecureRandom")
@@ -54,7 +55,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    if (newClassTree.arguments().isEmpty() || isDynamicallyGenerated(newClassTree.arguments().get(0))) {
+    if (newClassTree.arguments().isEmpty() || secureByteArrayGeneratorDetector.isDynamicallyGenerated(newClassTree.arguments().get(0))) {
       return;
     }
 
@@ -70,45 +71,6 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
     if (!hasBeenSecurelyInitialized) {
       reportIssue(newClassTree, "Use a dynamically-generated, random IV.");
     }
-  }
-
-  private static boolean isDynamicallyGenerated(ExpressionTree tree) {
-    if (tree instanceof IdentifierTree identifierTree) {
-      Symbol symbol = identifierTree.symbol();
-      if (symbol.isParameter()) {
-        return true;
-      }
-    }
-
-    return findConstructingMethods(tree)
-      .anyMatch(SECURE_RANDOM_GENERATE_SEED::matches);
-  }
-
-  private static Stream<MethodInvocationTree> findConstructingMethods(ExpressionTree expressionTree) {
-    if (expressionTree instanceof MethodInvocationTree methodInvocationTree) {
-      return Stream.of(methodInvocationTree);
-    }
-
-    if (!(expressionTree instanceof IdentifierTree identifierTree) || !(identifierTree.symbol() instanceof Symbol.VariableSymbol variableSymbol)) {
-      return Stream.empty();
-    }
-
-    var declaration = variableSymbol.declaration();
-    if (declaration == null) {
-      return Stream.empty();
-    }
-
-    var initializerStream = Stream.<MethodInvocationTree>of();
-    if (declaration.initializer() instanceof MethodInvocationTree methodInvocationTree) {
-      initializerStream = Stream.of(methodInvocationTree);
-    }
-
-    var reassignments = getReassignments(declaration, variableSymbol.usages())
-      .stream()
-      .map(assignmentExpressionTree -> assignmentExpressionTree.expression() instanceof MethodInvocationTree methodInvocationTree ? methodInvocationTree : null)
-      .filter(Objects::nonNull);
-
-    return Stream.concat(initializerStream, reassignments);
   }
 
   private static class SecureInitializationFinder extends BaseTreeVisitor {
@@ -239,6 +201,47 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
         return symbol(((AssignmentExpressionTree) parent).variable());
       }
       return Symbol.UNKNOWN_SYMBOL;
+    }
+  }
+
+  private static class SecureByteArrayGeneratorDetector {
+    public boolean isDynamicallyGenerated(ExpressionTree tree) {
+      if (tree instanceof IdentifierTree identifierTree) {
+        Symbol symbol = identifierTree.symbol();
+        if (symbol.isParameter()) {
+          return true;
+        }
+      }
+
+      return findConstructingMethods(tree)
+        .anyMatch(SECURE_RANDOM_GENERATE_SEED::matches);
+    }
+
+    private static Stream<MethodInvocationTree> findConstructingMethods(ExpressionTree expressionTree) {
+      if (expressionTree instanceof MethodInvocationTree methodInvocationTree) {
+        return Stream.of(methodInvocationTree);
+      }
+
+      if (!(expressionTree instanceof IdentifierTree identifierTree) || !(identifierTree.symbol() instanceof Symbol.VariableSymbol variableSymbol)) {
+        return Stream.empty();
+      }
+
+      var declaration = variableSymbol.declaration();
+      if (declaration == null) {
+        return Stream.empty();
+      }
+
+      var initializerStream = Stream.<MethodInvocationTree>of();
+      if (declaration.initializer() instanceof MethodInvocationTree methodInvocationTree) {
+        initializerStream = Stream.of(methodInvocationTree);
+      }
+
+      var reassignments = getReassignments(declaration, variableSymbol.usages())
+        .stream()
+        .map(assignmentExpressionTree -> assignmentExpressionTree.expression() instanceof MethodInvocationTree methodInvocationTree ? methodInvocationTree : null)
+        .filter(Objects::nonNull);
+
+      return Stream.concat(initializerStream, reassignments);
     }
   }
 }
