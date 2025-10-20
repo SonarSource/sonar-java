@@ -16,6 +16,8 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.Objects;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -71,24 +73,42 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   }
 
   private static boolean isDynamicallyGenerated(ExpressionTree tree) {
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = ((IdentifierTree) tree).symbol();
+    if (tree instanceof IdentifierTree identifierTree) {
+      Symbol symbol = identifierTree.symbol();
       if (symbol.isParameter()) {
         return true;
       }
-      VariableTree declaration = symbol.isVariableSymbol() ? ((Symbol.VariableSymbol) symbol).declaration() : null;
-      return declaration != null &&
-        (isSecureRandomGenerateSeed(declaration.initializer()) ||
-          getReassignments(declaration, symbol.usages()).stream()
-            .map(AssignmentExpressionTree::expression)
-            .anyMatch(CipherBlockChainingCheck::isSecureRandomGenerateSeed));
-    } else {
-      return isSecureRandomGenerateSeed(tree);
     }
+
+    return findConstructingMethods(tree)
+      .anyMatch(SECURE_RANDOM_GENERATE_SEED::matches);
   }
 
-  private static boolean isSecureRandomGenerateSeed(@Nullable ExpressionTree tree) {
-    return tree != null && tree.is(Tree.Kind.METHOD_INVOCATION) && SECURE_RANDOM_GENERATE_SEED.matches((MethodInvocationTree) tree);
+  private static Stream<MethodInvocationTree> findConstructingMethods(ExpressionTree expressionTree) {
+    if (expressionTree instanceof MethodInvocationTree methodInvocationTree) {
+      return Stream.of(methodInvocationTree);
+    }
+
+    if (!(expressionTree instanceof IdentifierTree identifierTree) || !(identifierTree.symbol() instanceof Symbol.VariableSymbol variableSymbol)) {
+      return Stream.empty();
+    }
+
+    var declaration = variableSymbol.declaration();
+    if (declaration == null) {
+      return Stream.empty();
+    }
+
+    var initializerStream = Stream.<MethodInvocationTree>of();
+    if (declaration.initializer() instanceof MethodInvocationTree methodInvocationTree) {
+      initializerStream = Stream.of(methodInvocationTree);
+    }
+
+    var reassignments = getReassignments(declaration, variableSymbol.usages())
+      .stream()
+      .map(assignmentExpressionTree -> assignmentExpressionTree.expression() instanceof MethodInvocationTree methodInvocationTree ? methodInvocationTree : null)
+      .filter(Objects::nonNull);
+
+    return Stream.concat(initializerStream, reassignments);
   }
 
   private static class SecureInitializationFinder extends BaseTreeVisitor {
