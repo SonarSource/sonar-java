@@ -16,7 +16,9 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -30,7 +32,9 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -242,6 +246,79 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
         .filter(Objects::nonNull);
 
       return Stream.concat(initializerStream, reassignments);
+    }
+  }
+
+  /**
+   * Collects all methods that construct IV byte arrays in a secure way.
+   * After applying this visitor to a class tree, {@link SecureByteArrayFactoryFinder#producesSecureBytesArray(MethodInvocationTree)} can
+   * be used to check whether the invocation of a method belonging to that tree will return such a secure array.
+   */
+  private static class SecureByteArrayFactoryFinder extends BaseTreeVisitor {
+    private @Nullable MethodTree currentMethodTree = null;
+    private final Set<String> secureByteArrayFactories = new HashSet<>();
+    private final SecureByteArrayGeneratorDetector secureByteArrayGeneratorDetector = new SecureByteArrayGeneratorDetector();
+
+    public boolean producesSecureBytesArray(MethodInvocationTree methodInvocation) {
+      return secureByteArrayFactories.contains(methodInvocation.methodSymbol().signature());
+    }
+
+    public void clear() {
+      secureByteArrayFactories.clear();
+    }
+
+    @Override
+    public void visitMethod(MethodTree tree) {
+      // There is no need to explore methods that do not even produce IV byte arrays
+      if (doesNotReturnByteArray(tree)
+        // We do not track nested methods
+        || currentMethodTree != null) {
+        return;
+      }
+
+      currentMethodTree = tree;
+      super.visitMethod(tree);
+      currentMethodTree = null;
+    }
+
+    @Override
+    public void visitReturnStatement(ReturnStatementTree tree) {
+      super.visitReturnStatement(tree);
+      if (currentMethodTree == null) {
+        return;
+      }
+
+      var returnedExpression = tree.expression();
+      if (returnedExpression == null) {
+        return;
+      }
+
+      if (secureByteArrayGeneratorDetector.isDynamicallyGenerated(returnedExpression)) {
+        markAsSecureFactory();
+        return;
+      }
+
+      var isSecureBytesArray = SecureInitializationFinder
+        .forIvBytesExpression(returnedExpression)
+        .appliesSecureInitialization(currentMethodTree);
+
+      if (isSecureBytesArray) {
+        markAsSecureFactory();
+      }
+    }
+
+    private void markAsSecureFactory() {
+      Objects.requireNonNull(currentMethodTree);
+      secureByteArrayFactories.add(currentMethodTree.symbol().signature());
+    }
+
+    private static boolean doesNotReturnByteArray(MethodTree methodTree) {
+      var returnType = methodTree.returnType();
+      if (returnType == null) {
+        return false;
+      }
+
+      return !"byte[]".equals(returnType.symbolType().fullyQualifiedName());
     }
   }
 }
