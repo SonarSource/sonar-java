@@ -83,10 +83,9 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
 
   private void compareNullability(TypeTree tree, SymbolMetadata upperBound, SymbolMetadata lowerBound, boolean overriddenIsLowerBound) {
     // Check current level
-    if (upperBound.nullabilityData().isNullable(PACKAGE, false, false)) {
-      if (lowerBound.nullabilityData().isNonNull(PACKAGE, false, false)) {
-        reportIssue(tree, lowerBound.nullabilityData(), upperBound.nullabilityData(), overriddenIsLowerBound);
-      }
+    if (upperBound.nullabilityData().isNullable(PACKAGE, false, false)
+        && lowerBound.nullabilityData().isNonNull(PACKAGE, false, false)) {
+      reportIssue(tree, lowerBound.nullabilityData(), upperBound.nullabilityData(), overriddenIsLowerBound);
     }
 
     // Check type parameters
@@ -102,7 +101,7 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private TypeTree getTypeArg(TypeTree tree, int index) {
+  private static TypeTree getTypeArg(TypeTree tree, int index) {
     if (tree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
       return ((ParameterizedTypeTree) tree).typeArguments().get(index);
     }
