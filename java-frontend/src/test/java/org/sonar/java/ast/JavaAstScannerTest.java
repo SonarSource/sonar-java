@@ -480,7 +480,7 @@ class JavaAstScannerTest {
   }
 
   @Test
-  void test_should_fail_on_stackoverflow() {
+  void test_should_fail_on_stackoverflow_by_default() {
     InputFile trivialCompilationUnit = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
     var files = List.of(trivialCompilationUnit);
     var problematicVisitor = new JavaFileScanner(){
@@ -492,14 +492,45 @@ class JavaAstScannerTest {
     List<JavaFileScanner> visitors = List.of(problematicVisitor);
 
     // Assert that by default, StackOverflowError is propagated
+    var emptySettings = new MapSettings();
     assertThrows(StackOverflowError.class, () ->
-      scanFilesWithVisitorsAndContext(files, visitors, new MapSettings(), JavaVersionImpl.MAX_SUPPORTED));
+      scanFilesWithVisitorsAndContext(files, visitors, emptySettings, JavaVersionImpl.MAX_SUPPORTED));
+  }
+
+  @Test
+  void test_should_not_fail_on_stackoverflow_when_set() {
+    InputFile trivialCompilationUnit = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
+    var files = List.of(trivialCompilationUnit);
+    var problematicVisitor = new JavaFileScanner(){
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        throw new StackOverflowError();
+      }
+    };
+    List<JavaFileScanner> visitors = List.of(problematicVisitor);
 
     // Assert that when configured to not fail on exception, StackOverflowError is swallowed, but logged
     MapSettings settings = new MapSettings().setProperty(SonarComponents.SONAR_FAIL_ON_STACKOVERFLOW, false);
     assertDoesNotThrow(() -> scanFilesWithVisitorsAndContext(files, visitors, settings, JavaVersionImpl.MAX_SUPPORTED));
     assertThat(logTester.logs(Level.ERROR))
       .containsExactly("A stack overflow error occurred while analyzing file: 'src/test/resources/AstScannerNoParseError.txt'");
+  }
+
+  @Test
+  void test_should_fail_on_stackoverflow_when_sonar_components_null() {
+    InputFile trivialCompilationUnit = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
+    var files = List.of(trivialCompilationUnit);
+    var problematicVisitor = new JavaFileScanner(){
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        throw new StackOverflowError();
+      }
+    };
+    List<JavaFileScanner> visitors = List.of(problematicVisitor);
+    JavaAstScanner scanner = new JavaAstScanner(null, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
+    VisitorsBridge visitorBridge = new VisitorsBridge(visitors, new ArrayList<>(), null, new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED));
+    scanner.setVisitorBridge(visitorBridge);
+    assertThrows(StackOverflowError.class, () -> scanner.scan(files));
   }
 
   private void scanSingleFile(InputFile file, boolean failOnException) {
