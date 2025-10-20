@@ -65,7 +65,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   };
 
   private static final String COMPONENT_SCAN_ANNOTATION = "org.springframework.context.annotation.ComponentScan";
-  private static final Set<String> COMPONENT_SCAN_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "value");
+  private static final Set<String> COMPONENT_SCAN_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "basePackageClasses", "value");
 
   private static final String CACHE_KEY_PREFIX = "java:S4605:targeted:";
 
@@ -86,7 +86,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.CLASS);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE);
   }
 
   @Override
@@ -207,6 +207,8 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
       for (Object o : objects) {
         if (o instanceof String oString) {
           packagesScannedBySpringAtProjectLevel.add(oString);
+        } else if (o instanceof Symbol oSymbol) {
+          packagesScannedBySpringAtProjectLevel.add(packageNameOf(oSymbol));
         }
       }
     }
