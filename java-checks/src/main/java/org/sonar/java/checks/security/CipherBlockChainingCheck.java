@@ -16,7 +16,9 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -71,6 +73,38 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
     .names("generateSeed")
     .withAnyParameters()
     .build();
+
+  private @Nullable Tree outermostClass = null;
+
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    var baseNodesToVisit = super.nodesToVisit();
+    var nodesToVisit = new ArrayList<Tree.Kind>(baseNodesToVisit.size() + 1);
+    nodesToVisit.addAll(baseNodesToVisit);
+    nodesToVisit.add(Tree.Kind.CLASS);
+
+    return nodesToVisit;
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (outermostClass == null && tree.is(Tree.Kind.CLASS)) {
+      // We only need run SecureByteArrayFactoryFinder once on the outermost class to find all secure IV byte array factory methods.
+      // If we apply the finder again to nested classes then we explore the same sub-trees multiple times.
+      outermostClass = tree;
+      tree.accept(secureByteArrayFactoryFinder);
+    }
+
+    super.visitNode(tree);
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree == outermostClass) {
+      secureByteArrayFactoryFinder.clear();
+    }
+    super.leaveNode(tree);
+  }
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
