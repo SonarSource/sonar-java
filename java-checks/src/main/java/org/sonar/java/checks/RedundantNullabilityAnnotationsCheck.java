@@ -126,7 +126,7 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
     }
 
     // Check parameter types nullability
-    for (var paramMetadata : metadata.parameterMetadata()) {
+    for (var paramMetadata : metadata.parametersMetadata()) {
       checkSymbol(classNullabilityData, tree, treeLevel, paramMetadata, scope);
     }
   }

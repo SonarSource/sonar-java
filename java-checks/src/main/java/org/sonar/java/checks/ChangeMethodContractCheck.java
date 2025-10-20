@@ -90,8 +90,8 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     }
 
     // Check type parameters
-    var upperParams = upperBound.parameterMetadata();
-    var lowerParams = lowerBound.parameterMetadata();
+    var upperParams = upperBound.parametersMetadata();
+    var lowerParams = lowerBound.parametersMetadata();
     if (upperParams.length != lowerParams.length) {
       return;
     }
@@ -107,6 +107,7 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
       return ((ParameterizedTypeTree) tree).typeArguments().get(index);
     }
 
+    // That's weird, but ok
     return tree;
   }
 

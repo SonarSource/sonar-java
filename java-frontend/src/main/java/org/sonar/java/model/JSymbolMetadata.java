@@ -190,7 +190,7 @@ final class JSymbolMetadata implements SymbolMetadata {
   }
 
   @Override
-  public SymbolMetadata[] parameterMetadata() {
+  public SymbolMetadata[] parametersMetadata() {
     return parameterMetas;
   }
 

@@ -77,7 +77,7 @@ public interface SymbolMetadata {
    * If the current metadata is attached to {@code @NonNull List<@Nullable String>},
    * it will return an array containing one metadata describing {@code @Nullable String}.
    */
-  SymbolMetadata[] parameterMetadata();
+  SymbolMetadata[] parametersMetadata();
 
   /**
    * Occurrence of an annotation on a symbol.

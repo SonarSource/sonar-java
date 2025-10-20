@@ -81,7 +81,7 @@ public class Symbols {
     }
 
     @Override
-    public SymbolMetadata[] parameterMetadata() {
+    public SymbolMetadata[] parametersMetadata() {
       return new SymbolMetadata[0];
     }
   };

@@ -392,8 +392,6 @@ abstract class JSymbol implements Symbol {
           return Symbols.EMPTY_METADATA;
         }
         return convertMetadata(returnType);
-      case IBinding.TYPE:
-        return convertMetadata((ITypeBinding) binding);
       default:
         return new JSymbolMetadata(sema, this, binding.getAnnotations());
     }
