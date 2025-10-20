@@ -41,6 +41,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -1062,6 +1063,23 @@ class SonarComponentsTest {
     assertThat(sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage()).isFalse();
     settings.setProperty("sonar.java.ignoreUnnamedModuleForSplitPackage", "true");
     assertThat(sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage()).isTrue();
+  }
+
+  @Test
+  void shouldFailOnStackOverflow_returns_true_by_default() {
+    MapSettings settings = new MapSettings();
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+    assertThat(sonarComponents.shouldFailOnStackOverflow()).isTrue();
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"true", "false"})
+  void shouldFailOnStackOverflow_returns_correct_value_when_set(String value) {
+    MapSettings settings = new MapSettings().setProperty("sonar.java.failOnStackOverflow", value);
+    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
+    assertThat(sonarComponents.shouldFailOnStackOverflow()).isEqualTo(Boolean.valueOf(value));
   }
 
   @Nested

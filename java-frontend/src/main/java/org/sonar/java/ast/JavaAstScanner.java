@@ -187,7 +187,9 @@ public class JavaAstScanner {
       interruptIfFailFast(e, inputFile);
     } catch (StackOverflowError error) {
       LOG.error(String.format(LOG_ERROR_STACKOVERFLOW, inputFile), error);
-      throw error;
+      if (sonarComponents != null && sonarComponents.shouldFailOnStackOverflow()) {
+        throw error;
+      }
     } finally {
       telemetry.aggregateAsCounter(telemetryAnalysisKeys.sizeCharsKey(), InputFileUtils.charCount(inputFile, 0));
       telemetry.aggregateAsCounter(telemetryAnalysisKeys.timeMsKey(), currentTimeMillis() - startTime);

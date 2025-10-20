@@ -67,6 +67,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -478,6 +479,29 @@ class JavaAstScannerTest {
 
   }
 
+  @Test
+  void test_should_fail_on_stackoverflow() {
+    InputFile trivialCompilationUnit = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
+    var files = List.of(trivialCompilationUnit);
+    var problematicVisitor = new JavaFileScanner(){
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        throw new StackOverflowError();
+      }
+    };
+    List<JavaFileScanner> visitors = List.of(problematicVisitor);
+
+    // Assert that by default, StackOverflowError is propagated
+    assertThrows(StackOverflowError.class, () ->
+      scanFilesWithVisitorsAndContext(files, visitors, new MapSettings(), JavaVersionImpl.MAX_SUPPORTED));
+
+    // Assert that when configured to not fail on exception, StackOverflowError is swallowed, but logged
+    MapSettings settings = new MapSettings().setProperty(SonarComponents.SONAR_FAIL_ON_STACKOVERFLOW, false);
+    assertDoesNotThrow(() -> scanFilesWithVisitorsAndContext(files, visitors, settings, JavaVersionImpl.MAX_SUPPORTED));
+    assertThat(logTester.logs(Level.ERROR))
+      .containsExactly("A stack overflow error occurred while analyzing file: 'src/test/resources/AstScannerNoParseError.txt'");
+  }
+
   private void scanSingleFile(InputFile file, boolean failOnException) {
     scanFilesWithVisitors(Collections.singletonList(file), Collections.emptyList(), -1, failOnException, false);
   }
@@ -501,12 +525,16 @@ class JavaAstScannerTest {
   }
 
   private void scanFilesWithVisitors(List<InputFile> inputFiles, List<JavaFileScanner> visitors,
-                                     int javaVersion, boolean failOnException, boolean autoscanMode) {
-    context.setSettings(new MapSettings()
+    int javaVersion, boolean failOnException, boolean autoscanMode) {
+    MapSettings settings = new MapSettings()
       .setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, failOnException)
-      .setProperty(SonarComponents.SONAR_AUTOSCAN, autoscanMode)
-    );
+      .setProperty(SonarComponents.SONAR_AUTOSCAN, autoscanMode);
 
+    scanFilesWithVisitorsAndContext(inputFiles, visitors, settings, javaVersion);
+  }
+
+  private void scanFilesWithVisitorsAndContext(List<InputFile> inputFiles, List<JavaFileScanner> visitors, MapSettings contextMap, int javaVersion) {
+    context.setSettings(contextMap);
     DefaultFileSystem fileSystem = context.fileSystem();
     ClasspathForMain classpathForMain = new ClasspathForMain(context.config(), fileSystem);
     ClasspathForTest classpathForTest = new ClasspathForTest(context.config(), fileSystem);

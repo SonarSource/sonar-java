@@ -102,6 +102,14 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
    * relying on (transitive) dependencies that do not respect modularization as defined by the JLS.
    */
   public static final String SONAR_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE = "sonar.java.ignoreUnnamedModuleForSplitPackage";
+
+  /**
+   * Describes whether the analysis should fail and halt when a StackOverflowError is encountered.
+   * True by default, we still want to give the possibility to disable this behavior in case of projects
+   * with large amounts of unreviewed AI-generated code causing such errors.
+   */
+  public static final String SONAR_FAIL_ON_STACKOVERFLOW = "sonar.java.failOnStackOverflow";
+
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");
   @VisibleForTesting
@@ -490,6 +498,10 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   public boolean shouldIgnoreUnnamedModuleForSplitPackage() {
     return context.config().getBoolean(SONAR_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE).orElse(false);
+  }
+
+  public boolean shouldFailOnStackOverflow() {
+    return context.config().getBoolean(SONAR_FAIL_ON_STACKOVERFLOW).orElse(true);
   }
 
   private static long computeIdealBatchSize() {
