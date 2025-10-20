@@ -16,13 +16,11 @@
  */
 package org.sonar.java.model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -383,30 +381,24 @@ abstract class JSymbol implements Symbol {
         return new JSymbolMetadata(sema, this, sema.resolvePackageAnnotations(binding.getName()));
       case IBinding.VARIABLE:
         ITypeBinding type = ((IVariableBinding) binding).getType();
-        return new JSymbolMetadata(
-          sema,
-          this,
-          type == null ? new IAnnotationBinding[0] : getAnnotations(type),
-          binding.getAnnotations());
+        if (type == null) {
+          return new JSymbolMetadata(sema, this, binding.getAnnotations());
+        }
+        return convertMetadata(type);
       case IBinding.METHOD:
         ITypeBinding returnType = ((IMethodBinding) binding).getReturnType();
         // In rare circumstances, when the semantic information is incomplete, returnType can be null.
         if (returnType == null) {
           return Symbols.EMPTY_METADATA;
         }
-        return new JSymbolMetadata(sema, this, getAnnotations(returnType), binding.getAnnotations());
+        return convertMetadata(returnType);
       default:
         return new JSymbolMetadata(sema, this, binding.getAnnotations());
     }
   }
 
-  private static IAnnotationBinding[] getAnnotations(ITypeBinding type) {
-    List<IAnnotationBinding> iAnnotationBindings = new ArrayList<>();
-    for (ITypeBinding typeArgument : type.getTypeArguments()) {
-      Collections.addAll(iAnnotationBindings, typeArgument.getTypeAnnotations());
-    }
-    Collections.addAll(iAnnotationBindings, type.getTypeAnnotations());
-    return iAnnotationBindings.toArray(new IAnnotationBinding[0]);
+  private SymbolMetadata convertMetadata(ITypeBinding type) {
+    return JSymbolMetadata.of(sema, this, type, binding.getAnnotations());
   }
 
   /**

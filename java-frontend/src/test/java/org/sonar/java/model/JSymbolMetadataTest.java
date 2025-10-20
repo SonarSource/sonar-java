@@ -186,6 +186,13 @@ class JSymbolMetadataTest {
   }
 
   @Test
+  void parametrized_type_level_nullability() throws IOException {
+    assertNullability(
+      NULLABILITY_SOURCE_DIR.resolve(Paths.get("no_default", "NullabilityOfParametrizedTypes.java"))
+    );
+  }
+
+  @Test
   void unsupported_nullability() throws IOException {
     assertNullability(
       NULLABILITY_SOURCE_DIR.resolve(Paths.get("no_default", "UnsupportedNullability.java"))

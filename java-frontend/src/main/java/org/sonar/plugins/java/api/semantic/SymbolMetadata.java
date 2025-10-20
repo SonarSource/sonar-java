@@ -44,10 +44,16 @@ public interface SymbolMetadata {
   List<AnnotationValue> valuesForAnnotation(String fullyQualifiedNameOfAnnotation);
 
   /**
-   * The list of annotations found on this symbol.
+   * The list of all annotations found on this symbol, including annotations that are present on the parametrized types.
    * @return A list of {@link AnnotationInstance}
    */
   List<AnnotationInstance> annotations();
+
+  /**
+   * The list of annotations that applies exactly on this symbol.
+   * @return A list of {@link AnnotationInstance}
+   */
+  List<AnnotationInstance> symbolAnnotations();
 
   /**
    * @return the nullability definition for metadata() of:
@@ -64,6 +70,14 @@ public interface SymbolMetadata {
 
   @Nullable
   AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance);
+
+  /**
+   * @return the metadata of the parameterized types of the current metadata
+   * <p>
+   * If the current metadata is attached to {@code @NonNull List<@Nullable String>},
+   * it will return an array containing one metadata describing {@code @Nullable String}.
+   */
+  SymbolMetadata[] parametersMetadata();
 
   /**
    * Occurrence of an annotation on a symbol.

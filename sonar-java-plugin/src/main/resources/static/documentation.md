@@ -144,6 +144,12 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **8.19**
+
+* New methods: `SymbolMetadata#symbolAnnotations()` and `SymbolMetadata#parametersMetadata()`.
+* Fix issue in `SymbolMetadata#nullabilityData()` and `SymbolMetadata#nullabilityData(NullabilityTarget)` where the parametrized types were affecting the result.
+  To access the nullability data of a parametrized type, use `SymbolMetadata#parametersMetadata()`.
+
 #### **8.15**
 
 * New fields for unknown symbols: `Symbol#ROOT_PACKAGE`, `Symbol#UNKNOWN_SYMBOL`, `Symbol.TypeSymbol#UNKNOWN_TYPE`, `Symbol.MethodSymbol#UNKNOWN_METHOD`, `Type#UNKNOWN`.

@@ -60,6 +60,11 @@ public class Symbols {
     }
 
     @Override
+    public List<AnnotationInstance> symbolAnnotations() {
+      return Collections.emptyList();
+    }
+
+    @Override
     public NullabilityData nullabilityData() {
       return JSymbolMetadata.unknownNullabilityAt(NullabilityLevel.UNKNOWN);
     }
@@ -73,6 +78,11 @@ public class Symbols {
     @Override
     public AnnotationTree findAnnotationTree(AnnotationInstance annotationInstance) {
       return null;
+    }
+
+    @Override
+    public SymbolMetadata[] parametersMetadata() {
+      return new SymbolMetadata[0];
     }
   };
 
