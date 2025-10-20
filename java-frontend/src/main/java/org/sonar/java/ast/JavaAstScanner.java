@@ -187,7 +187,7 @@ public class JavaAstScanner {
       interruptIfFailFast(e, inputFile);
     } catch (StackOverflowError error) {
       LOG.error(String.format(LOG_ERROR_STACKOVERFLOW, inputFile), error);
-      if (sonarComponents != null && sonarComponents.shouldFailOnStackOverflow()) {
+      if (sonarComponents == null || sonarComponents.shouldFailOnStackOverflow()) {
         throw error;
       }
     } finally {
