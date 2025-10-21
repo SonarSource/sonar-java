@@ -1,4 +1,4 @@
-package checks.unused;
+package checks.tests.unused;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
