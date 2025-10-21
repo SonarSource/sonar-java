@@ -59,7 +59,7 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
     @ParameterizedTest
     @FieldSource({"firstField", "secondField"})
     void test(int input) {
-      // ...
+      assertThat(input).isGreaterThan(0);
     }
   }
 
@@ -70,7 +70,7 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
     @ParameterizedTest
     @FieldSource
     void test(int input) {
-      // ...
+      assertThat(input).isGreaterThan(0);
     }
   }
 
@@ -86,7 +86,7 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
       @ParameterizedTest
       @FieldSource("checks.unused.UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation$ShouldNotRaiseForExternalFieldsReferencedInAnnotation#externalField")
       void test(int input) {
-        // ...
+        assertThat(input).isGreaterThan(0);
       }
     }
   }
@@ -102,7 +102,7 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
       @FieldSource("secondField")
     })
     void test(int input) {
-      // ...
+      assertThat(input).isGreaterThan(0);
     }
   }
 
@@ -115,7 +115,7 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
     @FieldSource("firstField")
     @FieldSource("secondField")
     void test(int input) {
-      // ...
+      assertThat(input).isGreaterThan(0);
     }
   }
 
@@ -131,14 +131,14 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
       @ParameterizedTest
       @FieldSource("firstField")
       void test(int input) {
-        // ...
+        assertThat(input).isGreaterThan(0);
       }
     }
 
     @ParameterizedTest
     @FieldSource("secondField")
     void test(int input) {
-      // ...
+      assertThat(input).isGreaterThan(0);
     }
   }
 
@@ -153,7 +153,7 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
       @ParameterizedTest
       @FieldSource("field")
       void test(int input) {
-        // ...
+        assertThat(input).isGreaterThan(0);
       }
     }
   }
@@ -167,7 +167,7 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
     @ParameterizedTest
     @CustomAnnotation("field")
     void test(int input) {
-      // ...
+      assertThat(input).isGreaterThan(0);
     }
   }
 
@@ -180,7 +180,7 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
     class Nested {
       @ParameterizedTest
       void test(int input) {
-        // ...
+        assertThat(input).isGreaterThan(0);
       }
     }
   }

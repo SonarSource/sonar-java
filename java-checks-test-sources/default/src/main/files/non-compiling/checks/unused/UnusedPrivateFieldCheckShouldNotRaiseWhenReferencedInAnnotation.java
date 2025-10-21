@@ -4,6 +4,8 @@ import java.util.List;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.FieldSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
   static class ShouldNotRaiseForDuplicateFields {
     private static final List<Integer> field = List.of(1, 2, 3); // Compliant: Used in annotation below
@@ -13,7 +15,7 @@ public class UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation {
     @ParameterizedTest
     @FieldSource("field")
     void test(int input) {
-      // ...
+      assertThat(input).isGreaterThan(0);
     }
   }
 }
