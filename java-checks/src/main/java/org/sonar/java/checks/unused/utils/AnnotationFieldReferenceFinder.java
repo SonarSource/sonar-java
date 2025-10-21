@@ -83,8 +83,8 @@ public class AnnotationFieldReferenceFinder extends BaseTreeVisitor {
         var owner = variable.symbol().owner();
         var ownerName = owner != null ? owner.name() : "(Unknown Owning Class)";
         LOG.error("""
-            Duplicate field name detected: {} in {}.
-            This may happen for non-compiling sources and detection of unused variables may be impacted.
+          Duplicate field name detected: {} in {}.
+          This may happen for non-compiling sources and detection of unused variables may be impacted.
           """, fieldName, ownerName);
       }
     }
