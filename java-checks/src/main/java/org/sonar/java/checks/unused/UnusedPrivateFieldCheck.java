@@ -170,18 +170,18 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isPrivateFieldWithNoSymbolUsages(VariableTree variableTree) {
-    if (!hasOnlyIgnoredAnnotations(variableTree)) {
-      return false;
-    }
-
     var symbol = variableTree.symbol();
     if (!symbol.isPrivate()) {
       return false;
     }
 
     var name = symbol.name();
-    return !"serialVersionUID".equals(name)
-      && !unknownIdentifiers.contains(name)
+    if ("serialVersionUID".equals(name)
+      || unknownIdentifiers.contains(name)) {
+      return false;
+    }
+
+    return hasOnlyIgnoredAnnotations(variableTree)
       && onlyUsedInVariableAssignment(symbol)
       && !hasOwnerClassAllowedAnnotations(variableTree);
   }
