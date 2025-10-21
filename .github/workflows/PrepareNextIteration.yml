@@ -6,6 +6,9 @@ on:
       nextVersion:
         description: Version number of the next iteration
         required: true
+      ticket:
+        description: "JIRA ticket (ex: SONARJAVA-XXX)"
+        required: true
 
 jobs:
   Next-Iteration-Job:
@@ -28,6 +31,6 @@ jobs:
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git checkout -b gh-action/next-iteration
           mvn versions:set -DgenerateBackupPoms=false -DnewVersion="${{ inputs.nextVersion }}"
-          git commit -m 'Prepare next development iteration' -a
+          git commit -m "${{ inputs.ticket }} Prepare next development iteration" -a
           git push --set-upstream origin gh-action/next-iteration
           gh pr create -B master --title 'Prepare next development iteration' --body ''
