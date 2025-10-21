@@ -1076,7 +1076,7 @@ class SonarComponentsTest {
   @ParameterizedTest
   @ValueSource(strings = {"true", "false"})
   void shouldFailOnStackOverflow_returns_correct_value_when_set(String value) {
-    MapSettings settings = new MapSettings().setProperty("sonar.java.failOnStackOverflow", value);
+    MapSettings settings = new MapSettings().setProperty("sonar.java.internal.failOnStackOverflow", value);
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(SensorContextTester.create(new File("")).setSettings(settings));
     assertThat(sonarComponents.shouldFailOnStackOverflow()).isEqualTo(Boolean.valueOf(value));

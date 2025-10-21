@@ -105,10 +105,10 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   /**
    * Describes whether the analysis should fail and halt when a StackOverflowError is encountered.
-   * True by default, we still want to give the possibility to disable this behavior in case of projects
-   * with large amounts of unreviewed AI-generated code causing such errors.
+   * True by default, we still want to give the possibility to disable this behavior in case of large projects
+   * for which it is costly to run a whole analysis to then just fail at the end and lose all findings.
    */
-  public static final String SONAR_FAIL_ON_STACKOVERFLOW = "sonar.java.failOnStackOverflow";
+  public static final String SONAR_FAIL_ON_STACKOVERFLOW = "sonar.java.internal.failOnStackOverflow";
 
   private static final Version SONARLINT_6_3 = Version.parse("6.3");
   private static final Version SONARQUBE_9_2 = Version.parse("9.2");

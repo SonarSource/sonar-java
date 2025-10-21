@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
@@ -81,6 +82,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 class JavaAstScannerTest {
+
+  public static final InputFile TRIVIAL_COMPILATION_UNIT = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
+  public static final JavaFileScanner PROBLEMATIC_VISITOR = ctx -> {
+    throw new StackOverflowError();
+  };
 
   @RegisterExtension
   public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
@@ -451,7 +457,6 @@ class JavaAstScannerTest {
 
   @Test
   void test_modifyCompilationUnit_modify_ast() {
-    InputFile trivialCompilationUnit = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
 
     var check = new JavaFileScanner() {
       @Override
@@ -469,7 +474,7 @@ class JavaAstScannerTest {
 
     JavaAstScanner scanner = new JavaAstScanner(null, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     scanner.setVisitorBridge(visitorsBridge);
-    scanner.scanForTesting(Collections.singletonList(trivialCompilationUnit), compilationUnit -> {
+    scanner.scanForTesting(Collections.singletonList(TRIVIAL_COMPILATION_UNIT), compilationUnit -> {
       var clazz = (ClassTreeImpl) ((JavaTree.CompilationUnitTreeImpl) compilationUnit).types().get(0);
       assertThat(clazz.simpleName().name()).isEqualTo("C");
       assertThat(clazz.simpleName().symbol().isUnknown()).isFalse();
@@ -481,54 +486,53 @@ class JavaAstScannerTest {
 
   @Test
   void test_should_fail_on_stackoverflow_by_default() {
-    InputFile trivialCompilationUnit = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
-    var files = List.of(trivialCompilationUnit);
-    var problematicVisitor = new JavaFileScanner(){
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        throw new StackOverflowError();
-      }
-    };
-    List<JavaFileScanner> visitors = List.of(problematicVisitor);
+    var files = List.of(TRIVIAL_COMPILATION_UNIT);
+    List<JavaFileScanner> visitors = List.of(PROBLEMATIC_VISITOR);
 
     // Assert that by default, StackOverflowError is propagated
     var emptySettings = new MapSettings();
-    assertThrows(StackOverflowError.class, () ->
-      scanFilesWithVisitorsAndContext(files, visitors, emptySettings, JavaVersionImpl.MAX_SUPPORTED));
+    assertThrows(StackOverflowError.class, () -> scanFilesWithVisitorsAndContext(files, visitors, emptySettings));
   }
 
   @Test
   void test_should_not_fail_on_stackoverflow_when_set() {
-    InputFile trivialCompilationUnit = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
-    var files = List.of(trivialCompilationUnit);
-    var problematicVisitor = new JavaFileScanner(){
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        throw new StackOverflowError();
-      }
-    };
-    List<JavaFileScanner> visitors = List.of(problematicVisitor);
-
     // Assert that when configured to not fail on exception, StackOverflowError is swallowed, but logged
     MapSettings settings = new MapSettings().setProperty(SonarComponents.SONAR_FAIL_ON_STACKOVERFLOW, false);
-    assertDoesNotThrow(() -> scanFilesWithVisitorsAndContext(files, visitors, settings, JavaVersionImpl.MAX_SUPPORTED));
+    assertDoesNotThrow(() -> scanFilesWithVisitorsAndContext(List.of(TRIVIAL_COMPILATION_UNIT), List.of(PROBLEMATIC_VISITOR), settings));
     assertThat(logTester.logs(Level.ERROR))
       .containsExactly("A stack overflow error occurred while analyzing file: 'src/test/resources/AstScannerNoParseError.txt'");
   }
 
+  @ParameterizedTest
+  @MethodSource("failFastAndFailOnSOCombinations")
+  void assertFailFastWithFailOnStackOverflowInteraction(boolean failFast, boolean failOnSO, boolean shouldFail) {
+    MapSettings settings = new MapSettings()
+      .setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, failFast)
+      .setProperty(SonarComponents.SONAR_FAIL_ON_STACKOVERFLOW, failOnSO);
+    var files = List.of(TRIVIAL_COMPILATION_UNIT);
+    List<JavaFileScanner> visitors = List.of(PROBLEMATIC_VISITOR);
+
+    if (shouldFail) {
+      assertThrows(StackOverflowError.class, () -> scanFilesWithVisitorsAndContext(files, visitors, settings));
+    } else {
+      assertDoesNotThrow(() -> scanFilesWithVisitorsAndContext(files, visitors, settings));
+    }
+  }
+
+  static List<Object[]> failFastAndFailOnSOCombinations() {
+    return Arrays.asList(new Object[][]{
+      {true, true, true},
+      {true, false, false},
+      {false, true, true},
+      {false, false, false}
+    });
+  }
+
   @Test
   void test_should_fail_on_stackoverflow_when_sonar_components_null() {
-    InputFile trivialCompilationUnit = TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt");
-    var files = List.of(trivialCompilationUnit);
-    var problematicVisitor = new JavaFileScanner(){
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        throw new StackOverflowError();
-      }
-    };
-    List<JavaFileScanner> visitors = List.of(problematicVisitor);
+    var files = List.of(TRIVIAL_COMPILATION_UNIT);
     JavaAstScanner scanner = new JavaAstScanner(null, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
-    VisitorsBridge visitorBridge = new VisitorsBridge(visitors, new ArrayList<>(), null, new JavaVersionImpl(JavaVersionImpl.MAX_SUPPORTED));
+    VisitorsBridge visitorBridge = new VisitorsBridge(PROBLEMATIC_VISITOR);
     scanner.setVisitorBridge(visitorBridge);
     assertThrows(StackOverflowError.class, () -> scanner.scan(files));
   }
@@ -564,6 +568,10 @@ class JavaAstScannerTest {
     scanFilesWithVisitorsAndContext(inputFiles, visitors, settings, javaVersion);
   }
 
+  private void scanFilesWithVisitorsAndContext(List<InputFile> inputFiles, List<JavaFileScanner> visitors, MapSettings contextMap) {
+    scanFilesWithVisitorsAndContext(inputFiles, visitors, contextMap, JavaVersionImpl.MAX_SUPPORTED);
+  }
+
   private void scanFilesWithVisitorsAndContext(List<InputFile> inputFiles, List<JavaFileScanner> visitors, MapSettings contextMap, int javaVersion) {
     context.setSettings(contextMap);
     DefaultFileSystem fileSystem = context.fileSystem();
@@ -572,7 +580,7 @@ class JavaAstScannerTest {
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null, null);
     sonarComponents.setSensorContext(context);
     JavaAstScanner scanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
-    VisitorsBridge visitorBridge = new VisitorsBridge(visitors, new ArrayList<>(), sonarComponents, new JavaVersionImpl(javaVersion));
+    VisitorsBridge visitorBridge = new VisitorsBridge(visitors, List.of(), sonarComponents, new JavaVersionImpl(javaVersion));
     scanner.setVisitorBridge(visitorBridge);
     scanner.scan(inputFiles);
   }
