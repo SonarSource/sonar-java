@@ -18,7 +18,9 @@ package org.sonar.java.checks.unused.utils;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +52,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  */
 public class AnnotationFieldReferenceFinder extends BaseTreeVisitor {
   private static final Logger LOG = LoggerFactory.getLogger(AnnotationFieldReferenceFinder.class);
-
-  private final StringLiteralFinder stringLiteralFinder = new StringLiteralFinder();
 
   // Stores all field names and associated variable trees for which no usages of the symbol have been found so far.
   // Fields are removed from this map, as soon as a string literal is found inside an annotation that matches the name of the field.
@@ -122,7 +122,8 @@ public class AnnotationFieldReferenceFinder extends BaseTreeVisitor {
     }
 
     for (var argument : annotationTree.arguments()) {
-      argument.accept(stringLiteralFinder);
+      var literalsInArgument = StringLiteralFinder.literalsInTree(argument);
+      literalsInArgument.forEach(fieldNameToVariableTree::remove);
     }
   }
 
@@ -156,10 +157,19 @@ public class AnnotationFieldReferenceFinder extends BaseTreeVisitor {
   }
 
   /**
-   * Finds string literals and removes them from {@link AnnotationFieldReferenceFinder#fieldNameToVariableTree}.
-   * I.e. it finds usages of field names in string literals.
+   * Finds string literals in a given tree, strips their surrounding quotation marks and returns them.
+   * It should be invoked via {@link StringLiteralFinder#literalsInTree(Tree)}.
    */
-  private class StringLiteralFinder extends BaseTreeVisitor {
+  private static class StringLiteralFinder extends BaseTreeVisitor {
+    private final Set<String> stringLiterals = new HashSet<>();
+
+    public static Set<String> literalsInTree(Tree tree) {
+      var finder = new StringLiteralFinder();
+      tree.accept(finder);
+
+      return finder.stringLiterals;
+    }
+
     @Override
     public void visitLiteral(LiteralTree tree) {
       if (!tree.is(Tree.Kind.STRING_LITERAL)) {
@@ -172,7 +182,7 @@ public class AnnotationFieldReferenceFinder extends BaseTreeVisitor {
       }
 
       var literalWithoutQuotes = literalValue.substring(1, literalValue.length() - 1);
-      fieldNameToVariableTree.remove(literalWithoutQuotes);
+      stringLiterals.add(literalWithoutQuotes);
     }
   }
 }
