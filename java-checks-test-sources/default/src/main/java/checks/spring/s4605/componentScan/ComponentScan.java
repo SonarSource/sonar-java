@@ -19,7 +19,7 @@ class Foo2 {
   };
 }
 
-@ComponentScan(basePackages = {"checks.spring.s4605.componentScan.packageY"})
+@ComponentScan(basePackages = {"checks.spring.s4605.componentScan.packageY"}, lazyInit = true)
 class Foo3 { }
 
 @ComponentScan(basePackages = "checks.spring.s4605.componentScan.packageZ")

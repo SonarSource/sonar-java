@@ -207,7 +207,8 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
       for (Object o : objects) {
         if (o instanceof String oString) {
           packagesScannedBySpringAtProjectLevel.add(oString);
-        } else if (o instanceof Symbol oSymbol) {
+        }
+        if (o instanceof Symbol oSymbol) {
           packagesScannedBySpringAtProjectLevel.add(packageNameOf(oSymbol));
         }
       }
