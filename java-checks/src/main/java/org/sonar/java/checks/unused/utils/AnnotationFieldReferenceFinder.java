@@ -28,7 +28,6 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -135,11 +134,6 @@ public class AnnotationFieldReferenceFinder extends BaseTreeVisitor {
       hasEnteredClassTree = true;
       super.visitClass(tree);
     }
-  }
-
-  @Override
-  public void visitNewClass(NewClassTree tree) {
-    // We intentionally do not visit sub-classes - their annotations and fields will be handled separately.
   }
 
   private static @Nullable MethodTree findAnnotatedMethod(AnnotationTree annotationTree) {
