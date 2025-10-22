@@ -35,6 +35,14 @@ class CipherBlockChainingCheckTest {
   }
 
   @Test
+  void should_detect_custom_iv_factories() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/CipherBlockChainingCheckShouldDetectCustomIVFactories.java"))
+      .withCheck(new CipherBlockChainingCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath(SOURCE_PATH))
