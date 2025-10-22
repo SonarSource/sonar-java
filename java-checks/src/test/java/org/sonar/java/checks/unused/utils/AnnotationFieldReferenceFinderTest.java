@@ -16,34 +16,18 @@
  */
 package org.sonar.java.checks.unused.utils;
 
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
-import org.sonar.java.ast.parser.ArgumentListTreeImpl;
-import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
-import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
-import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.declaration.AnnotationTreeImpl;
-import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.model.declaration.ModifiersTreeImpl;
+import org.sonar.java.checks.helpers.JParserTestUtils;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.model.expression.LiteralTreeImpl;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 /**
  * Tests an edge case of {@link AnnotationFieldReferenceFinder} that can not be covered with regular Java files by the tests in
@@ -55,20 +39,43 @@ class AnnotationFieldReferenceFinderTest {
 
   @Test
   void should_graciously_handle_fields_with_overlapping_names() {
-    var conflictingUsedA = field("conflictingUsed");
-    var conflictingUsedB = field("conflictingUsed");
-    var conflictingUnusedA = field("conflictingUnused");
-    var conflictingUnusedB = field("conflictingUnused");
-    var nonConflictingUsed = field("nonConflictingUsed");
-    var nonConflictingUnused = field("nonConflictingUnused");
+    var source = """
+      import org.junit.jupiter.params.ParameterizedTest;
+      import org.junit.jupiter.params.provider.FieldSource;
 
-    var method = methodWithAnnotationArgs(
-      literal("conflictingUsed"),
-      literal("nonConflictingUsed"));
+      class A {
+          Object conflictingUsed;
+          Object conflictingUnused;
+          Object nonConflictingUsed;
+          Object nonConflictingUnused;
+
+          @ParameterizedTest
+          @FieldSource({"conflictingUsed", "nonConflictingUsed"})
+          void test(int input) {
+              // ...
+          }
+      }
+      """;
+
+    // The goal here is to confront AnnotationFieldReferencesFinder with two fields on the same class that have the same name.
+    // ECJ will actually not produce such an AST, even if two fields with the same name appear in the code.
+    // Still, in case this does happen at some point, we want this test to confirm that we still behave in a safe way.
+    //
+    // Hence, we will do a hack here by parsing the same source twice, collecting the fields from it, and manually construct a list of
+    // fields that contains two different VariableTree instances with the same simpleName.
+    var firstParsing = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
+    var secondParsing = (JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source);
+
+    var conflictingUsedA = extractField(firstParsing, "conflictingUsed");
+    var conflictingUsedB = extractField(secondParsing, "conflictingUsed");
+    var conflictingUnusedA = extractField(firstParsing, "conflictingUnused");
+    var conflictingUnusedB = extractField(secondParsing, "conflictingUnused");
+    var nonConflictingUsed = extractField(firstParsing, "nonConflictingUsed");
+    var nonConflictingUnused = extractField(firstParsing, "nonConflictingUnused");
 
     var finder = AnnotationFieldReferenceFinder
       .findReferencesTo(List.of(conflictingUsedA, conflictingUsedB, conflictingUnusedA, conflictingUnusedB, nonConflictingUsed, nonConflictingUnused));
-    method.accept(finder);
+    firstParsing.accept(finder);
 
     assertThat(finder.fieldsNotReferencedInAnnotation())
       .describedAs("""
@@ -83,61 +90,23 @@ class AnnotationFieldReferenceFinderTest {
 
     assertThat(logTester.logs())
       .containsExactlyInAnyOrder("""
-        Duplicate field name detected: conflictingUsed in Owner.
+        Duplicate field name detected: conflictingUsed in A.
         This may happen for non-compiling sources and detection of unused variables may be impacted.
         """, """
-        Duplicate field name detected: conflictingUnused in Owner.
+        Duplicate field name detected: conflictingUnused in A.
         This may happen for non-compiling sources and detection of unused variables may be impacted.
         """);
   }
 
-  private static VariableTree field(String simpleName) {
-    var ownerSymbol = mock(Symbol.class);
-    doReturn("Owner").when(ownerSymbol).name();
+  private VariableTree extractField(JavaTree.CompilationUnitTreeImpl cut, String fieldName) {
+    var firstType = (ClassTree) cut.types().get(0);
 
-    var symbol = mock(Symbol.class);
-    doReturn(ownerSymbol).when(symbol).owner();
-
-    var identifierTree = new IdentifierTreeImpl(new InternalSyntaxToken(0, 0, simpleName, List.of(), false));
-    var variableTree = spy(new VariableTreeImpl(identifierTree));
-    doReturn(symbol).when(variableTree).symbol();
-
-    return variableTree;
-  }
-
-  private static LiteralTree literal(String unquotedValue) {
-    return new LiteralTreeImpl(Tree.Kind.STRING_LITERAL, new InternalSyntaxToken(0, 0, "\"%s\"".formatted(unquotedValue), List.of(), false));
-  }
-
-  private static MethodTree methodWithAnnotationArgs(ExpressionTree... annotationArgs) {
-    var annotationType = mock(Type.class);
-    doReturn("FieldSource").when(annotationType).name();
-    var annotationTypeExpression = spy(new IdentifierTreeImpl(new InternalSyntaxToken(0, 0, "FieldSource", List.of(), false)));
-    doReturn(annotationType).when(annotationTypeExpression).symbolType();
-
-    var annotationArgsTree = ArgumentListTreeImpl.emptyList();
-    annotationArgsTree.addAll(Arrays.asList(annotationArgs));
-
-    var annotation = new AnnotationTreeImpl(
-      new InternalSyntaxToken(0, 0, "@", List.of(), false),
-      annotationTypeExpression,
-      annotationArgsTree);
-
-    var methodModifiers = new ModifiersTreeImpl(List.of(annotation));
-    var parameters = new FormalParametersListTreeImpl(null, null);
-    var method = new MethodTreeImpl(
-      null,
-      new IdentifierTreeImpl(new InternalSyntaxToken(0, 0, "myMethod", List.of(), false)),
-      parameters,
-      null,
-      QualifiedIdentifierListTreeImpl.emptyList(),
-      null,
-      null);
-    method.completeWithModifiers(methodModifiers);
-
-    annotation.setParent(methodModifiers);
-    methodModifiers.setParent(method);
-
-    return method;
+    return firstType
+      .members()
+      .stream()
+      .filter(member -> member instanceof VariableTree field && fieldName.equals(field.simpleName().name()))
+      .findFirst()
+      .map(VariableTreeImpl.class::cast)
+      .orElseThrow();
   }
 }
