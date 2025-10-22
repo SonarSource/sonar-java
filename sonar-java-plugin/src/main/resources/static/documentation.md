@@ -101,6 +101,13 @@ You can control this behavior with the analysis parameter `sonar.java.skipUnchan
 * setting it to `false` will **never** make rules skip unchanged files, even if the context is a PR analysis
 * not setting this parameter lets the server decide whether the optimization should be enabled, by default it will be enabled for PR analyses.
 
+## Handling analysis runtime errors
+By default, the Java analyzer only halts the analysis when an `AnalysisException` or a `java.lang.Error` (non-recoverable error) is thrown.
+Generic runtime exceptions (like `NullPointerException`, `ArrayIndexOutOfBoundsException`, etc.) are caught and logged but do not stop the analysis.
+This behavior can be changed by setting two different analysis parameters:
+* `sonar.internal.analysis.failFast` - when set to `true`, any runtime exception will halt the analysis
+* `sonar.java.internal.failOnStackOverflow` - `true` by default, can be set to `false` to avoid halting the analysis on `StackOverflowError` (this overrides the `failFast` option)
+
 ## Cache-enabled rules (experimental)
 Starting from April 2022, the Java analyzer offers rule developers a SQ cache that can be used to store and retrieve information from one analysis to the other.
 The cache is provided by the underlying SonarQube instance and is branch-specific.
