@@ -46,4 +46,11 @@ class UnusedPrivateMethodCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void should_make_exceptions_for_parameter_annotations() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/UnusedPrivateMethodCheckShouldMakeExceptionsForParameterAnnotations.java"))
+      .withCheck(new UnusedPrivateMethodCheck())
+      .verifyIssues();
+  }
 }
