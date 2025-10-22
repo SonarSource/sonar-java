@@ -21,6 +21,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class UnusedPrivateFieldCheckTest {
 
@@ -88,4 +89,19 @@ class UnusedPrivateFieldCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void should_not_raise_when_referenced_in_annotation() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/unused/UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation.java"))
+      .withCheck(new UnusedPrivateFieldCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void should_not_raise_when_referenced_in_annotation_noncompiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/unused/UnusedPrivateFieldCheckShouldNotRaiseWhenReferencedInAnnotation.java"))
+      .withCheck(new UnusedPrivateFieldCheck())
+      .verifyIssues();
+  }
 }

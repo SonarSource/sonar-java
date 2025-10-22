@@ -19,6 +19,7 @@
     <forbiddenapis.skip>true</forbiddenapis.skip>
     <skipTests>true</skipTests>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <org.junit.jupiter.version>5.14.0</org.junit.jupiter.version>
   </properties>
 
   <dependencyManagement>
@@ -687,13 +688,13 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>5.7.1</version>
+      <version>${org.junit.jupiter.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
-      <version>5.7.1</version>
+      <version>${org.junit.jupiter.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
