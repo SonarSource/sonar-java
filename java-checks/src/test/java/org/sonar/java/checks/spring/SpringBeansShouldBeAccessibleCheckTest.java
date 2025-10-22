@@ -96,7 +96,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
   @Test
   void testComponentScanWithBasePackageClasses() {
     final String testFolder = BASE_PATH + "componentScan/";
-    List<String> files = Arrays.asList(
+    List<String> files = List.of(
       mainCodeSourcesPath(testFolder + "basePkgClasses/ignoredPackage/IgnoredService.java"),
       mainCodeSourcesPath(testFolder + "basePkgClasses/anotherValidPackage/MyOtherService.java"),
       mainCodeSourcesPath(testFolder + "basePkgClasses/anotherValidPackage/NoOpMarkerReferencedSomewhereElse.java"),
@@ -266,7 +266,4 @@ class SpringBeansShouldBeAccessibleCheckTest {
       msg -> msg.matches("Cache miss for key '[^']+'")
     )).hasSize(1);
   }
-
-
-
 }
