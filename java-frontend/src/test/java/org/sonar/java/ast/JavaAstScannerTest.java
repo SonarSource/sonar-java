@@ -504,7 +504,7 @@ class JavaAstScannerTest {
   }
 
   @ParameterizedTest
-  @MethodSource("failFastAndFailOnSOCombinations")
+  @MethodSource("failFastAndFailOnStackOverflowCombinations")
   void assertFailFastWithFailOnStackOverflowInteraction(boolean failFast, boolean failOnSO, boolean shouldFail) {
     MapSettings settings = new MapSettings()
       .setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, failFast)
@@ -519,7 +519,7 @@ class JavaAstScannerTest {
     }
   }
 
-  static List<Object[]> failFastAndFailOnSOCombinations() {
+  static List<Object[]> failFastAndFailOnStackOverflowCombinations() {
     return Arrays.asList(new Object[][]{
       {true, true, true},
       {true, false, false},
