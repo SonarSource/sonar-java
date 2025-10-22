@@ -39,7 +39,7 @@ class CipherBlockChainingCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/security/CipherBlockChainingCheckShouldDetectCustomIVFactories.java"))
       .withCheck(new CipherBlockChainingCheck())
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
   @Test

@@ -15,6 +15,17 @@ import javax.crypto.spec.SecretKeySpec;
 import static javax.crypto.Cipher.ENCRYPT_MODE;
 
 public class CipherBlockChainingCheckShouldDetectCustomIVFactories {
+  // We use fields to omit the details of cipher and secret key creation because they are not relevant for this test.
+  static Cipher cipher;
+  static SecretKeySpec secretKey;
+
+  static class Control {
+    void should_raise_issue_for_insecure_iv() throws InvalidAlgorithmParameterException, InvalidKeyException {
+      final byte[] insecureIv = new byte[42];
+      cipher.init(ENCRYPT_MODE, secretKey, new IvParameterSpec(insecureIv)); // Noncompliant
+    }
+  }
+
   // This is a reproducer for a former FP
   static class SONARJAVA4895Reproducer {
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
