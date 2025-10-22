@@ -94,6 +94,22 @@ class SpringBeansShouldBeAccessibleCheckTest {
   }
 
   @Test
+  void testComponentScanWithBasePackageClasses() {
+    final String testFolder = BASE_PATH + "componentScan/";
+    List<String> files = List.of(
+      mainCodeSourcesPath(testFolder + "basePkgClasses/ignoredPackage/IgnoredService.java"),
+      mainCodeSourcesPath(testFolder + "basePkgClasses/anotherValidPackage/MyOtherService.java"),
+      mainCodeSourcesPath(testFolder + "basePkgClasses/anotherValidPackage/NoOpMarkerReferencedSomewhereElse.java"),
+      mainCodeSourcesPath(testFolder + "basePkgClasses/validPackage/MyService.java"),
+      mainCodeSourcesPath(testFolder + "basePkgClasses/validPackage/NoOpComponentScan.java"));
+
+    CheckVerifier.newVerifier()
+      .onFiles(files)
+      .withCheck(new SpringBeansShouldBeAccessibleCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void testSpringBootApplication() {
     final String testFolder = BASE_PATH + "springBootApplication/";
     List<String> files = Arrays.asList(
