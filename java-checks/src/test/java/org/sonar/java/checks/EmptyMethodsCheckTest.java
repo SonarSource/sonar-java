@@ -32,6 +32,14 @@ class EmptyMethodsCheckTest {
   }
 
   @Test
+  void test_springboot_sanity() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SpringBootEmptyMethodsCheckSample.java"))
+      .withCheck(new EmptyMethodsCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void test_no_semantics() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/EmptyMethodsCheckNoSemantics.java"))

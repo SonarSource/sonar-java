@@ -2,6 +2,21 @@ package checks;
 
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class SpringBootTests {
+  // Compliant
+  @Test
+  void legitSanityTestEmptyMethod() {
+  }
+
+  // Noncompliant@+2
+  @Test
+  void superfluousEmptyTestMethod() {
+  }
+}
 
 class EmptyMethodsCheckSample {
   class A {
