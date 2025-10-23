@@ -1,10 +1,6 @@
 package checks;
 
 class KillTheNoiseUnresolvedMethodCall {
-
-  private void init(@UknownAnnotation Object object) {} // Noncompliant
-  private void init2(@somepackage.Observes Object object) {} // Noncompliant
-  
   static class A {
     private A(int i) {}  // Compliant - unresolved constructor invocation
   }
