@@ -45,6 +45,14 @@ public class UnusedPrivateMethodCheckShouldMakeExceptionsForParameterAnnotations
       private void notify_observer_is_specified(@ObservesAsync(notifyObserver = Reception.IF_EXISTS) Object o1) { // Compliant
 
       }
+
+      private void javax_implementation_is_used_01(@javax.enterprise.event.ObservesAsync Object o1) { // Compliant
+
+      }
+
+      private void javax_implementation_is_used_02(@javax.enterprise.event.ObservesAsync(notifyObserver = javax.enterprise.event.Reception.ALWAYS) Object o1) { // Compliant
+
+      }
     }
 
     static class RaiseWhen {

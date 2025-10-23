@@ -145,7 +145,8 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
     private static final Set<String> PARAM_ANNOTATION_EXCEPTIONS = Set.of(
       "javax.enterprise.event.Observes",
       "jakarta.enterprise.event.Observes",
-      "jakarta.enterprise.event.ObservesAsync");
+      "jakarta.enterprise.event.ObservesAsync",
+      "javax.enterprise.event.ObservesAsync");
 
     /**
      * Unused private methods will not be reported if any of their parameters have an unknown annotation whose simple name matches one of
