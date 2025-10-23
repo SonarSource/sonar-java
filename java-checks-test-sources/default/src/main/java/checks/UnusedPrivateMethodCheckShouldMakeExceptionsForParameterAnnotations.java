@@ -57,6 +57,27 @@ public class UnusedPrivateMethodCheckShouldMakeExceptionsForParameterAnnotations
       }
     }
   }
+
+  static class ForObserves {
+    private void should_not_raise_when_javax_observes_is_present(@javax.enterprise.event.Observes Object object) { // Compliant, javax.enterprise.event.Observes is an exception to
+                                                                                                                   // the rule
+
+    }
+
+    private void should_not_raise_when_jakarta_observes_is_present(@jakarta.enterprise.event.Observes Object object) { // Compliant, jakarta.enterprise.event.Observes is an
+                                                                                                                       // exception to the rule
+
+    }
+
+    static class WhenObservesAnnotationIsFromUnrecognizedPackage {
+      @interface Observes {
+      }
+
+      private void raise(@Observes Object object, String test) { // Noncompliant
+
+      }
+    }
+  }
 }
 
 class Other {

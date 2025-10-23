@@ -1,6 +1,9 @@
 package checks;
 
 class KillTheNoiseUnresolvedMethodCall {
+  private void control() { // Noncompliant
+  }
+
   static class A {
     private A(int i) {}  // Compliant - unresolved constructor invocation
   }
