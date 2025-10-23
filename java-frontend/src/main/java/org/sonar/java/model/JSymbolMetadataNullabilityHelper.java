@@ -224,7 +224,7 @@ public class JSymbolMetadataNullabilityHelper {
     configureAnnotation(ORG_JSPECIFY_ANNOTATIONS_NULL_MARKED, NON_NULL,
       Arrays.asList(NullabilityTarget.CLASS, FIELD, METHOD, PARAMETER),
       Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
-    configureAnnotation(ORG_JSPECIFY_ANNOTATIONS_NULL_UNMARKED, WEAK_NULLABLE,
+    configureAnnotation(ORG_JSPECIFY_ANNOTATIONS_NULL_UNMARKED, UNKNOWN,
       Arrays.asList(NullabilityTarget.CLASS, FIELD, METHOD, PARAMETER),
       Arrays.asList(NullabilityLevel.METHOD, CLASS, PACKAGE));
 

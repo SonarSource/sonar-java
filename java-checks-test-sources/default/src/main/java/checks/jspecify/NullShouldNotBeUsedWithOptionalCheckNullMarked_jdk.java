@@ -11,9 +11,8 @@ import org.jspecify.annotations.NullUnmarked;
 @NullMarked
 interface NullShouldNotBeUsedWithOptionalCheck_jdk {
 
-  @NullUnmarked // Noncompliant {{Methods with an "Optional" return type should not be "@NullUnmarked".}}
-//^^^^^^^^^^^^^
-  public Optional<String> getOptionalKo();
+  @NullUnmarked // Compliant - NullUnmarked doesn't say anything about nullability
+  public Optional<String> getOptional();
 
 }
 
@@ -23,9 +22,8 @@ class NullShouldNotBeUsedWithOptionalCheck_jdkClassA {
   public NullShouldNotBeUsedWithOptionalCheck_jdkClassA() {
   }
 
-  @NullUnmarked // Noncompliant {{Methods with an "Optional" return type should not be "@NullUnmarked".}}
-//^^^^^^^^^^^^^
-  public Optional<String> getOptionalKo() {
+  @NullUnmarked // Compliant - NullUnmarked doesn't say anything about nullability
+  public Optional<String> getOptional() {
     return null; // Noncompliant {{Methods with an "Optional" return type should never return null.}}
 //         ^^^^
   }
