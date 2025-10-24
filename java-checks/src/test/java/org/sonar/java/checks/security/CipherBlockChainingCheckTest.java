@@ -23,13 +23,14 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class CipherBlockChainingCheckTest {
-
-  private static final String SOURCE_PATH = "checks/security/CipherBlockChainingCheck.java";
+  private static final String BASE_PATH = "checks/security";
+  private static final String DEFAULT_SOURCE_PATH = BASE_PATH + "/CipherBlockChainingCheck.java";
+  private static final String CUSTOM_IV_FACTORY_DETECTION_SOURCE_PATH = BASE_PATH + "/CipherBlockChainingCheckShouldDetectCustomIVFactories.java";
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath(SOURCE_PATH))
+      .onFile(mainCodeSourcesPath(DEFAULT_SOURCE_PATH))
       .withCheck(new CipherBlockChainingCheck())
       .verifyIssues();
   }
@@ -37,7 +38,23 @@ class CipherBlockChainingCheckTest {
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath(SOURCE_PATH))
+      .onFile(nonCompilingTestSourcesPath(DEFAULT_SOURCE_PATH))
+      .withCheck(new CipherBlockChainingCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void should_detect_custom_iv_factories() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(CUSTOM_IV_FACTORY_DETECTION_SOURCE_PATH))
+      .withCheck(new CipherBlockChainingCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void should_detect_custom_iv_factories_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath(CUSTOM_IV_FACTORY_DETECTION_SOURCE_PATH))
       .withCheck(new CipherBlockChainingCheck())
       .verifyIssues();
   }
