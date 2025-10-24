@@ -51,7 +51,9 @@ public class CipherBlockChainingCheckShouldDetectCustomIVFactories {
 
     void should_not_raise_issue_for_secure_method_using_byte_buffer() throws InvalidAlgorithmParameterException, InvalidKeyException {
       final byte[] iv = initIvWithByteBuffer(12);
-      cipher.init(ENCRYPT_MODE, secretKey, new IvParameterSpec(iv)); // Compliant
+      // Here, it is unclear whether the byte buffer used to initialize `iv` in the called method contains secure bytes or not.
+      // Following the existing behaviour of this rule, we should not raise when byte buffers are involved in the initialization
+      cipher.init(ENCRYPT_MODE, secretKey, new IvParameterSpec(iv)); // Unknown: Could either be a TN or FN
     }
 
     void should_not_raise_issue_for_secure_method_in_surrounding_class() throws InvalidAlgorithmParameterException, InvalidKeyException {
