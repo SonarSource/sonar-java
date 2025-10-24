@@ -53,7 +53,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   // * ...
   //
   // In other words, there will be FPs when secure IV generating methods are used that are defined across (top-level) classes or files.
-  // This could be handled by doing a pass of SecureByteArrayFactoryFinder across all classes and files first, before performing
+  // This could be handled by doing a pass of IvFactoryFinderImpl across all classes and files first, before performing
   // CipherBlockChainingCheck.
   //
   // However, this is likely not worth the additional complexity.
@@ -63,10 +63,8 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   //
   // Furthermore, we can not simply mute this check as soon as a call is involved in generating IVs because then we will lose a lot of the
   // cases that are already detected by previous iterations of this check.
-  private final SecureByteArrayFactoryFinder secureByteArrayFactoryFinder = new SecureByteArrayFactoryFinder();
-  private final SecureByteArrayGeneratorDetector secureByteArrayGeneratorDetector = new SecureByteArrayGeneratorDetector()
-    .countParametersAsDynamic()
-    .detectCustomFactories(secureByteArrayFactoryFinder);
+  private final IvFactoryFinderImpl ivFactoryFinder = new IvFactoryFinderImpl();
+  private final IvInitializationAnalysis ivInitializationAnalysis = IvInitializationAnalysis.crossProcedural(ivFactoryFinder);
 
   private static final MethodMatchers SECURE_RANDOM_GENERATE_SEED = MethodMatchers.create()
     .ofTypes("java.security.SecureRandom")
@@ -89,10 +87,10 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   @Override
   public void visitNode(Tree tree) {
     if (outermostClass == null && tree.is(Tree.Kind.CLASS)) {
-      // We only need run SecureByteArrayFactoryFinder once on the outermost class to find all secure IV byte array factory methods.
-      // If we apply the finder again to nested classes then we explore the same sub-trees multiple times.
+      // We only need run IvFactoryFinderImpl once on the outermost class to find all secure IV byte array factory methods.
+      // If we apply the finder again to nested classes then we would explore the same sub-trees multiple times.
       outermostClass = tree;
-      tree.accept(secureByteArrayFactoryFinder);
+      tree.accept(ivFactoryFinder);
     }
 
     super.visitNode(tree);
@@ -101,7 +99,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   @Override
   public void leaveNode(Tree tree) {
     if (tree == outermostClass) {
-      secureByteArrayFactoryFinder.clear();
+      ivFactoryFinder.clear();
     }
     super.leaveNode(tree);
   }
@@ -115,7 +113,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    if (newClassTree.arguments().isEmpty() || secureByteArrayGeneratorDetector.isDynamicallyGenerated(newClassTree.arguments().get(0))) {
+    if (newClassTree.arguments().isEmpty() || ivInitializationAnalysis.isDynamicallyGenerated(newClassTree.arguments().get(0))) {
       return;
     }
 
@@ -264,30 +262,47 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
     }
   }
 
-  private static class SecureByteArrayGeneratorDetector {
-    private @Nullable SecureByteArrayFactoryFinder secureByteArrayFactoryFinder = null;
-    private boolean shouldCountParametersAsDynamic = false;
+  private interface IvFactoryFinder {
+    boolean producesSecureBytesArray(MethodInvocationTree methodInvocation);
 
-    /**
-     * When called, this detector will treat all byte arrays produced by method calls to secure IV-generating functions as secure.
-     * It uses the given {@link SecureByteArrayFactoryFinder} to judge whether a method call is secure.
-     */
-    public SecureByteArrayGeneratorDetector detectCustomFactories(SecureByteArrayFactoryFinder secureByteArrayFactoryFinder) {
-      this.secureByteArrayFactoryFinder = secureByteArrayFactoryFinder;
-      return this;
+    static IvFactoryFinder disabled() {
+      return methodInvocation -> false;
+    }
+  }
+
+  private interface IvInitializationAnalysis {
+    boolean isDynamicallyGenerated(ExpressionTree tree);
+
+    static IvInitializationAnalysis crossProcedural(IvFactoryFinder ivFactoryFinder) {
+      return new IvInitializationAnalysisImpl(ivFactoryFinder, true);
     }
 
+    static IvInitializationAnalysis intraProcedural() {
+      return new IvInitializationAnalysisImpl(IvFactoryFinder.disabled(), false);
+    }
+  }
+
+  private static class IvInitializationAnalysisImpl implements IvInitializationAnalysis {
+    private final IvFactoryFinder ivFactoryFinder;
+    private final boolean shouldCountParametersAsDynamic;
+
     /**
-     * If called, this detector will treat parameters as secure byte arrays.
-     * This is optional, since we can not trace arguments across methods and hence can not always assume them to be secure.
-     * However, for the methods where we see parameters being directly passed into IvParameterSpec, we do want to treat them as secure
-     * to match the behaviour of previous iterations of CipherBlockChainingCheck
+     *
+     * @param ivFactoryFinder when IV byte arrays are initialized using a method call, then this {@link IvFactoryFinder} will be used to
+     *                        judge whether the method produces a secure byte array.
+     * @param shouldCountParametersAsDynamic when set to {@code true}, this detector will treat parameters as secure byte arrays.
+     *                                       This is optional, since we can not trace arguments across methods and hence can not always
+     *                                       assume them to be secure.
+     *                                       However, for the methods where we see parameters being directly passed into IvParameterSpec, we
+     *                                       do want to treat them as secure to match the behaviour of previous iterations of
+     *                                       CipherBlockChainingCheck.
      */
-    public SecureByteArrayGeneratorDetector countParametersAsDynamic() {
-      this.shouldCountParametersAsDynamic = true;
-      return this;
+    IvInitializationAnalysisImpl(IvFactoryFinder ivFactoryFinder, boolean shouldCountParametersAsDynamic) {
+      this.ivFactoryFinder = ivFactoryFinder;
+      this.shouldCountParametersAsDynamic = shouldCountParametersAsDynamic;
     }
 
+    @Override
     public boolean isDynamicallyGenerated(ExpressionTree tree) {
       if (shouldCountParametersAsDynamic && tree instanceof IdentifierTree identifierTree) {
         Symbol symbol = identifierTree.symbol();
@@ -302,11 +317,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
             return true;
           }
 
-          if (secureByteArrayFactoryFinder == null) {
-            return false;
-          }
-
-          return secureByteArrayFactoryFinder.producesSecureBytesArray(methodInvocationTree);
+          return ivFactoryFinder.producesSecureBytesArray(methodInvocationTree);
         });
     }
 
@@ -340,18 +351,20 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
 
   /**
    * Collects all methods that construct IV byte arrays in a secure way.
-   * After applying this visitor to a class tree, {@link SecureByteArrayFactoryFinder#producesSecureBytesArray(MethodInvocationTree)} can
+   * After applying this visitor to a class tree, {@link IvFactoryFinder#producesSecureBytesArray(MethodInvocationTree)} can
    * be used to check whether the invocation of a method belonging to that tree will return such a secure array.
    */
-  private static class SecureByteArrayFactoryFinder extends BaseTreeVisitor {
+  private static class IvFactoryFinderImpl extends BaseTreeVisitor implements IvFactoryFinder {
     private @Nullable MethodTree currentMethodTree = null;
     private final Set<String> secureByteArrayFactories = new HashSet<>();
-    // Note, that we do not call detectCustomFactories() on secureByteArrayGeneratorDetector.
+
+    // Note, that we use the intra-procedural analysis here.
     // Meaning, that we will not trace whether methods called inside IV factories are secure.
     // In other words, CipherBlockChainingCheck supports a call-depth of at most 1.
     // See also the note on cross-procedural FPs in the surrounding class.
-    private final SecureByteArrayGeneratorDetector secureByteArrayGeneratorDetector = new SecureByteArrayGeneratorDetector();
+    private final IvInitializationAnalysis ivInitializationAnalysis = IvInitializationAnalysis.intraProcedural();
 
+    @Override
     public boolean producesSecureBytesArray(MethodInvocationTree methodInvocation) {
       return secureByteArrayFactories.contains(methodInvocation.methodSymbol().signature());
     }
@@ -386,7 +399,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
         return;
       }
 
-      if (secureByteArrayGeneratorDetector.isDynamicallyGenerated(returnedExpression)) {
+      if (ivInitializationAnalysis.isDynamicallyGenerated(returnedExpression)) {
         markAsSecureFactory();
         return;
       }
