@@ -16,7 +16,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
-@interface Observes {}
 
 class UnusedPrivateMethodCheck {
 
@@ -32,10 +31,6 @@ class UnusedPrivateMethodCheck {
     return Stream.of("Hello world!", "Carpe diem!");
   }
 
-  private void init(@Observes Object object, String test) {} // Noncompliant
-  private void init(@javax.enterprise.event.Observes Object object) {} //Compliant, javax.enterprise.event.Observes is an exception to the rule
-  private void jakartaInit(@jakarta.enterprise.event.Observes Object object) {} //Compliant, jakarta.enterprise.event.Observes is an exception to the rule
-  private void initNc(@AnotherAnnotation Object object) {} // Noncompliant
 
   private UnusedPrivateMethodCheck() {}
   private UnusedPrivateMethodCheck(int a) {} // Noncompliant [[quickfixes=qf_constructor]]

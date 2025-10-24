@@ -139,10 +139,22 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
     public final Set<String> allUnresolvedMethodNames;
 
+    /**
+     * Unused private methods will not be reported if any of their parameters have one of these annotations.
+     */
     private static final Set<String> PARAM_ANNOTATION_EXCEPTIONS = Set.of(
       "javax.enterprise.event.Observes",
-      "jakarta.enterprise.event.Observes"
-    );
+      "jakarta.enterprise.event.Observes",
+      "jakarta.enterprise.event.ObservesAsync",
+      "javax.enterprise.event.ObservesAsync");
+
+    /**
+     * Unused private methods will not be reported if any of their parameters have an unknown annotation whose simple name matches one of
+     * these strings.
+     */
+    private static final Set<String> UNKNOWN_PARAM_ANNOTATION_EXCEPTIONS = Set.of(
+      "Observes",
+      "ObservesAsync");
 
     private UnusedMethodCollector(Set<String> allUnresolvedMethodNames) {
       this.allUnresolvedMethodNames = allUnresolvedMethodNames;
@@ -229,7 +241,8 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
       if (annotationSymbolType.isUnknown()) {
         TypeTree annotationType = annotation.annotationType();
         if (annotationType.is(Tree.Kind.IDENTIFIER)) {
-          return "Observes".equals(((IdentifierTree) annotationType).name());
+          var simpleName = ((IdentifierTree) annotationType).name();
+          return UNKNOWN_PARAM_ANNOTATION_EXCEPTIONS.contains(simpleName);
         }
         if (annotationType.is(Tree.Kind.MEMBER_SELECT)) {
           String concatenatedAnnotation = ExpressionsHelper.concatenate((MemberSelectExpressionTree) annotationType);
