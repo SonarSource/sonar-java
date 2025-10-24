@@ -262,7 +262,7 @@ class InnerClassTests {
   class InnerNullmarked {
     @NullMarked // Compliant
     class Inner {
-      @NonNull Object o; // Noncompliant {{Remove redundant annotation @NonNull as inside scope annotation @NullMarked at class level.}}
+      @NonNull Object o; // Compliant
       @Nullable Object o2; // Compliant
     }
   }
@@ -272,7 +272,7 @@ class InnerClassTests {
     @NullUnmarked
     class Inner {
       @NonNull Object o; // Compliant
-      public void methodNonNullParamTyped(List<@Nullable Object> o) { // Noncompliant {{Remove redundant annotation @Nullable as inside scope annotation @NullUnmarked at class level.}}
+      public void methodNonNullParamTyped(List<@Nullable Object> o) { // Compliant
         // ..
       }
     }
@@ -282,7 +282,7 @@ class InnerClassTests {
   class InnerRedundantNullMarked {
     @NullMarked // Compliant
     class Inner {
-      @NullMarked // Noncompliant {{Remove redundant annotation @NullMarked at class level as inside scope annotation @NullMarked at class level.}}
+      @NullMarked // Compliant
       class InnerInner {}
     }
   }
@@ -291,7 +291,7 @@ class InnerClassTests {
   class InnerRedundantNullUnmarked {
     @NullUnmarked // Compliant
     class Inner {
-      @NullUnmarked // Noncompliant {{Remove redundant annotation @NullUnmarked at class level as inside scope annotation @NullUnmarked at class level.}}
+      @NullUnmarked // Compliant
       class InnerInner {}
     }
   }
@@ -299,11 +299,11 @@ class InnerClassTests {
 
 @NullUnmarked
 class InnerClassTestsTwo {
-  @NullUnmarked // Noncompliant {{Remove redundant annotation @NullUnmarked at class level as inside scope annotation @NullUnmarked at class level.}}
+  @NullUnmarked // Compliant
   class InnerNullmarked {
     @NullMarked // Compliant
     class Inner {
-      @NonNull Object o; // Noncompliant {{Remove redundant annotation @NonNull as inside scope annotation @NullMarked at class level.}}
+      @NonNull Object o; // Compliant
       @Nullable Object o2; // Compliant
     }
   }

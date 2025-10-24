@@ -10,9 +10,8 @@ import org.jspecify.annotations.NullUnmarked;
 @NullMarked
 interface NullShouldNotBeUsedWithOptionalCheck_guava {
 
-  @NullUnmarked // Noncompliant {{Methods with an "Optional" return type should not be "@NullUnmarked".}}
-//^^^^^^^^^^^^^
-  public Optional<String> getOptionalKo();
+  @NullUnmarked // Compliant - NullUnmarked doesn't say anything about nullability
+  public Optional<String> getOptional();
 
 }
 
@@ -22,9 +21,8 @@ class NullShouldNotBeUsedWithOptionalCheck_guavaClassA {
   public NullShouldNotBeUsedWithOptionalCheck_guavaClassA() {
   }
 
-  @NullUnmarked // Noncompliant {{Methods with an "Optional" return type should not be "@NullUnmarked".}}
-//^^^^^^^^^^^^^
-  public Optional<String> getOptionalKo() {
+  @NullUnmarked // Compliant - NullUnmarked doesn't say anything about nullability
+  public Optional<String> getOptional() {
     return null; // Noncompliant {{Methods with an "Optional" return type should never return null.}}
 //         ^^^^
   }
