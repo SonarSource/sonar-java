@@ -3,18 +3,12 @@ package checks;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class SpringBootTests {
-  // Compliant
-  @Test
-  void legitSanityTestEmptyMethod() {
-  }
-
+// missing @SpringBootTest annotation
+class NonSpringBootTests {
   // Noncompliant@+2
   @Test
-  void superfluousEmptyTestMethod() {
+  void notASanityTestEmptyMethod() {
   }
 }
 
