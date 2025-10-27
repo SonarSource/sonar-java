@@ -45,11 +45,10 @@ class PrimitivesMarkedNullableCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/jspecify/PrimitivesMarkedNullableCheckNullMarked.java"))
       .withCheck(new PrimitivesMarkedNullableCheck())
-      .verifyIssues();
+      .verifyNoIssues();
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/PrimitivesMarkedNullableCheck.java"))
       .withCheck(new PrimitivesMarkedNullableCheck())
-      .verifyIssues();
+      .verifyNoIssues();
   }
-
 }

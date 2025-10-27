@@ -60,6 +60,10 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
         // if nullable, either directly or inherited from higher scope
         // then check my members are not directly annotated with non-null
         checkMembers(classNullabilityData, classTree, NULLABILITY_SCOPE.NULLABLE);
+      } else if (classNullabilityData.type() == SymbolMetadata.NullabilityType.UNKNOWN) {
+        // Handle classes with UNKNOWN nullability (e.g., @NullUnmarked)
+        // Still need to check their members in case they have nested @NullMarked/@NullUnmarked
+        checkMembers(classNullabilityData, classTree, NULLABILITY_SCOPE.UNSPECIFIED);
       }
     }
   }
@@ -99,6 +103,12 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
       }
       // now recurse to check class members
       checkMembers(innerNullabilityData, tree, NULLABILITY_SCOPE.NULLABLE);
+    } else {
+      // Handle classes with UNKNOWN nullability (e.g., @NullUnmarked)
+      // Still need to check their members in case they have nested @NullMarked/@NullUnmarked
+      if (innerNullabilityData.type() == SymbolMetadata.NullabilityType.UNKNOWN) {
+        checkMembers(innerNullabilityData, tree, NULLABILITY_SCOPE.UNSPECIFIED);
+      }
     }
   }
 
@@ -148,7 +158,8 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
   // track class scope nullability state during recursion
   private enum NULLABILITY_SCOPE {
     NULLABLE,
-    NON_NULLABLE
+    NON_NULLABLE,
+    UNSPECIFIED
   }
 
 }

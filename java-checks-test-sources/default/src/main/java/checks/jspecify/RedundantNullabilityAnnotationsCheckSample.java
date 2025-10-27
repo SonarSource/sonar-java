@@ -272,7 +272,7 @@ class InnerClassTests {
     @NullUnmarked
     class Inner {
       @NonNull Object o; // Compliant
-      public void methodNonNullParamTyped(List<@Nullable Object> o) { // Noncompliant {{Remove redundant annotation @Nullable as inside scope annotation @NullUnmarked at class level.}}
+      public void methodNonNullParamTyped(List<@Nullable Object> o) { // Compliant
         // ..
       }
     }
@@ -291,7 +291,7 @@ class InnerClassTests {
   class InnerRedundantNullUnmarked {
     @NullUnmarked // Compliant
     class Inner {
-      @NullUnmarked // Noncompliant {{Remove redundant annotation @NullUnmarked at class level as inside scope annotation @NullUnmarked at class level.}}
+      @NullUnmarked // FN
       class InnerInner {}
     }
   }
@@ -299,7 +299,7 @@ class InnerClassTests {
 
 @NullUnmarked
 class InnerClassTestsTwo {
-  @NullUnmarked // Noncompliant {{Remove redundant annotation @NullUnmarked at class level as inside scope annotation @NullUnmarked at class level.}}
+  @NullUnmarked // FN
   class InnerNullmarked {
     @NullMarked // Compliant
     class Inner {
