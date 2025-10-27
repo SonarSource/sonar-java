@@ -17,6 +17,7 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.List;
+import java.util.Objects;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -72,7 +73,9 @@ public final class SpringUtils {
   }
 
   public static boolean isSpringBootUnitTest(MethodTree methodTree) {
-    ClassTree parentClass = (ClassTree) ExpressionUtils.getParentOfType(methodTree, Tree.Kind.CLASS);
+    Tree parentOfType = ExpressionUtils.getParentOfType(methodTree, Tree.Kind.CLASS);
+    Objects.requireNonNull(parentOfType, "MethodTree should have a parent of type ClassTree");
+    ClassTree parentClass = (ClassTree) parentOfType;
     return UnitTestUtils.isUnitTest(methodTree) && SpringUtils.isSpringBootTestClass(parentClass.symbol());
   }
 

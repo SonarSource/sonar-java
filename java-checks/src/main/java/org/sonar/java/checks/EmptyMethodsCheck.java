@@ -114,7 +114,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
 
   private void checkMethod(MethodTree methodTree) {
     BlockTree block = methodTree.block();
-    if (block != null && isEmpty(block) && !containsComment(block) && !checkForSpringSanityTest(methodTree)) {
+    if (block != null && isEmpty(block) && !containsComment(block) && !isSpringSanityTest(methodTree)) {
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(methodTree.simpleName())
@@ -124,7 +124,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private boolean checkForSpringSanityTest(MethodTree methodTree) {
+  private boolean isSpringSanityTest(MethodTree methodTree) {
     if (!springSanityTestEncountered && SpringUtils.isSpringBootUnitTest(methodTree)) {
       springSanityTestEncountered = true;
       return true;

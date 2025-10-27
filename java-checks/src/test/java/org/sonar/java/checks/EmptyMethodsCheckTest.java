@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class EmptyMethodsCheckTest {
 
@@ -34,7 +35,7 @@ class EmptyMethodsCheckTest {
   @Test
   void test_springboot_sanity() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SpringBootEmptyMethodsCheckSample.java"))
+      .onFile(testCodeSourcesPath("checks/tests/SpringBootEmptyMethodsCheckSample.java"))
       .withCheck(new EmptyMethodsCheck())
       .verifyIssues();
   }
