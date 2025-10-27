@@ -51,5 +51,4 @@ class PrimitivesMarkedNullableCheckTest {
       .withCheck(new PrimitivesMarkedNullableCheck())
       .verifyNoIssues();
   }
-
 }

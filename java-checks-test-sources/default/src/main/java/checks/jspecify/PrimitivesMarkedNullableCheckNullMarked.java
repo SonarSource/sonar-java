@@ -19,13 +19,10 @@ abstract class PrimitivesMarkedNullableCheckSample {
   abstract int getInt2();
 
   @NullUnmarked
-  protected abstract boolean isBool(); // Noncompliant {{"@NullUnmarked" annotation should not be used on primitive types}} [[quickfixes=qf1]]
-//                   ^^^^^^^
-  // fix@qf1 {{Remove "@NullUnmarked"}}
-  // edit@qf1 [[sl=-1;el=+0;sc=3;ec=3]] {{}}
+  protected abstract boolean isBool(); // Compliant
 
   @NullUnmarked
-  public double getDouble1() { return 0.0; } // Noncompliant {{"@NullUnmarked" annotation should not be used on primitive types}}
+  public double getDouble1() { return 0.0; } // Compliant
 
   public double getDouble2() { return 0.0; }
 
@@ -49,10 +46,7 @@ abstract class PrimitivesMarkedNullableCheckSample {
 
   public Object getObj2() { return null; }
 
-  protected abstract @NullUnmarked boolean isBool2(); // Noncompliant {{"@NullUnmarked" annotation should not be used on primitive types}} [[quickfixes=qf3]]
-//                                 ^^^^^^^
-  // fix@qf3 {{Remove "@NullUnmarked"}}
-  // edit@qf3 [[sc=22;ec=36]] {{}}
+  protected abstract @NullUnmarked boolean isBool2(); // Compliant
 
   @NullUnmarked
   Object containsAnonymousClass() {

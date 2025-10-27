@@ -262,7 +262,7 @@ class InnerClassTests {
   class InnerNullmarked {
     @NullMarked // Compliant
     class Inner {
-      @NonNull Object o; // Compliant
+      @NonNull Object o; // Noncompliant {{Remove redundant annotation @NonNull as inside scope annotation @NullMarked at class level.}}
       @Nullable Object o2; // Compliant
     }
   }
@@ -282,7 +282,7 @@ class InnerClassTests {
   class InnerRedundantNullMarked {
     @NullMarked // Compliant
     class Inner {
-      @NullMarked // Compliant
+      @NullMarked // Noncompliant {{Remove redundant annotation @NullMarked at class level as inside scope annotation @NullMarked at class level.}}
       class InnerInner {}
     }
   }
@@ -291,7 +291,7 @@ class InnerClassTests {
   class InnerRedundantNullUnmarked {
     @NullUnmarked // Compliant
     class Inner {
-      @NullUnmarked // Compliant
+      @NullUnmarked // FN
       class InnerInner {}
     }
   }
@@ -299,11 +299,11 @@ class InnerClassTests {
 
 @NullUnmarked
 class InnerClassTestsTwo {
-  @NullUnmarked // Compliant
+  @NullUnmarked // FN
   class InnerNullmarked {
     @NullMarked // Compliant
     class Inner {
-      @NonNull Object o; // Compliant
+      @NonNull Object o; // Noncompliant {{Remove redundant annotation @NonNull as inside scope annotation @NullMarked at class level.}}
       @Nullable Object o2; // Compliant
     }
   }
