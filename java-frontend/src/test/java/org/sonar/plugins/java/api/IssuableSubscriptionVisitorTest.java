@@ -39,7 +39,7 @@ class IssuableSubscriptionVisitorTest {
   void test_custom_rules_report_issues() {
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests.Builder(new CustomRule()).build();
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
-    Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
+    Set<AnalyzerMessage> issues = visitorsBridge.testContexts().get(0).getIssues();
     assertThat(issues).hasSize(8);
   }
 
@@ -79,14 +79,13 @@ class IssuableSubscriptionVisitorTest {
       reportIssue(tree, tree, "issue from tree to tree");
 
       CompilationUnitTree cut = (CompilationUnitTree) tree;
-      for(Tree type : cut.types()) {
-        if(type instanceof ClassTree ct){
+      for (Tree type : cut.types()) {
+        if (type instanceof ClassTree ct) {
           reportIssue(ct.members().get(0),
-            ct.members().get(ct.members().size()-1),
+            ct.members().get(ct.members().size() - 1),
             "issue on type",
             List.of(new JavaFileScannerContext.Location("", ct)),
-            null
-            );
+            null);
         }
       }
 

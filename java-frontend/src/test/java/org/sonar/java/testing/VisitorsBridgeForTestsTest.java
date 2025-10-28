@@ -52,7 +52,7 @@ class VisitorsBridgeForTestsTest {
       .build();
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
     visitorsBridgeForTests.visitFile(parse, false);
-    assertThat(visitorsBridgeForTests.lastCreatedTestContext().getSemanticModel()).isNull();
+    assertThat(visitorsBridgeForTests.testContexts().get(0).getSemanticModel()).isNull();
 
     parse = JParserTestUtils.parse("class A{}");
     visitorsBridgeForTests = new VisitorsBridgeForTests.Builder(new DummyVisitor())
@@ -61,7 +61,7 @@ class VisitorsBridgeForTestsTest {
       .build();
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
     visitorsBridgeForTests.visitFile(parse, false);
-    assertThat(visitorsBridgeForTests.lastCreatedTestContext().getSemanticModel()).isNotNull();
+    assertThat(visitorsBridgeForTests.testContexts().get(0).getSemanticModel()).isNotNull();
   }
 
   @Test
@@ -77,7 +77,7 @@ class VisitorsBridgeForTestsTest {
       .build();
     visitorsBridgeForTests.setCurrentFile(TestUtils.emptyInputFile("dummy.java"));
     visitorsBridgeForTests.visitFile(parse, false);
-    JavaFileScannerContextForTests lastContext = visitorsBridgeForTests.lastCreatedTestContext();
+    JavaFileScannerContextForTests lastContext = visitorsBridgeForTests.testContexts().get(0);
     assertThat(lastContext.getIssues()).isEmpty();
 
     AnalyzerMessage message = lastContext.createAnalyzerMessage(javaCheck, parse, "test");
@@ -91,7 +91,7 @@ class VisitorsBridgeForTestsTest {
   }
 
   @Test
-  void create_InputFileScannerContext_also_sets_testContext_field() {
+  void create_InputFileScannerContext_also_sets_testContexts() {
     SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponents.setSensorContext(context);
@@ -99,12 +99,22 @@ class VisitorsBridgeForTestsTest {
     VisitorsBridgeForTests visitorsBridgeForTests = new VisitorsBridgeForTests.Builder(javaCheck)
       .withSonarComponents(sonarComponents)
       .build();
-    var inputFile = mock(InputFile.class);
+    var firstInputFile = mock(InputFile.class);
+    var secondInputFile = mock(InputFile.class);
 
-    var expectedTestContext =
-      visitorsBridgeForTests.createScannerContext(sonarComponents, inputFile, new JavaVersionImpl(), false, CacheContextImpl.of(sonarComponents));
+    var firstExpectedTestContext = visitorsBridgeForTests.createScannerContext(sonarComponents, firstInputFile, new JavaVersionImpl(), false, CacheContextImpl.of(sonarComponents));
+    var secondExpectedTestContext = visitorsBridgeForTests.createScannerContext(sonarComponents, secondInputFile, new JavaVersionImpl(), false,
+      CacheContextImpl.of(sonarComponents));
 
-    assertThat(visitorsBridgeForTests.lastCreatedTestContext()).isSameAs(expectedTestContext);
+    var testContexts = visitorsBridgeForTests.testContexts();
+    assertThat(testContexts)
+      .hasSize(2);
+
+    assertThat(testContexts.get(0))
+      .isSameAs(firstExpectedTestContext);
+
+    assertThat(testContexts.get(1))
+      .isSameAs(secondExpectedTestContext);
   }
 
   @Test
@@ -126,11 +136,10 @@ class VisitorsBridgeForTestsTest {
 
   @Test
   void test_builder() {
-    VisitorsBridgeForTests visitorsBridge =
-      new VisitorsBridgeForTests.Builder(Collections.emptyList())
-        .withJavaVersion(JavaVersionImpl.fromString("17"))
-        .withAndroidContext(true)
-        .build();
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests.Builder(Collections.emptyList())
+      .withJavaVersion(JavaVersionImpl.fromString("17"))
+      .withAndroidContext(true)
+      .build();
     assertThat(visitorsBridge.getJavaVersion().asInt()).isEqualTo(17);
     assertThat(visitorsBridge.inAndroidContext()).isTrue();
   }

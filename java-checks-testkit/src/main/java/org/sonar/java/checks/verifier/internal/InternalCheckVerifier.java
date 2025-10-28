@@ -145,7 +145,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     requiresNull(javaVersion, "java version");
     return withJavaVersion(javaVersionAsInt, false);
   }
-  
+
   @Override
   public InternalCheckVerifier withJavaVersion(int javaVersionAsInt, boolean enablePreviewFeatures) {
     requiresNull(javaVersion, "java version");
@@ -153,8 +153,7 @@ public class InternalCheckVerifier implements CheckVerifier {
       var message = String.format(
         "Preview features can only be enabled when the version == latest supported Java version (%d != %d)",
         javaVersionAsInt,
-        JavaVersionImpl.MAX_SUPPORTED
-      );
+        JavaVersionImpl.MAX_SUPPORTED);
       throw new IllegalArgumentException(message);
     }
     javaVersion = new JavaVersionImpl(javaVersionAsInt, enablePreviewFeatures);
@@ -233,8 +232,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     this.cacheContext = new InternalCacheContext(
       true,
       readCache == null ? new DummyCache() : new JavaReadCacheImpl(readCache),
-      writeCache == null ? new DummyCache() : new JavaWriteCacheImpl(writeCache)
-    );
+      writeCache == null ? new DummyCache() : new JavaWriteCacheImpl(writeCache));
     return this;
   }
 
@@ -305,17 +303,21 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
     astScanner.scan(filesToParse);
 
-    JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
-    JavaFileScannerContextForTests testModuleScannerContext = visitorsBridge.lastCreatedModuleContext();
-    if (testJavaFileScannerContext != null) {
-      var issues = new LinkedHashSet<>(testJavaFileScannerContext.getIssues());
-      issues.addAll(testModuleScannerContext.getIssues());
-      var quickFixes = new HashMap<>(testJavaFileScannerContext.getQuickFixes());
-      quickFixes.putAll(testModuleScannerContext.getQuickFixes());
-      checkIssues(issues, quickFixes);
-    } else {
-      checkIssues(Collections.emptySet(), Collections.emptyMap());
+    var issues = new LinkedHashSet<AnalyzerMessage>();
+    var quickFixes = new HashMap<AnalyzerMessage.TextSpan, List<JavaQuickFix>>();
+
+    for (var fileScannerContext : visitorsBridge.testContexts()) {
+      issues.addAll(fileScannerContext.getIssues());
+      quickFixes.putAll(fileScannerContext.getQuickFixes());
     }
+
+    JavaFileScannerContextForTests testModuleScannerContext = visitorsBridge.lastCreatedModuleContext();
+    if (testModuleScannerContext != null) {
+      issues.addAll(testModuleScannerContext.getIssues());
+      quickFixes.putAll(testModuleScannerContext.getQuickFixes());
+    }
+
+    checkIssues(issues, quickFixes);
   }
 
   private void checkIssues(Set<AnalyzerMessage> issues, Map<TextSpan, List<JavaQuickFix>> quickFixes) {

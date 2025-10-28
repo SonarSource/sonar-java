@@ -40,7 +40,7 @@ class ParsingErrorCheckTest {
       .withSonarComponents(sonarComponents)
       .build();
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/parsing/ParsingError.java"), visitorsBridge);
-    Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
+    Set<AnalyzerMessage> issues = visitorsBridge.testContexts().get(0).getIssues();
     assertThat(issues).hasSize(1);
     AnalyzerMessage issue = issues.iterator().next();
     assertThat(issue.getLine()).isEqualTo(1);
@@ -60,7 +60,7 @@ class ParsingErrorCheckTest {
       .withSonarComponents(sonarComponents)
       .build();
     JavaAstScanner.scanSingleFileForTests(TestUtils.inputFile("src/test/files/checks/parsing/EmptyStatementsInImportsBug.java"), visitorsBridge);
-    Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
+    Set<AnalyzerMessage> issues = visitorsBridge.testContexts().get(0).getIssues();
     assertThat(issues).hasSize(1);
     AnalyzerMessage issue = issues.iterator().next();
     assertThat(issue.getLine()).isEqualTo(3);
