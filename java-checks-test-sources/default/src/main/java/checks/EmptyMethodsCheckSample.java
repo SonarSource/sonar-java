@@ -2,6 +2,15 @@ package checks;
 
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.junit.jupiter.api.Test;
+
+// missing @SpringBootTest annotation
+class NonSpringBootTests {
+  // Noncompliant@+2
+  @Test
+  void notASanityTestEmptyMethod() {
+  }
+}
 
 class EmptyMethodsCheckSample {
   class A {

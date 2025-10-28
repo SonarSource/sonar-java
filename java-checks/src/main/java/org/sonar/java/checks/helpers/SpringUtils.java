@@ -17,8 +17,12 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.List;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 public final class SpringUtils {
 
@@ -36,6 +40,7 @@ public final class SpringUtils {
   public static final String ASYNC_ANNOTATION = "org.springframework.scheduling.annotation.Async";
   public static final String DATA_REPOSITORY_ANNOTATION = "org.springframework.data.repository.Repository";
   public static final String REST_CONTROLLER_ANNOTATION = "org.springframework.web.bind.annotation.RestController";
+  public static final String SPRING_BOOT_TEST_ANNOTATION = "org.springframework.boot.test.context.SpringBootTest";
 
   private SpringUtils() {
     // Utils class
@@ -60,6 +65,19 @@ public final class SpringUtils {
 
   public static boolean isAutowired(Symbol symbol) {
     return symbol.metadata().isAnnotatedWith(AUTOWIRED_ANNOTATION);
+  }
+
+  public static boolean isSpringBootTestClass(Symbol symbol) {
+    return symbol.metadata().isAnnotatedWith(SPRING_BOOT_TEST_ANNOTATION);
+  }
+
+  public static boolean isSpringBootUnitTest(MethodTree methodTree) {
+    Tree parentOfType = ExpressionUtils.getParentOfType(methodTree, Tree.Kind.CLASS);
+    if (parentOfType == null) {
+      return false;
+    }
+    ClassTree parentClass = (ClassTree) parentOfType;
+    return UnitTestUtils.isUnitTest(methodTree) && SpringUtils.isSpringBootTestClass(parentClass.symbol());
   }
 
 }
