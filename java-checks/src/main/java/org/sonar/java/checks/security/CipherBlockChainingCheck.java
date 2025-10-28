@@ -100,6 +100,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
   public void leaveNode(Tree tree) {
     if (tree == outermostClass) {
       ivFactoryFinder.clear();
+      outermostClass = null;
     }
     super.leaveNode(tree);
   }
