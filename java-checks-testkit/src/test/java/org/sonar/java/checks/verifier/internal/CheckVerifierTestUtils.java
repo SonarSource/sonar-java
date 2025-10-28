@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -40,8 +41,10 @@ public class CheckVerifierTestUtils {
   }
 
   protected static final String TEST_FILE = "src/test/files/testing/Compliant.java";
+  protected static final String TEST_FILE_2 = "src/test/files/testing/Compliant2.java";
   protected static final String TEST_FILE_PARSE_ERROR = "src/test/files/testing/ParsingError.java";
   protected static final String TEST_FILE_NONCOMPLIANT = "src/test/files/testing/Noncompliant.java";
+  protected static final String TEST_FILE_NONCOMPLIANT_2 = "src/test/files/testing/Noncompliant2.java";
   protected static final String TEST_FILE_NONCOMPLIANT_ISSUE_ON_FILE = "src/test/files/java-check-verifier/CommonsJavaCheckVerifierOnFile.java";
   protected static final String TEST_FILE_WITH_QUICK_FIX = "src/test/files/testing/IssueWithQuickFix.java";
   protected static final String TEST_FILE_WITH_NO_EXPECTED = "src/test/files/testing/IssueWithNoQuickFixExpected.java";
@@ -51,10 +54,13 @@ public class CheckVerifierTestUtils {
 
   protected static final JavaFileScanner FAILING_CHECK = new FailingCheck();
   protected static final JavaFileScanner NO_EFFECT_CHECK = new NoEffectCheck();
-  protected static final JavaFileScanner FILE_LINE_ISSUE_CHECK = new FileLineIssueCheck();
   protected static final JavaFileScanner PROJECT_ISSUE_CHECK = new ProjectIssueCheck();
   protected static final JavaFileScanner FILE_ISSUE_CHECK = new FileIssueCheck();
   protected static final JavaFileScanner FILE_ISSUE_CHECK_IN_ANDROID = new FileIssueCheckInAndroidContext();
+
+  protected static FileLineIssueCheck fileLineIssueCheck() {
+    return new FileLineIssueCheck();
+  }
 
   @Rule(key = "FailingCheck")
   protected static final class FailingCheck implements JavaFileScanner {
@@ -97,10 +103,18 @@ public class CheckVerifierTestUtils {
 
   @Rule(key = "FileLineIssueCheck")
   protected static final class FileLineIssueCheck implements JavaFileScanner {
+    private @Nullable String pathSuffix = null;
+
+    public FileLineIssueCheck raiseForSpecificFileOnly(String pathSuffix) {
+      this.pathSuffix = pathSuffix;
+      return this;
+    }
 
     @Override
     public void scanFile(JavaFileScannerContext context) {
-      context.addIssue(1, this, "issueOnLine");
+      if (pathSuffix == null || context.getInputFile().uri().getPath().endsWith(pathSuffix)) {
+        context.addIssue(1, this, "issueOnLine");
+      }
     }
   }
 

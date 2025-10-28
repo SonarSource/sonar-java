@@ -53,6 +53,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -62,7 +63,6 @@ import static org.mockito.Mockito.verify;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.FAILING_CHECK;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.FILE_ISSUE_CHECK;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.FILE_ISSUE_CHECK_IN_ANDROID;
-import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.FILE_LINE_ISSUE_CHECK;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.NO_EFFECT_CHECK;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.PROJECT_ISSUE_CHECK;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TEST_FILE;
@@ -127,7 +127,7 @@ class JavaCheckVerifierTest {
     Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
       .withJavaVersion(11)
       .onFile(TEST_FILE)
-      .withCheck(FILE_LINE_ISSUE_CHECK)
+      .withCheck(CheckVerifierTestUtils.fileLineIssueCheck())
       .withoutSemantic()
       .verifyNoIssues());
 
@@ -205,8 +205,8 @@ class JavaCheckVerifierTest {
       .withChecks(
         FILE_ISSUE_CHECK,
         PROJECT_ISSUE_CHECK,
-        FILE_LINE_ISSUE_CHECK,
-        FILE_LINE_ISSUE_CHECK)
+        CheckVerifierTestUtils.fileLineIssueCheck(),
+        CheckVerifierTestUtils.fileLineIssueCheck())
       .verifyNoIssues());
 
     assertThat(e)
@@ -320,7 +320,7 @@ class JavaCheckVerifierTest {
     Consumer<CompilationUnitTree> modifier = tree -> {
       ClassTreeImpl classTree = (ClassTreeImpl) tree.types().get(0);
       IdentifierTree ident = new IdentifierTreeImpl(new InternalSyntaxToken(1, 1, "Modified", List.of(), false));
-      classTree.complete((ModifiersTreeImpl)classTree.modifiers(), classTree.declarationKeyword(), ident);
+      classTree.complete((ModifiersTreeImpl) classTree.modifiers(), classTree.declarationKeyword(), ident);
     };
 
     var check = new JavaFileScanner() {
@@ -331,7 +331,7 @@ class JavaCheckVerifierTest {
         assertThat(classTree.simpleName().name()).isEqualTo("Modified");
       }
     };
-    
+
     JavaCheckVerifier.newInstance()
       .onFile(TEST_FILE)
       .withCheck(check)
@@ -339,4 +339,84 @@ class JavaCheckVerifierTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void unexpected_issue_on_first_file_should_make_verifier_fail() {
+    Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
+      .withCheck(CheckVerifierTestUtils
+        .fileLineIssueCheck()
+        .raiseForSpecificFileOnly(CheckVerifierTestUtils.TEST_FILE))
+      .onFiles(CheckVerifierTestUtils.TEST_FILE, CheckVerifierTestUtils.TEST_FILE_NONCOMPLIANT_2)
+      .verifyIssues());
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessageContaining("<Compliant.java>\n+ 001: Noncompliant");
+  }
+
+  @Test
+  void unexpected_issue_on_second_file_should_make_verifier_fail() {
+    Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
+      .withCheck(CheckVerifierTestUtils
+        .fileLineIssueCheck()
+        .raiseForSpecificFileOnly(CheckVerifierTestUtils.TEST_FILE_2))
+      .onFiles(CheckVerifierTestUtils.TEST_FILE_NONCOMPLIANT, CheckVerifierTestUtils.TEST_FILE_2)
+      .verifyIssues());
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessageContaining("<Compliant2.java>\n+ 001: Noncompliant");
+  }
+
+  @Test
+  void unexpected_issue_on_both_files_should_make_verifier_fail() {
+    Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
+      .withCheck(CheckVerifierTestUtils.fileLineIssueCheck())
+      .onFiles(CheckVerifierTestUtils.TEST_FILE, CheckVerifierTestUtils.TEST_FILE_2)
+      .verifyIssues());
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessageContaining("<Compliant.java>\n+ 001: Noncompliant")
+      .hasMessageContaining("<Compliant2.java>\n+ 001: Noncompliant");
+  }
+
+  @Test
+  void expected_issue_on_first_file_should_make_verifier_succeed() {
+    assertThatNoException()
+      .isThrownBy(() -> JavaCheckVerifier.newInstance()
+        .withCheck(CheckVerifierTestUtils
+          .fileLineIssueCheck()
+          .raiseForSpecificFileOnly(TEST_FILE_NONCOMPLIANT))
+        .onFiles(CheckVerifierTestUtils.TEST_FILE_NONCOMPLIANT, CheckVerifierTestUtils.TEST_FILE_2)
+        .verifyIssues());
+  }
+
+  @Test
+  void expected_issue_on_second_file_should_make_verifier_succeed() {
+    assertThatNoException()
+      .isThrownBy(() -> JavaCheckVerifier.newInstance()
+        .withCheck(CheckVerifierTestUtils
+          .fileLineIssueCheck()
+          .raiseForSpecificFileOnly(CheckVerifierTestUtils.TEST_FILE_NONCOMPLIANT_2))
+        .onFiles(CheckVerifierTestUtils.TEST_FILE, CheckVerifierTestUtils.TEST_FILE_NONCOMPLIANT_2)
+        .verifyIssues());
+  }
+
+  @Test
+  void expected_issue_on_both_files_should_make_verifier_succeed() {
+    assertThatNoException()
+      .isThrownBy(() -> JavaCheckVerifier.newInstance()
+        .withCheck(CheckVerifierTestUtils.fileLineIssueCheck())
+        .onFiles(CheckVerifierTestUtils.TEST_FILE_NONCOMPLIANT, CheckVerifierTestUtils.TEST_FILE_NONCOMPLIANT_2)
+        .verifyIssues());
+  }
+
+  @Test
+  void succeeding_check_on_both_files_should_make_verifier_succeed() {
+    assertThatNoException()
+      .isThrownBy(() -> JavaCheckVerifier.newInstance()
+        .withCheck(NO_EFFECT_CHECK)
+        .onFiles(CheckVerifierTestUtils.TEST_FILE, CheckVerifierTestUtils.TEST_FILE_2)
+        .verifyNoIssues());
+  }
 }

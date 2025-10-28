@@ -17,8 +17,10 @@
 package org.sonar.java.testing;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
@@ -37,7 +39,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 public class VisitorsBridgeForTests extends VisitorsBridge {
 
-  private JavaFileScannerContextForTests testContext;
+  private List<JavaFileScannerContextForTests> testContexts = new ArrayList<>();
   private JavaFileScannerContextForTests moduleContext;
   private final boolean enableSemantic;
 
@@ -101,30 +103,31 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   @Override
   protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, @Nullable Sema semanticModel, SonarComponents sonarComponents, boolean failedParsing) {
     Sema model = enableSemantic ? semanticModel : null;
-    testContext = new JavaFileScannerContextForTests(tree, currentFile, model, sonarComponents, javaVersion, failedParsing, inAndroidContext, null);
+    var testContext = new JavaFileScannerContextForTests(tree, currentFile, model, sonarComponents, javaVersion, failedParsing, inAndroidContext, null);
+    testContexts.add(testContext);
     return testContext;
   }
 
   @Override
   protected InputFileScannerContext createScannerContext(
-    SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext, CacheContext cacheContext
-  ) {
-    testContext = new JavaFileScannerContextForTests(null, inputFile, null, sonarComponents, javaVersion, false, inAndroidContext, cacheContext);
+    SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext, CacheContext cacheContext) {
+    var testContext = new JavaFileScannerContextForTests(null, inputFile, null, sonarComponents, javaVersion, false, inAndroidContext, cacheContext);
+    testContexts.add(testContext);
     return testContext;
   }
 
   @Override
   protected ModuleScannerContext createScannerContext(
-    @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext, @Nullable CacheContext cacheContext
-  ) {
+    @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean inAndroidContext, @Nullable CacheContext cacheContext) {
     moduleContext = new JavaFileScannerContextForTests(null, null, null, sonarComponents, javaVersion, false, inAndroidContext, cacheContext);
     return moduleContext;
   }
 
-  public JavaFileScannerContextForTests lastCreatedTestContext() {
-    return testContext;
+  public List<JavaFileScannerContextForTests> testContexts() {
+    return testContexts;
   }
 
+  @CheckForNull
   public JavaFileScannerContextForTests lastCreatedModuleContext() {
     return moduleContext;
   }

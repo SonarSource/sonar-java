@@ -83,7 +83,8 @@ public class JavaCheckVerifier implements CheckVerifier {
   private List<InputFile> files = null;
   private boolean withoutSemantic = false;
   private boolean isCacheEnabled = false;
-  private Consumer<CompilationUnitTree> compilationUnitModifier = unused -> {};
+  private Consumer<CompilationUnitTree> compilationUnitModifier = unused -> {
+  };
 
   @VisibleForTesting
   CacheContext cacheContext = null;
@@ -105,7 +106,7 @@ public class JavaCheckVerifier implements CheckVerifier {
       .withJavaVersion(actualVersion)
       .withSonarComponents(sonarComponents)
       .withAndroidContext(inAndroidContext);
-    if(!withoutSemantic) {
+    if (!withoutSemantic) {
       visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
     }
 
@@ -122,10 +123,12 @@ public class JavaCheckVerifier implements CheckVerifier {
 
     addComments(verifier, commentLinesVisitor);
 
-    JavaFileScannerContextForTests testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
+    for (var fileScannerContext : visitorsBridge.testContexts()) {
+      addIssues(fileScannerContext, verifier);
+    }
+
     JavaFileScannerContextForTests testModuleScannerContext = visitorsBridge.lastCreatedModuleContext();
-    if (testJavaFileScannerContext != null) {
-      addIssues(testJavaFileScannerContext, verifier);
+    if (testModuleScannerContext != null) {
       addIssues(testModuleScannerContext, verifier);
     }
 

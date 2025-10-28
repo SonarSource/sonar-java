@@ -56,7 +56,6 @@ import static org.mockito.Mockito.verify;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.FAILING_CHECK;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.FILE_ISSUE_CHECK;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.FILE_ISSUE_CHECK_IN_ANDROID;
-import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.FILE_LINE_ISSUE_CHECK;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.IssueWithQuickFix;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.MultipleIssuePerLineCheck;
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.NO_EFFECT_CHECK;
@@ -129,7 +128,7 @@ class InternalCheckVerifierTest {
       Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
         .withJavaVersion(11)
         .onFile(TEST_FILE)
-        .withCheck(FILE_LINE_ISSUE_CHECK)
+        .withCheck(CheckVerifierTestUtils.fileLineIssueCheck())
         .withoutSemantic()
         .verifyNoIssues());
 
@@ -184,12 +183,11 @@ class InternalCheckVerifierTest {
       assertThatThrownBy(() -> verifier.withJavaVersion(desiredJavaVersion, true))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage(
-          String.format("Preview features can only be enabled when the version == latest supported Java version (%d != %d)", desiredJavaVersion, JavaVersionImpl.MAX_SUPPORTED)
-        );
+          String.format("Preview features can only be enabled when the version == latest supported Java version (%d != %d)", desiredJavaVersion, JavaVersionImpl.MAX_SUPPORTED));
     }
-    
 
-/*    @Test
+    /*  @formatter:off
+    @Test
     void preview_features_disabled_by_default() {
       Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
         .withCheck(NO_EFFECT_CHECK)
@@ -218,8 +216,9 @@ class InternalCheckVerifierTest {
         .verifyNoIssues());
 
       assertThat(noExceptionThrown).isNull();
-    }*/
-
+    }
+    @formatter:on
+    */
 
     @Test
     void setting_multiple_times_one_files_fails() {
@@ -468,7 +467,7 @@ class InternalCheckVerifierTest {
     void raising_an_issue_line_instead_of_project_should_fail() {
       Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE)
-        .withChecks(FILE_LINE_ISSUE_CHECK)
+        .withChecks(CheckVerifierTestUtils.fileLineIssueCheck())
         .verifyIssueOnProject("issueOnProject"));
 
       assertThat(e)
@@ -546,8 +545,8 @@ class InternalCheckVerifierTest {
         .withChecks(
           FILE_ISSUE_CHECK,
           PROJECT_ISSUE_CHECK,
-          FILE_LINE_ISSUE_CHECK,
-          FILE_LINE_ISSUE_CHECK)
+          CheckVerifierTestUtils.fileLineIssueCheck(),
+          CheckVerifierTestUtils.fileLineIssueCheck())
         .verifyNoIssues());
 
       assertThat(e)
@@ -614,7 +613,7 @@ class InternalCheckVerifierTest {
     void raising_an_issue_line_instead_of_file_should_fail() {
       Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE)
-        .withChecks(FILE_LINE_ISSUE_CHECK)
+        .withChecks(CheckVerifierTestUtils.fileLineIssueCheck())
         .verifyIssueOnFile("issueOnFile"));
 
       assertThat(e)
@@ -654,7 +653,7 @@ class InternalCheckVerifierTest {
     void should_verify() {
       InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE_NONCOMPLIANT)
-        .withChecks(FILE_LINE_ISSUE_CHECK)
+        .withChecks(CheckVerifierTestUtils.fileLineIssueCheck())
         .verifyIssues();
     }
 
@@ -744,8 +743,8 @@ class InternalCheckVerifierTest {
       assertThat(e)
         .isInstanceOf(AssertionError.class)
         .hasMessageContaining("[Quick Fix] Wrong description for issue on line 1.")
-        .hasMessageContaining(  "Expected: {{Description}}")
-        .hasMessageContaining(    "but was:     {{wrong}}");
+        .hasMessageContaining("Expected: {{Description}}")
+        .hasMessageContaining("but was:     {{wrong}}");
     }
 
     @Test
@@ -766,7 +765,7 @@ class InternalCheckVerifierTest {
         .isInstanceOf(AssertionError.class)
         .hasMessageContaining("[Quick Fix] Wrong number of edits for issue on line 1.")
         .hasMessageContaining("Expected: {{1}}")
-        .hasMessageContaining(    "but was:     {{2}}");
+        .hasMessageContaining("but was:     {{2}}");
     }
 
     @Test
@@ -787,7 +786,7 @@ class InternalCheckVerifierTest {
         .isInstanceOf(AssertionError.class)
         .hasMessageContaining("[Quick Fix] Wrong text replacement of edit 1 for issue on line 1.")
         .hasMessageContaining("Expected: {{Replacement}}")
-        .hasMessageContaining( "but was:     {{Wrong}}");
+        .hasMessageContaining("but was:     {{Wrong}}");
     }
 
     @Test
@@ -877,8 +876,7 @@ class InternalCheckVerifierTest {
         JavaQuickFix.newQuickFix("Description2")
           .addTextEdit(JavaTextEdit.replaceTextSpan(
             new AnalyzerMessage.TextSpan(1, 1, 1, 2), "Replacement2"))
-          .build()
-      );
+          .build());
 
       InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE_WITH_TWO_QUICK_FIX)
@@ -1015,8 +1013,7 @@ class InternalCheckVerifierTest {
     CacheContext cacheContext = new InternalCacheContext(
       true,
       new JavaReadCacheImpl(readCache),
-      new JavaWriteCacheImpl(writeCache)
-    );
+      new JavaWriteCacheImpl(writeCache));
 
     var check = spy(new NoEffectEndOfAnalysisCheck());
 
