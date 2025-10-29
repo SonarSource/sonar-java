@@ -114,7 +114,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
    * True if the call has a message argument. Such an argument is a string
    * and it is the first of the last argument (depending on the assertion library).
    */
-  private boolean hasMessageArg(MethodInvocationTree mit, Type type) {
+  private static boolean hasMessageArg(MethodInvocationTree mit, Type type) {
     List<ExpressionTree> args = mit.arguments();
 
     // `fail` needs one argument. Assume it is a string.
