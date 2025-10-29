@@ -124,6 +124,11 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
 
     // In TestNG, the message is the last argument.
     if (type.is("org.testng.Assert") || type.is("org.testng.AssertJUnit")) {
+      // Depending on the version of TestNG, assertThrows may or may not have the variant with a message.
+      // For simplicity, do not raise.
+      if ("assertThrows".equals(mit.methodSymbol().name())) {
+        return true;
+      }
       int expectedMessageArgIndex = args.size() - 1;
       return expectedMessageArgIndex > 0 && isString(args.get(expectedMessageArgIndex));
     }

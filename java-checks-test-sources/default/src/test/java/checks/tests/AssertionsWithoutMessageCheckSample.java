@@ -30,8 +30,7 @@ class AssertionsWithoutMessageCheckSample {
     org.testng.Assert.assertEquals("abc", "abc"); // Noncompliant
     org.testng.Assert.assertEquals("abc", "abc", "msg for strings"); // Compliant
 
-    // FP
-    org.testng.Assert.assertThrows(() -> {}); // Noncompliant
+    org.testng.Assert.assertThrows(() -> {}); // Compliant
 
     org.assertj.core.api.Assertions.assertThat("").usingComparator(null).as("a").isEqualTo(222); // Compliant
     org.junit.Assert.assertTrue(true); // Noncompliant {{Add a message to this assertion.}}
