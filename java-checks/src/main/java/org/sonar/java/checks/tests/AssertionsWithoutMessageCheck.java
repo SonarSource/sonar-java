@@ -115,9 +115,26 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
    * and it is the first of the last argument (depending on the assertion library).
    */
   private static boolean hasMessageArg(MethodInvocationTree mit, Type type) {
-    int expectedMessageArgIndex = (type.is("org.testng.Assert") || type.is("org.testng.AssertJUnit")) ? 1 : 0;
     List<ExpressionTree> args = mit.arguments();
-    return expectedMessageArgIndex < args.size() && isString(args.get(expectedMessageArgIndex));
+
+    // `fail` needs one argument. Assume it is a string.
+    if ("fail".equals(mit.methodSymbol().name())) {
+      return !args.isEmpty();
+    }
+
+    // In TestNG, the message is the last argument.
+    if (type.is("org.testng.Assert") || type.is("org.testng.AssertJUnit")) {
+      // Depending on the version of TestNG, assertThrows may or may not have the variant with a message.
+      // For simplicity, do not raise.
+      if ("assertThrows".equals(mit.methodSymbol().name())) {
+        return true;
+      }
+      int expectedMessageArgIndex = args.size() - 1;
+      return expectedMessageArgIndex > 0 && isString(args.get(expectedMessageArgIndex));
+    }
+
+    // In JUnit and others, the message is the first argument.
+    return !args.isEmpty() && isString(args.get(0));
   }
 
   private void checkFestLikeAssertion(MethodInvocationTree mit, Symbol symbol, IdentifierTree reportLocation) {
