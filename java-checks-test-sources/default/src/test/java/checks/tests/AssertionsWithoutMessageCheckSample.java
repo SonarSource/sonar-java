@@ -21,6 +21,9 @@ class AssertionsWithoutMessageCheckSample {
     org.testng.Assert.fail(); // Noncompliant
     org.testng.Assert.fail("msg"); // Compliant
 
+    org.testng.Assert.assertEquals(2, 3); // Noncompliant
+    org.testng.Assert.assertEquals(2, 3, "two is not equal three"); // Compliant
+
     org.assertj.core.api.Assertions.assertThat("").usingComparator(null).as("a").isEqualTo(222); // Compliant
     org.junit.Assert.assertTrue(true); // Noncompliant {{Add a message to this assertion.}}
 //                   ^^^^^^^^^^
