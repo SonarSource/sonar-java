@@ -129,7 +129,6 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
     }
 
     // In JUnit and others, the message is the first argument.
-    int expectedMessageArgIndex = 0;
     return !args.isEmpty() && isString(args.get(0));
   }
 
