@@ -115,7 +115,14 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
    * and it is the first of the last argument (depending on the assertion library).
    */
   private static boolean hasMessageArg(MethodInvocationTree mit, Type type) {
-    int expectedMessageArgIndex = (type.is("org.testng.Assert") || type.is("org.testng.AssertJUnit")) ? 1 : 0;
+    int expectedMessageArgIndex;
+    if (mit.methodSymbol().name().equals("fail")) {
+      expectedMessageArgIndex = 0;
+    } else if (type.is("org.testng.Assert") || type.is("org.testng.AssertJUnit")) {
+      expectedMessageArgIndex = 1;
+    } else {
+      expectedMessageArgIndex = 0;
+    }
     List<ExpressionTree> args = mit.arguments();
     return expectedMessageArgIndex < args.size() && isString(args.get(expectedMessageArgIndex));
   }
