@@ -116,7 +116,7 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
    */
   private static boolean hasMessageArg(MethodInvocationTree mit, Type type) {
     int expectedMessageArgIndex;
-    if (mit.methodSymbol().name().equals("fail")) {
+    if ("fail".equals(mit.methodSymbol().name())) {
       expectedMessageArgIndex = 0;
     } else if (type.is("org.testng.Assert") || type.is("org.testng.AssertJUnit")) {
       expectedMessageArgIndex = 1;
