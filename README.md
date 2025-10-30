@@ -55,9 +55,9 @@ To run tests locally follow these instructions.
 
 ### Java versions
 
-You need `Java 23` to build the project and `Java 17` run the Integration Tests (ITs).
-* `Java 17` can be used to build and test all modules except under `java-checks-test-sources` that requires `Java 23`.
-* `Java 23` can be used to build and test all modules except under `its` that requires `Java 17` because of SQ incompatibility.
+You need `Java 24` to build the project and `Java 17` run the Integration Tests (ITs).
+* `Java 17` can be used to build and test all modules except under `java-checks-test-sources` that requires `Java 24`.
+* `Java 24` can be used to build and test all modules except under `its` that requires `Java 17` because of SQ incompatibility.
 
 ### Build the Project and Run Unit Tests
 
