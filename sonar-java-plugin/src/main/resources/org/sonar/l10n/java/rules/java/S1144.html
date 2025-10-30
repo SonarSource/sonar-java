@@ -35,11 +35,7 @@ public class Foo implements Serializable
 <p>This rule doesn’t raise issues for:</p>
 <ul>
   <li> annotated methods </li>
-  <li> methods with parameters that are annotated with one of the following: </li>
-  <li> <code>@javax.enterprise.event.Observes</code> </li>
-  <li> <code>@javax.enterprise.event.ObservesAsync</code> </li>
-  <li> <code>@jakarta.enterprise.event.Observes</code> </li>
-  <li> <code>@jakarta.enterprise.event.ObservesAsync</code> </li>
+  <li> methods with parameters that are annotated with <code>@javax.enterprise.event.Observes</code> </li>
 </ul>
 <p>The rule does not take reflection into account, which means that issues will be raised on <code>private</code> methods that are only accessed using
 the reflection API.</p>
