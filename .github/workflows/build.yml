@@ -21,12 +21,16 @@ jobs:
     permissions:
       id-token: write  # Required for Vault OIDC authentication
       contents: write  # Required for repository access and tagging
+    outputs:
+      build-number: ${{ steps.build-maven.outputs.BUILD_NUMBER }}
+      deployed: ${{ steps.build-maven.outputs.deployed }}
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
         with:
           version: 2025.7.12
       - uses: SonarSource/ci-github-actions/build-maven@v1
+        id: build-maven
         with:
           deploy-pull-request: true
           # Override artifactory roles for public repo using private access
@@ -36,3 +40,94 @@ jobs:
             -Dmaven.test.skip=true
             -Dsonar.skip=true
             -pl !java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-web-4.0
+
+  ruling-qa:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          - github-ubuntu-latest-m
+          - github-windows-latest-m
+        profile:
+          - without-sonarqube-project
+          - only-sonarqube-project
+    name: Ruling QA
+    needs:
+      - build
+    if: ${{ needs.build.outputs.deployed }}
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      id-token: write
+      contents: write
+    env:
+      BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          submodules: recursive
+      - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
+        with:
+          version: 2025.7.12
+      - name: Select Java 17
+        run: mise use java@17
+      - name: Configure Maven
+        uses: SonarSource/ci-github-actions/config-maven@v1
+        with:
+          artifactory-reader-role: private-reader
+      - name: Getting Vault Secrets
+        id: secrets
+        uses: SonarSource/vault-action-wrapper@320bd31b03e5dacaac6be51bbbb15adf7caccc32 # v3.1.0
+        with:
+          secrets: |
+            development/github/token/licenses-ro token | GITHUB_TOKEN;
+      - name: Run ruling tests
+        shell: bash # Set explicitly so Bash is used on Windows runners too.
+        run: |
+          cd its/ruling
+          mvn package --batch-mode "-Pit-ruling,${{ matrix.profile }}" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+        env:
+          MAVEN_OPTS: "-Xmx3g"
+          GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
+
+  plugin-qa:
+    strategy:
+      fail-fast: false
+      matrix:
+        sq_version:
+          - LATEST_RELEASE
+          - DEV
+    name: Plugin QA
+    needs:
+      - build
+    if: ${{ needs.build.outputs.deployed }}
+    runs-on: github-ubuntu-latest-m
+    permissions:
+      id-token: write
+      contents: write
+    env:
+      BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          submodules: recursive
+      - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
+        with:
+          version: 2025.7.12
+      - name: Select Java 17
+        run: mise use java@17
+      - name: Configure Maven
+        uses: SonarSource/ci-github-actions/config-maven@v1
+        with:
+          artifactory-reader-role: private-reader
+      - name: Getting Vault Secrets
+        id: secrets
+        uses: SonarSource/vault-action-wrapper@320bd31b03e5dacaac6be51bbbb15adf7caccc32 # v3.1.0
+        with:
+          secrets: |
+            development/github/token/licenses-ro token | GITHUB_TOKEN;
+      - name: Plugin QA
+        env:
+          GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
+        run: |
+          cd its/plugin
+          mvn package --batch-mode -Pit-plugin -Dsonar.runtimeVersion=${{ matrix.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
