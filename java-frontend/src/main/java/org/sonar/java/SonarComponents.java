@@ -251,6 +251,10 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     return context.newHighlighting().onFile(inputFile);
   }
 
+  public List<File> getCompilationOutput() {
+    return javaClasspath.getBinaryDirs();
+  }
+
   public List<File> getJavaClasspath() {
     if (javaClasspath == null) {
       return new ArrayList<>();
@@ -260,6 +264,10 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   public boolean inAndroidContext() {
     return javaClasspath.inAndroidContext();
+  }
+
+  public List<File> getTestCompilationOutput() {
+    return javaTestClasspath.getBinaryDirs();
   }
 
   public List<File> getJavaTestClasspath() {

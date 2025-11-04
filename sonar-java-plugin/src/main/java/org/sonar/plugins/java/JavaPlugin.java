@@ -27,6 +27,7 @@ import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.java.AnalysisWarningsWrapper;
+import org.sonar.java.DefaultClassPathResolver;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConstants;
 import org.sonar.java.SonarComponents;
@@ -62,6 +63,7 @@ public class JavaPlugin implements Plugin {
       list.add(DroppedPropertiesSensor.class);
       list.add(JavaSonarWayProfile.class);
       list.add(ClasspathForMain.class);
+      list.add(DefaultClassPathResolver.class);
 
       ExternalReportExtensions.define(context);
     }
