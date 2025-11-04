@@ -17,8 +17,10 @@
 package org.sonar.java.model;
 
 import java.util.Locale;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.config.Configuration;
 import org.sonar.plugins.java.api.JavaVersion;
 
 public class JavaVersionImpl implements JavaVersion {
@@ -228,6 +230,24 @@ public class JavaVersionImpl implements JavaVersion {
   private static int convertJavaVersionString(String javaVersion) {
     String cleanedVersion = javaVersion.startsWith("1.") ? javaVersion.substring(2) : javaVersion;
     return Integer.parseInt(cleanedVersion);
+  }
+
+  public static JavaVersion readFromConfiguration(Configuration config) {
+    Optional<String> javaVersionAsString = config.get(SOURCE_VERSION);
+    if (!javaVersionAsString.isPresent()) {
+      return new JavaVersionImpl();
+    }
+    String enablePreviewAsString = config.get(ENABLE_PREVIEW).orElse("false");
+
+    JavaVersion javaVersion = fromString(javaVersionAsString.get(), enablePreviewAsString);
+    if (javaVersion.arePreviewFeaturesEnabled() && javaVersion.asInt() < MAX_SUPPORTED) {
+      LOG.warn("sonar.java.enablePreview is set but will be discarded as the Java version is less than the max" +
+        " supported version ({} < {})", javaVersion.asInt(), MAX_SUPPORTED);
+      javaVersion = new JavaVersionImpl(javaVersion.asInt(), false);
+    }
+    LOG.info("Configured Java source version ({}): {}, preview features enabled ({}): {}",
+      SOURCE_VERSION, javaVersion.asInt(), ENABLE_PREVIEW, javaVersion.arePreviewFeaturesEnabled());
+    return javaVersion;
   }
 
 }
