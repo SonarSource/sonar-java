@@ -1,0 +1,38 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+      - branch-*
+      - dogfood-*
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 1 * * *" # Run daily at 1:30 AM UTC
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: github-ubuntu-latest-m  # Public repo uses custom GitHub-hosted runner
+    name: Build
+    permissions:
+      id-token: write  # Required for Vault OIDC authentication
+      contents: write  # Required for repository access and tagging
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
+        with:
+          version: 2025.7.12
+      - uses: SonarSource/ci-github-actions/build-maven@v1
+        with:
+          deploy-pull-request: true
+          # Override artifactory roles for public repo using private access
+          artifactory-reader-role: private-reader
+          artifactory-deployer-role: qa-deployer
+          maven-args: >
+            -Dmaven.test.skip=true
+            -Dsonar.skip=true
+            -pl !java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-web-4.0
