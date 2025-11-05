@@ -111,7 +111,7 @@ public class JavaSensor implements Sensor {
 
     Measurer measurer = new Measurer(context, noSonarFilter);
 
-    JavaVersion javaVersion = getJavaVersion();
+    JavaVersion javaVersion = JavaVersionImpl.readFromConfiguration(settings);
     telemetry.aggregateAsSortedSet(JAVA_LANGUAGE_VERSION, javaVersion.toString());
     telemetry.aggregateAsCounter(JAVA_MODULE_COUNT, 1L);
 
@@ -179,24 +179,6 @@ public class JavaSensor implements Sensor {
 
   private Iterable<InputFile> javaFiles(InputFile.Type type) {
     return fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(type)));
-  }
-
-  private JavaVersion getJavaVersion() {
-    Optional<String> javaVersionAsString = settings.get(JavaVersion.SOURCE_VERSION);
-    if (!javaVersionAsString.isPresent()) {
-      return new JavaVersionImpl();
-    }
-    String enablePreviewAsString = settings.get(JavaVersion.ENABLE_PREVIEW).orElse("false");
-
-    JavaVersion javaVersion = JavaVersionImpl.fromString(javaVersionAsString.get(), enablePreviewAsString);
-    if (javaVersion.arePreviewFeaturesEnabled() && javaVersion.asInt() < JavaVersionImpl.MAX_SUPPORTED) {
-      LOG.warn("sonar.java.enablePreview is set but will be discarded as the Java version is less than the max" +
-        " supported version ({} < {})", javaVersion.asInt(), JavaVersionImpl.MAX_SUPPORTED);
-      javaVersion = new JavaVersionImpl(javaVersion.asInt(), false);
-    }
-    LOG.info("Configured Java source version ({}): {}, preview features enabled ({}): {}",
-      JavaVersion.SOURCE_VERSION, javaVersion.asInt(), JavaVersion.ENABLE_PREVIEW, javaVersion.arePreviewFeaturesEnabled());
-    return javaVersion;
   }
 
   @Override

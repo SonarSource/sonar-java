@@ -28,6 +28,7 @@ import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.DefaultJavaResourceLocator;
+import org.sonar.java.DefaultModuleMetadata;
 import org.sonar.java.JavaConstants;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.classpath.ClasspathForMain;
@@ -36,8 +37,8 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.classpath.ClasspathProperties;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
-import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.DefaultTelemetry;
+import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonar.plugins.surefire.SurefireExtensions;
@@ -62,6 +63,7 @@ public class JavaPlugin implements Plugin {
       list.add(DroppedPropertiesSensor.class);
       list.add(JavaSonarWayProfile.class);
       list.add(ClasspathForMain.class);
+      list.add(DefaultModuleMetadata.class);
 
       ExternalReportExtensions.define(context);
     }
@@ -105,8 +107,7 @@ public class JavaPlugin implements Plugin {
             " When a package or class is found in both the unnamed module and a named one, modularization is broken." +
             " As a result, the parser may be unable to build the project semantic successfully, leading to analysis failure." +
             " This parameter allows users to bypass Java platform modularity enforcement to prevent analysis failure." +
-            "</p>"
-        )
+            "</p>")
         .category(JavaConstants.JAVA_CATEGORY)
         .subCategory("Language")
         .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))

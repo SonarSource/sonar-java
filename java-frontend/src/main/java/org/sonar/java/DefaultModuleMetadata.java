@@ -14,29 +14,31 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.plugins.java.api.internal;
+package org.sonar.java;
 
-import org.sonar.api.scanner.ScannerSide;
-import org.sonar.java.annotations.Internal;
+import org.sonar.api.config.Configuration;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.internal.ModuleMetadata;
 
+public class DefaultModuleMetadata implements ModuleMetadata {
 
-/**
- * Interface to access metadata about the module being analyzed by a Sensor.
- */
-@Internal
-@ScannerSide
-public interface ModuleMetadata {
+  private final JavaVersion javaVersion;
+  private final String moduleKey;
 
-  /**
-   * Returns the Java version of the module being analyzed.
-   */
-  JavaVersion javaVersion();
+  public DefaultModuleMetadata(SonarComponents sonarComponents, Configuration configuration) {
+    this.javaVersion = JavaVersionImpl.readFromConfiguration(configuration);
+    this.moduleKey = sonarComponents.getModuleKey();
+  }
 
-  /**
-   * Returns the module key of the module being analyzed.
-   */
-  String moduleKey();
+  @Override
+  public JavaVersion javaVersion() {
+    return javaVersion;
+  }
+
+  @Override
+  public String moduleKey() {
+    return moduleKey;
+  }
 
 }
-

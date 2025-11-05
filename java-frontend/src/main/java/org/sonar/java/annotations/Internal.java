@@ -14,29 +14,20 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.plugins.java.api.internal;
+package org.sonar.java.annotations;
 
-import org.sonar.api.scanner.ScannerSide;
-import org.sonar.java.annotations.Internal;
-import org.sonar.plugins.java.api.JavaVersion;
-
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Interface to access metadata about the module being analyzed by a Sensor.
+ * This annotation should be placed on api elements that are meant to only be consumed by plugins maintained by SonarSource.
+ * Elements with this annotation are not stable and can change at any time.
  */
-@Internal
-@ScannerSide
-public interface ModuleMetadata {
-
-  /**
-   * Returns the Java version of the module being analyzed.
-   */
-  JavaVersion javaVersion();
-
-  /**
-   * Returns the module key of the module being analyzed.
-   */
-  String moduleKey();
-
+@Retention(RetentionPolicy.CLASS)
+@Target({ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
+@Documented
+public @interface Internal {
 }
-
