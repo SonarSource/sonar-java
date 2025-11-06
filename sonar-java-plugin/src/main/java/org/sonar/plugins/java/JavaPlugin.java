@@ -28,6 +28,7 @@ import org.sonar.api.SonarProduct;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.DefaultClassPathResolver;
+import org.sonar.java.DefaultInjectionTester;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConstants;
 import org.sonar.java.SonarComponents;
@@ -37,8 +38,8 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.classpath.ClasspathProperties;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
-import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.DefaultTelemetry;
+import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonar.plugins.surefire.SurefireExtensions;
@@ -84,6 +85,7 @@ public class JavaPlugin implements Plugin {
         .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
         .build(),
       JavaRulesDefinition.class,
+      DefaultInjectionTester.class,
       SonarComponents.class,
       DefaultJavaResourceLocator.class,
       PropertyDefinition.builder(JavaVersion.ENABLE_PREVIEW)
