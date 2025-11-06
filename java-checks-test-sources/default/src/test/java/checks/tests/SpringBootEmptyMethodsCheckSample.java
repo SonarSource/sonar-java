@@ -7,7 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class SpringBootSanityTest {
   // Compliant, first time we encounter a spring sanity test
   @Test
-  void contextLoads() {}
+  void contextLoads() {
+  }
 
   // Noncompliant@+2
   @Test
