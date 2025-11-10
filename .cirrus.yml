@@ -175,6 +175,7 @@ plugin_qa_task:
     - mvn package --batch-mode -Pit-plugin -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
+# Migrated to GHA.
 sanity_task:
   depends_on:
     - build
