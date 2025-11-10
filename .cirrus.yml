@@ -139,6 +139,7 @@ qa_os_win_task:
     - ps: .cirrus/install-latest-java-on-windows.ps1 ; if ($?) { & mvn.cmd --batch-mode clean verify }
   cleanup_before_cache_script: cleanup_maven_repository
 
+# Migrated to GHA
 plugin_qa_task:
   depends_on:
     - build
@@ -185,6 +186,7 @@ sanity_task:
     - mvn verify --batch-mode -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
   cleanup_before_cache_script: cleanup_maven_repository
 
+# Migrated to GHA
 ruling_task:
   depends_on:
     - build
@@ -217,6 +219,7 @@ ruling_task:
     actual_artifacts:
       path: "${CIRRUS_WORKING_DIR}/its/ruling/target/actual/**/*"
 
+# Migrated to GHA
 ruling_win_task:
   depends_on:
     - build
