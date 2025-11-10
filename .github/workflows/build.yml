@@ -82,12 +82,12 @@ jobs:
             development/github/token/licenses-ro token | GITHUB_TOKEN;
       - name: Run ruling tests
         shell: bash # Set explicitly so Bash is used on Windows runners too.
-        run: |
-          cd its/ruling
-          mvn package --batch-mode "-Pit-ruling,${{ matrix.profile }}" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
         env:
           MAVEN_OPTS: "-Xmx3g"
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
+        run: |
+          cd its/ruling
+          mvn package --batch-mode "-Pit-ruling,${{ matrix.profile }}" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
 
   plugin-qa:
     strategy:
