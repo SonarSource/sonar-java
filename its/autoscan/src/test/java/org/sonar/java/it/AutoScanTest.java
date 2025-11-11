@@ -195,8 +195,8 @@ public class AutoScanTest {
     SoftAssertions softly = new SoftAssertions();
     softly.assertThat(newDiffs).containsExactlyInAnyOrderElementsOf(knownDiffs.values());
     softly.assertThat(newTotal).isEqualTo(knownTotal);
-    softly.assertThat(rulesCausingFPs).hasSize(9);
-    softly.assertThat(rulesNotReporting).hasSize(11);
+    softly.assertThat(rulesCausingFPs).hasSize(11);
+    softly.assertThat(rulesNotReporting).hasSize(10);
 
     /**
      * 4. Check total number of differences (FPs + FNs)
