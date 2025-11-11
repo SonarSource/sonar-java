@@ -149,15 +149,8 @@ plugin_qa_task:
     cpu: 14
     memory: 6G
   <<: *ORCHESTRATOR_CACHE_PREPARATION_DEFINITION
-  matrix:
-    - env:
-        SQ_VERSION: LATEST_RELEASE[2025.1]
-      orchestrator_LATEST_RELEASE_cache:
-        <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
-    - env:
-        SQ_VERSION: DEV[2025.1]
-      orchestrator_DEV_cache:
-        <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
+  orchestrator_LATEST_RELEASE_cache:
+    <<: *ORCHESTRATOR_CACHE_ELEMENTS_DEFINITION
 
   maven_cache:
     folder: ${CIRRUS_WORKING_DIR}/.m2/repository
@@ -168,7 +161,7 @@ plugin_qa_task:
     - source cirrus-env QA
     - source set_maven_build_version $BUILD_NUMBER
     - cd its/plugin
-    - mvn package --batch-mode -Pit-plugin -Dsonar.runtimeVersion=${SQ_VERSION} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
+    - mvn package --batch-mode -Pit-plugin -Dsonar.runtimeVersion=LATEST_RELEASE[2025.1] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
 sanity_task:
