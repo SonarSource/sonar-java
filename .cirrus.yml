@@ -89,6 +89,7 @@ build_task:
     - regular_mvn_build_deploy_analyze -Dmaven.test.skip=true -Dsonar.skip=true -pl '!java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-web-4.0'
   cleanup_before_cache_script: cleanup_maven_repository
 
+# Migrated to GHA.
 test_analyze_task:
   <<: *COMMON_BUILD_DEFINITION
   build_script:
