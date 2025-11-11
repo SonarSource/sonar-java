@@ -131,3 +131,48 @@ jobs:
         run: |
           cd its/plugin
           mvn package --batch-mode -Pit-plugin -Dsonar.runtimeVersion=${{ matrix.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
+
+  test-analyze:
+    name: Test Analyze
+    needs:
+      - build
+    if: ${{ needs.build.outputs.deployed }}
+    runs-on: github-ubuntu-latest-m
+    permissions:
+      id-token: write
+      contents: write
+    env:
+      BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
+        with:
+          version: 2025.7.12
+      - uses: SonarSource/vault-action-wrapper@v3
+        id: secrets
+        with:
+          secrets: |
+            development/kv/data/next url | SONAR_HOST_URL;
+            development/kv/data/next token | SONAR_TOKEN;
+      - name: Test Analyze
+        env:
+          SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
+        run: |
+          # ignore duplications in the SE engine plugin, as it will be moved away from sonar-java at some point
+          PULL_REQUEST_SHA=$GIT_SHA1 mvn clean verify sonar:sonar --batch-mode -P-deploy-sonarsource,-release,-sign -Dmaven.deploy.skip=true -Dsonar.analysisCache.enabled=true -Dsonar.sca.exclusions="**/test/files/**, **/test/resources/**, its/plugin/projects/**, java-checks-test-sources/**, its/sources/**,"
+      - name: Build Java Custom Rules Example
+        env:
+          SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
+        working-directory: docs/java-custom-rules-example
+        run: |
+          mvn clean package -f pom_SQ_10_6_LATEST.xml --batch-mode
+      - name: Check License Compliance
+        run: |
+          # See https://xtranet.sonarsource.com/display/DEV/Open+Source+Licenses
+          mvn org.codehaus.mojo:license-maven-plugin:aggregate-add-third-party \
+            --batch-mode \
+            "-Dlicense.missingFile=${PWD}/missing-dep-licenses.properties" \
+            -DuseMissingFile \
+            "-Dlicense.overrideUrl=file://${PWD}/override-dep-licenses.properties"
