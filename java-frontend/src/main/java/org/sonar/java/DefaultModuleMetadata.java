@@ -16,21 +16,25 @@
  */
 package org.sonar.java;
 
+import javax.annotation.CheckForNull;
+import org.sonar.api.batch.bootstrap.ProjectDefinition;
 import org.sonar.api.config.Configuration;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.internal.ModuleMetadata;
 
+import static org.sonar.java.SonarComponents.SONAR_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE;
+
 public class DefaultModuleMetadata implements ModuleMetadata {
 
   private final JavaVersion javaVersion;
-  private final String moduleKey;
+  private final ProjectDefinition projectDefinition;
   private final boolean ignoreUnnamedModuleForSplitPackage;
 
-  public DefaultModuleMetadata(SonarComponents sonarComponents, Configuration configuration) {
+  public DefaultModuleMetadata(ProjectDefinition projectDefinition, Configuration configuration) {
     this.javaVersion = JavaVersionImpl.readFromConfiguration(configuration);
-    this.moduleKey = sonarComponents.getModuleKey();
-    this.ignoreUnnamedModuleForSplitPackage = sonarComponents.shouldIgnoreUnnamedModuleForSplitPackage();
+    this.projectDefinition = projectDefinition;
+    this.ignoreUnnamedModuleForSplitPackage = configuration.getBoolean(SONAR_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE).orElse(false);
   }
 
   @Override
@@ -40,12 +44,30 @@ public class DefaultModuleMetadata implements ModuleMetadata {
 
   @Override
   public String moduleKey() {
-    return moduleKey;
+    var root = getRootProject();
+    if (root != null && projectDefinition != null) {
+      var rootBase = root.getBaseDir().toPath();
+      var moduleBase = projectDefinition.getBaseDir().toPath();
+      return rootBase.relativize(moduleBase).toString().replace('\\', '/');
+    }
+    return "";
   }
 
   @Override
   public boolean shouldIgnoreUnnamedModuleForSplitPackage() {
     return ignoreUnnamedModuleForSplitPackage;
+  }
+
+  @CheckForNull
+  private ProjectDefinition getRootProject() {
+    ProjectDefinition current = projectDefinition;
+    if (current == null) {
+      return null;
+    }
+    while (current.getParent() != null) {
+      current = current.getParent();
+    }
+    return current;
   }
 
 }

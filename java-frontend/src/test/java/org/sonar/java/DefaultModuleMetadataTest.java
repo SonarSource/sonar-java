@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
-import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.config.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,10 +30,9 @@ class DefaultModuleMetadataTest {
 
   @Test
   void test() {
-    var sonarComponents = mockSonarComponents();
+    var projectDefinition = mockProjectDefinition();
     var config = mockConfiguration();
-    sonarComponents.setSensorContext(mockSensorContext(config));
-    var defaultModuleMetadata = new DefaultModuleMetadata(sonarComponents, config);
+    var defaultModuleMetadata = new DefaultModuleMetadata(projectDefinition, config);
 
     assertThat(defaultModuleMetadata.moduleKey()).isEqualTo("pmodule/cmodule");
     assertThat(defaultModuleMetadata.javaVersion().asInt()).isEqualTo(-1);
@@ -43,10 +41,9 @@ class DefaultModuleMetadataTest {
 
   @Test
   void testWithJavaVersion() {
-    var sonarComponents = mockSonarComponents();
+    var projectDefinition = mockProjectDefinition();
     var config = mockConfiguration("sonar.java.source", "11");
-    sonarComponents.setSensorContext(mockSensorContext(config));
-    var defaultModuleMetadata = new DefaultModuleMetadata(sonarComponents, config);
+    var defaultModuleMetadata = new DefaultModuleMetadata(projectDefinition, config);
 
     assertThat(defaultModuleMetadata.moduleKey()).isEqualTo("pmodule/cmodule");
     assertThat(defaultModuleMetadata.javaVersion().asInt()).isEqualTo(11);
@@ -54,23 +51,22 @@ class DefaultModuleMetadataTest {
 
   @Test
   void testWithShouldIgnoreUnnamed() {
-    var sonarComponents = mockSonarComponents();
+    var projectDefinition = mockProjectDefinition();
     var config = mockConfiguration("sonar.java.ignoreUnnamedModuleForSplitPackage", "true");
-    sonarComponents.setSensorContext(mockSensorContext(config));
-    var defaultModuleMetadata = new DefaultModuleMetadata(sonarComponents, config);
+    var defaultModuleMetadata = new DefaultModuleMetadata(projectDefinition, config);
 
     assertThat(defaultModuleMetadata.moduleKey()).isEqualTo("pmodule/cmodule");
     assertThat(defaultModuleMetadata.shouldIgnoreUnnamedModuleForSplitPackage()).isTrue();
   }
 
-  private SonarComponents mockSonarComponents() {
+  private ProjectDefinition mockProjectDefinition() {
     var rootProj = mock(ProjectDefinition.class);
     doReturn(new File("/foo/bar/proj")).when(rootProj).getBaseDir();
     var childModule = mock(ProjectDefinition.class);
     doReturn(new File("/foo/bar/proj/pmodule/cmodule")).when(childModule).getBaseDir();
     doReturn(rootProj).when(childModule).getParent();
 
-    return new SonarComponents(null, null, null, null, null, null, childModule);
+    return childModule;
   }
 
   private Configuration mockConfiguration(String... keysAndValues) {
@@ -84,12 +80,6 @@ class DefaultModuleMetadataTest {
       }
     }
     return configuration;
-  }
-
-  private SensorContext mockSensorContext(Configuration config) {
-    var sctx = mock(SensorContext.class);
-    doReturn(config).when(sctx).config();
-    return sctx;
   }
 
 }
