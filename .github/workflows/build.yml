@@ -132,6 +132,47 @@ jobs:
           cd its/plugin
           mvn package --batch-mode -Pit-plugin -Dsonar.runtimeVersion=${{ matrix.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
 
+  sanity:
+    name: Sanity Test
+    needs:
+      - build
+    if: ${{ needs.build.outputs.deployed }}
+    runs-on: github-ubuntu-latest-m
+    permissions:
+      id-token: write
+      contents: write
+    env:
+      BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
+        with:
+          version: 2025.7.12
+      - uses: SonarSource/vault-action-wrapper@v3
+        id: secrets
+        with:
+          secrets: |
+            development/kv/data/next url | SONAR_HOST_URL;
+            development/kv/data/next token | SONAR_TOKEN;
+      - name: Compile Test Sources
+        env:
+          SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
+        working-directory: java-checks-test-sources
+        run: |
+          mvn clean compile --batch-mode
+      - uses: SonarSource/ci-github-actions/config-maven@v1
+        with:
+          deploy: false
+          artifactory-reader-role: private-reader
+          artifactory-deployer-role: qa-deployer
+      - name: Sanity Test
+        env:
+          SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
+        run: |
+          mvn verify --batch-mode -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
+
   test-analyze:
     name: Test Analyze
     needs:
