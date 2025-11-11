@@ -248,6 +248,7 @@ ruling_win_task:
     - mvn package --batch-mode "-Pit-ruling,$PROFILE" -Dsonar.runtimeVersion=LATEST_RELEASE[2025.1] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
   cleanup_before_cache_script: cleanup_maven_repository
 
+# Migrated to GHA.
 autoscan_task:
   depends_on:
     - build
