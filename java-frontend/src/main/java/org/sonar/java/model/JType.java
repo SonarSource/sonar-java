@@ -211,42 +211,56 @@ final class JType implements Type, Type.ArrayType {
   }
 
   private String fullyQualifiedName(ITypeBinding typeBinding) {
-    String qualifiedName;
-    if (typeBinding.isNullType()) {
-      qualifiedName = "<nulltype>";
-    } else if (typeBinding.isPrimitive()) {
-      qualifiedName = typeBinding.getName();
-    } else if (typeBinding.isArray()) {
-      qualifiedName = fullyQualifiedName(typeBinding.getComponentType()) + "[]";
-    } else if (typeBinding.isCapture()) {
-      qualifiedName = "!capture!";
-    } else if (typeBinding.isTypeVariable()) {
-      qualifiedName = typeBinding.getName();
-    } else {
-      qualifiedName = typeBinding.getBinaryName();
-      if (qualifiedName == null) {
-        // e.g. anonymous class in unreachable code
-        qualifiedName = typeBinding.getKey();
-      }
-    }
+    String qualifiedName = baseQualifiedName(typeBinding);
+
     if (typeBinding.isIntersectionType()) {
-      TreeSet<String> intersectionTypes = new TreeSet<>();
-      intersectionTypes.add(qualifiedName);
-      for (ITypeBinding typeBound : typeBinding.getTypeBounds()) {
-        intersectionTypes.add(fullyQualifiedName(typeBound));
-      }
-      qualifiedName = String.join(" & ", intersectionTypes);
+      return buildIntersectionTypeName(typeBinding, qualifiedName);
     } else if (isUnionType()) {
-      TreeSet<String> unionTypes = new TreeSet<>();
-      ITypeBinding[] alternatives = sema.unionTypeAlternatives.get(typeBinding);
-      if (alternatives != null) {
-        for (ITypeBinding alternative : alternatives) {
-          unionTypes.add(fullyQualifiedName(alternative));
-        }
-        qualifiedName = String.join(" | ", unionTypes);
-      }
+      return buildUnionTypeName(typeBinding, qualifiedName);
     }
     return qualifiedName;
+  }
+
+  private String baseQualifiedName(ITypeBinding typeBinding) {
+    if (typeBinding.isNullType()) {
+      return "<nulltype>";
+    } else if (typeBinding.isPrimitive()) {
+      return typeBinding.getName();
+    } else if (typeBinding.isArray()) {
+      return fullyQualifiedName(typeBinding.getComponentType()) + "[]";
+    } else if (typeBinding.isCapture()) {
+      return "!capture!";
+    } else if (typeBinding.isTypeVariable()) {
+      return typeBinding.getName();
+    } else {
+      String binaryName = typeBinding.getBinaryName();
+      if (binaryName == null) {
+        // e.g. anonymous class in unreachable code
+        return typeBinding.getKey();
+      }
+      return binaryName;
+    }
+  }
+
+  private String buildIntersectionTypeName(ITypeBinding typeBinding, String baseName) {
+    TreeSet<String> intersectionTypes = new TreeSet<>();
+    intersectionTypes.add(baseName);
+    for (ITypeBinding typeBound : typeBinding.getTypeBounds()) {
+      intersectionTypes.add(fullyQualifiedName(typeBound));
+    }
+    return String.join(" & ", intersectionTypes);
+  }
+
+  private String buildUnionTypeName(ITypeBinding typeBinding, String baseName) {
+    ITypeBinding[] alternatives = sema.unionTypeAlternatives.get(typeBinding);
+    if (alternatives == null) {
+      return baseName;
+    }
+    TreeSet<String> unionTypes = new TreeSet<>();
+    for (ITypeBinding alternative : alternatives) {
+      unionTypes.add(fullyQualifiedName(alternative));
+    }
+    return String.join(" | ", unionTypes);
   }
 
   @Override

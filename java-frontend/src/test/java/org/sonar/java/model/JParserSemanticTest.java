@@ -1505,6 +1505,64 @@ class JParserSemanticTest {
   }
 
   @Test
+  void type_union_with_three_alternatives() {
+    CompilationUnitTree cu = test("class C { void m() { try { } catch (MatchException | NumberFormatException | ArithmeticException v) { } } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    TryStatementTree s = (TryStatementTree) m.block().body().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) s.catches().get(0).parameter();
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    Type symbolType = t.symbolType();
+    assertThat(symbolType.isUnionType()).isTrue();
+    // FQN should be sorted alphabetically
+    assertThat(symbolType.fullyQualifiedName()).isEqualTo("java.lang.ArithmeticException | java.lang.MatchException | java.lang.NumberFormatException");
+    assertThat(symbolType.getUnionTypes()).hasSize(3);
+    // getUnionTypes() returns types in source order, not sorted
+    assertThat(symbolType.getUnionTypes()).extracting(Type::fullyQualifiedName)
+      .containsExactly("java.lang.MatchException", "java.lang.NumberFormatException", "java.lang.ArithmeticException");
+  }
+
+  @Test
+  void type_union_ordering() {
+    // Test that union types are sorted alphabetically in FQN
+    CompilationUnitTree cu = test("class C { void m() { try { } catch (NumberFormatException | MatchException v) { } } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    TryStatementTree s = (TryStatementTree) m.block().body().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) s.catches().get(0).parameter();
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    Type symbolType = t.symbolType();
+    // Should be sorted: MatchException comes before NumberFormatException
+    assertThat(symbolType.fullyQualifiedName()).isEqualTo("java.lang.MatchException | java.lang.NumberFormatException");
+  }
+
+  @Test
+  void non_union_type_returns_false_for_isUnionType() {
+    CompilationUnitTree cu = test("class C { void m() { try { } catch (NumberFormatException v) { } } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    TryStatementTree s = (TryStatementTree) m.block().body().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) s.catches().get(0).parameter();
+    AbstractTypedTree t = (AbstractTypedTree) v.type();
+    Type symbolType = t.symbolType();
+    assertThat(symbolType.isUnionType()).isFalse();
+    assertThat(symbolType.getUnionTypes()).hasSize(1);
+    assertThat(symbolType.getUnionTypes()[0]).isEqualTo(symbolType);
+  }
+
+  @Test
+  void primitive_type_is_not_union() {
+    CompilationUnitTree cu = test("class C { void m(int x) { } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    VariableTreeImpl v = (VariableTreeImpl) m.parameters().get(0);
+    Type symbolType = v.symbol().type();
+    assertThat(symbolType.isUnionType()).isFalse();
+    assertThat(symbolType.getUnionTypes()).hasSize(1);
+    assertThat(symbolType.getUnionTypes()[0]).isEqualTo(symbolType);
+  }
+
+  @Test
   void type_intersection_in_cast_expression() {
     CompilationUnitTree cu = test("class C { void m(Object o) { var x = (AutoCloseable & Cloneable & Comparable<? extends Runnable>) o; } }");
     ClassTree c = (ClassTree) cu.types().get(0);

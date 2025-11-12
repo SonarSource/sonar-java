@@ -477,7 +477,7 @@ public abstract class JavaTree implements Tree {
 
   public static class UnionTypeTreeImpl extends AbstractTypedTree implements UnionTypeTree {
     private final ListTree<TypeTree> typeAlternatives;
-    public ITypeBinding[] alternativeBindings;
+    ITypeBinding[] alternativeBindings;
 
     public UnionTypeTreeImpl(QualifiedIdentifierListTreeImpl typeAlternatives) {
       this.typeAlternatives = Objects.requireNonNull(typeAlternatives);
