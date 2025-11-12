@@ -1,13 +1,15 @@
 import java.util.ArrayList;
 
 class SunPackagesUsedCheckSample {
+  private Object sun; // variable named "sun"
+
   private void f() {
     java.util.List a;
     sun.Foo b; // Noncompliant
 //  ^^^^^^^
     sun.Foo.toto.asd c; // secondary
 //  ^^^^^^^^^^^^^^^^<
-    
+
   }
 
   public Object uselessMethod() {
@@ -15,5 +17,19 @@ class SunPackagesUsedCheckSample {
       return new com.sun.xml.ws.transport.http.HttpAdapter(null, null, null); // compliant
     }
     return null;
+  }
+
+  // SONARJAVA-4698: False positive when variable is named "sun"
+  public void fooWithFieldNamedSun() {
+    sun.toString(); // Compliant - FP: "sun" is a field of type Object, not a sun.* package class
+  }
+
+  public void barWithParameterNamedSun(Object sun) {
+    sun.toString(); // Compliant - FP: "sun" is a parameter of type Object, not a sun.* package class
+  }
+
+  public void bazWithLocalVariableNamedSun() {
+    Object sun = new Object();
+    sun.toString(); // Compliant - FP: "sun" is a local variable of type Object, not a sun.* package class
   }
 }
