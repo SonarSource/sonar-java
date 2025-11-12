@@ -3,6 +3,7 @@ package checks;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -11,9 +12,9 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.EnumSet;
 
 class EmployeesTopLevel {
-
   public EmployeesTopLevel(String s) { }
 
   public HashSet<Employee> employees = new HashSet<>(); // Noncompliant {{The type of "employees" should be an interface such as "Set" rather than the implementation "HashSet".}} [[quickfixes=HashSet1]]
@@ -28,7 +29,6 @@ class EmployeesTopLevel {
 //       ^^^^^^^^^^
                                                                  // fix@LinkedList {{Replace "LinkedList" by "List"}}
                                                                  // edit@LinkedList [[sc=10;ec=20]] {{List}}
-                                                                 // edit@LinkedList [[sl=5;sc=29;el=5;ec=29]] {{\nimport java.util.List;}}
 
   private LinkedList<Employee> foo2() { return null; }
 
@@ -49,7 +49,7 @@ class EmployeesTopLevel {
 //       ^^^^^^^^^^^^^^^^^
                                                                      // fix@ConcurrentHashMap {{Replace "ConcurrentHashMap" by "ConcurrentMap"}}
                                                                      // edit@ConcurrentHashMap [[sc=10;ec=27]] {{ConcurrentMap}}
-                                                                     // edit@ConcurrentHashMap [[sl=12;sc=47;el=12;ec=47]] {{\nimport java.util.concurrent.ConcurrentMap;}}
+                                                                     // edit@ConcurrentHashMap [[sl=13;sc=47;el=13;ec=47]] {{\nimport java.util.concurrent.ConcurrentMap;}}
 
   public ConcurrentSkipListMap concurrentSkipListMap() { return null; } // Noncompliant {{The return type of this method should be an interface such as "ConcurrentMap" rather than the implementation "ConcurrentSkipListMap".}}
 
@@ -153,7 +153,55 @@ abstract class ApiEnforcesClassSonarjava4590 {
     return getList().poll();
   }
 
+  public void foo15(LinkedList<Integer> list){ // Compliant
+    foo14(list);
+  }
+
+  public void foo16(LinkedList<Integer> list){ // Compliant
+    foo17(true, list);
+  }
+
+  public void foo17(boolean bool, LinkedList<Integer> list){ // Noncompliant
+    return;
+  }
+
+  public void foo18(LinkedList<Integer> list){ // Noncompliant
+    foo19(list);
+  }
+
+  private void foo19(List<Integer> l){
+    return;
+  }
+
   private LinkedList<Integer> getList() {
     return null;
   }
+
+
+  public enum Fruit {
+    APPLE,
+    BANANA,
+    ORANGE,
+    PEAR;
+
+                                                                                    // FP, EnumSet is used as argument in method
+    public static final EnumSet<Fruit> FRUITS_FP = EnumSet.of(APPLE, ORANGE, PEAR); // Noncompliant
+
+    public static final EnumSet<Fruit> FRUITS = EnumSet.of(APPLE, ORANGE, PEAR); // Noncompliant
+
+
+    public void useFruit(LinkedList<Integer> list1){ // Noncompliant
+      EnumSet<Fruit> banana = EnumSet.complementOf(FRUITS_FP);
+      FRUITS.contains(Fruit.APPLE);
+    }
+
+  }
+
+  public void testEnum( EnumSet<Fruit> fruits){ // Compliant
+    EnumSet<Fruit> banana = EnumSet.complementOf(fruits);
+    EnumSet<Fruit> banana2 = EnumSet.complementOf(Fruit.FRUITS_FP);
+    EnumSet<Fruit> notBanana = EnumSet.copyOf(fruits);
+  }
+
+
 }

@@ -30,9 +30,12 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -358,6 +361,37 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
       var memberName = tree.identifier().name();
       var interfaceName = getSuggestedInterface(variableTree.type());
       if (!METHODS_BY_INTERFACE.get(interfaceName).contains(memberName)) {
+        excludedParameters.add(variableTree);
+      }
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      super.visitMethodInvocation(tree);
+
+      List<ExpressionTree> arguments = tree.arguments();
+      var methodSymbol = tree.methodSymbol();
+      if (methodSymbol.isUnknown()) {
+        return;
+      }
+      var paramTypes = methodSymbol.parameterTypes();
+      for (int i = 0; i < arguments.size(); i++) {
+        processorArgument(arguments.get(i), paramTypes.get(i));
+      }
+    }
+
+    private void processorArgument(ExpressionTree argument, Type expectedType) {
+      if (!(argument instanceof IdentifierTree)) {
+        return;
+      }
+
+      var variableName = ((IdentifierTree) argument).name();
+      var variableTree = candidateParametersByName.get(variableName);
+      if (variableTree == null) {
+        return;
+      }
+
+      if (expectedType.is(variableTree.type().symbolType().fullyQualifiedName())) {
         excludedParameters.add(variableTree);
       }
     }
