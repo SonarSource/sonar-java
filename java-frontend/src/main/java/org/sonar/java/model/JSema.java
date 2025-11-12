@@ -50,6 +50,7 @@ public final class JSema implements Sema {
   private final Map<Symbol.TypeSymbol, JInitializerBlockSymbol> staticInitializerBlockSymbols = new HashMap<>();
   private final Map<IAnnotationBinding, JSymbolMetadata.JAnnotationInstance> annotations = new HashMap<>();
   private final Map<String, Type> nameToTypeCache = new HashMap<>();
+  final Map<ITypeBinding, ITypeBinding[]> unionTypeAlternatives = new HashMap<>();
 
   JSema(AST ast) {
     this.ast = ast;

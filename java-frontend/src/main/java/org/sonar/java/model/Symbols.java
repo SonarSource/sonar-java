@@ -469,5 +469,15 @@ public class Symbols {
     public Type[] getIntersectionTypes() {
       return new Type[] { this };
     }
+
+    @Override
+    public boolean isUnionType() {
+      return false;
+    }
+
+    @Override
+    public Type[] getUnionTypes() {
+      return new Type[] { this };
+    }
   }
 }

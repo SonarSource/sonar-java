@@ -299,4 +299,21 @@ public interface Type {
    */
   Type[] getIntersectionTypes();
 
+  /**
+   * Check if this type is a union type. For example, return true for the type of 'e' in the following code:
+   * <code><pre>
+   *   try { } catch (IOException | SQLException e) { }
+   *</pre></code>
+   */
+  boolean isUnionType();
+
+  /**
+   * This method returns more than one type when {@link #isUnionType()} is true. For example, it
+   * returns {@code ["java.io.IOException", "java.sql.SQLException"] } for the type of 'e' in the following code:
+   * <code><pre>
+   *   try { } catch (IOException | SQLException e) { }
+   *</pre></code>
+   */
+  Type[] getUnionTypes();
+
 }

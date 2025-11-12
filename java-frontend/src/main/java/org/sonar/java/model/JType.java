@@ -210,7 +210,7 @@ final class JType implements Type, Type.ArrayType {
     return fullyQualifiedName;
   }
 
-  private static String fullyQualifiedName(ITypeBinding typeBinding) {
+  private String fullyQualifiedName(ITypeBinding typeBinding) {
     String qualifiedName;
     if (typeBinding.isNullType()) {
       qualifiedName = "<nulltype>";
@@ -236,6 +236,15 @@ final class JType implements Type, Type.ArrayType {
         intersectionTypes.add(fullyQualifiedName(typeBound));
       }
       qualifiedName = String.join(" & ", intersectionTypes);
+    } else if (isUnionType()) {
+      TreeSet<String> unionTypes = new TreeSet<>();
+      ITypeBinding[] alternatives = sema.unionTypeAlternatives.get(typeBinding);
+      if (alternatives != null) {
+        for (ITypeBinding alternative : alternatives) {
+          unionTypes.add(fullyQualifiedName(alternative));
+        }
+        qualifiedName = String.join(" | ", unionTypes);
+      }
     }
     return qualifiedName;
   }
@@ -254,6 +263,24 @@ final class JType implements Type, Type.ArrayType {
     Type[] types = new Type[bounds.length];
     for (int i = 0; i < bounds.length; i++) {
       types[i] = sema.type(bounds[i]);
+    }
+    return types;
+  }
+
+  @Override
+  public boolean isUnionType() {
+    return sema.unionTypeAlternatives.containsKey(typeBinding);
+  }
+
+  @Override
+  public Type[] getUnionTypes() {
+    ITypeBinding[] alternatives = sema.unionTypeAlternatives.get(typeBinding);
+    if (alternatives == null) {
+      return new Type[] { this };
+    }
+    Type[] types = new Type[alternatives.length];
+    for (int i = 0; i < alternatives.length; i++) {
+      types[i] = sema.type(alternatives[i]);
     }
     return types;
   }

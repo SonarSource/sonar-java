@@ -1497,11 +1497,11 @@ class JParserSemanticTest {
     Type symbolType = t.symbolType();
     assertThat(symbolType).isNotNull();
     assertThat(symbolType.isUnknown()).isFalse();
-    // "fullyQualifiedName()" should be unique for each different type, like for example "java.lang.MatchException | java.lang.NumberFormatException"
-    // this will be fixed by SONARJAVA-5718
-    assertThat(symbolType.fullyQualifiedName()).isEqualTo("java.lang.RuntimeException");
-    assertThat(symbolType.getIntersectionTypes()).extracting(Type::fullyQualifiedName)
-      .containsExactly("java.lang.RuntimeException");
+    // "fullyQualifiedName()" should be unique for each different type
+    assertThat(symbolType.fullyQualifiedName()).isEqualTo("java.lang.MatchException | java.lang.NumberFormatException");
+    assertThat(symbolType.isUnionType()).isTrue();
+    assertThat(symbolType.getUnionTypes()).extracting(Type::fullyQualifiedName)
+      .containsExactly("java.lang.MatchException", "java.lang.NumberFormatException");
   }
 
   @Test

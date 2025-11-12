@@ -38,6 +38,7 @@ import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.AssessableExpressionTree;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -476,6 +477,7 @@ public abstract class JavaTree implements Tree {
 
   public static class UnionTypeTreeImpl extends AbstractTypedTree implements UnionTypeTree {
     private final ListTree<TypeTree> typeAlternatives;
+    public ITypeBinding[] alternativeBindings;
 
     public UnionTypeTreeImpl(QualifiedIdentifierListTreeImpl typeAlternatives) {
       this.typeAlternatives = Objects.requireNonNull(typeAlternatives);
@@ -504,6 +506,14 @@ public abstract class JavaTree implements Tree {
     @Override
     public List<AnnotationTree> annotations() {
       return Collections.emptyList();
+    }
+
+    @Override
+    public Type symbolType() {
+      if (typeBinding != null && alternativeBindings != null) {
+        root.sema.unionTypeAlternatives.put(typeBinding, alternativeBindings);
+      }
+      return super.symbolType();
     }
   }
 
