@@ -40,7 +40,7 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(19)
+      .hasSize(20)
       .contains(SonarLintCache.class);
   }
 
@@ -51,7 +51,7 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(sqCommunity);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(35)
+      .hasSize(36)
       .doesNotContain(Jasper.class);
   }
 
@@ -61,7 +61,7 @@ class JavaPluginTest {
     Plugin.Context context = new Plugin.Context(sqEnterprise);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
-      .hasSize(36)
+      .hasSize(37)
       .contains(Jasper.class);
   }
 
