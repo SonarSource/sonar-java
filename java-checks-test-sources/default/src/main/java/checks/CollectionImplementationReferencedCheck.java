@@ -13,11 +13,8 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.EnumSet;
-import javax.ws.rs.core.Link;
-import scala.collection.mutable.LinkedHashMap$;
 
 class EmployeesTopLevel {
-
   public EmployeesTopLevel(String s) { }
 
   public HashSet<Employee> employees = new HashSet<>(); // Noncompliant {{The type of "employees" should be an interface such as "Set" rather than the implementation "HashSet".}} [[quickfixes=HashSet1]]
@@ -161,7 +158,7 @@ abstract class ApiEnforcesClassSonarjava4590 {
   }
 
   public void foo16(LinkedList<Integer> list){ // Compliant
-    foo17(true,list);
+    foo17(true, list);
   }
 
   public void foo17(boolean bool, LinkedList<Integer> list){ // Noncompliant
@@ -187,8 +184,9 @@ abstract class ApiEnforcesClassSonarjava4590 {
     ORANGE,
     PEAR;
 
-    public static final EnumSet<Fruit> FRUITS_FP = EnumSet.of(APPLE, ORANGE, PEAR); // Noncompliant
                                                                                     // FP, EnumSet is used as argument in method
+    public static final EnumSet<Fruit> FRUITS_FP = EnumSet.of(APPLE, ORANGE, PEAR); // Noncompliant
+
     public static final EnumSet<Fruit> FRUITS = EnumSet.of(APPLE, ORANGE, PEAR); // Noncompliant
 
 
