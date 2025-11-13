@@ -107,7 +107,7 @@
     <!-- Overrides parent pom to use a more recent version of jacoco -->
     <version.jacoco.plugin>0.8.11</version.jacoco.plugin>
     <!-- To avoid having security vulnerabilities reported on sample files and projects -->
-    <sonar.sca.exclusions>**/test/files/**, **/test/resources/**, its/plugin/projects/**, java-checks-test-sources/**, its/sources/**</sonar.sca.exclusions>
+    <sonar.sca.exclusions>**/test/files/**, **/test/resources/**, its/plugin/projects/**, java-checks-test-sources/**, its/sources/**, java-symbolic-execution/java-symbolic-execution-checks-test-sources/**</sonar.sca.exclusions>
   </properties>
 
   <distributionManagement>
