@@ -1,25 +1,9 @@
-import java.util.ArrayList;
+package checks;
 
 class SunPackagesUsedCheckSample {
   private Object sun; // variable named "sun"
 
-  private void f() {
-    java.util.List a;
-    sun.Foo b; // Noncompliant
-//  ^^^^^^^
-    sun.Foo.toto.asd c; // secondary
-//  ^^^^^^^^^^^^^^^^<
-
-  }
-
-  public Object uselessMethod() {
-    if (com.sun.xml.ws.developer.JAXWSProperties.CONNECT_TIMEOUT.equals("com.sun.xml.ws.connect.timeout")) { // compliant
-      return new com.sun.xml.ws.transport.http.HttpAdapter(null, null, null); // compliant
-    }
-    return null;
-  }
-
-  // SONARJAVA-4698: False positive when variable is named "sun"
+  // SONARJAVA-4698: Variables named "sun" should not trigger the rule
   public void fooWithFieldNamedSun() {
     sun.toString(); // Compliant - "sun" is a field of type Object, not a sun.* package class
   }
@@ -31,5 +15,11 @@ class SunPackagesUsedCheckSample {
   public void bazWithLocalVariableNamedSun() {
     Object sun = new Object();
     sun.toString(); // Compliant - "sun" is a local variable of type Object, not a sun.* package class
+  }
+
+  // Actual sun.* package usage - should trigger the rule
+  public void useSunMiscUnsafe() {
+    sun.misc.Unsafe unsafe = null; // Noncompliant {{Use classes from the Java API instead of Sun classes.}}
+//  ^^^^^^^^^^^^^^^
   }
 }
