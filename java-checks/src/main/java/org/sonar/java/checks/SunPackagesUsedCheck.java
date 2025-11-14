@@ -66,13 +66,32 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
     String reference = ExpressionsHelper.concatenate(tree);
-    if (!isExcluded(reference) && isSunClass(reference)) {
+    if (!isExcluded(reference) && isSunClass(reference) && isActuallySunPackage(tree)) {
       reportedTrees.add(tree);
     }
   }
 
   private static boolean isSunClass(String reference) {
     return reference.startsWith("sun.");
+  }
+
+  private static boolean isActuallySunPackage(MemberSelectExpressionTree tree) {
+    // Check if the expression's type actually comes from a sun.* package
+    // This prevents false positives when a variable is named "sun"
+    var type = tree.expression().symbolType();
+    if (!type.isUnknown()) {
+      // When we have type information, use it to determine if it's actually a sun.* package
+      String fullyQualifiedName = type.fullyQualifiedName();
+      return fullyQualifiedName.startsWith("sun.");
+    }
+
+    // When type is unknown (e.g., non-compiling code or AutoScan without bytecode),
+    // we can't reliably distinguish between a package reference (sun.Foo) and
+    // a variable access (sun.foo where "sun" is a variable name).
+    // We prefer to avoid false positives rather than risk annoying users with incorrect reports.
+    // This means we might miss some true sun.* package usages in non-compiling code or AutoScan,
+    // but users with proper builds and semantic analysis will still get accurate results.
+    return false;
   }
 
   private boolean isExcluded(String reference) {
