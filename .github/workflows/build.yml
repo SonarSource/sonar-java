@@ -200,11 +200,15 @@ jobs:
           secrets: |
             development/kv/data/next url | SONAR_HOST_URL;
             development/kv/data/next token | SONAR_TOKEN;
-      - name: Test Analyze
+      - uses: SonarSource/ci-github-actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: sonar-java-test-analyze-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+      - uses: SonarSource/ci-github-actions/build-maven@v1
+        id: test-and-analyze
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
-        uses: SonarSource/ci-github-actions/build-maven@v1
         with:
           deploy: false
           artifactory-reader-role: private-reader    # Override default public-reader
