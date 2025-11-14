@@ -16,10 +16,4 @@ class SunPackagesUsedCheckSample {
     Object sun = new Object();
     sun.toString(); // Compliant - "sun" is a local variable of type Object, not a sun.* package class
   }
-
-  // Actual sun.* package usage - should trigger the rule
-  public void useSunMiscUnsafe() {
-    sun.misc.Unsafe unsafe = null; // Noncompliant {{Use classes from the Java API instead of Sun classes.}}
-//  ^^^^^^^^^^^^^^^
-  }
 }

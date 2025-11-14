@@ -5,10 +5,8 @@ class SunPackagesUsedCheckSample {
 
   private void f() {
     java.util.List a;
-    sun.Foo b; // Noncompliant
-//  ^^^^^^^
-    sun.Foo.toto.asd c; // secondary
-//  ^^^^^^^^^^^^^^^^<
+    sun.Foo b; // Compliant - without semantic info, we can't distinguish between package and variable
+    sun.Foo.toto.asd c; // Compliant
 
   }
 

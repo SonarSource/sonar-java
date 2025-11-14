@@ -84,10 +84,14 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
       String fullyQualifiedName = type.fullyQualifiedName();
       return fullyQualifiedName.startsWith("sun.");
     }
-    // When type is unknown (non-compiling code), we can't use semantic analysis
-    // In this case, rely on the string-based check which has already been done
-    // This means we may miss some FPs in non-compiling code, but we'll catch them with proper semantic analysis
-    return true;
+
+    // When type is unknown (e.g., non-compiling code or AutoScan without bytecode),
+    // we can't reliably distinguish between a package reference (sun.Foo) and
+    // a variable access (sun.foo where "sun" is a variable name).
+    // We prefer to avoid false positives rather than risk annoying users with incorrect reports.
+    // This means we might miss some true sun.* package usages in non-compiling code or AutoScan,
+    // but users with proper builds and semantic analysis will still get accurate results.
+    return false;
   }
 
   private boolean isExcluded(String reference) {
