@@ -33,6 +33,7 @@ jobs:
         id: build-maven
         with:
           deploy-pull-request: true
+          sonar-platform: none # Prevent analysis
           # Override artifactory roles for public repo using private access
           artifactory-reader-role: private-reader
           artifactory-deployer-role: qa-deployer
