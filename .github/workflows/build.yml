@@ -288,3 +288,25 @@ jobs:
           version: 2025.7.12
       - name: Run Maven
         run: mvn clean verify --batch-mode
+
+  promote:
+    needs:
+      - build
+      - ruling-qa
+      - plugin-qa
+      - sanity
+      - test-analyze
+      - autoscan
+      - qa-os-win
+    if: ${{ needs.build.outputs.deployed }}
+    runs-on: github-ubuntu-latest-s  # Public repo uses custom GitHub-hosted runners
+    name: Promote
+    permissions:
+      id-token: write
+      contents: write
+    env:
+      BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
+    steps:
+      - uses: SonarSource/ci-github-actions/promote@v1
+        with:
+          promote-pull-request: true
