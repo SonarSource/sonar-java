@@ -200,8 +200,11 @@ jobs:
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
-        run: |
-          PULL_REQUEST_SHA=$GIT_SHA1 mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar --batch-mode --activate-profiles coverage --define maven.deploy.skip=true
+        uses: SonarSource/ci-github-actions/build-maven@v1
+        with:
+          deploy: false
+          artifactory-reader-role: private-reader    # Override default public-reader
+          artifactory-deployer-role: qa-deployer     # Override default public-deployer
       - name: Build Java Custom Rules Example
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
