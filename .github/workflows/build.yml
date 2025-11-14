@@ -38,9 +38,9 @@ jobs:
           artifactory-reader-role: private-reader
           artifactory-deployer-role: qa-deployer
           maven-args: >
-            -Dmaven.test.skip=true
-            -Dsonar.skip=true
-            -pl !java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-web-4.0
+            --define maven.test.skip=true
+            --define sonar.skip=true
+            --projects !java-checks-test-sources/default,!java-checks-test-sources/aws,!java-checks-test-sources/spring-web-4.0
 
   ruling-qa:
     strategy:
