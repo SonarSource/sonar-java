@@ -151,3 +151,25 @@ class FieldAssignments {
   private final int bar = foo[2]; // Compliant (array access)
 }
 
+// Test case from SONARJAVA-5796: @Builder.Default with @SuperBuilder should not trigger
+@lombok.experimental.SuperBuilder
+class LombokSuperBuilderWithDefault {
+  @lombok.Builder.Default
+  private final int foo = 1; // Compliant - Builder.Default requires this pattern
+
+  @lombok.Builder.Default
+  private final String bar = "test"; // Compliant - Builder.Default requires this pattern
+}
+
+@lombok.Builder
+class LombokBuilderWithDefault {
+  @lombok.Builder.Default
+  private final int baz = 42; // Compliant - Builder.Default requires this pattern
+}
+
+// Without Builder annotations, should still raise issues
+class NotABuilder {
+  @lombok.Builder.Default
+  private final int shouldRaise = 1; // Noncompliant {{Make this final field static too.}}
+}
+
