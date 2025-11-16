@@ -118,4 +118,22 @@ public class NullableInjectedFieldsHaveDefaultValueSample {
   @org.jspecify.annotations.Nullable
   @Value("${my.property_jspecify}") // Noncompliant  {{Provide a default null value for this field.}} [[sc=3;ec=27;secondary=-1]]
   private String myProperty_jspecify;
+
+  // Test case from SONARJAVA-5866: @NonNull parameters should not trigger the rule
+  public String shouldNotTriggerOnNonNullParameter(@Value("${x}") @org.jspecify.annotations.NonNull String x) { // Compliant - NonNull means no default null value needed
+    return x;
+  }
+
+  public String shouldNotTriggerOnNonNullParameterFindbugs(@Value("${y}") @edu.umd.cs.findbugs.annotations.NonNull String y) { // Compliant - NonNull means no default null value needed
+    return y;
+  }
+
+  // NonNull fields should also not trigger
+  @org.jspecify.annotations.NonNull
+  @Value("${my.nonnull.property}") // Compliant - NonNull means no default null value needed
+  private String myNonNullProperty_jspecify;
+
+  @edu.umd.cs.findbugs.annotations.NonNull
+  @Value("${my.nonnull.property2}") // Compliant - NonNull means no default null value needed
+  private String myNonNullProperty_findbugs;
 }
