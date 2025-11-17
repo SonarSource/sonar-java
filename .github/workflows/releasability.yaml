@@ -44,7 +44,7 @@ jobs:
             echo "LATEST_VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: SonarSource/gh-action_releasability@v2
+      - uses: SonarSource/gh-action_releasability@v3
         id: releasability
         with:
           branch: ${{ github.ref_name }}
