@@ -35,6 +35,11 @@ public interface ModuleMetadata {
   JavaVersion javaVersion();
 
   /**
+   * Returns the JDK home path of the module being analyzed.
+   */
+  String jdkHome();
+
+  /**
    * Returns the module key of the module being analyzed.
    */
   String moduleKey();

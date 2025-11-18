@@ -19,6 +19,7 @@ package org.sonar.java;
 import javax.annotation.CheckForNull;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
 import org.sonar.api.config.Configuration;
+import org.sonar.java.classpath.ClasspathProperties;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.internal.ModuleMetadata;
@@ -30,16 +31,23 @@ public class DefaultModuleMetadata implements ModuleMetadata {
   private final JavaVersion javaVersion;
   private final ProjectDefinition projectDefinition;
   private final boolean ignoreUnnamedModuleForSplitPackage;
+  private final String jdkHome;
 
   public DefaultModuleMetadata(ProjectDefinition projectDefinition, Configuration configuration) {
     this.javaVersion = JavaVersionImpl.readFromConfiguration(configuration);
     this.projectDefinition = projectDefinition;
     this.ignoreUnnamedModuleForSplitPackage = configuration.getBoolean(SONAR_IGNORE_UNNAMED_MODULE_FOR_SPLIT_PACKAGE).orElse(false);
+    this.jdkHome = configuration.get(ClasspathProperties.SONAR_JAVA_JDK_HOME).orElse("");
   }
 
   @Override
   public JavaVersion javaVersion() {
     return javaVersion;
+  }
+
+  @Override
+  public String jdkHome() {
+    return jdkHome;
   }
 
   @Override
