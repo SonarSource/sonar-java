@@ -54,4 +54,14 @@ class SunPackagesUsedCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void detected_real_sun_package_usage() {
+    // Test that we correctly detect all forms of sun.* package usage
+    // including imports, field declarations, return types, parameters, etc.
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/SunPackagesUsedCheckWithRealSunUsage.java"))
+      .withCheck(new SunPackagesUsedCheck())
+      .verifyIssues();
+  }
+
 }
