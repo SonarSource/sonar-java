@@ -79,14 +79,14 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) qualifiedIdentifier;
       String reference = ExpressionsHelper.concatenate(memberSelect);
       if (!isExcluded(reference) && isSunClass(reference)) {
-        // For imports, check if we have semantic info by checking if the import's symbol is known
-        // In compiling code, imports have proper symbol resolution; in non-compiling code they don't
+        // For imports, check if we have semantic info by checking if the import's symbol type is resolved
+        // In autoscan mode (without bytecode), the symbol's type will be unknown
         var symbol = tree.symbol();
-        if (symbol != null && !symbol.isUnknown()) {
-          // We have semantic info, so this is a real sun.* import
+        if (symbol != null && !symbol.isUnknown() && !symbol.type().isUnknown()) {
+          // We have full semantic info with bytecode, so this is a real sun.* import
           reportedTrees.add(memberSelect);
         }
-        // Without semantic info, we can't be sure this is a real sun.* import, so skip it
+        // Without semantic info or bytecode, we can't be sure this is a real sun.* import, so skip it
       }
     }
     super.visitImport(tree);
