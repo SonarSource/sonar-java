@@ -129,6 +129,7 @@ test_analyze_task:
     - ./check-license-compliance.sh
   cleanup_before_cache_script: cleanup_maven_repository
 
+# Migrated to GHA.
 qa_os_win_task:
   ec2_instance:
     image: base-windows-jdk21-v*

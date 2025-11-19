@@ -158,11 +158,12 @@ public final class TestClasspathUtils {
     String mavenRepository = findMavenLocalRepository(System::getenv, System::getProperty);
     try {
       String content = Files.readString(toPath(classpathTextFilePath), UTF_8);
-      Arrays.stream(content.split(":"))
+      // Split on ":", but not when it follows Windows drive letter (e.g. "C:\").
+      Arrays.stream(content.split("(?<![A-Z]):"))
         .map(String::trim)
         .filter(line -> !line.isBlank())
         .map(TestClasspathUtils::fixSeparator)
-        .map(line -> line.replace("${M2_REPO}", mavenRepository))
+        .map(line -> line.replace("M2_REPO", mavenRepository))
         .map(Paths::get)
         .forEach(dependencyPath -> {
           if (!Files.exists(dependencyPath)) {
