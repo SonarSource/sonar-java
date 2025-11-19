@@ -271,3 +271,42 @@ jobs:
           -Dmaven.test.redirectTestOutputToFile=false
           -Dparallel=methods
           -DuseUnlimitedThreads=true
+
+  qa-os-win:
+    name: Build and Unit Test on Windows
+    # No dependency on build step, because we do not need the build number.
+    runs-on: github-windows-latest-m
+    permissions:
+      id-token: write  # Required for Vault OIDC authentication
+      contents: write  # Required for repository access and tagging
+    steps:
+      - name: Config Git
+        run: git config --global core.autocrlf input
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
+        with:
+          version: 2025.7.12
+      - name: Run Maven
+        run: mvn clean verify --batch-mode
+
+  promote:
+    needs:
+      - build
+      - ruling-qa
+      - plugin-qa
+      - sanity
+      - test-analyze
+      - autoscan
+      - qa-os-win
+    if: ${{ needs.build.outputs.deployed }}
+    runs-on: github-ubuntu-latest-s  # Public repo uses custom GitHub-hosted runners
+    name: Promote
+    permissions:
+      id-token: write
+      contents: write
+    env:
+      BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
+    steps:
+      - uses: SonarSource/ci-github-actions/promote@v1
+        with:
+          promote-pull-request: true

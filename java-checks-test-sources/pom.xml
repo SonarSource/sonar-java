@@ -40,8 +40,7 @@
               <fileSeparator>/</fileSeparator>
               <pathSeparator>:${line.separator}</pathSeparator>
               <includeScope>test</includeScope>
-              <!-- $$ to not evaluate M2_REPO now, this will become ${M2_REPO} in the output file -->
-              <localRepoProperty>$${M2_REPO}</localRepoProperty>
+              <localRepoProperty>M2_REPO</localRepoProperty>
               <outputEncoding>UTF-8</outputEncoding>
               <outputFile>${project.build.directory}/test-classpath.txt</outputFile>
             </configuration>
