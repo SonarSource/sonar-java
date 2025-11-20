@@ -172,7 +172,9 @@ abstract class ApiEnforcesClassSonarjava4590 {
   private void foo19(List<Integer> l){
     return;
   }
-
+  public void foo20(LinkedList<String> list) { // Noncompliant
+    String.format("", 0, 0);
+  }
   private LinkedList<Integer> getList() {
     return null;
   }
