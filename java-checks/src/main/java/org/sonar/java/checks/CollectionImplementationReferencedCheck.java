@@ -375,7 +375,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
         return;
       }
       var paramTypes = methodSymbol.parameterTypes();
-      for (int i = 0; i < arguments.size(); i++) {
+      for (int i = 0; i < arguments.size() && i < paramTypes.size(); i++) {
         processorArgument(arguments.get(i), paramTypes.get(i));
       }
     }
