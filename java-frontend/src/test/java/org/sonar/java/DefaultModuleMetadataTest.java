@@ -40,6 +40,14 @@ class DefaultModuleMetadataTest {
   }
 
   @Test
+  void testNullProjectDefinition() {
+    var config = mockConfiguration();
+    var defaultModuleMetadata = new DefaultModuleMetadata(null, config);
+
+    assertThat(defaultModuleMetadata.moduleKey()).isEmpty();
+  }
+
+  @Test
   void testWithJavaVersion() {
     var projectDefinition = mockProjectDefinition();
     var config = mockConfiguration("sonar.java.source", "11");
