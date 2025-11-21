@@ -16,12 +16,16 @@
  */
 package org.sonar.java.model;
 
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.sonar.api.config.Configuration;
 import org.sonar.plugins.java.api.JavaVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 class JavaVersionImplTest {
 
@@ -181,6 +185,17 @@ class JavaVersionImplTest {
     assertThat(version.isNotSet()).isTrue();
     assertThat(version.asInt()).isEqualTo(-1);
     assertThat(version.arePreviewFeaturesEnabled()).isFalse();
+  }
+
+  @Test
+  void test_preview_features_without_max_version_from_config(){
+    var config = mock(Configuration.class);
+    doReturn(Optional.of("17")).when(config).get(JavaVersion.SOURCE_VERSION);
+    doReturn(Optional.of("true")).when(config).get(JavaVersion.ENABLE_PREVIEW);
+    var javaVersion = JavaVersionImpl.readFromConfiguration(config);
+    assertThat(javaVersion.asInt()).isEqualTo(17);
+    // Preview features should be disabled because 17 is not the max supported version
+    assertThat(javaVersion.arePreviewFeaturesEnabled()).isFalse();
   }
   
 }
