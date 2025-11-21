@@ -16,15 +16,14 @@
  */
 package org.sonar.java;
 
-import java.io.File;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import org.sonar.api.batch.bootstrap.ProjectDefinition;
 import org.sonar.api.config.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.sonar.java.TestUtils.mockProjectDefinition;
 
 class DefaultModuleMetadataTest {
 
@@ -67,23 +66,13 @@ class DefaultModuleMetadataTest {
     assertThat(defaultModuleMetadata.shouldIgnoreUnnamedModuleForSplitPackage()).isTrue();
   }
 
-  private ProjectDefinition mockProjectDefinition() {
-    var rootProj = mock(ProjectDefinition.class);
-    doReturn(new File("/foo/bar/proj")).when(rootProj).getBaseDir();
-    var childModule = mock(ProjectDefinition.class);
-    doReturn(new File("/foo/bar/proj/pmodule/cmodule")).when(childModule).getBaseDir();
-    doReturn(rootProj).when(childModule).getParent();
-
-    return childModule;
-  }
-
   private Configuration mockConfiguration(String... keysAndValues) {
     Configuration configuration = mock(Configuration.class);
     for (int i = 0; i < keysAndValues.length; i++) {
       String key = keysAndValues[i++];
       String value = keysAndValues[i];
       doReturn(Optional.of(value)).when(configuration).get(key);
-      if(value.equals("true") || value.equals("false")) {
+      if (value.equals("true") || value.equals("false")) {
         doReturn(Optional.of(Boolean.valueOf(value))).when(configuration).getBoolean(key);
       }
     }

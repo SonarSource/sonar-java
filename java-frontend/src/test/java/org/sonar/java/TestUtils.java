@@ -21,11 +21,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Stream;
+import org.sonar.api.batch.bootstrap.ProjectDefinition;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -144,4 +146,15 @@ public class TestUtils {
     when(mock.jspChecks()).thenReturn(List.of());
     return mock;
   }
+
+  public static ProjectDefinition mockProjectDefinition() {
+    var rootProj = mock(ProjectDefinition.class);
+    doReturn(new File("/foo/bar/proj")).when(rootProj).getBaseDir();
+    var childModule = mock(ProjectDefinition.class);
+    doReturn(new File("/foo/bar/proj/pmodule/cmodule")).when(childModule).getBaseDir();
+    doReturn(rootProj).when(childModule).getParent();
+
+    return childModule;
+  }
+
 }

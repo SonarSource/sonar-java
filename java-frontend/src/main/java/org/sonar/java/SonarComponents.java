@@ -68,6 +68,7 @@ import org.sonar.java.model.JProblem;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaIssue;
+import org.sonar.java.utils.ModuleMetadataUtils;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -513,7 +514,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   }
 
   public File projectLevelWorkDir() {
-    var root = getRootProject();
+    var root = ModuleMetadataUtils.getRootProject(projectDefinition);
     if (root != null) {
       return root.getWorkDir();
     } else {
@@ -527,25 +528,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
    * @return A key representing the module
    */
   public String getModuleKey() {
-    var root = getRootProject();
-    if (root != null && projectDefinition != null) {
-      var rootBase = root.getBaseDir().toPath();
-      var moduleBase = projectDefinition.getBaseDir().toPath();
-      return rootBase.relativize(moduleBase).toString().replace('\\', '/');
-    }
-    return "";
-  }
-
-  @CheckForNull
-  private ProjectDefinition getRootProject() {
-    ProjectDefinition current = projectDefinition;
-    if (current == null) {
-      return null;
-    }
-    while (current.getParent() != null) {
-      current = current.getParent();
-    }
-    return current;
+    return ModuleMetadataUtils.getModuleKey(projectDefinition);
   }
 
   public boolean canSkipUnchangedFiles() throws ApiMismatchException {
