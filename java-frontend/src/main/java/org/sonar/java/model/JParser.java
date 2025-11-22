@@ -2620,15 +2620,23 @@ public class JParser {
 
   private JavaTree.UnionTypeTreeImpl convertUnionType(UnionType e) {
     QualifiedIdentifierListTreeImpl alternatives = QualifiedIdentifierListTreeImpl.emptyList();
+    ITypeBinding[] alternativeBindings = new ITypeBinding[e.types().size()];
     for (int i = 0; i < e.types().size(); i++) {
       Type o = (Type) e.types().get(i);
-      alternatives.add(convertType(o));
+      TypeTree typeTree = convertType(o);
+      alternatives.add(typeTree);
+      if (typeTree instanceof AbstractTypedTree typedTree && typedTree.typeBinding != null) {
+        alternativeBindings[i] = typedTree.typeBinding;
+      } else {
+        alternativeBindings[i] = o.resolveBinding();
+      }
       if (i < e.types().size() - 1) {
         alternatives.separators().add(firstTokenAfter(o, TerminalToken.TokenNameOR));
       }
     }
     JavaTree.UnionTypeTreeImpl t = new JavaTree.UnionTypeTreeImpl(alternatives);
     t.typeBinding = e.resolveBinding();
+    t.alternativeBindings = alternativeBindings;
     return t;
   }
 
