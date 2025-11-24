@@ -35,10 +35,17 @@ public class TestExtractor {
     if (fileMatcherDirect.find()) {
       testFilePath = fileMatcherDirect.group(1);
     } else {
-      java.util.regex.Pattern filePatternFunc = java.util.regex.Pattern.compile("\\.onFile\\(mainCodeSourcesPath\\(\"([^\"]+)\"\\)\\)");
+      // Modular regex for method calls
+      java.util.regex.Pattern filePatternFunc = java.util.regex.Pattern.compile("\\.onFile\\((mainCodeSourcesPath|testCodeSourcesPath)\\(\"([^\"]+)\"\\)\\)");
       java.util.regex.Matcher fileMatcherFunc = filePatternFunc.matcher(content);
       if (fileMatcherFunc.find()) {
-        testFilePath = "src/main/java/" + fileMatcherFunc.group(1);
+        String method = fileMatcherFunc.group(1);
+        String fileArg = fileMatcherFunc.group(2);
+        if ("mainCodeSourcesPath".equals(method)) {
+          testFilePath = "src/main/java/" + fileArg;
+        } else if ("testCodeSourcesPath".equals(method)) {
+          testFilePath = "src/test/java/" + fileArg;
+        }
       }
     }
 
@@ -102,6 +109,7 @@ public class TestExtractor {
     }
     System.out.println("yay");
     long nullCount = mappings.stream().filter(m -> m.testFilePath() == null || m.mainFilePath() == null).count();
+    List<CheckTestMapping> nullElems = mappings.stream().filter(m -> m.testFilePath() == null || m.mainFilePath() == null).toList();
     System.out.println("Mappings with null testFilePath or mainFilePath: " + nullCount + " out of " + mappings.size());
   }
 
