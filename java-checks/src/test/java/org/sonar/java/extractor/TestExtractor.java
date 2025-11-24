@@ -101,6 +101,8 @@ public class TestExtractor {
       }
     }
     System.out.println("yay");
+    long nullCount = mappings.stream().filter(m -> m.testFilePath() == null || m.mainFilePath() == null).count();
+    System.out.println("Mappings with null testFilePath or mainFilePath: " + nullCount + " out of " + mappings.size());
   }
 
   @Test
