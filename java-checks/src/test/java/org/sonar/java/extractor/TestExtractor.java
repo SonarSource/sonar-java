@@ -14,6 +14,29 @@ public class TestExtractor {
 
   private record CheckTestMapping(String testFilePath, String testOrchestratorPath, String mainFilePath, String ruleKey) {}
 
+  // Helper to resolve check class name and main file path robustly
+  private String resolveCheckClassName(String parsedCheckClassName, String packageName, String testOrchestratorPath) {
+    // Try parsed check class name first
+    if (parsedCheckClassName != null) {
+      String fqcn = parsedCheckClassName.contains(".") ? parsedCheckClassName : packageName + "." + parsedCheckClassName;
+      try {
+        Class.forName(fqcn);
+        return fqcn;
+      } catch (Exception ignored) {}
+    }
+    // Heuristic: strip 'Test' from orchestrator file name and append 'Check'
+    String fileName = Path.of(testOrchestratorPath).getFileName().toString();
+    if (fileName.endsWith("Test.java")) {
+      String base = fileName.substring(0, fileName.length() - "Test.java".length());
+      String heuristicClass = packageName + "." + base;
+      try {
+        Class.forName(heuristicClass);
+        return heuristicClass;
+      } catch (Exception ignored) {}
+    }
+    return null;
+  }
+
   private List<CheckTestMapping> extractMappingsFromTestOrchestrator(String testOrchestratorPath) throws Exception {
     Path testFile = Path.of(testOrchestratorPath);
     String content = Files.readString(testFile);
@@ -64,16 +87,8 @@ public class TestExtractor {
     if (checkMatcher.find()) {
       checkClassName = checkMatcher.group(1);
     }
-
-    // Use reflection to get annotation info from the check class
-    String fqcn = null;
-    if (checkClassName != null) {
-      if (checkClassName.contains(".")) {
-        fqcn = checkClassName;
-      } else {
-        fqcn = packageName + "." + checkClassName;
-      }
-    }
+    // Use helper to resolve check class name robustly
+    String fqcn = resolveCheckClassName(checkClassName, packageName, testOrchestratorPath);
     String ruleKey = null;
     try {
       if (fqcn != null) {
@@ -91,8 +106,16 @@ public class TestExtractor {
     List<CheckTestMapping> mappings = new ArrayList<>();
     for (String testFilePath : testFilePaths) {
       String mainFilePath = null;
-      if (testFilePath != null) {
-        mainFilePath = testFilePath.replace("src/test/files/checks/", "src/main/java/org/sonar/java/checks/").replace(".java", "Check.java");
+      if (fqcn != null) {
+        // Derive main file path from resolved class name
+        String classPath = fqcn.replace('.', '/');
+        mainFilePath = "src/main/java/" + classPath.substring(classPath.lastIndexOf("/") + 1) + ".java";
+        // Try to find the file in src/main/java
+        Path mainPath = Path.of("../java-checks/src/main/java/", classPath.substring(classPath.lastIndexOf(".") + 1) + ".java");
+        if (!Files.exists(mainPath)) {
+          // fallback to previous logic
+          mainFilePath = testFilePath.replace("src/test/files/checks/", "src/main/java/org/sonar/java/checks/").replace(".java", "Check.java");
+        }
       }
       mappings.add(new CheckTestMapping(testFilePath, testOrchestratorPath, mainFilePath, ruleKey));
     }
