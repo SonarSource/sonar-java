@@ -1,5 +1,6 @@
 package org.sonar.java.extractor;
 
+import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -142,8 +143,9 @@ public class TestExtractor {
     }
     System.out.println("yay");
     long nullCount = mappings.stream().filter(m -> m.testFilePath() == null || m.mainFilePath() == null).count();
-    List<CheckTestMapping> nullEmeents = mappings.stream().filter(m -> m.testFilePath() == null || m.mainFilePath() == null || m.ruleKey() == null).toList();
     System.out.println("Mappings with null testFilePath or mainFilePath: " + nullCount + " out of " + mappings.size());
+    serializeMappingsToJson(mappings, "src/test/resources/check-test-mappings.json");
+    System.out.println("Serialized mappings to src/test/resources/check-test-mappings.json");
   }
 
   @Test
@@ -180,5 +182,11 @@ public class TestExtractor {
     assert testFilePath != null : "Test file path not found";
     assert checkClassName != null : "Check class name not found";
     assert ruleKey != null : "Rule key not found";
+  }
+
+  public void serializeMappingsToJson(List<CheckTestMapping> mappings, String outputPath) throws IOException {
+    Gson gson = new Gson();
+    String json = gson.toJson(mappings);
+    Files.writeString(Path.of(outputPath), json);
   }
 }
