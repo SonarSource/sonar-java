@@ -52,12 +52,12 @@ public class TestExtractor {
       packageName = "org.sonar.java.checks"; // fallback
     }
 
-    // Extract all .onFile(...) calls (supporting multiple method variants)
+    // Extract all .onFile(...) calls (supporting multiple method variants, qualified or not)
     List<String> supportedMethods = List.of("mainCodeSourcesPath", "testCodeSourcesPath", "nonCompilingTestSourcesPath");
     String methodRegex = String.join("|", supportedMethods);
-    java.util.regex.Pattern filePattern = java.util.regex.Pattern.compile("\\.onFile\\((" + methodRegex + ")\\(\"([^\"]+)\"\\)\\)");
-    // FIX: Correct escaping for Java string literal
-    filePattern = java.util.regex.Pattern.compile("\\.onFile\\((" + methodRegex + ")\\(\"([^\"]+)\"\\)\\)");
+    java.util.regex.Pattern filePattern = java.util.regex.Pattern.compile(
+        "\\.onFile\\((?:[a-zA-Z0-9_]+\\.)?(mainCodeSourcesPath|testCodeSourcesPath|nonCompilingTestSourcesPath)\\(\"([^\"]+)\"\\)\\)"
+    );
     java.util.regex.Matcher fileMatcher = filePattern.matcher(content);
     List<String> testFilePaths = new ArrayList<>();
     List<String> methodNames = new ArrayList<>();
