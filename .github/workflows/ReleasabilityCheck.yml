@@ -14,7 +14,7 @@ name: Releasability Check
 jobs:
   releasability-status:
     name: Releasability status
-    runs-on: sonar-xs
+    runs-on: github-ubuntu-latest-s
     permissions:
       id-token: write
       statuses: write
