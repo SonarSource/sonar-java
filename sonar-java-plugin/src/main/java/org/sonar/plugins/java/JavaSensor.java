@@ -25,8 +25,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.fs.FileSystem;
@@ -60,8 +58,6 @@ import static org.sonar.java.telemetry.TelemetryKey.JAVA_SCANNER_APP;
 @Phase(name = Phase.Name.PRE)
 @DependedUpon("org.sonar.plugins.java.JavaSensor")
 public class JavaSensor implements Sensor {
-
-  private static final Logger LOG = LoggerFactory.getLogger(JavaSensor.class);
 
   private static final String PERFORMANCE_MEASURE_ACTIVATION_PROPERTY = "sonar.java.performance.measure";
   private static final String PERFORMANCE_MEASURE_FILE_PATH_PROPERTY = "sonar.java.performance.measure.path";
