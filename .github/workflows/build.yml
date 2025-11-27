@@ -179,7 +179,7 @@ jobs:
     needs:
       - build
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: github-ubuntu-latest-m
+    runs-on: github-ubuntu-latest-l
     permissions:
       id-token: write
       contents: write
