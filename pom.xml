@@ -76,8 +76,8 @@
     <url>https://jira.sonarsource.com/browse/SONARJAVA</url>
   </issueManagement>
   <ciManagement>
-    <system>Cirrus CI</system>
-    <url>https://cirrus-ci.com/github/SonarSource/sonar-java</url>
+    <system>GitHub Actions</system>
+    <url>https://github.com/SonarSource/sonar-java/actions/workflows/build.yml</url>
   </ciManagement>
 
   <properties>

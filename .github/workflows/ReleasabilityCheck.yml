@@ -1,0 +1,28 @@
+name: Releasability Check
+
+# Triggered when the "Build" workflow completes on specific branches.
+
+'on':
+  workflow_run:
+    workflows: [ "Build" ]
+    types: [ completed ]
+    branches:
+      - master
+      - dogfood-*
+      - branch-*
+
+jobs:
+  releasability-status:
+    name: Releasability status
+    runs-on: github-ubuntu-latest-s
+    permissions:
+      id-token: write
+      statuses: write
+      contents: read
+    if: github.event.workflow_run.conclusion == 'success'
+    steps:
+      - uses: SonarSource/gh-action_releasability/releasability-status@v3
+        with:
+          optional_checks: "Jira"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
