@@ -14,9 +14,7 @@
     "linearOffset": "4h",
     "linearFactor": "30min"
   },
-  "tags": [
-    "architecture"
-  ],
+  "tags": [],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-110",
   "sqKey": "S110",
