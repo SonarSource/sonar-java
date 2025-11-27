@@ -173,6 +173,14 @@ public class NullableInjectedFieldsHaveDefaultValueCheck extends IssuableSubscri
     if (instance == null) {
       return Optional.empty();
     }
+    // Only return if the annotation is actually nullable (not non-null)
+    // Prefer not raising an issue when type is unknown
+    SymbolMetadata.NullabilityType nullabilityType = nullabilityData.type();
+    if (nullabilityType == SymbolMetadata.NullabilityType.NON_NULL ||
+        nullabilityType == SymbolMetadata.NullabilityType.UNKNOWN ||
+        nullabilityType == SymbolMetadata.NullabilityType.NO_ANNOTATION) {
+      return Optional.empty();
+    }
     return Optional.ofNullable(field.symbol().metadata().findAnnotationTree(instance));
   }
 
