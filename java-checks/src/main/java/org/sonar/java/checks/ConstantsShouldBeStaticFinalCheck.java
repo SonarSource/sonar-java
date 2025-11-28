@@ -52,10 +52,11 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
   @Override
   public void visitNode(Tree tree) {
     nestedClassesLevel++;
-    for (Tree member : ((ClassTree) tree).members()) {
+    ClassTree classTree = (ClassTree) tree;
+    for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) member;
-        if (staticNonFinal(variableTree) && hasConstantInitializer(variableTree) && !isObjectInInnerClass(variableTree)) {
+        if (staticNonFinal(variableTree) && hasConstantInitializer(variableTree) && !isObjectInInnerClass(variableTree) && !isLombokBuilderDefault(variableTree, classTree)) {
           reportIssue(variableTree.simpleName(), "Make this final field static too.");
         }
       }
@@ -135,5 +136,29 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
 
   private static boolean isStatic(VariableTree variableTree) {
     return ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC);
+  }
+
+  /**
+   * Check if a field is annotated with @Builder.Default in a class annotated with @Builder or @SuperBuilder.
+   * Lombok's builder pattern requires final fields with initializers when using @Builder.Default.
+   */
+  private static boolean isLombokBuilderDefault(VariableTree variableTree, ClassTree classTree) {
+    // Check if field has @Builder.Default annotation
+    boolean hasBuilderDefault = variableTree.modifiers().annotations().stream()
+      .anyMatch(annotation -> {
+        var type = annotation.symbolType();
+        return type.is("lombok.Builder.Default") || type.is("lombok.Builder$Default");
+      });
+
+    if (!hasBuilderDefault) {
+      return false;
+    }
+
+    // Check if class has @Builder or @SuperBuilder annotation
+    return classTree.modifiers().annotations().stream()
+      .anyMatch(annotation -> {
+        var type = annotation.symbolType();
+        return type.is("lombok.Builder") || type.is("lombok.experimental.SuperBuilder");
+      });
   }
 }
