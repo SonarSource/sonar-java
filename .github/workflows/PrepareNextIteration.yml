@@ -23,11 +23,12 @@ jobs:
       - name: Update Version Number
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEXT_VERSION: ${{ inputs.nextVersion }}
         run: |
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git checkout -b gh-action/next-iteration
-          mvn versions:set -DgenerateBackupPoms=false -DnewVersion="${{ inputs.nextVersion }}"
+          mvn versions:set -DgenerateBackupPoms=false -DnewVersion="${NEXT_VERSION}"
           git commit -m 'Prepare next development iteration' -a
           git push --set-upstream origin gh-action/next-iteration
           gh pr create -B master --title 'Prepare next development iteration' --body ''
