@@ -1,10 +1,28 @@
 class A {
-  void specExample() {
-    for (float x = 16_000_000; x < 17_000_000; x++) { // Noncompliant {{Increment and decrement operators (++/--) should not be used with floating point variables}}
+  void specNonCompliantExamples() {
+    for (float i = 16_000_000; i < 17_000_000; i++) { // Noncompliant {{Increment and decrement operators (++/--) should not be used with floating point variables}}
 //                                             ^^^
       // ...
     }
+
+
+    float x = 0f;
+    double y = 1.0;
+
+    x++; // Noncompliant {{Increment and decrement operators (++/--) should not be used with floating point variables}}
+//  ^^^
+    y--; // Noncompliant {{Increment and decrement operators (++/--) should not be used with floating point variables}}
+//  ^^^
   }
+
+  void specCompliantExamples() {
+    float x = 0f;
+    double y = 1.0;
+
+    x += 1.0; // Compliant
+    y -= 1.0; // Compliant
+  }
+
   void floatIsNotCompliant() {
     float y = 0.1f;
     y++; // Noncompliant {{Increment and decrement operators (++/--) should not be used with floating point variables}}
