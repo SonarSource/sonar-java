@@ -31,6 +31,8 @@ jobs:
           version: 2025.7.12
       - uses: SonarSource/ci-github-actions/build-maven@v1
         id: build-maven
+        env:
+          MAVEN_OPTS: "-Xmx8g"
         with:
           deploy-pull-request: true
           sonar-platform: none # Prevent analysis
@@ -171,6 +173,7 @@ jobs:
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
+          MAVEN_OPTS: "-Xmx8g"
         run: |
           mvn verify --batch-mode -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
 
