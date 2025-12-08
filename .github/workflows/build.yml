@@ -40,7 +40,7 @@ jobs:
           maven-args: >
             --define maven.test.skip=true
             --define sonar.skip=true
-            --projects !java-checks-test-sources/aws,!java-checks-test-sources/default,!java-checks-test-sources/java-17,!java-checks-test-sources/spring-3.2,!java-checks-test-sources/spring-web-4.0
+            --projects !java-checks-test-sources/aws,!java-checks-test-sources/default,!java-checks-test-sources/java-17,!java-checks-test-sources/spring-3.2
 
   ruling-qa:
     strategy:
