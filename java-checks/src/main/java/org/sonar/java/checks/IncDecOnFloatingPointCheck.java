@@ -19,17 +19,23 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.semantic.Type.Primitives;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 @Rule(key = "S8346")
-public class IncDecOnFPCheck extends IssuableSubscriptionVisitor {
+public class IncDecOnFloatingPointCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_INCREMENT, Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.PREFIX_DECREMENT);
+    return List.of(
+      Tree.Kind.POSTFIX_INCREMENT,
+      Tree.Kind.PREFIX_INCREMENT,
+      Tree.Kind.POSTFIX_DECREMENT,
+      Tree.Kind.PREFIX_DECREMENT
+    );
   }
 
   @Override
@@ -38,9 +44,26 @@ public class IncDecOnFPCheck extends IssuableSubscriptionVisitor {
       tree instanceof UnaryExpressionTree unaryExpr &&
         unaryExpr.expression() instanceof IdentifierTree identifier &&
         // above condition should always be true, just used to pattern match safely
-        (identifier.symbolType().isPrimitive(Primitives.FLOAT) || identifier.symbolType().isPrimitive(Primitives.DOUBLE))
+        isFloatingPoint(identifier.symbolType())
     ) {
-      reportIssue(unaryExpr, "Increment and decrement operators (++/--) should not be used with floating point variables");
+      reportIssue(
+        unaryExpr,
+        "%s operator (%s) should not be used with floating point variables".formatted(
+          isIncrement(unaryExpr) ? "Increment" : "Decrement",
+          unaryExpr.operatorToken().text()
+        )
+      );
     }
+  }
+
+  private static boolean isFloatingPoint(Type type) {
+    return type.isPrimitive(Primitives.FLOAT) || type.isPrimitive(Primitives.DOUBLE);
+  }
+
+  private static boolean isIncrement(UnaryExpressionTree unaryExp) {
+    return unaryExp.is(
+      Tree.Kind.PREFIX_INCREMENT,
+      Tree.Kind.POSTFIX_INCREMENT
+    );
   }
 }

@@ -19,13 +19,21 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-class IncDecOnFPCheckTest {
+class IncDecOnFloatingPointCheckTest {
 
   @Test
-  void detected() {
+  void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/IncDecOnFPCheck.java")
-      .withCheck(new IncDecOnFPCheck())
+      .onFile("src/test/files/checks/IncDecOnFloatingPointCheck.java")
+      .withCheck(new IncDecOnFloatingPointCheck())
+      .verifyIssues();
+  }
+  @Test
+  void testNoSemantic() {
+    CheckVerifier.newVerifier()
+      .withoutSemantic()
+      .onFile("src/test/files/checks/IncDecOnFloatingPointCheck.java")
+      .withCheck(new IncDecOnFloatingPointCheck())
       .verifyIssues();
   }
 }
