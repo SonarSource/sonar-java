@@ -1,0 +1,43 @@
+<p>This rule raises an issue when increment (<code>++</code>) or decrement (<code>--</code>) operators are used with floating-point variables.</p>
+<h2>Why is this an issue?</h2>
+<p>Increment and decrement operators (<code>++</code> and <code>--</code>) shouldn’t be used with floating-point variables (like <code>float</code> or
+<code>double</code>). While the language allows it, the usage is not idiomatic, and most developers intuitively expect <code>x++</code> to apply to
+integer types. Using it on a float violates this common expectation and can lead to misleading code.</p>
+<h3>What is the potential impact?</h3>
+<p>Floating-point arithmetic has some non-intuitive properties, which can lead to unexpected bugs. For example, the following loop will not terminate.
+This happens because <code>float</code> has only 24 bits of precision (mantissa) and once a number gets large enough, adding <code>1.0</code> becomes
+insignificant and the increment operation does nothing:</p>
+<pre>
+for (float x = 16_000_000; x &lt; 17_000_000; x++) {
+  // ...
+}
+// The loop does not terminate
+</pre>
+<p>The problem would not occur if <code>int</code> is used instead of <code>float</code>, even though both types occupy 32 bits:</p>
+<pre>
+for (int x = 16_000_000; x &lt; 17_000_000; x++) {
+  // ...
+}
+// This loop terminates.
+</pre>
+<h2>How to fix it</h2>
+<p>Using the compound assignment operators (<code>+=</code> and <code>-=</code>) makes the intent clearer and avoids the surprising use of
+<code>++</code> and <code>--</code> on floating-point types.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre>
+float x = 0f;
+double y = 1.0;
+
+x++;
+y--;
+</pre>
+<h4>Compliant solution</h4>
+<pre>
+float x = 0f;
+double y = 1.0;
+
+x += 1.0;
+y -= 1.0;
+</pre>
+
