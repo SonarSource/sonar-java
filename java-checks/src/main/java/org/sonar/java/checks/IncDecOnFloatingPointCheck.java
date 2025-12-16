@@ -41,25 +41,20 @@ public class IncDecOnFloatingPointCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    var unaryExprOpt = Optional.of(tree)
+    Optional.of(tree)
       .filter(UnaryExpressionTree.class::isInstance)
-      .map(UnaryExpressionTree.class::cast);
-    unaryExprOpt
-      .map(UnaryExpressionTree::expression)
-      .filter(IdentifierTree.class::isInstance)
-      .map(IdentifierTree.class::cast)
-      .filter(identifier -> isFloatingPoint(identifier.symbolType()))
-      .ifPresent(identifier -> {
-        // safe get
-        var unaryExpr = unaryExprOpt.get();
-        reportIssue(
-          unaryExpr,
-          "%s operator (%s) should not be used with floating point variables".formatted(
-            isIncrement(unaryExpr) ? "Increment" : "Decrement",
-            unaryExpr.operatorToken().text()
-          )
-        );
-      });
+      .map(UnaryExpressionTree.class::cast)
+      .filter(unaryExpr ->
+        unaryExpr.expression() instanceof IdentifierTree identifierTree
+          && isFloatingPoint(identifierTree.symbolType())
+      )
+      .ifPresent(unaryExpr -> reportIssue(
+        unaryExpr,
+        "%s operator (%s) should not be used with floating point variables".formatted(
+          isIncrement(unaryExpr) ? "Increment" : "Decrement",
+          unaryExpr.operatorToken().text()
+        )
+      ));
   }
 
 
