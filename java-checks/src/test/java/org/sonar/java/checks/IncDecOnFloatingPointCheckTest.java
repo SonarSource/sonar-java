@@ -28,6 +28,7 @@ class IncDecOnFloatingPointCheckTest {
       .withCheck(new IncDecOnFloatingPointCheck())
       .verifyIssues();
   }
+
   @Test
   void testNoSemantic() {
     CheckVerifier.newVerifier()

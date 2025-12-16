@@ -17,6 +17,7 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -40,21 +41,27 @@ public class IncDecOnFloatingPointCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (
-      tree instanceof UnaryExpressionTree unaryExpr &&
-        unaryExpr.expression() instanceof IdentifierTree identifier &&
-        // above condition should always be true, just used to pattern match safely
-        isFloatingPoint(identifier.symbolType())
-    ) {
-      reportIssue(
-        unaryExpr,
-        "%s operator (%s) should not be used with floating point variables".formatted(
-          isIncrement(unaryExpr) ? "Increment" : "Decrement",
-          unaryExpr.operatorToken().text()
-        )
-      );
-    }
+    var unaryExprOpt = Optional.of(tree)
+      .filter(UnaryExpressionTree.class::isInstance)
+      .map(UnaryExpressionTree.class::cast);
+    unaryExprOpt
+      .map(UnaryExpressionTree::expression)
+      .filter(IdentifierTree.class::isInstance)
+      .map(IdentifierTree.class::cast)
+      .filter(identifier -> isFloatingPoint(identifier.symbolType()))
+      .ifPresent(identifier -> {
+        // safe get
+        var unaryExpr = unaryExprOpt.get();
+        reportIssue(
+          unaryExpr,
+          "%s operator (%s) should not be used with floating point variables".formatted(
+            isIncrement(unaryExpr) ? "Increment" : "Decrement",
+            unaryExpr.operatorToken().text()
+          )
+        );
+      });
   }
+
 
   private static boolean isFloatingPoint(Type type) {
     return type.isPrimitive(Primitives.FLOAT) || type.isPrimitive(Primitives.DOUBLE);
