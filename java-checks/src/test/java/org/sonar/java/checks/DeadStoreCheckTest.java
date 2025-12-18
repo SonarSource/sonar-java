@@ -54,7 +54,7 @@ class DeadStoreCheckTest {
   @Test
   void test_fp() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/UnusedVariablesFPCheck.java"))
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/UnusedVariablesFPCheck.java"))
       .withJavaVersion(14)
       .withCheck(new DeadStoreCheck())
       .verifyNoIssues();

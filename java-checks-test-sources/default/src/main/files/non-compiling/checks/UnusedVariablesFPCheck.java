@@ -1,4 +1,4 @@
-package com;
+package checks;
 
 
 public class UnusedVariablesFPCheck {
