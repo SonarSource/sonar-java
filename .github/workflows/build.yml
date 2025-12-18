@@ -71,8 +71,8 @@ jobs:
       - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
         with:
           version: 2025.7.12
-      - name: Select Java 17
-        run: mise use java@17
+      - name: Select Java 21
+        run: mise use java@21
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
@@ -116,8 +116,8 @@ jobs:
       - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
         with:
           version: 2025.7.12
-      - name: Select Java 17
-        run: mise use java@17
+      - name: Select Java 21
+        run: mise use java@21
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
@@ -258,8 +258,8 @@ jobs:
         working-directory: java-checks-test-sources
         run: |
           mvn clean compile test-compile --batch-mode
-      - name: Select Java 17
-        run: mise use java@17
+      - name: Select Java 21
+        run: mise use java@21
       - uses: SonarSource/ci-github-actions/config-maven@v1
         with:
           deploy: false
