@@ -119,6 +119,26 @@ public class CollectorsToListCheckSample {
       .collect(Collectors.toList()); // Compliant, list5 needs to be mutable
 
     list5.removeIf(s -> true);
+
+    List<String> list6 = Stream.of("B", "C", "D")
+      .collect(Collectors.toList()); // Compliant, list6 needs to be mutable
+
+    list6.addFirst("A");
+
+    List<String> list7 = Stream.of("A", "B", "C")
+      .collect(Collectors.toList()); // Compliant, list7 needs to be mutable
+
+    list7.addLast("D");
+
+    List<String> list8 = Stream.of("A", "B", "C")
+      .collect(Collectors.toList()); // Compliant, list8 needs to be mutable
+
+    list8.removeFirst();
+
+    List<String> list9 = Stream.of("A", "B", "C")
+      .collect(Collectors.toList()); // Compliant, list9 needs to be mutable
+
+    list9.removeLast();
   }
 
   void addX() {
