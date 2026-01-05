@@ -342,7 +342,9 @@ public class Symbols {
     }
 
     @Override
-    public boolean isMethodSymbol() { return true; }
+    public boolean isMethodSymbol() {
+      return true;
+    }
   }
 
   public static final class UnknownType implements Type {
@@ -470,7 +472,7 @@ public class Symbols {
 
     @Override
     public Type[] getIntersectionTypes() {
-      return new Type[] { this };
+      return new Type[]{this};
     }
   }
 }
