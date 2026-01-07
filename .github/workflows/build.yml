@@ -121,9 +121,7 @@ jobs:
         with:
           version: 2025.7.12
       - name: Select Java Version
-        env:
-          JAVA_VERSION: ${{ matrix.item.java_version}}
-        run: mise use "java@${JAVA_VERSION}"
+        run: mise use java@${{ matrix.item.java_version}}
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
