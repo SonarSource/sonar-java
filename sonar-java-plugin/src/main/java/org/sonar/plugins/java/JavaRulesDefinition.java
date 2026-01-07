@@ -75,6 +75,18 @@ public class JavaRulesDefinition implements RulesDefinition {
 
     INTERNAL_KEYS.forEach((ruleKey, internalKey) -> repository.rule(ruleKey).setInternalKey(internalKey));
 
+    // --- inside the define(Context context) method, after rules are loaded into 'repository' ---
+    RuleMetadataLoader ruleMetadataLoader = new RuleMetadataLoader(RESOURCE_BASE_PATH, JavaSonarWayProfile.SONAR_WAY_PATH, sonarRuntime);
+    ruleMetadataLoader.addRulesByAnnotatedClass(repository, GeneratedCheckList.getChecks());
+
+    // NEW: inject CVSS metadata into the rule descriptions
+    new org.sonar.plugins.java.CvssMetadataInjector().inject(repository);
+
+// existing code continues...
+TEMPLATE_RULE_KEY.stream()
+  .map(repository::rule)
+  .forEach(rule -> rule.setTemplate(true));
+
     // for all the rules without explicit deprecated key already declared, register them with "squid:key"
     GeneratedCheckList.getChecks().stream()
       .filter(rule -> !deprecatesRules(rule))
