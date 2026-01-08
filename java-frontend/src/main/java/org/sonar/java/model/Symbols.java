@@ -472,7 +472,7 @@ public class Symbols {
 
     @Override
     public Type[] getIntersectionTypes() {
-      return new Type[]{this};
+      return new Type[] { this };
     }
   }
 }

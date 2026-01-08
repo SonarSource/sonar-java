@@ -3,6 +3,8 @@ package checks;
 
 public class UnusedVariablesFPCheck {
   public class DeobfuscatedUpdateManager {
+    // @formatter:off
+// uncommenting the following code makes the issue disappear, as the semantic is fully resolved
 //    private interface DataContainer {
 //      Iterable<ItemElement> getItems();
 //    }
@@ -29,25 +31,8 @@ public class UnusedVariablesFPCheck {
 //    static class A {
 //      interface GenericCallback<T> { }
 //    }
+    // @formatter:on
 
-    /**
-     * Deobfuscated names with AI from :
-     * ```java
-     * package com;
-     * <p>
-     * public class BCid51 {
-     * void HJid232(EJid229 YHid199, Yid24.RIid217<MBid37> QJid241) {
-     * for (XFid148 RJid242 : YHid199.WIid222()) {
-     * int DHid178;
-     * if (Fid5.BGid151() == CGid152.DGid153) {
-     * MBid37 IHid183 = RJid242.OFid139();
-     * IHid183.AGid150();
-     * }
-     * }
-     * }
-     * }
-     * ```
-     */
     void processUpdates(
       DataContainer container
       // REMARK : the issue arises from the A.GenericCallback<ModelObject> callback that is not even used (indirect type resolution problem)
@@ -55,7 +40,7 @@ public class UnusedVariablesFPCheck {
     ) {
       for (ItemElement element : container.getItems()) {
         if (SystemConfig.getMode() == ConfigMode.ENABLED) {
-          ModelObject dataModel = element.getDataModel();
+          ModelObject dataModel = element.getDataModel(); // Compliant - false positive was raised here, dataModel is used in the next line
           dataModel.performAction();
         }
       }
@@ -64,17 +49,25 @@ public class UnusedVariablesFPCheck {
   }
 
   static class StringConcatenation {
+    // @formatter:off
+// uncommenting the following code makes the issue disappear, as the semantic is fully resolved
 //    private class AClass {
 //      private class BClass<T> {
 //        public T b;
 //      }
 //    }
+    // @formatter:on
 
     public String doSomething(AClass.BClass<String> instance) {
-      String c = "Hi"; // Rule S1854
+      String c = "Hi"; // Compliant - false positive was raised here, c is used in the next line
       return instance.b + c;
     }
   }
+
+/*
+  A user reported a FP on enhanced switch statements like the one below.
+  However I was not able to reproduce it in a minimal example.
+  https://community.sonarsource.com/t/false-positive-for-s1854-unused-assignments-should-be-removed/114110/12
 
   static class EnhancedSwitch {
 //    private enum DocumentStatus {
@@ -108,12 +101,5 @@ public class UnusedVariablesFPCheck {
       documentRepository.save(document);
     }
 
-  }
-
-  class Obvious {
-//    void obvious() {
-//      int i = 0; // doesn't raise issue
-//      i = 1; // raises issue
-//    }
-  }
+  }*/
 }

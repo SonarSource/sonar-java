@@ -52,7 +52,7 @@ class DeadStoreCheckTest {
   }
 
   @Test
-  void test_fp() {
+  void test_incomplete_semantic() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/UnusedVariablesFPCheck.java"))
       .withJavaVersion(14)
