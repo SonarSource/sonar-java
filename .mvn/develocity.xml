@@ -1,6 +1,6 @@
 <develocity>
   <server>
-    <url>https://develocity.sonar.build</url>
+    <url>https://develocity-public.sonar.build</url>
   </server>
   <buildCache>
     <local>

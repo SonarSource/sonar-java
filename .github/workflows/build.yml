@@ -39,6 +39,8 @@ jobs:
           # Override artifactory roles for public repo using private access
           artifactory-reader-role: private-reader
           artifactory-deployer-role: qa-deployer
+          use-develocity: true
+          develocity-url: https://develocity-public.sonar.build/
           maven-args: >
             --define maven.test.skip=true
             --define sonar.skip=true
@@ -77,6 +79,8 @@ jobs:
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
           artifactory-reader-role: private-reader
+          use-develocity: true
+          develocity-url: https://develocity-public.sonar.build/
       - name: Getting Vault Secrets
         id: secrets
         uses: SonarSource/vault-action-wrapper@320bd31b03e5dacaac6be51bbbb15adf7caccc32 # v3.1.0
@@ -126,6 +130,8 @@ jobs:
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
           artifactory-reader-role: private-reader
+          use-develocity: true
+          develocity-url: https://develocity-public.sonar.build/
       - name: Getting Vault Secrets
         id: secrets
         uses: SonarSource/vault-action-wrapper@320bd31b03e5dacaac6be51bbbb15adf7caccc32 # v3.1.0
@@ -173,6 +179,8 @@ jobs:
           deploy: false
           artifactory-reader-role: private-reader
           artifactory-deployer-role: qa-deployer
+          use-develocity: true
+          develocity-url: https://develocity-public.sonar.build/
       - name: Sanity Test
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
@@ -208,6 +216,8 @@ jobs:
           deploy: false
           artifactory-reader-role: private-reader    # Override default public-reader
           artifactory-deployer-role: qa-deployer     # Override default public-deployer
+          use-develocity: true
+          develocity-url: https://develocity-public.sonar.build/
           scanner-java-opts: '-Xmx2g'
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
@@ -269,6 +279,8 @@ jobs:
           deploy: false
           artifactory-reader-role: private-reader
           artifactory-deployer-role: qa-deployer
+          use-develocity: true
+          develocity-url: https://develocity-public.sonar.build/
       - name: Run autoscan tests
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
