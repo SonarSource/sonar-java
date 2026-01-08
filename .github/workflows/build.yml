@@ -176,9 +176,7 @@ jobs:
           mvn clean compile --batch-mode
       - uses: SonarSource/ci-github-actions/config-maven@v1
         with:
-          deploy: false
           artifactory-reader-role: private-reader
-          artifactory-deployer-role: qa-deployer
           use-develocity: true
           develocity-url: https://develocity-public.sonar.build/
       - name: Sanity Test
@@ -248,9 +246,7 @@ jobs:
             development/kv/data/next token | SONAR_TOKEN;
       - uses: SonarSource/ci-github-actions/config-maven@v1
         with:
-          deploy: false
           artifactory-reader-role: private-reader
-          artifactory-deployer-role: qa-deployer
           use-develocity: true
           develocity-url: https://develocity-public.sonar.build/
         env:
@@ -310,9 +306,7 @@ jobs:
         run: mise use java@17
       - uses: SonarSource/ci-github-actions/config-maven@v1
         with:
-          deploy: false
           artifactory-reader-role: private-reader
-          artifactory-deployer-role: qa-deployer
           use-develocity: true
           develocity-url: https://develocity-public.sonar.build/
       - name: Run autoscan tests
