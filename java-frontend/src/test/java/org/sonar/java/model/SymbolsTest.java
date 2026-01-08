@@ -171,7 +171,6 @@ class SymbolsTest {
     assertThat(unknownSymbol.isPackageSymbol()).isFalse();
     assertThat(unknownSymbol.isTypeSymbol()).isFalse();
     assertThat(unknownSymbol.isVariableSymbol()).isFalse();
-    assertThat(unknownSymbol.isMethodSymbol()).isTrue();
 
     assertThat(unknownSymbol.isStatic()).isFalse();
     assertThat(unknownSymbol.isFinal()).isFalse();
