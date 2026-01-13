@@ -46,7 +46,7 @@ public class ModuleMetadataUtils {
     if (current == null) {
       return null;
     }
-    while (current.getParent() != null) {
+    while (current != null && current.getParent() != null) {
       current = current.getParent();
     }
     return current;
@@ -57,7 +57,8 @@ public class ModuleMetadataUtils {
       return "";
     }
     StringBuilder builder = new StringBuilder();
-    while (current.getParent() != null) {
+    // we do not want to include root module as this is usually either a sonar project key (as in Gradle) or a (Maven) groupId
+    while (current != null && current.getParent() != null) {
       // prepend separator if not first module
       if (!builder.isEmpty()) {
         // as modules can have dots in names, separator should be :
