@@ -21,28 +21,18 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
-import org.sonar.java.model.VisitorsBridge;
 
 public class ModuleMetadataUtils {
 
   private static final Logger LOG = LoggerFactory.getLogger(ModuleMetadataUtils.class);
-  
+
   private ModuleMetadataUtils() {
     // utility class
   }
 
   public static String getModuleKey(@Nullable ProjectDefinition projectDefinition) {
-    var originalModuleKey = getOriginalModuleKey(projectDefinition);
-    var fqModuleKey = getFQModuleKey(projectDefinition);
-    LOG.warn("originalModuleKey={}", originalModuleKey);
-    LOG.warn("fqModuleKey={}", fqModuleKey);
-    return originalModuleKey + fqModuleKey;
-  }
-  
-  public static String getOriginalModuleKey(@Nullable ProjectDefinition projectDefinition) {
     var root = getRootProject(projectDefinition);
     if (root != null && projectDefinition != null) {
-//      printProjectDefinitionHierarchyAndProperties(root, "    ");
       var rootBase = root.getBaseDir().toPath();
       var moduleBase = projectDefinition.getBaseDir().toPath();
       return rootBase.relativize(moduleBase).toString().replace('\\', '/');
@@ -62,16 +52,18 @@ public class ModuleMetadataUtils {
     return current;
   }
 
-  private static String getFQModuleKey(@Nullable ProjectDefinition current) {
+  public static String getFullyQualifiedModuleKey(@Nullable ProjectDefinition current) {
     if (current == null) {
       return "";
     }
     StringBuilder builder = new StringBuilder();
-    while (current != null) {
+    while (current.getParent() != null) {
+      // prepend separator if not first module
       if (!builder.isEmpty()) {
-        // TODO as modules can have dots in names, separator should be : - which will impact architecture plugin too
+        // as modules can have dots in names, separator should be :
         builder.insert(0, ":");
       }
+      // get module key property
       var property = current.properties().get("sonar.moduleKey");
       if (property != null) {
         LOG.warn("         sonar.moduleKey={}", property);
@@ -80,23 +72,21 @@ public class ModuleMetadataUtils {
           : property;
         builder.insert(0, leafModule);
         current = current.getParent();
-        if (current.getParent() == null) {
-          break;
-        }
       } else {
         break;
       }
     }
+    LOG.warn("getFullyQualifiedModuleKey={}", builder);
     return builder.toString();
   }
-  
-  private static void printProjectDefinitionHierarchyAndProperties(ProjectDefinition current, String indent) {
+
+  public static void printProjectDefinitionHierarchyAndProperties(ProjectDefinition current, String indent) {
     current.properties().forEach((key, value) -> {
       if (key.contains("moduleKey")) {
         LOG.warn("{}Project: {}, Property: {}={}", indent, current.getName(), key, value);
       }
     });
-    for (var child: current.getSubProjects()) {
+    for (var child : current.getSubProjects()) {
       printProjectDefinitionHierarchyAndProperties(child, indent + "  ");
     }
   }

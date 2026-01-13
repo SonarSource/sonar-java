@@ -87,6 +87,11 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
     return sonarComponents.getModuleKey();
   }
 
+  @Override
+  public String getFullyQualifiedModuleKey() {
+    return sonarComponents.getFullyQualifiedModuleKey();
+  }
+  
   @CheckForNull
   @Override
   public SonarProduct sonarProduct() {

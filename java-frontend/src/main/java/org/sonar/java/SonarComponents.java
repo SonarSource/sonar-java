@@ -531,6 +531,10 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     return ModuleMetadataUtils.getModuleKey(projectDefinition);
   }
 
+  public String getFullyQualifiedModuleKey() {
+    return ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition);
+  }
+
   public boolean canSkipUnchangedFiles() throws ApiMismatchException {
     if (context == null) {
       return false;
