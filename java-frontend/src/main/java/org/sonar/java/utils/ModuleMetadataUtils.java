@@ -57,7 +57,7 @@ public class ModuleMetadataUtils {
       return "";
     }
     StringBuilder builder = new StringBuilder();
-    // we do not want to include root module as this is usually either a sonar project key (as in Gradle) or a (Maven) groupId
+    // we do not want to include root module as this is usually the sonar project key
     while (current != null && current.getParent() != null) {
       // prepend separator if not first module
       if (!builder.isEmpty()) {
