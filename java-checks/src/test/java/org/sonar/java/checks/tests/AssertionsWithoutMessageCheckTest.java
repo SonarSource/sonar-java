@@ -18,16 +18,38 @@ package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.FilesUtils;
+import org.sonar.java.test.classpath.TestClasspathUtils;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AssertionsWithoutMessageCheckTest {
 
   @Test
-  void test() {
+  void test_Testng77() {
+    List<File> classPath = new ArrayList<>(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     CheckVerifier.newVerifier()
       .onFile(testCodeSourcesPath("checks/tests/AssertionsWithoutMessageCheckSample.java"))
       .withCheck(new AssertionsWithoutMessageCheck())
+      .withClassPath(classPath)
       .verifyIssues();
+  }
+
+  @Test
+  void test_Testng75() {
+    List<File> classPath = new ArrayList<>(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    classPath.removeIf(file -> file.getName().contains("testng"));
+    List<File> list = FilesUtils.getFilesRecursively(Path.of("..", "java-checks-test-sources", "target/test-jars"), "jar");
+    classPath.addAll(list);
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsWithoutMessageCheckSample_Testng75.java"))
+      .withCheck(new AssertionsWithoutMessageCheck())
+      .withClassPath(classPath)
+      .verifyNoIssues();
   }
 }
