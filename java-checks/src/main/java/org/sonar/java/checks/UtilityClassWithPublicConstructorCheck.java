@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.AnnotationsHelper;
 import org.sonar.java.checks.helpers.ClassPatternsUtils;
@@ -50,6 +52,8 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
     "lombok.NoArgsConstructor",
     "lombok.AllArgsConstructor",
     "lombok.RequiredArgsConstructor");
+
+  private static final int DEFAULT_PADDING = 2;
 
   private static final Set<String> LOMBOK_CONSTRUCTOR_GENERATOR_NAMES =
     LOMBOK_CONSTRUCTOR_GENERATORS.stream()
@@ -136,31 +140,44 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   }
 
   private static List<JavaQuickFix> computeQuickFixes(ClassTree classTree) {
-    int firstMemberColumnOffset = classTree.members().get(0).firstToken().range().start().columnOffset();
-    int columnOffsetDiff = firstMemberColumnOffset - classTree.firstToken().range().start().columnOffset();
-
-    String leftPadding = " ".repeat(firstMemberColumnOffset);
-    String constructor = leftPadding + "private " + classTree.simpleName() + "() {\n" + leftPadding + " ".repeat(columnOffsetDiff)
-      + "/* This utility class should not be instantiated */\n" + leftPadding + "}";
+    String constructor = buildPrivateConstructor(classTree);
 
     List<JavaQuickFix> quickFixes = new ArrayList<>();
     quickFixes.add(JavaQuickFix.newQuickFix("Add an empty private constructor as the first member of the class.")
-      .addTextEdit(JavaTextEdit.insertAfterTree(classTree.openBraceToken(), "\n" + constructor + "\n"))
+      .addTextEdit(JavaTextEdit.insertAfterTree(classTree.openBraceToken(), constructor))
       .build());
     quickFixes.add(JavaQuickFix.newQuickFix("Add an empty private constructor as the last member of the class.")
-      .addTextEdit(JavaTextEdit.insertAfterTree(classTree.members().get(classTree.members().size() - 1), "\n\n" + constructor))
+      .addTextEdit(JavaTextEdit.insertAfterTree(classTree.members().get(classTree.members().size() - 1), constructor))
       .build());
 
     if (classTree.members().stream().anyMatch(tree -> tree.is(Tree.Kind.METHOD))) {
       List<Tree> membersBeforeFirstMethod = classTree.members().stream().takeWhile(tree -> !tree.is(Tree.Kind.METHOD)).toList();
       if (!membersBeforeFirstMethod.isEmpty()) {
         quickFixes.add(JavaQuickFix.newQuickFix("Add an empty private constructor before the first method in the class.")
-          .addTextEdit(JavaTextEdit.insertAfterTree(membersBeforeFirstMethod.get(membersBeforeFirstMethod.size() - 1), "\n\n" + constructor))
+          .addTextEdit(JavaTextEdit.insertAfterTree(membersBeforeFirstMethod.get(membersBeforeFirstMethod.size() - 1), constructor))
           .build());
       }
     }
 
     return quickFixes;
+  }
+
+  private static String buildPrivateConstructor(ClassTree classTree) {
+    int classColumnOffset = classTree.firstToken().range().start().columnOffset();
+    int firstMemberColumnOffset = classTree.members().get(0).firstToken().range().start().columnOffset();
+    Pair<Integer, Integer> paddings = calculatePaddingAmounts(classColumnOffset, firstMemberColumnOffset);
+
+    String declarationPadding = " ".repeat(paddings.getRight());
+    String bodyPadding = " ".repeat(paddings.getLeft());
+
+    return "\n" + declarationPadding + "private " + classTree.simpleName() + "() {\n"
+      + declarationPadding + bodyPadding + "/* This utility class should not be instantiated */\n"
+      + declarationPadding + "}" + "\n";
+  }
+
+  private static Pair<Integer, Integer> calculatePaddingAmounts(int classColumnOffset, int firstMemberColumnOffset) {
+    int colDiff = firstMemberColumnOffset - classColumnOffset;
+    return Pair.of(Math.max(DEFAULT_PADDING, colDiff), colDiff > 0 ? firstMemberColumnOffset : (classColumnOffset + DEFAULT_PADDING));
   }
 
 }
