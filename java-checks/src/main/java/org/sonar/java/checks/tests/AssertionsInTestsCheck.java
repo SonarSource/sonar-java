@@ -42,6 +42,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
+
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
 
@@ -104,13 +106,18 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
         // In this case we cannot know if the provided ContextConsumer has the type param <AssertableApplicationContext>, but we want to avoid FPs
         return true;
       }
-      Type contextConsumerType;
+      @Nullable Type contextConsumerType = null;
       if (contextConsumerImplSymbol.isInterface()) {
         contextConsumerType = contextConsumerImplSymbol.type();
       } else {
-        contextConsumerType = contextConsumerImplSymbol.interfaces().get(0);
+        List<Type> interfaces = contextConsumerImplSymbol.interfaces();
+        if (!interfaces.isEmpty()) {
+          contextConsumerType = interfaces.get(0);
+        }
       }
-      return isAssertableApplicationContext(contextConsumerType) && hasDeclaredAssertions(contextConsumerImplSymbol);
+      return contextConsumerType != null
+        && isAssertableApplicationContext(contextConsumerType)
+        && hasDeclaredAssertions(contextConsumerImplSymbol);
     }
     return false;
   }
