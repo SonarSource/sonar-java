@@ -78,6 +78,14 @@ class DefaultInputFileScannerContextTest {
     assertThat(ctx.getModuleKey()).isEqualTo(moduleKey);
   }
 
+  @Test
+  void getFullyQualifiedModuleKey() {
+    var moduleKey = "some/random/module/key";
+    doReturn(moduleKey).when(sonarComponents).getFullyQualifiedModuleKey();
+    var ctx = new DefaultJavaFileScannerContext(null, null, null, sonarComponents, null, false, false);
+    assertThat(ctx.getFullyQualifiedModuleKey()).isEqualTo(moduleKey);
+  }
+
   private SonarComponents createSonarComponentsMock() {
     SonarComponents specificSonarComponents = mock(SonarComponents.class);
     doAnswer(invocation -> {

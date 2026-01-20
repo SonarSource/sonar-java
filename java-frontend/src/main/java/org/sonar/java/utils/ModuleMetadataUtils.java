@@ -67,7 +67,7 @@ public class ModuleMetadataUtils {
       // get module key property
       var property = current.properties().get("sonar.moduleKey");
       if (property != null) {
-        LOG.warn("         sonar.moduleKey={}", property);
+        LOG.trace("         sonar.moduleKey={}", property);
         var leafModule = property.lastIndexOf(":") >= 0
           ? property.substring(property.lastIndexOf(":") + 1)
           : property;
@@ -77,18 +77,7 @@ public class ModuleMetadataUtils {
         break;
       }
     }
-    LOG.warn("getFullyQualifiedModuleKey={}", builder);
+    LOG.trace("getFullyQualifiedModuleKey={}", builder);
     return builder.toString();
-  }
-
-  public static void printProjectDefinitionHierarchyAndProperties(ProjectDefinition current, String indent) {
-    current.properties().forEach((key, value) -> {
-      if (key.contains("moduleKey")) {
-        LOG.warn("{}Project: {}, Property: {}={}", indent, current.getName(), key, value);
-      }
-    });
-    for (var child : current.getSubProjects()) {
-      printProjectDefinitionHierarchyAndProperties(child, indent + "  ");
-    }
   }
 }
