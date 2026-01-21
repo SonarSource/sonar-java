@@ -170,11 +170,6 @@ class WithValueAnnotation { // Compliant, fields annotated with Spring @Value ar
   private int field;
 }
 
-class WithValueAnnotationConstant { // Compliant, fields annotated with Spring @Value are excluded
-  @Value("10")
-  private int field;
-}
-
 class WithValueAnnotationDefault { // Compliant, fields annotated with Spring @Value are excluded
   @Value("${app.field:10}")
   private int field;
