@@ -1042,8 +1042,6 @@
             <arg>-Xlint:-deprecation</arg>
           </compilerArgs>
           <release>25</release>
-          <source>25</source>
-          <target>25</target>
           <annotationProcessorPaths>
             <path>
               <groupId>org.projectlombok</groupId>
