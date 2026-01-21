@@ -17,6 +17,7 @@
 package org.sonar.plugins.java.api;
 
 import java.io.File;
+import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.SonarRuntime;
@@ -88,7 +89,7 @@ public interface ModuleScannerContext {
    * This key is fully qualified, meaning that it contains the parent modules keys as well.
    * E.g. instead of "level4", it will return the full hierarchy key "level1:level2:level3:level4"
    */
-  String getFullyQualifiedModuleKey();
+  Optional<String> getFullyQualifiedModuleKey();
   
   /**
    * @return The Sonar product (SONARQUBE/SONARLINT) which forms the current execution context of the scan.

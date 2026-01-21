@@ -36,7 +36,8 @@ class ModuleMetadataUtilsTest {
   @Test
   void getFullyQualifiedModuleKey() {
     var projectDefinition = mockProjectDefinitionWithModuleKeys();
-    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition)).isEqualTo("module1:module2");
+    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition).isPresent()).isTrue();
+    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition).get()).isEqualTo("module1:module2");
     assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(null)).isEmpty();
   }
 

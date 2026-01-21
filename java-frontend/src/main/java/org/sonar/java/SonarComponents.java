@@ -531,7 +531,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     return ModuleMetadataUtils.getModuleKey(projectDefinition);
   }
 
-  public String getFullyQualifiedModuleKey() {
+  public Optional<String> getFullyQualifiedModuleKey() {
     return ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition);
   }
 

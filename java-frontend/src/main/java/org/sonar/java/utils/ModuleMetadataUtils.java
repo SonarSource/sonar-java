@@ -16,6 +16,7 @@
  */
 package org.sonar.java.utils;
 
+import java.util.Optional;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -52,9 +53,9 @@ public class ModuleMetadataUtils {
     return current;
   }
 
-  public static String getFullyQualifiedModuleKey(@Nullable ProjectDefinition current) {
+  public static Optional<String> getFullyQualifiedModuleKey(@Nullable ProjectDefinition current) {
     if (current == null) {
-      return "";
+      return Optional.empty();
     }
     StringBuilder builder = new StringBuilder();
     // we do not want to include root module as this is usually the sonar project key
@@ -78,6 +79,6 @@ public class ModuleMetadataUtils {
       }
     }
     LOG.trace("getFullyQualifiedModuleKey={}", builder);
-    return builder.toString();
+    return Optional.of(builder.toString());
   }
 }

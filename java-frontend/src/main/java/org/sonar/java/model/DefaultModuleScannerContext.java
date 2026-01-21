@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import java.io.File;
+import java.util.Optional;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
@@ -88,7 +89,7 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   }
 
   @Override
-  public String getFullyQualifiedModuleKey() {
+  public Optional<String> getFullyQualifiedModuleKey() {
     return sonarComponents.getFullyQualifiedModuleKey();
   }
   
