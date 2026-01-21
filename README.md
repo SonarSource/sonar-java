@@ -55,9 +55,8 @@ To run tests locally follow these instructions.
 
 ### Java versions
 
-You need `Java 24` to build the project and `Java 17` run the Integration Tests (ITs).
-* `Java 17` can be used to build and test all modules except under `java-checks-test-sources` that requires `Java 24`.
-* `Java 24` can be used to build and test all modules except under `its` that requires `Java 17` because of SQ incompatibility.
+You need `Java 25` to compile and run the Unit Tests of the project and `Java 17` run the Integration Tests (ITs).
+Note that `Java 21` can be used to build and test all modules except under `java-checks-test-sources` (as they require `Java 25`) and  `its` (as they require `Java 17` because of SQ incompatibility).
 
 ### Build the Project and Run Unit Tests
 
@@ -164,7 +163,7 @@ Make sure that the `java-checks-test-sources` module has been compiled (ie: the 
 
 In doubt, go the [`java-checks-test-sources`](java-checks-tests-sources) module and run:
 ```shell
-# Use java 24!
+# Use java 25!
 mvn clean compile
 ```
 
@@ -194,7 +193,7 @@ You can debug ITs by adding `-Dmaven.binary=mvnDebug` as an option when running 
 
 ### License
 
-Copyright 2012-2025 SonarSource.
+Copyright 2012-2026 SonarSource.
 
 SonarQube analyzers released after November 29, 2024, including patch fixes for prior versions, are published under the [Sonar Source-Available License Version 1 (SSALv1)](LICENSE.txt).
 
