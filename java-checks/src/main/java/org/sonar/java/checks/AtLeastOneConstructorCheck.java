@@ -57,7 +57,8 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
     "org.apache.maven.plugins.annotations.Component",
     "org.apache.maven.plugins.annotations.Parameter",
     "org.codehaus.plexus.component.annotations.Requirement",
-    "org.codehaus.plexus.component.annotations.Configuration"
+    "org.codehaus.plexus.component.annotations.Configuration",
+    "org.springframework.beans.factory.annotation.Value"
     );
 
   @Override
