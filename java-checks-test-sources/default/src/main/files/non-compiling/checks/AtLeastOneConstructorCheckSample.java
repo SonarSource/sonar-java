@@ -9,3 +9,8 @@ class AtLeastOneConstructorCheckSample {
 class AtLeastOneConstructorCheckAnnotatedUnknown  {
   private MyObject foo; // Compliant
 }
+
+class WithValueAnnotation {
+  @Value("${app.field}")
+  private int field; // Compliant
+}
