@@ -16,6 +16,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.codehaus.plexus.component.annotations.Configuration;
 import org.codehaus.plexus.component.annotations.Requirement;
+import org.springframework.beans.factory.annotation.Value;
 
 class WithoutConstructor { // Noncompliant {{Add a constructor to the class, or provide default values.}}
 //    ^^^^^^^^^^^^^^^^^^
@@ -162,4 +163,14 @@ class MyLombok { // Compliant, Builder pattern are excluded (Lombok builder)
   private int field;
 
   public int getField(){return field;}
+}
+
+class WithValueAnnotation { // Compliant, fields annotated with Spring @Value are excluded
+  @Value("${app.field}")
+  private int field;
+}
+
+class WithValueAnnotationDefault { // Compliant, fields annotated with Spring @Value are excluded
+  @Value("${app.field:10}")
+  private int field;
 }
