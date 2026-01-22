@@ -29,4 +29,12 @@ class SystemOutOrErrUsageCheckTest {
       .withCheck(new SystemOutOrErrUsageCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_compact_source_file() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SystemOutOrErrUsageCheckCompactSourceFileSample.java"))
+      .withCheck(new SystemOutOrErrUsageCheck())
+      .verifyIssues();
+  }
 }
