@@ -79,6 +79,13 @@ public interface Tree {
     RECORD(ClassTree.class),
 
     /**
+     * {@link ClassTree}
+     *
+     * @since Java 25
+     */
+    IMPLICIT_CLASS(ClassTree.class),
+
+    /**
      * {@link EnumConstantTree}
      *
      * @since Java 1.5

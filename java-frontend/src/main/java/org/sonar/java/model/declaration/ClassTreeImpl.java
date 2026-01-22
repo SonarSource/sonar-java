@@ -43,9 +43,11 @@ import java.util.List;
 public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   private final Kind kind;
-  private final SyntaxToken openBraceToken;
+  @Nullable
+  private SyntaxToken openBraceToken;
   private final List<Tree> members;
-  private final SyntaxToken closeBraceToken;
+  @Nullable
+  private SyntaxToken closeBraceToken;
   private ModifiersTree modifiers;
   private SyntaxToken atToken;
   private SyntaxToken declarationKeyword;
@@ -69,15 +71,19 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   public ITypeBinding typeBinding;
 
-  public ClassTreeImpl(Kind kind, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
+  public ClassTreeImpl(Kind kind, List<Tree> members) {
     this.kind = kind;
-    this.openBraceToken = openBraceToken;
     this.members = orderMembers(kind, members);
-    this.closeBraceToken = closeBraceToken;
     this.modifiers = ModifiersTreeImpl.emptyModifiers();
     this.typeParameters = new TypeParameterListTreeImpl();
     this.superInterfaces = QualifiedIdentifierListTreeImpl.emptyList();
     this.permittedTypes = QualifiedIdentifierListTreeImpl.emptyList();
+  }
+
+  public ClassTreeImpl complete(SyntaxToken openBraceToken, SyntaxToken closeBraceToken) {
+    this.openBraceToken = openBraceToken;
+    this.closeBraceToken = closeBraceToken;
+    return this;
   }
 
   public ClassTreeImpl complete(ModifiersTreeImpl modifiers, SyntaxToken declarationKeyword, IdentifierTree name) {
@@ -197,6 +203,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return permittedTypes;
   }
 
+  @Nullable
   @Override
   public SyntaxToken openBraceToken() {
     return openBraceToken;
@@ -207,6 +214,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return members;
   }
 
+  @Nullable
   @Override
   public SyntaxToken closeBraceToken() {
     return closeBraceToken;
@@ -262,9 +270,9 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
       addIfNotNull(implementsKeyword),
       Collections.singletonList(superInterfaces),
       Collections.singletonList(permittedTypes),
-      Collections.singletonList(openBraceToken),
+      addIfNotNull(openBraceToken),
       members,
-      Collections.singletonList(closeBraceToken)
+      addIfNotNull(closeBraceToken)
     );
   }
 

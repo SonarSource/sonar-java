@@ -40,4 +40,11 @@ class HiddenFieldCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_compact_source() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/HiddenFieldCheckCompactSample.java"))
+      .withCheck(new HiddenFieldCheck())
+      .verifyIssues();
+  }
 }
