@@ -29,20 +29,36 @@ import java.util.List;
 @Rule(key = "S106")
 public class SystemOutOrErrUsageCheck extends IssuableSubscriptionVisitor {
 
+  private boolean isCompactSourceFile = false;
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.MEMBER_SELECT);
+    return List.of(
+      Tree.Kind.COMPILATION_UNIT,
+      Tree.Kind.IMPLICIT_CLASS,
+      Tree.Kind.MEMBER_SELECT
+    );
   }
 
   @Override
   public void visitNode(Tree tree) {
-    MemberSelectExpressionTree mset = (MemberSelectExpressionTree) tree;
+    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      isCompactSourceFile = false;
+    } else if (tree.is(Tree.Kind.IMPLICIT_CLASS)) {
+      // System.out or System.err is allowed in compact source files.
+      isCompactSourceFile = true;
+    } else if (!isCompactSourceFile && tree instanceof MemberSelectExpressionTree mset) {
+      visitMemberSelectExpression(mset);
+    }
+  }
+
+  private void visitMemberSelectExpression(MemberSelectExpressionTree mset) {
     String name = mset.identifier().name();
 
     if ("out".equals(name) && isSystem(mset.expression())) {
-      reportIssue(tree, "Replace this use of System.out by a logger.");
+      reportIssue(mset, "Replace this use of System.out by a logger.");
     } else if ("err".equals(name) && isSystem(mset.expression())) {
-      reportIssue(tree, "Replace this use of System.err by a logger.");
+      reportIssue(mset, "Replace this use of System.err by a logger.");
     }
   }
 
