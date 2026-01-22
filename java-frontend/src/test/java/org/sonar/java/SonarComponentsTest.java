@@ -82,7 +82,6 @@ import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.testing.ThreadLocalLogTester;
-import org.sonar.java.utils.ModuleMetadataUtils;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
