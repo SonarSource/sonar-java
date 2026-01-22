@@ -166,7 +166,7 @@ public class TestUtils {
     doReturn(new File("/foo/bar/proj/pmodule/cmodule")).when(child1Module).getBaseDir();
     doReturn(rootProj).when(child1Module).getParent();
     var child1Properties = new HashMap<String, String>();
-    child1Properties.put("sonar.moduleKey", "module1");
+    child1Properties.put("sonar.moduleKey", "propj:module1");
     when(child1Module.properties()).thenReturn(child1Properties);
 
     var child2Module = mock(ProjectDefinition.class);

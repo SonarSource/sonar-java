@@ -19,13 +19,9 @@ package org.sonar.java.utils;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
 
 public class ModuleMetadataUtils {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ModuleMetadataUtils.class);
 
   private ModuleMetadataUtils() {
     // utility class
@@ -68,7 +64,6 @@ public class ModuleMetadataUtils {
       // get module key property
       var property = current.properties().get("sonar.moduleKey");
       if (property != null) {
-        LOG.trace("         sonar.moduleKey={}", property);
         var leafModule = property.lastIndexOf(":") >= 0
           ? property.substring(property.lastIndexOf(":") + 1)
           : property;
@@ -78,7 +73,6 @@ public class ModuleMetadataUtils {
         break;
       }
     }
-    LOG.trace("getFullyQualifiedModuleKey={}", builder);
-    return Optional.of(builder.toString());
+    return builder.isEmpty() ? Optional.empty() : Optional.of(builder.toString());
   }
 }

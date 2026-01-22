@@ -31,13 +31,15 @@ class ModuleMetadataUtilsTest {
     var projectDefinition = mockProjectDefinition();
     assertThat(ModuleMetadataUtils.getModuleKey(projectDefinition)).isEqualTo("pmodule/cmodule");
     assertThat(ModuleMetadataUtils.getModuleKey(null)).isEmpty();
+    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition)).isEmpty();
+    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(null)).isEmpty();
   }
 
   @Test
   void getFullyQualifiedModuleKey() {
     var projectDefinition = mockProjectDefinitionWithModuleKeys();
-    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition).isPresent()).isTrue();
-    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition).get()).isEqualTo("module1:module2");
+    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition)).isPresent();
+    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition)).contains("module1:module2");
     assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(null)).isEmpty();
   }
 

@@ -531,6 +531,11 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     return ModuleMetadataUtils.getModuleKey(projectDefinition);
   }
 
+  /**
+   * Returns an OS-independent key that should identify the module and its hierarchy within the project
+   *
+   * @return A fully-qualified key representing the module
+   */
   public Optional<String> getFullyQualifiedModuleKey() {
     return ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition);
   }
