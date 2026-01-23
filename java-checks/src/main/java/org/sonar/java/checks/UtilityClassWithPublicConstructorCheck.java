@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +24,10 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.AnnotationsHelper;
 import org.sonar.java.checks.helpers.ClassPatternsUtils;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -71,7 +75,12 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
       }
     }
     if (hasImplicitPublicConstructor && !hasCompliantGeneratedConstructors(classTree)) {
-      reportIssue(classTree.simpleName(), "Add a private constructor to hide the implicit public one.");
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(classTree.simpleName())
+        .withMessage("Add a private constructor to hide the implicit public one.")
+        .withQuickFixes(() -> computeQuickFixes(classTree))
+        .report();
     }
   }
 
@@ -124,6 +133,34 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
       return false;
     }
     return !"PUBLIC".equals(valueName);
+  }
+
+  private static List<JavaQuickFix> computeQuickFixes(ClassTree classTree) {
+    int firstMemberColumnOffset = classTree.members().get(0).firstToken().range().start().columnOffset();
+    int columnOffsetDiff = firstMemberColumnOffset - classTree.firstToken().range().start().columnOffset();
+
+    String leftPadding = " ".repeat(firstMemberColumnOffset);
+    String constructor = leftPadding + "private " + classTree.simpleName() + "() {\n" + leftPadding + " ".repeat(columnOffsetDiff)
+      + "/* This utility class should not be instantiated */\n" + leftPadding + "}";
+
+    List<JavaQuickFix> quickFixes = new ArrayList<>();
+    quickFixes.add(JavaQuickFix.newQuickFix("Add an empty private constructor as the first member of the class.")
+      .addTextEdit(JavaTextEdit.insertAfterTree(classTree.openBraceToken(), "\n" + constructor + "\n"))
+      .build());
+    quickFixes.add(JavaQuickFix.newQuickFix("Add an empty private constructor as the last member of the class.")
+      .addTextEdit(JavaTextEdit.insertAfterTree(classTree.members().get(classTree.members().size() - 1), "\n\n" + constructor))
+      .build());
+
+    if (classTree.members().stream().anyMatch(tree -> tree.is(Tree.Kind.METHOD))) {
+      List<Tree> membersBeforeFirstMethod = classTree.members().stream().takeWhile(tree -> !tree.is(Tree.Kind.METHOD)).toList();
+      if (!membersBeforeFirstMethod.isEmpty()) {
+        quickFixes.add(JavaQuickFix.newQuickFix("Add an empty private constructor before the first method in the class.")
+          .addTextEdit(JavaTextEdit.insertAfterTree(membersBeforeFirstMethod.get(membersBeforeFirstMethod.size() - 1), "\n\n" + constructor))
+          .build());
+      }
+    }
+
+    return quickFixes;
   }
 
 }
