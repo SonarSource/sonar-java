@@ -33,7 +33,15 @@ class SystemOutOrErrUsageCheckTest {
   @Test
   void test_compact_source_file() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SystemOutOrErrUsageCheckCompactSourceFileSample.java"))
+      .onFile(mainCodeSourcesPath("checks/SystemOutOrErrUsageCheckCompactOnlyMainSample.java"))
+      .withCheck(new SystemOutOrErrUsageCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_compact_source_file_with_regular_class() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SystemOutOrErrUsageCheckCompactWithClassSample.java"))
       .withCheck(new SystemOutOrErrUsageCheck())
       .verifyIssues();
   }
