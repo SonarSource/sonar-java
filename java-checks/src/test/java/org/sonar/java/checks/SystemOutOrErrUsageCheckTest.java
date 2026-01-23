@@ -37,4 +37,12 @@ class SystemOutOrErrUsageCheckTest {
       .withCheck(new SystemOutOrErrUsageCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_full_source_file() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SystemOutOrErrUsageCheckFullSourceFileSample.java"))
+      .withCheck(new SystemOutOrErrUsageCheck())
+      .verifyIssues();
+  }
 }
