@@ -1,5 +1,8 @@
 package checks;
 
+import org.apache.commons.lang.math.JVMRandom;
+
+import java.security.SecureRandom;
 import java.util.Random;
 
 public class ReuseRandomCheckSample {
@@ -18,9 +21,13 @@ public class ReuseRandomCheckSample {
     Random localVar2 = new Random(seed); // Compliant for Random(long seed)
     Object localVar3 = new Object();
 
+    SecureRandom secureRandom = new SecureRandom(); // Noncompliant {{Save and re-use this "Random".}}
+    JVMRandom jvmRandom = new JVMRandom(); // Noncompliant {{Save and re-use this "Random".}}
+
     staticField = new Random();
     field = new Random();
     this.field = new Random();
+    field = new SecureRandom();
 
     field = localVar1 = new Random();
     field = (localVar1 = new Random());
@@ -37,6 +44,7 @@ public class ReuseRandomCheckSample {
     int usedDirectly = new Random().nextInt(); // Noncompliant
 //                         ^^^^^^
     (new Random()).nextInt(); // Noncompliant
+    (new SecureRandom()).nextInt(); // Noncompliant
   }
 
   public static void main(String[] args) {
