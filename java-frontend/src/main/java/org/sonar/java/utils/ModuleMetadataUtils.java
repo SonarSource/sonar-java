@@ -40,9 +40,6 @@ public class ModuleMetadataUtils {
   @CheckForNull
   public static ProjectDefinition getRootProject(@Nullable ProjectDefinition projectDefinition) {
     ProjectDefinition current = projectDefinition;
-    if (current == null) {
-      return null;
-    }
     while (current != null && current.getParent() != null) {
       current = current.getParent();
     }
@@ -50,20 +47,17 @@ public class ModuleMetadataUtils {
   }
 
   public static Optional<String> getFullyQualifiedModuleKey(@Nullable ProjectDefinition current) {
-    if (current == null) {
-      return Optional.empty();
-    }
     StringBuilder builder = new StringBuilder();
     // we do not want to include root module as this is usually the sonar project key
     while (current != null && current.getParent() != null) {
-      // prepend separator if not first module
-      if (!builder.isEmpty()) {
-        // as modules can have dots in names, separator should be :
-        builder.insert(0, ":");
-      }
       // get module key property
       var property = current.properties().get("sonar.moduleKey");
       if (property != null) {
+        // prepend separator if not first module
+        if (!builder.isEmpty()) {
+          // as modules can have dots in names, separator should be :
+          builder.insert(0, ":");
+        }
         var leafModule = property.lastIndexOf(":") >= 0
           ? property.substring(property.lastIndexOf(":") + 1)
           : property;

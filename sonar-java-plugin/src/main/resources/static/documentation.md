@@ -151,6 +151,10 @@ The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/do
 
 ### API changes
 
+#### **8.22**
+
+* New method: `ModuleMetadataUtils#getFullyQualifiedModuleKey(@Nullable ProjectDefinition current)`.
+
 #### **8.19**
 
 * New methods: `SymbolMetadata#symbolAnnotations()` and `SymbolMetadata#parametersMetadata()`.
