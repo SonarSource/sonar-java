@@ -1,13 +1,11 @@
 package checks;
 
-import java.io.IO;
+// TODO: Remove before merging. This is only for comparing ASTs in debugger.
 
 public class SystemOutOrErrUsageCheckFullSourceFileSample {
   void main() {
     String name = IO.readln("Enter your name: ");
-
-    System.out.println("Goodbye " + name + "!"); // Noncompliant
-
     IO.println("Hello " + name + "!");
+    System.out.println("Goodbye " + name + "!"); // Noncompliant
   }
 }

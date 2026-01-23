@@ -670,7 +670,7 @@ public class JParser {
         t = convertTypeDeclaration((TypeDeclaration) e, modifiers, name, openBraceToken, members, closeBraceToken);
         break;
       case ASTNode.UNNAMED_CLASS:
-        t = convertUnnamedClassDeclaration((ImplicitTypeDeclaration) e, name, openBraceToken, members, closeBraceToken);
+        t = convertImplicitTypeDeclaration(members);
         break;
       case ASTNode.ENUM_DECLARATION:
         t = convertEnumDeclaration((EnumDeclaration) e, modifiers, name, openBraceToken, members, closeBraceToken);
@@ -717,15 +717,10 @@ public class JParser {
     return t;
   }
 
-  private ClassTreeImpl convertUnnamedClassDeclaration(ImplicitTypeDeclaration e, IdentifierTreeImpl name,
-                                               InternalSyntaxToken openBraceToken, List<Tree> members, InternalSyntaxToken closeBraceToken) {
-    ClassTreeImpl t = new ClassTreeImpl(Tree.Kind.CLASS, openBraceToken, members, closeBraceToken);
-
-//    if (!e.isInterface() && e.getSuperclassType() != null) {
-//      Type superclassType = e.getSuperclassType();
-//      t.completeSuperclass(firstTokenBefore(superclassType, TerminalToken.TokenNameextends), convertType(superclassType));
-//    }
-    return t;
+  /** Converts AST on an implicit class at the top level of a compact compilation unit. */
+  private ClassTreeImpl convertImplicitTypeDeclaration(List<Tree> members) {
+    // TODO: open and close braces should be made nullable
+    return new ClassTreeImpl(Tree.Kind.IMPLICIT_CLASS, /* openBraceToken = */ null, members, /* closeBraceToken = */ null);
   }
 
   private ClassTreeImpl convertEnumDeclaration(EnumDeclaration e, ModifiersTreeImpl modifiers, IdentifierTreeImpl name,
