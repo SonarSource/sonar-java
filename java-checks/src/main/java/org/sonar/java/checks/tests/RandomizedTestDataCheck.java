@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class RandomizedTestDataCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatchers RANDOM_CONSTRUCTOR_METHOD_MATCHER = MethodMatchers.create()
-    .ofTypes("java.util.Random")
+    .ofSubTypes("java.util.Random")
     .constructor()
     .withAnyParameters()
     .build();
