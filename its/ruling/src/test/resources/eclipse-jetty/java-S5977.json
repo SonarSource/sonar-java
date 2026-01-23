@@ -8,6 +8,18 @@
 "org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/StressTest.java": [
 73
 ],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ThreadStarvationTest.java": [
+114
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/DebugHandlerTest.java": [
+123
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLCloseTest.java": [
+61
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLEngineTest.java": [
+143
+],
 "org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ssl/SSLSelectChannelConnectorLoadTest.java": [
 237
 ],

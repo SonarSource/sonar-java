@@ -114,7 +114,7 @@ To run the test, first make sure the submodules are checked out:
 
     git submodule update --init --recursive
 
-Then, ensure that the `JAVA_HOME` environment variable is set for the ruling tests execution and that it points to your local JDK 17 installation.
+Then, ensure that the `JAVA_HOME` environment variable is set for the ruling tests execution and that it points to your local JDK 21 installation.
 Failing to do so will produce inconsistencies with the expected results.
 
 From the `its/ruling` folder, launch the ruling tests:
@@ -186,7 +186,7 @@ For more detailed information, you can compare the differences between the resul
 * [java-checks-test-sources-no-binaries](its/autoscan/target/actual/java-checks-test-sources-no-binaries)
 
 Depending on the results found, you might need to update the ground truth.
-The expected results are listed in [src/test/resources](its/autoscan/src/test/resources/autoscan/).
+The expected results are listed in [src/test/resources](its/autoscan/src/test/resources/autoscan/diffs).
 
 #### Debugging Integration Tests
 You can debug ITs by adding `-Dmaven.binary=mvnDebug` as an option when running the tests. This will cause the analyzer JVM to wait for a debugger to be attached before continuing.

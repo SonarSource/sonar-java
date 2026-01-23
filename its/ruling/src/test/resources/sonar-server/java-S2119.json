@@ -1,0 +1,8 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java": [
+378
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/usertoken/TokenGeneratorImpl.java": [
+29
+]
+}
