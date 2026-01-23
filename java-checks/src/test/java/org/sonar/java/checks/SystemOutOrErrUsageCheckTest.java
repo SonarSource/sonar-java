@@ -35,7 +35,7 @@ class SystemOutOrErrUsageCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/SystemOutOrErrUsageCheckCompactOnlyMainSample.java"))
       .withCheck(new SystemOutOrErrUsageCheck())
-      .verifyIssues();
+      .verifyNoIssues();
   }
 
   @Test
@@ -43,7 +43,7 @@ class SystemOutOrErrUsageCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/SystemOutOrErrUsageCheckCompactWithClassSample.java"))
       .withCheck(new SystemOutOrErrUsageCheck())
-      .verifyIssues();
+      .verifyNoIssues();
   }
 
   @Test
