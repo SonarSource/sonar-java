@@ -23,11 +23,12 @@ public class WildCardReturnParameterNestedTypeCheck {
   private static class B extends checks.A {
   }
 
-  static class Entry<K, V> {}
+  static class Entry<K, V> {
+  }
 
   @SuppressWarnings("unchecked")
   static <K> Function<Entry<K, ?>, K> keyFunction() {
-    return (Function) Maps.EntryFunction.KEY;
+    throw new UnsupportedOperationException();
   }
 }
 
