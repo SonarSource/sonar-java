@@ -1,5 +1,6 @@
 package checks;
 
+import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -20,6 +21,13 @@ public class WildCardReturnParameterNestedTypeCheck {
   }
 
   private static class B extends checks.A {
+  }
+
+  static class Entry<K, V> {}
+
+  @SuppressWarnings("unchecked")
+  static <K> Function<Entry<K, ?>, K> keyFunction() {
+    return (Function) Maps.EntryFunction.KEY;
   }
 }
 
