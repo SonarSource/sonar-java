@@ -1,11 +1,13 @@
 package checks.tests;
 
+import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
+
+import org.apache.commons.lang.math.JVMRandom;
 import org.junit.jupiter.api.Test;
 
 public class RandomizedTestDataCheckSample {
-
   @Test
   public void randomizedTest() {
 
@@ -36,6 +38,13 @@ public class RandomizedTestDataCheckSample {
     int age5 = new Random().nextInt(42);
 //             ^^^^^^^^^^^^<
     MyRandom myRandom = new MyRandom(); // Compliant
+
+    Random random = new Random();
+//                  ^^^^^^^^^^^^<
+    SecureRandom random1 = new SecureRandom();
+//                         ^^^^^^^^^^^^^^^^^^<
+    int age6 = new JVMRandom().nextInt(34);
+//             ^^^^^^^^^^^^^^^<
   }
 
   @Test
