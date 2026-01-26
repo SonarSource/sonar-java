@@ -72,13 +72,13 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitClass(ClassTree tree) {
-    // Exclude anonymous classes
-    boolean isAnonymous = tree.simpleName() == null;
-    if (!isAnonymous) {
+    // Exclude anonymous classes other than implicit classed of compact source files.
+    boolean isExcluded = tree.simpleName() == null && !tree.is(Kind.IMPLICIT_CLASS);
+    if (!isExcluded) {
       checkIndentation(Collections.singletonList(tree));
     }
     int previousLevel = expectedLevel;
-    if (isAnonymous) {
+    if (isExcluded) {
       excludeIssueAtLine = LineUtils.startLine(tree.openBraceToken());
       expectedLevel = Position.startOf(tree.closeBraceToken()).columnOffset();
     }
