@@ -49,15 +49,15 @@ class PublicApiCheckerTest {
   @Test
   void targeted_kinds() {
     assertThat(PublicApiChecker.classKinds())
-      .hasSize(5)
-      .containsExactlyInAnyOrder(Tree.Kind.ANNOTATION_TYPE, Tree.Kind.ENUM, Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD);
+      .hasSize(6)
+      .containsExactlyInAnyOrder(Tree.Kind.ANNOTATION_TYPE, Tree.Kind.ENUM, Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD, Tree.Kind.IMPLICIT_CLASS);
 
     assertThat(PublicApiChecker.methodKinds())
       .hasSize(2)
       .containsExactlyInAnyOrder(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD);
 
     assertThat(PublicApiChecker.apiKinds())
-      .hasSize(8)
+      .hasSize(9)
       .contains(PublicApiChecker.classKinds())
       .contains(PublicApiChecker.methodKinds())
       .contains(Tree.Kind.VARIABLE);
