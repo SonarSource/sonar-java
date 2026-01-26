@@ -47,6 +47,7 @@ import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.MethodReferenceTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
+import org.sonar.java.model.location.InternalRange;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.model.statement.BreakStatementTreeImpl;
 import org.sonar.java.model.statement.ContinueStatementTreeImpl;
@@ -58,6 +59,7 @@ import org.sonar.java.model.statement.StaticInitializerTreeImpl;
 import org.sonar.java.model.statement.SwitchExpressionTreeImpl;
 import org.sonar.java.model.statement.YieldStatementTreeImpl;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -2065,5 +2067,39 @@ class JParserSemanticTest {
     assertNotEquals(pOfA.symbol(), pOfC.symbol());
     assertNotEquals(pOfB.symbol(), pOfC.symbol());
 
+  }
+
+  @Test
+  void testImportModule() {
+    String source = """
+      package com.example;
+
+      import module java.base;
+
+      import static java.sql.Connection.TRANSACTION_NONE;
+
+      public class Source {
+        List<Integer> xs = new ArrayList<>();
+        Set<Integer> ys = new HashSet<>();
+      }
+      """;
+
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+
+    ImportTree importModule = (ImportTree) cu.imports().get(0);
+
+    assertThat(importModule.isModule()).isTrue();
+    assertThat(importModule.isStatic()).isFalse();
+    assertThat(importModule.symbol()).isNull();
+
+    MemberSelectExpressionTree javaBase = (MemberSelectExpressionTree) importModule.qualifiedIdentifier();
+    assertThat(javaBase.identifier().name()).isEqualTo("base");
+
+    assertThat(importModule.moduleKeyword().range()).isEqualTo(
+      new InternalRange(Position.at(3, 8), Position.at(3, 14))
+    );
+
+    ImportTree importConst = (ImportTree) cu.imports().get(1);
+    assertThat(importConst.isModule()).isFalse();
   }
 }

@@ -317,20 +317,25 @@ public abstract class JavaTree implements Tree {
 
   public static class ImportTreeImpl extends JavaTree implements ImportTree {
     private final boolean isStatic;
+    private final boolean isModule;
     private final Tree qualifiedIdentifier;
     private final SyntaxToken semicolonToken;
     private final SyntaxToken importToken;
     private final SyntaxToken staticToken;
+    private final SyntaxToken moduleToken;
 
     public IBinding binding;
 
     public ImportTreeImpl(InternalSyntaxToken importToken, @Nullable InternalSyntaxToken staticToken,
+                          @Nullable InternalSyntaxToken moduleToken,
                           Tree qualifiedIdentifier, InternalSyntaxToken semiColonToken) {
       this.importToken = importToken;
       this.staticToken = staticToken;
+      this.moduleToken = moduleToken;
       this.qualifiedIdentifier = qualifiedIdentifier;
       this.semicolonToken = semiColonToken;
       isStatic = staticToken != null;
+      isModule = moduleToken != null;
     }
 
     @Nullable
@@ -359,6 +364,11 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
+    public  boolean isModule() {
+      return isModule;
+    }
+
+    @Override
     public SyntaxToken importKeyword() {
       return importToken;
     }
@@ -367,6 +377,12 @@ public abstract class JavaTree implements Tree {
     @Override
     public SyntaxToken staticKeyword() {
       return staticToken;
+    }
+
+    @Nullable
+    @Override
+    public SyntaxToken moduleKeyword() {
+      return moduleToken;
     }
 
     @Override
