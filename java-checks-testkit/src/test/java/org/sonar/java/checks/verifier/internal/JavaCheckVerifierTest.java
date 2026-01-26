@@ -419,4 +419,40 @@ class JavaCheckVerifierTest {
         .onFiles(CheckVerifierTestUtils.TEST_FILE, CheckVerifierTestUtils.TEST_FILE_2)
         .verifyNoIssues());
   }
+
+  @Test
+  void addJarsToClasspath_modifies_classpath() {
+    JavaCheckVerifier dummyVerifier = JavaCheckVerifier.newInstance();
+    dummyVerifier.withCheck(NO_EFFECT_CHECK)
+      .onFile(TEST_FILE)
+      .verifyNoIssues();
+    int initialSize = dummyVerifier.actualClasspath.size();
+    assertThat(dummyVerifier.actualClasspath.stream().map(File::getName)).noneMatch(n -> n.equals("testng-7.5.1.jar"));
+
+    dummyVerifier = JavaCheckVerifier.newInstance();
+    dummyVerifier.addJarsToClasspath("testng-7.5.1");
+    dummyVerifier.withCheck(NO_EFFECT_CHECK)
+      .onFile(TEST_FILE)
+      .verifyNoIssues();
+    assertThat(dummyVerifier.actualClasspath).hasSize(initialSize + 1);
+    assertThat(dummyVerifier.actualClasspath.stream().map(File::getName)).anyMatch(n -> n.equals("testng-7.5.1.jar"));
+  }
+
+  @Test
+  void removeJarsFromClasspath_modifies_classpath() {
+    JavaCheckVerifier dummyVerifier = JavaCheckVerifier.newInstance();
+    dummyVerifier.withCheck(NO_EFFECT_CHECK)
+      .onFile(TEST_FILE)
+      .verifyNoIssues();
+    int initialSize = dummyVerifier.actualClasspath.size();
+    assertThat(dummyVerifier.actualClasspath.stream().map(File::getName)).anyMatch(n -> n.equals("testng-7.12.0.jar"));
+
+    dummyVerifier = JavaCheckVerifier.newInstance();
+    dummyVerifier.removeJarsFromClasspath("testng-7.12.0");
+    dummyVerifier.withCheck(NO_EFFECT_CHECK)
+      .onFile(TEST_FILE)
+      .verifyNoIssues();
+    assertThat(dummyVerifier.actualClasspath).hasSize(initialSize - 1);
+    assertThat(dummyVerifier.actualClasspath.stream().map(File::getName)).noneMatch(n -> n.equals("testng-7.12.0.jar"));
+  }
 }

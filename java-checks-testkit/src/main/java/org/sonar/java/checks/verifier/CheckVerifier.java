@@ -130,6 +130,31 @@ public interface CheckVerifier {
   CheckVerifier withClassPath(Collection<File> classpath);
 
   /**
+   * Defines the libraries to add to the classpath.
+   * Usually used when the code of the test files requires the knowledge of a particular set
+   * of libraries or java compiled classes.
+   * <p>
+   * <strong>Note:</strong> The JAR files must be pre-downloaded using the {@code maven-dependency-plugin}
+   * configured in {@code java-checks-test-sources/pom.xml}. The plugin's {@code copy} execution
+   * (phase: {@code test-compile}) downloads dependencies to {@code target/test-jars} directory.
+   * Add new dependencies as {@code artifactItem} entries in the plugin configuration.
+   *
+   * @param jarsToAdd a collection of jar names (without extensions) to add to the classpath
+   * @return the verifier configured to use the dependencies provided as arguments to change the classpath
+   */
+  CheckVerifier addJarsToClasspath(String... jarsToAdd);
+
+  /**
+   * Defines the libraries to remove from the classpath.
+   * Usually used when the code of the test files requires the knowledge of a particular set
+   * of libraries or java compiled classes.
+   *
+   * @param jarsToRemove a collection of jar names (without extensions) to remove from the classpath
+   * @return the verifier configured to use the dependencies provided as arguments to change the classpath
+   */
+  CheckVerifier removeJarsFromClasspath(String... jarsToRemove);
+
+  /**
    * Defines the java version syntax to be used for the verification. Usually used when the code of the
    * test files explicitly target a given version (e.g. java 7) where a particular syntax/API has been introduced.
    * Preview features for the specified java version will be disabled by default; use {@link CheckVerifier#withJavaVersion(int, boolean)}

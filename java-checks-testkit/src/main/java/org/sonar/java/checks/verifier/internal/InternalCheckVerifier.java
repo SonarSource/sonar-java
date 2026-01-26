@@ -126,6 +126,16 @@ public class InternalCheckVerifier implements CheckVerifier {
     return this;
   }
 
+  @Override
+  public CheckVerifier addJarsToClasspath(String... jarsToAdd) {
+    throw new UnsupportedOperationException("Not implemented!");
+  }
+
+  @Override
+  public CheckVerifier removeJarsFromClasspath(String... jarsToRemove) {
+    throw new UnsupportedOperationException("Not implemented!");
+  }
+
   @Beta
   public InternalCheckVerifier withCustomIssueVerifier(Consumer<Set<AnalyzerMessage>> customIssueVerifier) {
     requiresNull(this.customIssueVerifier, "custom issue verifier");

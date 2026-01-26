@@ -18,11 +18,9 @@ package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.FilesUtils;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,14 +40,11 @@ class AssertionsWithoutMessageCheckTest {
 
   @Test
   void test_Testng75() {
-    List<File> classPath = new ArrayList<>(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
-    classPath.removeIf(file -> file.getName().contains("testng"));
-    List<File> list = FilesUtils.getFilesRecursively(Path.of("..", "java-checks-test-sources", "target/test-jars"), "jar");
-    classPath.addAll(list);
     CheckVerifier.newVerifier()
       .onFile(testCodeSourcesPath("checks/tests/AssertionsWithoutMessageCheckSample_Testng75.java"))
       .withCheck(new AssertionsWithoutMessageCheck())
-      .withClassPath(classPath)
+      .addJarsToClasspath("testng-7.5.1")
+      .removeJarsFromClasspath("testng-7.12.0")
       .verifyNoIssues();
   }
 }

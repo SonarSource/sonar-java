@@ -48,6 +48,11 @@ public final class TestClasspathUtils {
   public static final Module JAVA_17_MODULE = new Module("java-checks-test-sources/java-17");
   public static final Module SPRING_32_MODULE = new Module("java-checks-test-sources/spring-3.2");
   public static final Module SPRING_WEB_40_MODULE = new Module("java-checks-test-sources/spring-web-4.0");
+  private static final Path testJarsPath = Path.of("java-checks-test-sources/target/test-jars");
+
+  public static List<File> getTestJars(List<String> jars) {
+    return jars.stream().map(name -> testJarsPath.resolve(name + ".jar").toFile()).toList();
+  }
 
   public static class Module {
     private final String relativePath;
