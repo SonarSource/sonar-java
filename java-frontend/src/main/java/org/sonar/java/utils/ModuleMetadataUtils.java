@@ -16,6 +16,7 @@
  */
 package org.sonar.java.utils;
 
+import java.util.Optional;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
@@ -39,13 +40,33 @@ public class ModuleMetadataUtils {
   @CheckForNull
   public static ProjectDefinition getRootProject(@Nullable ProjectDefinition projectDefinition) {
     ProjectDefinition current = projectDefinition;
-    if (current == null) {
-      return null;
-    }
-    while (current.getParent() != null) {
+    while (current != null && current.getParent() != null) {
       current = current.getParent();
     }
     return current;
   }
 
+  public static Optional<String> getFullyQualifiedModuleKey(@Nullable ProjectDefinition current) {
+    StringBuilder builder = new StringBuilder();
+    // we do not want to include root module as this is usually the sonar project key
+    while (current != null && current.getParent() != null) {
+      // get module key property
+      var property = current.properties().get("sonar.moduleKey");
+      if (property != null) {
+        // prepend separator if not first module
+        if (!builder.isEmpty()) {
+          // as modules can have dots in names, separator should be :
+          builder.insert(0, ":");
+        }
+        var leafModule = property.lastIndexOf(":") >= 0
+          ? property.substring(property.lastIndexOf(":") + 1)
+          : property;
+        builder.insert(0, leafModule);
+        current = current.getParent();
+      } else {
+        break;
+      }
+    }
+    return builder.isEmpty() ? Optional.empty() : Optional.of(builder.toString());
+  }
 }

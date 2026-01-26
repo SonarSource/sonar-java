@@ -19,6 +19,7 @@ package org.sonar.java;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 import org.sonar.api.batch.bootstrap.ProjectDefinition;
@@ -157,4 +158,24 @@ public class TestUtils {
     return childModule;
   }
 
+  public static ProjectDefinition mockProjectDefinitionWithModuleKeys() {
+    var rootProj = mock(ProjectDefinition.class);
+    doReturn(new File("/foo/bar/proj")).when(rootProj).getBaseDir();
+    
+    var child1Module = mock(ProjectDefinition.class);
+    doReturn(new File("/foo/bar/proj/pmodule/cmodule")).when(child1Module).getBaseDir();
+    doReturn(rootProj).when(child1Module).getParent();
+    var child1Properties = new HashMap<String, String>();
+    child1Properties.put("sonar.moduleKey", "propj:module1");
+    when(child1Module.properties()).thenReturn(child1Properties);
+
+    var child2Module = mock(ProjectDefinition.class);
+    doReturn(new File("/foo/bar/proj/pmodule/cmodule/c2module")).when(child2Module).getBaseDir();
+    doReturn(child1Module).when(child2Module).getParent();
+    var child2Properties = new HashMap<String, String>();
+    child2Properties.put("sonar.moduleKey", "module2");
+    when(child2Module.properties()).thenReturn(child2Properties);
+
+    return child2Module;
+  }
 }

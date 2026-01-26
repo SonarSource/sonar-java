@@ -18,6 +18,7 @@ package org.sonar.java.model;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputComponent;
@@ -76,6 +77,16 @@ class DefaultInputFileScannerContextTest {
     doReturn(moduleKey).when(sonarComponents).getModuleKey();
     var ctx = new DefaultJavaFileScannerContext(null, null, null, sonarComponents, null, false, false);
     assertThat(ctx.getModuleKey()).isEqualTo(moduleKey);
+  }
+
+  @Test
+  void getFullyQualifiedModuleKey() {
+    var moduleKey = Optional.of("some/random/module/key");
+    doReturn(moduleKey).when(sonarComponents).getFullyQualifiedModuleKey();
+    var ctx = new DefaultJavaFileScannerContext(null, null, null, sonarComponents, null, false, false);
+    assertThat(ctx.getFullyQualifiedModuleKey())
+      .isPresent()
+      .hasValue(moduleKey.get());
   }
 
   private SonarComponents createSonarComponentsMock() {

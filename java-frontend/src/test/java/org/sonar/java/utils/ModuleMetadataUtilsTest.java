@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.sonar.java.TestUtils.mockProjectDefinition;
+import static org.sonar.java.TestUtils.mockProjectDefinitionWithModuleKeys;
 
 class ModuleMetadataUtilsTest {
 
@@ -30,8 +31,18 @@ class ModuleMetadataUtilsTest {
     var projectDefinition = mockProjectDefinition();
     assertThat(ModuleMetadataUtils.getModuleKey(projectDefinition)).isEqualTo("pmodule/cmodule");
     assertThat(ModuleMetadataUtils.getModuleKey(null)).isEmpty();
+    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition)).isEmpty();
+    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(null)).isEmpty();
   }
-  
+
+  @Test
+  void getFullyQualifiedModuleKey() {
+    var projectDefinition = mockProjectDefinitionWithModuleKeys();
+    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition)).isPresent();
+    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(projectDefinition)).contains("module1:module2");
+    assertThat(ModuleMetadataUtils.getFullyQualifiedModuleKey(null)).isEmpty();
+  }
+
   @Test
   void getRootProject() {
     var projectDefinition = mockProjectDefinition();

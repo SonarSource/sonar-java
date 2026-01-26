@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.LongSupplier;
@@ -1308,6 +1309,7 @@ class SonarComponentsTest {
   void moduleKey_empty() {
     var sonarComponents = new SonarComponents(null, null, null, null, null, null);
     assertThat(sonarComponents.getModuleKey()).isEmpty();
+    assertThat(sonarComponents.getFullyQualifiedModuleKey()).isEmpty();
   }
 
   @Test
@@ -1315,13 +1317,21 @@ class SonarComponentsTest {
     var rootProj = mock(ProjectDefinition.class);
     doReturn(new File("/foo/bar/proj")).when(rootProj).getBaseDir();
     var parentModule = mock(ProjectDefinition.class);
+    var parentProperties = new HashMap<String, String>();
+    parentProperties.put("sonar.moduleKey", "proj1:pmodule");
+    when(parentModule.properties()).thenReturn(parentProperties);
     doReturn(rootProj).when(parentModule).getParent();
     var childModule = mock(ProjectDefinition.class);
+    var childProperties = new HashMap<String, String>();
+    childProperties.put("sonar.moduleKey", "proj1:pmodule:cmodule");
+    when(childModule.properties()).thenReturn(childProperties);
     doReturn(new File("/foo/bar/proj/pmodule/cmodule")).when(childModule).getBaseDir();
     doReturn(parentModule).when(childModule).getParent();
 
     var sonarComponents = new SonarComponents(null, null, null, null, null, null, childModule);
     assertThat(sonarComponents.getModuleKey()).isEqualTo("pmodule/cmodule");
+    assertThat(sonarComponents.getFullyQualifiedModuleKey()).isPresent();
+    assertThat(sonarComponents.getFullyQualifiedModuleKey()).contains("pmodule:cmodule");
   }
 
   @Rule(key = "jsp")
