@@ -23,7 +23,7 @@ class StringUtils { // Noncompliant
 class StringUtils { // Compliant
 
   private StringUtils() {
-    throw new IllegalStateException("Utility class");
+    /* This utility class should not be instantiated */
   }
 
   public static String concatenate(String s1, String s2) {
