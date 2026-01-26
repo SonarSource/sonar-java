@@ -3,6 +3,7 @@ package checks.spring;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 
 public class NullableInjectedFieldsHaveDefaultValueSample {
   @Nullable
@@ -39,7 +40,7 @@ public class NullableInjectedFieldsHaveDefaultValueSample {
 
   private static final String NON_COMPLIANT_IN_A_CONSTANT = "${non.compliant.constant}";
   //fix@fixStaticConstant {{Set null as default value}}
-  //edit@fixStaticConstant [[sl=40;el=40;sc=61;ec=88]] {{"${non.compliant.constant:#{null}}"}}
+  //edit@fixStaticConstant [[sl=-4;el=-4;sc=61;ec=88]] {{"${non.compliant.constant:#{null}}"}}
   @Nullable
   @Value(value = NON_COMPLIANT_IN_A_CONSTANT) // Noncompliant [[sc=3;ec=46;secondary=-1;quickfixes=fixStaticConstant,localFixOnStaticConstant]]
   //fix@localFixOnStaticConstant {{Set null as default value locally}}
@@ -48,7 +49,7 @@ public class NullableInjectedFieldsHaveDefaultValueSample {
 
   private final String finalButNotStatic = "${non.compliant.constant}";
   //fix@fixConstant {{Set null as default value}}
-  //edit@fixConstant [[sl=49;el=49;sc=44;ec=71]] {{"${non.compliant.constant:#{null}}"}}
+  //edit@fixConstant [[sl=-4;el=-4;sc=44;ec=71]] {{"${non.compliant.constant:#{null}}"}}
   @Nullable
   @Value(finalButNotStatic) // Noncompliant [[sc=3;ec=28;secondary=-1;quickfixes=fixConstant,localFixOnConstant]]
   // fix@localFixOnConstant {{Set null as default value locally}}
@@ -118,4 +119,16 @@ public class NullableInjectedFieldsHaveDefaultValueSample {
   @org.jspecify.annotations.Nullable
   @Value("${my.property_jspecify}") // Noncompliant  {{Provide a default null value for this field.}} [[sc=3;ec=27;secondary=-1]]
   private String myProperty_jspecify;
+
+  @Value("${notNull}")
+  @NonNull
+  private String notNull; // Compliant, fields marked as non-null should be ignored
+
+  private String nonNullArgument(@Value("${x}") @org.jspecify.annotations.NonNull String x) { // Compliant, parameters marked as non-null should be ignored
+    return x;
+  }
+
+  private String FBNonNullArgument(@Value("${x}") @edu.umd.cs.findbugs.annotations.NonNull String x) { // Compliant, parameters marked as non-null should be ignored
+    return x;
+  }
 }
