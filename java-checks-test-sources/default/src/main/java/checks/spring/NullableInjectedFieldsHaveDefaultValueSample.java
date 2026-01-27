@@ -124,11 +124,11 @@ public class NullableInjectedFieldsHaveDefaultValueSample {
   @NonNull
   private String notNull; // Compliant, fields marked as non-null should be ignored
 
-  private String nonNullArgument(@Value("${x}") @org.jspecify.annotations.NonNull String x) { // Compliant, parameters marked as non-null should be ignored
+  private String nonNullArgument1(@Value("${x}") @org.jspecify.annotations.NonNull String x) { // Compliant, parameters marked as non-null should be ignored
     return x;
   }
 
-  private String FBNonNullArgument(@Value("${x}") @edu.umd.cs.findbugs.annotations.NonNull String x) { // Compliant, parameters marked as non-null should be ignored
+  private String nonNullArgument2(@Value("${x}") @NonNull String x) { // Compliant, parameters marked as non-null should be ignored
     return x;
   }
 }
