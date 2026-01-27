@@ -106,7 +106,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
         // In this case we cannot know if the provided ContextConsumer has the type param <AssertableApplicationContext>, but we want to avoid FPs
         return true;
       }
-      @Nullable Type contextConsumerType = null;
+      Type contextConsumerType = null;
       if (contextConsumerImplSymbol.isInterface()) {
         contextConsumerType = contextConsumerImplSymbol.type();
       } else {
