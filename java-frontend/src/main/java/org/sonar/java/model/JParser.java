@@ -760,15 +760,20 @@ public class JParser {
   private ClassTreeImpl convertTypeDeclaration(AbstractTypeDeclaration e) {
     List<Tree> members = new ArrayList<>();
 
-    int leftBraceTokenIndex = findLeftBraceTokenIndex(e);
-    addEmptyStatementsToList(leftBraceTokenIndex, members);
+    boolean isUnnamed = e.getNodeType() == ASTNode.UNNAMED_CLASS;
+
+    int leftBraceTokenIndex = 0;
+    if (!isUnnamed) {
+      leftBraceTokenIndex = findLeftBraceTokenIndex(e);
+      addEmptyStatementsToList(leftBraceTokenIndex, members);
+    }
 
     for (Object o : e.bodyDeclarations()) {
       processBodyDeclaration((BodyDeclaration) o, members);
     }
 
     ModifiersTreeImpl modifiers = convertModifiers(e.modifiers());
-    IdentifierTreeImpl name = createSimpleName(e.getName());
+    IdentifierTreeImpl name = isUnnamed ? null : createSimpleName(e.getName());
 
     InternalSyntaxToken openBraceToken = createSyntaxToken(leftBraceTokenIndex);
     InternalSyntaxToken closeBraceToken = lastTokenIn(e, TerminalToken.TokenNameRBRACE);
@@ -777,6 +782,9 @@ public class JParser {
     switch (e.getNodeType()) {
       case ASTNode.TYPE_DECLARATION:
         t = convertTypeDeclaration((TypeDeclaration) e, modifiers, name, openBraceToken, members, closeBraceToken);
+        break;
+      case ASTNode.UNNAMED_CLASS:
+        t = convertImplicitTypeDeclaration(members);
         break;
       case ASTNode.ENUM_DECLARATION:
         t = convertEnumDeclaration((EnumDeclaration) e, modifiers, name, openBraceToken, members, closeBraceToken);
@@ -821,6 +829,12 @@ public class JParser {
       t.completeSuperclass(firstTokenBefore(superclassType, TerminalToken.TokenNameextends), convertType(superclassType));
     }
     return t;
+  }
+
+  /** Converts AST on an implicit class at the top level of a compact compilation unit. */
+  private ClassTreeImpl convertImplicitTypeDeclaration(List<Tree> members) {
+    // TODO: open and close braces should be made nullable
+    return new ClassTreeImpl(Tree.Kind.IMPLICIT_CLASS, /* openBraceToken = */ null, members, /* closeBraceToken = */ null);
   }
 
   private ClassTreeImpl convertEnumDeclaration(EnumDeclaration e, ModifiersTreeImpl modifiers, IdentifierTreeImpl name,
@@ -920,7 +934,7 @@ public class JParser {
         return ((EnumDeclaration) e).superInterfaceTypes();
       case ASTNode.RECORD_DECLARATION:
         return ((RecordDeclaration) e).superInterfaceTypes();
-      case ASTNode.ANNOTATION_TYPE_DECLARATION:
+      case ASTNode.ANNOTATION_TYPE_DECLARATION, ASTNode.UNNAMED_CLASS:
         return Collections.emptyList();
       default:
         throw new IllegalStateException(ASTNode.nodeClassForType(e.getNodeType()).toString());
@@ -1009,7 +1023,8 @@ public class JParser {
       case ASTNode.ANNOTATION_TYPE_DECLARATION,
         ASTNode.ENUM_DECLARATION,
         ASTNode.RECORD_DECLARATION,
-        ASTNode.TYPE_DECLARATION:
+        ASTNode.TYPE_DECLARATION,
+        ASTNode.UNNAMED_CLASS:
         lastTokenIndex = processTypeDeclaration((AbstractTypeDeclaration) node, members);
         break;
       case ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION:
