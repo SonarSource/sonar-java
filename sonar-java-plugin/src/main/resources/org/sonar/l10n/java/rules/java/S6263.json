@@ -19,5 +19,10 @@
   "ruleSpecification": "RSPEC-6263",
   "sqKey": "S6263",
   "scope": "Main",
-  "quickfix": "unknown"
+  "quickfix": "unknown",
+  "securityStandards": {
+    "CWE": [
+      798
+    ]
+  }
 }
