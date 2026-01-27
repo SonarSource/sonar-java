@@ -3,6 +3,7 @@ package checks.tests;
 import org.junit.jupiter.api.Test;
 import rx.Observable;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertEquals;
 
 public class TooManyAssertionsCheckCustom2 {
@@ -35,6 +36,19 @@ public class TooManyAssertionsCheckCustom2 {
 //  ^^^^^^^^^^^^^^^^^^^^^<
     customAssert();
 //  ^^^^^^^^^^^^^^<
+  }
+
+  @Test
+  void test4() { // Noncompliant {{Refactor this method to reduce the number of assertions from 3 to less than 2.}}
+//     ^^^^^
+    var myObject = new Object();
+
+    assertThat(myObject).as("description").isNotNull().describedAs("description").isNotNull();
+//  ^^^^^^^^^^^^^^^^^^^^<
+    assertThat(myObject).as("description").isNotNull().describedAs("description").isNotNull();
+//  ^^^^^^^^^^^^^^^^^^^^<
+    assertThat(myObject).as("description").isNotNull().describedAs("description").isNotNull();
+//  ^^^^^^^^^^^^^^^^^^^^<
   }
 
   void customAssert() {
