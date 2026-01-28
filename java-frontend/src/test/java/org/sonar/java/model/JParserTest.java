@@ -569,7 +569,7 @@ class JParserTest {
 
     Token token5 = tokens.get(5);
     assertThat(token5.toString(source)).isEqualTo("/// markdown comment 1\n  /// markdown comment 2");
-    assertThat(token5.isComment()).isFalse(); // JDT issue https://github.com/eclipse-jdt/eclipse.jdt.core/issues/3914
+    assertThat(token5.isComment()).isTrue();
     assertThat(isComment(token5)).isTrue();
     assertThat(convertTokenTypeToCommentKind(token5)).isEqualTo(CommentKind.MARKDOWN);
 
