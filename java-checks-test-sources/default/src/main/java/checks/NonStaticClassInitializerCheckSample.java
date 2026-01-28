@@ -14,7 +14,7 @@ class NonStaticClassInitializerCheckSample {
 
     new Runnable() {
 
-      { // Noncompliant
+      {
         System.out.println();
       }
 

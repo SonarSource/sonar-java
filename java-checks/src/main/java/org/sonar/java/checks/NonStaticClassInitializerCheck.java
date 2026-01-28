@@ -34,6 +34,13 @@ public class NonStaticClassInitializerCheck extends IssuableSubscriptionVisitor 
 
   @Override
   public void visitNode(Tree tree) {
-    reportIssue(((BlockTree) tree).openBraceToken(), "Move the contents of this initializer to a standard constructor or to field initializers.");
+    if (!isMemberOfAnonymousClass(tree)) {
+      reportIssue(((BlockTree) tree).openBraceToken(), "Move the contents of this initializer to a standard constructor or to field initializers.");
+    }
+  }
+
+  private static boolean isMemberOfAnonymousClass(Tree tree) {
+    Tree parent = tree.parent();
+    return parent.is(Tree.Kind.CLASS) && parent.parent() != null && parent.parent().is(Tree.Kind.NEW_CLASS);
   }
 }
