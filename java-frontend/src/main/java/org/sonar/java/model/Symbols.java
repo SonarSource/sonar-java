@@ -99,7 +99,7 @@ public class Symbols {
     }
 
     @Override
-    public final boolean isMethodSymbol() {
+    public boolean isMethodSymbol() {
       return false;
     }
 
@@ -339,6 +339,11 @@ public class Symbols {
     @Override
     public boolean isNativeMethod() {
       return false;
+    }
+
+    @Override
+    public boolean isMethodSymbol() {
+      return true;
     }
   }
 
