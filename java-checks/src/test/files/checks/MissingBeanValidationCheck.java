@@ -106,3 +106,28 @@ class Building {
   static class Size<T> { }
 }
 
+public class Occupant {
+  @jakarta.validation.constraints.NotNull
+  private String name;
+}
+
+public class Floor {
+  @jakarta.validation.constraints.NotNull
+  private List<Occupant> occupants; // Noncompliant {{Add missing "@Valid" on "occupants" to validate it with "Bean Validation".}}
+//        ^^^^^^^^^^^^^^
+
+  @jakarta.validation.Valid
+  @jakarta.validation.constraints.NotNull
+  private List<Occupant> validatedOccupants; // Compliant
+
+  @jakarta.validation.constraints.NotNull
+  // Preferred style as of Bean Validation 2.0
+  private List<@jakarta.validation.Valid User> validatedOccupants2; // Compliant
+
+  public void ignore(Occupant occupant) { // Noncompliant {{Add missing "@Valid" on "occupant" to validate it with "Bean Validation".}}
+//                   ^^^^^^^^
+  }
+
+  public void validate(@jakarta.validation.Valid Occupant occupant) { // Compliant
+  }
+}
