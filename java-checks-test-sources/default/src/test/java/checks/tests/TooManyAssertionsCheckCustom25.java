@@ -80,19 +80,18 @@ public class TooManyAssertionsCheckCustom25 {
     var myObject = new Object();
 
     assertThat(true).isTrue().isTrue().isTrue();
-    assertThat(true).isTrue().as("").isTrue().as("").isTrue();
+    assertThat(true).isTrue().as("true").isTrue().describedAs("isTrue").isTrue();
+    assertThat(myObject).as("object").isNotNull();
+    assertThat(myObject).isNotNull().as("object").isNotNull();
     assertThat(myObject).as("description").isNotNull();
-    assertThat(myObject).as("description").isNotNull();
-    assertThat(myObject).as("description").isNotNull();
-    assertThat(myObject).as("description").isNotNull();
-    assertThat(myObject).as("description").isNotNull();
-    assertThat(myObject).as("description").isNotNull();
-    assertThat(myObject).as("description").isNotNull();
-    assertThat(myObject).as("description").isNotNull();
-    assertThat(myObject).as("description").isNotNull();
-    assertThat(myObject).describedAs("hjksa").isNotNull();
-    assertThat(myObject).withFailMessage("hjksa").isNotNull();
-    assertThat(myObject).overridingErrorMessage("hjksa").isNotNull();
+    assertThat(myObject).as("description").isInstanceOf(Object.class);
+    assertThat(myObject).isNotNull().as("description").isInstanceOf(Object.class);
+    assertThat(myObject).describedAs("someObject").isNotNull();
+    assertThat(myObject).isNotNull().describedAs("someObject").isNotNull();
+    assertThat(myObject).withFailMessage("failure").describedAs("someObject").isNotNull();
+    assertThat(myObject).isNotNull().withFailMessage("failure").describedAs("someObject").isNotNull();
+    assertThat(myObject).overridingErrorMessage("error").isNotNull();
+    assertThat(myObject).isNotNull().overridingErrorMessage("error").isNotNull();
   }
 
   int g(int x) {
