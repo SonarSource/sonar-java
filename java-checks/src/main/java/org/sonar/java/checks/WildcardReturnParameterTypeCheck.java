@@ -68,7 +68,6 @@ public class WildcardReturnParameterTypeCheck extends IssuableSubscriptionVisito
       } else if (!symbolType.is("java.lang.Class") && !symbolType.isUnknown()) {
         typeArguments.forEach(this::reportIfWildcard);
       }
-      super.visitParameterizedType(tree);
     }
 
     private void reportIfWildcard(Tree tree) {
