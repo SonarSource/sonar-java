@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
+
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
 
