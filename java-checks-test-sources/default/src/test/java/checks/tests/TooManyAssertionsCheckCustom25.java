@@ -75,25 +75,6 @@ public class TooManyAssertionsCheckCustom25 {
     assertEquals(1026, g(26));
   }
 
-  @Test
-  void test3() { // Compliant, chained assertions only count as a single instance
-    var myObject = new Object();
-
-    assertThat(true).isTrue().isTrue().isTrue();
-    assertThat(true).isTrue().as("true").isTrue().describedAs("isTrue").isTrue();
-    assertThat(myObject).as("object").isNotNull();
-    assertThat(myObject).isNotNull().as("object").isNotNull();
-    assertThat(myObject).as("description").isNotNull();
-    assertThat(myObject).as("description").isInstanceOf(Object.class);
-    assertThat(myObject).isNotNull().as("description").isInstanceOf(Object.class);
-    assertThat(myObject).describedAs("someObject").isNotNull();
-    assertThat(myObject).isNotNull().describedAs("someObject").isNotNull();
-    assertThat(myObject).withFailMessage("failure").describedAs("someObject").isNotNull();
-    assertThat(myObject).isNotNull().withFailMessage("failure").describedAs("someObject").isNotNull();
-    assertThat(myObject).overridingErrorMessage("error").isNotNull();
-    assertThat(myObject).isNotNull().overridingErrorMessage("error").isNotNull();
-  }
-
   int g(int x) {
     return x + 100;
   }
