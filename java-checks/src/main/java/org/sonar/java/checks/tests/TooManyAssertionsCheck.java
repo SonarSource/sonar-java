@@ -111,15 +111,15 @@ public class TooManyAssertionsCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       super.visitMethodInvocation(mit);
-      if (isAssertion(methodName(mit), mit.methodSymbol())) {
-        ExpressionTree methodSelect = mit.methodSelect();
-        if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-          ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-          if (assertions.contains(expression) || chainedAssertions.contains(expression)) {
-            chainedAssertions.add(mit);
-            return;
-          }
+      ExpressionTree methodSelect = mit.methodSelect();
+      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+        ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
+        if (assertions.contains(expression) || chainedAssertions.contains(expression)) {
+          chainedAssertions.add(mit);
+          return;
         }
+      }
+      if (isAssertion(methodName(mit), mit.methodSymbol())) {
         assertions.add(mit);
       }
     }
