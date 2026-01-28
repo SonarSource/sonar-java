@@ -36,8 +36,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S5128")
 public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
-  private static final String JAVAX_VALIDATION_VALID = "javax.validation.Valid";
-  private static final String JAVAX_VALIDATION_CONSTRAINT = "javax.validation.Constraint";
+  private static final List<String> JSR380_VALID_ANNOTATIONS = List.of("javax.validation.Valid", "jakarta.validation.Valid");
+  private static final List<String> JSR380_CONSTRAINTS = List.of("javax.validation.Constraint", "jakarta.validation.Constraint");
+  private static final List<String> JSR380_CONSTRAINT_VALIDATORS = List.of("javax.validation.ConstraintValidator", "jakarta.validation.ConstraintValidator");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -74,7 +75,7 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isInConstraintValidator(MethodTree methodTree) {
     Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
-    return enclosingClass != null && enclosingClass.type().isSubtypeOf("javax.validation.ConstraintValidator");
+    return enclosingClass != null && JSR380_CONSTRAINT_VALIDATORS.stream().anyMatch(type -> enclosingClass.type().isSubtypeOf(type));
   }
 
   private static Optional<String> getIssueMessage(VariableTree variable) {
@@ -85,10 +86,10 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean validationEnabled(VariableTree variable) {
-    if (variable.symbol().metadata().isAnnotatedWith(JAVAX_VALIDATION_VALID)) {
+    if (JSR380_VALID_ANNOTATIONS.stream().anyMatch(value -> variable.symbol().metadata().isAnnotatedWith(value))) {
       return true;
     }
-    return typeArgumentAnnotations(variable).anyMatch(annotation -> annotation.is(JAVAX_VALIDATION_VALID));
+    return typeArgumentAnnotations(variable).anyMatch(annotation -> JSR380_VALID_ANNOTATIONS.contains(annotation.fullyQualifiedName()));
   }
 
   private static Stream<Type> typeArgumentAnnotations(VariableTree variable) {
@@ -132,6 +133,6 @@ public class MissingBeanValidationCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isConstraintAnnotation(SymbolMetadata.AnnotationInstance annotationInstance) {
-    return annotationInstance.symbol().metadata().isAnnotatedWith(JAVAX_VALIDATION_CONSTRAINT);
+    return JSR380_CONSTRAINTS.stream().anyMatch(constraint -> annotationInstance.symbol().metadata().isAnnotatedWith(constraint));
   }
 }
