@@ -170,7 +170,7 @@ public class NullableInjectedFieldsHaveDefaultValueCheck extends IssuableSubscri
   private static Optional<AnnotationTree> getNullableAnnotation(VariableTree field) {
     SymbolMetadata.NullabilityData nullabilityData = field.symbol().metadata().nullabilityData(SymbolMetadata.NullabilityTarget.FIELD);
     SymbolMetadata.AnnotationInstance instance = nullabilityData.annotation();
-    if (instance == null) {
+    if (instance == null || nullabilityData.isNonNull(SymbolMetadata.NullabilityLevel.CLASS, false, false)) {
       return Optional.empty();
     }
     return Optional.ofNullable(field.symbol().metadata().findAnnotationTree(instance));
