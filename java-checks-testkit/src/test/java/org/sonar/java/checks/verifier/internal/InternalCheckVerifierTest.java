@@ -1067,4 +1067,32 @@ class InternalCheckVerifierTest {
       .hasMessage("Method not implemented, feel free to implement.");
   }
 
+  @Test
+  void addJarsToClasspath_not_supported() {
+    InternalCheckVerifier checkVerifier = InternalCheckVerifier.newInstance()
+      .onFile(TEST_FILE);
+
+    Throwable e = catchThrowable(() -> {
+      checkVerifier.addJarsToClasspath("testng-7.5.1");
+    });
+
+    assertThat(e)
+      .isInstanceOf(UnsupportedOperationException.class)
+      .hasMessage("Not implemented!");
+  }
+
+  @Test
+  void removeJarsFromClasspath_not_supported() {
+    InternalCheckVerifier checkVerifier = InternalCheckVerifier.newInstance()
+      .onFile(TEST_FILE);
+
+    Throwable e = catchThrowable(() -> {
+      checkVerifier.removeJarsFromClasspath("testng-7.12.0");
+    });
+
+    assertThat(e)
+      .isInstanceOf(UnsupportedOperationException.class)
+      .hasMessage("Not implemented!");
+  }
+
 }

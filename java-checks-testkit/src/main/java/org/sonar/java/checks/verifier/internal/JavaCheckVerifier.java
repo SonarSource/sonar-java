@@ -78,6 +78,10 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   private List<JavaFileScanner> checks = null;
   private List<File> classpath = null;
+  private List<String> jarsToAdd = new ArrayList<>();
+  private List<String> jarsToRemove = new ArrayList<>();
+  @VisibleForTesting
+  List<File> actualClasspath = null;
   private JavaVersion javaVersion = null;
   private boolean inAndroidContext = false;
   private List<InputFile> files = null;
@@ -96,7 +100,6 @@ public class JavaCheckVerifier implements CheckVerifier {
     MultiFileVerifier verifier = MultiFileVerifier.create(Paths.get(files.get(0).uri()), UTF_8);
 
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
-    List<File> actualClasspath = classpath == null ? TestClasspathUtils.DEFAULT_MODULE.getClassPath() : classpath;
 
     List<JavaFileScanner> visitors = new ArrayList<>(checks);
     CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
@@ -107,6 +110,7 @@ public class JavaCheckVerifier implements CheckVerifier {
       .withSonarComponents(sonarComponents)
       .withAndroidContext(inAndroidContext);
     if (!withoutSemantic) {
+      setActualClasspath();
       visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
     }
 
@@ -133,6 +137,13 @@ public class JavaCheckVerifier implements CheckVerifier {
     }
 
     return verifier;
+  }
+
+  private void setActualClasspath() {
+    List<File> newClasspath = classpath == null ? new ArrayList<>(TestClasspathUtils.DEFAULT_MODULE.getClassPath()) : classpath;
+    jarsToRemove.forEach(f -> newClasspath.removeIf(file -> file.getName().contains(f)));
+    newClasspath.addAll(TestClasspathUtils.getTestJars(jarsToAdd));
+    actualClasspath = Collections.unmodifiableList(newClasspath);
   }
 
   private static void addIssues(JavaFileScannerContextForTests scannerContext, MultiFileVerifier verifier) {
@@ -229,6 +240,18 @@ public class JavaCheckVerifier implements CheckVerifier {
   public CheckVerifier withClassPath(Collection<File> classpath) {
     requiresNull(this.classpath, "classpath");
     this.classpath = new ArrayList<>(classpath);
+    return this;
+  }
+
+  @Override
+  public CheckVerifier addJarsToClasspath(String... jarsToAdd) {
+    this.jarsToAdd.addAll(Arrays.asList(jarsToAdd));
+    return this;
+  }
+
+  @Override
+  public CheckVerifier removeJarsFromClasspath(String... jarsToRemove) {
+    this.jarsToRemove.addAll(Arrays.asList(jarsToRemove));
     return this;
   }
 

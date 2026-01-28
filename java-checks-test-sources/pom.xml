@@ -51,6 +51,7 @@
           <execution>
             <id>copy</id>
             <phase>test-compile</phase>
+            <inherited>false</inherited>
             <goals>
               <goal>copy</goal>
             </goals>
