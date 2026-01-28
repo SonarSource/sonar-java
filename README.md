@@ -55,8 +55,8 @@ To run tests locally follow these instructions.
 
 ### Java versions
 
-You need `Java 25` to compile and run the Unit Tests of the project and `Java 17` run the Integration Tests (ITs).
-Note that `Java 21` can be used to build and test all modules except under `java-checks-test-sources` (as they require `Java 25`) and  `its` (as they require `Java 17` because of SQ incompatibility).
+You need `Java 25` to compile and run the Unit Tests of the project and `Java 21` run the Integration Tests (ITs).
+Note that `Java 21` can be used to build and test all modules except under `java-checks-test-sources` (as they require `Java 25`).
 
 ### Build the Project and Run Unit Tests
 
@@ -121,7 +121,7 @@ From the `its/ruling` folder, launch the ruling tests:
 
     mvn clean install -Pit-ruling -DcommunityEditionTestsOnly=true 
     # Alternatively
-    JAVA_HOME=/my/local/java17/jdk/ mvn clean install -Pit-ruling -DcommunityEditionTestsOnly=true
+    JAVA_HOME=/my/local/java21/jdk/ mvn clean install -Pit-ruling -DcommunityEditionTestsOnly=true
 
 Note for internal contributors: in order to also execute the tests that depend on the SonarQube Server Enterprise Edition, use: 
 
@@ -172,7 +172,7 @@ mvn clean compile
 To run the tests, move to the [`its/autoscan`](its/autoscan) folder and run:
 ```shell
 # cd its/autoscan
-# use Java 17!
+# use Java 21!
 mvn clean package --batch-mode --errors --show-version \
    --activate-profiles it-autoscan \
   -Dsonar.runtimeVersion=LATEST_RELEASE

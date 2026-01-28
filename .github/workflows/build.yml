@@ -54,17 +54,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner:
-          - github-ubuntu-latest-m
-          - github-windows-latest-m
-        profile:
-          - without-sonarqube-project
-          - only-sonarqube-project
+        item:
+          - { runner: github-ubuntu-latest-m, profile: without-sonarqube-project }
+          - { runner: github-ubuntu-latest-m, profile: only-sonarqube-project }
+          - { runner: github-ubuntu-latest-m, profile: only-guava-project, java_version: 17, sonar-runtime: "LATEST_RELEASE[2025.4]" }
+          - { runner: github-windows-latest-m, profile: without-sonarqube-project }
+          - { runner: github-windows-latest-m, profile: only-sonarqube-project }
+          - { runner: github-windows-latest-m, profile: only-guava-project, java_version: 17, sonar-runtime: "LATEST_RELEASE[2025.4]" }
     name: Ruling QA
     needs:
       - build
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: ${{ matrix.runner }}
+    runs-on: ${{ matrix.item.runner }}
     permissions:
       id-token: write
       contents: write
@@ -77,8 +78,8 @@ jobs:
       - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
         with:
           version: 2025.7.12
-      - name: Select Java 17
-        run: mise use java@17
+      - name: Select Java Version
+        run: mise use java@${{ matrix.item.java_version}}
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
@@ -96,9 +97,10 @@ jobs:
         env:
           MAVEN_OPTS: "-Xmx3g"
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
+          SONAR_RUNTIME: ${{ matrix.item.sonar-runtime || 'LATEST_RELEASE' }}
         run: |
           cd its/ruling
-          mvn package --batch-mode "-Pit-ruling,${{ matrix.profile }}" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+          mvn package --batch-mode "-Pit-ruling,${{ matrix.item.profile }}" "-Dsonar.runtimeVersion=${{ env.SONAR_RUNTIME }}" -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
 
   plugin-qa:
     strategy:
@@ -107,8 +109,6 @@ jobs:
         item:
           - sq_version: LATEST_RELEASE
             java_version: 21
-          - sq_version: LATEST_RELEASE
-            java_version: 17
           - sq_version: DEV
             java_version: 21
     name: Plugin QA
@@ -306,8 +306,8 @@ jobs:
         working-directory: java-checks-test-sources
         run: |
           mvn clean compile test-compile --batch-mode
-      - name: Select Java 17
-        run: mise use java@17
+      - name: Select Java 21
+        run: mise use java@21
       - uses: SonarSource/ci-github-actions/config-maven@v1
         with:
           artifactory-reader-role: private-reader
