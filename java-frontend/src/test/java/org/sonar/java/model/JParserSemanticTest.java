@@ -2086,7 +2086,7 @@ class JParserSemanticTest {
 
     JavaTree.CompilationUnitTreeImpl cu = test(source);
 
-    ImportTree importModule = (ImportTree) cu.imports().get(0);
+    JavaTree.ImportTreeImpl importModule = (JavaTree.ImportTreeImpl) cu.imports().get(0);
 
     assertThat(importModule.isModule()).isTrue();
     assertThat(importModule.isStatic()).isFalse();
@@ -2099,7 +2099,7 @@ class JParserSemanticTest {
       new InternalRange(Position.at(3, 8), Position.at(3, 14))
     );
 
-    ImportTree importConst = (ImportTree) cu.imports().get(1);
+    JavaTree.ImportTreeImpl importConst = (JavaTree.ImportTreeImpl) cu.imports().get(1);
     assertThat(importConst.isModule()).isFalse();
   }
 }
