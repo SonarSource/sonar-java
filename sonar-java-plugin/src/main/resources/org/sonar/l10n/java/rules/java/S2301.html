@@ -6,33 +6,30 @@ the meaning or to take extra time to look the method up.</p>
 <p>Instead, separate methods should be written.</p>
 <p>This rule finds methods with a <code>boolean</code> that’s used to determine which path to take through the method.</p>
 <h3>Noncompliant code example</h3>
-<pre>
-public String tempt(String name, boolean ofAge) {
-  if (ofAge) {
-    offerLiquor(name);
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public String feed(String name, boolean isHuman) {
+  if (isHuman) {
+    // implementation for human
   } else {
-    offerCandy(name);
+    // implementation for animal
   }
 }
 
-// ...
-public void corrupt() {
-  tempt("Joe", false); // does this mean not to temp Joe?
-}
+// Intent is not clear at call site
+feed("Max", false); // does this mean not to feed Max?
 </pre>
 <h3>Compliant solution</h3>
-<pre>
-public void temptAdult(String name) {
-  offerLiquor(name);
+<pre data-diff-id="1" data-diff-type="compliant">
+public void feedHuman(String name) {
+  offerSushi(name);
 }
 
-public void temptChild(String name) {
-    offerCandy(name);
+public void feedAnimal(String name) {
+  offerCarrot(name);
 }
 
-// ...
-public void corrupt() {
-  age &lt; legalAge ? temptChild("Joe") : temptAdult("Joe");
-}
+// Clear intent at call site
+feedHuman("Joe");
+feedAnimal("Max");
 </pre>
 
