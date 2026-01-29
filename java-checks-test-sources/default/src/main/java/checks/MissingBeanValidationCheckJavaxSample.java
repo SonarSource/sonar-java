@@ -1,3 +1,5 @@
+package checks;
+
 import java.util.List;
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
@@ -10,7 +12,7 @@ class User {
   private String name;
 }
 
-@Constraint
+@Constraint(validatedBy = CheckMyConstraint.class)
 @interface MyConstraint {
 }
 
@@ -19,12 +21,12 @@ class Department {
   private int hierarchyLevel;
 }
 
-public class CheckMyConstraint implements ConstraintValidator<MyConstraint, Department>
-{
+class CheckMyConstraint implements ConstraintValidator<MyConstraint, Department> {
   public void initialize(MyConstraint constraintAnnotation) {
   }
 
   public boolean isValid(Department bean, ConstraintValidatorContext context) { // Compliant - @Valid inside constraint validators would be nonsense
+    return true;
   }
 }
 
@@ -52,16 +54,13 @@ class CompliantGroup {
   private List<User> members; // Compliant
 }
 
-class CompliantUserSelection {
-  private List<@Valid User> contents; // Compliant; preferred syntax as of Java 8
-}
-
 class NonCompliantService {
   public void login(User user) { // Noncompliant {{Add missing "@Valid" on "user" to validate it with "Bean Validation".}}
   }
 
   public List<User> list(Department department) { // Noncompliant {{Add missing "@Valid" on "department" to validate it with "Bean Validation".}}
 //                       ^^^^^^^^^^
+    return List.of();
   }
 }
 
@@ -75,6 +74,7 @@ class CompliantService {
   }
 
   public List<User> list(@Valid Department department) { // Compliant
+    return List.of();
   }
 }
 
@@ -103,31 +103,6 @@ class Human {
 }
 
 class Building {
-  static class Size<T> { }
-}
-
-public class Occupant {
-  @jakarta.validation.constraints.NotNull
-  private String name;
-}
-
-public class Floor {
-  @jakarta.validation.constraints.NotNull
-  private List<Occupant> occupants; // Noncompliant {{Add missing "@Valid" on "occupants" to validate it with "Bean Validation".}}
-//        ^^^^^^^^^^^^^^
-
-  @jakarta.validation.Valid
-  @jakarta.validation.constraints.NotNull
-  private List<Occupant> validatedOccupants; // Compliant
-
-  @jakarta.validation.constraints.NotNull
-  // Preferred style as of Bean Validation 2.0
-  private List<@jakarta.validation.Valid User> validatedOccupants2; // Compliant
-
-  public void ignore(Occupant occupant) { // Noncompliant {{Add missing "@Valid" on "occupant" to validate it with "Bean Validation".}}
-//                   ^^^^^^^^
-  }
-
-  public void validate(@jakarta.validation.Valid Occupant occupant) { // Compliant
+  static class Size<T> {
   }
 }
