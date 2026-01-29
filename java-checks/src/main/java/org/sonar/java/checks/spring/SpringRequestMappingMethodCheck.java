@@ -45,6 +45,13 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
   private static final String REQUEST_METHOD = "method";
   public static final String MESSAGE = "Make sure allowing safe and unsafe HTTP methods is safe here.";
 
+  private boolean classHasSafeMethods = false;
+  private boolean classHasUnsafeMethods = false;
+  private boolean methodHasSafeMethods = false;
+  private boolean methodHasUnsafeMethods = false;
+
+  private boolean isClassVisited = false;
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
@@ -53,11 +60,12 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
+    isClassVisited = true;
     findRequestMappingAnnotation(classTree.modifiers())
       .flatMap(SpringRequestMappingMethodCheck::findRequestMethods)
-      .filter(SpringRequestMappingMethodCheck::mixSafeAndUnsafeMethods)
+      .filter(this::mixSafeAndUnsafeMethods)
       .ifPresent(methods -> reportIssue(methods, MESSAGE));
-
+    isClassVisited = false;
     classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .forEach(member -> checkMethod((MethodTree) member, classTree.symbol()));
@@ -69,9 +77,15 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
       .flatMap(SpringRequestMappingMethodCheck::findRequestMethods);
 
     if (requestMethods.isPresent()) {
-      requestMethods
-        .filter(SpringRequestMappingMethodCheck::mixSafeAndUnsafeMethods)
-        .ifPresent(methods -> reportIssue(methods, MESSAGE));
+      Optional<ExpressionTree> expressionTree = requestMethods
+        .filter(this::mixSafeAndUnsafeMethods);
+      if (expressionTree.isPresent()) {
+        reportIssue(expressionTree.get(), MESSAGE);
+      } else {
+        if ((classHasSafeMethods && methodHasUnsafeMethods) || (classHasUnsafeMethods && methodHasSafeMethods)) {
+          reportIssue(requestMethods.get(), MESSAGE);
+        }
+      }
     } else if (requestMappingAnnotation.isPresent() && !inheritRequestMethod(classSymbol)) {
       reportIssue(requestMappingAnnotation.get().annotationType(), MESSAGE);
     }
@@ -109,9 +123,16 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
     return false;
   }
 
-  private static boolean mixSafeAndUnsafeMethods(ExpressionTree requestMethodsAssignment) {
+  private boolean mixSafeAndUnsafeMethods(ExpressionTree requestMethodsAssignment) {
     HttpMethodVisitor visitor = new HttpMethodVisitor();
     requestMethodsAssignment.accept(visitor);
+    if (isClassVisited) {
+      classHasSafeMethods = visitor.hasSafeMethods;
+      classHasUnsafeMethods = visitor.hasUnsafeMethods;
+    } else {
+      methodHasSafeMethods = visitor.hasSafeMethods;
+      methodHasUnsafeMethods = visitor.hasUnsafeMethods;
+    }
     return visitor.hasSafeMethods && visitor.hasUnsafeMethods;
   }
 
