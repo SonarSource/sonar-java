@@ -64,6 +64,39 @@ public class SpringRequestMappingMethodCheckSample {
       return "Hello from get";
     }
 
+    @RequestMapping(value = "/post", method = RequestMethod.POST) // Noncompliant
+    String post() {
+      return "Hello from post";
+    }
+
+    @RequestMapping(value = "/put", method = RequestMethod.PUT) // Noncompliant
+    String put() {
+      return "Hello from put";
+    }
+
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE) // Noncompliant
+    String delete() {
+      return "Hello from delete";
+    }
+  }
+
+  @RestController
+  @RequestMapping(path = "/update", method = RequestMethod.POST)
+  public static class UpdateController {
+    @RequestMapping(value = "/", method = RequestMethod.GET) // Noncompliant
+    String get() {
+      return "Hello from get";
+    }
+
+    @RequestMapping(value = "/head", method = RequestMethod.HEAD) // Noncompliant
+    String head() {
+      return "Hello from head";
+    }
+
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+    String delete() {
+      return "Hello from delete";
+    }
   }
 
   public static class DerivedController extends OtherController {

@@ -45,6 +45,11 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
   private static final String REQUEST_METHOD = "method";
   public static final String MESSAGE = "Make sure allowing safe and unsafe HTTP methods is safe here.";
 
+  private boolean classHasSafeMethods;
+  private boolean classHasUnsafeMethods;
+  private boolean methodHasSafeMethods;
+  private boolean methodHasUnsafeMethods;
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return Collections.singletonList(Tree.Kind.CLASS);
@@ -53,11 +58,11 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
+    resetFlags();
     findRequestMappingAnnotation(classTree.modifiers())
       .flatMap(SpringRequestMappingMethodCheck::findRequestMethods)
-      .filter(SpringRequestMappingMethodCheck::mixSafeAndUnsafeMethods)
+      .filter(this::mixesSafeAndUnsafeMethodsOnClass)
       .ifPresent(methods -> reportIssue(methods, MESSAGE));
-
     classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .forEach(member -> checkMethod((MethodTree) member, classTree.symbol()));
@@ -69,9 +74,15 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
       .flatMap(SpringRequestMappingMethodCheck::findRequestMethods);
 
     if (requestMethods.isPresent()) {
-      requestMethods
-        .filter(SpringRequestMappingMethodCheck::mixSafeAndUnsafeMethods)
-        .ifPresent(methods -> reportIssue(methods, MESSAGE));
+      Optional<ExpressionTree> expressionTree = requestMethods
+        .filter(this::mixesSafeAndUnsafeMethodsOnMethod);
+      if (expressionTree.isPresent()) {
+        reportIssue(expressionTree.get(), MESSAGE);
+      } else {
+        if ((classHasSafeMethods && methodHasUnsafeMethods) || (classHasUnsafeMethods && methodHasSafeMethods)) {
+          reportIssue(requestMethods.get(), MESSAGE);
+        }
+      }
     } else if (requestMappingAnnotation.isPresent() && !inheritRequestMethod(classSymbol)) {
       reportIssue(requestMappingAnnotation.get().annotationType(), MESSAGE);
     }
@@ -109,10 +120,27 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
     return false;
   }
 
-  private static boolean mixSafeAndUnsafeMethods(ExpressionTree requestMethodsAssignment) {
+  private boolean mixesSafeAndUnsafeMethodsOnClass(ExpressionTree requestMethodsAssignment) {
     HttpMethodVisitor visitor = new HttpMethodVisitor();
     requestMethodsAssignment.accept(visitor);
+    classHasSafeMethods = visitor.hasSafeMethods;
+    classHasUnsafeMethods = visitor.hasUnsafeMethods;
     return visitor.hasSafeMethods && visitor.hasUnsafeMethods;
+  }
+
+  private boolean mixesSafeAndUnsafeMethodsOnMethod(ExpressionTree requestMethodsAssignment) {
+    HttpMethodVisitor visitor = new HttpMethodVisitor();
+    requestMethodsAssignment.accept(visitor);
+    methodHasSafeMethods = visitor.hasSafeMethods;
+    methodHasUnsafeMethods = visitor.hasUnsafeMethods;
+    return visitor.hasSafeMethods && visitor.hasUnsafeMethods;
+  }
+
+  private void resetFlags() {
+    classHasSafeMethods = false;
+    classHasUnsafeMethods = false;
+    methodHasSafeMethods = false;
+    methodHasUnsafeMethods = false;
   }
 
   private static class HttpMethodVisitor extends BaseTreeVisitor {
