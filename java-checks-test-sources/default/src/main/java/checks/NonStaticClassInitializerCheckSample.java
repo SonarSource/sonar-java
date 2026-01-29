@@ -4,6 +4,11 @@ class NonStaticClassInitializerCheckSample {
   static {
   }
 
+  static class Inner {
+    { // Noncompliant
+    }
+  }
+
   { // Noncompliant {{Move the contents of this initializer to a standard constructor or to field initializers.}}
 //^
     System.out.println();
@@ -14,7 +19,7 @@ class NonStaticClassInitializerCheckSample {
 
     new Runnable() {
 
-      { // Noncompliant
+      {
         System.out.println();
       }
 
