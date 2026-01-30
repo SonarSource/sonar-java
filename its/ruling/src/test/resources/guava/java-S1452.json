@@ -1,8 +1,4 @@
 {
-"com.google.guava:guava:src/com/google/common/base/Enums.java": [
-100,
-100
-],
 "com.google.guava:guava:src/com/google/common/cache/CacheBuilder.java": [
 767
 ],
@@ -16,17 +12,10 @@
 513
 ],
 "com.google.guava:guava:src/com/google/common/collect/Maps.java": [
-106,
-111,
-649,
-2131,
-2135
+649
 ],
 "com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
 903
-],
-"com.google.guava:guava:src/com/google/common/collect/Ordering.java": [
-413
 ],
 "com.google.guava:guava:src/com/google/common/collect/RegularImmutableAsList.java": [
 49
@@ -47,16 +36,12 @@
 "com.google.guava:guava:src/com/google/common/collect/TreeMultimap.java": [
 156
 ],
-"com.google.guava:guava:src/com/google/common/hash/Funnels.java": [
-169
-],
 "com.google.guava:guava:src/com/google/common/reflect/Element.java": [
 48
 ],
 "com.google.guava:guava:src/com/google/common/reflect/Invokable.java": [
 67,
-108,
-129
+108
 ],
 "com.google.guava:guava:src/com/google/common/reflect/Parameter.java": [
 56,
@@ -67,7 +52,6 @@
 157,
 238,
 275,
-315,
 364,
 387,
 562,

@@ -34,7 +34,7 @@ class WildcardReturnParameterTypeCheck {
       return null;
     }
 
-    public Class<List<?>> getClassofList() { // Noncompliant
+    public Class<List<?>> getClassofList() { // Compliant, nested type is ignored
       return null;
     }
 
@@ -43,7 +43,7 @@ class WildcardReturnParameterTypeCheck {
     }
 
     public List<? // Noncompliant
-      extends List<?>> getSomething() { // Noncompliant
+      extends List<?>> getSomething() { // Compliant, skip nested wildcard return types
       return null;
     }
 
