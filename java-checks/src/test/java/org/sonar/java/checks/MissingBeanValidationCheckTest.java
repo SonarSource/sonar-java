@@ -19,18 +19,34 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class MissingBeanValidationCheckTest {
 
   @Test
-  void test() {
+  void testWithJavax() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/MissingBeanValidationCheck.java")
+      .onFile(mainCodeSourcesPath("checks/MissingBeanValidationCheckJavaxSample.java"))
       .withCheck(new MissingBeanValidationCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/MissingBeanValidationCheck.java")
+      .onFile(mainCodeSourcesPath("checks/MissingBeanValidationCheckJavaxSample.java"))
       .withCheck(new MissingBeanValidationCheck())
       .withoutSemantic()
       .verifyNoIssues();
   }
+
+  @Test
+  void testWithJakarta() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MissingBeanValidationCheckJakartaSample.java"))
+      .withCheck(new MissingBeanValidationCheck())
+      .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MissingBeanValidationCheckJakartaSample.java"))
+      .withCheck(new MissingBeanValidationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
 }

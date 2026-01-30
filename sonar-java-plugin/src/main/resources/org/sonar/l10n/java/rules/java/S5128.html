@@ -1,11 +1,11 @@
 <h2>Why is this an issue?</h2>
-<p><code>Bean Validation</code> as per defined by JSR 380 can be triggered programmatically or also executed by the <code>Bean Validation</code>
+<p><code>Bean Validation</code> as defined by JSR 380 can be triggered programmatically or also executed by the <code>Bean Validation</code>
 providers. However something should tell the <code>Bean Validation</code> provider that a variable must be validated otherwise no validation will
-happen. This can be achieved by annotating a variable with <code>javax.validation.Valid</code> and unfortunally it’s easy to forget to add this
-annotation on complex Beans.</p>
+happen. This can be achieved by annotating a variable with <code>javax.validation.Valid</code> or <code>jakarta.validation.Valid</code> and is
+unfortunately easy to forget on complex Beans.</p>
 <p>Not annotating a variable with <code>@Valid</code> means <code>Bean Validation</code> will not be triggered for this variable, but readers may
 overlook this omission and assume the variable will be validated.</p>
-<p>This rule will run by default on all <code>Class</code>'es and therefore can generate a lot of noise. This rule should be restricted to run only on
+<p>This rule will run by default on all <code>Class</code>'es and can therefore generate a lot of noise. It should be restricted to run only on
 certain layers. For this reason, the "Restrict Scope of Coding Rules" feature should be used to check for missing <code>@Valid</code> annotations only
 on some packages of the application.</p>
 <h3>Noncompliant code example</h3>
