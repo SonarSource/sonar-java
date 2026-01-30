@@ -47,4 +47,11 @@ class DefaultPackageCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void compact_source() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DefaultPackageCheckCompactSample.java"))
+      .withCheck(new DefaultPackageCheck())
+      .verifyNoIssues();
+  }
 }
