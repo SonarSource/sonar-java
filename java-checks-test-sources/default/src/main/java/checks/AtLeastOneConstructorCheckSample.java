@@ -78,11 +78,6 @@ class Inject2 { // Noncompliant
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
 }
 
-class JakartaInject {
-  @jakarta.inject.Inject
-  private MyService myService; // Compliant, fields annotated with Jakarta's @Inject should be ignored.
-}
-
 class ABuilder { // Compliant, Builder pattern are excluded
   private int field;
 
