@@ -2066,4 +2066,40 @@ class JParserSemanticTest {
     assertNotEquals(pOfB.symbol(), pOfC.symbol());
 
   }
+
+  @Test
+  void compactSource_simple() {
+    String source = """
+      void main() {
+      }
+    """;
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    assertThat(cu.types()).hasSize(1);
+    ClassTreeImpl clazz = (ClassTreeImpl) cu.types().get(0);
+    assertThat(clazz).isNotNull();
+    assertThat(clazz.kind()).isEqualTo(Tree.Kind.IMPLICIT_CLASS);
+    assertThat(clazz.simpleName()).isNull();
+    assertThat(clazz.openBraceToken()).isNull();
+    assertThat(clazz.closeBraceToken()).isNull();
+  }
+
+  @Test
+  void compactSource_complex() {
+    String source = """
+      void main() {
+        System.out.println("Hello, World!");
+      }
+      int i = 43;
+      class Helper {
+        void help() {
+          System.out.println("Helping...");
+        }
+      }
+    """;
+    JavaTree.CompilationUnitTreeImpl cu = test(source);
+    ClassTreeImpl clazz = (ClassTreeImpl) cu.types().get(0);
+    assertThat(clazz).isNotNull();
+    assertThat(clazz.kind()).isEqualTo(Tree.Kind.IMPLICIT_CLASS);
+    assertThat(clazz.members()).hasSize(3);
+  }
 }

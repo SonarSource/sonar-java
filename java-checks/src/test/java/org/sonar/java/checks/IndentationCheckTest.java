@@ -57,4 +57,12 @@ class IndentationCheckTest {
       .withCheck(new IndentationCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void compact_source_file() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/IndentationCheck_compactSource.java"))
+      .withCheck(new IndentationCheck())
+      .verifyIssues();
+  }
 }

@@ -17,6 +17,7 @@
 package org.sonar.java;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -37,6 +38,15 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class Measurer extends SubscriptionVisitor {
+
+  private static final Tree.Kind[] CLASS_KINDS = new Tree.Kind[]{
+    Tree.Kind.CLASS,
+    Tree.Kind.INTERFACE,
+    Tree.Kind.ENUM,
+    Tree.Kind.ANNOTATION_TYPE,
+    Tree.Kind.RECORD,
+    Tree.Kind.IMPLICIT_CLASS
+  };
 
   private final SensorContext sensorContext;
   private final NoSonarFilter noSonarFilter;
@@ -61,9 +71,13 @@ public class Measurer extends SubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.RECORD,
-        Tree.Kind.NEW_CLASS, Tree.Kind.ENUM_CONSTANT,
-        Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    List<Tree.Kind> nodes = new ArrayList<>(Arrays.asList(CLASS_KINDS));
+    nodes.addAll(Arrays.asList(
+      Tree.Kind.NEW_CLASS,
+      Tree.Kind.ENUM_CONSTANT,
+      Tree.Kind.METHOD,
+      Tree.Kind.CONSTRUCTOR));
+    return nodes;
   }
 
 
@@ -120,7 +134,7 @@ public class Measurer extends SubscriptionVisitor {
   }
 
   private static boolean isClassTree(Tree tree) {
-    return tree.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.RECORD);
+    return tree.is(CLASS_KINDS);
   }
 
   private <T extends Serializable> void saveMetricOnFile(Metric<T> metric, T value) {
