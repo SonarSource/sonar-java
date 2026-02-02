@@ -52,6 +52,9 @@ public interface ImportTree extends ImportClauseTree {
   SyntaxToken staticKeyword();
 
   @Nullable
+  /**
+   * @since Java 25
+   * /
   SyntaxToken moduleKeyword();
 
   Tree qualifiedIdentifier();
