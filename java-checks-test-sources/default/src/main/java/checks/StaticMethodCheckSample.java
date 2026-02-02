@@ -426,3 +426,19 @@ class ReturnTypeCheck {
     }
   }
 }
+
+// Note `final` on the class indicating that main methods will not be overridden.
+// Without it, the check would apply only to private methods.
+final public class StaticMethodCheckSample {
+  void main() { // Compliant
+    System.out.println("StaticMethodCheckSample no arg main");
+  }
+
+  void main(String[] args) { // Compliant
+    System.out.println("StaticMethodCheckSample main with args");
+  }
+
+  void main(int i) { // Noncompliant
+    System.out.println("i = " + i);
+  }
+}

@@ -33,6 +33,14 @@ class StaticMethodCheckTest {
   }
 
   @Test
+  void test_compact_source() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StaticMethodCheckCompactSample.java"))
+      .withCheck(new StaticMethodCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/StaticMethodCheckSample.java"))
