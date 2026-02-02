@@ -997,7 +997,6 @@ public class JParser {
         members,
         lastTokenIn(e.getAnonymousClassDeclaration(), TerminalToken.TokenNameRBRACE)
       );
-
       classBody.typeBinding = e.getAnonymousClassDeclaration().resolveBinding();
       declaration(classBody.typeBinding, classBody);
     }
