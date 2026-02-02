@@ -54,12 +54,13 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
     "javax.annotation.Resource",
     "javax.ejb.EJB",
     "javax.inject.Inject",
+    "jakarta.inject.Inject",
     "org.apache.maven.plugins.annotations.Component",
     "org.apache.maven.plugins.annotations.Parameter",
     "org.codehaus.plexus.component.annotations.Requirement",
     "org.codehaus.plexus.component.annotations.Configuration",
     "org.springframework.beans.factory.annotation.Value"
-    );
+  );
 
   @Override
   public List<Kind> nodesToVisit() {
