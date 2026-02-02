@@ -321,7 +321,9 @@ public abstract class JavaTree implements Tree {
     private final Tree qualifiedIdentifier;
     private final SyntaxToken semicolonToken;
     private final SyntaxToken importToken;
+    @Nullable
     private final SyntaxToken staticToken;
+    @Nullable
     private final SyntaxToken moduleToken;
 
     public IBinding binding;
