@@ -2137,5 +2137,8 @@ class JParserSemanticTest {
     assertThat(clazz).isNotNull();
     assertThat(clazz.kind()).isEqualTo(Tree.Kind.IMPLICIT_CLASS);
     assertThat(clazz.members()).hasSize(3);
+    assertThat(clazz.members().get(0).kind()).isEqualTo(Tree.Kind.METHOD);
+    assertThat(clazz.members().get(1).kind()).isEqualTo(Tree.Kind.VARIABLE);
+    assertThat(clazz.members().get(2).kind()).isEqualTo(Tree.Kind.CLASS);
   }
 }
