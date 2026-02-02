@@ -30,6 +30,10 @@ class AtLeastOneConstructorCheckTest {
       .onFile(mainCodeSourcesPath("checks/AtLeastOneConstructorCheckSample.java"))
       .withCheck(new AtLeastOneConstructorCheck())
       .verifyIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/AtLeastOneConstructorCheckJakartaSample.java"))
+      .withCheck(new AtLeastOneConstructorCheck())
+      .verifyNoIssues();
   }
 
   @Test
