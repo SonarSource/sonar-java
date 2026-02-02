@@ -1,0 +1,32 @@
+name: Unified Dogfooding scans
+on:
+  schedule:
+    - cron: '0 4 * * *' # Run the workflow every day at 04:00 UTC
+  workflow_dispatch:
+
+jobs:
+  unified-platform-dogfooding:
+    runs-on: github-ubuntu-latest-s
+    name: Unified Platform Dogfooding
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
+        with:
+          version: 2025.7.12
+      - uses: SonarSource/ci-github-actions/build-maven@v1
+        with:
+          run-shadow-scans: true
+          artifactory-reader-role: private-reader
+          artifactory-deployer-role: qa-deployer
+      - name: Run IRIS Analysis
+        uses: SonarSource/unified-dogfooding-actions/run-iris@v1
+        with:
+          primary_project_key: org.sonarsource.java:java
+          primary_platform: "Next"
+          shadow1_project_key: "SonarSource_sonar-java"
+          shadow1_platform: "SQC-EU"
+          shadow2_project_key: "SonarSource_sonar-java"
+          shadow2_platform: "SQC-US"
