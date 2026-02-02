@@ -43,7 +43,7 @@ class WildcardReturnParameterTypeCheckTest {
   @Test
   void test_nested_types() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/WildCardReturnParameterNestedTypeCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/WildCardReturnParameterNestedTypeSample.java"))
       .withCheck(new WildcardReturnParameterTypeCheck())
       .verifyNoIssues();
   }
