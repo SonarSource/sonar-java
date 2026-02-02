@@ -6,7 +6,7 @@ on:
 
 jobs:
   unified-platform-dogfooding:
-    runs-on: github-ubuntu-latest-s
+    runs-on: github-ubuntu-latest-m
     name: Unified Platform Dogfooding
     permissions:
       id-token: write
