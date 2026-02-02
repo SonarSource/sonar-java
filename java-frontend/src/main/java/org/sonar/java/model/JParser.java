@@ -777,7 +777,7 @@ public class JParser {
       processBodyDeclaration((BodyDeclaration) o, members);
     }
 
-    ClassTreeImpl t = new ClassTreeImpl(Tree.Kind.IMPLICIT_CLASS, members);
+    ClassTreeImpl t = new ClassTreeImpl(Tree.Kind.IMPLICIT_CLASS, null, members, null);
 
     t.typeBinding = e.resolveBinding();
     declaration(t.typeBinding, t);
@@ -835,8 +835,7 @@ public class JParser {
   private ClassTreeImpl convertTypeDeclaration(TypeDeclaration e, ModifiersTreeImpl modifiers, IdentifierTreeImpl name,
                                                InternalSyntaxToken openBraceToken, List<Tree> members, InternalSyntaxToken closeBraceToken) {
     InternalSyntaxToken declarationKeyword = firstTokenBefore(e.getName(), e.isInterface() ? TerminalToken.TokenNameinterface : TerminalToken.TokenNameclass);
-    ClassTreeImpl t = new ClassTreeImpl(e.isInterface() ? Tree.Kind.INTERFACE : Tree.Kind.CLASS, members)
-      .complete(openBraceToken, closeBraceToken)
+    ClassTreeImpl t = new ClassTreeImpl(e.isInterface() ? Tree.Kind.INTERFACE : Tree.Kind.CLASS, openBraceToken, members, closeBraceToken)
       .complete(modifiers, declarationKeyword, name)
       .completeTypeParameters(convertTypeParameters(e.typeParameters()));
 
@@ -866,16 +865,14 @@ public class JParser {
     members.addAll(0, enumConstants);
 
     InternalSyntaxToken declarationKeyword = firstTokenBefore(e.getName(), TerminalToken.TokenNameenum);
-    return new ClassTreeImpl(Tree.Kind.ENUM, members)
-      .complete(openBraceToken, closeBraceToken)
+    return new ClassTreeImpl(Tree.Kind.ENUM, openBraceToken, members, closeBraceToken)
       .complete(modifiers, declarationKeyword, name);
   }
 
   private ClassTreeImpl convertAnnotationTypeDeclaration(AnnotationTypeDeclaration e, ModifiersTreeImpl modifiers, IdentifierTreeImpl name,
     InternalSyntaxToken openBraceToken, List<Tree> members, InternalSyntaxToken closeBraceToken) {
     InternalSyntaxToken declarationKeyword = firstTokenBefore(e.getName(), TerminalToken.TokenNameinterface);
-    return new ClassTreeImpl(Tree.Kind.ANNOTATION_TYPE, members)
-      .complete(openBraceToken, closeBraceToken)
+    return new ClassTreeImpl(Tree.Kind.ANNOTATION_TYPE, openBraceToken, members, closeBraceToken)
       .complete(modifiers, declarationKeyword, name)
       .completeAtToken(firstTokenBefore(e.getName(), TerminalToken.TokenNameAT));
   }
@@ -888,8 +885,7 @@ public class JParser {
     InternalSyntaxToken closeParen = firstTokenAfter(
       recordComponents.isEmpty() ? e.getName() : (ASTNode) recordComponents.get(recordComponents.size() - 1),
       TerminalToken.TokenNameRPAREN);
-    return new ClassTreeImpl(Tree.Kind.RECORD, members)
-      .complete(openBraceToken, closeBraceToken)
+    return new ClassTreeImpl(Tree.Kind.RECORD, openBraceToken, members, closeBraceToken)
       .complete(modifiers, declarationKeyword, name)
       .completeTypeParameters(convertTypeParameters(e.typeParameters()))
       .completeRecordComponents(openParen, convertRecordComponents(e), closeParen);
@@ -995,11 +991,12 @@ public class JParser {
       for (Object o : e.getAnonymousClassDeclaration().bodyDeclarations()) {
         processBodyDeclaration((BodyDeclaration) o, members);
       }
-      classBody = new ClassTreeImpl(Tree.Kind.CLASS, members)
-        .complete(
-          firstTokenIn(e.getAnonymousClassDeclaration(), TerminalToken.TokenNameLBRACE),
-          lastTokenIn(e.getAnonymousClassDeclaration(), TerminalToken.TokenNameRBRACE)
-        );
+      classBody = new ClassTreeImpl(
+        Tree.Kind.CLASS,
+        firstTokenIn(e.getAnonymousClassDeclaration(), TerminalToken.TokenNameLBRACE),
+        members,
+        lastTokenIn(e.getAnonymousClassDeclaration(), TerminalToken.TokenNameRBRACE)
+      );
 
       classBody.typeBinding = e.getAnonymousClassDeclaration().resolveBinding();
       declaration(classBody.typeBinding, classBody);
@@ -2200,11 +2197,12 @@ public class JParser {
       for (Object o : e.getAnonymousClassDeclaration().bodyDeclarations()) {
         processBodyDeclaration((BodyDeclaration) o, members);
       }
-      classBody = new ClassTreeImpl(Tree.Kind.CLASS, members).
-        complete(
-          firstTokenIn(e.getAnonymousClassDeclaration(), TerminalToken.TokenNameLBRACE),
-          lastTokenIn(e.getAnonymousClassDeclaration(), TerminalToken.TokenNameRBRACE)
-        );
+      classBody = new ClassTreeImpl(
+        Tree.Kind.CLASS,
+        firstTokenIn(e.getAnonymousClassDeclaration(), TerminalToken.TokenNameLBRACE),
+        members,
+        lastTokenIn(e.getAnonymousClassDeclaration(), TerminalToken.TokenNameRBRACE)
+      );
       classBody.typeBinding = e.getAnonymousClassDeclaration().resolveBinding();
       declaration(classBody.typeBinding, classBody);
     }

@@ -44,10 +44,10 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   private final Kind kind;
   @Nullable
-  private SyntaxToken openBraceToken;
+  private final SyntaxToken openBraceToken;
   private final List<Tree> members;
   @Nullable
-  private SyntaxToken closeBraceToken;
+  private final SyntaxToken closeBraceToken;
   private ModifiersTree modifiers;
   private SyntaxToken atToken;
   private SyntaxToken declarationKeyword;
@@ -71,19 +71,15 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   public ITypeBinding typeBinding;
 
-  public ClassTreeImpl(Kind kind, List<Tree> members) {
+  public ClassTreeImpl(Kind kind, @Nullable SyntaxToken openBraceToken, List<Tree> members, @Nullable SyntaxToken closeBraceToken) {
     this.kind = kind;
+    this.openBraceToken = openBraceToken;
     this.members = orderMembers(kind, members);
+    this.closeBraceToken = closeBraceToken;
     this.modifiers = ModifiersTreeImpl.emptyModifiers();
     this.typeParameters = new TypeParameterListTreeImpl();
     this.superInterfaces = QualifiedIdentifierListTreeImpl.emptyList();
     this.permittedTypes = QualifiedIdentifierListTreeImpl.emptyList();
-  }
-
-  public ClassTreeImpl complete(SyntaxToken openBraceToken, SyntaxToken closeBraceToken) {
-    this.openBraceToken = openBraceToken;
-    this.closeBraceToken = closeBraceToken;
-    return this;
   }
 
   public ClassTreeImpl complete(ModifiersTreeImpl modifiers, SyntaxToken declarationKeyword, IdentifierTree name) {
