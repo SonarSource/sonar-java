@@ -50,6 +50,8 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     currentClassKey.clear();
     parent.clear();
     anonymousInnerClassCounter.clear();
+    // 0 stored on the top will be used for implicit anonymous classes in compact source files.
+    anonymousInnerClassCounter.push(0);
     scan(tree);
   }
 
@@ -77,9 +79,10 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
       key = currentPackage + "/" + className;
     }
     if ("".equals(className) || (parent.peek() != null && parent.peek().is(Tree.Kind.METHOD))) {
-      // inner class declared within method
+      // inner class declared within method or implicitly declared class in a compact source file
       int count = anonymousInnerClassCounter.pop() + 1;
-      key = currentClassKey.peek() + "$" + count + className;
+      String prefix = currentClassKey.isEmpty() ? "" : currentClassKey.peek();
+      key = prefix + "$" + count + className;
       anonymousInnerClassCounter.push(count);
     } else if (currentClassKey.peek() != null) {
       key = currentClassKey.peek() + "$" + className;

@@ -78,6 +78,11 @@ class MeasurerTest {
   }
 
   @Test
+  void verify_compact_source() {
+    checkMetric("CompactSource.java", "classes", 1);
+  }
+
+  @Test
   void verify_ncloc_metric() {
     checkMetric("LinesOfCode.java", "ncloc", 2);
     checkMetric("CommentedOutFile.java", "ncloc", 0);

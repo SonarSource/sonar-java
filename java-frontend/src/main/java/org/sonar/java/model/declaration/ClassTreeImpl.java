@@ -43,8 +43,10 @@ import java.util.List;
 public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   private final Kind kind;
+  @Nullable
   private final SyntaxToken openBraceToken;
   private final List<Tree> members;
+  @Nullable
   private final SyntaxToken closeBraceToken;
   private ModifiersTree modifiers;
   private SyntaxToken atToken;
@@ -69,7 +71,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   public ITypeBinding typeBinding;
 
-  public ClassTreeImpl(Kind kind, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
+  public ClassTreeImpl(Kind kind, @Nullable SyntaxToken openBraceToken, List<Tree> members, @Nullable SyntaxToken closeBraceToken) {
     this.kind = kind;
     this.openBraceToken = openBraceToken;
     this.members = orderMembers(kind, members);
@@ -197,6 +199,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return permittedTypes;
   }
 
+  @Nullable
   @Override
   public SyntaxToken openBraceToken() {
     return openBraceToken;
@@ -207,6 +210,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return members;
   }
 
+  @Nullable
   @Override
   public SyntaxToken closeBraceToken() {
     return closeBraceToken;
@@ -262,9 +266,9 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
       addIfNotNull(implementsKeyword),
       Collections.singletonList(superInterfaces),
       Collections.singletonList(permittedTypes),
-      Collections.singletonList(openBraceToken),
+      addIfNotNull(openBraceToken),
       members,
-      Collections.singletonList(closeBraceToken)
+      addIfNotNull(closeBraceToken)
     );
   }
 

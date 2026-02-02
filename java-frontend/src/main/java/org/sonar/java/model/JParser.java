@@ -769,7 +769,27 @@ public class JParser {
     }
   }
 
+  /** Converts implicitly declared unnamed class at the top level of a compact compilation unit. */
+  private ClassTreeImpl convertUnnamedClassDeclaration(AbstractTypeDeclaration e) {
+    List<Tree> members = new ArrayList<>();
+
+    for (Object o : e.bodyDeclarations()) {
+      processBodyDeclaration((BodyDeclaration) o, members);
+    }
+
+    ClassTreeImpl t = new ClassTreeImpl(Tree.Kind.IMPLICIT_CLASS, null, members, null);
+
+    t.typeBinding = e.resolveBinding();
+    declaration(t.typeBinding, t);
+
+    return t;
+  }
+
   private ClassTreeImpl convertTypeDeclaration(AbstractTypeDeclaration e) {
+    if (e.getNodeType() == ASTNode.UNNAMED_CLASS) {
+      return convertUnnamedClassDeclaration(e);
+    }
+
     List<Tree> members = new ArrayList<>();
 
     int leftBraceTokenIndex = findLeftBraceTokenIndex(e);
@@ -932,7 +952,7 @@ public class JParser {
         return ((EnumDeclaration) e).superInterfaceTypes();
       case ASTNode.RECORD_DECLARATION:
         return ((RecordDeclaration) e).superInterfaceTypes();
-      case ASTNode.ANNOTATION_TYPE_DECLARATION:
+      case ASTNode.ANNOTATION_TYPE_DECLARATION, ASTNode.UNNAMED_CLASS:
         return Collections.emptyList();
       default:
         throw new IllegalStateException(ASTNode.nodeClassForType(e.getNodeType()).toString());
@@ -1021,7 +1041,8 @@ public class JParser {
       case ASTNode.ANNOTATION_TYPE_DECLARATION,
         ASTNode.ENUM_DECLARATION,
         ASTNode.RECORD_DECLARATION,
-        ASTNode.TYPE_DECLARATION:
+        ASTNode.TYPE_DECLARATION,
+        ASTNode.UNNAMED_CLASS:
         lastTokenIndex = processTypeDeclaration((AbstractTypeDeclaration) node, members);
         break;
       case ASTNode.ANNOTATION_TYPE_MEMBER_DECLARATION:

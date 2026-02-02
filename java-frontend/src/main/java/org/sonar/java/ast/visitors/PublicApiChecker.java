@@ -43,7 +43,8 @@ public class PublicApiChecker {
     Tree.Kind.INTERFACE,
     Tree.Kind.ENUM,
     Tree.Kind.ANNOTATION_TYPE,
-    Tree.Kind.RECORD
+    Tree.Kind.RECORD,
+    Tree.Kind.IMPLICIT_CLASS
   };
 
   private static final Tree.Kind[] METHOD_KINDS = {
