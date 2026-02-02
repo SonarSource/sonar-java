@@ -79,7 +79,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
       key = currentPackage + "/" + className;
     }
     if ("".equals(className) || (parent.peek() != null && parent.peek().is(Tree.Kind.METHOD))) {
-      // inner class declared within method or unnamed implicit class in compact source file
+      // inner class declared within method or implicitly declared class in a compact source file
       int count = anonymousInnerClassCounter.pop() + 1;
       String prefix = currentClassKey.isEmpty() ? "" : currentClassKey.peek();
       key = prefix + "$" + count + className;

@@ -2,7 +2,7 @@
 
 void main() { // Noncompliant
   System.out.println("Just right."); // Noncompliant
-  if(true) {
+  if (true) {
         System.out.println("Too much."); // Noncompliant
   }
 }
