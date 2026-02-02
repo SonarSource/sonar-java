@@ -1,10 +1,9 @@
 package checks;
 
-import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.ArrayList;
 
-public class WildCardReturnParameterNestedTypeCheck {
+public class WildCardReturnParameterNestedTypeSample {
   void bar() {
     foo(listOfLists());
   }
@@ -20,7 +19,7 @@ public class WildCardReturnParameterNestedTypeCheck {
   private static class A {
   }
 
-  private static class B extends checks.A {
+  private static class B extends A {
   }
 
   static class Entry<K, V> {
