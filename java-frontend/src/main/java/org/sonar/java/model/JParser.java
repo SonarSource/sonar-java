@@ -575,20 +575,32 @@ public class JParser {
     for (int i = 0; i < e.imports().size(); i++) {
       ImportDeclaration e2 = (ImportDeclaration) e.imports().get(i);
       ExpressionTree name = convertImportName(e2.getName());
-      if (e2.isOnDemand()) {
-        name = new MemberSelectExpressionTreeImpl(
-          name,
-          lastTokenIn(e2, TerminalToken.TokenNameDOT),
-          new IdentifierTreeImpl(lastTokenIn(e2, TerminalToken.TokenNameMULTIPLY))
-        );
+
+      boolean isModuleImport = org.eclipse.jdt.core.dom.Modifier.isModule(e2.getModifiers());
+
+      // "on demand" means `import pkg.*;`
+      if (e2.isOnDemand() && !isModuleImport) {
+        InternalSyntaxToken dotToken = lastTokenIn(e2, TerminalToken.TokenNameDOT);
+        InternalSyntaxToken identifierToken = lastTokenIn(e2, TerminalToken.TokenNameMULTIPLY);
+        name = new MemberSelectExpressionTreeImpl(name, dotToken, new IdentifierTreeImpl(identifierToken));
       }
+
+      InternalSyntaxToken staticKeyword = e2.isStatic() ? firstTokenIn(e2, TerminalToken.TokenNamestatic) : null;
+      InternalSyntaxToken moduleKeyword = isModuleImport ? firstTokenIn(e2, TerminalToken.TokenNamemodule) : null;
+
       JavaTree.ImportTreeImpl t = new JavaTree.ImportTreeImpl(
         firstTokenIn(e2, TerminalToken.TokenNameimport),
-        e2.isStatic() ? firstTokenIn(e2, TerminalToken.TokenNamestatic) : null,
+        staticKeyword,
+        moduleKeyword,
         name,
         lastTokenIn(e2, TerminalToken.TokenNameSEMICOLON)
       );
-      t.binding = e2.resolveBinding();
+
+      if (!isModuleImport) {
+        // There is no method to resolve bindings for a module import.
+        t.binding = e2.resolveBinding();
+      }
+
       imports.add(t);
 
       int tokenIndex = tokenManager.lastIndexIn(e2, TerminalToken.TokenNameSEMICOLON);

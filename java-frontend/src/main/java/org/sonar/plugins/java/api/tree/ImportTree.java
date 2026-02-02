@@ -41,10 +41,21 @@ public interface ImportTree extends ImportClauseTree {
    */
   boolean isStatic();
 
+  /**
+   * @since Java 25
+   */
+  boolean isModule();
+
   SyntaxToken importKeyword();
 
   @Nullable
   SyntaxToken staticKeyword();
+
+  @Nullable
+  /**
+   * @since Java 25
+   */
+  SyntaxToken moduleKeyword();
 
   Tree qualifiedIdentifier();
 
