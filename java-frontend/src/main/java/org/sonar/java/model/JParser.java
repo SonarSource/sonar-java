@@ -597,6 +597,7 @@ public class JParser {
       );
 
       if (!isModuleImport) {
+        // There is no method to resolve bindings for a module import.
         t.binding = e2.resolveBinding();
       }
 
