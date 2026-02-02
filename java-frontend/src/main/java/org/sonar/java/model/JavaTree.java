@@ -407,6 +407,7 @@ public abstract class JavaTree implements Tree {
       return ListUtils.concat(
         Collections.singletonList(importToken),
         isStatic ? Collections.singletonList(staticToken) : Collections.<Tree>emptyList(),
+        isModule ? Collections.singletonList(moduleToken) : Collections.<Tree>emptyList(),
         Arrays.asList(qualifiedIdentifier, semicolonToken));
     }
   }
