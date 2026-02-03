@@ -39,8 +39,6 @@ jobs:
           echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr create --base master --title "Prepare next development iteration ${NEXT_VERSION}" --body ''
 
