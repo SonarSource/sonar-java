@@ -40,9 +40,12 @@ jobs:
           echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
+        id: create-pr
         run: |
-          gh pr create --base master --title "Prepare next development iteration ${NEXT_VERSION}" --body ''
+          URL=$(gh pr create --base master --title "Prepare next development iteration ${NEXT_VERSION}" --body '')
+          echo "url=${URL}" >> $GITHUB_OUTPUT
 
-      - name: Trigger Continuous Integration
+      - name: Summary
         run: |
-          gh workflow run build.yml --ref "${{ steps.update-version.outputs.branch }}"
+          echo "Generated ${{steps.create-pr.outputs.url}}" >> $GITHUB_STEP_SUMMARY
+          echo "Tip: close and reopen the PR to trigger CI. " >> $GITHUB_STEP_SUMMARY
