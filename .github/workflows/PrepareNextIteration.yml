@@ -25,6 +25,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Update Version Number
+        id: update-version
         run: |
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
@@ -35,9 +36,14 @@ jobs:
           mvn versions:set -DgenerateBackupPoms=false -DnewVersion="${NEXT_VERSION}"
           git commit -m 'Prepare next development iteration' -a
           git push --set-upstream origin "${BRANCH}"
+          echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr create --base master --title "Prepare next development iteration ${NEXT_VERSION}" --body ''
+
+      - name: Trigger Continuous Integration
+        run: |
+          gh workflow run build.yml --ref "${{ steps.update-version.outputs.branch }}"
