@@ -6,7 +6,7 @@ on:
 
 jobs:
   unified-platform-dogfooding:
-    runs-on: github-ubuntu-latest-s
+    runs-on: github-ubuntu-latest-m
     name: Unified Platform Dogfooding
     permissions:
       id-token: write
@@ -17,6 +17,8 @@ jobs:
         with:
           version: 2025.7.12
       - uses: SonarSource/ci-github-actions/build-maven@v1
+        env:
+          MAVEN_OPTS: "-Xmx8g"
         with:
           run-shadow-scans: true
           artifactory-reader-role: private-reader
