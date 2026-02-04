@@ -170,7 +170,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
 
   @Override
   public void visitCatch(CatchTree tree) {
-    if (!isExcludedType(tree.parameter().type()) && !excludedCatchTrees.contains(tree)) {
+    if (!isExcludedType(tree.parameter().type()) && !excludedCatchTrees.contains(tree) && !tree.parameter().simpleName().isUnnamedVariable()) {
       Symbol exception = tree.parameter().symbol();
       usageStatusStack.addFirst(new UsageStatus(exception.usages()));
       super.visitCatch(tree);
