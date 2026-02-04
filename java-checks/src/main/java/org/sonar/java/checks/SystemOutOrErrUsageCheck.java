@@ -23,7 +23,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S106")
