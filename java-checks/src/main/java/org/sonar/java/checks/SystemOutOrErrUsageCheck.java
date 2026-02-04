@@ -53,11 +53,19 @@ public class SystemOutOrErrUsageCheck extends IssuableSubscriptionVisitor {
 
   private void visitMemberSelectExpression(MemberSelectExpressionTree mset) {
     String name = mset.identifier().name();
-
     if ("out".equals(name) && isSystem(mset.expression())) {
       reportIssue(mset, "Replace this use of System.out by a logger.");
     } else if ("err".equals(name) && isSystem(mset.expression())) {
       reportIssue(mset, "Replace this use of System.err by a logger.");
+    } else {
+      boolean isIoFunction = mset.expression().parent() instanceof MemberSelectExpressionTree tree &&
+        tree.expression() instanceof IdentifierTree identifierTree &&
+        "IO".equals(identifierTree.name());
+      // use contains to cover both print and println methods
+      boolean isIoPrintFunction = isIoFunction && mset.identifier().name().contains("print");
+      if (isIoPrintFunction) {
+        reportIssue(mset, "Replace this use of IO." + mset.identifier().name() + " by a logger.");
+      }
     }
   }
 

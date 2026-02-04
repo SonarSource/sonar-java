@@ -23,7 +23,7 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class SystemOutOrErrUsageCheckTest {
   @Test
-  void test() {
+  void test_sout() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/SystemOutOrErrUsageCheckSample.java"))
       .withCheck(new SystemOutOrErrUsageCheck())
@@ -31,9 +31,25 @@ class SystemOutOrErrUsageCheckTest {
   }
 
   @Test
-  void test_compact_source_file() {
+  void test_sout_compact_source_file() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/SystemOutOrErrUsageCheckCompactOnlyMainSample.java"))
+      .withCheck(new SystemOutOrErrUsageCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_io() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/IoPrintlnUsageCheckSample.java"))
+      .withCheck(new SystemOutOrErrUsageCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_io_compact_source_file() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/IoPrintlnUsageCheckCompactSample.java"))
       .withCheck(new SystemOutOrErrUsageCheck())
       .verifyNoIssues();
   }
