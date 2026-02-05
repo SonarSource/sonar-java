@@ -17,19 +17,45 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S8432")
 public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisitor {
+  private final List<String> immediateUsageMethods = List.of("run", "call");
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of();
+    return List.of(Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    // Implementation of the check goes here
+    if (tree instanceof MethodInvocationTree methodInvocationTree) {
+      visitMethodInvocationTree(methodInvocationTree);
+    }
+  }
+
+
+  private void visitMethodInvocationTree(MethodInvocationTree tree) {
+    if (tree.methodSelect() instanceof MemberSelectExpressionTree memberSelectExpressionTree &&
+      "where".equals(memberSelectExpressionTree.identifier().name())) {
+      boolean usedImmediately = tree.parent() instanceof MemberSelectExpressionTree parentMemberSelect &&
+        immediateUsageMethods.contains(parentMemberSelect.identifier().name());
+      if (usedImmediately) {
+        return;
+      }
+      if (tree.parent() instanceof VariableTree variableTree) {
+        return;
+      }
+      reportIssue(tree, "Hello");
+    }
   }
 }
+
+
