@@ -174,7 +174,8 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       Symbol exception = tree.parameter().symbol();
       usageStatusStack.addFirst(new UsageStatus(exception.usages()));
       super.visitCatch(tree);
-      if (usageStatusStack.pop().isInvalid() && !exception.isUnknown()) {
+      if (usageStatusStack.pop().isInvalid() && !exception.isUnknown()
+        && !isExceptionVariableUnnamed(tree.parameter())) {
         context.reportIssue(this, tree.parameter(), "Either log or rethrow this exception.");
       }
     }
@@ -205,6 +206,10 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     }
     super.visitMemberSelectExpression(tree);
 
+  }
+
+  private boolean isExceptionVariableUnnamed(VariableTree parameter) {
+        return parameter.simpleName().isUnnamedVariable();
   }
 
   private boolean isExcludedType(Tree tree) {

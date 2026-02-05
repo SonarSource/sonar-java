@@ -65,6 +65,33 @@ class CatchUsesExceptionWithContextCheck {
         System.out.println("" + e);
       }
     }
+
+    // Unnamed exception variables
+    try {
+    } catch (Exception _) {                     // Compliant
+    }
+
+    try {
+    } catch (Exception _) {                     // Compliant
+      try {
+      } catch (Exception _) {                   // Compliant
+      }
+    }
+
+    try {
+    } catch (Exception _) {                     // Compliant
+      try {
+      } catch (Exception z) { // Noncompliant {{Either log or rethrow this exception.}}
+      }
+    }
+
+    try {
+    } catch (Exception e) {                     // Compliant
+      System.out.println(e);
+      try {
+      } catch (Exception _) {                   // Compliant
+      }
+    }
   }
 
   private void g() {
