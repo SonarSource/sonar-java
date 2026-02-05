@@ -56,15 +56,8 @@ public class SystemOutOrErrUsageCheck extends IssuableSubscriptionVisitor {
       reportIssue(mset, "Replace this use of System.out by a logger.");
     } else if ("err".equals(name) && isSystem(mset.expression())) {
       reportIssue(mset, "Replace this use of System.err by a logger.");
-    } else {
-      boolean isIoFunction = mset.expression().parent() instanceof MemberSelectExpressionTree tree &&
-        tree.expression() instanceof IdentifierTree identifierTree &&
-        "IO".equals(identifierTree.name());
-      // use contains to cover both print and println methods
-      boolean isIoPrintFunction = isIoFunction && mset.identifier().name().contains("print");
-      if (isIoPrintFunction) {
-        reportIssue(mset, "Replace this use of IO." + mset.identifier().name() + " by a logger.");
-      }
+    } else if (isIoPrintFunction(mset)) {
+      reportIssue(mset, "Replace this use of IO." + mset.identifier().name() + " by a logger.");
     }
   }
 
@@ -76,5 +69,13 @@ public class SystemOutOrErrUsageCheck extends IssuableSubscriptionVisitor {
       identifierTree = ((MemberSelectExpressionTree) expression).identifier();
     }
     return identifierTree != null && "System".equals(identifierTree.name());
+  }
+
+  private static boolean isIoPrintFunction(MemberSelectExpressionTree mset) {
+    boolean isIoFunction = mset.expression().parent() instanceof MemberSelectExpressionTree tree &&
+      tree.expression() instanceof IdentifierTree identifierTree &&
+      "IO".equals(identifierTree.name());
+    // use contains to cover both print and println methods
+    return isIoFunction && mset.identifier().name().contains("print");
   }
 }
