@@ -193,9 +193,17 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
       }
     }
 
-    // Check if usage is assigned to another variable (aliasing) - counts as valid
-    if (parent instanceof VariableTree) {
-      return true;
+    // Check if usage is assigned to another variable (aliasing)
+    if (parent instanceof VariableTree varTree) {
+      Symbol targetSymbol = varTree.symbol();
+      // If assigned to a field, it escapes
+      if (!targetSymbol.isLocalVariable()) {
+        return true;
+      }
+      // If assigned to a local variable, check if that variable is properly used
+      if (targetSymbol.isVariableSymbol()) {
+        return targetSymbol.usages().stream().anyMatch(this::isUsageValid);
+      }
     }
 
     // Check if usage escapes (returned or passed as argument)
