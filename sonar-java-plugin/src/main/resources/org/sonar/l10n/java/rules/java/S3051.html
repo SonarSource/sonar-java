@@ -1,0 +1,35 @@
+<h2>Why is this an issue?</h2>
+<p>"A rose by any other name would smell as sweet," but <code>main</code> by any other name would not. Just because a method has the name "main", that
+doesn’t make it the entry point to an application.</p>
+<p>In Java versions prior to Java 25, the main method must have a specific signature to serve as the application entry point: it must be <code>public
+static void</code> and accept a single <code>String []</code> as an argument.</p>
+<p>Starting with Java 25, the requirements for main methods have been relaxed. The main method can now be:</p>
+<ul>
+  <li> An instance method (non-static) </li>
+  <li> Non-public (e.g., package-private or protected) </li>
+  <li> Defined without a <code>String []</code> parameter </li>
+</ul>
+<p>Using <code>main</code> for anything other than an application entry point can be confusing to developers unfamiliar with Java, as the method name
+strongly suggests it is the starting point of execution. To avoid this confusion, methods with different purposes should be given other names.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+public void main(String arg) {  // Noncompliant
+  // ...
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre>
+void main(String [] args) { // Compliant Java 25 instance main
+  run(args[0]);
+}
+
+public void run(String arg) { // Renamed
+  // ...
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> OpenJDK - <a href="https://openjdk.org/jeps/512">JEP 512: Compact Source Files and Instance Main Methods</a> </li>
+</ul>
+

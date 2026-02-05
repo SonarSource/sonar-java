@@ -1,0 +1,24 @@
+{
+  "title": "\"main\" should have the right signature",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "convention",
+    "confusing"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-3051",
+  "sqKey": "S3051",
+  "scope": "Main",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
