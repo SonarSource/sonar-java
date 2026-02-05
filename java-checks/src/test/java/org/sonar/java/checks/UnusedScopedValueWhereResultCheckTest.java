@@ -34,7 +34,7 @@ class UnusedScopedValueWhereResultCheckTest {
   @Test
   void testEdgeCases() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/UnusedScopedValueWhereResultSampleEdgeCases.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/UnusedScopedValueWhereResultEdgeCasesSample.java"))
       .withCheck(new UnusedScopedValueWhereResultCheck())
       .verifyIssues();
   }
