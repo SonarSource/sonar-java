@@ -68,6 +68,16 @@ try {
   LOGGER.warn(message); // Compliant - exception message logged with some contextual information
 }
 </pre>
+<p>Additionally, no issue will be raised if the exception parameter uses the unnamed variable <code>_</code>, which is available starting with Java
+21. The unnamed variable makes it explicit that the exception is caught but not needed in the handler (see {rule:java:S7467}).</p>
+<pre>
+try {
+  /* ... */
+} catch (Exception _) {
+  // Compliant - unnamed exception parameter is intentionally unused
+  return defaultValue;
+}
+</pre>
 <h2>Resources</h2>
 <ul>
   <li> OWASP - <a href="https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/">Top 10 2021 Category A9 - Security Logging and

@@ -65,6 +65,9 @@ class CatchUsesExceptionWithContextCheck {
         System.out.println("" + e);
       }
     }
+    try {
+    } catch (Exception _) {                     // Compliant
+    }
   }
 
   private void g() {
