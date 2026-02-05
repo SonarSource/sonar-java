@@ -23,9 +23,12 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -92,6 +95,11 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
       return;
     }
 
+    // Check if result is assigned to a field (escapes)
+    if (parent instanceof AssignmentExpressionTree) {
+      return;
+    }
+
     // Check if result escapes (returned or passed as argument)
     if (isEscaping(mit)) {
       return;
@@ -120,11 +128,42 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
 
     // Check all usages of the variable
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) symbol;
-    boolean isProperlyUsed = variableSymbol.usages().stream().anyMatch(this::isUsageValid);
+    List<IdentifierTree> usages = variableSymbol.usages();
+
+    // Check if variable is reassigned before proper use
+    if (isWhereResult && isReassignedBeforeProperUse(usages)) {
+      reportIssue(variableTree.simpleName(), MESSAGE);
+      return;
+    }
+
+    boolean isProperlyUsed = usages.stream().anyMatch(this::isUsageValid);
 
     if (!isProperlyUsed) {
       reportIssue(variableTree.simpleName(), MESSAGE);
     }
+  }
+
+  private boolean isReassignedBeforeProperUse(List<IdentifierTree> usages) {
+    for (IdentifierTree usage : usages) {
+      // Check if this usage is a reassignment (left side of assignment)
+      Tree parent = usage.parent();
+      if (parent instanceof AssignmentExpressionTree assignment && assignment.variable() == usage) {
+        // This is a reassignment - check if there's any proper use before this reassignment
+        // For simplicity, if we see a reassignment and no proper use, consider it unused
+        boolean hasProperUseBefore = usages.stream()
+          .filter(u -> u != usage)
+          .filter(u -> isBefore(u, usage))
+          .anyMatch(this::isUsageValid);
+        if (!hasProperUseBefore) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private static boolean isBefore(IdentifierTree first, IdentifierTree second) {
+    return first.identifierToken().range().start().isBefore(second.identifierToken().range().start());
   }
 
   private static boolean isCarrierType(Symbol symbol) {
@@ -133,6 +172,11 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
 
   private boolean isUsageValid(IdentifierTree usage) {
     Tree parent = usage.parent();
+
+    // Check if usage is a reassignment (left side of assignment) - not a valid use
+    if (parent instanceof AssignmentExpressionTree assignment && assignment.variable() == usage) {
+      return false;
+    }
 
     // Check if usage is consumed via .run() or .call()
     if (parent instanceof MemberSelectExpressionTree memberSelect && memberSelect.expression() == usage) {
@@ -147,6 +191,11 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
           return isChainEventuallyConsumed(chainedMit);
         }
       }
+    }
+
+    // Check if usage is assigned to another variable (aliasing) - counts as valid
+    if (parent instanceof VariableTree) {
+      return true;
     }
 
     // Check if usage escapes (returned or passed as argument)
@@ -200,14 +249,28 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
   private static boolean isEscaping(Tree tree) {
     Tree parent = tree.parent();
 
+    if (parent == null) {
+      return false;
+    }
+
     // Returned from method
     if (parent instanceof ReturnStatementTree) {
       return true;
     }
 
-    // Passed as argument to another method
+    // Passed as argument to another method or constructor
     if (parent instanceof Arguments) {
       return true;
+    }
+
+    // Used in ternary expression - check if the ternary escapes
+    if (parent instanceof ConditionalExpressionTree) {
+      return isEscaping(parent);
+    }
+
+    // Passed to constructor
+    if (parent instanceof NewClassTree newClass) {
+      return newClass.arguments().contains(tree);
     }
 
     return false;

@@ -31,4 +31,12 @@ class UnusedScopedValueWhereResultCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void testEdgeCases() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/UnusedScopedValueWhereResultSampleEdgeCases.java"))
+      .withCheck(new UnusedScopedValueWhereResultCheck())
+      .verifyIssues();
+  }
+
 }
