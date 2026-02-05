@@ -1,194 +1,206 @@
 import static java.lang.ScopedValue.where;
 
-class UnusedScopedValueWhereResultSampleEdgeCases {
 
-  static final ScopedValue<String> SCOPED = ScopedValue.newInstance();
-  static final ScopedValue<String> SCOPED2 = ScopedValue.newInstance();
+static final ScopedValue<String> SCOPED = ScopedValue.newInstance();
+static final ScopedValue<String> SCOPED2 = ScopedValue.newInstance();
 
-  // Field storage - should be flagged as we can't track field usage reliably
-  ScopedValue.Carrier carrierField;
-  static ScopedValue.Carrier staticCarrierField;
-
+// Field storage - should be flagged as we can't track field usage reliably
+ScopedValue.Carrier carrierField;
+static ScopedValue.Carrier staticCarrierField;
 
 
-  void chainedWhereBeforeConsumption() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - chained .where() then .run()
-    carrier.where(SCOPED2, "world").run(() -> {});
+void chainedWhereBeforeConsumption() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - chained .where() then .run()
+  carrier.where(SCOPED2, "world").run(() -> {
+  });
+}
+
+void chainedWhereBeforeCallConsumption() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - chained .where() then .call()
+  carrier.where(SCOPED2, "world").call(() -> "result");
+}
+
+// ===== CONTROL FLOW =====
+
+void conditionalUsage(boolean condition) {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - used conditionally
+  if (condition) {
+    carrier.run(() -> {
+    });
   }
+}
 
-  void chainedWhereBeforeCallConsumption() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - chained .where() then .call()
-    carrier.where(SCOPED2, "world").call(() -> "result");
+void conditionalUsageNotAllPaths(boolean condition) {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - used in one branch (we don't do path-sensitive analysis)
+  if (condition) {
+    carrier.run(() -> {
+    });
   }
+  // else: carrier not used - but we can't detect this without CFG analysis
+}
 
-  // ===== CONTROL FLOW =====
-
-  void conditionalUsage(boolean condition) {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - used conditionally
-    if (condition) {
-      carrier.run(() -> {});
-    }
+void carrierInTryFinally() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - used in finally
+  try {
+    doSomething();
+  } finally {
+    carrier.run(() -> {
+    });
   }
+}
 
-  void conditionalUsageNotAllPaths(boolean condition) {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - used in one branch (we don't do path-sensitive analysis)
-    if (condition) {
-      carrier.run(() -> {});
-    }
-    // else: carrier not used - but we can't detect this without CFG analysis
+void carrierInLoop() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - used in loop
+  for (int i = 0; i < 3; i++) {
+    carrier.run(() -> {
+    });
   }
+}
 
-  void carrierInTryFinally() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - used in finally
-    try {
-      doSomething();
-    } finally {
-      carrier.run(() -> {});
-    }
-  }
+// ===== VARIABLE SCENARIOS =====
 
-  void carrierInLoop() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - used in loop
-    for (int i = 0; i < 3; i++) {
-      carrier.run(() -> {});
-    }
-  }
+void variableReassignedBeforeUse() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Noncompliant
+  carrier = ScopedValue.where(SCOPED, "world");
+  carrier.run(() -> {
+  });
+}
 
-  // ===== VARIABLE SCENARIOS =====
+void multipleVariablesSameCarrier() {
+  var carrier1 = ScopedValue.where(SCOPED, "hello"); // Compliant - used via carrier2 reference... actually no, different objects
+  var carrier2 = carrier1; // Carrier2 points to same object
+  carrier2.run(() -> {
+  });
+}
 
-  void variableReassignedBeforeUse() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Noncompliant
-    carrier = ScopedValue.where(SCOPED, "world");
-    carrier.run(() -> {});
-  }
+void multipleVariablesOneUnused() {
+  var usedCarrier = ScopedValue.where(SCOPED, "hello"); // Compliant
+  var unusedCarrier = ScopedValue.where(SCOPED, "world"); // Noncompliant
+  usedCarrier.run(() -> {
+  });
+}
 
-  void multipleVariablesSameCarrier() {
-    var carrier1 = ScopedValue.where(SCOPED, "hello"); // Compliant - used via carrier2 reference... actually no, different objects
-    var carrier2 = carrier1; // Carrier2 points to same object
-    carrier2.run(() -> {});
-  }
+void carrierStoredInField() {
+  carrierField = ScopedValue.where(SCOPED, "hello"); // Compliant - way of escaping
+}
 
-  void multipleVariablesOneUnused() {
-    var usedCarrier = ScopedValue.where(SCOPED, "hello"); // Compliant
-    var unusedCarrier = ScopedValue.where(SCOPED, "world"); // Noncompliant
-    usedCarrier.run(() -> {});
-  }
+void carrierStoredInStaticField() {
+  staticCarrierField = ScopedValue.where(SCOPED, "hello"); // Compliant - way of escaping
+}
 
-  void carrierStoredInField() {
-    carrierField = ScopedValue.where(SCOPED, "hello"); // Compliant - way of escaping
-  }
+// ===== RETURN VARIATIONS =====
 
-  void carrierStoredInStaticField() {
-    staticCarrierField = ScopedValue.where(SCOPED, "hello"); // Compliant - way of escaping
-  }
+ScopedValue.Carrier directReturnWithoutVariable() {
+  return ScopedValue.where(SCOPED, "hello"); // Compliant - returned directly
+}
 
-  // ===== RETURN VARIATIONS =====
+ScopedValue.Carrier ternaryReturn(boolean condition) {
+  var carrier1 = ScopedValue.where(SCOPED, "hello"); // Compliant - potentially returned
+  var carrier2 = ScopedValue.where(SCOPED, "world"); // Compliant - potentially returned
+  return condition ? carrier1 : carrier2;
+}
 
-  ScopedValue.Carrier directReturnWithoutVariable() {
-    return ScopedValue.where(SCOPED, "hello"); // Compliant - returned directly
-  }
+// ===== NON-CONSUMING METHOD CALLS =====
 
-  ScopedValue.Carrier ternaryReturn(boolean condition) {
-    var carrier1 = ScopedValue.where(SCOPED, "hello"); // Compliant - potentially returned
-    var carrier2 = ScopedValue.where(SCOPED, "world"); // Compliant - potentially returned
-    return condition ? carrier1 : carrier2;
-  }
+void toStringOnCarrier() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Noncompliant
+  carrier.toString();
+}
 
-  // ===== NON-CONSUMING METHOD CALLS =====
+void hashCodeOnCarrier() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Noncompliant
+  carrier.hashCode();
+}
 
-  void toStringOnCarrier() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Noncompliant
-    carrier.toString();
-  }
+void equalsOnCarrier() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Noncompliant
+  carrier.equals(null);
+}
 
-  void hashCodeOnCarrier() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Noncompliant
-    carrier.hashCode();
-  }
+void getOnCarrier() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Noncompliant
+  carrier.get(SCOPED);
+}
 
-  void equalsOnCarrier() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Noncompliant
-    carrier.equals(null);
-  }
+// ===== LAMBDA/CLOSURE =====
 
-  void getOnCarrier() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Noncompliant
-    carrier.get(SCOPED);
-  }
+void carrierUsedInsideLambda() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - used inside lambda
+  Runnable r = () -> {
+    carrier.run(() -> {
+    });
+  };
+  r.run();
+}
 
-  // ===== LAMBDA/CLOSURE =====
+void carrierPassedToLambdaConsumer() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - escapes to lambda consumer
+  consumeCarrier(c -> c.run(() -> {
+  }), carrier);
+}
 
-  void carrierUsedInsideLambda() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - used inside lambda
-    Runnable r = () -> {
-      carrier.run(() -> {});
-    };
-    r.run();
-  }
+// ===== NESTED ESCAPING =====
 
-  void carrierPassedToLambdaConsumer() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - escapes to lambda consumer
-    consumeCarrier(c -> c.run(() -> {}), carrier);
-  }
+void carrierPassedToMethodThatReturnsIt() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - escapes via method call
+  var returned = identity(carrier);
+  returned.run(() -> {
+  });
+}
 
-  // ===== NESTED ESCAPING =====
+void carrierPassedToMethodThatReturnsItButUnused() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - escapes via method call (we can't track further)
+  var returned = identity(carrier);
+  // returned is not used - but carrier escaped so we don't flag
+}
 
-  void carrierPassedToMethodThatReturnsIt() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - escapes via method call
-    var returned = identity(carrier);
-    returned.run(() -> {});
-  }
+// ===== STATIC IMPORT =====
 
-  void carrierPassedToMethodThatReturnsItButUnused() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - escapes via method call (we can't track further)
-    var returned = identity(carrier);
-    // returned is not used - but carrier escaped so we don't flag
-  }
+void staticImportWhere() {
+  where(SCOPED, "hello"); // Noncompliant
+}
 
-  // ===== STATIC IMPORT =====
+void staticImportWhereUsed() {
+  where(SCOPED, "hello").run(() -> {
+  }); // Compliant - used immediately
+}
 
-  void staticImportWhere() {
-    where(SCOPED, "hello"); // Noncompliant
-  }
+void staticImportWhereVariable() {
+  var carrier = where(SCOPED, "hello"); // Noncompliant
+}
 
-  void staticImportWhereUsed() {
-    where(SCOPED, "hello").run(() -> {}); // Compliant - used immediately
-  }
+void staticImportWhereVariableUsed() {
+  var carrier = where(SCOPED, "hello"); // Compliant - used
+  carrier.run(() -> {
+  });
+}
 
-  void staticImportWhereVariable() {
-    var carrier = where(SCOPED, "hello"); // Noncompliant
-  }
+// ===== CONSTRUCTOR ARGUMENT =====
 
-  void staticImportWhereVariableUsed() {
-    var carrier = where(SCOPED, "hello"); // Compliant - used
-    carrier.run(() -> {});
-  }
+void carrierAsConstructorArgument() {
+  var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - escapes via constructor
+  new CarrierHolder(carrier);
+}
 
-  // ===== CONSTRUCTOR ARGUMENT =====
+void carrierAsConstructorArgumentDirect() {
+  new CarrierHolder(ScopedValue.where(SCOPED, "hello")); // Compliant - escapes via constructor
+}
 
-  void carrierAsConstructorArgument() {
-    var carrier = ScopedValue.where(SCOPED, "hello"); // Compliant - escapes via constructor
-    new CarrierHolder(carrier);
-  }
+// ===== HELPER METHODS AND CLASSES =====
 
-  void carrierAsConstructorArgumentDirect() {
-    new CarrierHolder(ScopedValue.where(SCOPED, "hello")); // Compliant - escapes via constructor
-  }
+void doSomething() {
+}
 
-  // ===== HELPER METHODS AND CLASSES =====
+ScopedValue.Carrier identity(ScopedValue.Carrier carrier) {
+  return carrier;
+}
 
-  void doSomething() {}
+void consumeCarrier(java.util.function.Consumer<ScopedValue.Carrier> consumer, ScopedValue.Carrier carrier) {
+  consumer.accept(carrier);
+}
 
-  ScopedValue.Carrier identity(ScopedValue.Carrier carrier) {
-    return carrier;
-  }
-
-  void consumeCarrier(java.util.function.Consumer<ScopedValue.Carrier> consumer, ScopedValue.Carrier carrier) {
-    consumer.accept(carrier);
-  }
-
-  static class CarrierHolder {
-    CarrierHolder(ScopedValue.Carrier carrier) // Noncompliant
-    {}
+static class CarrierHolder {
+  CarrierHolder(ScopedValue.Carrier carrier) // Noncompliant
+  {
   }
 }
