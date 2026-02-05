@@ -20,41 +20,197 @@ import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S8432")
 public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisitor {
-  private final List<String> immediateUsageMethods = List.of("run", "call");
+
+  private static final String WHERE_METHOD_NAME = "where";
+
+  private static final String MESSAGE = "Use this ScopedValue.Carrier by calling run() or call(), or remove this useless call to where().";
+
+  private static final Set<String> CONSUMPTION_METHODS = Set.of("run", "call");
+
+  private static final MethodMatchers WHERE_MATCHER = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("java.lang.ScopedValue")
+      .names(WHERE_METHOD_NAME)
+      .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.lang.ScopedValue$Carrier")
+      .names(WHERE_METHOD_NAME)
+      .withAnyParameters()
+      .build());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.VARIABLE);
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (tree instanceof MethodInvocationTree methodInvocationTree) {
-      visitMethodInvocationTree(methodInvocationTree);
+      checkMethodInvocation(methodInvocationTree);
+    } else if (tree instanceof VariableTree variableTree) {
+      checkCarrierVariable(variableTree);
     }
   }
 
-
-  private void visitMethodInvocationTree(MethodInvocationTree tree) {
-    if (tree.methodSelect() instanceof MemberSelectExpressionTree memberSelectExpressionTree &&
-      "where".equals(memberSelectExpressionTree.identifier().name())) {
-      boolean usedImmediately = tree.parent() instanceof MemberSelectExpressionTree parentMemberSelect &&
-        immediateUsageMethods.contains(parentMemberSelect.identifier().name());
-      if (usedImmediately) {
-        return;
-      }
-      if (tree.parent() instanceof VariableTree variableTree) {
-        return;
-      }
-      reportIssue(tree, "Hello");
+  private void checkMethodInvocation(MethodInvocationTree mit) {
+    if (!WHERE_MATCHER.matches(mit)) {
+      return;
     }
+
+    Tree parent = mit.parent();
+
+    // Special case: if there is no parent, consider it consumed to avoid false positives
+    if (parent == null) {
+      return;
+    }
+
+    // Check if result is immediately consumed (chained .run() or .call())
+    if (isImmediatelyConsumed(parent)) {
+      return;
+    }
+
+    // Check if result is chained with another .where() - don't report, the final result will be checked
+    if (isChainedWhere(parent)) {
+      return;
+    }
+
+    // Check if result is assigned to a variable - the variable check will handle this
+    if (parent instanceof VariableTree) {
+      return;
+    }
+
+    // Check if result escapes (returned or passed as argument)
+    if (isEscaping(mit)) {
+      return;
+    }
+
+    // If we reach here, the result is discarded
+    reportIssue(mit, MESSAGE);
+  }
+
+  private void checkCarrierVariable(VariableTree variableTree) {
+    Symbol symbol = variableTree.symbol();
+    if (!symbol.isVariableSymbol()) {
+      return;
+    }
+
+    // Check if this variable is initialized with a where() call
+    var initializer = variableTree.initializer();
+    boolean isWhereResult = initializer instanceof MethodInvocationTree mit && WHERE_MATCHER.matches(mit);
+
+    // Check if this variable is a Carrier type parameter
+    boolean isCarrierParameter = symbol.isParameter() && isCarrierType(symbol);
+
+    if (!isWhereResult && !isCarrierParameter) {
+      return;
+    }
+
+    // Check all usages of the variable
+    Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) symbol;
+    boolean isProperlyUsed = variableSymbol.usages().stream().anyMatch(this::isUsageValid);
+
+    if (!isProperlyUsed) {
+      reportIssue(variableTree.simpleName(), MESSAGE);
+    }
+  }
+
+  private static boolean isCarrierType(Symbol symbol) {
+    return symbol.type().is("java.lang.ScopedValue$Carrier");
+  }
+
+  private boolean isUsageValid(IdentifierTree usage) {
+    Tree parent = usage.parent();
+
+    // Check if usage is consumed via .run() or .call()
+    if (parent instanceof MemberSelectExpressionTree memberSelect && memberSelect.expression() == usage) {
+      String methodName = memberSelect.identifier().name();
+      if (CONSUMPTION_METHODS.contains(methodName)) {
+        return true;
+      }
+      // Check if it's a chained .where() that eventually gets consumed
+      if (WHERE_METHOD_NAME.equals(methodName)) {
+        Tree grandParent = memberSelect.parent();
+        if (grandParent instanceof MethodInvocationTree chainedMit) {
+          return isChainEventuallyConsumed(chainedMit);
+        }
+      }
+    }
+
+    // Check if usage escapes (returned or passed as argument)
+    return isEscaping(usage);
+  }
+
+  private static boolean isImmediatelyConsumed(Tree parent) {
+    if (parent instanceof MemberSelectExpressionTree memberSelect) {
+      return CONSUMPTION_METHODS.contains(memberSelect.identifier().name());
+    }
+    return false;
+  }
+
+  private static boolean isChainedWhere(Tree parent) {
+    if (parent instanceof MemberSelectExpressionTree memberSelect) {
+      return WHERE_METHOD_NAME.equals(memberSelect.identifier().name());
+    }
+    return false;
+  }
+
+  private boolean isChainEventuallyConsumed(MethodInvocationTree mit) {
+    Tree parent = mit.parent();
+
+    // Special case: if there is no parent, consider it consumed to avoid false positives
+    if (parent == null) {
+      return true;
+    }
+
+    if (isImmediatelyConsumed(parent)) {
+      return true;
+    }
+
+    if (isChainedWhere(parent) && parent.parent() instanceof MethodInvocationTree nextMit) {
+      return isChainEventuallyConsumed(nextMit);
+    }
+
+    if (isEscaping(mit)) {
+      return true;
+    }
+
+    if (parent instanceof VariableTree varTree) {
+      Symbol symbol = varTree.symbol();
+      if (symbol.isVariableSymbol()) {
+        return symbol.usages().stream().anyMatch(this::isUsageValid);
+      }
+    }
+
+    return false;
+  }
+
+  private static boolean isEscaping(Tree tree) {
+    Tree parent = tree.parent();
+
+    // Returned from method
+    if (parent instanceof ReturnStatementTree) {
+      return true;
+    }
+
+    // Passed as argument to another method
+    if (parent instanceof Arguments) {
+      return true;
+    }
+
+    return false;
   }
 }
 
