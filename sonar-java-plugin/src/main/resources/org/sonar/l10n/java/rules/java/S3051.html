@@ -1,0 +1,40 @@
+<h2>Why is this an issue?</h2>
+<p>A method named <code>main</code> with an invalid signature for a program entry point is confusing. It suggests the method is intended to be an entry point, but the JVM will not recognize it as such.</p>
+<p>Valid signatures for a program entry point are:</p>
+<ul>
+  <li><code>public static void main(String[] args)</code> - traditional signature</li>
+  <li><code>static void main(String[] args)</code> - static main without public modifier (Java 21+)</li>
+  <li><code>void main(String[] args)</code> - instance main method (Java 21+)</li>
+  <li><code>void main()</code> - main method without parameters (Java 21+)</li>
+  <li><code>static void main()</code> - static main without parameters (Java 21+)</li>
+</ul>
+<h3>Noncompliant code example</h3>
+<pre>
+class App {
+  // Wrong return type
+  int main(String[] args) { // Noncompliant
+    return 0;
+  }
+
+  // Wrong parameter type
+  void main(int[] args) { // Noncompliant
+  }
+
+  // Too many parameters
+  void main(String[] args, int extra) { // Noncompliant
+  }
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre>
+class App {
+  public static void main(String[] args) { // Compliant
+  }
+
+  // Or using Java 21+ flexible main methods:
+  void main() { // Compliant
+  }
+}
+</pre>
+<h3>Exceptions</h3>
+<p>Methods named <code>main</code> in interfaces, abstract classes, and annotations are ignored, as these cannot be used as program entry points.</p>
