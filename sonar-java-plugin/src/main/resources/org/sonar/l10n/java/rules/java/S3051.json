@@ -1,0 +1,23 @@
+{
+  "title": "\"main\" method should have the correct signature",
+  "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-3051",
+  "sqKey": "S3051",
+  "scope": "Main",
+  "quickfix": "unknown"
+}
