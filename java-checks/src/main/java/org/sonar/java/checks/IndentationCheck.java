@@ -82,7 +82,9 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
       excludeIssueAtLine = LineUtils.startLine(tree.openBraceToken());
       expectedLevel = Position.startOf(tree.closeBraceToken()).columnOffset();
     }
-    newBlock();
+    if (!tree.is(Kind.IMPLICIT_CLASS)) {
+      newBlock();
+    }
     checkIndentation(tree.members());
     super.visitClass(tree);
     leaveNode(tree);
