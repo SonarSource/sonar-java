@@ -87,6 +87,8 @@
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
     <sonar.version>25.1.0.102122</sonar.version>
+    <!-- Required by shadow scans -->
+    <sonar.organization>sonarsource</sonar.organization>
     <!--
       sonar-plugin-api should be compatible with SQ peach. You can see which version SQ is using
       at SonarSource/sonarqube/gradle.properties
