@@ -1,16 +1,17 @@
 static final ScopedValue myScopedValue = ScopedValue.newInstance();
+static final ScopedValue myScopedValue2 = ScopedValue.newInstance();
 
 void main() {
-  ScopedValue.where(myScopedValue, "hello").get(myScopedValue); // Noncompliant
-  ScopedValue.where(myScopedValue, "hello").run(() -> {
+  ScopedValue.where(myScopedValue, "Simple chained with get").get(myScopedValue); // Noncompliant
+  ScopedValue.where(myScopedValue, "Simple chained with run").run(() -> {
   }); // Compliant, the result is used immediately
-  ScopedValue.where(myScopedValue, "hello").where(ScopedValue.newInstance(), "hello").run(() -> {
+  ScopedValue.where(myScopedValue, "Chained two").where(myScopedValue2, "times with run").run(() -> {
   }); // Compliant, the result is used immediately
-  ScopedValue.where(myScopedValue, "hello"); // Noncompliant
-  var myUnusedCarrier = ScopedValue.where(myScopedValue, "hello"); // Noncompliant
-  var myUnused2LevelCarrier = ScopedValue.where(myScopedValue, "hello").where(ScopedValue.newInstance(), "hello"); // Noncompliant
-  var myUsedCarrier = ScopedValue.where(myScopedValue, "hello"); // Compliant, the result is assigned to a variable and used
-  var myUsed2LevelCarrier = ScopedValue.where(myScopedValue, "hello").where(ScopedValue.newInstance(), "hello"); // Compliant, the result is assigned to a variable and used
+  ScopedValue.where(myScopedValue, "Simple carrier creation"); // Noncompliant
+  var myUnusedCarrier = ScopedValue.where(myScopedValue, "Unused carrier in variable"); // Noncompliant
+  var myUnused2LevelCarrier = ScopedValue.where(myScopedValue, "Unused carrrier in variable").where(myScopedValue2, "2 levels of where"); // Noncompliant
+  var myUsedCarrier = ScopedValue.where(myScopedValue, "Used carrier in variable"); // Compliant, the result is assigned to a variable and used
+  var myUsed2LevelCarrier = ScopedValue.where(myScopedValue, "Used carrier in variable").where(myScopedValue2, "2 levels of where"); // Compliant, the result is assigned to a variable and used
   myUsedCarrier.run(() -> {
   });
   myUsed2LevelCarrier.run(() -> {
@@ -18,7 +19,7 @@ void main() {
 }
 
 void escapedCarrierFunctionCall() {
-  var carrier = ScopedValue.where(myScopedValue, "hello"); // ccompliant - the result escapes
+  var carrier = ScopedValue.where(myScopedValue, "Escape a carrier with a function call"); // compliant - the result escapes
   usedCarrierArgument(carrier);
 }
 
@@ -31,7 +32,7 @@ void unusedCarrierArgument(ScopedValue.Carrier carrier) { // Noncompliant
 }
 
 ScopedValue.Carrier escapedCarrierReturn() {
-  var carrier = ScopedValue.where(myScopedValue, "hello"); // compliant - the result escapes
+  var carrier = ScopedValue.where(myScopedValue, "Escape a carrier with a return"); // compliant - the result escapes
   return carrier;
 }
 
