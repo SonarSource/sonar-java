@@ -64,7 +64,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       .withAnyParameters()
       .build(),
     MethodMatchers.create()
-      .ofTypes("javax.persistence.EntityManager")
+      .ofTypes("javax.persistence.EntityManager", "jakarta.persistence.EntityManager")
       .names("createNativeQuery", "createQuery")
       .withAnyParameters()
       .build(),

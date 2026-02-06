@@ -19,7 +19,7 @@ import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 
 class SQLInjection {
   private static final String CONSTANT = "SELECT * FROM TABLE";
-  public void method(String param, String param2, EntityManager entityManager) {
+  public void method(String param, String param2, EntityManager entityManager, jakarta.persistence.EntityManager entityManager2) {
     try {
       Connection conn = DriverManager.getConnection("url", "user1", "password");
       Statement stmt = conn.createStatement();
@@ -83,6 +83,7 @@ class SQLInjection {
 
       String sql = "SELECT lastname, firstname FROM employee where uid = '" + param + "'";
       entityManager.createNativeQuery(sql); // Noncompliant
+      entityManager2.createNativeQuery(sql); // Noncompliant
 
       String concatenatedQuery0 = "SELECT * ";
       concatenatedQuery0 += "FROM " + param;
