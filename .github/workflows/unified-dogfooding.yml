@@ -30,7 +30,7 @@ jobs:
         with:
           primary_project_key: org.sonarsource.java:java
           primary_platform: "Next"
-          shadow1_project_key: "SonarSource_sonar-java"
+          shadow1_project_key: org.sonarsource.java:java
           shadow1_platform: "SQC-EU"
-          shadow2_project_key: "SonarSource_sonar-java"
+          shadow2_project_key: org.sonarsource.java:java
           shadow2_platform: "SQC-US"
