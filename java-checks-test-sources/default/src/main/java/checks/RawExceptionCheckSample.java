@@ -103,4 +103,7 @@ class SubClass extends RawExceptionCheckSample {
 
   public static void main(String[] args) throws Exception { //should not raise issue SONARJAVA-671
   }
+
+  void main() throws Exception { // Compliant, because it is an instance main.
+  }
 }

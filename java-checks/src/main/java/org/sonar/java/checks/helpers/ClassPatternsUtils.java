@@ -18,6 +18,7 @@ package org.sonar.java.checks.helpers;
 
 import java.util.List;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -35,15 +36,15 @@ public class ClassPatternsUtils {
       ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.PRIVATE);
   }
 
-  public static boolean isUtilityClass(ClassTree classTree) {
+  public static boolean isUtilityClass(ClassTree classTree, JavaVersion javaVersion) {
     return !anonymousClass(classTree) && hasOnlyStaticMembers(classTree) && !extendsAnotherClassOrImplementsSerializable(classTree)
-      && !containsMainMethod(classTree);
+      && !containsMainMethod(classTree, javaVersion);
   }
 
-  private static boolean containsMainMethod(ClassTree classTree) {
+  private static boolean containsMainMethod(ClassTree classTree, JavaVersion javaVersion) {
     return classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
-      .anyMatch(method -> MethodTreeUtils.isMainMethod((MethodTree) method));
+      .anyMatch(method -> MethodTreeUtils.isMainMethod((MethodTree) method, javaVersion));
   }
 
   private static boolean hasOnlyStaticMembers(ClassTree classTree) {

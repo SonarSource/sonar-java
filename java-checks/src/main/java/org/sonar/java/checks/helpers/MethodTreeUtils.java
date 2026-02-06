@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -48,12 +49,24 @@ public final class MethodTreeUtils {
   private MethodTreeUtils() {
   }
 
-  public static boolean isMainMethod(MethodTree m) {
+  public static boolean isMainMethod(MethodTree m, JavaVersion javaVersion) {
+    return javaVersion.asInt() < 25 ? isMainMethodTraditional(m) : isMainMethodJava25(m);
+  }
+
+  private static boolean isMainMethodJava25(MethodTree m) {
+    return !isPrivate(m) && isNamed(m, "main") && returnsPrimitive(m, "void") && (hasStringArrayParameter(m) || hasNoParameters(m));
+  }
+
+  private static boolean isMainMethodTraditional(MethodTree m) {
     return isPublic(m) && isStatic(m) && isNamed(m, "main") && returnsPrimitive(m, "void") && hasStringArrayParameter(m);
   }
 
   private static boolean hasStringArrayParameter(MethodTree m) {
     return m.parameters().size() == 1 && isParameterStringArray(m);
+  }
+
+  private static boolean hasNoParameters(MethodTree m) {
+    return m.parameters().isEmpty();
   }
 
   private static boolean isParameterStringArray(MethodTree m) {
@@ -135,6 +148,10 @@ public final class MethodTreeUtils {
 
   private static boolean isPublic(MethodTree m) {
     return ModifiersUtils.hasModifier(m.modifiers(), Modifier.PUBLIC);
+  }
+
+  private static boolean isPrivate(MethodTree m) {
+    return ModifiersUtils.hasModifier(m.modifiers(), Modifier.PRIVATE);
   }
 
   private static boolean returnsInt(MethodTree m) {

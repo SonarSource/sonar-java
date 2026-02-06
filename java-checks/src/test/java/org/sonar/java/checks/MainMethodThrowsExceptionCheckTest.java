@@ -19,13 +19,25 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class MainMethodThrowsExceptionCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/MainMethodThrowsExceptionCheck.java")
+      .onFile(mainCodeSourcesPath("checks/MainMethodThrowsExceptionCheckSample.java"))
       .withCheck(new MainMethodThrowsExceptionCheck())
+      .withJavaVersion(21)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_instance_main() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MainMethodThrowsExceptionCheckInstanceMainSample.java"))
+      .withCheck(new MainMethodThrowsExceptionCheck())
+      .withJavaVersion(25)
       .verifyIssues();
   }
 }
