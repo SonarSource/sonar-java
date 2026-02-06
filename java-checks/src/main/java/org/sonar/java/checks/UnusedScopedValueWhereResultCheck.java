@@ -54,6 +54,8 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
       .withAnyParameters()
       .build());
 
+  // ===== VISITOR METHODS =====
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.VARIABLE);
@@ -68,6 +70,7 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
     }
   }
 
+  // ===== CHECK METHOD INVOCATION =====
   private void checkMethodInvocation(MethodInvocationTree mit) {
     if (!WHERE_MATCHER.matches(mit)) {
       return;
@@ -106,8 +109,11 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
     }
 
     // If we reach here, the result is discarded
-    reportIssue(mit, MESSAGE);
+    reportIssue(mit);
   }
+
+
+  // ===== CHECK CARRIER VARIABLE =====
 
   private void checkCarrierVariable(VariableTree variableTree) {
     Symbol symbol = variableTree.symbol();
@@ -128,31 +134,35 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
 
     // Check all usages of the variable
     Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) symbol;
-    List<IdentifierTree> usages = variableSymbol.usages();
+    List<IdentifierTree> variableUsages = variableSymbol.usages();
 
     // Check if variable is reassigned before proper use
-    if (isWhereResult && isReassignedBeforeProperUse(usages)) {
-      reportIssue(variableTree.simpleName(), MESSAGE);
+    if (isWhereResult && isVariableReassignedBeforeProperUse(variableUsages)) {
+      reportIssue(variableTree.simpleName());
       return;
     }
 
-    boolean isProperlyUsed = usages.stream().anyMatch(this::isUsageValid);
+    boolean isProperlyUsed = variableUsages.stream().anyMatch(this::isUsageValid);
 
     if (!isProperlyUsed) {
-      reportIssue(variableTree.simpleName(), MESSAGE);
+      reportIssue(variableTree.simpleName());
     }
   }
 
-  private boolean isReassignedBeforeProperUse(List<IdentifierTree> usages) {
-    for (IdentifierTree usage : usages) {
+  private static boolean isCarrierType(Symbol symbol) {
+    return symbol.type().is("java.lang.ScopedValue$Carrier");
+  }
+
+  private boolean isVariableReassignedBeforeProperUse(List<IdentifierTree> variableUsages) {
+    for (IdentifierTree variableUsage : variableUsages) {
       // Check if this usage is a reassignment (left side of assignment)
-      Tree parent = usage.parent();
-      if (parent instanceof AssignmentExpressionTree assignment && assignment.variable() == usage) {
+      Tree parent = variableUsage.parent();
+      if (parent instanceof AssignmentExpressionTree assignment && assignment.variable() == variableUsage) {
         // This is a reassignment - check if there's any proper use before this reassignment
         // For simplicity, if we see a reassignment and no proper use, consider it unused
-        boolean hasProperUseBefore = usages.stream()
-          .filter(u -> u != usage)
-          .filter(u -> isBefore(u, usage))
+        boolean hasProperUseBefore = variableUsages.stream()
+          .filter(u -> u != variableUsage)
+          .filter(u -> isUsageBefore(u, variableUsage))
           .anyMatch(this::isUsageValid);
         if (!hasProperUseBefore) {
           return true;
@@ -162,64 +172,62 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
     return false;
   }
 
-  private static boolean isBefore(IdentifierTree first, IdentifierTree second) {
-    return first.identifierToken().range().start().isBefore(second.identifierToken().range().start());
-  }
-
-  private static boolean isCarrierType(Symbol symbol) {
-    return symbol.type().is("java.lang.ScopedValue$Carrier");
-  }
-
   private boolean isUsageValid(IdentifierTree usage) {
     Tree parent = usage.parent();
 
-    // Check if usage is a reassignment (left side of assignment) - not a valid use
-    if (parent instanceof AssignmentExpressionTree assignment && assignment.variable() == usage) {
+    // 1. Filter out reassignments immediately
+    if (isReassignment(usage, parent)) {
       return false;
     }
 
-    // Check if usage is consumed via .run() or .call()
+    // 2. Delegate logic for method calls (.run, .call, .where)
     if (parent instanceof MemberSelectExpressionTree memberSelect && memberSelect.expression() == usage) {
-      String methodName = memberSelect.identifier().name();
-      if (CONSUMPTION_METHODS.contains(methodName)) {
-        return true;
-      }
-      // Check if it's a chained .where() that eventually gets consumed
-      if (WHERE_METHOD_NAME.equals(methodName)) {
-        Tree grandParent = memberSelect.parent();
-        if (grandParent instanceof MethodInvocationTree chainedMit) {
-          return isChainEventuallyConsumed(chainedMit);
-        }
-      }
+      return isMethodUsageValid(memberSelect);
     }
 
-    // Check if usage is assigned to another variable (aliasing)
+    // 3. Delegate logic for aliasing (assignment to other variables)
     if (parent instanceof VariableTree varTree) {
-      Symbol targetSymbol = varTree.symbol();
-      // If assigned to a field, it escapes
-      if (!targetSymbol.isLocalVariable()) {
-        return true;
-      }
-      // If assigned to a local variable, check if that variable is properly used
-      if (targetSymbol.isVariableSymbol()) {
-        return targetSymbol.usages().stream().anyMatch(this::isUsageValid);
-      }
+      return isAliasingValid(varTree);
     }
 
-    // Check if usage escapes (returned or passed as argument)
+    // 4. Check if usage escapes (returned or passed as argument)
     return isEscaping(usage);
   }
 
-  private static boolean isImmediatelyConsumed(Tree parent) {
-    if (parent instanceof MemberSelectExpressionTree memberSelect) {
-      return CONSUMPTION_METHODS.contains(memberSelect.identifier().name());
+  private boolean isMethodUsageValid(MemberSelectExpressionTree memberSelect) {
+    String methodName = memberSelect.identifier().name();
+    if (CONSUMPTION_METHODS.contains(methodName)) {
+      return true;
+    }
+    if (WHERE_METHOD_NAME.equals(methodName) && memberSelect.parent() instanceof MethodInvocationTree chainedMit) {
+      return isChainEventuallyConsumed(chainedMit);
     }
     return false;
   }
 
-  private static boolean isChainedWhere(Tree parent) {
+  private boolean isAliasingValid(VariableTree varTree) {
+    Symbol targetSymbol = varTree.symbol();
+    if (!targetSymbol.isLocalVariable()) {
+      return true;
+    }
+    return targetSymbol.isVariableSymbol() &&
+      targetSymbol.usages().stream().anyMatch(this::isUsageValid);
+  }
+
+  private static boolean isUsageBefore(IdentifierTree mainUsage, IdentifierTree relativeToUsage) {
+    return mainUsage.identifierToken().range().start().isBefore(relativeToUsage.identifierToken().range().start());
+  }
+
+  private static boolean isReassignment(IdentifierTree usage, Tree parent) {
+    return parent instanceof AssignmentExpressionTree assignment && assignment.variable() == usage;
+  }
+
+
+  // ===== HELPER METHODS =====
+
+  private static boolean isImmediatelyConsumed(Tree parent) {
     if (parent instanceof MemberSelectExpressionTree memberSelect) {
-      return WHERE_METHOD_NAME.equals(memberSelect.identifier().name());
+      return CONSUMPTION_METHODS.contains(memberSelect.identifier().name());
     }
     return false;
   }
@@ -254,6 +262,13 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
     return false;
   }
 
+  private static boolean isChainedWhere(Tree parent) {
+    if (parent instanceof MemberSelectExpressionTree memberSelect) {
+      return WHERE_METHOD_NAME.equals(memberSelect.identifier().name());
+    }
+    return false;
+  }
+
   private static boolean isEscaping(Tree tree) {
     Tree parent = tree.parent();
 
@@ -282,6 +297,10 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
     }
 
     return false;
+  }
+
+  private void reportIssue(Tree tree) {
+    reportIssue(tree, MESSAGE);
   }
 }
 
