@@ -178,29 +178,16 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
 
     // 2. Delegate logic for method calls (.run, .call, .where)
     if (parent instanceof MemberSelectExpressionTree memberSelect && memberSelect.expression() == usage) {
-      return isMethodUsageValid(memberSelect);
+      return CONSUMPTION_METHODS.contains(memberSelect.identifier().name());
     }
 
     // 3. Delegate logic for aliasing (assignment to other variables)
     if (parent instanceof VariableTree varTree) {
-      return isAliasingValid(varTree);
+      return varTree.symbol().usages().stream().anyMatch(this::isUsageValid);
     }
 
     // 4. Check if usage escapes (returned or passed as argument)
     return isEscaping(usage);
-  }
-
-  private boolean isMethodUsageValid(MemberSelectExpressionTree memberSelect) {
-    String methodName = memberSelect.identifier().name();
-    if (CONSUMPTION_METHODS.contains(methodName)) {
-      return true;
-    }
-
-    return false;
-  }
-
-  private boolean isAliasingValid(VariableTree varTree) {
-    return varTree.symbol().usages().stream().anyMatch(this::isUsageValid);
   }
 
   private static boolean isUsageBefore(IdentifierTree mainUsage, IdentifierTree relativeToUsage) {
