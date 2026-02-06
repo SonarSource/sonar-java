@@ -111,9 +111,7 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
     reportIssue(mit);
   }
 
-
   // ===== CHECK CARRIER VARIABLE =====
-
   private void checkCarrierVariable(VariableTree variableTree) {
     Symbol symbol = variableTree.symbol();
 
@@ -195,7 +193,6 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
   }
 
   // ===== HELPER METHODS =====
-
   private static boolean isImmediatelyConsumed(Tree parent) {
     if (parent instanceof MemberSelectExpressionTree memberSelect) {
       return CONSUMPTION_METHODS.contains(memberSelect.identifier().name());
