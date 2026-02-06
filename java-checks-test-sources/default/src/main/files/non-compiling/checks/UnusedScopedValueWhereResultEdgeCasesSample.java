@@ -28,7 +28,7 @@ void variableReassignedBeforeUse() {
 }
 
 void multipleVariablesSameCarrierUsed() {
-  var carrier1 = ScopedValue.where(SCOPED, "Single instance"); // Compliant - used via carrier2 reference... actually no, different objects
+  var carrier1 = ScopedValue.where(SCOPED, "Single instance"); // Compliant
   var carrier2 = carrier1; // Carrier2 points to same object
   carrier2.run(() -> {
   });
@@ -46,19 +46,17 @@ void multipleVariablesSameCarrierUnused() {
   var carrier2 = carrier1; // Carrier2 points to same object but is never used
 }
 
-void multipleVariablesOneUnused() {
-  var usedCarrier = ScopedValue.where(SCOPED, "Used instance"); // Compliant
-  var unusedCarrier = usedCarrier.where(SCOPED, "Unused instance"); // Noncompliant
-  usedCarrier.run(() -> {
-  });
-}
-
 void carrierStoredInField() {
   carrierField = ScopedValue.where(SCOPED, "Stored in instance field"); // Compliant - way of escaping
 }
 
 void carrierStoredInStaticField() {
   staticCarrierField = ScopedValue.where(SCOPED, "Stored in static field"); // Compliant - way of escaping
+}
+
+void escapingInFieldTwice() {
+  carrierField = ScopedValue.where(SCOPED, "Instance 1"); // Compliant - escapes, we can't track field usage
+  carrierField = ScopedValue.where(SCOPED, "Instance 2"); // Compliant - reassigned but still escapes
 }
 
 // ===== RETURN VARIATIONS =====

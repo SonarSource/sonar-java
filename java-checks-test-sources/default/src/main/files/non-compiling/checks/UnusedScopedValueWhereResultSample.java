@@ -23,6 +23,10 @@ void escapedCarrierFunctionCall() {
   usedCarrierArgument(carrier);
 }
 
+void escapedCarrierFunctionCall2() {
+  usedCarrierArgument(ScopedValue.where(myScopedValue, "Escape a carrier with a function call")); // compliant - the result escapes
+}
+
 void usedCarrierArgument(ScopedValue.Carrier carrier) { // compliant - the carrier is used in the function
   carrier.run(() -> {
   });
@@ -34,6 +38,10 @@ void unusedCarrierArgument(ScopedValue.Carrier carrier) { // Noncompliant
 ScopedValue.Carrier escapedCarrierReturn() {
   var carrier = ScopedValue.where(myScopedValue, "Escape a carrier with a return"); // compliant - the result escapes
   return carrier;
+}
+
+ScopedValue.Carrier escapedCarrierReturn2() {
+  return ScopedValue.where(myScopedValue, "Escape a carrier with a return"); // compliant - the result escapes
 }
 
 void escapedCarrierArgument(ScopedValue.Carrier carrier) { // compliant - the carrier is used in the function

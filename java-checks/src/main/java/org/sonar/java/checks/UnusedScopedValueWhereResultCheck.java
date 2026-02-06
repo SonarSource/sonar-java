@@ -28,7 +28,6 @@ import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -117,9 +116,6 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
 
   private void checkCarrierVariable(VariableTree variableTree) {
     Symbol symbol = variableTree.symbol();
-    if (!symbol.isVariableSymbol()) {
-      return;
-    }
 
     // Check if this variable is initialized with a where() call
     var initializer = variableTree.initializer();
@@ -175,9 +171,9 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
   private boolean isUsageValid(IdentifierTree usage) {
     Tree parent = usage.parent();
 
-    // 1. Filter out reassignments immediately
-    if (isReassignment(usage, parent)) {
-      return false;
+    // Special case: if there is no parent, consider it valid to avoid false positives
+    if (parent == null) {
+      return true;
     }
 
     // 2. Delegate logic for method calls (.run, .call, .where)
@@ -199,29 +195,17 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
     if (CONSUMPTION_METHODS.contains(methodName)) {
       return true;
     }
-    if (WHERE_METHOD_NAME.equals(methodName) && memberSelect.parent() instanceof MethodInvocationTree chainedMit) {
-      return isChainEventuallyConsumed(chainedMit);
-    }
+
     return false;
   }
 
   private boolean isAliasingValid(VariableTree varTree) {
-    Symbol targetSymbol = varTree.symbol();
-    if (!targetSymbol.isLocalVariable()) {
-      return true;
-    }
-    return targetSymbol.isVariableSymbol() &&
-      targetSymbol.usages().stream().anyMatch(this::isUsageValid);
+    return varTree.symbol().usages().stream().anyMatch(this::isUsageValid);
   }
 
   private static boolean isUsageBefore(IdentifierTree mainUsage, IdentifierTree relativeToUsage) {
     return mainUsage.identifierToken().range().start().isBefore(relativeToUsage.identifierToken().range().start());
   }
-
-  private static boolean isReassignment(IdentifierTree usage, Tree parent) {
-    return parent instanceof AssignmentExpressionTree assignment && assignment.variable() == usage;
-  }
-
 
   // ===== HELPER METHODS =====
 
@@ -229,36 +213,6 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
     if (parent instanceof MemberSelectExpressionTree memberSelect) {
       return CONSUMPTION_METHODS.contains(memberSelect.identifier().name());
     }
-    return false;
-  }
-
-  private boolean isChainEventuallyConsumed(MethodInvocationTree mit) {
-    Tree parent = mit.parent();
-
-    // Special case: if there is no parent, consider it consumed to avoid false positives
-    if (parent == null) {
-      return true;
-    }
-
-    if (isImmediatelyConsumed(parent)) {
-      return true;
-    }
-
-    if (isChainedWhere(parent) && parent.parent() instanceof MethodInvocationTree nextMit) {
-      return isChainEventuallyConsumed(nextMit);
-    }
-
-    if (isEscaping(mit)) {
-      return true;
-    }
-
-    if (parent instanceof VariableTree varTree) {
-      Symbol symbol = varTree.symbol();
-      if (symbol.isVariableSymbol()) {
-        return symbol.usages().stream().anyMatch(this::isUsageValid);
-      }
-    }
-
     return false;
   }
 
@@ -272,8 +226,9 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
   private static boolean isEscaping(Tree tree) {
     Tree parent = tree.parent();
 
+    // Special case: if there is no parent, consider it escaping to avoid false positives
     if (parent == null) {
-      return false;
+      return true;
     }
 
     // Returned from method
@@ -289,11 +244,6 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
     // Used in ternary expression - check if the ternary escapes
     if (parent instanceof ConditionalExpressionTree) {
       return isEscaping(parent);
-    }
-
-    // Passed to constructor
-    if (parent instanceof NewClassTree newClass) {
-      return newClass.arguments().contains(tree);
     }
 
     return false;
