@@ -17,6 +17,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -93,16 +94,11 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscr
   private static Collection<Symbol> filterMethodsAndFields(Collection<Symbol> symbols) {
     List<Symbol> filtered = new ArrayList<>();
     for (Symbol symbol : symbols) {
-      if ((symbol.isVariableSymbol() && !isThisOrSuper(symbol)) || (symbol.isMethodSymbol() && !isConstructor(symbol))) {
+      if ((symbol.isVariableSymbol() && !ExpressionUtils.isThisOrSuper(symbol.name())) || (symbol.isMethodSymbol() && !isConstructor(symbol))) {
         filtered.add(symbol);
       }
     }
     return filtered;
-  }
-
-  private static boolean isThisOrSuper(Symbol symbol) {
-    String name = symbol.name();
-    return "this".equals(name) || "super".equals(name);
   }
 
   private static boolean isConstructor(Symbol symbol) {

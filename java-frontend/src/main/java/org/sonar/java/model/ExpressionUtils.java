@@ -89,6 +89,10 @@ public final class ExpressionUtils {
     return "this".equalsIgnoreCase(selectSourceName) || "super".equalsIgnoreCase(selectSourceName);
   }
 
+  public static boolean isThisOrSuper(String name) {
+    return "this".equals(name) || "super".equals(name);
+  }
+
   public static IdentifierTree extractIdentifier(AssignmentExpressionTree tree) {
     Optional<IdentifierTree> identifier = extractIdentifier(tree.variable());
 

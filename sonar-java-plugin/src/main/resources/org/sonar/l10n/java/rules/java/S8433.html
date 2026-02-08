@@ -1,0 +1,52 @@
+<h2>Why is this an issue?</h2>
+<p>Java 25 introduces Flexible Constructor Bodies, which allow statements to be placed before an explicit constructor invocation - the super(…​) or
+this(…​) call. This enables developers to perform validation logic in the prologue, ensuring that the system avoids the overhead of initializing a
+superclass or allocating resources for an invalid object.</p>
+<h2>How to fix it</h2>
+<p>Move all the validation logic for parameters in a constructor before super(…​) or this(…​) call.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class Coffee {
+    int water;
+    int milk;
+
+    public Coffee(int water, int milk) {
+        this.water = water;
+        this.milk = milk;
+    }
+}
+
+public class SmallCoffee extends Coffee {
+    private static final int MAX_CUP_VOLUME = 100;
+
+    public SmallCoffee(int water, int milk, String topping) {
+        super(water, milk); // Noncompliant: constructing before validation
+        int totalVolume = water + milk;
+        if (totalVolume &gt; MAX_CUP_VOLUME) {
+            throw new IllegalArgumentException();
+        }
+        this.topping = topping;
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class SmallCoffee extends Coffee {
+    private static final int MAX_CUP_VOLUME = 100;
+
+    public SmallCoffee(int water, int milk, String topping) {
+        int totalVolume = water + milk;
+        if (totalVolume &gt; MAX_CUP_VOLUME) {
+            throw new IllegalArgumentException();
+        }
+        super(water, milk); // Compliant: validation before construction
+        this.topping = topping;
+    }
+}
+</pre>
+<h2>Resources</h2>
+<ul>
+  <li> <a href="https://openjdk.org/jeps/513">JEP 513: Flexible Constructor Bodies</a> </li>
+</ul>
+

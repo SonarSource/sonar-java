@@ -1,0 +1,24 @@
+{
+  "title": "Validation logic should be placed in constructor prologue when possible",
+  "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java25",
+    "suspicious"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-8433",
+  "sqKey": "S8433",
+  "scope": "All",
+  "quickfix": "unknown"
+}

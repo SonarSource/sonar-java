@@ -13,6 +13,10 @@
   <name>SonarQube Java :: Checks</name>
   <description>Code Analyzer for Java :: Analyzer's checks</description>
 
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>

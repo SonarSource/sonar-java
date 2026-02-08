@@ -356,12 +356,8 @@ public class ReplaceLambdaByMethodRefCheck extends IssuableSubscriptionVisitor {
     }
     return symbol != null &&
       symbol.owner().isTypeSymbol()
-      && !isThisOrSuper(symbol.name())
+      && !ExpressionUtils.isThisOrSuper(symbol.name())
       && !symbol.isFinal();
-  }
-
-  private static boolean isThisOrSuper(String name) {
-    return "this".equals(name) || "super".equals(name);
   }
 
   private static boolean matchingParameters(Arguments arguments, List<VariableTree> parameters) {
