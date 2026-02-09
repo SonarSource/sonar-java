@@ -118,18 +118,11 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
   private static int findConstructorCallIndex(BlockTree body) {
     List<StatementTree> statements = body.body();
     for (int i = 0; i < statements.size(); i++) {
-      StatementTree statement = statements.get(i);
-      if (!statement.is(Tree.Kind.EXPRESSION_STATEMENT)
-        || !(((ExpressionStatementTree) statement).expression()).is(Tree.Kind.METHOD_INVOCATION)) {
-        continue;
-      }
-      MethodInvocationTree invocation = (MethodInvocationTree) ((ExpressionStatementTree) statement).expression();
-      ExpressionTree methodSelect = invocation.methodSelect();
-      if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-        String methodName = ((IdentifierTree) methodSelect).name();
-        if (ExpressionUtils.isThisOrSuper(methodName)) {
-          return i;
-        }
+      if (statements.get(i) instanceof ExpressionStatementTree expressionStatementTree
+        && expressionStatementTree.expression() instanceof MethodInvocationTree methodInvocationTree
+        && methodInvocationTree.methodSelect() instanceof IdentifierTree identifierTree
+        && ExpressionUtils.isThisOrSuper(identifierTree.name())){
+        return i;
       }
     }
     // No explicit super() or this() call
@@ -143,16 +136,13 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
    * @return true if the statement is a validation statement, false otherwise
    */
   private static boolean isValidationStatement(StatementTree statement) {
-    if (statement.is(Tree.Kind.IF_STATEMENT)) {
-      IfStatementTree ifStatement = (IfStatementTree) statement;
+    if (statement instanceof IfStatementTree ifStatement) {
       return containsThrow(ifStatement.thenStatement());
     }
 
-    if (statement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      ExpressionTree expression = ((ExpressionStatementTree) statement).expression();
-      if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-        return VALIDATION_METHODS.matches((MethodInvocationTree) expression);
-      }
+    if (statement instanceof ExpressionStatementTree expressionStatementTree
+      && expressionStatementTree.expression() instanceof MethodInvocationTree methodInvocationTree) {
+      return VALIDATION_METHODS.matches(methodInvocationTree);
     }
 
     return false;
