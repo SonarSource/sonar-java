@@ -33,6 +33,7 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -159,12 +160,21 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   }
 
   private boolean isExcluded(MethodTree tree) {
-    return MethodTreeUtils.isMainMethod(tree, context.getJavaVersion())
+    return isMainWithRequiredArgs(tree)
       || isAnnotated(tree)
       || isOverriding(tree)
       || isSerializableMethod(tree)
       || isDesignedForExtension(tree)
       || isUsedAsMethodReference(tree);
+  }
+
+  /**
+   * True if the argument is the main method and the argument cannot be removed,
+   * which is the case before Java 25.
+   */
+  private boolean isMainWithRequiredArgs(MethodTree tree) {
+    JavaVersion javaVersion = context.getJavaVersion();
+    return !javaVersion.isJava25Compatible() && MethodTreeUtils.isMainMethod(tree, javaVersion);
   }
 
   private static boolean isAnnotated(MethodTree tree) {
