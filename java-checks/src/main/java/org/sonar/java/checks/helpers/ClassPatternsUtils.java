@@ -36,6 +36,7 @@ public class ClassPatternsUtils {
       ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.PRIVATE);
   }
 
+  /** True if the class contains only static members (with caveats). */
   public static boolean isUtilityClass(ClassTree classTree, JavaVersion javaVersion) {
     return !anonymousClass(classTree) && hasOnlyStaticMembers(classTree) && !extendsAnotherClassOrImplementsSerializable(classTree)
       && !containsMainMethod(classTree, javaVersion);

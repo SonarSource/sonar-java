@@ -45,8 +45,8 @@ class ClassPatternsUtilsTest {
     assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("class A { public static void a(){} private static void b(){} private void c(){}}"), java21));
 
     JavaVersion java25 = new JavaVersionImpl(25);
-    ClassTree instanceMain = parseClass("class A { void main(){} }");
-    assertFalse(ClassPatternsUtils.isUtilityClass(instanceMain, java21));
+    ClassTree instanceMain = parseClass("class A { static void main(){} }");
+    assertTrue(ClassPatternsUtils.isUtilityClass(instanceMain, java21));
     assertFalse(ClassPatternsUtils.isUtilityClass(instanceMain, java25));
   }
 
