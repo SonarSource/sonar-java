@@ -77,11 +77,6 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
 
     Tree parent = mit.parent();
 
-    // Special case: if there is no parent, consider it consumed to avoid false positives
-    if (parent == null) {
-      return;
-    }
-
     // Check if result is immediately consumed (chained .run() or .call())
     if (isImmediatelyConsumed(parent)) {
       return;
@@ -169,11 +164,6 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
   private boolean isUsageValid(IdentifierTree usage) {
     Tree parent = usage.parent();
 
-    // Special case: if there is no parent, consider it valid to avoid false positives
-    if (parent == null) {
-      return true;
-    }
-
     // 2. Delegate logic for method calls (.run, .call, .where)
     if (parent instanceof MemberSelectExpressionTree memberSelect && memberSelect.expression() == usage) {
       return CONSUMPTION_METHODS.contains(memberSelect.identifier().name());
@@ -209,11 +199,6 @@ public class UnusedScopedValueWhereResultCheck extends IssuableSubscriptionVisit
 
   private static boolean isEscaping(Tree tree) {
     Tree parent = tree.parent();
-
-    // Special case: if there is no parent, consider it escaping to avoid false positives
-    if (parent == null) {
-      return true;
-    }
 
     // Returned from method
     if (parent instanceof ReturnStatementTree) {
