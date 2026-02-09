@@ -18,6 +18,7 @@ class FlexibleConstructorBodyValidationCheckSample {
       int maxCupCoffee = 90;
       int totalVolume = water + milk;
       if (totalVolume > maxCupCoffee) { // Noncompliant {{Move this validation logic before the super() or this() call.}}
+    //^[el=+3;ec=7]
         throw new IllegalArgumentException();
       }
       this.topping = topping;
