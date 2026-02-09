@@ -34,7 +34,6 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -106,16 +105,15 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
 
       if (isValidationStatement(statement) && canBeMovedToPrologue(statement, parameters)) {
         reportIssue(statement, "Move this validation logic before the super() or this() call.");
-      } else if (containsFieldAssignment(statement)) {
-        // Stop analysis if we encounter a field assignment (indicates validation should not be moved)
-        break;
       }
     }
   }
 
   /**
-   * Find the index of an explicit super() / this() call in the constructor body.
-   * Returns -1 if no explicit call is found (implicit super()).
+   * Find the index of an explicit super() or this() call in the constructor body.
+   *
+   * @param body the constructor body to search
+   * @return the index of the explicit super() or this() call, or -1 if no explicit call is found (implicit super())
    */
   private static int findConstructorCallIndex(BlockTree body) {
     List<StatementTree> statements = body.body();
@@ -139,13 +137,12 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
   }
 
   /**
-   * Check if a statement is a validation statement (throws exception or calls validation method).
+   * Check if a statement is a validation statement (conditionally throws exception or calls validation method).
+   *
+   * @param statement the statement to check
+   * @return true if the statement is a validation statement, false otherwise
    */
   private static boolean isValidationStatement(StatementTree statement) {
-    if (statement.is(Tree.Kind.THROW_STATEMENT)) {
-      return true;
-    }
-
     if (statement.is(Tree.Kind.IF_STATEMENT)) {
       IfStatementTree ifStatement = (IfStatementTree) statement;
       return containsThrow(ifStatement.thenStatement());
@@ -181,15 +178,6 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
   }
 
   /**
-   * Check if statement contains field assignment (this.field = value).
-   */
-  private static boolean containsFieldAssignment(StatementTree statement) {
-    FieldAssignmentFinder finder = new FieldAssignmentFinder();
-    statement.accept(finder);
-    return finder.foundFieldAssignment;
-  }
-
-  /**
    * Visitor to find throw statements.
    */
   private static class ThrowFinder extends BaseTreeVisitor {
@@ -213,16 +201,6 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
     }
 
     @Override
-    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      if (ExpressionUtils.isSelectOnThisOrSuper((tree))) {
-        hasInstanceDependency = true;
-        return;
-      }
-
-      super.visitMemberSelectExpression(tree);
-    }
-
-    @Override
     public void visitIdentifier(IdentifierTree tree) {
       Symbol symbol = tree.symbol();
 
@@ -232,7 +210,7 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
       }
 
       // Check if it's an instance field or method being accessed
-      if (symbol.isVariableSymbol() || symbol.isMethodSymbol()) {
+      if (symbol.isVariableSymbol()) {
         // This is likely an instance field accessed without 'this.'
         hasInstanceDependency = true;
         return;
@@ -261,26 +239,6 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
     @Override
     public void visitThrowStatement(ThrowStatementTree tree) {
       // skip throw statements
-    }
-  }
-
-  /**
-   * Visitor to find field assignments.
-   */
-  private static class FieldAssignmentFinder extends BaseTreeVisitor {
-    boolean foundFieldAssignment = false;
-
-    @Override
-    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      // Check if this is a field assignment (this.field = ...)
-      if (ExpressionUtils.isThis(tree.expression())) {
-        Tree parent = tree.parent();
-        if (parent != null && parent.is(Tree.Kind.ASSIGNMENT)) {
-          foundFieldAssignment = true;
-          return;
-        }
-      }
-      super.visitMemberSelectExpression(tree);
     }
   }
 }

@@ -29,6 +29,7 @@ class FlexibleConstructorBodyValidationCheckSample {
       if (totalVolume > maxCupCoffee) { // Compliant: validation before super()
         throw new IllegalArgumentException();
       }
+      maxCupCoffee++;
       super(water, milk);
     }
 
@@ -48,7 +49,12 @@ class FlexibleConstructorBodyValidationCheckSample {
     private String flavor;
 
     public MediumCoffee(int water, int milk) {
+      this.isValidFlavor("");
       super(water, milk);
+      if (water + milk > MAX_SIZE) { // Noncompliant
+        throw new IllegalArgumentException();
+      }
+      this.isValidFlavor("");
       this.flavor = "Vanilla";
     }
 
@@ -72,6 +78,7 @@ class FlexibleConstructorBodyValidationCheckSample {
     }
   }
 
+  // Test using static members
   static class LargeCoffee extends Coffee {
     private String name;
     private static final int MAX_SIZE = 500;
@@ -86,9 +93,13 @@ class FlexibleConstructorBodyValidationCheckSample {
     public LargeCoffee(String name) {
       super(100, 100);
       this.name = name;
-      if (name == null) { // Compliant: Not reported - after field assignment
+      if (!isValidName(name)) { // NonCompliant
         throw new IllegalArgumentException();
       }
+    }
+
+    private static boolean isValidName(String name) {
+      return name != null && !name.isEmpty();
     }
   }
 
@@ -98,12 +109,22 @@ class FlexibleConstructorBodyValidationCheckSample {
       super(100, 50);
       com.google.common.base.Preconditions.checkNotNull(name); // Noncompliant {{Move this validation logic before the super() or this() call.}}
     }
+
+    public GuavaCoffee(String name) {
+      com.google.common.base.Preconditions.checkNotNull(name); // Compliant
+      super(100, 50);
+    }
   }
 
   static class SpringCoffee extends Coffee {
     public SpringCoffee(String name) {
       super(100, 50);
       org.springframework.util.Assert.notNull(name, "Name must not be null"); // Noncompliant {{Move this validation logic before the super() or this() call.}}
+    }
+
+    public SpringCoffee(String name) {
+      org.springframework.util.Assert.notNull(name, "Name must not be null"); // Compliant
+      super(100, 50);
     }
   }
 
