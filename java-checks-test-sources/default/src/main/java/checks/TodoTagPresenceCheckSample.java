@@ -27,6 +27,8 @@
  // Noncompliant@+1
 //// TODO Explanation
 
+// Spanish todos
+
 // PreTodo
 // toDomain
 package checks;
