@@ -166,6 +166,14 @@ public interface JavaVersion {
   boolean isJava24Compatible();
 
   /**
+   * Test if java version of the project is greater than or equal to 25.
+   * Remark - Contrary to other isJava*Compatible methods, this one will NOT return true if version is not set
+   * @return true if java version used is >= 25
+   * @since SonarJava 8.0: Support of Java 25
+   */
+  boolean isJava25Compatible();
+
+  /**
    * get java version as integer
    * @return an int representing the java version
    */
