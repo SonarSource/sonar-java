@@ -19,6 +19,7 @@ public class Coffee {
 
 public class SmallCoffee extends Coffee {
     private static final int MAX_CUP_VOLUME = 100;
+    int topping;
 
     public SmallCoffee(int water, int milk, String topping) {
         super(water, milk); // Noncompliant: constructing before validation
@@ -34,6 +35,7 @@ public class SmallCoffee extends Coffee {
 <pre data-diff-id="1" data-diff-type="compliant">
 public class SmallCoffee extends Coffee {
     private static final int MAX_CUP_VOLUME = 100;
+    int topping;
 
     public SmallCoffee(int water, int milk, String topping) {
         int totalVolume = water + milk;
