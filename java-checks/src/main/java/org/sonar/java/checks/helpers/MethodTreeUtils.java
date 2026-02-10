@@ -50,7 +50,7 @@ public final class MethodTreeUtils {
   }
 
   public static boolean isMainMethod(MethodTree m, JavaVersion javaVersion) {
-    return javaVersion.asInt() < 25 ? isMainMethodTraditional(m) : isMainMethodJava25(m);
+    return javaVersion.isJava25Compatible() ? isMainMethodJava25(m) : isMainMethodTraditional(m);
   }
 
   private static boolean isMainMethodJava25(MethodTree m) {
