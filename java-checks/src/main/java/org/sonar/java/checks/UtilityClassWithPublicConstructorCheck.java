@@ -64,7 +64,7 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (!ClassPatternsUtils.isUtilityClass(classTree) || ClassPatternsUtils.isPrivateInnerClass(classTree)) {
+    if (!ClassPatternsUtils.isUtilityClass(classTree, context.getJavaVersion()) || ClassPatternsUtils.isPrivateInnerClass(classTree)) {
       return;
     }
     boolean hasImplicitPublicConstructor = true;

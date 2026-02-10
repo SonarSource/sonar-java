@@ -19,7 +19,9 @@ package org.sonar.java.checks.helpers;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -45,14 +47,28 @@ class MethodTreeUtilsTest {
 
   @Test
   void is_main_method() {
-    assertTrue(MethodTreeUtils.isMainMethod(parseMethod("class A { public static void main(String[] args){} }")));
-    assertTrue(MethodTreeUtils.isMainMethod(parseMethod("class A { public static void main(String... args){} }")));
-    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { public void main(String[] args){} }")));
-    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { static void main(String[] args){} }")));
-    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { public static void amain(String[] args){} }")));
-    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { public static void main(String args){} }")));
-    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { public static int main(String[] args){} }")));
-    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { public static void main(String[] args, String[] second){} }")));
+    JavaVersion java21 = new JavaVersionImpl(21);
+
+    assertTrue(MethodTreeUtils.isMainMethod(parseMethod("class A { public static void main(String[] args){} }"), java21));
+    assertTrue(MethodTreeUtils.isMainMethod(parseMethod("class A { public static void main(String... args){} }"), java21));
+    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { public void main(String[] args){} }"), java21));
+    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { static void main(String[] args){} }"), java21));
+    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { public static void amain(String[] args){} }"), java21));
+    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { public static void main(String args){} }"), java21));
+    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { public static int main(String[] args){} }"), java21));
+    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A { public static void main(String[] args, String[] second){} }"), java21));
+
+    JavaVersion java25 = new JavaVersionImpl(25);
+
+    MethodTree instanceMainNoArg = parseMethod("class A { void main(){} }");
+    assertFalse(MethodTreeUtils.isMainMethod(instanceMainNoArg, java21));
+    assertTrue(MethodTreeUtils.isMainMethod(instanceMainNoArg, java25));
+
+    MethodTree instanceMainWithArgs = parseMethod("class A { void main(String ... args){} }");
+    assertFalse(MethodTreeUtils.isMainMethod(instanceMainWithArgs, java21));
+    assertTrue(MethodTreeUtils.isMainMethod(instanceMainWithArgs, java25));
+
+    assertFalse(MethodTreeUtils.isMainMethod(parseMethod("class A {void amain(){} }"), java25));
   }
 
   @Test

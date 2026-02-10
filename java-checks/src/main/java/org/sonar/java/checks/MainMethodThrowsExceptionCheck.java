@@ -36,7 +36,7 @@ public class MainMethodThrowsExceptionCheck extends IssuableSubscriptionVisitor 
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (MethodTreeUtils.isMainMethod(methodTree) && !methodTree.throwsClauses().isEmpty()) {
+    if (MethodTreeUtils.isMainMethod(methodTree, context.getJavaVersion()) && !methodTree.throwsClauses().isEmpty()) {
       reportIssue(methodTree.throwsToken(), "Remove this throws clause.");
     }
   }

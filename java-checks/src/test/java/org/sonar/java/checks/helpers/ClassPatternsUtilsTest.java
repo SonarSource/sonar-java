@@ -17,6 +17,8 @@
 package org.sonar.java.checks.helpers;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
@@ -33,13 +35,19 @@ class ClassPatternsUtilsTest {
 
   @Test
   void is_utility_class() {
-    assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("class A { public static void main(String[] args){} }")));
-    assertTrue(ClassPatternsUtils.isUtilityClass(parseClass("class A { public static void a(){} private static void b(){}}")));
-    assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("enum A {}")));
-    assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("class A { enum B {}}")));
-    assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("class A { interface B {}}")));
-    assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("class A { @interface B {}}")));
-    assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("class A { public static void a(){} private static void b(){} private void c(){}}")));
+    JavaVersion java21 = new JavaVersionImpl(21);
+    assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("class A { public static void main(String[] args){} }"), java21));
+    assertTrue(ClassPatternsUtils.isUtilityClass(parseClass("class A { public static void a(){} private static void b(){}}"), java21));
+    assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("enum A {}"), java21));
+    assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("class A { enum B {}}"), java21));
+    assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("class A { interface B {}}"), java21));
+    assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("class A { @interface B {}}"), java21));
+    assertFalse(ClassPatternsUtils.isUtilityClass(parseClass("class A { public static void a(){} private static void b(){} private void c(){}}"), java21));
+
+    JavaVersion java25 = new JavaVersionImpl(25);
+    ClassTree instanceMain = parseClass("class A { static void main(){} }");
+    assertTrue(ClassPatternsUtils.isUtilityClass(instanceMain, java21));
+    assertFalse(ClassPatternsUtils.isUtilityClass(instanceMain, java25));
   }
 
   private ClassTree parseClass(String code) {

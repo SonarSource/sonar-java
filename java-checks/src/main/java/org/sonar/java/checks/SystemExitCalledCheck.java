@@ -42,7 +42,7 @@ public class SystemExitCalledCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.CONSTRUCTOR) || !MethodTreeUtils.isMainMethod((MethodTree) tree)) {
+    if (tree.is(Tree.Kind.CONSTRUCTOR) || !MethodTreeUtils.isMainMethod((MethodTree) tree, context.getJavaVersion())) {
       tree.accept(new InvocationVisitor());
     }
   }

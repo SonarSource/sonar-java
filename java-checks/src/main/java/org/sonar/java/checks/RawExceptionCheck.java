@@ -25,6 +25,7 @@ import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.reporting.FluentReporting;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -47,11 +48,13 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
     "java.lang.RuntimeException");
 
   private FluentReporting context;
+  private JavaVersion javaVersion;
   private final Set<Type> exceptionsThrownByMethodInvocations = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = (FluentReporting) context;
+    this.javaVersion = context.getJavaVersion();
     scan(context.getTree());
   }
 
@@ -120,8 +123,8 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
     return Boolean.FALSE.equals(tree.isOverriding());
   }
 
-  private static boolean isNotMainMethod(MethodTree tree) {
-    return !MethodTreeUtils.isMainMethod(tree);
+  private boolean isNotMainMethod(MethodTree tree) {
+    return !MethodTreeUtils.isMainMethod(tree, javaVersion);
   }
 
 }

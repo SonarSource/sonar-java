@@ -158,8 +158,8 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
     return quickFixes;
   }
 
-  private static boolean isExcluded(MethodTree tree) {
-    return MethodTreeUtils.isMainMethod(tree)
+  private boolean isExcluded(MethodTree tree) {
+    return MethodTreeUtils.isMainMethod(tree, context.getJavaVersion())
       || isAnnotated(tree)
       || isOverriding(tree)
       || isSerializableMethod(tree)

@@ -59,7 +59,7 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
   @Override
   public void visitClass(ClassTree tree) {
     // if class is utility or private inner class -> don't report
-    if (ClassPatternsUtils.isUtilityClass(tree) || ClassPatternsUtils.isPrivateInnerClass(tree)) {
+    if (ClassPatternsUtils.isUtilityClass(tree, context.getJavaVersion()) || ClassPatternsUtils.isPrivateInnerClass(tree)) {
       return;
     }
 
