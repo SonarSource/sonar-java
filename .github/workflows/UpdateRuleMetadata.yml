@@ -19,6 +19,12 @@ jobs:
       - name: Checkout Sources
         uses: actions/checkout@v4
 
+      - name: Checkout RSpec
+        uses: actions/checkout@v4
+        with:
+          repository: SonarSource/rspec
+          path: /tmp/rspec
+
       - name: Setup JFrog
         uses: SonarSource/jfrog-setup-wrapper@v3
         with:
@@ -42,7 +48,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          java -jar "/tmp/rule-api.jar" update
+          java -jar "/tmp/rule-api.jar" -folder /tmp/rspec update
           sed --in-place='' -e 's/rule:java:S3649/rule:javasecurity:S3649/g' 'sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S2077.html'
 
       - name: Create PR
