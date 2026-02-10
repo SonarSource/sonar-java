@@ -7,7 +7,7 @@ class MainMethodThrowsExceptionInstanceMainCheckSample {
 //                                ^^^^^^
   }
 
-  public void main(int a, int b) {}
+  public void main(int a, int b) throws IOException {}
 
   public void example() {}
 }
