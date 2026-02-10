@@ -22,7 +22,6 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class PresuperLogicBloatsConstructorCheckTest {
-
   @Test
   void test() {
     CheckVerifier.newVerifier()
@@ -30,14 +29,5 @@ class PresuperLogicBloatsConstructorCheckTest {
       .withCheck(new PresuperLogicBloatsConstructorCheck())
       .withJavaVersion(25)
       .verifyIssues();
-  }
-
-  @Test
-  void test_no_semantic() {
-    CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/PresuperLogicShoudntBloatConstructor.java"))
-      .withCheck(new JacksonDeserializationCheck())
-      .withoutSemantic()
-      .verifyNoIssues();
   }
 }
