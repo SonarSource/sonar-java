@@ -16,27 +16,24 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 
 @Rule(key = "S8444")
-public class PresuperLogicBloatsConstructorCheck extends IssuableSubscriptionVisitor {
+public class PresuperLogicBloatsConstructorCheck extends FlexibleConstructorCheck {
+  private static final int MAX_STATEMENTS_BEFORE_CONSTRUCTOR_CALL = 3;
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return List.of();
+  void validateConstructor(MethodTree constructor, List<StatementTree> body, int constructorCallIndex) {
+    if (constructorCallIndex > MAX_STATEMENTS_BEFORE_CONSTRUCTOR_CALL) {
+      reportIssue(
+        body.get(0),
+        body.get(constructorCallIndex - 1),
+        "Excessive logic in this \"pre-construction\" phase makes the code harder to read and maintain."
+      );
+    }
   }
 }
 

@@ -19,7 +19,6 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class PresuperLogicBloatsConstructorCheckTest {
@@ -29,6 +28,7 @@ class PresuperLogicBloatsConstructorCheckTest {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/PresuperLogicShoudntBloatConstructor.java"))
       .withCheck(new PresuperLogicBloatsConstructorCheck())
+      .withJavaVersion(25)
       .verifyIssues();
   }
 
@@ -40,5 +40,4 @@ class PresuperLogicBloatsConstructorCheckTest {
       .withoutSemantic()
       .verifyNoIssues();
   }
-
 }

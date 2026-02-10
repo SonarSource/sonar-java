@@ -9,7 +9,8 @@ public class PresuperLogicShoudntBloatConstructor {
 
   public static class NonCompliantSecureFile {
     public NonCompliantSecureFile(String path) {
-      if (path == null || path.isBlank()) {
+      if (path == null || path.isBlank()) {  // Noncompliant {{Excessive logic in this "pre-construction" phase makes the code harder to read and maintain.}}
+   // ^[el=+19;ec=7]
         throw new IllegalArgumentException("Path cannot be empty");
       }
       if (path.contains("..")) {
@@ -28,7 +29,7 @@ public class PresuperLogicShoudntBloatConstructor {
       if (sanitizedPath.endsWith("/")) {
         sanitizedPath = sanitizedPath.substring(0, sanitizedPath.length() - 1);
       }
-      super(sanitizedPath); // Noncompliant
+      super(sanitizedPath);
     }
   }
 
