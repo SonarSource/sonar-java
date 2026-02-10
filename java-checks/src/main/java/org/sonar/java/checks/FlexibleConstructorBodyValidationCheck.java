@@ -16,21 +16,15 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -40,9 +34,10 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S8433")
-public class FlexibleConstructorBodyValidationCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+public class FlexibleConstructorBodyValidationCheck extends FlexibleConstructorCheck {
 
   private static final MethodMatchers VALIDATION_METHODS = MethodMatchers.or(
     MethodMatchers.create()
@@ -68,67 +63,23 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
   );
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.CONSTRUCTOR);
-  }
-
-  @Override
-  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.isJava25Compatible();
-  }
-
-  @Override
-  public void visitNode(Tree tree) {
-    MethodTree constructor = (MethodTree) tree;
-    BlockTree body = constructor.block();
-
-    if (body == null || body.body().isEmpty()) {
-      return;
-    }
-
-    // Find the super() or this() call
-    int constructorCallIndex = findConstructorCallIndex(body);
-
-    // Get statements after the constructor call
-    List<StatementTree> statements = body.body();
-    if (constructorCallIndex == statements.size() - 1
+  void validateConstructor(MethodTree constructor, List<StatementTree> body, int constructorCallIndex) {
+    if (constructorCallIndex == body.size() - 1
       || (constructorCallIndex == -1 && hasNoExplicitSuperClass(constructor))) {
       // No statements after constructor call or no superclass and no constructor call
       return;
     }
-
     // Collect constructor parameters for analysis
-    Set<Symbol> parameters = new HashSet<>();
-    constructor.parameters().forEach(param -> parameters.add(param.symbol()));
+    Set<Symbol> parameters = constructor.parameters().stream().map(VariableTree::symbol).collect(Collectors.toSet());
 
     // Analyze statements after the constructor call for movable validation
-    for (int i = constructorCallIndex + 1; i < statements.size(); i++) {
-      StatementTree statement = statements.get(i);
+    for (int i = constructorCallIndex + 1; i < body.size(); i++) {
+      StatementTree statement = body.get(i);
 
       if (isValidationStatement(statement) && canBeMovedToPrologue(statement, parameters)) {
         reportIssue(statement, "Move this validation logic before the super() or this() call.");
       }
     }
-  }
-
-  /**
-   * Find the index of an explicit super() or this() call in the constructor body.
-   *
-   * @param body the constructor body to search
-   * @return the index of the explicit super() or this() call, or -1 if no explicit call is found (implicit super())
-   */
-  private static int findConstructorCallIndex(BlockTree body) {
-    List<StatementTree> statements = body.body();
-    for (int i = 0; i < statements.size(); i++) {
-      if (statements.get(i) instanceof ExpressionStatementTree expressionStatementTree
-        && expressionStatementTree.expression() instanceof MethodInvocationTree methodInvocationTree
-        && methodInvocationTree.methodSelect() instanceof IdentifierTree identifierTree
-        && ExpressionUtils.isThisOrSuper(identifierTree.name())){
-        return i;
-      }
-    }
-    // No explicit super() or this() call
-    return -1;
   }
 
   private static boolean hasNoExplicitSuperClass(MethodTree constructor) {
@@ -202,7 +153,7 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
       Symbol symbol = tree.symbol();
 
       // Allow parameters, local variables and static fields / methods
-      if (symbol.isLocalVariable() || symbol.isStatic()|| parameters.contains(symbol)) {
+      if (symbol.isLocalVariable() || symbol.isStatic() || parameters.contains(symbol)) {
         return;
       }
 
