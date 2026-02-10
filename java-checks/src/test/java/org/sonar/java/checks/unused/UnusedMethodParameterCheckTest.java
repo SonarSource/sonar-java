@@ -18,25 +18,45 @@ package org.sonar.java.checks.unused;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.plugins.java.api.JavaFileScanner;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class UnusedMethodParameterCheckTest {
+  private static final JavaFileScanner CHECK = new UnusedMethodParameterCheck();
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/unused/UnusedMethodParameterCheck.java"))
-      .withCheck(new UnusedMethodParameterCheck())
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedMethodParameterCheckSample.java"))
+      .withCheck(CHECK)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_main_method_java21() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedMethodParameterCheckMainSample.java"))
+      .withCheck(CHECK)
+      .withJavaVersion(21)
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_main_method_java25() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedMethodParameterCheckMainSample.java"))
+      .withCheck(CHECK)
+      .withJavaVersion(25)
       .verifyIssues();
   }
 
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/unused/UnusedMethodParameterCheck.java"))
-      .withCheck(new UnusedMethodParameterCheck())
+      .onFile(nonCompilingTestSourcesPath("checks/unused/UnusedMethodParameterCheckSample.java"))
+      .withCheck(CHECK)
       .verifyIssues();
   }
 }
