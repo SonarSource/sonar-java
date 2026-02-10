@@ -7,7 +7,7 @@ public class PresuperLogicShoudntBloatConstructor {
     }
   }
 
-  public static class NonCompliantSecureFile {
+  public static class NonCompliantSecureFile extends File {
     public NonCompliantSecureFile(String path) {
       if (path == null || path.isBlank()) {  // Noncompliant {{Excessive logic in this "pre-construction" phase makes the code harder to read and maintain.}}
    // ^[el=+19;ec=7]
@@ -60,6 +60,34 @@ public class PresuperLogicShoudntBloatConstructor {
     private static String normalizePath(String path) {
       String cleaned = path.trim().replace("//", "/");
       return cleaned.endsWith("/") ? cleaned.substring(0, cleaned.length() - 1) : cleaned;
+    }
+  }
+
+  public static class NonCompliantSecureFile2 extends File {
+    public NonCompliantSecureFile(String path) {
+      if (true) {  // Noncompliant {{Excessive logic in this "pre-construction" phase makes the code harder to read and maintain.}}
+   // ^[el=+21;ec=7]
+        if (path == null || path.isBlank()) {
+          throw new IllegalArgumentException("Path cannot be empty");
+        }
+        if (path.contains("..")) {
+          throw new IllegalArgumentException("Relative path traversal is forbidden");
+        }
+        if (path.startsWith("/root") || path.startsWith("/etc")) {
+          throw new SecurityException("Access to system directories is restricted");
+        }
+        if (path.length() > 255) {
+          throw new IllegalArgumentException("Path exceeds maximum length");
+        }
+        if (!path.matches("^[a-zA-Z0-9/._-]+$")) {
+          throw new IllegalArgumentException("Path contains illegal characters");
+        }
+        String sanitizedPath = path.trim().replace("//", "/");
+        if (sanitizedPath.endsWith("/")) {
+          sanitizedPath = sanitizedPath.substring(0, sanitizedPath.length() - 1);
+        }
+      }
+      super(sanitizedPath);
     }
   }
 }

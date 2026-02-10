@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.StatementVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 
@@ -27,7 +28,13 @@ public class PresuperLogicBloatsConstructorCheck extends FlexibleConstructorChec
 
   @Override
   void validateConstructor(MethodTree constructor, List<StatementTree> body, int constructorCallIndex) {
-    if (constructorCallIndex > MAX_STATEMENTS_BEFORE_CONSTRUCTOR_CALL) {
+    if (constructorCallIndex < 0) {
+      // No constructor call, nothing to check
+      return;
+    }
+    StatementVisitor statementVisitor = new StatementVisitor();
+    int statementsBeforeConstructorCall = body.stream().limit(constructorCallIndex).map(statementVisitor::numberOfStatements).reduce(0, Integer::sum);
+    if (statementsBeforeConstructorCall > MAX_STATEMENTS_BEFORE_CONSTRUCTOR_CALL) {
       reportIssue(
         body.get(0),
         body.get(constructorCallIndex - 1),
