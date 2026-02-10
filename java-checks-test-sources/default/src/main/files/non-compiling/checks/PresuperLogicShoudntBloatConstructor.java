@@ -69,26 +69,6 @@ public class PresuperLogicShoudntBloatConstructor {
       String sanitizedPath = normalizePath(path);
       super(sanitizedPath);
     }
-
-    private static void validatePathSecurity(String path) {
-      if (path == null || path.contains("..")) {
-        throw new IllegalArgumentException("Invalid or dangerous path sequence");
-      }
-      if (path.startsWith("/root") || path.startsWith("/etc")) {
-        throw new SecurityException("Access to system directories is restricted");
-      }
-    }
-
-    private static void validatePathFormat(String path) {
-      if (path.length() > 255 || !path.matches("^[a-zA-Z0-9/._-]+$")) {
-        throw new IllegalArgumentException("Path format or length is invalid");
-      }
-    }
-
-    private static String normalizePath(String path) {
-      String cleaned = path.trim().replace("//", "/");
-      return cleaned.endsWith("/") ? cleaned.substring(0, cleaned.length() - 1) : cleaned;
-    }
   }
 
   public static class EdgeCaseSecureFile extends File {
@@ -139,19 +119,26 @@ public class PresuperLogicShoudntBloatConstructor {
       }
       super(sanitizedPath);
     }
+  }
 
-    private static void validatePathSecurity(String path) {
-      if (path == null || path.contains("..")) {
-        throw new IllegalArgumentException("Invalid or dangerous path sequence");
-      }
-      if (path.startsWith("/root") || path.startsWith("/etc")) {
-        throw new SecurityException("Access to system directories is restricted");
-      }
-    }
 
-    private static String normalizePath(String path) {
-      String cleaned = path.trim().replace("//", "/");
-      return cleaned.endsWith("/") ? cleaned.substring(0, cleaned.length() - 1) : cleaned;
+  private static void validatePathSecurity(String path) {
+    if (path == null || path.contains("..")) {
+      throw new IllegalArgumentException("Invalid or dangerous path sequence");
     }
+    if (path.startsWith("/root") || path.startsWith("/etc")) {
+      throw new SecurityException("Access to system directories is restricted");
+    }
+  }
+
+  private static void validatePathFormat(String path) {
+    if (path.length() > 255 || !path.matches("^[a-zA-Z0-9/._-]+$")) {
+      throw new IllegalArgumentException("Path format or length is invalid");
+    }
+  }
+
+  private static String normalizePath(String path) {
+    String cleaned = path.trim().replace("//", "/");
+    return cleaned.endsWith("/") ? cleaned.substring(0, cleaned.length() - 1) : cleaned;
   }
 }
