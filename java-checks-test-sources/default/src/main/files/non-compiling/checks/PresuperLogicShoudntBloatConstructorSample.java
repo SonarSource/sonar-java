@@ -1,6 +1,6 @@
 package org.sonar.java.checks;
 
-public class PresuperLogicShoudntBloatConstructor {
+public class PresuperLogicShoudntBloatConstructorSample {
   public static class File {
     public File(String path) {
       // Simulate file initialization logic
