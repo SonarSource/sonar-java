@@ -25,7 +25,7 @@ class PresuperLogicBloatsConstructorCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/PresuperLogicShoudntBloatConstructor.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/PresuperLogicShoudntBloatConstructorSample.java"))
       .withCheck(new PresuperLogicBloatsConstructorCheck())
       .withJavaVersion(25)
       .verifyIssues();
