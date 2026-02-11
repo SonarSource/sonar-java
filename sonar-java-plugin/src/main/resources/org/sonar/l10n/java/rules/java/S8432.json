@@ -1,0 +1,23 @@
+{
+  "title": "\"ScopedValue.where\" results should not be ignored",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java25"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-8432",
+  "sqKey": "S8432",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}

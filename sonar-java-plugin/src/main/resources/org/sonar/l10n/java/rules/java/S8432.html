@@ -1,0 +1,42 @@
+<p>A <code>ScopedValue.where(key, value)</code> call creates a <code>ScopedValue.Carrier</code> object that maps a key to a specific value. However,
+this binding is not active until a functional task is executed through that carrier using methods like <code>.run(Runnable)</code> or
+<code>.call(Callable)</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>Calling <code>.where(…​)</code> without a subsequent execution method is a "dead" statement. Unlike <code>ThreadLocal.set()</code>, which modifies
+the state of the current thread, <code>ScopedValue</code> bindings are only valid within the dynamic scope of a carrier’s execution method.</p>
+<p>Ignoring the returned <code>Carrier</code> object means the intended value binding is never established, likely leading to a
+<code>NoSuchElementException</code> when attempting to access the value.</p>
+<h2>How to fix it</h2>
+<p>Chain the <code>.where(…​)</code> call with an execution method such as <code>.run(Runnable)</code> or <code>.call(Callable)</code>. This ensures
+the binding is active for the duration of the provided functional interface’s execution.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+static final ScopedValue&lt;String&gt; THEME = ScopedValue.newInstance();
+
+public void applySettings() {
+    // Noncompliant: The binding is created but never activated.
+    ScopedValue.where(THEME, "DARK");
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+static final ScopedValue&lt;String&gt; THEME = ScopedValue.newInstance();
+
+public void applySettings() {
+    // Compliant: The binding is scoped to the execution of the run() method.
+    ScopedValue.where(THEME, "DARK").run(this::renderUI);
+}
+
+void renderUI() {
+    System.out.println("Applying theme: " + THEME.get());
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://openjdk.org/jeps/506">JEP 506: Scoped Values</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ScopedValue.Carrier.html">Oracle Java Documentation -
+  ScopedValue.Carrier</a> </li>
+</ul>
+
