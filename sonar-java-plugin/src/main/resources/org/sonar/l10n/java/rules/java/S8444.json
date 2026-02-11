@@ -1,5 +1,5 @@
 {
-  "title": "Validation and data preparation logic before super() should not bloat constructor",
+  "title": "Excessive logic before super() should not bloat constructor",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

@@ -8,6 +8,11 @@ initialization, and violates the separation of concerns.</p>
 <h2>How to fix it</h2>
 <p>Refactor complex pre-construction logic into private static helper methods or static factory methods. Keep statements before <code>super()</code>
 limited to simple validations and direct parameter transformations.</p>
+<h3>Parameters</h3>   statementsThreshold
+<pre>
+5
+</pre>
+<p>Maximum number of statements allowed before the constructor call.</p>
 <h3>Code examples</h3>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 public class SecureFile extends File {
