@@ -93,7 +93,7 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
     List<StatementTree> statements = body.body();
     if (constructorCallIndex == statements.size() - 1
       || (constructorCallIndex == -1 && hasNoExplicitSuperClass(constructor))) {
-      // No statements after constructor call and no explicit superclass
+      // No statements after constructor call or no superclass and no constructor call
       return;
     }
 

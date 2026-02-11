@@ -174,7 +174,7 @@ class FlexibleConstructorBodyValidationCheckSample {
     private static final int MAX_SIZE = 500;
 
     public NoSuperclassCoffee(int water, int milk) {
-      if (water + milk > MAX_SIZE) { // Compliant: no superclass
+      if (water + milk > MAX_SIZE) { // Compliant: no superclass and no this(...) call
         throw new IllegalArgumentException();
       }
     }
