@@ -167,7 +167,7 @@ class FlexibleConstructorBodyValidationCheckSample {
     }
   }
 
-  // Test no issues when no superclass
+  // Test when there is no superclass
   static class NoSuperclassCoffee {
     private int water;
     private int milk;
