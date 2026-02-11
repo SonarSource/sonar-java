@@ -31,4 +31,13 @@ class WildcardImportsShouldNotBeUsedCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void no_issue_on_java_25() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/WildcardImportsShouldNotBeUsedCheck.java"))
+      .withCheck(new WildcardImportsShouldNotBeUsedCheck())
+      .withJavaVersion(25)
+      .verifyNoIssues();
+  }
+
 }
