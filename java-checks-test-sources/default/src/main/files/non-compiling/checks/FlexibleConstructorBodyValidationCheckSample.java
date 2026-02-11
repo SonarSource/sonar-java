@@ -178,5 +178,12 @@ class FlexibleConstructorBodyValidationCheckSample {
         throw new IllegalArgumentException();
       }
     }
+
+    public NoSuperclassCoffee(int water) {
+      this(water, 0);
+      if (water <= 0) { // Noncompliant {{Move this validation logic before the super() or this() call.}}
+        throw new IllegalArgumentException();
+      }
+    }
   }
 }
