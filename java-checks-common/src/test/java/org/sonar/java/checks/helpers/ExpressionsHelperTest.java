@@ -19,10 +19,14 @@ package org.sonar.java.checks.helpers;
 import java.lang.reflect.Constructor;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
@@ -38,6 +42,33 @@ class ExpressionsHelperTest extends JParserTestUtils {
     assertThat(constructor.isAccessible()).isFalse();
     constructor.setAccessible(true);
     constructor.newInstance();
+  }
+
+  @Test
+  void concatenate_null() {
+    assertThat(ExpressionsHelper.concatenate(null)).isEmpty();
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "import A;, A",
+    "import java.util.List;, java.util.List",
+    "import java.util.regex.Pattern;, java.util.regex.Pattern",
+    "import java.util.*;, java.util.*",
+    "import static java.util.Collections.emptyList;, java.util.Collections.emptyList",
+    "import static java.util.Collections.*;, java.util.Collections.*",
+    "import module java.base;, java.base"
+  })
+  void concatenate(String importStatement, String expected) {
+    String code = importStatement + "\nclass C {}";
+    ExpressionTree qualifiedId = getImportQualifiedIdentifier(code, 0);
+    assertThat(ExpressionsHelper.concatenate(qualifiedId)).isEqualTo(expected);
+  }
+
+  private ExpressionTree getImportQualifiedIdentifier(String code, int importIndex) {
+    CompilationUnitTree compilationUnit = parse(code);
+    ImportTree importTree = (ImportTree) compilationUnit.imports().get(importIndex);
+    return (ExpressionTree) importTree.qualifiedIdentifier();
   }
 
   @Test

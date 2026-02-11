@@ -17,10 +17,10 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -40,18 +40,9 @@ public class WildcardImportsShouldNotBeUsedCheck extends IssuableSubscriptionVis
     ImportTree importTree = (ImportTree) tree;
 
     // See RSPEC-2208 : exception with static imports.
-    if (fullQualifiedName(importTree.qualifiedIdentifier()).endsWith(".*") && !importTree.isStatic()) {
+    String qualifiedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
+    if (qualifiedName.endsWith(".*") && !importTree.isStatic()) {
       reportIssue(importTree.qualifiedIdentifier(), "Explicitly import the specific classes needed.");
     }
-  }
-
-  private static String fullQualifiedName(Tree tree) {
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      return ((IdentifierTree) tree).name();
-    } else if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree m = (MemberSelectExpressionTree) tree;
-      return fullQualifiedName(m.expression()) + "." + m.identifier().name();
-    }
-    throw new UnsupportedOperationException(String.format("Kind/Class '%s' not supported", tree.getClass()));
   }
 }
