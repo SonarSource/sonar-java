@@ -16,16 +16,23 @@
  */
 package org.sonar.java.checks;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class PresuperLogicBloatsConstructorCheckTest {
+  private static final PresuperLogicBloatsConstructorCheck check = new PresuperLogicBloatsConstructorCheck();
+
+  @BeforeAll
+  static void setUp() {
+    check.statementsThreshold = 3;
+  }
+
   @Test
   void test() {
-    var check = new PresuperLogicBloatsConstructorCheck();
-    check.statementsThreshold = 3;
+
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/PresuperLogicShoudntBloatConstructorSample.java"))
       .withCheck(check)
