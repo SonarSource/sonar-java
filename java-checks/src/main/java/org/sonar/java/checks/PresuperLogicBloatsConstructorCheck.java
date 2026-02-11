@@ -18,13 +18,20 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.StatementVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 
 @Rule(key = "S8444")
 public class PresuperLogicBloatsConstructorCheck extends FlexibleConstructorCheck {
-  private static final int MAX_STATEMENTS_BEFORE_CONSTRUCTOR_CALL = 3;
+
+  private static final int DEFAULT_STATEMENTS_THRESHOLD = 3;
+  @RuleProperty(
+    key = "statementsThreshold",
+    description = "The issue message",
+    defaultValue = "" + DEFAULT_STATEMENTS_THRESHOLD)
+  public int statementsThreshold = DEFAULT_STATEMENTS_THRESHOLD;
 
   @Override
   void validateConstructor(MethodTree constructor, List<StatementTree> body, int constructorCallIndex) {
@@ -34,7 +41,7 @@ public class PresuperLogicBloatsConstructorCheck extends FlexibleConstructorChec
     }
     StatementVisitor statementVisitor = new StatementVisitor();
     int statementsBeforeConstructorCall = body.stream().limit(constructorCallIndex).map(statementVisitor::numberOfStatements).reduce(0, Integer::sum);
-    if (statementsBeforeConstructorCall > MAX_STATEMENTS_BEFORE_CONSTRUCTOR_CALL) {
+    if (statementsBeforeConstructorCall > statementsThreshold) {
       reportIssue(
         body.get(0),
         body.get(constructorCallIndex - 1),
