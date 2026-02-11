@@ -94,7 +94,7 @@ class FlexibleConstructorBodyValidationCheckSample {
     public LargeCoffee(String name) {
       super(100, 100);
       this.name = name;
-      if (!isValidName(name)) { // NonCompliant
+      if (!isValidName(name)) { // Noncompliant
         throw new IllegalArgumentException();
       }
     }
@@ -163,6 +163,19 @@ class FlexibleConstructorBodyValidationCheckSample {
             throw new IllegalArgumentException();
           }
         }
+      }
+    }
+  }
+
+  // Test no issues when no superclass
+  static class NoSuperclassCoffee {
+    private int water;
+    private int milk;
+    private static final int MAX_SIZE = 500;
+
+    public NoSuperclassCoffee(int water, int milk) {
+      if (water + milk > MAX_SIZE) { // Compliant: no superclass
+        throw new IllegalArgumentException();
       }
     }
   }

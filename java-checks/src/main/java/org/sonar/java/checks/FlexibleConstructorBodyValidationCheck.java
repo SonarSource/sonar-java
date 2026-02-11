@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -90,8 +91,9 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
 
     // Get statements after the constructor call
     List<StatementTree> statements = body.body();
-    if (constructorCallIndex == statements.size() - 1) {
-      // No statements after constructor call
+    if (constructorCallIndex == statements.size() - 1
+      || (constructorCallIndex == -1 && hasNoExplicitSuperClass(constructor))) {
+      // No statements after constructor call and no explicit superclass
       return;
     }
 
@@ -127,6 +129,11 @@ public class FlexibleConstructorBodyValidationCheck extends IssuableSubscription
     }
     // No explicit super() or this() call
     return -1;
+  }
+
+  private static boolean hasNoExplicitSuperClass(MethodTree constructor) {
+    Type superClass = constructor.symbol().enclosingClass().superClass();
+    return (superClass == null || superClass.is("java.lang.Object"));
   }
 
   /**
