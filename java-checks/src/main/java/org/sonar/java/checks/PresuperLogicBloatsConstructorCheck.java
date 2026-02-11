@@ -26,10 +26,10 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 @Rule(key = "S8444")
 public class PresuperLogicBloatsConstructorCheck extends FlexibleConstructorCheck {
 
-  private static final int DEFAULT_STATEMENTS_THRESHOLD = 3;
+  private static final int DEFAULT_STATEMENTS_THRESHOLD = 5;
   @RuleProperty(
     key = "statementsThreshold",
-    description = "The issue message",
+    description = "Maximum number of statements allowed before the constructor call.",
     defaultValue = "" + DEFAULT_STATEMENTS_THRESHOLD)
   public int statementsThreshold = DEFAULT_STATEMENTS_THRESHOLD;
 

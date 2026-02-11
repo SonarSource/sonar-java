@@ -24,9 +24,11 @@ import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPa
 class PresuperLogicBloatsConstructorCheckTest {
   @Test
   void test() {
+    var check = new PresuperLogicBloatsConstructorCheck();
+    check.statementsThreshold = 3;
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/PresuperLogicShoudntBloatConstructorSample.java"))
-      .withCheck(new PresuperLogicBloatsConstructorCheck())
+      .withCheck(check)
       .withJavaVersion(25)
       .verifyIssues();
   }
