@@ -3,10 +3,12 @@ package checks;
 public class MultipleMainInstancesSample {
   public static class NonCompliant {
     public static void main(String[] args) { // Noncompliant
+//  ^[el=+3;ec=5] 0
       System.out.println("Static main detected; shadowing instance main.");
     }
 
     void main() { // Noncompliant
+//  ^[el=+3;ec=5] 0
       System.out.println("Unreachable entry point due to static precedence.");
     }
   }

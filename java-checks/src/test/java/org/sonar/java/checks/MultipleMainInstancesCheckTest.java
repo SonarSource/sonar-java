@@ -28,6 +28,16 @@ class MultipleMainInstancesCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/MultipleMainInstancesSample.java"))
       .withCheck(new MultipleMainInstancesCheck())
+      .withJavaVersion(25)
       .verifyIssues();
+  }
+
+  @Test
+  void test_java_24() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MultipleMainInstancesSample.java"))
+      .withCheck(new MultipleMainInstancesCheck())
+      .withJavaVersion(24)
+      .verifyNoIssues();
   }
 }

@@ -17,14 +17,48 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S8446")
-public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor {
+public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of();
+    return List.of(Tree.Kind.CLASS);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (tree instanceof ClassTree ct) {
+      List<MethodTree> mainMethods = ct.members().stream().flatMap(member -> {
+          if (member instanceof MethodTree mt && isMainMethod(mt)) {
+            return Stream.of(mt);
+          } else {
+            return Stream.empty();
+          }
+        }
+      ).toList();
+      if (mainMethods.size() > 1) {
+        mainMethods.forEach(mt ->
+          reportIssue(mt, "Only one main method should be defined in a class.")
+        );
+      }
+    }
+  }
+
+  private boolean isMainMethod(MethodTree tree) {
+    return MethodTreeUtils.isMainMethod(tree, context.getJavaVersion());
+  }
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava25Compatible();
   }
 }
