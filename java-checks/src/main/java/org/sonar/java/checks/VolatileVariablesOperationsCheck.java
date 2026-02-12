@@ -126,6 +126,8 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
           break;
         case ENUM,
           CLASS,
+          INTERFACE,
+          RECORD,
           IMPLICIT_CLASS:
           if (!current.is(Tree.Kind.IMPLICIT_CLASS) && ((ClassTree) current).simpleName() == null) {
             return;

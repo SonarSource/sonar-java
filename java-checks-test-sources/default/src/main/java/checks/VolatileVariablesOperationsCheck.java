@@ -109,3 +109,25 @@ enum anEnum {
     value++; // Noncompliant
   }
 }
+
+record Vinyl(String singer, String title, int year) {
+  static volatile int counter = 0;
+  static int nonVolatile = 0;
+
+  void method() {
+    counter++; // Noncompliant
+    nonVolatile++;
+  }
+}
+
+class Container {
+  static volatile int counter = 0;
+  static int nonVolatile = 0;
+}
+
+interface MyInterface {
+  default void method() {
+    Container.counter++; // Noncompliant
+    Container.nonVolatile++;
+  }
+}
