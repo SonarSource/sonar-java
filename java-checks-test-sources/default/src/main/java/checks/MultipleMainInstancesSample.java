@@ -28,4 +28,36 @@ public class MultipleMainInstancesSample {
       }
     }
   }
+
+  public static enum NonCompliantEnum {
+    INSTANCE;
+
+    public static void main(String[] args) { // Noncompliant
+      System.out.println("Static main in enum detected; shadowing instance main.");
+    }
+
+    void main() { // Noncompliant
+      System.out.println("Unreachable entry point in enum due to static precedence.");
+    }
+  }
+
+  public static interface NonCompliantInterface {
+    static void main(String[] args) { // Noncompliant
+      System.out.println("Static main in interface detected; shadowing instance main.");
+    }
+
+    default void main() { // Noncompliant
+      System.out.println("Unreachable entry point in interface due to static precedence.");
+    }
+  }
+
+  public static record NonCompliantRecord(String data) {
+    public static void main(String[] args) { // Noncompliant
+      System.out.println("Static main in record detected; shadowing instance main.");
+    }
+
+    void main() { // Noncompliant
+      System.out.println("Unreachable entry point in record due to static precedence.");
+    }
+  }
 }
