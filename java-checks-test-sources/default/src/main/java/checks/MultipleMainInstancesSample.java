@@ -1,5 +1,3 @@
-package checks;
-
 public class MultipleMainInstancesSample {
   public static class NonCompliant {
     public static void main(String[] args) { // Noncompliant
@@ -60,4 +58,13 @@ public class MultipleMainInstancesSample {
       System.out.println("Unreachable entry point in record due to static precedence.");
     }
   }
+}
+
+// test implicit class
+void main() { // Noncompliant
+  System.out.println("Hello World!");
+}
+
+static public void main(String[] args) { // Noncompliant
+  System.out.println("Hello World!");
 }
