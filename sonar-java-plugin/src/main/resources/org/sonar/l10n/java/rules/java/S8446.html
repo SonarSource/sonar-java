@@ -1,0 +1,46 @@
+<p>Starting with Java 25 (JEP 512), multiple <code>main</code> method signatures are allowed within a single class. While the JVM follows a strict
+selection algorithm to determine the entry point, having more than one <code>main</code> method can lead to significant confusion.</p>
+<h2>Why is this an issue?</h2>
+<p>Having multiple <code>main</code> methods reduces code clarity and maintainability. Readers may be unaware of the specific JVM selection rules—such
+as the preference for <code>static</code> over instance methods or methods with parameters over those without—and might incorrectly assume a different
+method will execute. This ambiguity forces developers to spend unnecessary time deciphering which method actually serves as the program’s entry
+point.</p>
+<h2>How to fix it</h2>
+<p>Keep only one <code>main</code> method per class. If you require multiple entry points for different execution scenarios, create separate classes
+or rename the secondary methods to reflect their actual purpose.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class Application {
+    // Noncompliant: Multiple main methods are confusing and lead to shadowing
+    public static void main(String[] args) {
+        System.out.println("Static main detected; shadowing instance main.");
+    }
+
+    void main() {
+        System.out.println("Unreachable entry point due to static precedence.");
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class LegacyApplication {
+    // Compliant: Standard static entry point
+    public static void main(String[] args) {
+        System.out.println("Running standard static entry point.");
+    }
+}
+
+class Application {
+    // Compliant: Instance main method in a separate class
+    void main() {
+        System.out.println("Running modern instance main entry point.");
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://openjdk.org/jeps/512">JEP 512: Compact Source Files and Instance Main Methods</a> </li>
+</ul>
+
