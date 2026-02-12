@@ -30,4 +30,12 @@ class VolatileVariablesOperationsCheckTest {
       .withCheck(new VolatileVariablesOperationsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_compact_source() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/VolatileVariablesOperationsCheckCompactSource.java"))
+      .withCheck(new VolatileVariablesOperationsCheck())
+      .verifyIssues();
+  }
 }
