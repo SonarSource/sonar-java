@@ -47,7 +47,7 @@ public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor impl
       ).toList();
       if (mainMethods.size() > 1) {
         mainMethods.forEach(mt ->
-          reportIssue(mt, "Only one main method should be defined in a class.")
+          reportIssue(mt, "At most one main method should be defined in a class.")
         );
       }
     }
