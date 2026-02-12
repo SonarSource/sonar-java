@@ -37,7 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S8433")
-public class FlexibleConstructorBodyValidationCheck extends FlexibleConstructorCheck {
+public class FlexibleConstructorBodyValidationCheck extends FlexibleConstructorVisitor {
 
   private static final MethodMatchers VALIDATION_METHODS = MethodMatchers.or(
     MethodMatchers.create()

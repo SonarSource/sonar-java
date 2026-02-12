@@ -24,7 +24,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 
 @Rule(key = "S8444")
-public class PresuperLogicBloatsConstructorCheck extends FlexibleConstructorCheck {
+public class PresuperLogicBloatsConstructorCheck extends FlexibleConstructorVisitor {
 
   private static final int DEFAULT_STATEMENTS_THRESHOLD = 5;
   @RuleProperty(

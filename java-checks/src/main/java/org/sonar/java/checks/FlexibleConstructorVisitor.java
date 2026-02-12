@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public abstract class FlexibleConstructorCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+public abstract class FlexibleConstructorVisitor extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   /**
    * Validate the constructor body, providing the constructor method tree, the list of statements in the constructor body, and the index of any explicit super() or this() call (or -1 if no explicit call is found).
