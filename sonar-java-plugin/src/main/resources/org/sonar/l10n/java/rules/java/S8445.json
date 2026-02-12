@@ -1,0 +1,24 @@
+{
+  "title": "Import declarations should be grouped by specificity",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "convention",
+    "java25"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-8445",
+  "sqKey": "S8445",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
