@@ -2880,6 +2880,12 @@
     "falsePositives": 0
   },
   {
+    "ruleKey": "8446",
+    "hasTruePositives": false,
+    "falseNegatives": 0,
+    "falsePositives": 0
+  },
+  {
     "ruleKey": "8447",
     "hasTruePositives": true,
     "falseNegatives": 0,
