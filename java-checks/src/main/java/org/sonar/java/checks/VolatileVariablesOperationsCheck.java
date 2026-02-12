@@ -125,13 +125,15 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
           }
           break;
         case ENUM,
-          CLASS:
-          if (((ClassTree) current).simpleName() == null) {
+          CLASS,
+          IMPLICIT_CLASS:
+          if (!current.is(Tree.Kind.IMPLICIT_CLASS) && ((ClassTree) current).simpleName() == null) {
             return;
           }
-          // we got to a non anonymous class, we can safely raise an issue
+          // we got to a non-anonymous class or implicit class in compact source file, we can safely raise an issue
           foundClass = true;
           break;
+
       }
       current = current.parent();
     }
