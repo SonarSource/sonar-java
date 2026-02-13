@@ -17,7 +17,6 @@
 package org.sonar.java.checks;
 
 import java.util.List;
-import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -36,20 +35,16 @@ public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor impl
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree instanceof ClassTree ct) {
-      List<MethodTree> mainMethods = ct.members().stream().flatMap(member -> {
-          if (member instanceof MethodTree mt && isMainMethod(mt)) {
-            return Stream.of(mt);
-          } else {
-            return Stream.empty();
-          }
-        }
-      ).toList();
-      if (mainMethods.size() > 1) {
-        mainMethods.forEach(mt ->
-          reportIssue(mt, "At most one main method should be defined in a class.")
-        );
-      }
+    ClassTree ct = (ClassTree) tree;
+    List<MethodTree> mainMethods = ct.members().stream()
+      .filter(MethodTree.class::isInstance)
+      .map(MethodTree.class::cast)
+      .filter(this::isMainMethod)
+      .toList();
+    if (mainMethods.size() > 1) {
+      var firstMainMethod = mainMethods.get(0);
+      var firstMainMethodToken = firstMainMethod.simpleName();
+      reportIssue(firstMainMethodToken, "At most one main method should be defined in a class.");
     }
   }
 
