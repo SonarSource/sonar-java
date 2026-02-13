@@ -11,6 +11,7 @@ class InitializeSubclassFieldsBeforeSuperCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/InitializeSubclassFieldsBeforeSuperSample.java"))
       .withCheck(new InitializeSubclassFieldsBeforeSuperCheck())
+      .withJavaVersion(25)
       .verifyIssues();
   }
 
