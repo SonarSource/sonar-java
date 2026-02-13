@@ -51,4 +51,5 @@ class ImportDeclarationOrderCheckTest {
       .withJavaVersion(25)
       .verifyNoIssues();
   }
+
 }

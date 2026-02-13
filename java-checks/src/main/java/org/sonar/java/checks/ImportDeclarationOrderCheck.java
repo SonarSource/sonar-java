@@ -20,19 +20,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S8445")
 public class ImportDeclarationOrderCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
-
-  private final List<ImportTree> imports = new ArrayList<>();
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -48,6 +44,7 @@ public class ImportDeclarationOrderCheck extends IssuableSubscriptionVisitor imp
   public void visitNode(Tree tree) {
     CompilationUnitTree compilationUnit = (CompilationUnitTree) tree;
 
+    List<ImportTree> imports = new ArrayList<>();
     // Collect all import statements
     compilationUnit.imports()
       .stream()
@@ -55,15 +52,10 @@ public class ImportDeclarationOrderCheck extends IssuableSubscriptionVisitor imp
       .map(ImportTree.class::cast)
       .forEach(imports::add);
 
-    analyzeImportOrder();
+    analyzeImportOrder(imports);
   }
 
-  @Override
-  public void leaveNode(Tree tree) {
-    imports.clear();
-  }
-
-  private void analyzeImportOrder() {
+  private void analyzeImportOrder(List<ImportTree> imports) {
     if (imports.size() <= 1) {
       return;
     }
@@ -102,8 +94,7 @@ public class ImportDeclarationOrderCheck extends IssuableSubscriptionVisitor imp
   }
 
   private static boolean isWildcardImport(ImportTree importTree) {
-    String qualifiedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
-    return qualifiedName.endsWith(".*");
+    return "*".equals(importTree.qualifiedIdentifier().lastToken().text());
   }
 
   enum ImportType {
