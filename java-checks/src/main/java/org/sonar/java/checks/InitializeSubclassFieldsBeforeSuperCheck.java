@@ -23,11 +23,13 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
       return;
     }
     MethodTree superMethod;
+    Symbol.TypeSymbol childClass;
     if (body.get(constructorCallIndex) instanceof ExpressionStatementTree esTree
       && esTree.expression() instanceof MethodInvocationTree miTree
       && (superMethod = miTree.methodSymbol().declaration()) != null
+      && (childClass = constructor.symbol().enclosingClass()) != null
     ) {
-      AssignmentsUsedInSuperCheck assignmentsUsedInSuperCheck = new AssignmentsUsedInSuperCheck(superMethod);
+      AssignmentsUsedInSuperCheck assignmentsUsedInSuperCheck = new AssignmentsUsedInSuperCheck(superMethod, childClass);
       body.subList(constructorCallIndex + 1, body.size()).forEach(statement -> statement.accept(assignmentsUsedInSuperCheck));
     }
   }
@@ -38,23 +40,45 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
       && THIS.getValue().equals(idTree.name());
   }
 
-  private static boolean isFieldUsedInMethod(MethodTree mt, Symbol symbol) {
-    SymbolUsedCheck symbolUsedCheck = new SymbolUsedCheck(symbol);
+  private static boolean isFieldUsedInMethod(MethodTree mt, Symbol symbol, Symbol.TypeSymbol childClass) {
     var methodBlock = mt.block();
     if (methodBlock == null) {
-      // the function is not implemented (abstract method, interface method...),
-      // so we consider that any symbol could be used in it.
+      // Try to resolve the concrete override in the child class.
+      MethodTree override = findOverrideIn(childClass, mt.symbol());
+      if (override != null) {
+        return isFieldUsedInMethod(override, symbol, childClass);
+      }
+      // Can't resolve override, conservatively assume field may be used.
       return true;
     }
+    SymbolUsedCheck symbolUsedCheck = new SymbolUsedCheck(symbol, childClass);
     methodBlock.body().forEach(statement -> statement.accept(symbolUsedCheck));
     return symbolUsedCheck.isSymbolUsed();
   }
 
+  private static MethodTree findOverrideIn(Symbol.TypeSymbol childClass, Symbol.MethodSymbol abstractMethod) {
+    String methodName = abstractMethod.name();
+    for (Symbol member : childClass.memberSymbols()) {
+      if (member.isMethodSymbol()) {
+        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) member;
+        if (methodName.equals(methodSymbol.name())
+          && methodSymbol.declaration() != null
+          && methodSymbol.overriddenSymbols().stream().anyMatch(s -> s == abstractMethod)
+        ) {
+          return methodSymbol.declaration();
+        }
+      }
+    }
+    return null;
+  }
+
   private final class AssignmentsUsedInSuperCheck extends StatementVisitor {
     private final MethodTree superMethod;
+    private final Symbol.TypeSymbol childClass;
 
-    private AssignmentsUsedInSuperCheck(MethodTree superMethod) {
+    private AssignmentsUsedInSuperCheck(MethodTree superMethod, Symbol.TypeSymbol childClass) {
       this.superMethod = superMethod;
+      this.childClass = childClass;
     }
 
     @Override
@@ -62,7 +86,7 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
       if (
         isFieldAssignment(tree)
           && tree.variable() instanceof MemberSelectExpressionTree mseTree
-          && isFieldUsedInMethod(superMethod, mseTree.identifier().symbol())
+          && isFieldUsedInMethod(superMethod, mseTree.identifier().symbol(), childClass)
       ) {
         reportIssue(tree, "Initialize subclass fields before calling super constructor.");
       }
@@ -73,9 +97,11 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
   private static class SymbolUsedCheck extends StatementVisitor {
     private boolean symbolUsed = false;
     private final Symbol symbol;
+    private final Symbol.TypeSymbol childClass;
 
-    private SymbolUsedCheck(Symbol symbol) {
+    private SymbolUsedCheck(Symbol symbol, Symbol.TypeSymbol childClass) {
       this.symbol = symbol;
+      this.childClass = childClass;
     }
 
     @Override
@@ -88,7 +114,7 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
     public void visitMethodInvocation(MethodInvocationTree tree) {
       var methodDeclaration = tree.methodSymbol().declaration();
       if (methodDeclaration != null) {
-        symbolUsed |= isFieldUsedInMethod(methodDeclaration, symbol);
+        symbolUsed |= isFieldUsedInMethod(methodDeclaration, symbol, childClass);
       }
       super.visitMethodInvocation(tree);
     }
