@@ -1,0 +1,47 @@
+<p>The <code>java.io.IO</code> class provides simple methods for interactive console I/O. For standard console input, <code>IO.readln()</code> should
+be preferred over the traditional, more verbose <code>BufferedReader</code> or <code>Scanner</code> patterns.</p>
+<h2>Why is this an issue?</h2>
+<p>Traditionally, reading a line from the console required significant boilerplate code, involving <code>InputStreamReader</code>,
+<code>BufferedReader</code>, and explicit <code>IOException</code> handling. This pattern is not only verbose but also error-prone and harder to
+read.</p>
+<p>The modern <code>IO.readln()</code> method: * Reduces boilerplate by providing a single-method call for reading lines. * Eliminates the need for
+explicit checked exception handling for standard console input. * Allows for an optional prompt string, combining the "print" and "read" steps into
+one cohesive operation. * Avoids the resource management overhead (like <code>try-with-resources</code>) required for manual stream wrappers.</p>
+<h2>How to fix it</h2>
+<p>Replace manual stream wrapping of <code>System.in</code> with the static <code>IO.readln()</code> method. If you are using a version of Java where
+<code>IO</code> is automatically imported (such as in JShell or modern entry points), you can call <code>readln()</code> directly; otherwise, use
+<code>import static java.io.IO.readln;</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+void main() {
+    try {
+        System.out.print("Enter text: ");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String line = reader.readLine(); // Noncompliant: verbose boilerplate
+        System.out.println(line);
+    } catch (IOException ioe) {
+        ioe.printStackTrace();
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import static java.io.IO.readln;
+
+void main() {
+    // Compliant: concise and readable console input
+    String line = readln("Enter text: ");
+    System.out.println(line);
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://openjdk.org/jeps/512">JEP 512: Compact Source Files and Instance Main Methods</a> </li>
+</ul>
+
