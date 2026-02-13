@@ -28,7 +28,17 @@ class BufferedReaderBoilerplateCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/BufferedReaderBoilerplateCheckSample.java"))
       .withCheck(new BufferedReaderBoilerplateCheck())
+      .withJavaVersion(25)
       .verifyIssues();
+  }
+
+  @Test
+  void test_jav24() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/BufferedReaderBoilerplateCheckSample.java"))
+      .withCheck(new BufferedReaderBoilerplateCheck())
+      .withJavaVersion(24)
+      .verifyNoIssues();
   }
 
 }

@@ -1,16 +1,20 @@
 package checks;
 
 import java.io.BufferedReader;
+import java.io.IO;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
 class BufferedReaderBoilerplateCheckSample {
-
   void noncompliantBasic() throws IOException {
     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in)); // Noncompliant {{Use "IO.readln()" instead of this "BufferedReader" boilerplate.}}
     String line = reader.readLine();
+  }
+
+  void compliantBasic() throws IOException {
+    String line = IO.readln();
   }
 
   void noncompliantWithPrompt() throws IOException {
