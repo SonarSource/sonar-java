@@ -20,13 +20,14 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class BufferedReaderBoilerplateCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/BufferedReaderBoilerplateCheckSample.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/BufferedReaderBoilerplateCheckSample.java"))
       .withCheck(new BufferedReaderBoilerplateCheck())
       .withJavaVersion(25)
       .verifyIssues();
@@ -35,7 +36,7 @@ class BufferedReaderBoilerplateCheckTest {
   @Test
   void test_jav24() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/BufferedReaderBoilerplateCheckSample.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/BufferedReaderBoilerplateCheckSample.java"))
       .withCheck(new BufferedReaderBoilerplateCheck())
       .withJavaVersion(24)
       .verifyNoIssues();
