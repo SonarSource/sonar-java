@@ -19,8 +19,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -30,22 +29,33 @@ import java.util.Collections;
 import java.util.List;
 
 @Rule(key = "S2208")
-public class WildcardImportsShouldNotBeUsedCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
-
-  @Override
-  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return !version.isJava25Compatible();
-  }
+public class WildcardImportsShouldNotBeUsedCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.IMPORT);
+    return Collections.singletonList(Tree.Kind.COMPILATION_UNIT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    ImportTree importTree = (ImportTree) tree;
+    CompilationUnitTree compilationUnit = (CompilationUnitTree) tree;
 
+    // Do not raise issues when module imports are present
+    boolean hasModuleImports = compilationUnit.imports().stream()
+      .anyMatch(importTree -> importTree.is(Tree.Kind.IMPORT) && ((ImportTree) importTree).isModule());
+
+    if (hasModuleImports) {
+      return;
+    }
+
+    // Check for wildcard imports
+    compilationUnit.imports().stream()
+      .filter(importTree -> importTree.is(Tree.Kind.IMPORT))
+      .map(ImportTree.class::cast)
+      .forEach(this::checkWildcardImport);
+  }
+
+  private void checkWildcardImport(ImportTree importTree) {
     // See RSPEC-2208 : exception with static imports.
     String qualifiedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
     if (qualifiedName.endsWith(".*") && !importTree.isStatic()) {

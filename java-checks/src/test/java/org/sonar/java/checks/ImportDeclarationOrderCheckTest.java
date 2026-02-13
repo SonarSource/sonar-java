@@ -46,10 +46,9 @@ class ImportDeclarationOrderCheckTest {
   @DisplayName("The same imports but correctly ordered")
   void correctly_ordered_imports() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ImportDeclarationOrderCheckSampleNoIssues.java"))
+      .onFile(mainCodeSourcesPath("checks/ImportDeclarationOrderCheckSampleNoIssuesSample.java"))
       .withCheck(new ImportDeclarationOrderCheck())
       .withJavaVersion(25)
       .verifyNoIssues();
   }
-
 }

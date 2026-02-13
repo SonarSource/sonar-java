@@ -21,5 +21,5 @@ import static java.util.Collections.*;
 import static java.lang.Math.PI;
 import static java.lang.System.out;
 
-class ImportDeclarationOrderCheckSampleNoIssues {
+class ImportDeclarationOrderCheckSampleNoIssuesSample {
 }

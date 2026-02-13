@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
@@ -32,11 +33,11 @@ class WildcardImportsShouldNotBeUsedCheckTest {
   }
 
   @Test
-  void no_issue_on_java_25() {
+  @DisplayName("No issues when module imports are present")
+  void no_issues_with_module_imports() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/WildcardImportsShouldNotBeUsedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/WildcardImportsShouldNotBeUsedCheckWithModuleImportsSample.java"))
       .withCheck(new WildcardImportsShouldNotBeUsedCheck())
-      .withJavaVersion(25)
       .verifyNoIssues();
   }
 
