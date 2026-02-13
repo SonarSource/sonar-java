@@ -35,7 +35,8 @@
 350
 ],
 "com.google.guava:guava:src/com/google/common/base/Optional.java": [
-112
+112,
+125
 ],
 "com.google.guava:guava:src/com/google/common/base/Predicates.java": [
 95,
@@ -45,6 +46,7 @@
 144,
 157,
 167,
+175,
 225,
 236,
 706
@@ -58,6 +60,7 @@
 ],
 "com.google.guava:guava:src/com/google/common/base/Suppliers.java": [
 54,
+110,
 169,
 226,
 268
@@ -78,6 +81,13 @@
 165
 ],
 "com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+254,
+383,
+384,
+398,
+399,
+414,
+415,
 447,
 454,
 469,
@@ -91,6 +101,11 @@
 1739,
 1762,
 1876,
+2097,
+2100,
+2103,
+2107,
+2111,
 2116,
 2261,
 2436,
@@ -123,7 +138,9 @@
 130
 ],
 "com.google.guava:guava:src/com/google/common/collect/ArrayTable.java": [
-101
+101,
+134,
+135
 ],
 "com.google.guava:guava:src/com/google/common/collect/BinaryTreeTraverser.java": [
 103,
@@ -135,14 +152,14 @@
 49
 ],
 "com.google.guava:guava:src/com/google/common/collect/Collections2.java": [
-99,
-144,
-245,
-412,
-472,
-565,
-587,
-612
+98,
+143,
+244,
+411,
+471,
+564,
+586,
+611
 ],
 "com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
 56,
@@ -159,10 +176,18 @@
 54,
 97,
 141,
+201,
+202,
 283
+],
+"com.google.guava:guava:src/com/google/common/collect/ContiguousSet.java": [
+75,
+76
 ],
 "com.google.guava:guava:src/com/google/common/collect/Cut.java": [
 288,
+318,
+329,
 371
 ],
 "com.google.guava:guava:src/com/google/common/collect/DescendingMultiset.java": [
@@ -248,6 +273,7 @@
 278,
 308,
 314,
+500,
 615
 ],
 "com.google.guava:guava:src/com/google/common/collect/ImmutableListMultimap.java": [
@@ -259,6 +285,7 @@
 121,
 129,
 354,
+480,
 507,
 526,
 641
@@ -317,7 +344,9 @@
 272,
 321,
 335,
-445
+445,
+497,
+498
 ],
 "com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java": [
 67,
@@ -342,6 +371,7 @@
 270,
 271,
 282,
+305,
 364,
 376,
 390,
@@ -408,6 +438,7 @@
 "com.google.guava:guava:src/com/google/common/collect/Lists.java": [
 89,
 114,
+146,
 187,
 209,
 233,
@@ -415,6 +446,10 @@
 293,
 313,
 356,
+550,
+551,
+661,
+662,
 799,
 801
 ],
@@ -435,10 +470,15 @@
 ],
 "com.google.guava:guava:src/com/google/common/collect/MapMaker.java": [
 504,
+507,
+508,
 518,
+583,
+584,
 779
 ],
 "com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+216,
 301,
 314,
 327,
@@ -453,6 +493,11 @@
 1710,
 1749,
 1889,
+2098,
+2101,
+2104,
+2108,
+2112,
 2117,
 2366,
 3370
@@ -486,6 +531,11 @@
 1817,
 1823,
 1981,
+2179,
+2481,
+2528,
+2570,
+2607,
 2616,
 2670,
 2841,
@@ -513,6 +563,7 @@
 220,
 413,
 417,
+443,
 542,
 805,
 806
@@ -545,6 +596,8 @@
 1836,
 1875,
 1878,
+1991,
+2028,
 2042,
 2056
 ],
@@ -562,6 +615,7 @@
 56
 ],
 "com.google.guava:guava:src/com/google/common/collect/Ordering.java": [
+167,
 203,
 374,
 385,
@@ -600,38 +654,49 @@
 298
 ],
 "com.google.guava:guava:src/com/google/common/collect/RegularContiguousSet.java": [
-58
+47,
+58,
+147
 ],
 "com.google.guava:guava:src/com/google/common/collect/RegularImmutableBiMap.java": [
 41,
+96,
 98,
-106
+106,
+138
 ],
 "com.google.guava:guava:src/com/google/common/collect/RegularImmutableList.java": [
 31,
 72
 ],
 "com.google.guava:guava:src/com/google/common/collect/RegularImmutableMap.java": [
+78,
 80,
 86,
 149
 ],
 "com.google.guava:guava:src/com/google/common/collect/RegularImmutableMultiset.java": [
 39,
+79,
 81
 ],
 "com.google.guava:guava:src/com/google/common/collect/RegularImmutableSet.java": [
-32
+32,
+85
 ],
 "com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedMultiset.java": [
 115
 ],
 "com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedSet.java": [
-263
+263,
+285,
+293
 ],
 "com.google.guava:guava:src/com/google/common/collect/RegularImmutableTable.java": [
 143,
-144
+144,
+163,
+164
 ],
 "com.google.guava:guava:src/com/google/common/collect/Serialization.java": [
 197
@@ -639,6 +704,7 @@
 "com.google.guava:guava:src/com/google/common/collect/Sets.java": [
 165,
 200,
+223,
 292,
 311,
 328,
@@ -688,6 +754,8 @@
 102,
 210,
 244,
+304,
+305,
 416,
 511,
 656,
@@ -703,10 +771,12 @@
 1323,
 1340,
 1512,
+1564,
 1618
 ],
 "com.google.guava:guava:src/com/google/common/collect/Tables.java": [
 67,
+142,
 302,
 334,
 455,
@@ -731,6 +801,8 @@
 ],
 "com.google.guava:guava:src/com/google/common/collect/TreeMultiset.java": [
 74,
+92,
+93,
 125,
 127,
 254,
@@ -899,6 +971,8 @@
 ],
 "com.google.guava:guava:src/com/google/common/util/concurrent/Striped.java": [
 199,
+223,
+224,
 236,
 267,
 345,

@@ -57,10 +57,8 @@ jobs:
         item:
           - { runner: github-ubuntu-latest-m, profile: without-sonarqube-project }
           - { runner: github-ubuntu-latest-m, profile: only-sonarqube-project }
-          - { runner: github-ubuntu-latest-m, profile: only-guava-project, java_version: 17, sonar-runtime: "LATEST_RELEASE[2025.4]" }
           - { runner: github-windows-latest-m, profile: without-sonarqube-project }
           - { runner: github-windows-latest-m, profile: only-sonarqube-project }
-          - { runner: github-windows-latest-m, profile: only-guava-project, java_version: 17, sonar-runtime: "LATEST_RELEASE[2025.4]" }
     name: Ruling QA
     needs:
       - build
