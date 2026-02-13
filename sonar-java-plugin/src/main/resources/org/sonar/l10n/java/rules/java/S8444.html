@@ -1,0 +1,82 @@
+<p>While Java 25+ allows statements to appear before the <code>super(…​)</code> or <code>this(…​)</code> call in a constructor, this area should be
+reserved for simple validation, transformation, or preparation of arguments. Excessive logic in this "pre-construction" phase makes the code harder to
+read and maintain.</p>
+<h2>Why is this an issue?</h2>
+<p>The ability to place code before <code>super()</code> is intended for basic tasks like parameter validation or simple transformations. Using this
+space for complex logic obscures the primary purpose of the constructor, increases maintenance risk by introducing complex control flow before object
+initialization, and violates the separation of concerns.</p>
+<h2>How to fix it</h2>
+<p>Refactor complex pre-construction logic into private static helper methods or static factory methods. Keep statements before <code>super()</code>
+limited to simple validations and direct parameter transformations.</p>
+<h3>Parameters</h3>   statementsThreshold
+<pre>
+5
+</pre>
+<p>Maximum number of statements allowed before the constructor call.</p>
+<h3>Code examples</h3>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class SecureFile extends File {
+    public SecureFile(String path) {
+        // Noncompliant: Validation and path normalization logic is too verbose
+        if (path == null || path.isBlank()) {
+            throw new IllegalArgumentException("Path cannot be empty");
+        }
+        if (path.contains("..")) {
+            throw new IllegalArgumentException("Relative path traversal is forbidden");
+        }
+        if (path.startsWith("/root") || path.startsWith("/etc")) {
+            throw new SecurityException("Access to system directories is restricted");
+        }
+        if (path.length() &gt; 255) {
+            throw new IllegalArgumentException("Path exceeds maximum length");
+        }
+        if (!path.matches("^[a-zA-Z0-9/._-]+$")) {
+            throw new IllegalArgumentException("Path contains illegal characters");
+        }
+
+        String sanitizedPath = path.trim().replace("//", "/");
+        if (sanitizedPath.endsWith("/")) {
+            sanitizedPath = sanitizedPath.substring(0, sanitizedPath.length() - 1);
+        }
+
+        super(sanitizedPath);
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class SecureFile extends File {
+    public SecureFile(String path) {
+        // Compliant: Logic is encapsulated in static helpers
+        validatePathSecurity(path);
+        validatePathFormat(path);
+        String sanitizedPath = normalizePath(path);
+        super(sanitizedPath);
+    }
+
+    private static void validatePathSecurity(String path) {
+        if (path == null || path.contains("..")) {
+            throw new IllegalArgumentException("Invalid or dangerous path sequence");
+        }
+        if (path.startsWith("/root") || path.startsWith("/etc")) {
+            throw new SecurityException("Access to system directories is restricted");
+        }
+    }
+
+    private static void validatePathFormat(String path) {
+        if (path.length() &gt; 255 || !path.matches("^[a-zA-Z0-9/._-]+$")) {
+            throw new IllegalArgumentException("Path format or length is invalid");
+        }
+    }
+
+    private static String normalizePath(String path) {
+        String cleaned = path.trim().replace("//", "/");
+        return cleaned.endsWith("/") ? cleaned.substring(0, cleaned.length() - 1) : cleaned;
+    }
+}
+</pre>
+<h3>Documentation</h3>
+<ul>
+  <li> JEP 513 : <a href="https://openjdk.org/jeps/513">Flexible Constructor Bodies</a> </li>
+</ul>
+
