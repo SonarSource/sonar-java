@@ -20,12 +20,13 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class InitializeSubclassFieldsBeforeSuperCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InitializeSubclassFieldsBeforeSuperSample.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/InitializeSubclassFieldsBeforeSuperSample.java"))
       .withCheck(new InitializeSubclassFieldsBeforeSuperCheck())
       .withJavaVersion(25)
       .verifyIssues();
@@ -34,7 +35,7 @@ class InitializeSubclassFieldsBeforeSuperCheckTest {
   @Test
   void test_java_24() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InitializeSubclassFieldsBeforeSuperSample.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/InitializeSubclassFieldsBeforeSuperSample.java"))
       .withCheck(new InitializeSubclassFieldsBeforeSuperCheck())
       .withJavaVersion(24)
       .verifyNoIssues();
