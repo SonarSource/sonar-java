@@ -1,0 +1,24 @@
+{
+  "title": "Subclass fields should be initialized before \"super()\"",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java25"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-8447",
+  "sqKey": "S8447",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW",
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
