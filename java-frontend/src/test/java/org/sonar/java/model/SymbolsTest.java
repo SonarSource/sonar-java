@@ -125,6 +125,7 @@ class SymbolsTest {
     Symbol unknownSymbol = Symbol.UNKNOWN_SYMBOL;
 
     assertCommonProperties(unknownSymbol);
+    assertThat(unknownSymbol.isMethodSymbol()).isEqualTo(false);
     assertThat(unknownSymbol.name()).isEqualTo("!unknown!");
     assertThat(unknownSymbol.owner()).isEqualTo(Symbol.ROOT_PACKAGE);
     SymbolMetadata metadata = unknownSymbol.metadata();
@@ -137,6 +138,7 @@ class SymbolsTest {
     Symbol.TypeSymbol unknownTypeSymbol = Symbol.TypeSymbol.UNKNOWN_TYPE;
 
     assertCommonProperties(unknownTypeSymbol);
+    assertThat(unknownTypeSymbol.isMethodSymbol()).isEqualTo(false);
     assertThat(unknownTypeSymbol.name()).isEqualTo("!unknown!");
     assertThat(unknownTypeSymbol.owner()).isEqualTo(Symbol.ROOT_PACKAGE);
 
@@ -154,6 +156,7 @@ class SymbolsTest {
     Symbol.MethodSymbol unknownMethodSymbol = Symbol.MethodSymbol.UNKNOWN_METHOD;
 
     assertCommonProperties(unknownMethodSymbol);
+    assertThat(unknownMethodSymbol.isMethodSymbol()).isEqualTo(true);
     assertThat(unknownMethodSymbol.name()).isEqualTo("!unknownMethod!");
     assertThat(unknownMethodSymbol.owner()).isEqualTo(Symbol.TypeSymbol.UNKNOWN_TYPE);
 
@@ -171,7 +174,6 @@ class SymbolsTest {
     assertThat(unknownSymbol.isPackageSymbol()).isFalse();
     assertThat(unknownSymbol.isTypeSymbol()).isFalse();
     assertThat(unknownSymbol.isVariableSymbol()).isFalse();
-    assertThat(unknownSymbol.isMethodSymbol()).isEqualTo(unknownSymbol instanceof Symbols.UnknownMethodSymbol);
 
     assertThat(unknownSymbol.isStatic()).isFalse();
     assertThat(unknownSymbol.isFinal()).isFalse();
