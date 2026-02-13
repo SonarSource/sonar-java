@@ -1,0 +1,71 @@
+<p>When a superclass constructor invokes an overridable method that a subclass has overridden to access its own fields, those fields may be accessed
+before they are initialized. In modern Java (25 +), subclass constructors can now initialize fields in the constructor prologue—the area before the
+<code>super()</code> call—to ensure that any methods called during superclass construction observe a fully initialized state.</p>
+<h2>Why is this an issue?</h2>
+<p>Traditionally, <code>super()</code> had to be the first statement in a constructor, forcing subclass field initialization to happen after the
+superclass was already constructed. If the superclass constructor calls an overridable method, the subclass implementation will see default values
+(such as <code>null</code>, <code>0</code>, or <code>false</code>) for its fields instead of the values intended by the caller. This leads to subtle
+bugs, `NullPointerException`s, or inconsistent object states that are difficult to debug.</p>
+<h2>How to fix it</h2>
+<p>Move the initialization of subclass fields before the <code>super()</code> call. This takes advantage of flexible constructor bodies to ensure that
+the subclass state is established before the superclass constructor begins its execution. Alternatively, if the method in the superclass does not need
+to be overridden, mark it as <code>final</code> or <code>private</code> to prevent the issue entirely.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class Super {
+    Super() {
+        overriddenMethod();
+    }
+
+    void overriddenMethod() {
+        System.out.println("Base logic");
+    }
+}
+
+class Sub extends Super {
+    final int x;
+
+    Sub(int x) {
+        super();
+        this.x = x; // Noncompliant: x is uninitialized when overriddenMethod is called by Super()
+    }
+
+    @Override
+    void overriddenMethod() {
+        System.out.println(x); // Prints 0 instead of the value of x
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Super {
+    Super() {
+        overriddenMethod();
+    }
+
+    void overriddenMethod() {
+        System.out.println("Base logic");
+    }
+}
+
+class Sub extends Super {
+    final int x;
+
+    Sub(int x) {
+        this.x = x; // Compliant: x is initialized in the prologue before super()
+        super();
+    }
+
+    @Override
+    void overriddenMethod() {
+        System.out.println(x); // Prints the expected value
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://openjdk.org/jeps/513">JEP 513: Flexible Constructor Bodies</a> </li>
+</ul>
+
