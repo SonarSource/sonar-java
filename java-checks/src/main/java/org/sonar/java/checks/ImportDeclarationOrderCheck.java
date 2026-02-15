@@ -66,7 +66,7 @@ public class ImportDeclarationOrderCheck extends IssuableSubscriptionVisitor imp
 
       if (currentType.ordinal() < previousType.ordinal()) {
         String message = buildMessage(currentType, previousType);
-        reportIssue(importTree.importKeyword(), message);
+        reportIssue(importTree.qualifiedIdentifier(), message);
       }
 
       previousType = currentType;
