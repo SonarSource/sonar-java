@@ -19,14 +19,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class InnerStaticClassesCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InnerStaticClassesCheckSample.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/InnerStaticClassesCheckSample.java"))
       .withCheck(new InnerStaticClassesCheck())
       .verifyIssues();
   }
@@ -34,7 +34,7 @@ class InnerStaticClassesCheckTest {
   @Test
   void testCompactSourceFiles() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InnerStaticClassesCompactSourceFileSample.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/InnerStaticClassesCompactSourceFileSample.java"))
       .withCheck(new InnerStaticClassesCheck())
       .verifyNoIssues();
   }
