@@ -17,6 +17,8 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -36,16 +38,44 @@ public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor impl
   @Override
   public void visitNode(Tree tree) {
     ClassTree ct = (ClassTree) tree;
-    List<MethodTree> mainMethods = ct.members().stream()
+    List<MethodTree> membersMainMethods = findMainMethodsInMembers(ct).toList();
+    List<MethodTree> superMainMethods = findMainMethodsInSuperclasses(ct).toList();
+    boolean hasMembersMainMethod = !membersMainMethods.isEmpty();
+    boolean hasMultipleMainMethods = membersMainMethods.size() + superMainMethods.size() > 1;
+    boolean hasLegitSingleMainOverride =
+      membersMainMethods.size() == 1
+        && Optional.ofNullable(membersMainMethods.get(0).isOverriding()).orElse(false);
+
+    if (hasMembersMainMethod && hasMultipleMainMethods && !hasLegitSingleMainOverride) {
+      var firstMainMethod = membersMainMethods.get(0);
+      var firstMainMethodToken = firstMainMethod.simpleName();
+      var errorMessage = membersMainMethods.size() > 1 ?
+        "At most one main method should be defined in a class." :
+        "Main method should not be defined in a class if a main method is already defined in a superclass.";
+      reportIssue(firstMainMethodToken, errorMessage);
+    }
+  }
+
+  private Stream<MethodTree> findMainMethodsInSuperclasses(ClassTree ct) {
+    var superClass = ct.superClass();
+    if (superClass == null) {
+      return Stream.empty();
+    }
+    var superClassTree = superClass.symbolType().symbol().declaration();
+    if (superClassTree == null) {
+      return Stream.empty();
+    }
+    return Stream.concat(
+      findMainMethodsInMembers(superClassTree),
+      findMainMethodsInSuperclasses(superClassTree)
+    );
+  }
+
+  private Stream<MethodTree> findMainMethodsInMembers(ClassTree ct) {
+    return ct.members().stream()
       .filter(MethodTree.class::isInstance)
       .map(MethodTree.class::cast)
-      .filter(this::isMainMethod)
-      .toList();
-    if (mainMethods.size() > 1) {
-      var firstMainMethod = mainMethods.get(0);
-      var firstMainMethodToken = firstMainMethod.simpleName();
-      reportIssue(firstMainMethodToken, "At most one main method should be defined in a class.");
-    }
+      .filter(this::isMainMethod);
   }
 
   private boolean isMainMethod(MethodTree tree) {
