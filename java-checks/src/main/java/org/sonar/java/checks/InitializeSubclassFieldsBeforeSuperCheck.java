@@ -17,6 +17,7 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.StatementVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -29,6 +30,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 
 import static org.sonar.java.ast.api.JavaKeyword.THIS;
 
+@Rule(key = "S8447")
 public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleConstructorVisitor {
 
 
