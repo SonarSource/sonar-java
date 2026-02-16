@@ -17,6 +17,7 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.StatementVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -32,8 +33,6 @@ import static org.sonar.java.ast.api.JavaKeyword.THIS;
 
 @Rule(key = "S8447")
 public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleConstructorVisitor {
-
-
   @Override
   void validateConstructor(MethodTree constructor, List<StatementTree> body, int constructorCallIndex) {
     if (constructorCallIndex < 0) {
@@ -58,36 +57,32 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
       && THIS.getValue().equals(idTree.name());
   }
 
-  private static boolean isFieldUsedInMethod(MethodTree mt, Symbol symbol, Symbol.TypeSymbol childClass) {
+  private static boolean isFieldUsedInMethod(MethodTree mt, Symbol symbol) {
     var methodBlock = mt.block();
     if (methodBlock == null) {
-      // Try to resolve the concrete override in the child class.
-      MethodTree override = findOverrideIn(childClass, mt.symbol());
-      if (override != null) {
-        return isFieldUsedInMethod(override, symbol, childClass);
-      }
       // Can't resolve override, conservatively assume field may be used.
       return true;
     }
-    SymbolUsedCheck symbolUsedCheck = new SymbolUsedCheck(symbol, childClass);
+    SymbolUsedCheck symbolUsedCheck = new SymbolUsedCheck(symbol);
     methodBlock.body().forEach(statement -> statement.accept(symbolUsedCheck));
     return symbolUsedCheck.isSymbolUsed();
   }
 
-  private static MethodTree findOverrideIn(Symbol.TypeSymbol childClass, Symbol.MethodSymbol abstractMethod) {
+  private static boolean isFieldUsedInMethod(MethodTree mt, Symbol symbol, Symbol.TypeSymbol childClass) {
+    // Try to resolve the concrete override in the child class.
+    return findOverrideIn(childClass, mt.symbol())
+      .map(methodTree -> isFieldUsedInMethod(methodTree, symbol))
+      .orElseGet(() -> isFieldUsedInMethod(mt, symbol));
+  }
+
+  private static Optional<MethodTree> findOverrideIn(Symbol.TypeSymbol childClass, Symbol.MethodSymbol abstractMethod) {
     String methodName = abstractMethod.name();
-    for (Symbol member : childClass.memberSymbols()) {
-      if (member.isMethodSymbol()) {
-        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) member;
-        if (methodName.equals(methodSymbol.name())
-          && methodSymbol.declaration() != null
-          && methodSymbol.overriddenSymbols().stream().anyMatch(s -> s == abstractMethod)
-        ) {
-          return methodSymbol.declaration();
-        }
-      }
-    }
-    return null;
+    return childClass.memberSymbols().stream()
+      .filter(s -> s.isMethodSymbol() && s.name().equals(methodName))
+      .map(Symbol.MethodSymbol.class::cast)
+      .filter(m -> m.declaration() != null && m.overriddenSymbols().stream().anyMatch(s -> s == abstractMethod))
+      .findFirst()
+      .map(Symbol.MethodSymbol::declaration);
   }
 
   private final class AssignmentsUsedInSuperCheck extends StatementVisitor {
@@ -115,11 +110,9 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
   private static class SymbolUsedCheck extends StatementVisitor {
     private boolean symbolUsed = false;
     private final Symbol symbol;
-    private final Symbol.TypeSymbol childClass;
 
-    private SymbolUsedCheck(Symbol symbol, Symbol.TypeSymbol childClass) {
+    private SymbolUsedCheck(Symbol symbol) {
       this.symbol = symbol;
-      this.childClass = childClass;
     }
 
     @Override
@@ -132,7 +125,7 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
     public void visitMethodInvocation(MethodInvocationTree tree) {
       var methodDeclaration = tree.methodSymbol().declaration();
       if (methodDeclaration != null) {
-        symbolUsed |= isFieldUsedInMethod(methodDeclaration, symbol, childClass);
+        symbolUsed |= isFieldUsedInMethod(methodDeclaration, symbol);
       }
       super.visitMethodInvocation(tree);
     }

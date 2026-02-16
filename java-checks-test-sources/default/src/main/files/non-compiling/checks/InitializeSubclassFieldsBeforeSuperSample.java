@@ -295,7 +295,7 @@ public class InitializeSubclassFieldsBeforeSuperSample {
   }
 
 
-  static class NonAbstractOverridesChain {
+  static class NonAbstractOverrides {
     class A {
       A() {
         hello();
@@ -312,7 +312,7 @@ public class InitializeSubclassFieldsBeforeSuperSample {
 
       B() {
         super();
-        this.name = "name"; // TODO : FN here
+        this.name = "name"; // Noncompliant
       }
 
       @Override
