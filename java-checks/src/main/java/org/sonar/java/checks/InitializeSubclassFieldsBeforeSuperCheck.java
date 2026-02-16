@@ -17,10 +17,12 @@
 package org.sonar.java.checks;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.StatementVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -40,13 +42,11 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
       return;
     }
     MethodTree superMethod;
-    Symbol.TypeSymbol childClass;
     if (body.get(constructorCallIndex) instanceof ExpressionStatementTree esTree
       && esTree.expression() instanceof MethodInvocationTree miTree
       && (superMethod = miTree.methodSymbol().declaration()) != null
-      && (childClass = constructor.symbol().enclosingClass()) != null
     ) {
-      AssignmentsUsedInSuperCheck assignmentsUsedInSuperCheck = new AssignmentsUsedInSuperCheck(superMethod, childClass);
+      AssignmentsUsedInSuperCheck assignmentsUsedInSuperCheck = new AssignmentsUsedInSuperCheck(superMethod);
       body.subList(constructorCallIndex + 1, body.size()).forEach(statement -> statement.accept(assignmentsUsedInSuperCheck));
     }
   }
@@ -57,8 +57,7 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
       && THIS.getValue().equals(idTree.name());
   }
 
-  private static boolean isFieldUsedInMethod(MethodTree mt, Symbol symbol) {
-    var methodBlock = mt.block();
+  private static boolean isFieldUsedInBlock(@Nullable BlockTree methodBlock, Symbol symbol) {
     if (methodBlock == null) {
       // Can't resolve override, conservatively assume field may be used.
       return true;
@@ -68,30 +67,19 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
     return symbolUsedCheck.isSymbolUsed();
   }
 
-  private static boolean isFieldUsedInMethod(MethodTree mt, Symbol symbol, Symbol.TypeSymbol childClass) {
-    // Try to resolve the concrete override in the child class.
-    return findOverrideIn(childClass, mt.symbol())
-      .map(methodTree -> isFieldUsedInMethod(methodTree, symbol))
-      .orElseGet(() -> isFieldUsedInMethod(mt, symbol));
-  }
-
-  private static Optional<MethodTree> findOverrideIn(Symbol.TypeSymbol childClass, Symbol.MethodSymbol abstractMethod) {
-    String methodName = abstractMethod.name();
-    return childClass.memberSymbols().stream()
-      .filter(s -> s.isMethodSymbol() && s.name().equals(methodName))
-      .map(Symbol.MethodSymbol.class::cast)
-      .filter(m -> m.declaration() != null && m.overriddenSymbols().stream().anyMatch(s -> s == abstractMethod))
-      .findFirst()
-      .map(Symbol.MethodSymbol::declaration);
+  private static boolean isFieldUsedInMethod(MethodTree mt, Symbol symbol) {
+    return isFieldUsedInBlock(mt.block(), symbol) ||
+      mt.symbol().overriddenSymbols().stream()
+        .map(Symbol.MethodSymbol::declaration)
+        .filter(Objects::nonNull).map(MethodTree::block).filter(Objects::nonNull)
+        .anyMatch(methodtree -> isFieldUsedInBlock(methodtree, symbol));
   }
 
   private final class AssignmentsUsedInSuperCheck extends StatementVisitor {
     private final MethodTree superMethod;
-    private final Symbol.TypeSymbol childClass;
 
-    private AssignmentsUsedInSuperCheck(MethodTree superMethod, Symbol.TypeSymbol childClass) {
+    private AssignmentsUsedInSuperCheck(MethodTree superMethod) {
       this.superMethod = superMethod;
-      this.childClass = childClass;
     }
 
     @Override
@@ -99,7 +87,7 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
       if (
         isFieldAssignment(tree)
           && tree.variable() instanceof MemberSelectExpressionTree mseTree
-          && isFieldUsedInMethod(superMethod, mseTree.identifier().symbol(), childClass)
+          && isFieldUsedInMethod(superMethod, mseTree.identifier().symbol())
       ) {
         reportIssue(tree, "Initialize subclass fields before calling super constructor.");
       }
