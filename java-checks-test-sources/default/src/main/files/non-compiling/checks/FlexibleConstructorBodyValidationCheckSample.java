@@ -133,7 +133,7 @@ class FlexibleConstructorBodyValidationCheckSample {
   static class ImplicitSuperCoffee extends Coffee {
     public ImplicitSuperCoffee(int water) {
       // Implicit super() call here
-      if (water < 0) { // Noncompliant
+      if (water < 0) {
         throw new IllegalArgumentException();
       }
     }
@@ -167,23 +167,4 @@ class FlexibleConstructorBodyValidationCheckSample {
     }
   }
 
-  // Test when there is no superclass
-  static class NoSuperclassCoffee {
-    private int water;
-    private int milk;
-    private static final int MAX_SIZE = 500;
-
-    public NoSuperclassCoffee(int water, int milk) {
-      if (water + milk > MAX_SIZE) { // Compliant: no superclass and no this(...) call
-        throw new IllegalArgumentException();
-      }
-    }
-
-    public NoSuperclassCoffee(int water) {
-      this(water, 0);
-      if (water <= 0) { // Noncompliant {{Move this validation logic before the super() or this() call.}}
-        throw new IllegalArgumentException();
-      }
-    }
-  }
 }

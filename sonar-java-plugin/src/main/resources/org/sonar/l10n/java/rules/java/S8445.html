@@ -1,0 +1,63 @@
+<p>This rule raises an issue when import declarations are not organized into distinct groups based on their kind and specificity level.</p>
+<h2>Why is this an issue?</h2>
+<p>Import declarations should be organized into distinct groups based on their kind to improve readability and make shadowing behavior explicit. The
+grouping order should reflect specificity levels: module imports first (least specific), followed by on-demand package imports (intermediate
+specificity), single-type imports (most specific), then static on-demand imports, and finally single-static imports.</p>
+<p>When imports are mixed or ordered arbitrarily, it becomes harder to understand which declarations might shadow others. Java’s import shadowing
+rules mean that more specific imports can override less specific ones, so organizing imports by specificity makes these relationships clearer and
+improves code maintainability by providing a consistent, predictable structure.</p>
+<h2>How to fix it</h2>
+<p>Organize import declarations into the following groups, in this order:</p>
+<ol>
+  <li> Module imports (e.g., <code>import module java.base;</code>) </li>
+  <li> On-demand package imports (e.g., <code>import javax.swing.text.*;</code>) </li>
+  <li> Single-type imports (e.g., <code>import java.util.List;</code>) </li>
+  <li> Static on-demand imports (e.g., <code>import static java.util.Collections.*;</code>) </li>
+  <li> Single-static imports (e.g., <code>import static java.util.regex.Pattern.compile;</code>) </li>
+</ol>
+<p>Separate each group with a blank line for better visual organization.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import java.sql.Date;
+import module java.base;
+import static java.util.Collections.*;
+import javax.swing.text.*;
+import module java.desktop;
+import static java.util.regex.Pattern.compile;
+import java.util.List;
+
+class Foo {
+    // ...
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+// Module imports
+import module java.base;
+import module java.desktop;
+
+// On-demand package imports
+import javax.swing.text.*; // resolves the ambiguity of the simple name Element
+
+// Single-type imports
+import java.sql.Date; // resolves the ambiguity of the simple name Date
+import java.util.List;
+
+// Static on-demand imports
+import static java.util.Collections.*;
+
+// Single-static imports
+import static java.util.regex.Pattern.compile;
+
+class Foo {
+    // ...
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-7.html#jls-7.5">Java Language Specification - Import Declarations</a> </li>
+  <li> <a href="https://openjdk.org/jeps/511">JEP 511: Module Import Declarations</a> </li>
+</ul>
+
