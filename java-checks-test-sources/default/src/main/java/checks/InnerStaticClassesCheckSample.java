@@ -1,4 +1,4 @@
-package foo;
+package checks;
 
 class Fruit {
   private int value;

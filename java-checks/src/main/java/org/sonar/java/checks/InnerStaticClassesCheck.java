@@ -49,6 +49,10 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
 
   @Override
   public void visitClass(ClassTree tree) {
+    if (tree.is(Tree.Kind.IMPLICIT_CLASS)) {
+      // this rule doesn't apply to implicit classes (compact source files)
+      return;
+    }
     Symbol.TypeSymbol symbol = tree.symbol();
     outerClasses.push(symbol);
     atLeastOneReference.push(Boolean.FALSE);
