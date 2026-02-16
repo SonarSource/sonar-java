@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -65,8 +64,8 @@ public class FlexibleConstructorBodyValidationCheck extends FlexibleConstructorV
   @Override
   void validateConstructor(MethodTree constructor, List<StatementTree> body, int constructorCallIndex) {
     if (constructorCallIndex == body.size() - 1
-      || (constructorCallIndex == -1 && hasNoExplicitSuperClass(constructor))) {
-      // No statements after constructor call or no superclass and no constructor call
+      || (constructorCallIndex == -1)) {
+      // No statements after constructor call or no constructor call
       return;
     }
     // Collect constructor parameters for analysis
@@ -80,11 +79,6 @@ public class FlexibleConstructorBodyValidationCheck extends FlexibleConstructorV
         reportIssue(statement, "Move this validation logic before the super() or this() call.");
       }
     }
-  }
-
-  private static boolean hasNoExplicitSuperClass(MethodTree constructor) {
-    Type superClass = constructor.symbol().enclosingClass().superClass();
-    return (superClass == null || superClass.is("java.lang.Object"));
   }
 
   /**
