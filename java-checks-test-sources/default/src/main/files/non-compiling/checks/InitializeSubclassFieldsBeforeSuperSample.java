@@ -228,8 +228,10 @@ public class InitializeSubclassFieldsBeforeSuperSample {
 
     CompliantLocalVar(String name) {
       this.name = name;
+      String localVar1;
       super();
-      String localVar = "test"; // Compliant - not a field assignment
+      localVar1 = "test"; // Compliant - not a field assignment
+      String localVar2 = "test"; // Compliant - not a field assignment
     }
 
     @Override
@@ -318,6 +320,42 @@ public class InitializeSubclassFieldsBeforeSuperSample {
       @Override
       void hello() {
         IO.println(name);
+      }
+    }
+  }
+
+
+  static class CallChain {
+    class A {
+      A() {
+        hello();
+      }
+
+      abstract void hello();
+
+    }
+
+    abstract class B extends A {
+      protected final String name;
+
+      B() {
+        super();
+        this.name = "name"; // Noncompliant
+        hello(); // just to have a statement after super that is not an assignment
+      }
+
+      @Override
+      void hello() {
+        greeting();
+      }
+
+      abstract void greeting();
+    }
+
+    class C extends B {
+      @Override
+      void greeting() {
+        System.out.println(name);
       }
     }
   }
