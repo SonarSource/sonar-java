@@ -4,16 +4,20 @@ import java.io.IO;
 
 public class InitializeSubclassFieldsBeforeSuperSample {
 
-  abstract static class ParentAbstract {
-    protected ParentAbstract() {
+  // =================== Parent classes ===================
+
+  // Constructor calls abstract method → child overrides are invoked during super()
+  abstract static class ParentCallsAbstract {
+    protected ParentCallsAbstract() {
       IO.println("name is " + getName());
     }
 
     abstract String getName();
   }
 
-  static class ParentConcreteHelper {
-    protected ParentConcreteHelper() {
+  // Constructor calls a concrete method that the child may or may not override
+  static class ParentCallsConcrete {
+    protected ParentCallsConcrete() {
       doInit();
     }
 
@@ -22,8 +26,9 @@ public class InitializeSubclassFieldsBeforeSuperSample {
     }
   }
 
-  abstract static class ParentTransitive {
-    protected ParentTransitive() {
+  // Constructor calls private method → which calls abstract method (transitive chain)
+  abstract static class ParentCallsTransitive {
+    protected ParentCallsTransitive() {
       helper();
     }
 
@@ -34,22 +39,26 @@ public class InitializeSubclassFieldsBeforeSuperSample {
     abstract String getValue();
   }
 
-  static class ParentDirectFieldAccess {
-    protected String usedField;
-    protected String unusedField;
+  // Constructor directly reads an inherited field (no method call involved)
+  static class ParentReadsField {
+    protected String readField;
+    protected String ignoredField;
 
-    protected ParentDirectFieldAccess() {
-      IO.println("Value: " + usedField);
+    protected ParentReadsField() {
+      IO.println("Value: " + readField);
     }
   }
 
-  // Field used via abstract method in super constructor
-  public static class NonCompliant extends ParentAbstract {
+  // =================== Noncompliant ===================
+
+  // Basic: field returned by abstract override, assigned after super()
+  public static class FieldUsedViaOverride extends ParentCallsAbstract {
     private final String name;
 
-    NonCompliant(String name) {
+    FieldUsedViaOverride(String name) {
       super();
-      this.name = name; // Noncompliant
+      this.name = name; // Noncompliant {{Initialize subclass fields before calling super constructor.}}
+//    ^^^^^^^^^^^^^^^^
     }
 
     @Override
@@ -58,11 +67,11 @@ public class InitializeSubclassFieldsBeforeSuperSample {
     }
   }
 
-  // Assignment in nested if/else block after super
-  public static class NonCompliantNestedBlock extends ParentAbstract {
+  // Assignment inside if/else block after super() — visitor must recurse into nested blocks
+  public static class AssignmentInNestedBlock extends ParentCallsAbstract {
     private final String name;
 
-    NonCompliantNestedBlock(String name, boolean condition) {
+    AssignmentInNestedBlock(String name, boolean condition) {
       super();
       if (condition) {
         this.name = name; // Noncompliant
@@ -77,11 +86,11 @@ public class InitializeSubclassFieldsBeforeSuperSample {
     }
   }
 
-  // Field used transitively: super() → helper() → abstract getValue()
-  public static class NonCompliantTransitive extends ParentTransitive {
+  // Transitive: super() → private helper() → abstract getValue() → child override
+  public static class FieldUsedTransitively extends ParentCallsTransitive {
     private final String data;
 
-    NonCompliantTransitive(String data) {
+    FieldUsedTransitively(String data) {
       super();
       this.data = data; // Noncompliant
     }
@@ -92,37 +101,22 @@ public class InitializeSubclassFieldsBeforeSuperSample {
     }
   }
 
-  // Mixed: only the inherited field actually used in parent constructor is flagged
-  public static class NonCompliantMixedInheritedFields extends ParentDirectFieldAccess {
-    NonCompliantMixedInheritedFields(String used, String unused) {
+  // Inherited field directly read by parent constructor; only the read field is flagged
+  public static class InheritedFieldReadByParent extends ParentReadsField {
+    InheritedFieldReadByParent(String read, String ignored) {
       super();
-      this.usedField = used; // Noncompliant
-      this.unusedField = unused; // Compliant - not read in parent constructor
+      this.readField = read; // Noncompliant
+      this.ignoredField = ignored; // Compliant - not read in parent constructor
     }
   }
 
-  // Abstract method override: multiple fields, only one used in override
-  public static class NonCompliantMixedAbstractOverride extends ParentAbstract {
-    private String name;
-    private int age;
+  // =================== Compliant ===================
 
-    NonCompliantMixedAbstractOverride(String name, int age) {
-      super();
-      this.name = name; // Noncompliant
-      this.age = age; // Compliant - getName() override doesn't use age
-    }
-
-    @Override
-    String getName() {
-      return name;
-    }
-  }
-
-  // Field assigned before super()
-  public static class Compliant extends ParentAbstract {
+  // Assignment BEFORE super() — not included in the post-super statement list
+  public static class AssignedBeforeSuper extends ParentCallsAbstract {
     private final String name;
 
-    Compliant(String name) {
+    AssignedBeforeSuper(String name) {
       this.name = name;
       super();
     }
@@ -133,21 +127,21 @@ public class InitializeSubclassFieldsBeforeSuperSample {
     }
   }
 
-  // Super calls concrete method that doesn't use child's field
-  public static class CompliantConcreteMethod extends ParentConcreteHelper {
+  // Parent calls concrete method, child doesn't override it → field not reachable
+  public static class ConcreteMethodNotOverridden extends ParentCallsConcrete {
     private String extra;
 
-    CompliantConcreteMethod(String extra) {
+    ConcreteMethodNotOverridden(String extra) {
       super();
       this.extra = extra; // Compliant - doInit() doesn't use this field
     }
   }
 
-  // Local variable assignment after super (not a field)
-  public static class CompliantLocalVar extends ParentAbstract {
+  // Local variable assignment after super() — not a field, should not be flagged
+  public static class LocalVariableAfterSuper extends ParentCallsAbstract {
     private final String name;
 
-    CompliantLocalVar(String name) {
+    LocalVariableAfterSuper(String name) {
       this.name = name;
       String localVar1;
       super();
@@ -161,7 +155,10 @@ public class InitializeSubclassFieldsBeforeSuperSample {
     }
   }
 
-  // Override resolved in grandchild, not the direct child that assigns the field
+  // =================== Edge cases ===================
+
+  // Override is in a grandchild, not the direct child that assigns the field
+  // → findChildOverride returns the abstract re-declaration → conservative flag
   static class GrandchildOverride {
     abstract class Base {
       Base() {
@@ -172,11 +169,11 @@ public class InitializeSubclassFieldsBeforeSuperSample {
     }
 
     abstract class Middle extends Base {
-      protected final String name;
+      protected final String label;
 
       Middle() {
         super();
-        this.name = "name"; // Noncompliant
+        this.label = "value"; // Noncompliant
       }
 
       abstract void describe();
@@ -189,13 +186,12 @@ public class InitializeSubclassFieldsBeforeSuperSample {
 
       @Override
       void describe() {
-        IO.println(name);
+        IO.println(label);
       }
     }
   }
 
-
-  // Parameter shadowing: method parameter has same name as field
+  // Parameter with same name as field: bare name resolves to parameter, this.field resolves to field
   static class ParameterShadowing {
     abstract class Base {
       String someText;
@@ -207,9 +203,9 @@ public class InitializeSubclassFieldsBeforeSuperSample {
       abstract void doWork();
     }
 
-    // Compliant: isValid's parameter 'someText' shadows the field, so bare 'someText' references are the parameter
-    class CompliantParameterShadowsField extends Base {
-      CompliantParameterShadowsField(String someText) {
+    // Compliant: bare 'someText' in isValid refers to the parameter, not the field
+    class ShadowedByParameter extends Base {
+      ShadowedByParameter(String someText) {
         super();
         this.someText = someText; // Compliant
       }
@@ -224,9 +220,9 @@ public class InitializeSubclassFieldsBeforeSuperSample {
       }
     }
 
-    // Field accessed via this.someText in isValid - should raise issue
-    class NonCompliantFieldAccessedViaThis extends Base {
-      NonCompliantFieldAccessedViaThis(String someText) {
+    // this.someText explicitly accesses the field despite parameter shadowing
+    class ExplicitThisBypassesShadowing extends Base {
+      ExplicitThisBypassesShadowing(String someText) {
         super();
         this.someText = someText; // Noncompliant
       }
@@ -237,78 +233,40 @@ public class InitializeSubclassFieldsBeforeSuperSample {
       }
 
       private boolean isValid(String someText) {
-        return !this.someText.isEmpty(); // accessing field via this.
+        return !this.someText.isEmpty();
       }
     }
   }
 
-  // Transitive: super() → process() override → abstract formatOutput() → grandchild override uses field
-  static class TransitiveCallChain {
-    abstract class Base {
-      Base() {
-        process();
-      }
-
-      abstract void process();
-    }
-
-    abstract class Middle extends Base {
-      protected final String name;
-
-      Middle() {
-        super();
-        this.name = "name"; // Noncompliant
-        process(); // just to have a statement after super that is not an assignment
-      }
-
-      @Override
-      void process() {
-        formatOutput();
-      }
-
-      abstract void formatOutput();
-    }
-
-    class Leaf extends Middle {
-      @Override
-      void formatOutput() {
-        IO.println(name);
-      }
-    }
-  }
-
-  // Parent only writes to the field (never reads it) → child assignment is compliant
-  class OnlyUsageIsReassignment {
+  // Parent only writes to the field (never reads) → assignment-only usage is not flagged
+  class FieldOnlyWrittenByParent {
     class Parent {
-      String name;
+      String label;
 
       Parent() {
-        this.name = "hello";
-        name = "world";
+        this.label = "hello";
+        label = "world";
       }
     }
 
     class Child extends Parent {
       Child() {
         super();
-        this.name = "name"; // Compliant - only usage of name is assignment, not read in parent constructor
-        name = "name"; // Compliant - only usage of name is assignment, not read in parent constructor
+        this.label = "value"; // Compliant - parent only assigns, never reads
+        label = "value"; // Compliant
       }
     }
   }
 
-  // Tests implicit this (bare field name), explicit this, and outer class field exclusion
-  class ImplicitThis {
+  // Tests bare field name (implicit this) assignment detection and outer-class field exclusion
+  class ImplicitThisAndOuterField {
     Integer outerField;
 
     class Parent {
-      String name;
-      Integer age;
+      String label;
 
       Parent() {
-        this.name = name.toLowerCase();
-        name = this.name.toUpperCase();
-        this.age = 2 * (age + 1);
+        IO.println(label);
         postInit();
       }
 
@@ -321,12 +279,11 @@ public class InitializeSubclassFieldsBeforeSuperSample {
 
       Child() {
         super();
-        this.name = "name"; // Noncompliant
-        name = "name"; // Noncompliant
-        this.age = 5; // Noncompliant
-        this.message = "message"; // Noncompliant
-        message = "message"; // Noncompliant
-        outerField = 1; // Compliant - not field of Child
+        this.label = "value"; // Noncompliant
+        label = "value"; // Noncompliant
+        this.message = "msg"; // Noncompliant
+        message = "msg"; // Noncompliant
+        outerField = 1; // Compliant - field belongs to enclosing class, not Child
       }
 
       @Override

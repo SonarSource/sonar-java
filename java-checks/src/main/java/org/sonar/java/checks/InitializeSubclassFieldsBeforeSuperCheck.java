@@ -38,6 +38,8 @@ import static org.sonar.java.ast.api.JavaKeyword.THIS;
 
 @Rule(key = "S8447")
 public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleConstructorVisitor {
+  private static final String MESSAGE = "Initialize subclass fields before calling super constructor.";
+
   @Override
   void validateConstructor(MethodTree constructor, List<StatementTree> body, int constructorCallIndex) {
     if (constructorCallIndex < 0) {
@@ -103,7 +105,7 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
       fieldAssignmentSymbol(tree, childClass).ifPresent(symbol -> {
         if (isFieldUsedInMethod(superMethod, symbol, childClass, new HashSet<>()))
-          reportIssue(tree, "Initialize subclass fields before calling super constructor.");
+          reportIssue(tree, MESSAGE);
       });
       super.visitAssignmentExpression(tree);
     }
