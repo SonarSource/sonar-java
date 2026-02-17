@@ -128,7 +128,7 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
     @Override
     public void visitIdentifier(IdentifierTree tree) {
       if (tree.parent() instanceof MemberSelectExpressionTree) {
-        // handled in visitMemberSelectExpression to avoid double counting symbol usage
+        // handled in visitMemberSelectExpression, early return to avoid double counting
         return;
       }
       boolean isSymbolUsed = tree.symbol() == symbol;
