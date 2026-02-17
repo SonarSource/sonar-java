@@ -6,4 +6,7 @@ public class MainJava21 {
 
   void main() { // Noncompliant
   }
+
+  void main(int args) { // Noncompliant
+  }
 }
