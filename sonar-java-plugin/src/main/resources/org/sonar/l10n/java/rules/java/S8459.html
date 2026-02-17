@@ -1,0 +1,42 @@
+<p>"ScopedValue.get()" should only be called within the execution of a "where(…​).run()" or "where(…​).call()" block.</p>
+<h2>Why is this an issue?</h2>
+<p><code>ScopedValue</code> is designed for "one-way" data sharing that is strictly bounded by a stack frame. Unlike <code>ThreadLocal</code>, which
+persists until explicitly removed or the thread dies, a <code>ScopedValue</code> is only "bound" during the execution of the <code>Runnable</code> or
+<code>Callable</code> passed to the <code>run()</code> or <code>call()</code> methods.</p>
+<p>Calling <code>.get()</code> outside of this specific execution window—even if a <code>where()</code> call was previously made—will result in a
+<code>NoSuchElementException</code>. This is a common mistake when developers treat <code>ScopedValue</code> as a configuration setter rather than a
+scoped execution wrapper.</p>
+<h2>How to fix it</h2>
+<p>Wrap any logic that requires the value of a <code>ScopedValue</code> inside a <code>run()</code> or <code>call()</code> block initiated by
+<code>ScopedValue.where()</code>. If the value needs to be accessed across thread boundaries (like in an <code>ExecutorService</code>), the binding
+must be re-established or passed within the task’s own execution scope.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+static final ScopedValue&lt;String&gt; USER = ScopedValue.newInstance();
+
+public void process() {
+    // Noncompliant: 'where' returns a Carrier, but does not bind the value yet.
+    ScopedValue.where(USER, "Alice");
+
+    // This will throw NoSuchElementException because we are not inside a .run() block
+    System.out.println(USER.get());
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+static final ScopedValue&lt;String&gt; USER = ScopedValue.newInstance();
+
+public void process() {
+    // Compliant: The value is bound only for the duration of the lambda
+    ScopedValue.where(USER, "Alice").run(() -&gt; {
+        System.out.println(USER.get());
+    });
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://openjdk.org/jeps/506">JEP 506: Scoped Values</a> </li>
+</ul>
+

@@ -1,0 +1,24 @@
+{
+  "title": "Scoped values should only be accessed within their binding scope",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "java25",
+    "concurrency"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-8459",
+  "sqKey": "S8459",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  }
+}
