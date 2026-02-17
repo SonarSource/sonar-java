@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -55,10 +56,21 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
     }
   }
 
-  private static boolean isFieldAssignment(AssignmentExpressionTree tree) {
-    return tree.variable() instanceof MemberSelectExpressionTree mseTree
+  private static Optional<Symbol> fieldAssignmentSymbol(AssignmentExpressionTree tree, Symbol.TypeSymbol childClass) {
+    // field assignment
+    if (tree.variable() instanceof MemberSelectExpressionTree mseTree
       && mseTree.expression() instanceof IdentifierTree idTree
-      && THIS.getValue().equals(idTree.name());
+      && THIS.getValue().equals(idTree.name())) {
+      return Optional.of(mseTree.identifier().symbol());
+    }
+    // direct assignment
+    if (tree.variable() instanceof IdentifierTree idTree
+      && idTree.symbol().owner() instanceof Symbol.TypeSymbol typeSymbol
+      && childClass.type().isSubtypeOf(typeSymbol.type())
+    ) {
+      return Optional.of(idTree.symbol());
+    }
+    return Optional.empty();
   }
 
 
@@ -89,13 +101,10 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if (
-        isFieldAssignment(tree)
-          && tree.variable() instanceof MemberSelectExpressionTree mseTree
-          && isFieldUsedInMethod(superMethod, mseTree.identifier().symbol(), childClass, new HashSet<>())
-      ) {
-        reportIssue(tree, "Initialize subclass fields before calling super constructor.");
-      }
+      fieldAssignmentSymbol(tree, childClass).ifPresent(symbol -> {
+        if (isFieldUsedInMethod(superMethod, symbol, childClass, new HashSet<>()))
+          reportIssue(tree, "Initialize subclass fields before calling super constructor.");
+      });
       super.visitAssignmentExpression(tree);
     }
   }
@@ -118,7 +127,17 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      symbolUsed |= tree.symbol() == symbol;
+      if (tree.parent() instanceof MemberSelectExpressionTree) {
+        // handled in visitMemberSelectExpression to avoid double counting symbol usage
+        return;
+      }
+      boolean isSymbolUsed = tree.symbol() == symbol;
+      boolean isSymbolUsedAsAssignmentTarget =
+        tree.parent() instanceof AssignmentExpressionTree assignment
+          && assignment.variable() instanceof IdentifierTree identifierTree
+          && identifierTree.symbol() == symbol;
+      boolean isSymbolUsedAsExpression = tree.parent() instanceof AssignmentExpressionTree assignment && assignment.expression() == tree;
+      symbolUsed |= isSymbolUsed && (!isSymbolUsedAsAssignmentTarget || isSymbolUsedAsExpression);
       super.visitIdentifier(tree);
     }
 
@@ -127,7 +146,9 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
       if (tree.expression() instanceof IdentifierTree idTree
         && THIS.getValue().equals(idTree.name())
         && tree.identifier().symbol() == symbol) {
-        symbolUsed = true;
+        boolean isSymbolUsedOnlyAsAssignmentTarget = tree.parent() instanceof AssignmentExpressionTree assignment && assignment.variable() == tree;
+        boolean isSymbolUsedAsExpression = tree.parent() instanceof AssignmentExpressionTree assignment && assignment.expression() == tree;
+        symbolUsed |= !isSymbolUsedOnlyAsAssignmentTarget || isSymbolUsedAsExpression;
       }
       super.visitMemberSelectExpression(tree);
     }

@@ -406,4 +406,62 @@ public class InitializeSubclassFieldsBeforeSuperSample {
       }
     }
   }
+
+  class OnlyUsageIsReassignment {
+    class A {
+      String name;
+
+      A() {
+        this.name = "hello";
+        name = "world";
+      }
+    }
+
+    class B extends A {
+      B() {
+        super();
+        this.name = "name"; // Compliant - only usage of name is assignment, not read in parent constructor}
+        name = "name"; // Compliant - only usage of name is assignment, not read in parent constructor
+      }
+    }
+  }
+
+  class ImplicitThis {
+    Integer outerField;
+
+    class A {
+      String name;
+      Integer age;
+
+      A() {
+        this.name = name.toLowerCase();
+        name = this.name.toUpperCase();
+        this.age = 2 * (age + 1);
+        postInit();
+      }
+
+      void postInit() {
+      }
+    }
+
+    class B extends A {
+      String message;
+
+      B() {
+        super();
+        this.name = "name"; // Noncompliant
+        name = "name"; // Noncompliant
+        this.age = 5; // Noncompliant
+        this.message = "message"; // Noncompliant
+        message = "message"; // Noncompliant
+        outerField = 1; // Compliant - not field of B
+      }
+
+      @Override
+      void postInit() {
+        IO.println(message);
+        IO.println(outerField);
+      }
+    }
+  }
 }
