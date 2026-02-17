@@ -71,8 +71,8 @@ jobs:
       - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
         with:
           version: 2025.7.12
-      - name: Select Java 17
-        run: mise use java@17
+      - name: Select Java 21
+        run: mise use java@21
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
@@ -90,19 +90,11 @@ jobs:
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
         run: |
           cd its/ruling
-          mvn package --batch-mode "-Pit-ruling,${{ matrix.profile }}" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+          mvn package --batch-mode "-Pit-ruling,${{ matrix.profile }}" -Dsonar.runtimeVersion=LATEST_RELEASE[2026.1] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
 
   plugin-qa:
     strategy:
       fail-fast: false
-      matrix:
-        item:
-          - sq_version: LATEST_RELEASE
-            java_version: 21
-          - sq_version: LATEST_RELEASE
-            java_version: 17
-          - sq_version: DEV
-            java_version: 21
     name: Plugin QA
     needs:
       - build
@@ -120,8 +112,8 @@ jobs:
       - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
         with:
           version: 2025.7.12
-      - name: Select Java Version
-        run: mise use java@${{ matrix.item.java_version}}
+      - name: Select Java Version 21
+        run: mise use java@21
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
@@ -137,7 +129,7 @@ jobs:
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
         run: |
           cd its/plugin
-          mvn package --batch-mode -Pit-plugin -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
+          mvn package --batch-mode -Pit-plugin -Dsonar.runtimeVersion=LATEST_RELEASE[2026.1] -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
 
   sanity:
     name: Sanity Test
@@ -262,8 +254,8 @@ jobs:
         working-directory: java-checks-test-sources
         run: |
           mvn clean compile test-compile --batch-mode
-      - name: Select Java 17
-        run: mise use java@17
+      - name: Select Java 21
+        run: mise use java@21
       - uses: SonarSource/ci-github-actions/config-maven@v1
         with:
           deploy: false
@@ -278,7 +270,7 @@ jobs:
         run: >
           mvn clean package --batch-mode --errors --show-version
           --activate-profiles it-autoscan
-          -Dsonar.runtimeVersion=LATEST_RELEASE
+          -Dsonar.runtimeVersion=LATEST_RELEASE[2026.1]
           -Dmaven.test.redirectTestOutputToFile=false
           -Dparallel=methods
           -DuseUnlimitedThreads=true
