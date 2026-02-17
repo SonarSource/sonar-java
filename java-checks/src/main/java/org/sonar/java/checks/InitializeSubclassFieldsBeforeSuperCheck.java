@@ -48,8 +48,8 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
       && (superMethod = miTree.methodSymbol().declaration()) != null
       && (childClass = constructor.symbol().enclosingClass()) != null
     ) {
-      AssignmentsUsedInSuperCheck assignmentsUsedInSuperCheck = new AssignmentsUsedInSuperCheck(superMethod, childClass);
-      body.subList(constructorCallIndex + 1, body.size()).forEach(statement -> statement.accept(assignmentsUsedInSuperCheck));
+      AssignmentsUsedInSuperVisitor assignmentsUsedInSuperVisitor = new AssignmentsUsedInSuperVisitor(superMethod, childClass);
+      body.subList(constructorCallIndex + 1, body.size()).forEach(statement -> statement.accept(assignmentsUsedInSuperVisitor));
     }
   }
 
@@ -65,20 +65,20 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
       // Can't resolve body, conservatively assume field may be used.
       return true;
     }
-    SymbolUsedCheck symbolUsedCheck = new SymbolUsedCheck(symbol, childClass);
-    methodBlock.body().forEach(statement -> statement.accept(symbolUsedCheck));
-    return symbolUsedCheck.isSymbolUsed();
+    SymbolUsedVisitor symbolUsedVisitor = new SymbolUsedVisitor(symbol, childClass);
+    methodBlock.body().forEach(statement -> statement.accept(symbolUsedVisitor));
+    return symbolUsedVisitor.isSymbolUsed();
   }
 
   private static boolean isFieldUsedInMethod(MethodTree mt, Symbol symbol, @Nullable Symbol.TypeSymbol childClass) {
     return isFieldUsedInBlock(mt.block(), symbol, childClass);
   }
 
-  private final class AssignmentsUsedInSuperCheck extends StatementVisitor {
+  private final class AssignmentsUsedInSuperVisitor extends StatementVisitor {
     private final MethodTree superMethod;
     private final Symbol.TypeSymbol childClass;
 
-    private AssignmentsUsedInSuperCheck(MethodTree superMethod, Symbol.TypeSymbol childClass) {
+    private AssignmentsUsedInSuperVisitor(MethodTree superMethod, Symbol.TypeSymbol childClass) {
       this.superMethod = superMethod;
       this.childClass = childClass;
     }
@@ -96,13 +96,13 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
     }
   }
 
-  private static class SymbolUsedCheck extends StatementVisitor {
+  private static class SymbolUsedVisitor extends StatementVisitor {
     private boolean symbolUsed = false;
     private final Symbol symbol;
     @Nullable
     private final Symbol.TypeSymbol childClass;
 
-    private SymbolUsedCheck(Symbol symbol, @Nullable Symbol.TypeSymbol childClass) {
+    private SymbolUsedVisitor(Symbol symbol, @Nullable Symbol.TypeSymbol childClass) {
       this.symbol = symbol;
       this.childClass = childClass;
     }
