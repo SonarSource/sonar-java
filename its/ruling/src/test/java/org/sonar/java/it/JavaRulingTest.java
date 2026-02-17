@@ -48,6 +48,7 @@ import org.assertj.core.api.Fail;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
@@ -181,6 +182,7 @@ public class JavaRulingTest {
   }
 
   @Test
+  @Ignore("The version of guava used for the ruling tests does not build with a Java 21 compiler. The issue might be fixed by backporting SONARJAVA-6016.")
   public void guava() throws Exception {
     String projectName = "guava";
     MavenBuild build = test_project("com.google.guava:guava", projectName);
