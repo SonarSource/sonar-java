@@ -46,16 +46,13 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
       // Super called implicitly, so we disable the rule to avoid false positives.
       return;
     }
-    MethodTree superMethod;
-    Symbol.TypeSymbol childClass;
-    if (body.get(constructorCallIndex) instanceof ExpressionStatementTree esTree
-      && esTree.expression() instanceof MethodInvocationTree miTree
-      && (superMethod = miTree.methodSymbol().declaration()) != null
-      && (childClass = constructor.symbol().enclosingClass()) != null
-    ) {
-      AssignmentsUsedInSuperVisitor assignmentsUsedInSuperVisitor = new AssignmentsUsedInSuperVisitor(superMethod, childClass);
-      body.subList(constructorCallIndex + 1, body.size()).forEach(statement -> statement.accept(assignmentsUsedInSuperVisitor));
-    }
+    var constructorInvocationExpression = (ExpressionStatementTree) body.get(constructorCallIndex);
+    var constructorInvocation = (MethodInvocationTree) constructorInvocationExpression.expression();
+    AssignmentsUsedInSuperVisitor assignmentsUsedInSuperVisitor = new AssignmentsUsedInSuperVisitor(
+      constructorInvocation.methodSymbol().declaration(),
+      constructor.symbol().enclosingClass()
+    );
+    body.subList(constructorCallIndex + 1, body.size()).forEach(statement -> statement.accept(assignmentsUsedInSuperVisitor));
   }
 
   private static Optional<Symbol> fieldAssignmentSymbol(AssignmentExpressionTree tree, Symbol.TypeSymbol childClass) {
@@ -104,8 +101,9 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
       fieldAssignmentSymbol(tree, childClass).ifPresent(symbol -> {
-        if (isFieldUsedInMethod(superMethod, symbol, childClass, new HashSet<>()))
+        if (isFieldUsedInMethod(superMethod, symbol, childClass, new HashSet<>())) {
           reportIssue(tree, MESSAGE);
+        }
       });
       super.visitAssignmentExpression(tree);
     }
