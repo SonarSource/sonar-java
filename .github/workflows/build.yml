@@ -57,10 +57,8 @@ jobs:
         item:
           - { runner: github-ubuntu-latest-m, profile: without-sonarqube-project }
           - { runner: github-ubuntu-latest-m, profile: only-sonarqube-project }
-          - { runner: github-ubuntu-latest-m, profile: only-guava-project, java_version: 17, sonar-runtime: "LATEST_RELEASE[2025.4]" }
           - { runner: github-windows-latest-m, profile: without-sonarqube-project }
           - { runner: github-windows-latest-m, profile: only-sonarqube-project }
-          - { runner: github-windows-latest-m, profile: only-guava-project, java_version: 17, sonar-runtime: "LATEST_RELEASE[2025.4]" }
     name: Ruling QA
     needs:
       - build
@@ -79,9 +77,7 @@ jobs:
         with:
           version: 2025.7.12
       - name: Select Java Version
-        env:
-          JAVA_VERSION: ${{ matrix.item.java_version || '21' }}
-        run: mise use "java@${{ env.JAVA_VERSION }}"
+        run: mise use java@21
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
@@ -99,10 +95,9 @@ jobs:
         env:
           MAVEN_OPTS: "-Xmx3g"
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
-          SONAR_RUNTIME: ${{ matrix.item.sonar-runtime || 'LATEST_RELEASE' }}
         run: |
           cd its/ruling
-          mvn package --batch-mode "-Pit-ruling,${{ matrix.item.profile }}" "-Dsonar.runtimeVersion=${{ env.SONAR_RUNTIME }}" -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+          mvn package --batch-mode "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
 
   plugin-qa:
     strategy:

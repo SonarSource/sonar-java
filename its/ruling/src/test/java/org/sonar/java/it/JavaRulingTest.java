@@ -185,8 +185,8 @@ public class JavaRulingTest {
     String projectName = "guava";
     MavenBuild build = test_project("com.google.guava:guava", projectName);
     build
-      // by default guava is compatible with java 6, however this is not supported with JDK 17
-      .setProperty("java.version", "1.7")
+      // by default guava is compatible with java 6, however this is not supported with JDK 21
+      .setProperty("java.version", "1.8")
       .setProperty("maven.javadoc.skip", "true")
       // use batch
       .setProperty("sonar.java.experimental.batchModeSizeInKB", "8192");
