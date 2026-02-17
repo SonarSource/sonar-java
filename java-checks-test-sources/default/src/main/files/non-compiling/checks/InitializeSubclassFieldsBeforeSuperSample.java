@@ -325,6 +325,53 @@ public class InitializeSubclassFieldsBeforeSuperSample {
   }
 
 
+  // Parameter shadowing: method parameter has same name as field
+  static class ParameterShadowing {
+    abstract class A {
+      String someText;
+
+      A() {
+        doWork();
+      }
+
+      abstract void doWork();
+    }
+
+    // Compliant: isValid's parameter 'flavor' shadows the field, so bare 'flavor' references are the parameter
+    class CompliantParameterShadowsField extends A {
+      CompliantParameterShadowsField(String someText) {
+        super();
+        this.someText = someText; // Compliant
+      }
+
+      @Override
+      void doWork() {
+        isValid("parameter value");
+      }
+
+      private boolean isValid(String someText) {
+        return !someText.isEmpty();
+      }
+    }
+
+    // Field accessed via this.flavor in isValid - should raise issue
+    class NonCompliantFieldAccessedViaThis extends A {
+      NonCompliantFieldAccessedViaThis(String someText) {
+        super();
+        this.someText = someText; // Noncompliant
+      }
+
+      @Override
+      void doWork() {
+        isValid("parameter value");
+      }
+
+      private boolean isValid(String someText) {
+        return !this.someText.isEmpty(); // accessing field via this.
+      }
+    }
+  }
+
   static class CallChain {
     class A {
       A() {
@@ -355,7 +402,7 @@ public class InitializeSubclassFieldsBeforeSuperSample {
     class C extends B {
       @Override
       void greeting() {
-        System.out.println(name);
+        IO.println(name);
       }
     }
   }
