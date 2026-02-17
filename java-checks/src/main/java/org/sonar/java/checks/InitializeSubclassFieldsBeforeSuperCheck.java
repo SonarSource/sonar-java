@@ -16,7 +16,9 @@
  */
 package org.sonar.java.checks;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.StatementVisitor;
@@ -60,18 +62,20 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
   }
 
 
-  private static boolean isFieldUsedInBlock(@Nullable BlockTree methodBlock, Symbol symbol, @Nullable Symbol.TypeSymbol childClass) {
-    if (methodBlock == null) {
+  private static boolean isFieldUsedInMethod(
+    @Nullable MethodTree method,
+    Symbol symbol,
+    Symbol.TypeSymbol childClass,
+    Set<MethodTree> visitedMethods
+  ) {
+    BlockTree methodBlock;
+    if (method == null || (methodBlock = method.block()) == null) {
       // Can't resolve body, conservatively assume field may be used.
       return true;
     }
-    SymbolUsedVisitor symbolUsedVisitor = new SymbolUsedVisitor(symbol, childClass);
+    SymbolUsedVisitor symbolUsedVisitor = new SymbolUsedVisitor(symbol, childClass, visitedMethods);
     methodBlock.body().forEach(statement -> statement.accept(symbolUsedVisitor));
     return symbolUsedVisitor.isSymbolUsed();
-  }
-
-  private static boolean isFieldUsedInMethod(MethodTree mt, Symbol symbol, @Nullable Symbol.TypeSymbol childClass) {
-    return isFieldUsedInBlock(mt.block(), symbol, childClass);
   }
 
   private final class AssignmentsUsedInSuperVisitor extends StatementVisitor {
@@ -88,7 +92,7 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
       if (
         isFieldAssignment(tree)
           && tree.variable() instanceof MemberSelectExpressionTree mseTree
-          && isFieldUsedInMethod(superMethod, mseTree.identifier().symbol(), childClass)
+          && isFieldUsedInMethod(superMethod, mseTree.identifier().symbol(), childClass, new HashSet<>())
       ) {
         reportIssue(tree, "Initialize subclass fields before calling super constructor.");
       }
@@ -99,12 +103,17 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
   private static class SymbolUsedVisitor extends StatementVisitor {
     private boolean symbolUsed = false;
     private final Symbol symbol;
-    @Nullable
     private final Symbol.TypeSymbol childClass;
+    private final Set<MethodTree> visitedMethods;
 
-    private SymbolUsedVisitor(Symbol symbol, @Nullable Symbol.TypeSymbol childClass) {
+    private SymbolUsedVisitor(
+      Symbol symbol,
+      Symbol.TypeSymbol childClass,
+      Set<MethodTree> visitedMethods
+    ) {
       this.symbol = symbol;
       this.childClass = childClass;
+      this.visitedMethods = visitedMethods;
     }
 
     @Override
@@ -114,25 +123,30 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
     }
 
     @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      if (tree.expression() instanceof IdentifierTree idTree
+        && THIS.getValue().equals(idTree.name())
+        && tree.identifier().symbol() == symbol) {
+        symbolUsed = true;
+      }
+      super.visitMemberSelectExpression(tree);
+    }
+
+    @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       Symbol.MethodSymbol calledMethod = tree.methodSymbol();
-      MethodTree childOverride = findChildOverride(childClass, calledMethod);
-      if (childOverride != null) {
-        symbolUsed |= isFieldUsedInMethod(childOverride, symbol, childClass);
-      } else {
-        var methodDeclaration = calledMethod.declaration();
-        if (methodDeclaration != null) {
-          symbolUsed |= isFieldUsedInMethod(methodDeclaration, symbol, childClass);
-        }
+      MethodTree targetMethod = findChildOverride(childClass, calledMethod);
+      if (targetMethod == null) {
+        targetMethod = calledMethod.declaration();
+      }
+      if (targetMethod != null && visitedMethods.add(targetMethod)) {
+        symbolUsed |= isFieldUsedInMethod(targetMethod, symbol, childClass, visitedMethods);
       }
       super.visitMethodInvocation(tree);
     }
 
     @Nullable
-    private static MethodTree findChildOverride(@Nullable Symbol.TypeSymbol childClass, Symbol.MethodSymbol method) {
-      if (childClass == null) {
-        return null;
-      }
+    private static MethodTree findChildOverride(Symbol.TypeSymbol childClass, Symbol.MethodSymbol method) {
       Symbol.TypeSymbol declaringClass = method.enclosingClass();
       Symbol.TypeSymbol currentClass = childClass;
       while (currentClass != null && currentClass != declaringClass) {
