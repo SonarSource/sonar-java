@@ -15,6 +15,7 @@ class AvoidKeyGeneratorWithKdfCheckSample {
 
   void nonCompliantAlgos() throws NoSuchAlgorithmException {
     KeyGenerator.getInstance("HKDF-SHA256"); // Noncompliant {{Use the KDF API instead of KeyGenerator for key derivation.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     KeyGenerator.getInstance("HKDF-SHA384"); // Noncompliant
     KeyGenerator.getInstance("HKDF-SHA512"); // Noncompliant
     SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256"); // Noncompliant {{Use the KDF API instead of SecretKeyFactory for key derivation.}}
