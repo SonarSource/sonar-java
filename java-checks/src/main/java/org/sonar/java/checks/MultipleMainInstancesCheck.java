@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -48,7 +49,7 @@ public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor impl
       reportIssue(membersMainMethods.get(0).simpleName(), "At most one main method should be defined in a class.");
       return;
     }
-    List<MethodTree> superMainMethods = findMainMethodsInSuperclasses(ct).toList();
+    List<MethodTree> superMainMethods = findMainMethodsInSuperclasses(ct);
     if (superMainMethods.isEmpty()) {
       return;
     }
@@ -64,11 +65,12 @@ public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor impl
     mainWithHigherPriorityInSuper.ifPresentOrElse(
       // there is a main method in superclasses with higher priority than the one in members, so the one in members will not be the entry point
       superMainMethod -> reportIssue(
-          singleMainMethod.simpleName(),
-          "This 'main' method will not be the entry point because another inherited 'main' from %s takes precedence."
-            .formatted(enclosingClassName(superMainMethod))
-        ),
-      // there is no main method in superclasses with higher priority than the one in members, so the one in members will be the entry point, but if it is not overriding, it is a problem as it introduces multiple main methods
+        singleMainMethod.simpleName(),
+        "This 'main' method will not be the entry point because another inherited 'main' from %s takes precedence."
+          .formatted(enclosingClassName(superMainMethod))
+      ),
+      // there is no main method in superclasses with higher priority than the one in members, so the one in members will be the entry point, but if it is not overriding, it is
+      // a problem as it introduces multiple main methods
       () -> {
         if (!isOverriding) {
           var superMainMethod = superMainMethods.get(0);
@@ -82,24 +84,21 @@ public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor impl
     );
   }
 
-  private final String enclosingClassName(MethodTree mainMethod) {
+  private String enclosingClassName(MethodTree mainMethod) {
     var enclosingClass = mainMethod.symbol().enclosingClass();
     return enclosingClass == null ? "unknown" : enclosingClass.name();
   }
 
-  private Stream<MethodTree> findMainMethodsInSuperclasses(ClassTree ct) {
+  private List<MethodTree> findMainMethodsInSuperclasses(ClassTree ct) {
+    List<MethodTree> mains = new ArrayList<>();
     var superClass = ct.superClass();
-    if (superClass == null) {
-      return Stream.empty();
+    while (superClass != null) {
+      var superClassTree = superClass.symbolType().symbol().declaration();
+      findMainMethodsInMembers(superClassTree)
+        .forEach(mains::add);
+      superClass = superClassTree.superClass();
     }
-    var superClassTree = superClass.symbolType().symbol().declaration();
-    if (superClassTree == null) {
-      return Stream.empty();
-    }
-    return Stream.concat(
-      findMainMethodsInMembers(superClassTree),
-      findMainMethodsInSuperclasses(superClassTree)
-    );
+    return mains;
   }
 
   private Stream<MethodTree> findMainMethodsInMembers(ClassTree ct) {
