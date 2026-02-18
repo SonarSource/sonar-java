@@ -19,15 +19,16 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class ScopedValueGetOutsideBindingScopeCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/ScopedValueGetOutsideBindingScopeCheckSample.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/ScopedValueGetOutsideBindingScopeCheckSample.java"))
       .withCheck(new ScopedValueGetOutsideBindingScopeCheck())
+      .withJavaVersion(25)
       .verifyIssues();
   }
 
