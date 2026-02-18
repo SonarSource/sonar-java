@@ -4,9 +4,13 @@ be preferred over the traditional, more verbose <code>BufferedReader</code> or <
 <p>Traditionally, reading a line from the console required significant boilerplate code, involving <code>InputStreamReader</code>,
 <code>BufferedReader</code>, and explicit <code>IOException</code> handling. This pattern is not only verbose but also error-prone and harder to
 read.</p>
-<p>The modern <code>IO.readln()</code> method: * Reduces boilerplate by providing a single-method call for reading lines. * Eliminates the need for
-explicit checked exception handling for standard console input. * Allows for an optional prompt string, combining the "print" and "read" steps into
-one cohesive operation. * Avoids the resource management overhead (like <code>try-with-resources</code>) required for manual stream wrappers.</p>
+<p>The modern <code>IO.readln()</code> method:</p>
+<ul>
+  <li> Reduces boilerplate by providing a single-method call for reading lines. </li>
+  <li> Eliminates the need for explicit checked exception handling for standard console input. </li>
+  <li> Allows for an optional prompt string, combining the "print" and "read" steps into one cohesive operation. </li>
+  <li> Avoids the resource management overhead (like <code>try-with-resources</code>) required for manual stream wrappers. </li>
+</ul>
 <h2>How to fix it</h2>
 <p>Replace manual stream wrapping of <code>System.in</code> with the static <code>IO.readln()</code> method. If you are using a version of Java where
 <code>IO</code> is automatically imported (such as in JShell or modern entry points), you can call <code>readln()</code> directly; otherwise, use

@@ -18,7 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S8450")
-public class BufferedReaderBoilerplateCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+public class BufferedReaderBoilerplateCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
   private static final MethodMatchers BUFFERED_READER_CONSTRUCTOR = MethodMatchers.create()
     .ofTypes("java.io.BufferedReader")
@@ -52,18 +52,18 @@ public class BufferedReaderBoilerplateCheck extends IssuableSubscriptionVisitor 
     return List.of(Tree.Kind.NEW_CLASS);
   }
 
+
   @Override
-  public void visitNode(Tree tree) {
-    NewClassTree newClassTree = (NewClassTree) tree;
-    if (!BUFFERED_READER_CONSTRUCTOR.matches(newClassTree)) {
-      return;
-    }
-    ExpressionTree firstArg = newClassTree.arguments().get(0);
-    if (firstArg.is(Tree.Kind.NEW_CLASS)) {
-      NewClassTree innerNewClass = (NewClassTree) firstArg;
-      if (INPUT_STREAM_READER_CONSTRUCTOR.matches(innerNewClass) && isSystemIn(innerNewClass.arguments().get(0))) {
-        reportIssue(newClassTree, "Use \"IO.readln()\" instead of this \"BufferedReader\" boilerplate.");
-      }
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return BUFFERED_READER_CONSTRUCTOR;
+  }
+
+  @Override
+  protected void onConstructorFound(NewClassTree newClassTree) {
+    if (newClassTree.arguments().get(0) instanceof NewClassTree innerNewClass
+      && INPUT_STREAM_READER_CONSTRUCTOR.matches(innerNewClass)
+      && isSystemIn(innerNewClass.arguments().get(0))) {
+      reportIssue(newClassTree, "Use \"IO.readln()\" instead of this \"BufferedReader\" boilerplate.");
     }
   }
 
