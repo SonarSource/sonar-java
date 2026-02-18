@@ -1,35 +1,45 @@
 package checks;
 
-import java.security.SecureRandom;
-import javax.crypto.KDF;
+import java.security.NoSuchAlgorithmException;
 import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.HKDFParameterSpec;
+import javax.crypto.SecretKeyFactory;
 
 class AvoidKeyGeneratorWithKdfCheckSample {
 
-  private static final byte[] getSharedSecret() {
-    return null;
+  private static final String HKDF_ALGO = "HKDF-SHA256";
+  private static final String PBKDF2_ALGO = "PBKDF2WithHmacSHA256";
+
+  private static final String SHA_ALGO = "HA256";
+
+  // --- Noncompliant: KeyGenerator with KDF algorithms ---
+
+  void nonCompliantAlgos() throws NoSuchAlgorithmException {
+    KeyGenerator.getInstance("HKDF-SHA256"); // Noncompliant {{Use the KDF API instead of KeyGenerator for key derivation.}}
+    KeyGenerator.getInstance("HKDF-SHA384"); // Noncompliant
+    KeyGenerator.getInstance("HKDF-SHA512"); // Noncompliant
+    SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256"); // Noncompliant {{Use the KDF API instead of SecretKeyFactory for key derivation.}}
   }
 
-  void noncompliant() throws Exception {
-    byte[] sharedSecret = getSharedSecret();
-    KeyGenerator kg = KeyGenerator.getInstance("HKDF-SHA256"); // Noncompliant
-
-    kg.init(new SecureRandom(sharedSecret));
-    SecretKey key = kg.generateKey();
+  void nonCompliantConstantInArgument() throws NoSuchAlgorithmException {
+    KeyGenerator.getInstance(HKDF_ALGO); // Noncompliant
+    SecretKeyFactory.getInstance(PBKDF2_ALGO); // Noncompliant
   }
 
-  void compliant() throws Exception {
-    byte[] ikm = getSharedSecret();
-    byte[] info = "AES_256_GCM_Key".getBytes();
+  // --- Compliant: non-KDF algorithms ---
 
-    KDF hkdf = KDF.getInstance("HKDF-SHA256");
-    HKDFParameterSpec params = HKDFParameterSpec.ofExtract()
-      .addIKM(ikm)
-      .thenExpand(info, 32);
-
-    SecretKey key = hkdf.deriveKey("AES", params);
+  void compliantAlgos() throws NoSuchAlgorithmException {
+    KeyGenerator.getInstance("AES"); // Compliant
+    KeyGenerator.getInstance("DES"); // Compliant
+    SecretKeyFactory.getInstance("SHA-224"); // Compliant
   }
 
+  void compliantConstantInArgument() throws NoSuchAlgorithmException {
+    KeyGenerator.getInstance(SHA_ALGO); // Compliant
+    SecretKeyFactory.getInstance(SHA_ALGO); // Compliant
+  }
+
+  void compliantUnknownArg(String algo) throws NoSuchAlgorithmException {
+    KeyGenerator.getInstance(algo); // Compliant - unknown algorithm at compile time
+    SecretKeyFactory.getInstance(algo); // Compliant - unknown algorithm at compile time
+  }
 }

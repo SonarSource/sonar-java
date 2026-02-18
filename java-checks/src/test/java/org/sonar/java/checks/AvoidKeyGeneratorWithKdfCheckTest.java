@@ -28,7 +28,17 @@ class AvoidKeyGeneratorWithKdfCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/AvoidKeyGeneratorWithKdfCheckSample.java"))
       .withCheck(new AvoidKeyGeneratorWithKdfCheck())
+      .withJavaVersion(25)
       .verifyIssues();
+  }
+
+  @Test
+  void test_java24() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/AvoidKeyGeneratorWithKdfCheckSample.java"))
+      .withCheck(new AvoidKeyGeneratorWithKdfCheck())
+      .withJavaVersion(24)
+      .verifyNoIssues();
   }
 
 }

@@ -16,22 +16,43 @@
  */
 package org.sonar.java.checks;
 
-import java.util.List;
+import java.util.Locale;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S8461")
-public class AvoidKeyGeneratorWithKdfCheck extends IssuableSubscriptionVisitor {
+public class AvoidKeyGeneratorWithKdfCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
+
+  private static final String MESSAGE = "Use the KDF API instead of %s for key derivation.";
+
+  private static final String KDF = "KDF";
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.METHOD);
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava25Compatible();
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    // TODO: implement rule logic
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(
+      MethodMatchers.create().ofTypes("javax.crypto.KeyGenerator").names("getInstance").withAnyParameters().build(),
+      MethodMatchers.create().ofTypes("javax.crypto.SecretKeyFactory").names("getInstance").withAnyParameters().build());
+  }
+
+  @Override
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    ExpressionTree firstArg = mit.arguments().get(0);
+    String algorithm = ExpressionsHelper.getConstantValueAsString(firstArg).value();
+    if (algorithm != null && algorithm.toUpperCase(Locale.ROOT).contains(KDF)) {
+      String className = mit.methodSymbol().owner().name();
+      reportIssue(mit, String.format(MESSAGE, className));
+    }
   }
 
 }
