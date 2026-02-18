@@ -1,0 +1,25 @@
+{
+  "title": "The KDF API should be used for key derivation instead of KeyGenerator or SecretKeyFactory",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java25"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-8461",
+  "sqKey": "S8461",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH",
+      "RELIABILITY": "MEDIUM",
+      "SECURITY": "LOW"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
