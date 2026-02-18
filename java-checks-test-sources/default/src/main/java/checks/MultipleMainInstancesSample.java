@@ -34,7 +34,6 @@ public class MultipleMainInstancesSample {
     }
 
     void main() {
-
       System.out.println("Unreachable entry point in enum due to static precedence.");
     }
   }
@@ -60,7 +59,7 @@ public class MultipleMainInstancesSample {
     }
   }
 
-  public static class NonCompliantWithOverloads {
+  public static class NonCompliantChildPrecedence {
     class Parent {
       void main() {
         System.out.println("Parent instance main method.");
@@ -68,8 +67,22 @@ public class MultipleMainInstancesSample {
     }
 
     class Child extends Parent {
-      public static void main(String[] args) { // Noncompliant {{Main method should not be defined in a class if a main method is already defined in a superclass.}}
+      void main(String[] args) { // Noncompliant {{Override main from Parent to avoid introducing multiple main methods.}}
         System.out.println("Static main in child class detected; shadowing instance main.");
+      }
+    }
+  }
+
+  public static class NonCompliantParentPrecedence {
+    class Parent {
+      void main(String[] args) {
+        System.out.println("Parent instance main method.");
+      }
+    }
+
+    class Child extends Parent {
+      void main() { // Noncompliant {{This 'main' method will not be the entry point because another inherited 'main' from Parent takes precedence.}}
+        System.out.println("Parent main method takes precedence over child main; this method will not be the entry point.");
       }
     }
   }
@@ -102,7 +115,7 @@ public class MultipleMainInstancesSample {
 
     class Child extends Parent {
       @Override
-      void main() { // Compliant: This is an instance method that overrides the parent main
+      void main() { // Noncompliant {{This 'main' method will not be the entry point because another inherited 'main' from Parent takes precedence.}}
         System.out.println("Child instance main method overriding parent main.");
       }
     }
@@ -143,7 +156,7 @@ public class MultipleMainInstancesSample {
     }
 
     class NonCompliantChild extends Parent {
-      void main(String[] args) { // Noncompliant {{Main method should not be defined in a class if a main method is already defined in a superclass.}}
+      void main(String[] args) { // Noncompliant {{Override main from GrandParent to avoid introducing multiple main methods.}}
         System.out.println("Child main method detected; shadowing grandparent main.");
       }
     }

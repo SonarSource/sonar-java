@@ -61,6 +61,26 @@ public final class MethodTreeUtils {
     return isPublic(m) && isStatic(m) && isNamed(m, "main") && returnsPrimitive(m, "void") && hasStringArrayParameter(m);
   }
 
+  /**
+   * Compares the priority of two main methods. In Java 25 and above, a main method with a String[] parameter has higher priority than a main method without parameters. In earlier versions of Java, only a main method with a String[] parameter is considered valid.
+   * @param compared: first main method to compare
+   * @param reference: second main method to compare
+   * @return 1 if m1 has higher priority, -1 if m2 has higher priority, 0 if both have the same priority
+   */
+  public static int compareMainMethodPriority(MethodTree compared, MethodTree reference) {
+    boolean comparedHasStringArrayParameter = hasStringArrayParameter(compared);
+    boolean referenceHasStringArrayParameter = hasStringArrayParameter(reference);
+    if (comparedHasStringArrayParameter && !referenceHasStringArrayParameter) {
+      return 1;
+    }
+    else if (!comparedHasStringArrayParameter && referenceHasStringArrayParameter) {
+      return -1;
+    }
+    else {
+      return 0;
+    }
+  }
+
   private static boolean hasStringArrayParameter(MethodTree m) {
     return m.parameters().size() == 1 && isParameterStringArray(m);
   }

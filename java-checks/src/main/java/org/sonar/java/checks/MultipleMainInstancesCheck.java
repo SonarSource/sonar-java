@@ -28,6 +28,8 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+//https://github.com/SonarSource/sonar-java/pull/5455
+
 @Rule(key = "S8446")
 public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
   @Override
@@ -39,21 +41,50 @@ public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor impl
   public void visitNode(Tree tree) {
     ClassTree ct = (ClassTree) tree;
     List<MethodTree> membersMainMethods = findMainMethodsInMembers(ct).toList();
-    List<MethodTree> superMainMethods = findMainMethodsInSuperclasses(ct).toList();
-    boolean hasMembersMainMethod = !membersMainMethods.isEmpty();
-    boolean hasMultipleMainMethods = membersMainMethods.size() + superMainMethods.size() > 1;
-    boolean hasLegitSingleMainOverride =
-      membersMainMethods.size() == 1
-        && Optional.ofNullable(membersMainMethods.get(0).isOverriding()).orElse(false);
-
-    if (hasMembersMainMethod && hasMultipleMainMethods && !hasLegitSingleMainOverride) {
-      var firstMainMethod = membersMainMethods.get(0);
-      var firstMainMethodToken = firstMainMethod.simpleName();
-      var errorMessage = membersMainMethods.size() > 1 ?
-        "At most one main method should be defined in a class." :
-        "Main method should not be defined in a class if a main method is already defined in a superclass.";
-      reportIssue(firstMainMethodToken, errorMessage);
+    if (membersMainMethods.isEmpty()) {
+      return;
     }
+    if (membersMainMethods.size() > 1) {
+      reportIssue(membersMainMethods.get(0).simpleName(), "At most one main method should be defined in a class.");
+      return;
+    }
+    List<MethodTree> superMainMethods = findMainMethodsInSuperclasses(ct).toList();
+    if (superMainMethods.isEmpty()) {
+      return;
+    }
+
+    // at this point : 1 main method in members and at least 1 main method in superclasses
+    var singleMainMethod = membersMainMethods.get(0);
+    boolean isOverriding = Optional.ofNullable(singleMainMethod.isOverriding()).orElse(false);
+
+    // override case
+    var mainWithHigherPriorityInSuper = superMainMethods.stream().filter(superMainMethod ->
+      MethodTreeUtils.compareMainMethodPriority(singleMainMethod, superMainMethod) < 0
+    ).findFirst();
+    mainWithHigherPriorityInSuper.ifPresentOrElse(
+      // there is a main method in superclasses with higher priority than the one in members, so the one in members will not be the entry point
+      superMainMethod -> reportIssue(
+          singleMainMethod.simpleName(),
+          "This 'main' method will not be the entry point because another inherited 'main' from %s takes precedence."
+            .formatted(enclosingClassName(superMainMethod))
+        ),
+      // there is no main method in superclasses with higher priority than the one in members, so the one in members will be the entry point, but if it is not overriding, it is a problem as it introduces multiple main methods
+      () -> {
+        if (!isOverriding) {
+          var superMainMethod = superMainMethods.get(0);
+          reportIssue(
+            singleMainMethod,
+            "Override main from %s to avoid introducing multiple main methods."
+              .formatted(enclosingClassName(superMainMethod))
+          );
+        }
+      }
+    );
+  }
+
+  private final String enclosingClassName(MethodTree mainMethod) {
+    var enclosingClass = mainMethod.symbol().enclosingClass();
+    return enclosingClass == null ? "unknown" : enclosingClass.name();
   }
 
   private Stream<MethodTree> findMainMethodsInSuperclasses(ClassTree ct) {
