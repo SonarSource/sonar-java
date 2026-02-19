@@ -52,7 +52,6 @@ public class BufferedReaderBoilerplateCheck extends AbstractMethodDetection impl
     return List.of(Tree.Kind.NEW_CLASS);
   }
 
-
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return BUFFERED_READER_CONSTRUCTOR;
@@ -68,11 +67,8 @@ public class BufferedReaderBoilerplateCheck extends AbstractMethodDetection impl
   }
 
   private static boolean isSystemIn(ExpressionTree expression) {
-    if (!expression.is(Tree.Kind.MEMBER_SELECT)) {
-      return false;
-    }
-    MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expression;
-    return "in".equals(memberSelect.identifier().name()) &&
-      memberSelect.expression().symbolType().is("java.lang.System");
+    return expression instanceof MemberSelectExpressionTree memberSelect
+      &&"in".equals(memberSelect.identifier().name())
+      && memberSelect.expression().symbolType().is("java.lang.System");
   }
 }
