@@ -1,4 +1,4 @@
-package checks;
+package checks.innerStaticClassesCheck;
 
 class Fruit {
   private int value;
@@ -113,7 +113,7 @@ class A {
 
   class B { // Compliant inner class refers to field.
     Bar foo() {
-      return new String() {
+      return new Bar() {
         public String toString() { return ""+fielda;}
       };
     }
@@ -125,14 +125,14 @@ class A {
   }
   
   class SubB extends B {  // Compliant since super class is not static
-    Object foo() {
-      return new Object();
+    Bar foo() {
+      return new Bar();
     }
   }
   
   class SubSubB extends SubB {  // Compliant since super class is not static
-    Object foo() {
-      return new Object();
+    Bar foo() {
+      return new Bar();
     }
   }
   
@@ -146,11 +146,11 @@ class A {
 
 }
 
-public class Extendable {
+class Extendable {
   protected int field;
 }
 
-public class Foo extends Extendable {
+class Foo extends Extendable {
 
   class Inner { // Compliant field is refered.
     void plop(){
@@ -158,7 +158,7 @@ public class Foo extends Extendable {
     }
   }
 }
-public class A1 {
+class A1 {
   private int field;
 
   class B { // Noncompliant
@@ -177,7 +177,7 @@ public class A1 {
   void usedInAnonymousClass() {
     final String myString = "";
     method(new toImplement() { // Compliant my String is used.
-      void fun(String s) {
+      public void fun(String s) {
         myString.length();
       }
     });
@@ -200,10 +200,10 @@ class A3 {
     }
   }
 }
-public class A4 {
+class A4 {
   public void m(int a) {
     class B { // compliant cannot be made static
-      void foo() {
+      int foo() {
         return a;
       }
     }
