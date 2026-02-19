@@ -57,9 +57,7 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
 
   private static Optional<Symbol> fieldAssignmentSymbol(AssignmentExpressionTree tree, Symbol.TypeSymbol childClass) {
     // field assignment
-    if (tree.variable() instanceof MemberSelectExpressionTree mseTree
-      && mseTree.expression() instanceof IdentifierTree idTree
-      && THIS.getValue().equals(idTree.name())) {
+    if (tree.variable() instanceof MemberSelectExpressionTree mseTree) {
       return Optional.of(mseTree.identifier().symbol());
     }
     // direct assignment
