@@ -84,7 +84,7 @@ public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor impl
     );
   }
 
-  private String enclosingClassName(MethodTree mainMethod) {
+  private static String enclosingClassName(MethodTree mainMethod) {
     var enclosingClass = mainMethod.symbol().enclosingClass();
     return enclosingClass == null ? "unknown" : enclosingClass.name();
   }
