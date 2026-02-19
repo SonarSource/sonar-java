@@ -62,7 +62,9 @@ public final class MethodTreeUtils {
   }
 
   /**
-   * Compares the priority of two main methods. In Java 25 and above, a main method with a String[] parameter has higher priority than a main method without parameters. In earlier versions of Java, only a main method with a String[] parameter is considered valid.
+   * Compares the priority of two main methods.
+   * In Java 25 and above, a main method with a String[] parameter has higher priority than a main method without parameters.
+   * In earlier versions of Java, only a main method with a String[] parameter is considered valid.
    * @param compared: first main method to compare
    * @param reference: second main method to compare
    * @return 1 if m1 has higher priority, -1 if m2 has higher priority, 0 if both have the same priority
@@ -72,11 +74,9 @@ public final class MethodTreeUtils {
     boolean referenceHasStringArrayParameter = hasStringArrayParameter(reference);
     if (comparedHasStringArrayParameter && !referenceHasStringArrayParameter) {
       return 1;
-    }
-    else if (!comparedHasStringArrayParameter && referenceHasStringArrayParameter) {
+    } else if (!comparedHasStringArrayParameter && referenceHasStringArrayParameter) {
       return -1;
-    }
-    else {
+    } else {
       return 0;
     }
   }
