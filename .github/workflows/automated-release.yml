@@ -6,34 +6,6 @@ on:
         description: "Short description for the REL ticket"
         required: true
         type: string
-      sq-ide-short-description:
-        description: "Short description for the SonarLint IDE tickets (leave empty to skip IDE tickets)"
-        required: false
-        type: string
-      sqc-integration:
-        description: "Integrate into SQC"
-        type: boolean
-        default: true
-      sqs-integration:
-        description: "Integrate into SQS"
-        type: boolean
-        default: true
-      slvs-integration:
-        description: "Create SLVS ticket (SonarLint for Visual Studio)"
-        type: boolean
-        default: false
-      slvscode-integration:
-        description: "Create SLVSCode ticket (SonarLint for VS Code)"
-        type: boolean
-        default: false
-      sle-integration:
-        description: "Create SLE ticket (SonarLint for Eclipse)"
-        type: boolean
-        default: false
-      sli-integration:
-        description: "Create SLI ticket (SonarLint for IntelliJ)"
-        type: boolean
-        default: false
       branch:
         description: "Branch from which to do the release"
         required: true
@@ -55,7 +27,19 @@ on:
       dry-run:
         description: "Test mode: uses Jira sandbox and creates draft GitHub release"
         type: boolean
-        default: false
+        default: true
+      ide-integration:
+        description: "Integrate into IDE"
+        type: boolean
+        default: true
+      sqc-integration:
+        description: "Integrate into SQC"
+        type: boolean
+        default: true
+      sqs-integration:
+        description: "Integrate into SQS"
+        type: boolean
+        default: true
 
 jobs:
   release:
@@ -71,16 +55,15 @@ jobs:
       project-name: "SonarJava"
       plugin-name: "java"
       jira-project-key: "SONARJAVA"
+      runner-environment: "github-ubuntu-latest-s"
       rule-props-changed: ${{ github.event.inputs.rule-props-changed }}
       short-description: ${{ github.event.inputs.short-description }}
       new-version: ${{ github.event.inputs.new-version }}
       sqc-integration: ${{ github.event.inputs.sqc-integration == 'true' }}
       sqs-integration: ${{ github.event.inputs.sqs-integration == 'true' }}
-      create-slvs-ticket: ${{ github.event.inputs.slvs-integration == 'true' }}
-      create-slvscode-ticket: ${{ github.event.inputs.slvscode-integration == 'true' }}
-      create-sle-ticket: ${{ github.event.inputs.sle-integration == 'true' }}
-      create-sli-ticket: ${{ github.event.inputs.sli-integration == 'true' }}
-      sq-ide-short-description: ${{ github.event.inputs.sq-ide-short-description }}
+      create-sle-ticket: ${{ github.event.inputs.ide-integration == 'true' }}
+      create-sli-ticket: ${{ github.event.inputs.ide-integration == 'true' }}
+      create-slvscode-ticket: ${{ github.event.inputs.ide-integration == 'true' }}
       branch: ${{ github.event.inputs.branch }}
       pm-email: "jean.jimbo@sonarsource.com"
       slack-channel: "squad-jvm-notifs"
@@ -91,7 +74,7 @@ jobs:
   bump_versions:
     name: Bump versions
     needs: release
-    uses: ./.github/workflows/bump-versions.yaml
+    uses: ./.github/workflows/PrepareNextIteration.yml
     permissions:
       contents: write
       pull-requests: write
