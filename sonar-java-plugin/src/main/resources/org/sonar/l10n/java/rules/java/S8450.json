@@ -1,0 +1,23 @@
+{
+  "title": "Prefer \"IO.readln()\" over \"BufferedReader\" boilerplate",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java25"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-8450",
+  "sqKey": "S8450",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
