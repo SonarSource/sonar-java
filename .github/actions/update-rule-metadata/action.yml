@@ -49,6 +49,7 @@ runs:
       
       - name: Custom Update
         if: ${{ inputs.post-update }}
+        shell: bash
         run: ${{ inputs.post-update }}
 
       - name: Create PR
