@@ -1,0 +1,48 @@
+<p>Using the specific KDF (Key Derivation Function) API ensures that cryptographic keys are derived deterministically and flexibly, which is not
+supported by general-purpose key generation APIs.</p>
+<h2>Why is this an issue?</h2>
+<p>Using <code>KeyGenerator</code> or <code>SecretKeyFactory</code> for key derivation is inappropriate because these APIs were designed for different
+cryptographic purposes:</p>
+<ul>
+  <li> <strong>KeyGenerator</strong> is intended for <strong>non-deterministic</strong> key creation using a source of entropy (randomness). In
+  contrast, KDFs are designed to allow multiple parties to derive the same key deterministically from shared input material. </li>
+  <li> <strong>SecretKeyFactory</strong> is optimized for <strong>single key</strong> creation (like PBE). KDFs, however, are built to support
+  <strong>successive derivations</strong>, allowing a single master secret to branch into multiple sub-keys safely. </li>
+</ul>
+<p>Using the wrong API can lead to implementation errors, lack of support for necessary KDF parameters (like salts or info strings), and poor code
+maintainability.</p>
+<h2>How to fix it</h2>
+<p>Replace usages of <code>KeyGenerator</code> or <code>SecretKeyFactory</code> with the dedicated <code>KDF</code> API when performing key derivation
+operations such as HKDF.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+// Noncompliant: Attempting to force a random generator to be deterministic
+byte[] sharedSecret = getSharedSecret();
+KeyGenerator kg = KeyGenerator.getInstance("HKDF-SHA256");
+// This is unpredictable; the provider might ignore this seed or use it incorrectly
+kg.init(new SecureRandom(sharedSecret));
+SecretKey key = kg.generateKey();
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+// Compliant: Using the KDF API to formally derive a key from a shared secret
+byte[] ikm = getSharedSecret();
+byte[] salt = getSalt(); // Optional but recommended
+byte[] info = "AES_256_GCM_Key".getBytes();
+
+KDF hkdf = KDF.getInstance("HKDF-SHA256");
+HKDFParameterSpec params = HKDFParameterSpec.ofExtract()
+    .addIKM(ikm)
+    .addSalt(salt)
+    .thenExpand(info, 32);
+
+SecretKey key = hkdf.deriveKey("AES", params);
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> <a href="https://openjdk.org/jeps/510">JEP 510: Key Derivation Function API</a> </li>
+  <li> <a href="https://docs.oracle.com/en/java/javase/25/docs/specs/security/standard-names.html#kdf-algorithms">KDF Algorithms</a> </li>
+</ul>
+
