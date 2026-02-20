@@ -33,18 +33,18 @@ public class Java25FeaturesTelemetryTest {
   @Test
   public void test() {
     MavenBuild build = TestUtils.createMavenBuild()
-      .setPom(TestUtils.projectPom("java-25-new-features"))
+      .setPom(TestUtils.projectPom("java-features"))
       .setCleanPackageSonarGoals()
       .setDebugLogs(true);
 
     String projectKey = "org.sonarsource.it.projects:parent-project";
-    TestUtils.provisionProject(orchestrator, projectKey, "multi-module", "java", "multi-module");
+    TestUtils.provisionProject(orchestrator, projectKey, "java-features", "java", "multi-module");
 
     BuildResult buildResult = orchestrator.executeBuild(build);
 
     assertThat(buildResult.getLogs())
-      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY, 1))
-      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_MODULE_IMPORT, 1))
-      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_COMPACT_SOURCE_FILES, 1));
+      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY.key(), 1))
+      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_MODULE_IMPORT.key(), 1))
+      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_COMPACT_SOURCE_FILES.key(), 1));
   }
 }

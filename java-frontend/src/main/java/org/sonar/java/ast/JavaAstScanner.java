@@ -48,8 +48,8 @@ import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.telemetry.TelemetryKey.JavaAnalysisKeys;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -184,7 +184,7 @@ public class JavaAstScanner {
       Set<JProblem> undefinedTypes = ast.sema.undefinedTypes();
       collectUndefinedTypes(path, undefinedTypes);
       cleanUp.accept(ast);
-      new TelemetryFeaturesVisitor().visitNode(ast);
+      new Java25FeaturesTelemetryVisitor().visitNode(ast);
       telemetryAnalysisKeys = javaAnalysisKeys.success();
       telemetry.aggregateAsCounter(javaAnalysisKeys.success().typeErrorCountKey(), undefinedTypes.size());
     } catch (RecognitionException e) {
@@ -210,7 +210,7 @@ public class JavaAstScanner {
     }
   }
 
-  private final class TelemetryFeaturesVisitor extends SubscriptionVisitor {
+  private final class Java25FeaturesTelemetryVisitor extends SubscriptionVisitor implements JavaVersionAwareVisitor {
     @Override
     public List<Tree.Kind> nodesToVisit() {
       return List.of(Tree.Kind.CONSTRUCTOR, Tree.Kind.IMPORT, Tree.Kind.IMPLICIT_CLASS);
@@ -244,6 +244,11 @@ public class JavaAstScanner {
         && expressionStatementTree.expression() instanceof MethodInvocationTree methodInvocationTree
         && methodInvocationTree.methodSelect() instanceof IdentifierTree identifierTree
         && ExpressionUtils.isThisOrSuper(identifierTree.name());
+    }
+
+    @Override
+    public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+      return version.isJava25Compatible();
     }
   }
 
