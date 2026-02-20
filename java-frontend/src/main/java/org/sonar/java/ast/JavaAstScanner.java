@@ -37,7 +37,6 @@ import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisProgress;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.ast.visitors.Java25FeaturesTelemetryVisitor;
 import org.sonar.java.model.InputFileUtils;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.JProblem;
@@ -91,14 +90,13 @@ public class JavaAstScanner {
   }
 
   public void scan(Iterable<? extends InputFile> inputFiles) {
-    scan(inputFiles, compilationUnitTree -> {
-    });
+    scan(inputFiles, compilationUnitTree -> {});
   }
 
   /**
    * Scan the given files and modify
    *
-   * @param inputFiles            The list of files to analyze
+   * @param inputFiles The list of files to analyze
    * @param modifyCompilationUnit allow you to modify the ast before running the analysis on it, for example to remove semantic information
    */
   @VisibleForTesting
@@ -156,8 +154,7 @@ public class JavaAstScanner {
   }
 
   public void simpleScan(InputFile inputFile, JParserConfig.Result result, Consumer<JavaTree.CompilationUnitTreeImpl> cleanUp) {
-    simpleScan(inputFile, result, cleanUp, compilationUnitTree -> {
-    });
+    simpleScan(inputFile, result, cleanUp, compilationUnitTree -> {});
   }
 
   // modifyCompilationUnit should be used for testing.
@@ -174,12 +171,6 @@ public class JavaAstScanner {
       Set<JProblem> undefinedTypes = ast.sema.undefinedTypes();
       collectUndefinedTypes(path, undefinedTypes);
       cleanUp.accept(ast);
-
-      final var java25FeaturesTelemetryVisitor =new Java25FeaturesTelemetryVisitor(telemetry);
-      if (java25FeaturesTelemetryVisitor.isCompatibleWithJavaVersion(visitor.getJavaVersion())) {
-        java25FeaturesTelemetryVisitor.scan(ast);
-      }
-
       telemetryAnalysisKeys = javaAnalysisKeys.success();
       telemetry.aggregateAsCounter(javaAnalysisKeys.success().typeErrorCountKey(), undefinedTypes.size());
     } catch (RecognitionException e) {
