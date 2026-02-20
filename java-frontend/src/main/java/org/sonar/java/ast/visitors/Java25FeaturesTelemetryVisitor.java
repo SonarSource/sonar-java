@@ -38,12 +38,6 @@ public final class Java25FeaturesTelemetryVisitor extends SubscriptionVisitor im
     this.telemetry = telemetry;
   }
 
-
-  public void scan(Tree ast) {
-    // public wrapper for protected scanTree method
-    scanTree(ast);
-  }
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.CONSTRUCTOR, Tree.Kind.IMPORT, Tree.Kind.IMPLICIT_CLASS);
