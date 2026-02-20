@@ -1,0 +1,82 @@
+name: Automated Release
+on:
+  workflow_dispatch:
+    inputs:
+      short-description:
+        description: "Short description for the REL ticket"
+        required: true
+        type: string
+      branch:
+        description: "Branch from which to do the release"
+        required: true
+        default: "master"
+        type: string
+      new-version:
+        description: "New version to release (without -SNAPSHOT; if left empty, the current minor version will be auto-incremented)"
+        required: false
+        type: string
+      rule-props-changed:
+        description: >
+          "@RuleProperty" changed? See SC-4654
+        type: boolean
+        default: false
+      verbose:
+        description: "Enable verbose logging"
+        type: boolean
+        default: false
+      dry-run:
+        description: "Test mode: uses Jira sandbox and creates draft GitHub release"
+        type: boolean
+        default: true
+      ide-integration:
+        description: "Integrate into IDE"
+        type: boolean
+        default: true
+      sqc-integration:
+        description: "Integrate into SQC"
+        type: boolean
+        default: true
+      sqs-integration:
+        description: "Integrate into SQS"
+        type: boolean
+        default: true
+
+jobs:
+  release:
+    name: Release
+    uses: SonarSource/release-github-actions/.github/workflows/automated-release.yml@v1
+    permissions:
+      statuses: read
+      id-token: write
+      contents: write
+      actions: write
+      pull-requests: write
+    with:
+      project-name: "SonarJava"
+      plugin-name: "java"
+      jira-project-key: "SONARJAVA"
+      runner-environment: "github-ubuntu-latest-s"
+      rule-props-changed: ${{ github.event.inputs.rule-props-changed }}
+      short-description: ${{ github.event.inputs.short-description }}
+      new-version: ${{ github.event.inputs.new-version }}
+      sqc-integration: ${{ github.event.inputs.sqc-integration == 'true' }}
+      sqs-integration: ${{ github.event.inputs.sqs-integration == 'true' }}
+      create-sle-ticket: ${{ github.event.inputs.ide-integration == 'true' }}
+      create-sli-ticket: ${{ github.event.inputs.ide-integration == 'true' }}
+      create-slvscode-ticket: ${{ github.event.inputs.ide-integration == 'true' }}
+      branch: ${{ github.event.inputs.branch }}
+      pm-email: "jean.jimbo@sonarsource.com"
+      slack-channel: "squad-jvm-notifs"
+      verbose: ${{ github.event.inputs.verbose == 'true' }}
+      use-jira-sandbox: ${{ github.event.inputs.dry-run == 'true' }}
+      is-draft-release: ${{ github.event.inputs.dry-run == 'true' }}
+
+  bump_versions:
+    name: Bump versions
+    needs: release
+    uses: ./.github/workflows/PrepareNextIteration.yml
+    permissions:
+      contents: write
+      pull-requests: write
+    with:
+      version: ${{ needs.release.outputs.new-version }}

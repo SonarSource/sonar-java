@@ -1,10 +1,15 @@
 name: Prepare Next Development Iteration
 
 on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
-      nextVersion:
-        description: Version number of the next iteration (e.g. 8.4-SNAPSHOT)
+      version:
+        description: The new version (without -SNAPSHOT)
         required: true
 
 jobs:
@@ -17,7 +22,7 @@ jobs:
 
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      NEXT_VERSION: ${{ inputs.nextVersion }}
+      NEXT_VERSION: "${{ inputs.version }}-SNAPSHOT"
 
     steps:
 
