@@ -184,7 +184,7 @@ public class JavaAstScanner {
       Set<JProblem> undefinedTypes = ast.sema.undefinedTypes();
       collectUndefinedTypes(path, undefinedTypes);
       cleanUp.accept(ast);
-      new Java25FeaturesTelemetryVisitor().visitNode(ast);
+      new Java25FeaturesTelemetryVisitor().scan(ast);
       telemetryAnalysisKeys = javaAnalysisKeys.success();
       telemetry.aggregateAsCounter(javaAnalysisKeys.success().typeErrorCountKey(), undefinedTypes.size());
     } catch (RecognitionException e) {
@@ -211,6 +211,11 @@ public class JavaAstScanner {
   }
 
   private final class Java25FeaturesTelemetryVisitor extends SubscriptionVisitor implements JavaVersionAwareVisitor {
+    public void scan(Tree ast) {
+      // public wrapper for protected scanTree method
+      scanTree(ast);
+    }
+
     @Override
     public List<Tree.Kind> nodesToVisit() {
       return List.of(Tree.Kind.CONSTRUCTOR, Tree.Kind.IMPORT, Tree.Kind.IMPLICIT_CLASS);
