@@ -16,5 +16,7 @@ void main() {}
     Child(int i) {
       IO.println("Hello from Child constructor");
       IO.println("Hello from Child constructor");
+      int j=0;
+      this();
     }
   }

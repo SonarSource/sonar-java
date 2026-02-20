@@ -28,9 +28,8 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.sonar.java.TestUtils.mockSonarComponents;
 
@@ -54,7 +53,7 @@ class Java25FeaturesTelemetryVisitorTest {
 
     verify(telemetry).aggregateAsCounter(TelemetryKey.JAVA_FEATURE_MODULE_IMPORT, 1);
     verify(telemetry).aggregateAsCounter(TelemetryKey.JAVA_FEATURE_COMPACT_SOURCE_FILES, 1);
-    verify(telemetry).aggregateAsCounter(TelemetryKey.JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY, 1);
+    verify(telemetry, times(2)).aggregateAsCounter(TelemetryKey.JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY, 1);
   }
 
 }

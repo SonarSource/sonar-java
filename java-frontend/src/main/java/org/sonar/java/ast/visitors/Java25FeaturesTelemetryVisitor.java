@@ -59,7 +59,7 @@ public final class Java25FeaturesTelemetryVisitor extends SubscriptionVisitor {
         // if the 1st statement of the constructor is a call to another constructor, then the flexible constructor body feature is not used.
         .skip(1)
         // if any other statement is a call to another constructor, then the flexible constructor body feature is used.
-        .anyMatch(this::isSuperInvocation)
+        .anyMatch(Java25FeaturesTelemetryVisitor::isSuperInvocation)
     ) {
       aggregate(TelemetryKey.JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY);
     }
@@ -70,7 +70,7 @@ public final class Java25FeaturesTelemetryVisitor extends SubscriptionVisitor {
     telemetry.aggregateAsCounter(key, 1);
   }
 
-  private boolean isSuperInvocation(StatementTree statement) {
+  private static boolean isSuperInvocation(StatementTree statement) {
     return statement instanceof ExpressionStatementTree expressionStatementTree
       && expressionStatementTree.expression() instanceof MethodInvocationTree methodInvocationTree
       && methodInvocationTree.methodSelect() instanceof IdentifierTree identifierTree
