@@ -2,9 +2,6 @@ name: Update Rule Metadata
 
 on: workflow_dispatch
 
-env:
-  PR_BRANCH_NAME: "gh-action/update-rule-metadata.${{ github.run_id }}"
-
 jobs:
   UpdateRuleMetadata_job:
     name: Update Rule Metadata
@@ -15,57 +12,8 @@ jobs:
       id-token: write
 
     steps:
-
-      - name: Checkout Sources
-        uses: actions/checkout@v4
-
-      - name: Setup JFrog
-        uses: SonarSource/jfrog-setup-wrapper@v3
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: ./.github/actions/update-rule-metadata
         with:
-          artifactoryRoleSuffix: private-reader
-
-      - name: Setup Rule API
-        run: |
-          jfrog rt curl -sLf "sonarsource-private-releases/com/sonarsource/rule-api/rule-api/%5BRELEASE%5D/rule-api-%5BRELEASE%5D.jar" -o rule-api.jar
-          echo "Latest com.sonarsource.rule-api:rule-api release:"
-          jar xf rule-api.jar META-INF/MANIFEST.MF
-          grep 'Implementation-Version' META-INF/MANIFEST.MF
-        working-directory: /tmp
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
-      - name: Getting Vault Secrets
-        id: secrets
-        uses: SonarSource/vault-action-wrapper@320bd31b03e5dacaac6be51bbbb15adf7caccc32 # v3.1.0
-        with:
-          secrets: |
-            development/github/token/{REPO_OWNER_NAME_DASH}-rspec token | GITHUB_TOKEN_RSPEC;
-
-      - name: Update Files
-        env:
-          GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN_RSPEC }}
-        run: |
-          java -jar "/tmp/rule-api.jar" update
-          sed --in-place='' -e 's/rule:java:S3649/rule:javasecurity:S3649/g' 'sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S2077.html'
-
-      - name: Create PR
-        id: create-pr
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git checkout -b "${{ env.PR_BRANCH_NAME }}"
-          git commit -m 'Update rule metadata' -a
-          git push --set-upstream origin "${{ env.PR_BRANCH_NAME }}"
-          URL=$(gh pr create -B master --title 'Update rule metadata' --body '')
-          echo "url=${URL}" >> $GITHUB_OUTPUT
-
-      - name: Summary
-        run: |
-          echo "Generated ${{steps.create-pr.outputs.url}}." >> $GITHUB_STEP_SUMMARY
-          echo "Tip: close and reopen the PR to trigger CI. " >> $GITHUB_STEP_SUMMARY
+          post-update: |
+            sed --in-place='' -e 's/rule:java:S3649/rule:javasecurity:S3649/g' 'sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S2077.html'
