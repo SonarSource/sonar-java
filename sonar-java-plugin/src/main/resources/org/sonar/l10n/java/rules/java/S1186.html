@@ -3,18 +3,18 @@
 functionality and are misleading to others as they might think the method implementation fulfills a specific and identified requirement.</p>
 <p>There are several reasons for a method not to have a body:</p>
 <ul>
-  <li> It is an unintentional omission, and should be fixed to prevent an unexpected behavior in production. </li>
-  <li> It is not yet, or never will be, supported. In this case an exception should be thrown. </li>
-  <li> The method is an intentionally-blank override. In this case a nested comment should explain the reason for the blank override. </li>
+  <li>It is an unintentional omission, and should be fixed to prevent an unexpected behavior in production.</li>
+  <li>It is not yet, or never will be, supported. In this case an exception should be thrown.</li>
+  <li>The method is an intentionally-blank override. In this case a nested comment should explain the reason for the blank override.</li>
 </ul>
 <h3>Exceptions</h3>
 <p>This does not raise an issue in the following cases:</p>
 <ul>
-  <li> Methods with a comment to explain why they are empty </li>
-  <li> Non-public default (no-argument) constructors </li>
-  <li> Public default (no-argument) constructors when there are other constructors in the class </li>
-  <li> Empty methods in abstract classes </li>
-  <li> Methods annotated with <code>@org.aspectj.lang.annotation.Pointcut()</code> </li>
+  <li>Methods with a comment to explain why they are empty</li>
+  <li>Non-public default (no-argument) constructors</li>
+  <li>Public default (no-argument) constructors when there are other constructors in the class</li>
+  <li>Empty methods in abstract classes</li>
+  <li>Methods annotated with <code>@org.aspectj.lang.annotation.Pointcut()</code></li>
 </ul>
 <pre>
 public abstract class Animal {

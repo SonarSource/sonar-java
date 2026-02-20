@@ -2,16 +2,16 @@
 query. However, this rule doesn’t detect SQL injections (unlike rule {rule:javasecurity:S3649}), the goal is only to highlight complex/formatted queries.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> Some parts of the query come from untrusted values (like user inputs). </li>
-  <li> The query is repeated/duplicated in other parts of the code. </li>
-  <li> The application must support different types of relational databases. </li>
+  <li>Some parts of the query come from untrusted values (like user inputs).</li>
+  <li>The query is repeated/duplicated in other parts of the code.</li>
+  <li>The application must support different types of relational databases.</li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> Use <a href="https://cheatsheetseries.owasp.org/cheatsheets/Query_Parameterization_Cheat_Sheet.html">parameterized queries, prepared
-  statements, or stored procedures</a> and bind variables to SQL query parameters. </li>
-  <li> Consider using ORM frameworks if there is a need to have an abstract layer to access data. </li>
+  <li>Use <a href="https://cheatsheetseries.owasp.org/cheatsheets/Query_Parameterization_Cheat_Sheet.html">parameterized queries, prepared statements,
+  or stored procedures</a> and bind variables to SQL query parameters.</li>
+  <li>Consider using ORM frameworks if there is a need to have an abstract layer to access data.</li>
 </ul>
 <h2>Sensitive Code Example</h2>
 <pre>
@@ -72,15 +72,15 @@ public User getUserHibernate(org.hibernate.Session session, String data) {
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A03_2021-Injection/">Top 10 2021 Category A3 - Injection</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A1_2017-Injection">Top 10 2017 Category A1 - Injection</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/89">CWE-89 - Improper Neutralization of Special Elements used in an SQL Command</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/564">CWE-564 - SQL Injection: Hibernate</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/20">CWE-20 - Improper Input Validation</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/943">CWE-943 - Improper Neutralization of Special Elements in Data Query Logic</a> </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/ITdGBQ">CERT, IDS00-J.</a> - Prevent SQL injection </li>
-  <li> Derived from FindSecBugs rules <a href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_JPA">Potential SQL/JPQL Injection
+  <li>OWASP - <a href="https://owasp.org/Top10/A03_2021-Injection/">Top 10 2021 Category A3 - Injection</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A1_2017-Injection">Top 10 2017 Category A1 - Injection</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/89">CWE-89 - Improper Neutralization of Special Elements used in an SQL Command</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/564">CWE-564 - SQL Injection: Hibernate</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/20">CWE-20 - Improper Input Validation</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/943">CWE-943 - Improper Neutralization of Special Elements in Data Query Logic</a></li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/ITdGBQ">CERT, IDS00-J.</a> - Prevent SQL injection</li>
+  <li>Derived from FindSecBugs rules <a href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_JPA">Potential SQL/JPQL Injection
   (JPA)</a>, <a href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_JDO">Potential SQL/JDOQL Injection (JDO)</a>, <a
-  href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_HIBERNATE">Potential SQL/HQL Injection (Hibernate)</a> </li>
+  href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_HIBERNATE">Potential SQL/HQL Injection (Hibernate)</a></li>
 </ul>
 

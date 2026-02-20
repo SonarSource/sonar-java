@@ -7,9 +7,9 @@ number values are not part of that interface either. Only the API contract of im
 <code>Float</code>, <code>BigInteger</code>, etc., provides such assertions.</p>
 <h2>How to fix it</h2>
 <ul>
-  <li> To compare the number value of two instances <code>a</code> and <code>b</code> of <code>AtomicInteger</code> or <code>AtomicLong</code>, use
-  <code>a.get() == b.get()</code> instead of <code>a.equals(b)</code>. </li>
-  <li> If you want to check for object identity, use <code>a == b</code> instead of <code>a.equals(b)</code> to clarify your intention. </li>
+  <li>To compare the number value of two instances <code>a</code> and <code>b</code> of <code>AtomicInteger</code> or <code>AtomicLong</code>, use
+  <code>a.get() == b.get()</code> instead of <code>a.equals(b)</code>.</li>
+  <li>If you want to check for object identity, use <code>a == b</code> instead of <code>a.equals(b)</code> to clarify your intention.</li>
 </ul>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -35,11 +35,11 @@ Boolean isSameReference(AtomicLong a, AtomicLong b) {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/package-summary.html">Java SE 8 API Specification: Package
-  "java.util.concurrent.atomic"</a> </li>
+  <li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/package-summary.html">Java SE 8 API Specification: Package
+  "java.util.concurrent.atomic"</a></li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> <a href="https://programming.guide/java/atomicinteger-equals.html">Programming.Guide: AtomicInteger and equals / Comparable</a> </li>
+  <li><a href="https://programming.guide/java/atomicinteger-equals.html">Programming.Guide: AtomicInteger and equals / Comparable</a></li>
 </ul>
 

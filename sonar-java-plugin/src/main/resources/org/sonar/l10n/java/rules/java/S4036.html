@@ -2,15 +2,18 @@
 in the production system.</p>
 <p>To do so, it is important to point to the specific executable that should be used.</p>
 <p>For example, if you call <code>git</code> (without specifying a path), the operating system will search for the executable in the directories
-specified in the <code>PATH</code> environment variable.<br> An attacker could have added, in a permissive directory covered by <code>PATH</code> ,
-another executable called <code>git</code>, but with a completely different behavior, for example exfiltrating data or exploiting a vulnerability in
-your own code.</p>
+specified in the <code>PATH</code> environment variable.
+  <br>
+  An attacker could have added, in a permissive directory covered by <code>PATH</code> , another executable called <code>git</code>, but with a
+  completely different behavior, for example exfiltrating data or exploiting a vulnerability in your own code.</p>
 <p>However, by calling <code>/usr/bin/git</code> or <code>../git</code> (relative path) directly, the operating system will always use the intended
-executable.<br> Note that you still need to make sure that the executable is not world-writeable and potentially overwritten. This is not the scope of
-this rule.</p>
+executable.
+  <br>
+  Note that you still need to make sure that the executable is not world-writeable and potentially overwritten. This is not the scope of this
+  rule.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> The PATH environment variable only contains fixed, trusted directories. </li>
+  <li>The PATH environment variable only contains fixed, trusted directories.</li>
 </ul>
 <p>There is a risk if you answered no to this question.</p>
 <h2>Recommended Secure Coding Practices</h2>
@@ -53,10 +56,10 @@ builder.command(Arrays.asList("\\SERVER\bin\make"));
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">Top 10 2021 Category A8 - Software and Data Integrity
-  Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A1_2017-Injection">Top 10 2017 Category A1 - Injection</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/426">CWE-426 - Untrusted Search Path</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/427">CWE-427 - Uncontrolled Search Path Element</a> </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">Top 10 2021 Category A8 - Software and Data Integrity
+  Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A1_2017-Injection">Top 10 2017 Category A1 - Injection</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/426">CWE-426 - Untrusted Search Path</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/427">CWE-427 - Uncontrolled Search Path Element</a></li>
 </ul>
 

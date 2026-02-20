@@ -1,9 +1,9 @@
 <h2>Why is this an issue?</h2>
 <p>Spring provides two options to mark a REST parameter as optional:</p>
 <ol>
-  <li> Use <code>required = false</code> in the <code>@PathVariable</code> or <code>@RequestParam</code> annotation of the respective method parameter
-  or </li>
-  <li> Use type <code>java.util.Optional&lt;T&gt;</code> for the method parameter </li>
+  <li>Use <code>required = false</code> in the <code>@PathVariable</code> or <code>@RequestParam</code> annotation of the respective method parameter
+  or</li>
+  <li>Use type <code>java.util.Optional&lt;T&gt;</code> for the method parameter</li>
 </ol>
 <p>When using 1., the absence of the parameter, when the REST function is called, is encoded by <code>null</code>, which can only be used for object
 types. If <code>required = false</code> is used for a parameter with a primitive and the REST function is called without the parameter, a runtime
@@ -46,11 +46,11 @@ public Article getArticle(@PathVariable Optional&lt;Integer&gt; articleId) { // 
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html">Spring
-  Framework API - Annotation Interface PathVariable</a> </li>
+  <li><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html">Spring
+  Framework API - Annotation Interface PathVariable</a></li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> <a href="https://www.baeldung.com/spring-optional-path-variables">Baeldung - Spring Optional Path Variables</a> </li>
+  <li><a href="https://www.baeldung.com/spring-optional-path-variables">Baeldung - Spring Optional Path Variables</a></li>
 </ul>
 

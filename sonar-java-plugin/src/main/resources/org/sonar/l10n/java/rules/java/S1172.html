@@ -6,14 +6,14 @@ function parameters that are not being utilized is considered best practice.</p>
 <h3>Exceptions</h3>
 <p>The rule will not raise issues for unused parameters:</p>
 <ul>
-  <li> that are annotated with <code>@javax.enterprise.event.Observes</code> </li>
-  <li> in overrides and implementation methods </li>
-  <li> in interface <code>default</code> methods </li>
-  <li> in non-private methods that only <code>throw</code> or that have empty bodies </li>
-  <li> in annotated methods, unless the annotation is <code>@SuppressWarning("unchecked")</code> or <code>@SuppressWarning("rawtypes")</code>, in
-  which case the annotation will be ignored </li>
-  <li> in overridable methods (non-final, or not member of a final class, non-static, non-private), if the parameter is documented with a proper
-  javadoc. </li>
+  <li>that are annotated with <code>@javax.enterprise.event.Observes</code></li>
+  <li>in overrides and implementation methods</li>
+  <li>in interface <code>default</code> methods</li>
+  <li>in non-private methods that only <code>throw</code> or that have empty bodies</li>
+  <li>in annotated methods, unless the annotation is <code>@SuppressWarning("unchecked")</code> or <code>@SuppressWarning("rawtypes")</code>, in which
+  case the annotation will be ignored</li>
+  <li>in overridable methods (non-final, or not member of a final class, non-static, non-private), if the parameter is documented with a proper
+  javadoc.</li>
 </ul>
 <h2>How to fix it</h2>
 <p>Having unused function parameters in your code can lead to confusion and misunderstanding of a developer’s intention. They reduce code readability
@@ -59,7 +59,6 @@ protected void foobar(int a, String s) { // no issue, method is overridable and 
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/5dUxBQ">CERT, MSC12-C.</a> - Detect and remove code that has no effect or is never executed
-  </li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/5dUxBQ">CERT, MSC12-C.</a> - Detect and remove code that has no effect or is never executed</li>
 </ul>
 

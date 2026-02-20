@@ -3,10 +3,10 @@
 fields, they are ignored.</p>
 <h3>What is the potential impact?</h3>
 <ul>
-  <li> <strong>Null Values</strong>: Uninitialized static fields annotated with @Value, @Inject, or @Autowired will not be initialized by Spring,
-  potentially causing NullPointerException at runtime. </li>
-  <li> <strong>Confusing Code</strong>: The presence of injection annotations on static fields can mislead developers into believing that the fields
-  will be populated by Spring. </li>
+  <li><strong>Null Values</strong>: Uninitialized static fields annotated with @Value, @Inject, or @Autowired will not be initialized by Spring,
+  potentially causing NullPointerException at runtime.</li>
+  <li><strong>Confusing Code</strong>: The presence of injection annotations on static fields can mislead developers into believing that the fields
+  will be populated by Spring.</li>
 </ul>
 <p>This rule raises an issue when a static field is annotated with @Value, @Inject, or @Autowired.</p>
 <h2>How to fix it</h2>
@@ -35,6 +35,6 @@ public class MyComponent {
 <h2>Resources</h2>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> Java Guides - <a href="https://www.baeldung.com/spring-inject-static-field">Injecting a Value in a Static Field in Spring</a> </li>
+  <li>Java Guides - <a href="https://www.baeldung.com/spring-inject-static-field">Injecting a Value in a Static Field in Spring</a></li>
 </ul>
 

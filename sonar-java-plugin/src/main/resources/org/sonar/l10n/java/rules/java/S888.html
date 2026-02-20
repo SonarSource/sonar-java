@@ -19,8 +19,8 @@ for (int i = 1; i &lt;= 10; i += 2)  // Compliant
 <h3>Exceptions</h3>
 <p>Equality operators are ignored if the loop counter is not modified within the body of the loop and either:</p>
 <ul>
-  <li> starts below the ending value and is incremented by 1 on each iteration. </li>
-  <li> starts above the ending value and is decremented by 1 on each iteration. </li>
+  <li>starts below the ending value and is incremented by 1 on each iteration.</li>
+  <li>starts above the ending value and is decremented by 1 on each iteration.</li>
 </ul>
 <p>Equality operators are also ignored when the test is against <code>null</code>.</p>
 <pre>
@@ -34,7 +34,7 @@ for (int i = 0; (item = arr[i]) != null; i++) {
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/835">CWE-835 - Loop with Unreachable Exit Condition ('Infinite Loop')</a> </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/x9YxBQ">CERT, MSC21-C.</a> - Use robust loop termination conditions </li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/835">CWE-835 - Loop with Unreachable Exit Condition ('Infinite Loop')</a></li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/x9YxBQ">CERT, MSC21-C.</a> - Use robust loop termination conditions</li>
 </ul>
 

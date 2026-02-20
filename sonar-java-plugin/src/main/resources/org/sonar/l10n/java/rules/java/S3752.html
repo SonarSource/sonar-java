@@ -6,8 +6,8 @@ change the state of an application, for instance to update a user’s profile on
 protections are most of the time only protecting operations performed by unsafe HTTP methods.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> HTTP methods are not defined at all for a route/controller of the application. </li>
-  <li> Safe HTTP methods are defined and used for a route/controller that can change the state of an application. </li>
+  <li>HTTP methods are not defined at all for a route/controller of the application.</li>
+  <li>Safe HTTP methods are defined and used for a route/controller that can change the state of an application.</li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
@@ -39,13 +39,13 @@ String delete2(@RequestParam("id") String id) {
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a> </li>
-  <li> OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control">Top 10 2017 Category A5 - Broken Access Control</a>
-  </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/352">CWE-352 - Cross-Site Request Forgery (CSRF)</a> </li>
-  <li> <a href="https://owasp.org/www-community/attacks/csrf">OWASP: Cross-Site Request Forgery</a> </li>
-  <li> <a href="https://docs.spring.io/spring-security/site/docs/5.0.x/reference/html/csrf.html#csrf-use-proper-verbs">Spring Security Official
-  Documentation: Use proper HTTP verbs (CSRF protection)</a> </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a></li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control">Top 10 2017 Category A5 - Broken Access
+  Control</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/352">CWE-352 - Cross-Site Request Forgery (CSRF)</a></li>
+  <li><a href="https://owasp.org/www-community/attacks/csrf">OWASP: Cross-Site Request Forgery</a></li>
+  <li><a href="https://docs.spring.io/spring-security/site/docs/5.0.x/reference/html/csrf.html#csrf-use-proper-verbs">Spring Security Official
+  Documentation: Use proper HTTP verbs (CSRF protection)</a></li>
 </ul>
 

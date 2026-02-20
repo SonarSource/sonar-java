@@ -3,20 +3,20 @@
 developer loses time trying to fix his code logic before noticing wrong assertions.</p>
 <p>Dissimilar types are:</p>
 <ul>
-  <li> comparing a primitive with null </li>
-  <li> comparing an object with an unrelated primitive (E.G. a string with an int) </li>
-  <li> comparing unrelated classes </li>
-  <li> comparing an array to a non-array </li>
-  <li> comparing two arrays of dissimilar types </li>
+  <li>comparing a primitive with null</li>
+  <li>comparing an object with an unrelated primitive (E.G. a string with an int)</li>
+  <li>comparing unrelated classes</li>
+  <li>comparing an array to a non-array</li>
+  <li>comparing two arrays of dissimilar types</li>
 </ul>
 <p>This rule also raises issues for unrelated <code>class</code> and <code>interface</code> or unrelated <code>interface</code> types in negative
 assertions. Because except in some corner cases, those types are more likely to be dissimilar. And inside a negative assertion, there is no test
 failure to inform the developer about this unusual comparison.</p>
 <p>Supported test frameworks:</p>
 <ul>
-  <li> JUnit4 </li>
-  <li> JUnit5 </li>
-  <li> AssertJ </li>
+  <li>JUnit4</li>
+  <li>JUnit5</li>
+  <li>AssertJ</li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre>
@@ -46,6 +46,6 @@ void assertValues(int size,
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> {rule:java:S2159} - Silly equality checks should not be made </li>
+  <li>{rule:java:S2159} - Silly equality checks should not be made</li>
 </ul>
 

@@ -17,304 +17,586 @@ reported.</p>
   </thead>
   <tbody>
     <tr>
-      <td><p><strong>Related to Object</strong></p></td>
+      <td>
+        <p><strong>Related to Object</strong></p>
+      </td>
       <td></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getObject()).isEqualTo(null)</code></p></td>
-      <td><p><code>assertThat(getObject()).isNull()</code></p></td>
+      <td>
+        <p><code>assertThat(getObject()).isEqualTo(null)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getObject()).isNull()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getBoolean()).isEqualTo(true)</code></p></td>
-      <td><p><code>assertThat(getBoolean()).isTrue()</code></p></td>
+      <td>
+        <p><code>assertThat(getBoolean()).isEqualTo(true)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getBoolean()).isTrue()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getBoolean()).isEqualTo(false)</code></p></td>
-      <td><p><code>assertThat(getBoolean()).isFalse()</code></p></td>
+      <td>
+        <p><code>assertThat(getBoolean()).isEqualTo(false)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getBoolean()).isFalse()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x.equals(y)).isTrue()</code></p></td>
-      <td><p><code>assertThat(x).isEqualTo(y)</code></p></td>
+      <td>
+        <p><code>assertThat(x.equals(y)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(x).isEqualTo(y)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x == y).isTrue()</code></p></td>
-      <td><p><code>assertThat(x).isSameAs(y)</code></p></td>
+      <td>
+        <p><code>assertThat(x == y).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(x).isSameAs(y)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x == null).isTrue()</code></p></td>
-      <td><p><code>assertThat(x).isNull()</code></p></td>
+      <td>
+        <p><code>assertThat(x == null).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(x).isNull()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x.toString()).isEqualTo(y)</code></p></td>
-      <td><p><code>assertThat(x).hasToString(y)</code></p></td>
+      <td>
+        <p><code>assertThat(x.toString()).isEqualTo(y)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(x).hasToString(y)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x.hashCode()).isEqualTo(y.hashCode())</code></p></td>
-      <td><p><code>assertThat(x).hasSameHashCodeAs(y)</code></p></td>
+      <td>
+        <p><code>assertThat(x.hashCode()).isEqualTo(y.hashCode())</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(x).hasSameHashCodeAs(y)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getObject() instanceof MyClass).isTrue()</code></p></td>
-      <td><p><code>assertThat(getObject()).isInstanceOf(MyClass.class)</code></p></td>
+      <td>
+        <p><code>assertThat(getObject() instanceof MyClass).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getObject()).isInstanceOf(MyClass.class)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><strong>Related to <code>Comparable</code></strong></p></td>
+      <td>
+        <p><strong>Related to <code>Comparable</code></strong></p>
+      </td>
       <td></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x.compareTo(y)).isZero()</code></p></td>
-      <td><p><code>assertThat(x).isEqualByComparingTo(y)</code></p></td>
+      <td>
+        <p><code>assertThat(x.compareTo(y)).isZero()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(x).isEqualByComparingTo(y)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x &gt;= y).isTrue()</code></p></td>
-      <td><p><code>assertThat(x).isGreaterThanOrEqualTo(y)</code></p></td>
+      <td>
+        <p><code>assertThat(x &gt;= y).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(x).isGreaterThanOrEqualTo(y)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x &gt; y).isTrue()</code></p></td>
-      <td><p><code>assertThat(x).isGreaterThan(y)</code></p></td>
+      <td>
+        <p><code>assertThat(x &gt; y).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(x).isGreaterThan(y)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x &lt;= y).isTrue()</code></p></td>
-      <td><p><code>assertThat(x).isLessThanOrEqualTo(y)</code></p></td>
+      <td>
+        <p><code>assertThat(x &lt;= y).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(x).isLessThanOrEqualTo(y)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(x &lt; y).isTrue()</code></p></td>
-      <td><p><code>assertThat(x).isLessThan(y)</code></p></td>
+      <td>
+        <p><code>assertThat(x &lt; y).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(x).isLessThan(y)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><strong>Related to <code>String</code></strong></p></td>
+      <td>
+        <p><strong>Related to <code>String</code></strong></p>
+      </td>
       <td></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getString().isEmpty()).isTrue()</code></p></td>
-      <td><p><code>assertThat(getString()).isEmpty()</code></p></td>
+      <td>
+        <p><code>assertThat(getString().isEmpty()).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getString()).isEmpty()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getString()).hasSize(0)</code></p></td>
-      <td><p><code>assertThat(getString()).isEmpty()</code></p></td>
+      <td>
+        <p><code>assertThat(getString()).hasSize(0)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getString()).isEmpty()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getString().equals(expected)).isTrue()</code></p></td>
-      <td><p><code>assertThat(getString()).isEqualTo(expected)</code></p></td>
+      <td>
+        <p><code>assertThat(getString().equals(expected)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getString()).isEqualTo(expected)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getString().equalsIgnoreCase(expected)).isTrue()</code></p></td>
-      <td><p><code>assertThat(getString()).isEqualToIgnoringCase(expected)</code></p></td>
+      <td>
+        <p><code>assertThat(getString().equalsIgnoreCase(expected)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getString()).isEqualToIgnoringCase(expected)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getString().contains(expected)).isTrue()</code></p></td>
-      <td><p><code>assertThat(getString()).contains(expected)</code></p></td>
+      <td>
+        <p><code>assertThat(getString().contains(expected)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getString()).contains(expected)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getString().startsWith(expected)).isTrue()</code></p></td>
-      <td><p><code>assertThat(getString()).startsWith(expected)</code></p></td>
+      <td>
+        <p><code>assertThat(getString().startsWith(expected)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getString()).startsWith(expected)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getString().endsWith(expected)).isTrue()</code></p></td>
-      <td><p><code>assertThat(getString()).endsWith(expected)</code></p></td>
+      <td>
+        <p><code>assertThat(getString().endsWith(expected)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getString()).endsWith(expected)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getString().matches(expected)).isTrue()</code></p></td>
-      <td><p><code>assertThat(getString()).matches(expected)</code></p></td>
+      <td>
+        <p><code>assertThat(getString().matches(expected)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getString()).matches(expected)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getString().trim()).isEmpty()</code></p></td>
-      <td><p><code>assertThat(getString()).isBlank()</code></p></td>
+      <td>
+        <p><code>assertThat(getString().trim()).isEmpty()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getString()).isBlank()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getString().length()).isEqualTo(length)</code></p></td>
-      <td><p><code>assertThat(getString()).hasSize(length)</code></p></td>
+      <td>
+        <p><code>assertThat(getString().length()).isEqualTo(length)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getString()).hasSize(length)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getString().length()).hasSize(expected.length())</code></p></td>
-      <td><p><code>assertThat(getString()).hasSameSizeAs(expected)</code></p></td>
+      <td>
+        <p><code>assertThat(getString().length()).hasSize(expected.length())</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getString()).hasSameSizeAs(expected)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><strong>&nbsp;Related to <code>File</code></strong></p></td>
+      <td>
+        <p><strong>&nbsp;Related to <code>File</code></strong></p>
+      </td>
       <td></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile()).hasSize(0)</code></p></td>
-      <td><p><code>assertThat(getFile()).isEmpty()</code></p></td>
+      <td>
+        <p><code>assertThat(getFile()).hasSize(0)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).isEmpty()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().length()).isZero()</code></p></td>
-      <td><p><code>assertThat(getFile()).isEmpty()</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().length()).isZero()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).isEmpty()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().length()).isEqualTo(length)</code></p></td>
-      <td><p><code>assertThat(getFile()).hasSize(length)</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().length()).isEqualTo(length)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).hasSize(length)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().canRead()).isTrue()</code></p></td>
-      <td><p><code>assertThat(getFile()).canRead()</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().canRead()).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).canRead()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().canWrite()).isTrue()</code></p></td>
-      <td><p><code>assertThat(getFile()).canWrite()</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().canWrite()).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).canWrite()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().exists()).isTrue()</code></p></td>
-      <td><p><code>assertThat(getFile()).exists()</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().exists()).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).exists()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().getName()).isEqualTo(name)</code></p></td>
-      <td><p><code>assertThat(getFile()).hasName(name)</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().getName()).isEqualTo(name)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).hasName(name)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().getParent()).isEqualTo(pathname)</code></p></td>
-      <td><p><code>assertThat(getFile()).hasParent(pathname)</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().getParent()).isEqualTo(pathname)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).hasParent(pathname)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().getParentFile()).isNull()</code></p></td>
-      <td><p><code>assertThat(getFile()).hasNoParent()</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().getParentFile()).isNull()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).hasNoParent()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().isAbsolute()).isTrue()</code></p></td>
-      <td><p><code>assertThat(getFile()).isAbsolute()</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().isAbsolute()).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).isAbsolute()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().isAbsolute()).isFalse()</code></p></td>
-      <td><p><code>assertThat(getFile()).isRelative()</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().isAbsolute()).isFalse()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).isRelative()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().isDirectory()).isTrue()</code></p></td>
-      <td><p><code>assertThat(getFile()).isDirectory()</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().isDirectory()).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).isDirectory()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().isFile()).isTrue()</code></p></td>
-      <td><p><code>assertThat(getFile()).isFile()</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().isFile()).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).isFile()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getFile().list()).isEmpty()</code></p></td>
-      <td><p><code>assertThat(getFile()).isEmptyDirectory()</code></p></td>
+      <td>
+        <p><code>assertThat(getFile().list()).isEmpty()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getFile()).isEmptyDirectory()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><strong>&nbsp;Related to <code>Path</code></strong></p></td>
+      <td>
+        <p><strong>&nbsp;Related to <code>Path</code></strong></p>
+      </td>
       <td></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getPath().startsWith(path)).isTrue()</code></p></td>
-      <td><p><code>assertThat(getPath()).startsWithRaw(path)</code></p></td>
+      <td>
+        <p><code>assertThat(getPath().startsWith(path)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getPath()).startsWithRaw(path)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getPath().endsWith(path)).isTrue()</code></p></td>
-      <td><p><code>assertThat(getPath()).endsWithRaw(path)</code></p></td>
+      <td>
+        <p><code>assertThat(getPath().endsWith(path)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getPath()).endsWithRaw(path)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getPath().getParent()).isEqualTo(name)</code></p></td>
-      <td><p><code>assertThat(getPath()).hasParentRaw(name)</code></p></td>
+      <td>
+        <p><code>assertThat(getPath().getParent()).isEqualTo(name)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getPath()).hasParentRaw(name)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getPath().getParent()).isNull()</code></p></td>
-      <td><p><code>assertThat(getPath()).hasNoParentRaw()</code></p></td>
+      <td>
+        <p><code>assertThat(getPath().getParent()).isNull()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getPath()).hasNoParentRaw()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getPath().isAbsolute()).isTrue()</code></p></td>
-      <td><p><code>assertThat(getPath()).isAbsolute()</code></p></td>
+      <td>
+        <p><code>assertThat(getPath().isAbsolute()).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getPath()).isAbsolute()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getPath().isAbsolute()).isFalse()</code></p></td>
-      <td><p><code>assertThat(getPath()).isRelative()</code></p></td>
+      <td>
+        <p><code>assertThat(getPath().isAbsolute()).isFalse()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getPath()).isRelative()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><strong>&nbsp;Related to <code>Array</code></strong></p></td>
+      <td>
+        <p><strong>&nbsp;Related to <code>Array</code></strong></p>
+      </td>
       <td></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getArray().length).isZero()</code></p></td>
-      <td><p><code>assertThat(getArray()).isEmpty()</code></p></td>
+      <td>
+        <p><code>assertThat(getArray().length).isZero()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getArray()).isEmpty()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getArray().length).isEqualTo(length)</code></p></td>
-      <td><p><code>assertThat(getArray()).hasSize(length)</code></p></td>
+      <td>
+        <p><code>assertThat(getArray().length).isEqualTo(length)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getArray()).hasSize(length)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getArray().length).isEqualTo(anotherArray.length)</code></p></td>
-      <td><p><code>assertThat(getArray()).hasSameSizeAs(anotherArray)</code></p></td>
+      <td>
+        <p><code>assertThat(getArray().length).isEqualTo(anotherArray.length)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getArray()).hasSameSizeAs(anotherArray)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getArray().length).isLessThanOrEqualTo(expression)</code></p></td>
-      <td><p><code>assertThat(getArray()).hasSizeLessThanOrEqualTo(expression)</code></p></td>
+      <td>
+        <p><code>assertThat(getArray().length).isLessThanOrEqualTo(expression)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getArray()).hasSizeLessThanOrEqualTo(expression)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getArray().length).isLessThan(expression)</code></p></td>
-      <td><p><code>assertThat(getArray()).hasSizeLessThan(expression)</code></p></td>
+      <td>
+        <p><code>assertThat(getArray().length).isLessThan(expression)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getArray()).hasSizeLessThan(expression)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getArray().length).isGreaterThan(expression)</code></p></td>
-      <td><p><code>assertThat(getArray()).hasSizeGreaterThan(expression)</code></p></td>
+      <td>
+        <p><code>assertThat(getArray().length).isGreaterThan(expression)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getArray()).hasSizeGreaterThan(expression)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getArray().length).isGreaterThanOrEqualTo(expression)</code></p></td>
-      <td><p><code>assertThat(getArray()).hasSizeGreaterThanOrEqualTo(expression)</code></p></td>
+      <td>
+        <p><code>assertThat(getArray().length).isGreaterThanOrEqualTo(expression)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getArray()).hasSizeGreaterThanOrEqualTo(expression)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><strong>Related to <code>Collection</code></strong></p></td>
+      <td>
+        <p><strong>Related to <code>Collection</code></strong></p>
+      </td>
       <td></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getCollection().isEmpty()).isTrue()</code></p></td>
-      <td><p><code>assertThat(getCollection()).isEmpty()</code></p></td>
+      <td>
+        <p><code>assertThat(getCollection().isEmpty()).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getCollection()).isEmpty()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getCollection().size()).isZero()</code></p></td>
-      <td><p><code>assertThat(getCollection()).isEmpty()</code></p></td>
+      <td>
+        <p><code>assertThat(getCollection().size()).isZero()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getCollection()).isEmpty()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getCollection().contains(something)).isTrue()</code></p></td>
-      <td><p><code>assertThat(getCollection()).contains(something)</code></p></td>
+      <td>
+        <p><code>assertThat(getCollection().contains(something)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getCollection()).contains(something)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getCollection().containsAll(otherCollection)).isTrue()</code></p></td>
-      <td><p><code>assertThat(getCollection()).containsAll(otherCollection)</code></p></td>
+      <td>
+        <p><code>assertThat(getCollection().containsAll(otherCollection)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getCollection()).containsAll(otherCollection)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><strong>Related to <code>Map</code></strong></p></td>
+      <td>
+        <p><strong>Related to <code>Map</code></strong></p>
+      </td>
       <td></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getMap().size()).isEqualTo(otherMap().size()</code></p></td>
-      <td><p><code>assertThat(getMap()).hasSameSizeAs(otherMap())</code></p></td>
+      <td>
+        <p><code>assertThat(getMap().size()).isEqualTo(otherMap().size()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getMap()).hasSameSizeAs(otherMap())</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getMap().containsKey(key)).isTrue()</code></p></td>
-      <td><p><code>assertThat(getMap()).containsKey(key)</code></p></td>
+      <td>
+        <p><code>assertThat(getMap().containsKey(key)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getMap()).containsKey(key)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getMap().keySet()).contains(key)</code></p></td>
-      <td><p><code>assertThat(getMap()).containsKey(key)</code></p></td>
+      <td>
+        <p><code>assertThat(getMap().keySet()).contains(key)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getMap()).containsKey(key)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getMap().keySet()).containsOnlyKey(key)</code></p></td>
-      <td><p><code>assertThat(getMap()).containsOnlyKey(key)</code></p></td>
+      <td>
+        <p><code>assertThat(getMap().keySet()).containsOnlyKey(key)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getMap()).containsOnlyKey(key)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getMap().containsValue(value)).isTrue()</code></p></td>
-      <td><p><code>assertThat(getMap()).containsValue(value)</code></p></td>
+      <td>
+        <p><code>assertThat(getMap().containsValue(value)).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getMap()).containsValue(value)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getMap().values()).contains(value)</code></p></td>
-      <td><p><code>assertThat(getMap()).containsValue(value)</code></p></td>
+      <td>
+        <p><code>assertThat(getMap().values()).contains(value)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getMap()).containsValue(value)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getMap().get(key)).isEqualTo(value)</code></p></td>
-      <td><p><code>assertThat(getMap()).containsEntry(key, value)</code></p></td>
+      <td>
+        <p><code>assertThat(getMap().get(key)).isEqualTo(value)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getMap()).containsEntry(key, value)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><strong>Related to <code>Optional</code></strong></p></td>
+      <td>
+        <p><strong>Related to <code>Optional</code></strong></p>
+      </td>
       <td></td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getOptional().isPresent()).isTrue()</code></p></td>
-      <td><p><code>assertThat(getOptional()).isPresent()</code></p></td>
+      <td>
+        <p><code>assertThat(getOptional().isPresent()).isTrue()</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getOptional()).isPresent()</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getOptional().get()).isEqualTo(something)</code></p></td>
-      <td><p><code>assertThat(getOptional()).contains(something)</code></p></td>
+      <td>
+        <p><code>assertThat(getOptional().get()).isEqualTo(something)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getOptional()).contains(something)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>assertThat(getOptional().get()).isSameAs(something)</code></p></td>
-      <td><p><code>assertThat(getOptional()).containsSame(something)</code></p></td>
+      <td>
+        <p><code>assertThat(getOptional().get()).isSameAs(something)</code></p>
+      </td>
+      <td>
+        <p><code>assertThat(getOptional()).containsSame(something)</code></p>
+      </td>
     </tr>
   </tbody>
 </table>

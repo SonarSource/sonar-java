@@ -6,13 +6,13 @@ class. This ambiguity can cause the application to crash at runtime, and it make
 maintain.</p>
 <h3>What is the potential impact?</h3>
 <ul>
-  <li> <strong>incorrect instantiation</strong>: the wrong constructor is selected for instantiation, leading to a bean not being correctly
-  initialized. </li>
-  <li> <strong>unsatisfied dependency exception</strong>: the constructor selected by Spring requires beans that are not available in the Spring
-  context. </li>
-  <li> <strong>non-deterministic behavior</strong>: the constructor selected by Spring can vary, based on the number of dependencies that can be
-  satisfied at runtime, leading to unpredictable application behavior. </li>
-  <li> <strong>maintainability issues</strong>: adding more constructors in the future could lead to further confusion and potential bugs. </li>
+  <li><strong>incorrect instantiation</strong>: the wrong constructor is selected for instantiation, leading to a bean not being correctly
+  initialized.</li>
+  <li><strong>unsatisfied dependency exception</strong>: the constructor selected by Spring requires beans that are not available in the Spring
+  context.</li>
+  <li><strong>non-deterministic behavior</strong>: the constructor selected by Spring can vary, based on the number of dependencies that can be
+  satisfied at runtime, leading to unpredictable application behavior.</li>
+  <li><strong>maintainability issues</strong>: adding more constructors in the future could lead to further confusion and potential bugs.</li>
 </ul>
 <h2>How to fix it</h2>
 <p>Use the <code>@Autowired</code> annotation to specify which constructor to use for auto-wiring.</p>
@@ -57,12 +57,12 @@ public class ExampleClass {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> Spring - <a href="https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired.html">Annotation Config:
-  Autowired</a> </li>
+  <li>Spring - <a href="https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired.html">Annotation Config:
+  Autowired</a></li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> Java Guides - <a href="https://www.javaguides.net/2023/08/unsatisfieddependencyexception-in.html">UnsatisfiedDependencyException in Spring
-  Boot</a> </li>
+  <li>Java Guides - <a href="https://www.javaguides.net/2023/08/unsatisfieddependencyexception-in.html">UnsatisfiedDependencyException in Spring
+  Boot</a></li>
 </ul>
 
