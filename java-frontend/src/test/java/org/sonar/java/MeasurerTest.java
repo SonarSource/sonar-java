@@ -89,6 +89,21 @@ class MeasurerTest {
     checkMetric("EmptyFile.java", "ncloc", 0);
   }
 
+  @Test
+  void verify_ncloc_metric_on_test_file() {
+    String relativePath = PathUtils.sanitize(new File(BASE_DIR, "LinesOfCode.java").getPath());
+    InputFile inputFile = TestUtils.inputFile("", new File(relativePath), InputFile.Type.TEST);
+    context.fileSystem().add(inputFile);
+
+    Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), measurer, new NoOpTelemetry(), null, null);
+
+    frontend.scan(Collections.emptyList(), Collections.singletonList(inputFile), Collections.emptyList());
+
+    assertThat(context.measures(inputFile.key())).hasSize(1);
+    assertThat(context.measure(inputFile.key(), "ncloc").value()).isEqualTo(2);
+  }
+
   /**
    * Utility method to quickly get metric out of a file.
    */
