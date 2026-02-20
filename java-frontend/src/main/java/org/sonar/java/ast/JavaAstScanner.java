@@ -174,7 +174,12 @@ public class JavaAstScanner {
       Set<JProblem> undefinedTypes = ast.sema.undefinedTypes();
       collectUndefinedTypes(path, undefinedTypes);
       cleanUp.accept(ast);
-      new Java25FeaturesTelemetryVisitor(telemetry).scan(ast);
+
+      final var java25FeaturesTelemetryVisitor =new Java25FeaturesTelemetryVisitor(telemetry);
+      if (java25FeaturesTelemetryVisitor.isCompatibleWithJavaVersion(visitor.getJavaVersion())) {
+        java25FeaturesTelemetryVisitor.scan(ast);
+      }
+
       telemetryAnalysisKeys = javaAnalysisKeys.success();
       telemetry.aggregateAsCounter(javaAnalysisKeys.success().typeErrorCountKey(), undefinedTypes.size());
     } catch (RecognitionException e) {

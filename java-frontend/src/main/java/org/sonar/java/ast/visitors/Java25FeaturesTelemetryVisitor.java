@@ -20,6 +20,8 @@ import java.util.List;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -29,7 +31,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public final class Java25FeaturesTelemetryVisitor extends SubscriptionVisitor {
+public final class Java25FeaturesTelemetryVisitor extends SubscriptionVisitor implements JavaVersionAwareVisitor {
   private final Telemetry telemetry;
 
   public Java25FeaturesTelemetryVisitor(Telemetry telemetry) {
@@ -77,5 +79,9 @@ public final class Java25FeaturesTelemetryVisitor extends SubscriptionVisitor {
       && ExpressionUtils.isThisOrSuper(identifierTree.name());
   }
 
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava25Compatible();
+  }
 }
 
