@@ -257,4 +257,17 @@ class UtilityClassWithPublicConstructorCheckSample {
     }
   }
 
+  // fix@qf4 {{Add an empty private constructor as the first member of the class.}}
+  // edit@qf4 [[sl=+0;el=+0;sc=43;ec=43]] {{\n    private StringUtilsWithBadOffsets() {\n      /* This utility class should not be instantiated */\n    }\n}}
+  // fix@qf5 {{Add an empty private constructor as the last member of the class.}}
+  // edit@qf5 [[sl=+5;el=+5;sc=6;ec=6]] {{\n\n    private StringUtilsWithBadOffsets() {\n      /* This utility class should not be instantiated */\n    }}}
+  // fix@qf6 {{Add an empty private constructor before the first method in the class.}}
+  // edit@qf6 [[sl=+1;el=+1;sc=45;ec=45]] {{\n\n    private StringUtilsWithBadOffsets() {\n      /* This utility class should not be instantiated */\n    }}}
+  public class StringUtilsWithBadOffsets { // Noncompliant [[sc=16;ec=41;quickfixes=qf4,qf5,qf6]]
+public static String HELLO = "Hello world!";
+
+ public static String concatenate(String s1, String s2) {
+      return s1 + s2;
+    }
+  }
 }

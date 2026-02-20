@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.AnnotationsHelper;
 import org.sonar.java.checks.helpers.ClassPatternsUtils;
@@ -50,6 +52,8 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
     "lombok.NoArgsConstructor",
     "lombok.AllArgsConstructor",
     "lombok.RequiredArgsConstructor");
+
+  private static final int DEFAULT_PADDING = 2;
 
   private static final Set<String> LOMBOK_CONSTRUCTOR_GENERATOR_NAMES =
     LOMBOK_CONSTRUCTOR_GENERATORS.stream()
@@ -136,12 +140,7 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   }
 
   private static List<JavaQuickFix> computeQuickFixes(ClassTree classTree) {
-    int firstMemberColumnOffset = classTree.members().get(0).firstToken().range().start().columnOffset();
-    int columnOffsetDiff = firstMemberColumnOffset - classTree.firstToken().range().start().columnOffset();
-
-    String leftPadding = " ".repeat(firstMemberColumnOffset);
-    String constructor = leftPadding + "private " + classTree.simpleName() + "() {\n" + leftPadding + " ".repeat(columnOffsetDiff)
-      + "/* This utility class should not be instantiated */\n" + leftPadding + "}";
+    String constructor = buildPrivateConstructor(classTree);
 
     List<JavaQuickFix> quickFixes = new ArrayList<>();
     quickFixes.add(JavaQuickFix.newQuickFix("Add an empty private constructor as the first member of the class.")
@@ -161,6 +160,24 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
     }
 
     return quickFixes;
+  }
+
+  private static String buildPrivateConstructor(ClassTree classTree) {
+    int classColumnOffset = classTree.firstToken().range().start().columnOffset();
+    int firstMemberColumnOffset = classTree.members().get(0).firstToken().range().start().columnOffset();
+    Pair<Integer, Integer> paddings = calculatePaddingAmounts(classColumnOffset, firstMemberColumnOffset);
+
+    String declarationPadding = " ".repeat(paddings.getRight());
+    String bodyPadding = " ".repeat(paddings.getLeft());
+
+    return declarationPadding + "private " + classTree.simpleName() + "() {\n"
+      + declarationPadding + bodyPadding + "/* This utility class should not be instantiated */\n"
+      + declarationPadding + "}";
+  }
+
+  private static Pair<Integer, Integer> calculatePaddingAmounts(int classColumnOffset, int firstMemberColumnOffset) {
+    int colDiff = firstMemberColumnOffset - classColumnOffset;
+    return Pair.of(Math.max(DEFAULT_PADDING, colDiff), colDiff > 0 ? firstMemberColumnOffset : (classColumnOffset + DEFAULT_PADDING));
   }
 
 }
