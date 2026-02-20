@@ -144,17 +144,17 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
 
     List<JavaQuickFix> quickFixes = new ArrayList<>();
     quickFixes.add(JavaQuickFix.newQuickFix("Add an empty private constructor as the first member of the class.")
-      .addTextEdit(JavaTextEdit.insertAfterTree(classTree.openBraceToken(), constructor))
+      .addTextEdit(JavaTextEdit.insertAfterTree(classTree.openBraceToken(), "\n" + constructor + "\n"))
       .build());
     quickFixes.add(JavaQuickFix.newQuickFix("Add an empty private constructor as the last member of the class.")
-      .addTextEdit(JavaTextEdit.insertAfterTree(classTree.members().get(classTree.members().size() - 1), constructor))
+      .addTextEdit(JavaTextEdit.insertAfterTree(classTree.members().get(classTree.members().size() - 1), "\n\n" + constructor))
       .build());
 
     if (classTree.members().stream().anyMatch(tree -> tree.is(Tree.Kind.METHOD))) {
       List<Tree> membersBeforeFirstMethod = classTree.members().stream().takeWhile(tree -> !tree.is(Tree.Kind.METHOD)).toList();
       if (!membersBeforeFirstMethod.isEmpty()) {
         quickFixes.add(JavaQuickFix.newQuickFix("Add an empty private constructor before the first method in the class.")
-          .addTextEdit(JavaTextEdit.insertAfterTree(membersBeforeFirstMethod.get(membersBeforeFirstMethod.size() - 1), constructor))
+          .addTextEdit(JavaTextEdit.insertAfterTree(membersBeforeFirstMethod.get(membersBeforeFirstMethod.size() - 1), "\n\n" + constructor))
           .build());
       }
     }
@@ -170,9 +170,9 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
     String declarationPadding = " ".repeat(paddings.getRight());
     String bodyPadding = " ".repeat(paddings.getLeft());
 
-    return "\n" + declarationPadding + "private " + classTree.simpleName() + "() {\n"
+    return declarationPadding + "private " + classTree.simpleName() + "() {\n"
       + declarationPadding + bodyPadding + "/* This utility class should not be instantiated */\n"
-      + declarationPadding + "}" + "\n";
+      + declarationPadding + "}";
   }
 
   private static Pair<Integer, Integer> calculatePaddingAmounts(int classColumnOffset, int firstMemberColumnOffset) {

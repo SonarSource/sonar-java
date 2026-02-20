@@ -246,9 +246,9 @@ class UtilityClassWithPublicConstructorCheckSample {
   // fix@qf1 {{Add an empty private constructor as the first member of the class.}}
   // edit@qf1 [[sl=+0;el=+0;sc=29;ec=29]] {{\n    private StringUtils() {\n      /* This utility class should not be instantiated */\n    }\n}}
   // fix@qf2 {{Add an empty private constructor as the last member of the class.}}
-  // edit@qf2 [[sl=+5;el=+5;sc=6;ec=6]] {{\n    private StringUtils() {\n      /* This utility class should not be instantiated */\n    }\n}}
+  // edit@qf2 [[sl=+5;el=+5;sc=6;ec=6]] {{\n\n    private StringUtils() {\n      /* This utility class should not be instantiated */\n    }}}
   // fix@qf3 {{Add an empty private constructor before the first method in the class.}}
-  // edit@qf3 [[sl=+1;el=+1;sc=49;ec=49]] {{\n    private StringUtils() {\n      /* This utility class should not be instantiated */\n    }\n}}
+  // edit@qf3 [[sl=+1;el=+1;sc=49;ec=49]] {{\n\n    private StringUtils() {\n      /* This utility class should not be instantiated */\n    }}}
   public class StringUtils { // Noncompliant [[sc=16;ec=27;quickfixes=qf1,qf2,qf3]]
     public static String HELLO = "Hello world!";
 
@@ -260,9 +260,9 @@ class UtilityClassWithPublicConstructorCheckSample {
   // fix@qf4 {{Add an empty private constructor as the first member of the class.}}
   // edit@qf4 [[sl=+0;el=+0;sc=43;ec=43]] {{\n    private StringUtilsWithBadOffsets() {\n      /* This utility class should not be instantiated */\n    }\n}}
   // fix@qf5 {{Add an empty private constructor as the last member of the class.}}
-  // edit@qf5 [[sl=+5;el=+5;sc=6;ec=6]] {{\n    private StringUtilsWithBadOffsets() {\n      /* This utility class should not be instantiated */\n    }\n}}
+  // edit@qf5 [[sl=+5;el=+5;sc=6;ec=6]] {{\n\n    private StringUtilsWithBadOffsets() {\n      /* This utility class should not be instantiated */\n    }}}
   // fix@qf6 {{Add an empty private constructor before the first method in the class.}}
-  // edit@qf6 [[sl=+1;el=+1;sc=45;ec=45]] {{\n    private StringUtilsWithBadOffsets() {\n      /* This utility class should not be instantiated */\n    }\n}}
+  // edit@qf6 [[sl=+1;el=+1;sc=45;ec=45]] {{\n\n    private StringUtilsWithBadOffsets() {\n      /* This utility class should not be instantiated */\n    }}}
   public class StringUtilsWithBadOffsets { // Noncompliant [[sc=16;ec=41;quickfixes=qf4,qf5,qf6]]
 public static String HELLO = "Hello world!";
 
