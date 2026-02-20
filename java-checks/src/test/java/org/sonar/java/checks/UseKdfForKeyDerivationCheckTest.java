@@ -21,13 +21,13 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-class AvoidKeyGeneratorWithKdfCheckTest {
+class UseKdfForKeyDerivationCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AvoidKeyGeneratorWithKdfCheckSample.java"))
-      .withCheck(new AvoidKeyGeneratorWithKdfCheck())
+      .onFile(mainCodeSourcesPath("checks/UseKdfForKeyDerivationCheckSample.java"))
+      .withCheck(new UseKdfForKeyDerivationCheck())
       .withJavaVersion(25)
       .verifyIssues();
   }
@@ -35,8 +35,8 @@ class AvoidKeyGeneratorWithKdfCheckTest {
   @Test
   void test_java24() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AvoidKeyGeneratorWithKdfCheckSample.java"))
-      .withCheck(new AvoidKeyGeneratorWithKdfCheck())
+      .onFile(mainCodeSourcesPath("checks/UseKdfForKeyDerivationCheckSample.java"))
+      .withCheck(new UseKdfForKeyDerivationCheck())
       .withJavaVersion(24)
       .verifyNoIssues();
   }

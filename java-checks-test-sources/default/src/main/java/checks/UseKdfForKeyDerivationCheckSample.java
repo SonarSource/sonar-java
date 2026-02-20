@@ -4,12 +4,12 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKeyFactory;
 
-class AvoidKeyGeneratorWithKdfCheckSample {
+class UseKdfForKeyDerivationCheckSample {
 
   private static final String HKDF_ALGO = "HKDF-SHA256";
   private static final String PBKDF2_ALGO = "PBKDF2WithHmacSHA256";
 
-  private static final String SHA_ALGO = "HA256";
+  private static final String AES = "AES";
 
   // --- Noncompliant: KeyGenerator with KDF algorithms ---
 
@@ -35,8 +35,8 @@ class AvoidKeyGeneratorWithKdfCheckSample {
   }
 
   void compliantConstantInArgument() throws NoSuchAlgorithmException {
-    KeyGenerator.getInstance(SHA_ALGO); // Compliant
-    SecretKeyFactory.getInstance(SHA_ALGO); // Compliant
+    KeyGenerator.getInstance(AES); // Compliant
+    SecretKeyFactory.getInstance(AES); // Compliant
   }
 
   void compliantUnknownArg(String algo) throws NoSuchAlgorithmException {

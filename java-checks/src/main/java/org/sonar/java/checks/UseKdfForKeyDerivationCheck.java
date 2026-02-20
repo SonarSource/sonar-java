@@ -27,7 +27,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
 @Rule(key = "S8461")
-public class AvoidKeyGeneratorWithKdfCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
+public class UseKdfForKeyDerivationCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
   private static final String MESSAGE = "Use the KDF API instead of %s for key derivation.";
 
