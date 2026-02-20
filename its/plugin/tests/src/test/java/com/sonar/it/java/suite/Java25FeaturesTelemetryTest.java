@@ -25,7 +25,7 @@ import org.sonar.java.telemetry.TelemetryKey;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class J25FreaturesTelemetryTest {
+public class Java25FeaturesTelemetryTest {
 
   @ClassRule
   public static OrchestratorRule orchestrator = JavaTestSuite.ORCHESTRATOR;
@@ -43,6 +43,8 @@ public class J25FreaturesTelemetryTest {
     BuildResult buildResult = orchestrator.executeBuild(build);
 
     assertThat(buildResult.getLogs())
-      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY, 1));
+      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY, 1))
+      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_MODULE_IMPORT, 1))
+      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_COMPACT_SOURCE_FILES, 1));
   }
 }
