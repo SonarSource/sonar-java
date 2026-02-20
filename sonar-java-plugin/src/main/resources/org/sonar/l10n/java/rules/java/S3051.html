@@ -5,9 +5,9 @@ doesn’t make it the entry point to an application.</p>
 static void</code> and accept a single <code>String []</code> as an argument.</p>
 <p>Starting with Java 25, the requirements for main methods have been relaxed. The main method can now be:</p>
 <ul>
-  <li> An instance method (non-static) </li>
-  <li> Non-public (e.g., package-private or protected) </li>
-  <li> Defined without a <code>String []</code> parameter </li>
+  <li>An instance method (non-static)</li>
+  <li>Non-public (e.g., package-private or protected)</li>
+  <li>Defined without a <code>String []</code> parameter</li>
 </ul>
 <p>Using <code>main</code> for anything other than an application entry point can be confusing to developers unfamiliar with Java, as the method name
 strongly suggests it is the starting point of execution. To avoid this confusion, methods with different purposes should be given other names.</p>
@@ -30,6 +30,6 @@ public void run(String arg) { // Renamed
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> OpenJDK - <a href="https://openjdk.org/jeps/512">JEP 512: Compact Source Files and Instance Main Methods</a> </li>
+  <li>OpenJDK - <a href="https://openjdk.org/jeps/512">JEP 512: Compact Source Files and Instance Main Methods</a></li>
 </ul>
 

@@ -16,9 +16,9 @@ class Foo implements Cloneable { // Noncompliant, override `clone` method
 <p>Override the <code>clone</code> method in class <code>Foo</code>. By convention, it must call <code>super.clone()</code>. At this point, we know
 that:</p>
 <ul>
-  <li> By behavioral contract, <code>Object.clone</code> will not throw a <code>CloneNotSupportedException</code>, because <code>Foo</code> implements
-  <code>Cloneable</code>. </li>
-  <li> The returned object is an instance of class <code>Foo</code> </li>
+  <li>By behavioral contract, <code>Object.clone</code> will not throw a <code>CloneNotSupportedException</code>, because <code>Foo</code> implements
+  <code>Cloneable</code>.</li>
+  <li>The returned object is an instance of class <code>Foo</code></li>
 </ul>
 <p>We can narrow down the return type of <code>clone</code> to <code>Foo</code> and handle the <code>CloneNotSupportedException</code> inside the
 function instead of throwing it:</p>
@@ -77,9 +77,9 @@ class Entity implements Cloneable {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Cloneable.html">Interface Cloneable - Java™ Platform, Standard Edition 8 API
-  Specification</a> </li>
-  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#clone--">Object.clone - Java™ Platform, Standard Edition 8 API
-  Specification</a> </li>
+  <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Cloneable.html">Interface Cloneable - Java™ Platform, Standard Edition 8 API
+  Specification</a></li>
+  <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#clone--">Object.clone - Java™ Platform, Standard Edition 8 API
+  Specification</a></li>
 </ul>
 

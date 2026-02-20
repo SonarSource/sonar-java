@@ -31,21 +31,21 @@ void syncMethod(int x) {
 <p>This behavior can cause unrelated threads to deadlock with unclear stacktraces.</p>
 <p>Within the JDK, types which should not be used for synchronization include:</p>
 <ul>
-  <li> <code>String</code> literals </li>
-  <li> Primitive wrapper classes in <code>java.lang</code> (such as <code>Boolean</code> with <code>Boolean.FALSE</code> and
-  <code>Boolean.TRUE</code>) </li>
-  <li> The class <code>java.lang.Runtime.Version</code> </li>
-  <li> The <code>Optional*</code> classes in <code>java.util</code>: <code>Optional</code>, <code>OptionalInt</code>, <code>OptionalLong</code>, and
-  <code>OptionalDouble</code> </li>
-  <li> Various classes in the <code>java.time</code> API: <code>Instant</code>, <code>LocalDate</code>, <code>LocalTime</code>,
+  <li><code>String</code> literals</li>
+  <li>Primitive wrapper classes in <code>java.lang</code> (such as <code>Boolean</code> with <code>Boolean.FALSE</code> and
+  <code>Boolean.TRUE</code>)</li>
+  <li>The class <code>java.lang.Runtime.Version</code></li>
+  <li>The <code>Optional*</code> classes in <code>java.util</code>: <code>Optional</code>, <code>OptionalInt</code>, <code>OptionalLong</code>, and
+  <code>OptionalDouble</code></li>
+  <li>Various classes in the <code>java.time</code> API: <code>Instant</code>, <code>LocalDate</code>, <code>LocalTime</code>,
   <code>LocalDateTime</code>, <code>ZonedDateTime</code>, <code>ZoneId</code>, <code>OffsetTime</code>, <code>OffsetDateTime</code>,
-  <code>ZoneOffset</code>, <code>Duration</code>, <code>Period</code>, <code>Year</code>, <code>YearMonth</code>, and <code>MonthDay</code> </li>
-  <li> Various classes in the <code>java.time.chrono</code> API: <code>MinguoDate</code>, <code>HijrahDate</code>, <code>JapaneseDate</code>, and
-  <code>ThaiBuddhistDate</code> </li>
-  <li> The interface <code>java.lang.ProcessHandle</code> and its implementation classes </li>
-  <li> The implementation classes of the collection factories in <code>java.util</code>: <code>List.of</code>, <code>List.copyOf</code>,
-  <code>Set.of</code>, <code>Set.copyOf</code>, <code>Map.of</code>, <code>Map.copyOf</code>, <code>Map.ofEntries</code>, and <code>Map.entry</code>.
-  </li>
+  <code>ZoneOffset</code>, <code>Duration</code>, <code>Period</code>, <code>Year</code>, <code>YearMonth</code>, and <code>MonthDay</code></li>
+  <li>Various classes in the <code>java.time.chrono</code> API: <code>MinguoDate</code>, <code>HijrahDate</code>, <code>JapaneseDate</code>, and
+  <code>ThaiBuddhistDate</code></li>
+  <li>The interface <code>java.lang.ProcessHandle</code> and its implementation classes</li>
+  <li>The implementation classes of the collection factories in <code>java.util</code>: <code>List.of</code>, <code>List.copyOf</code>,
+  <code>Set.of</code>, <code>Set.copyOf</code>, <code>Map.of</code>, <code>Map.copyOf</code>, <code>Map.ofEntries</code>, and
+  <code>Map.entry</code>.</li>
 </ul>
 <h2>How to fix it</h2>
 <p>Replace instances of value-based classes with a new object instance to synchronize on.</p>
@@ -96,9 +96,9 @@ public void doSomething() {
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> CERT - <a href="https://wiki.sei.cmu.edu/confluence/x/1zdGBQ">Do not synchronize on objects that may be reused</a> </li>
-  <li> OpenJDK - <a href="https://openjdk.java.net/jeps/390">JEP 390: Warnings for Value-Based Classes</a> </li>
-  <li> Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/doc-files/ValueBased.html">Value-based
-  Classes</a> </li>
+  <li>CERT - <a href="https://wiki.sei.cmu.edu/confluence/x/1zdGBQ">Do not synchronize on objects that may be reused</a></li>
+  <li>OpenJDK - <a href="https://openjdk.java.net/jeps/390">JEP 390: Warnings for Value-Based Classes</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/doc-files/ValueBased.html">Value-based
+  Classes</a></li>
 </ul>
 

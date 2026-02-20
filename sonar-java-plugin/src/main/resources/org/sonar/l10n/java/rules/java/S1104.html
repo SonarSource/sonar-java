@@ -1,9 +1,9 @@
 <h2>Why is this an issue?</h2>
 <p>Public fields in public classes do not respect the encapsulation principle and have three main disadvantages:</p>
 <ul>
-  <li> Additional behavior such as validation cannot be added. </li>
-  <li> The internal representation is exposed, and cannot be changed afterwards. </li>
-  <li> Member values are subject to change from anywhere in the code and may not meet the programmer’s assumptions. </li>
+  <li>Additional behavior such as validation cannot be added.</li>
+  <li>The internal representation is exposed, and cannot be changed afterwards.</li>
+  <li>Member values are subject to change from anywhere in the code and may not meet the programmer’s assumptions.</li>
 </ul>
 <p>To prevent unauthorized modifications, private attributes and accessor methods (set and get) should be used.</p>
 <h3>What is the potential impact?</h3>
@@ -17,14 +17,15 @@ ignored, as annotations are often used by injection frameworks, which in exchang
 <h2>How to fix it</h2>
 <p>Depending on your need there are multiple options:</p>
 <ul>
-  <li> Encapsulate the field
+  <li>Encapsulate the field
     <ol>
-      <li> Make the field private. </li>
-      <li> Define methods to get and set the value of the field.<br> These methods are commonly known as getter and setter methods and are prefixed by
-      <code>get</code> and <code>set</code> followed by the name of the field. <em>Note:</em> as a bonus it is now possible to monitor value changes
-      using breakpoints. </li>
-    </ol>  </li>
-  <li> Mark the field as <code>public final</code> if it is not supposed to change. </li>
+      <li>Make the field private.</li>
+      <li>Define methods to get and set the value of the field.
+        <br>
+        These methods are commonly known as getter and setter methods and are prefixed by <code>get</code> and <code>set</code> followed by the name
+        of the field. <em>Note:</em> as a bonus it is now possible to monitor value changes using breakpoints.</li>
+    </ol></li>
+  <li>Mark the field as <code>public final</code> if it is not supposed to change.</li>
 </ul>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -62,6 +63,6 @@ will ensure that only valid values are set.</p>
 value.</p>
 <h2>Resources</h2>
 <ul>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/493">CWE-493 - Critical Public Variable Without Final Modifier</a> </li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/493">CWE-493 - Critical Public Variable Without Final Modifier</a></li>
 </ul>
 

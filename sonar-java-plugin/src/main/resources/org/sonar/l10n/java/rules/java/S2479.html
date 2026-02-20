@@ -4,10 +4,10 @@ invisible or difficult to recognize, which can result in bugs when the string is
 character use their encoded version (ex: ASCII <code>\n,\t,</code>…​ or Unicode <code>U+000D, U+0009,</code>…​).</p>
 <p>This rule raises an issue when the following characters are seen in a literal string:</p>
 <ul>
-  <li> <a href="https://en.wikipedia.org/wiki/ASCII#Control_characters">ASCII control character</a>. (character index &lt; 32 or = 127) </li>
-  <li> Unicode <a href="https://en.wikipedia.org/wiki/Unicode_character_property#Whitespace">whitespace characters</a>. </li>
-  <li> Unicode <a href="https://en.wikipedia.org/wiki/C0_and_C1_control_codes">C0 control characters</a> </li>
-  <li> Unicode characters <code>U+200B, U+200C, U+200D, U+2060, U+FEFF, U+2028, U+2029</code> </li>
+  <li><a href="https://en.wikipedia.org/wiki/ASCII#Control_characters">ASCII control character</a>. (character index &lt; 32 or = 127)</li>
+  <li>Unicode <a href="https://en.wikipedia.org/wiki/Unicode_character_property#Whitespace">whitespace characters</a>.</li>
+  <li>Unicode <a href="https://en.wikipedia.org/wiki/C0_and_C1_control_codes">C0 control characters</a></li>
+  <li>Unicode characters <code>U+200B, U+200C, U+200D, U+2060, U+FEFF, U+2028, U+2029</code></li>
 </ul>
 <p>No issue will be raised on the simple space character. Unicode <code>U+0020</code>, ASCII 32.</p>
 <h3>Noncompliant code example</h3>

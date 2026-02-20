@@ -21,17 +21,17 @@ public class OtherSerializableClass extends SerializableClass {
 <p>This is important because the serialization/deserialization runs through the class hierarchy of an object to decide which object fields to write or
 read, and applies two different logics:</p>
 <ul>
-  <li> When the class is serializable:
+  <li>When the class is serializable:
     <ul>
-      <li> Serialization saves the class reference and the object fields of this class. </li>
-      <li> Deserialization instantiates a new object of this class without using a constructor, and restores the object fields of this class. </li>
-    </ul>  </li>
-  <li> When the class is not serializable:
+      <li>Serialization saves the class reference and the object fields of this class.</li>
+      <li>Deserialization instantiates a new object of this class without using a constructor, and restores the object fields of this class.</li>
+    </ul></li>
+  <li>When the class is not serializable:
     <ul>
-      <li> Serialization only saves the class reference and <strong>ignores</strong> the object fields of this class. </li>
-      <li> Deserialization instantiates a new object of this class using the <strong>no-argument constructor</strong> and does not restore the object
-      fields of this class. </li>
-    </ul>  </li>
+      <li>Serialization only saves the class reference and <strong>ignores</strong> the object fields of this class.</li>
+      <li>Deserialization instantiates a new object of this class using the <strong>no-argument constructor</strong> and does not restore the object
+      fields of this class.</li>
+    </ul></li>
 </ul>
 <p>So developers should pay particular attention to the non-serializable classes in the class hierarchy, because the presence of an implicit or
 explicit <strong>no-argument constructor</strong> is required in those classes.</p>
@@ -90,9 +90,9 @@ no-argument constructor which will produce a runtime error.</p>
 <h2>How to fix it</h2>
 <p>There are two solutions to fix the missing <strong>no-argument constructor</strong> issue on non-serializable classes:</p>
 <ul>
-  <li> <code>Solution 1</code> If the fields of a non-serializable class need to be persisted, add the <code>java.io.Serializable</code> interface to
-  the class <code>implements</code> definition. </li>
-  <li> <code>Solution 2</code> Otherwise, add a no-argument constructor and initialize the fields with some valid default values. </li>
+  <li><code>Solution 1</code> If the fields of a non-serializable class need to be persisted, add the <code>java.io.Serializable</code> interface to
+  the class <code>implements</code> definition.</li>
+  <li><code>Solution 2</code> Otherwise, add a no-argument constructor and initialize the fields with some valid default values.</li>
 </ul>
 <h3>Code examples</h3>
 <p><strong>Example #1</strong></p>
@@ -166,6 +166,6 @@ public class Fruit {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Serializable.html">Oracle SDK - java.io.Serializable</a> </li>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Serializable.html">Oracle SDK - java.io.Serializable</a></li>
 </ul>
 

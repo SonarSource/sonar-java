@@ -3,10 +3,10 @@
 <p>If the intention is to iterate over the specified range, this differs from what the loop does because the counter moves in the wrong direction.</p>
 <p>If the intention is to have an infinite loop or a loop terminated only by a break statement, there are two problems:</p>
 <ol>
-  <li> The loop condition is not infinite because the counter variable will eventually overflow and fulfill the condition. This can take a long time,
-  depending on the data type of the counter. </li>
-  <li> An infinite loop terminated by a <code>break</code> statement should be implemented using a <code>while</code> or <code>do</code>
-  <code>while</code> loop to make the developer’s intention clear to the reader. </li>
+  <li>The loop condition is not infinite because the counter variable will eventually overflow and fulfill the condition. This can take a long time,
+  depending on the data type of the counter.</li>
+  <li>An infinite loop terminated by a <code>break</code> statement should be implemented using a <code>while</code> or <code>do</code>
+  <code>while</code> loop to make the developer’s intention clear to the reader.</li>
 </ol>
 <h2>How to fix it</h2>
 <h3>Code examples</h3>
@@ -60,10 +60,10 @@ while (true) { // Compliant
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/aTdGBQ">CERT, MSC54-J.</a> - Avoid inadvertent wrapping of loop counters </li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/aTdGBQ">CERT, MSC54-J.</a> - Avoid inadvertent wrapping of loop counters</li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> <a href="https://en.wikipedia.org/wiki/Integer_overflow">Wikipedia - Integer overflow</a> </li>
+  <li><a href="https://en.wikipedia.org/wiki/Integer_overflow">Wikipedia - Integer overflow</a></li>
 </ul>
 

@@ -2,10 +2,10 @@
 <p>Shadowing occurs when a local variable has the same name as a variable or a field in an outer scope.</p>
 <p>This can lead to three main problems:</p>
 <ul>
-  <li> Confusion: The same name can refer to different variables in different parts of the scope, making the code hard to read and understand. </li>
-  <li> Unintended Behavior: You might accidentally use the wrong variable, leading to hard-to-detect bugs. </li>
-  <li> Maintenance Issues: If the inner variable is removed or renamed, the code’s behavior might change unexpectedly because the outer variable is
-  now being used. </li>
+  <li>Confusion: The same name can refer to different variables in different parts of the scope, making the code hard to read and understand.</li>
+  <li>Unintended Behavior: You might accidentally use the wrong variable, leading to hard-to-detect bugs.</li>
+  <li>Maintenance Issues: If the inner variable is removed or renamed, the code’s behavior might change unexpectedly because the outer variable is now
+  being used.</li>
 </ul>
 <p>To avoid these problems, rename the shadowing, shadowed, or both identifiers to accurately represent their purpose with unique and meaningful
 names.</p>
@@ -24,13 +24,13 @@ class Foo {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> CERT - <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL51-J.+Do+not+shadow+or+obscure+identifiers+in+subscopes">DCL51-J. Do not
-  shadow or obscure identifiers in subscopes</a> </li>
+  <li>CERT - <a href="https://wiki.sei.cmu.edu/confluence/display/java/DCL51-J.+Do+not+shadow+or+obscure+identifiers+in+subscopes">DCL51-J. Do not
+  shadow or obscure identifiers in subscopes</a></li>
 </ul>
 <h3>Related rules</h3>
 <ul>
-  <li> {rule:java:S2176} - Class names should not shadow interfaces or superclasses </li>
-  <li> {rule:java:S2387} - Child class fields should not shadow parent class fields </li>
-  <li> {rule:java:S4977} - Type parameters should not shadow other type parameters </li>
+  <li>{rule:java:S2176} - Class names should not shadow interfaces or superclasses</li>
+  <li>{rule:java:S2387} - Child class fields should not shadow parent class fields</li>
+  <li>{rule:java:S4977} - Type parameters should not shadow other type parameters</li>
 </ul>
 

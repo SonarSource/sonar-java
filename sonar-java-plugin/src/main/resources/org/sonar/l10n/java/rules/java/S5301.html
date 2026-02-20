@@ -14,17 +14,17 @@ the execution of arbitrary code on the application server.</p>
 <p>By exploiting the behavior of some of the application-defined types and objects, the attacker could manage to affect the application’s business
 logic. The exact consequences will depend on the application’s nature:</p>
 <ul>
-  <li> Payment bypass in an e-commerce application. </li>
-  <li> Privilege escalation. </li>
-  <li> Unauthorized users' data access. </li>
+  <li>Payment bypass in an e-commerce application.</li>
+  <li>Privilege escalation.</li>
+  <li>Unauthorized users' data access.</li>
 </ul>
 <h4>Publicly-known exploitation</h4>
 <p>In some cases, depending on the library the application uses and their versions, there may exist publicly known deserialization attack payloads
 known as <strong>gadget chains</strong>. In general, they are designed to have severe consequences, such as:</p>
 <ul>
-  <li> Arbitrary code execution </li>
-  <li> Arbitrary file read or write </li>
-  <li> Server-side request forgery </li>
+  <li>Arbitrary code execution</li>
+  <li>Arbitrary file read or write</li>
+  <li>Server-side request forgery</li>
 </ul>
 <p>Those attacks are independent of the application’s own logic and from the types it specifies.</p>
 <h2>How to fix it in Java EE</h2>
@@ -53,15 +53,15 @@ would leave the application at risk.</p>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> Apache ActiveMQ Documentation - <a href="https://activemq.apache.org/objectmessage.html">ObjectMessage</a> </li>
-  <li> CVE - <a href="https://www.cve.org/CVERecord?id=CVE-2015-5254">CVE-2015-5254</a> </li>
+  <li>Apache ActiveMQ Documentation - <a href="https://activemq.apache.org/objectmessage.html">ObjectMessage</a></li>
+  <li>CVE - <a href="https://www.cve.org/CVERecord?id=CVE-2015-5254">CVE-2015-5254</a></li>
 </ul>
 <h3>Standards</h3>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">Top 10 2021 - Category A8 - Software and Data
-  Integrity Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization">Top 10 2017 - Category A8 - Insecure
-  Deserialization</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/502">CWE-502 - Deserialization of Untrusted Data</a> </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">Top 10 2021 - Category A8 - Software and Data Integrity
+  Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization">Top 10 2017 - Category A8 - Insecure
+  Deserialization</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/502">CWE-502 - Deserialization of Untrusted Data</a></li>
 </ul>
 

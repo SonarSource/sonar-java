@@ -29,9 +29,9 @@ public void myOtherMethod() throws Exception {
 <h2>How to fix it</h2>
 <p>To fix this issue, make sure to throw specific exceptions that are relevant to the context in which they arise. It is recommended to either:</p>
 <ul>
-  <li> Raise a specific exception from the Java standard library when one matches. For example an <code>IllegalArgumentException</code> should be
-  thrown when a method receives an invalid argument. </li>
-  <li> Create a custom exception class deriving from <code>Exception</code> or one of its subclasses. </li>
+  <li>Raise a specific exception from the Java standard library when one matches. For example an <code>IllegalArgumentException</code> should be
+  thrown when a method receives an invalid argument.</li>
+  <li>Create a custom exception class deriving from <code>Exception</code> or one of its subclasses.</li>
 </ul>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -53,11 +53,11 @@ void checkValue(int value) {
 <h2>Resources</h2>
 <h3>Standards</h3>
 <ul>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/397">CWE-397 Declaration of Throws for Generic Exception</a> </li>
-  <li> CERT - <a href="https://wiki.sei.cmu.edu/confluence/x/_DdGBQ">ERR07-J. Do not throw RuntimeException, Exception, or Throwable</a> </li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/397">CWE-397 Declaration of Throws for Generic Exception</a></li>
+  <li>CERT - <a href="https://wiki.sei.cmu.edu/confluence/x/_DdGBQ">ERR07-J. Do not throw RuntimeException, Exception, or Throwable</a></li>
 </ul>
 <h3>Related rules</h3>
 <ul>
-  <li> {rule:java:S1181} - Generic exceptions should not be caught </li>
+  <li>{rule:java:S1181} - Generic exceptions should not be caught</li>
 </ul>
 

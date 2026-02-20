@@ -2,18 +2,18 @@
 <p>JDK7 introduced the class <code>java.nio.charset.StandardCharsets</code>. It provides constants for all charsets that are guaranteed to be
 available on every implementation of the Java platform.</p>
 <ul>
-  <li> ISO_8859_1 </li>
-  <li> US_ASCII </li>
-  <li> UTF_16 </li>
-  <li> UTF_16BE </li>
-  <li> UTF_16LE </li>
-  <li> UTF_8 </li>
+  <li>ISO_8859_1</li>
+  <li>US_ASCII</li>
+  <li>UTF_16</li>
+  <li>UTF_16BE</li>
+  <li>UTF_16LE</li>
+  <li>UTF_8</li>
 </ul>
 <p>These constants should be preferred to:</p>
 <ul>
-  <li> the use of a String such as "UTF-8" which has the drawback of requiring the <code>catch</code>/<code>throw</code> of an
-  <code>UnsupportedEncodingException</code> that will never actually happen </li>
-  <li> the use of Guava’s <code>Charsets</code> class, which has been obsolete since JDK7 </li>
+  <li>the use of a String such as "UTF-8" which has the drawback of requiring the <code>catch</code>/<code>throw</code> of an
+  <code>UnsupportedEncodingException</code> that will never actually happen</li>
+  <li>the use of Guava’s <code>Charsets</code> class, which has been obsolete since JDK7</li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre>

@@ -8,7 +8,8 @@ initialization, and violates the separation of concerns.</p>
 <h2>How to fix it</h2>
 <p>Refactor complex pre-construction logic into private static helper methods or static factory methods. Keep statements before <code>super()</code>
 limited to simple validations and direct parameter transformations.</p>
-<h3>Parameters</h3>   statementsThreshold
+<h3>Parameters</h3>
+statementsThreshold
 <pre>
 5
 </pre>
@@ -77,6 +78,6 @@ public class SecureFile extends File {
 </pre>
 <h3>Documentation</h3>
 <ul>
-  <li> JEP 513 : <a href="https://openjdk.org/jeps/513">Flexible Constructor Bodies</a> </li>
+  <li>JEP 513 : <a href="https://openjdk.org/jeps/513">Flexible Constructor Bodies</a></li>
 </ul>
 

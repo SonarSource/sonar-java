@@ -21,8 +21,8 @@ private Object get() {
 </pre>
 <h3>Compliant solution</h3>
 <ul>
-  <li> For JUnit &gt;= 4.13, use <a
-  href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a>: </li>
+  <li>For JUnit &gt;= 4.13, use <a
+  href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a>:</li>
 </ul>
 <pre>
 // This test correctly fails.
@@ -34,7 +34,7 @@ public void testToString() {
 }
 </pre>
 <ul>
-  <li> For JUnit &lt; 4.13, use the <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a>: </li>
+  <li>For JUnit &lt; 4.13, use the <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a>:</li>
 </ul>
 <pre>
 @Test
@@ -49,6 +49,6 @@ public void testShouldFail() {
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a> </li>
+  <li><a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a></li>
 </ul>
 

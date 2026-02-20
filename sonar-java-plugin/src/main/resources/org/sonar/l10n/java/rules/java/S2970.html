@@ -1,10 +1,10 @@
 <h2>Why is this an issue?</h2>
 <p>It is very easy to write incomplete assertions when using some test frameworks. This rule enforces complete assertions in the following cases:</p>
 <ul>
-  <li> Fest: <code>assertThat</code> is not followed by an assertion invocation </li>
-  <li> AssertJ: <code>assertThat</code> is not followed by an assertion invocation </li>
-  <li> Mockito: <code>verify</code> is not followed by a method invocation </li>
-  <li> Truth: <code>assertXXX</code> is not followed by an assertion invocation </li>
+  <li>Fest: <code>assertThat</code> is not followed by an assertion invocation</li>
+  <li>AssertJ: <code>assertThat</code> is not followed by an assertion invocation</li>
+  <li>Mockito: <code>verify</code> is not followed by a method invocation</li>
+  <li>Truth: <code>assertXXX</code> is not followed by an assertion invocation</li>
 </ul>
 <p>In such cases, what is intended to be a test doesn’t actually verify anything</p>
 <h3>Noncompliant code example</h3>

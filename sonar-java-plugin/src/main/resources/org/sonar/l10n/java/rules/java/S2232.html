@@ -1,12 +1,12 @@
 <h2>Why is this an issue?</h2>
 <p>There are several reasons to avoid using this method:</p>
 <ol>
-  <li> It is optionally available only for result sets of type <code>ResultSet.TYPE_FORWARD_ONLY</code>. Database drivers will throw an exception if
-  not supported. </li>
-  <li> The method can be expensive to execute as the database driver may need to fetch ahead one row to determine whether the current row is the last
-  in the result set. The documentation of the method explicitly mentions this fact. </li>
-  <li> What "the cursor is on the last row" means for an empty <code>ResultSet</code> is unclear. Database drivers may return <code>true</code> or
-  <code>false</code> in this case . </li>
+  <li>It is optionally available only for result sets of type <code>ResultSet.TYPE_FORWARD_ONLY</code>. Database drivers will throw an exception if
+  not supported.</li>
+  <li>The method can be expensive to execute as the database driver may need to fetch ahead one row to determine whether the current row is the last
+  in the result set. The documentation of the method explicitly mentions this fact.</li>
+  <li>What "the cursor is on the last row" means for an empty <code>ResultSet</code> is unclear. Database drivers may return <code>true</code> or
+  <code>false</code> in this case .</li>
 </ol>
 <p><code>ResultSet.next()</code> is a good alternative to <code>ResultSet.isLast()</code> as it does not have the mentioned issues. It is always
 supported and, as per specification, returns <code>false</code> for empty result sets.</p>
@@ -36,6 +36,6 @@ String formattedNames =  names.stream().collect(Collectors.joining(", "));
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html#isLast--">Java SE 8 API Specification: ResultSet.isLast()</a> </li>
+  <li><a href="https://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html#isLast--">Java SE 8 API Specification: ResultSet.isLast()</a></li>
 </ul>
 

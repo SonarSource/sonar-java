@@ -3,14 +3,14 @@
 <p>Encryption algorithms are essential for protecting sensitive information and ensuring secure communications in a variety of domains. They are used
 for several important reasons:</p>
 <ul>
-  <li> Confidentiality, privacy, and intellectual property protection </li>
-  <li> Security during transmission or on storage devices </li>
-  <li> Data integrity, general trust, and authentication </li>
+  <li>Confidentiality, privacy, and intellectual property protection</li>
+  <li>Security during transmission or on storage devices</li>
+  <li>Data integrity, general trust, and authentication</li>
 </ul>
 <p>When selecting encryption algorithms, tools, or combinations, you should also consider two things:</p>
 <ol>
-  <li> No encryption is unbreakable. </li>
-  <li> The strength of an encryption algorithm is usually measured by the effort required to crack it within a reasonable time frame. </li>
+  <li>No encryption is unbreakable.</li>
+  <li>The strength of an encryption algorithm is usually measured by the effort required to crack it within a reasonable time frame.</li>
 </ol>
 <p>In the mode Cipher Block Chaining (CBC), each block is used as cryptographic input for the next block. For this reason, the first block requires an
 initialization vector (IV), also called a "starting variable" (SV).</p>
@@ -23,8 +23,9 @@ encryption was supposed to protect.</p>
 <p>Below are some real-world scenarios that illustrate the potential impact of an attacker exploiting the vulnerability.</p>
 <h4>Additional attack surface</h4>
 <p>By modifying the plaintext of the encrypted message, an attacker may be able to trigger additional vulnerabilities in the code. An attacker can
-further exploit a system to obtain more information.<br> Encrypted values are often considered trustworthy because it would not be possible for a
-third party to modify them under normal circumstances.</p>
+further exploit a system to obtain more information.
+  <br>
+  Encrypted values are often considered trustworthy because it would not be possible for a third party to modify them under normal circumstances.</p>
 <h4>Breach of confidentiality and privacy</h4>
 <p>When encrypted data contains personal or sensitive information, its retrieval by an attacker can lead to privacy violations, identity theft,
 financial loss, reputational damage, or unauthorized access to confidential systems.</p>
@@ -100,28 +101,29 @@ public void encrypt(String key, String plainText) {
 <h4>Use unique IVs</h4>
 <p>To ensure high security, initialization vectors must meet two important criteria:</p>
 <ul>
-  <li> IVs must be unique for each encryption operation. </li>
-  <li> For CBC and CFB modes, a secure FIPS-compliant random number generator should be used to generate unpredictable IVs. </li>
+  <li>IVs must be unique for each encryption operation.</li>
+  <li>For CBC and CFB modes, a secure FIPS-compliant random number generator should be used to generate unpredictable IVs.</li>
 </ul>
 <p>The IV does not need be secret, so the IV or information sufficient to determine the IV may be transmitted along with the ciphertext.</p>
-<p>In the previous non-compliant example, the problem is not that the IV is hard-coded.<br> It is that the same IV is used for multiple encryption
-attempts.</p>
+<p>In the previous non-compliant example, the problem is not that the IV is hard-coded.
+  <br>
+  It is that the same IV is used for multiple encryption attempts.</p>
 <h2>Resources</h2>
 <h3>Standards</h3>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
-  Exposure</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
-  Misconfiguration</a> </li>
-  <li> OWASP - <a href="https://mas.owasp.org/checklists/MASVS-CRYPTO/">Mobile AppSec Verification Standard - Cryptography Requirements</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m5-insufficient-cryptography">Mobile Top 10 2016 Category M5 -
-  Insufficient Cryptography</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m10-insufficient-cryptography">Mobile Top 10 2024 Category M10 -
-  Insufficient Cryptography</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/329">CWE-329 - Not Using an Unpredictable IV with CBC Mode</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/780">CWE-780 - Use of RSA Algorithm without OAEP</a> </li>
-  <li> <a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf">NIST, SP-800-38A</a> - Recommendation for Block Cipher
-  Modes of Operation </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
+  Exposure</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
+  Misconfiguration</a></li>
+  <li>OWASP - <a href="https://mas.owasp.org/checklists/MASVS-CRYPTO/">Mobile AppSec Verification Standard - Cryptography Requirements</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m5-insufficient-cryptography">Mobile Top 10 2016 Category M5 -
+  Insufficient Cryptography</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m10-insufficient-cryptography">Mobile Top 10 2024 Category M10 -
+  Insufficient Cryptography</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/329">CWE-329 - Not Using an Unpredictable IV with CBC Mode</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/780">CWE-780 - Use of RSA Algorithm without OAEP</a></li>
+  <li><a href="https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38a.pdf">NIST, SP-800-38A</a> - Recommendation for Block Cipher
+  Modes of Operation</li>
 </ul>
 
