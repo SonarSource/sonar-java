@@ -200,7 +200,6 @@ public class JavaAstScanner {
     }
   }
 
-
   private static void cleanUpAst(JavaTree.CompilationUnitTreeImpl ast) {
     // release environment used for semantic resolution
     ast.sema.getEnvironmentCleaner().run();
