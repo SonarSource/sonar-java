@@ -1,13 +1,13 @@
 <p>In Android applications, broadcasting intents is security-sensitive. For example, it has led in the past to the following vulnerability:</p>
 <ul>
-  <li> <a href="https://www.cve.org/CVERecord?id=CVE-2018-9489">CVE-2018-9489</a> </li>
+  <li><a href="https://www.cve.org/CVERecord?id=CVE-2018-9489">CVE-2018-9489</a></li>
 </ul>
 <p>By default, broadcasted intents are visible to every application, exposing all sensitive information they contain.</p>
 <p>This rule raises an issue when an intent is broadcasted without specifying any "receiver permission".</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> The intent contains sensitive information. </li>
-  <li> Intent reception is not restricted. </li>
+  <li>The intent contains sensitive information.</li>
+  <li>Intent reception is not restricted.</li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
@@ -71,17 +71,17 @@ public class MyIntentBroadcast {
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a> </li>
-  <li> OWASP - <a href="https://mas.owasp.org/checklists/MASVS-PLATFORM/">Mobile AppSec Verification Standard - Platform Interaction Requirements</a>
-  </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m1-improper-platform-usage">Mobile Top 10 2016 Category M1 - Improper
-  Platform Usage</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m3-insecure-authentication-authorization">Mobile Top 10 2024 Category
-  M3 - Insecure Authentication/Authorization</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m8-security-misconfiguration">Mobile Top 10 2024 Category M8 - Security
-  Misconfiguration</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/927">CWE-927 - Use of Implicit Intent for Sensitive Communication</a> </li>
-  <li> <a href="https://developer.android.com/guide/components/broadcasts.html#restricting_broadcasts_with_permissions">Android documentation</a> -
-  Broadcast Overview - Security considerations and best practices </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a></li>
+  <li>OWASP - <a href="https://mas.owasp.org/checklists/MASVS-PLATFORM/">Mobile AppSec Verification Standard - Platform Interaction
+  Requirements</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m1-improper-platform-usage">Mobile Top 10 2016 Category M1 - Improper
+  Platform Usage</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m3-insecure-authentication-authorization">Mobile Top 10 2024 Category M3
+  - Insecure Authentication/Authorization</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m8-security-misconfiguration">Mobile Top 10 2024 Category M8 - Security
+  Misconfiguration</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/927">CWE-927 - Use of Implicit Intent for Sensitive Communication</a></li>
+  <li><a href="https://developer.android.com/guide/components/broadcasts.html#restricting_broadcasts_with_permissions">Android documentation</a> -
+  Broadcast Overview - Security considerations and best practices</li>
 </ul>
 

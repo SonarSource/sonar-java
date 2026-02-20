@@ -15,24 +15,44 @@ also avoid creating unnecessary temporary objects.</p>
   </thead>
   <tbody>
     <tr>
-      <td><p><code>stream.filter(predicate).findFirst().isPresent()</code></p></td>
-      <td><p><code>stream.anyMatch(predicate)</code></p></td>
+      <td>
+        <p><code>stream.filter(predicate).findFirst().isPresent()</code></p>
+      </td>
+      <td>
+        <p><code>stream.anyMatch(predicate)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>stream.filter(predicate).findAny().isPresent()</code></p></td>
-      <td><p><code>stream.anyMatch(predicate)</code></p></td>
+      <td>
+        <p><code>stream.filter(predicate).findAny().isPresent()</code></p>
+      </td>
+      <td>
+        <p><code>stream.anyMatch(predicate)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>!stream.anyMatch(predicate)</code></p></td>
-      <td><p><code>stream.noneMatch(predicate)</code></p></td>
+      <td>
+        <p><code>!stream.anyMatch(predicate)</code></p>
+      </td>
+      <td>
+        <p><code>stream.noneMatch(predicate)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>!stream.anyMatch(x -&gt; !(...))</code></p></td>
-      <td><p><code>stream.allMatch(...)</code></p></td>
+      <td>
+        <p><code>!stream.anyMatch(x -&gt; !(...))</code></p>
+      </td>
+      <td>
+        <p><code>stream.allMatch(...)</code></p>
+      </td>
     </tr>
     <tr>
-      <td><p><code>stream.map(mapper).anyMatch(Boolean::booleanValue)</code></p></td>
-      <td><p><code>stream.anyMatch(predicate)</code></p></td>
+      <td>
+        <p><code>stream.map(mapper).anyMatch(Boolean::booleanValue)</code></p>
+      </td>
+      <td>
+        <p><code>stream.anyMatch(predicate)</code></p>
+      </td>
     </tr>
   </tbody>
 </table>

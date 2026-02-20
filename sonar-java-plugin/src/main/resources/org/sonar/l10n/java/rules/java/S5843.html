@@ -5,17 +5,17 @@ should consider replacing it or parts of it with regular code or splitting it ap
 <p>Each of the following operators increases the complexity by an amount equal to the current nesting level and also increases the current nesting
 level by one for its arguments:</p>
 <ul>
-  <li> <code>|</code> - when multiple <code>|</code> operators are used together, the subsequent ones only increase the complexity by 1 </li>
-  <li> <code>&amp;&amp;</code> (inside character classes) - when multiple <code>&amp;&amp;</code> operators are used together, the subsequent ones
-  only increase the complexity by 1 </li>
-  <li> Quantifiers (<code>*</code>, <code>+</code>, <code>?</code>, <code>{n,m}</code>, <code>{n,}</code> or <code>{n}</code>) </li>
-  <li> Non-capturing groups that set flags (such as <code>(?i:some_pattern)</code> or <code>(?i)some_pattern</code>) </li>
-  <li> Lookahead and lookbehind assertions </li>
+  <li><code>|</code> - when multiple <code>|</code> operators are used together, the subsequent ones only increase the complexity by 1</li>
+  <li><code>&amp;&amp;</code> (inside character classes) - when multiple <code>&amp;&amp;</code> operators are used together, the subsequent ones only
+  increase the complexity by 1</li>
+  <li>Quantifiers (<code>*</code>, <code>+</code>, <code>?</code>, <code>{n,m}</code>, <code>{n,}</code> or <code>{n}</code>)</li>
+  <li>Non-capturing groups that set flags (such as <code>(?i:some_pattern)</code> or <code>(?i)some_pattern</code>)</li>
+  <li>Lookahead and lookbehind assertions</li>
 </ul>
 <p>Additionally, each use of the following features increase the complexity by 1 regardless of nesting:</p>
 <ul>
-  <li> character classes </li>
-  <li> back references </li>
+  <li>character classes</li>
+  <li>back references</li>
 </ul>
 <p>If a regular expression is split among multiple variables, the complexity is calculated for each variable individually, not for the whole regular
 expression. If a regular expression is split over multiple lines, each line is treated individually if it is accompanied by a comment (either a Java

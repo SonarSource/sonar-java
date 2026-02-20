@@ -9,11 +9,11 @@ If <code>value</code> is the same as <code>min</code> or <code>max</code>, using
 <code>Math.max</code> should be used instead.</p>
 <h2>How to fix it</h2>
 <ul>
-  <li> If 2nd argument &gt; 3rd argument, use <code>Math.clamp(value, min, max)</code> instead of <code>Math.clamp(value, max, min)</code>. </li>
-  <li> If <code>value</code> is the same as <code>min</code>, fix the logic or use <code>Math.min(value, max)</code> instead. </li>
-  <li> If <code>value</code> is the same as <code>max</code>, fix the logic or use <code>Math.max(min, value)</code> instead. </li>
-  <li> If <code>min</code> is the same as <code>max</code>, fix the logic because <code>Math.clamp(value, x, x)</code> will always return
-  <code>x</code>. </li>
+  <li>If 2nd argument &gt; 3rd argument, use <code>Math.clamp(value, min, max)</code> instead of <code>Math.clamp(value, max, min)</code>.</li>
+  <li>If <code>value</code> is the same as <code>min</code>, fix the logic or use <code>Math.min(value, max)</code> instead.</li>
+  <li>If <code>value</code> is the same as <code>max</code>, fix the logic or use <code>Math.max(min, value)</code> instead.</li>
+  <li>If <code>min</code> is the same as <code>max</code>, fix the logic because <code>Math.clamp(value, x, x)</code> will always return
+  <code>x</code>.</li>
 </ul>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -42,7 +42,7 @@ Math.max(red, 0); // Compliant
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> Java Documentation - <a
-  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html#clamp(long,int,int)">Math.clamp</a> </li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html#clamp(long,int,int)">Math.clamp</a></li>
 </ul>
 

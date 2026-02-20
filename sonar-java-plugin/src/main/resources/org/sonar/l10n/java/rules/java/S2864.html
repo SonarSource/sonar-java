@@ -27,11 +27,11 @@ public void doSomethingWithMap(Map&lt;String,Object&gt; map) {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/Map.html">Oracle SE 20 - Map</a> </li>
+  <li><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/Map.html">Oracle SE 20 - Map</a></li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> <a href="https://www.baeldung.com/java-map-entries-methods">Baeldung - Java Map methods</a> </li>
+  <li><a href="https://www.baeldung.com/java-map-entries-methods">Baeldung - Java Map methods</a></li>
 </ul>
 <h3>Benchmarks</h3>
 <table>
@@ -53,46 +53,106 @@ public void doSomethingWithMap(Map&lt;String,Object&gt; map) {
   </thead>
   <tbody>
     <tr>
-      <td><p>usingEntrySet</p></td>
-      <td><p>10</p></td>
-      <td><p>Temurin 21</p></td>
-      <td><p>27.48 ns/op</p></td>
-      <td><p>±6.22 ns/op</p></td>
+      <td>
+        <p>usingEntrySet</p>
+      </td>
+      <td>
+        <p>10</p>
+      </td>
+      <td>
+        <p>Temurin 21</p>
+      </td>
+      <td>
+        <p>27.48 ns/op</p>
+      </td>
+      <td>
+        <p>±6.22 ns/op</p>
+      </td>
     </tr>
     <tr>
-      <td><p>usingEntrySet</p></td>
-      <td><p>1000</p></td>
-      <td><p>Temurin 21</p></td>
-      <td><p>2480.26 ns/op</p></td>
-      <td><p>±899.05 ns/op</p></td>
+      <td>
+        <p>usingEntrySet</p>
+      </td>
+      <td>
+        <p>1000</p>
+      </td>
+      <td>
+        <p>Temurin 21</p>
+      </td>
+      <td>
+        <p>2480.26 ns/op</p>
+      </td>
+      <td>
+        <p>±899.05 ns/op</p>
+      </td>
     </tr>
     <tr>
-      <td><p>usingEntrySet</p></td>
-      <td><p>10000</p></td>
-      <td><p>Temurin 21</p></td>
-      <td><p>22745.78 ns/op</p></td>
-      <td><p>±10505.46 ns/op</p></td>
+      <td>
+        <p>usingEntrySet</p>
+      </td>
+      <td>
+        <p>10000</p>
+      </td>
+      <td>
+        <p>Temurin 21</p>
+      </td>
+      <td>
+        <p>22745.78 ns/op</p>
+      </td>
+      <td>
+        <p>±10505.46 ns/op</p>
+      </td>
     </tr>
     <tr>
-      <td><p>usingKeySet</p></td>
-      <td><p>10</p></td>
-      <td><p>Temurin 21</p></td>
-      <td><p>49.70 ns/op</p></td>
-      <td><p>±3.78 ns/op</p></td>
+      <td>
+        <p>usingKeySet</p>
+      </td>
+      <td>
+        <p>10</p>
+      </td>
+      <td>
+        <p>Temurin 21</p>
+      </td>
+      <td>
+        <p>49.70 ns/op</p>
+      </td>
+      <td>
+        <p>±3.78 ns/op</p>
+      </td>
     </tr>
     <tr>
-      <td><p>usingKeySet</p></td>
-      <td><p>1000</p></td>
-      <td><p>Temurin 21</p></td>
-      <td><p>5061.54 ns/op</p></td>
-      <td><p>±2056.60 ns/op</p></td>
+      <td>
+        <p>usingKeySet</p>
+      </td>
+      <td>
+        <p>1000</p>
+      </td>
+      <td>
+        <p>Temurin 21</p>
+      </td>
+      <td>
+        <p>5061.54 ns/op</p>
+      </td>
+      <td>
+        <p>±2056.60 ns/op</p>
+      </td>
     </tr>
     <tr>
-      <td><p>usingKeySet</p></td>
-      <td><p>10000</p></td>
-      <td><p>Temurin 21</p></td>
-      <td><p>46689.04 ns/op</p></td>
-      <td><p>±14509.97 ns/op</p></td>
+      <td>
+        <p>usingKeySet</p>
+      </td>
+      <td>
+        <p>10000</p>
+      </td>
+      <td>
+        <p>Temurin 21</p>
+      </td>
+      <td>
+        <p>46689.04 ns/op</p>
+      </td>
+      <td>
+        <p>±14509.97 ns/op</p>
+      </td>
     </tr>
   </tbody>
 </table>

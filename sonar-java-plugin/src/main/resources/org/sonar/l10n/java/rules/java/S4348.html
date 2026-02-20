@@ -10,10 +10,10 @@ returns <code>this</code>.</p>
 <h3>What is the potential impact?</h3>
 <p>The <code>Iterable.iterator()</code> method returning the same <code>Iterator</code> instance many times would have the following effects:</p>
 <ol>
-  <li> For subsequent iterations, e.g., two subsequent <code>for</code> loops with iterators over the same object, only the first one would iterate,
-  and the others would do nothing. </li>
-  <li> For nested iterations over the same object, the different iteration processes would affect each other because they only have a common, shared
-  state. </li>
+  <li>For subsequent iterations, e.g., two subsequent <code>for</code> loops with iterators over the same object, only the first one would iterate,
+  and the others would do nothing.</li>
+  <li>For nested iterations over the same object, the different iteration processes would affect each other because they only have a common, shared
+  state.</li>
 </ol>
 <h2>How to fix it</h2>
 <h3>Code examples</h3>
@@ -61,9 +61,9 @@ class FooSequence implements Iterable&lt;Foo&gt; {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Iterable.html">Java SE 7 API Specification: java.lang.Iterable</a> </li>
-  <li> <a href="https://docs.oracle.com/javase/7/docs/api/java/util/Iterator.html">Java SE 7 API Specification: java.util.Iterator</a> </li>
-  <li> <a href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-14.html#jls-14.14.2">Java 7 Language Specification: The enhanced for
-  statement</a> (since Java 1.5) </li>
+  <li><a href="https://docs.oracle.com/javase/7/docs/api/java/lang/Iterable.html">Java SE 7 API Specification: java.lang.Iterable</a></li>
+  <li><a href="https://docs.oracle.com/javase/7/docs/api/java/util/Iterator.html">Java SE 7 API Specification: java.util.Iterator</a></li>
+  <li><a href="https://docs.oracle.com/javase/specs/jls/se7/html/jls-14.html#jls-14.14.2">Java 7 Language Specification: The enhanced for
+  statement</a> (since Java 1.5)</li>
 </ul>
 

@@ -2,10 +2,10 @@
 <p>Calling <code>System.gc()</code> or <code>Runtime.getRuntime().gc()</code> is a bad idea for a simple reason: there is no way to know exactly what
 will be done under the hood by the JVM because the behavior will depend on its vendor, version and options:</p>
 <ul>
-  <li> Will the whole application be frozen during the call? </li>
-  <li> Is the <code>-XX:DisableExplicitGC</code> option activated? </li>
-  <li> Will the JVM simply ignore the call? </li>
-  <li> …​ </li>
+  <li>Will the whole application be frozen during the call?</li>
+  <li>Is the <code>-XX:DisableExplicitGC</code> option activated?</li>
+  <li>Will the JVM simply ignore the call?</li>
+  <li>…​</li>
 </ul>
 <p>Like for <code>System.gc()</code>, there is no reason to manually call <code>runFinalization()</code> to force the call of finalization methods of
 any objects pending finalization.</p>

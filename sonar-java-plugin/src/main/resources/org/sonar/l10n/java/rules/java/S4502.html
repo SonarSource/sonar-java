@@ -5,22 +5,22 @@ application.</p>
 hidden web request and as web browsers automatically include cookies, the actions can be authenticated and sensitive.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> The web application uses cookies to authenticate users. </li>
-  <li> There exist sensitive operations in the web application that can be performed when the user is authenticated. </li>
-  <li> The state / resources of the web application can be modified by doing HTTP POST or HTTP DELETE requests for example. </li>
+  <li>The web application uses cookies to authenticate users.</li>
+  <li>There exist sensitive operations in the web application that can be performed when the user is authenticated.</li>
+  <li>The state / resources of the web application can be modified by doing HTTP POST or HTTP DELETE requests for example.</li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> Protection against CSRF attacks is strongly recommended:
+  <li>Protection against CSRF attacks is strongly recommended:
     <ul>
-      <li> to be activated by default for all <a href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Safe_methods">unsafe HTTP
-      methods</a>. </li>
-      <li> implemented, for example, with an unguessable CSRF token </li>
-    </ul>  </li>
-  <li> Of course all sensitive operations should not be performed with <a
+      <li>to be activated by default for all <a href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Safe_methods">unsafe HTTP
+      methods</a>.</li>
+      <li>implemented, for example, with an unguessable CSRF token</li>
+    </ul></li>
+  <li>Of course all sensitive operations should not be performed with <a
   href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Safe_methods">safe HTTP</a> methods like <code>GET</code> which are designed to be
-  used only for information retrieval. </li>
+  used only for information retrieval.</li>
 </ul>
 <h2>Sensitive Code Example</h2>
 <p><a href="https://docs.spring.io/spring-security/site/docs/5.0.x/reference/html/csrf.html#csrf-using">Spring Security</a> provides by default a
@@ -52,14 +52,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/352">CWE-352 - Cross-Site Request Forgery (CSRF)</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
-  Misconfiguration</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-community/attacks/csrf">Cross-Site Request Forgery</a> </li>
-  <li> STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222603">Application Security and
-  Development: V-222603</a> - The application must protect from Cross-Site Request Forgery (CSRF) vulnerabilities. </li>
-  <li> PortSwigger - <a href="https://portswigger.net/research/web-storage-the-lesser-evil-for-session-tokens">Web storage: the lesser evil for
-  session tokens</a> </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/352">CWE-352 - Cross-Site Request Forgery (CSRF)</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
+  Misconfiguration</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-community/attacks/csrf">Cross-Site Request Forgery</a></li>
+  <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222603">Application Security and
+  Development: V-222603</a> - The application must protect from Cross-Site Request Forgery (CSRF) vulnerabilities.</li>
+  <li>PortSwigger - <a href="https://portswigger.net/research/web-storage-the-lesser-evil-for-session-tokens">Web storage: the lesser evil for session
+  tokens</a></li>
 </ul>
 

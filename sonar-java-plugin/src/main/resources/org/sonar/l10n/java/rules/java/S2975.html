@@ -4,11 +4,11 @@ mechanisms.</p>
 <p>The <code>Object.clone</code> / <code>java.lang.Cloneable</code> mechanism in Java should be considered broken for the following reasons and
 should, consequently, not be used:</p>
 <ul>
-  <li> <code>Cloneable</code> is a <em>marker interface</em> without API but with a contract about class behavior that the compiler cannot enforce.
-  This is a bad practice. </li>
-  <li> Classes are instantiated without calling their constructor, so possible preconditions cannot be enforced. </li>
-  <li> There are implementation flaws by design when overriding <code>Object.clone</code>, like type casts or the handling of
-  <code>CloneNotSupportedException</code> exceptions. </li>
+  <li><code>Cloneable</code> is a <em>marker interface</em> without API but with a contract about class behavior that the compiler cannot enforce.
+  This is a bad practice.</li>
+  <li>Classes are instantiated without calling their constructor, so possible preconditions cannot be enforced.</li>
+  <li>There are implementation flaws by design when overriding <code>Object.clone</code>, like type casts or the handling of
+  <code>CloneNotSupportedException</code> exceptions.</li>
 </ul>
 <h2>How to fix it</h2>
 <p>A copy constructor, copy factory or a custom copy function are suitable alternatives to the <code>Object.clone</code> /
@@ -94,15 +94,15 @@ class Entity { // Compliant
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://www.artima.com/intv/bloch13.html">Joshua Bloch - Copy Constructor versus Cloning</a> </li>
-  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Cloneable.html">Interface Cloneable - Java™ Platform, Standard Edition 8 API
-  Specification</a> </li>
-  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#clone--">Object.clone - Java™ Platform, Standard Edition 8 API
-  Specification</a> </li>
+  <li><a href="https://www.artima.com/intv/bloch13.html">Joshua Bloch - Copy Constructor versus Cloning</a></li>
+  <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Cloneable.html">Interface Cloneable - Java™ Platform, Standard Edition 8 API
+  Specification</a></li>
+  <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html#clone--">Object.clone - Java™ Platform, Standard Edition 8 API
+  Specification</a></li>
 </ul>
 <h3>Related rules</h3>
 <ul>
-  <li> {rule:java:S2157} - "Cloneables" should implement "clone" </li>
-  <li> {rule:java:S1182} - Classes that override "clone" should be "Cloneable" and call "super.clone()" </li>
+  <li>{rule:java:S2157} - "Cloneables" should implement "clone"</li>
+  <li>{rule:java:S1182} - Classes that override "clone" should be "Cloneable" and call "super.clone()"</li>
 </ul>
 

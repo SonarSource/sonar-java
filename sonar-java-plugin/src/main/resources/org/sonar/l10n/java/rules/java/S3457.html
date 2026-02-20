@@ -6,26 +6,25 @@ result in the wrong strings being created.</p>
 <p>This rule checks whether every format string specifier can be correctly matched with one of the additional arguments when calling the following
 methods:</p>
 <ul>
-  <li> <a
-  href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#format-java.lang.String-java.lang.Object…​-"><code>java.lang.String#format</code></a> </li>
-  <li> <a
-  href="https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#format-java.lang.String-java.lang.Object…​-"><code>java.util.Formatter#format</code></a> </li>
-  <li> <a
-  href="https://docs.oracle.com/javase/8/docs/api/java/io/PrintStream.html#format-java.lang.String-java.lang.Object…​-"><code>java.io.PrintStream#format</code></a> </li>
-  <li> <a
-  href="https://docs.oracle.com/javase/8/docs/api/java/text/MessageFormat.html#format-java.lang.String-java.lang.Object…​-"><code>java.text.MessageFormat#format</code></a> </li>
-  <li> <a
-  href="https://docs.oracle.com/javase/8/docs/api/java/io/PrintWriter.html#format-java.lang.String-java.lang.Object…​-"><code>java.io.PrintWriter#format</code></a> </li>
-  <li> <a
-  href="https://docs.oracle.com/javase/8/docs/api/java/io/PrintStream.html#printf-java.lang.String-java.lang.Object…​-"><code>java.io.PrintStream#printf</code></a> </li>
-  <li> <a
-  href="https://docs.oracle.com/javase/8/docs/api/java/io/PrintWriter.html#printf-java.lang.String-java.lang.Object…​-"><code>java.io.PrintWriter#printf</code></a> </li>
-  <li> <a
-  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html#formatted(java.lang.Object…​)"><code>java.lang.String#formatted</code></a> (since Java 15) </li>
-  <li> logging methods of <a href="https://www.slf4j.org/api/org/slf4j/Logger.html"><code>org.slf4j.Logger</code></a>, <a
+  <li><a
+  href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#format-java.lang.String-java.lang.Object…​-"><code>java.lang.String#format</code></a></li>
+  <li><a
+  href="https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#format-java.lang.String-java.lang.Object…​-"><code>java.util.Formatter#format</code></a></li>
+  <li><a
+  href="https://docs.oracle.com/javase/8/docs/api/java/io/PrintStream.html#format-java.lang.String-java.lang.Object…​-"><code>java.io.PrintStream#format</code></a></li>
+  <li><a
+  href="https://docs.oracle.com/javase/8/docs/api/java/text/MessageFormat.html#format-java.lang.String-java.lang.Object…​-"><code>java.text.MessageFormat#format</code></a></li>
+  <li><a
+  href="https://docs.oracle.com/javase/8/docs/api/java/io/PrintWriter.html#format-java.lang.String-java.lang.Object…​-"><code>java.io.PrintWriter#format</code></a></li>
+  <li><a
+  href="https://docs.oracle.com/javase/8/docs/api/java/io/PrintStream.html#printf-java.lang.String-java.lang.Object…​-"><code>java.io.PrintStream#printf</code></a></li>
+  <li><a
+  href="https://docs.oracle.com/javase/8/docs/api/java/io/PrintWriter.html#printf-java.lang.String-java.lang.Object…​-"><code>java.io.PrintWriter#printf</code></a></li>
+  <li><a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html#formatted(java.lang.Object…​)"><code>java.lang.String#formatted</code></a> (since Java 15)</li>
+  <li>logging methods of <a href="https://www.slf4j.org/api/org/slf4j/Logger.html"><code>org.slf4j.Logger</code></a>, <a
   href="https://docs.oracle.com/javase/8/docs/api/java/util/logging/Logger.html"><code>java.util.logging.Logger</code></a>, <a
-  href="https://logging.apache.org/log4j/2.x/javadoc/log4j-api/org/apache/logging/log4j/Logger.html"><code>org.apache.logging.log4j.Logger</code></a>.
-  </li>
+  href="https://logging.apache.org/log4j/2.x/javadoc/log4j-api/org/apache/logging/log4j/Logger.html"><code>org.apache.logging.log4j.Logger</code></a>.</li>
 </ul>
 <h2>How to fix it</h2>
 <p>A <code>printf-</code>-style format string is a string that contains placeholders, which are replaced by values when the string is printed or
@@ -60,7 +59,7 @@ void logging(org.slf4j.Logger slf4jLog, java.util.logging.Logger logger) {
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/J9YxBQ">CERT, FIO47-C.</a> - Use valid format strings </li>
-  <li> <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/text/MessageFormat.html">java.text.MessageFormat</a> </li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/J9YxBQ">CERT, FIO47-C.</a> - Use valid format strings</li>
+  <li><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/text/MessageFormat.html">java.text.MessageFormat</a></li>
 </ul>
 

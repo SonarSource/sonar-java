@@ -3,22 +3,22 @@
 <p>Encryption algorithms are essential for protecting sensitive information and ensuring secure communications in a variety of domains. They are used
 for several important reasons:</p>
 <ul>
-  <li> Confidentiality, privacy, and intellectual property protection </li>
-  <li> Security during transmission or on storage devices </li>
-  <li> Data integrity, general trust, and authentication </li>
+  <li>Confidentiality, privacy, and intellectual property protection</li>
+  <li>Security during transmission or on storage devices</li>
+  <li>Data integrity, general trust, and authentication</li>
 </ul>
 <p>When selecting encryption algorithms, tools, or combinations, you should also consider two things:</p>
 <ol>
-  <li> No encryption is unbreakable. </li>
-  <li> The strength of an encryption algorithm is usually measured by the effort required to crack it within a reasonable time frame. </li>
+  <li>No encryption is unbreakable.</li>
+  <li>The strength of an encryption algorithm is usually measured by the effort required to crack it within a reasonable time frame.</li>
 </ol>
 <p>For these reasons, as soon as cryptography is included in a project, it is important to choose encryption algorithms that are considered strong and
 secure by the cryptography community.</p>
 <p>To provide communication security over a network, SSL and TLS are generally used. However, it is important to note that the following protocols are
 all considered weak by the cryptographic community, and are officially deprecated:</p>
 <ul>
-  <li> SSL versions 1.0, 2.0 and 3.0 </li>
-  <li> TLS versions 1.0 and 1.1 </li>
+  <li>SSL versions 1.0, 2.0 and 3.0</li>
+  <li>TLS versions 1.0 and 1.1</li>
 </ul>
 <p>When these unsecured protocols are used, it is best practice to expect a breach: that a user or organization with malicious intent will perform
 mathematical attacks on this data after obtaining it by other means.</p>
@@ -29,8 +29,9 @@ encryption was supposed to protect.</p>
 <p>Below are some real-world scenarios that illustrate the potential impact of an attacker exploiting the vulnerability.</p>
 <h4>Additional attack surface</h4>
 <p>By modifying the plaintext of the encrypted message, an attacker may be able to trigger additional vulnerabilities in the code. An attacker can
-further exploit a system to obtain more information.<br> Encrypted values are often considered trustworthy because it would not be possible for a
-third party to modify them under normal circumstances.</p>
+further exploit a system to obtain more information.
+  <br>
+  Encrypted values are often considered trustworthy because it would not be possible for a third party to modify them under normal circumstances.</p>
 <h4>Breach of confidentiality and privacy</h4>
 <p>When encrypted data contains personal or sensitive information, its retrieval by an attacker can lead to privacy violations, identity theft,
 financial loss, reputational damage, or unauthorized access to confidential systems.</p>
@@ -73,7 +74,8 @@ public static void main(String[] args) {
 community.</p>
 <p>The best choices at the moment are the following.</p>
 <h4>Use TLS v1.2 or TLS v1.3</h4>
-<p>Even though TLS V1.3 is available, using TLS v1.2 is still considered good and secure practice by the cryptography community.<br></p>
+<p>Even though TLS V1.3 is available, using TLS v1.2 is still considered good and secure practice by the cryptography community.
+  <br></p>
 <p>The use of TLS v1.2 ensures compatibility with a wide range of platforms and enables seamless communication between different systems that do not
 yet have TLS v1.3 support.</p>
 <p>The only drawback depends on whether the framework used is outdated: its TLS v1.2 settings may enable older and insecure cipher suites that are
@@ -109,7 +111,8 @@ public static void main(String[] args) {
 community.</p>
 <p>The best choices at the moment are the following.</p>
 <h4>Use TLS v1.2 or TLS v1.3</h4>
-<p>Even though TLS V1.3 is available, using TLS v1.2 is still considered good and secure practice by the cryptography community.<br></p>
+<p>Even though TLS V1.3 is available, using TLS v1.2 is still considered good and secure practice by the cryptography community.
+  <br></p>
 <p>The use of TLS v1.2 ensures compatibility with a wide range of platforms and enables seamless communication between different systems that do not
 yet have TLS v1.3 support.</p>
 <p>The only drawback depends on whether the framework used is outdated: its TLS v1.2 settings may enable older and insecure cipher suites that are
@@ -119,28 +122,28 @@ versions, and improves performance.</p>
 <h2>Resources</h2>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> <a href="https://en.wikipedia.org/wiki/Padding_oracle_attack">Wikipedia, Padding Oracle Attack</a> </li>
-  <li> <a href="https://en.wikipedia.org/wiki/Chosen-ciphertext_attack">Wikipedia, Chosen-Ciphertext Attack</a> </li>
-  <li> <a href="https://en.wikipedia.org/wiki/Chosen-plaintext_attack">Wikipedia, Chosen-Plaintext Attack</a> </li>
-  <li> <a href="https://en.wikipedia.org/wiki/Semantic_security">Wikipedia, Semantically Secure Cryptosystems</a> </li>
-  <li> <a href="https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding">Wikipedia, OAEP</a> </li>
-  <li> <a href="https://en.wikipedia.org/wiki/Galois/Counter_Mode">Wikipedia, Galois/Counter Mode</a> </li>
+  <li><a href="https://en.wikipedia.org/wiki/Padding_oracle_attack">Wikipedia, Padding Oracle Attack</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Chosen-ciphertext_attack">Wikipedia, Chosen-Ciphertext Attack</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Chosen-plaintext_attack">Wikipedia, Chosen-Plaintext Attack</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Semantic_security">Wikipedia, Semantically Secure Cryptosystems</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding">Wikipedia, OAEP</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Galois/Counter_Mode">Wikipedia, Galois/Counter Mode</a></li>
 </ul>
 <h3>Standards</h3>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
-  Authentication Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
-  Exposure</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
-  Misconfiguration</a> </li>
-  <li> OWASP - <a href="https://mas.owasp.org/checklists/MASVS-CRYPTO/">Mobile AppSec Verification Standard - Cryptography Requirements</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m5-insufficient-cryptography">Mobile Top 10 2016 Category M5 -
-  Insufficient Cryptography</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m5-insecure-communication">Mobile Top 10 2024 Category M5 - Insecure
-  Communication</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/327">CWE-327 - Use of a Broken or Risky Cryptographic Algorithm</a> </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/hDdGBQ">CERT, MSC61-J.</a> - Do not use insecure or weak cryptographic algorithms </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
+  Authentication Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
+  Exposure</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
+  Misconfiguration</a></li>
+  <li>OWASP - <a href="https://mas.owasp.org/checklists/MASVS-CRYPTO/">Mobile AppSec Verification Standard - Cryptography Requirements</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m5-insufficient-cryptography">Mobile Top 10 2016 Category M5 -
+  Insufficient Cryptography</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m5-insecure-communication">Mobile Top 10 2024 Category M5 - Insecure
+  Communication</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/327">CWE-327 - Use of a Broken or Risky Cryptographic Algorithm</a></li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/hDdGBQ">CERT, MSC61-J.</a> - Do not use insecure or weak cryptographic algorithms</li>
 </ul>
 

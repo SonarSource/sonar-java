@@ -5,11 +5,11 @@ immediately following the removed element.</p>
 <h2>How to fix it</h2>
 <p>There are three ways how to fix this issue:</p>
 <ol>
-  <li> Replace the loop with a call to <code>Collection.removeIf()</code>. This is the preferred solution. </li>
-  <li> Replace the ascending loop with a descending loop. Use this approach if the preferred solution is not possible due to side effects of the loop.
-  </li>
-  <li> Adjust the loop counter within the loop body after the call to <code>Collection.remove()</code>. <strong>This approach is not
-  recommended</strong>, because it will raise an issue with rule <em>{rule:java:S127} - "for" loop stop conditions should be invariant</em> </li>
+  <li>Replace the loop with a call to <code>Collection.removeIf()</code>. This is the preferred solution.</li>
+  <li>Replace the ascending loop with a descending loop. Use this approach if the preferred solution is not possible due to side effects of the
+  loop.</li>
+  <li>Adjust the loop counter within the loop body after the call to <code>Collection.remove()</code>. <strong>This approach is not
+  recommended</strong>, because it will raise an issue with rule <em>{rule:java:S127} - "for" loop stop conditions should be invariant</em></li>
 </ol>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -84,11 +84,11 @@ void removeFrom(List&lt;String&gt; list) {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.oracle.com/javase/7/docs/api/java/util/Collection.html#remove(java.lang.Object)">Java SE 7 API Specification:
-  Collection.remove</a> </li>
-  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html#removeIf-java.util.function.Predicate-">Java SE 8 API
-  Specification: Collection.removeIf</a> </li>
-  <li> <a href="https://sonarsource.github.io/rspec/#/rspec/{rule:java:S6068}/java">{rule:java:S127} - "for" loop stop conditions should be
-  invariant</a> </li>
+  <li><a href="https://docs.oracle.com/javase/7/docs/api/java/util/Collection.html#remove(java.lang.Object)">Java SE 7 API Specification:
+  Collection.remove</a></li>
+  <li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html#removeIf-java.util.function.Predicate-">Java SE 8 API
+  Specification: Collection.removeIf</a></li>
+  <li><a href="https://sonarsource.github.io/rspec/#/rspec/{rule:java:S6068}/java">{rule:java:S127} - "for" loop stop conditions should be
+  invariant</a></li>
 </ul>
 

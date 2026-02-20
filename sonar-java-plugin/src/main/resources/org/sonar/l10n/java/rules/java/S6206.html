@@ -5,9 +5,9 @@ implementing immutable classes on your own might lead to some bugs.</p>
 <p>One of the important aspects of <code>records</code> is that final fields can’t be overwritten using reflection.</p>
 <p>This rule reports an issue on classes for which all these statements are true:</p>
 <ul>
-  <li> all instance fields are private and final </li>
-  <li> has only one constructor with a parameter for all fields </li>
-  <li> has getters for all fields </li>
+  <li>all instance fields are private and final</li>
+  <li>has only one constructor with a parameter for all fields</li>
+  <li>has getters for all fields</li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre>
@@ -40,6 +40,6 @@ record Person(String name, int age) { }
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://docs.oracle.com/javase/specs/jls/se16/html/jls-8.html#jls-8.10">Records specification</a> </li>
+  <li><a href="https://docs.oracle.com/javase/specs/jls/se16/html/jls-8.html#jls-8.10">Records specification</a></li>
 </ul>
 

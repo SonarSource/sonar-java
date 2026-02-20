@@ -5,15 +5,15 @@ the theft of session-cookies, the <code>HttpOnly</code> attribute can help to re
 vulnerability to steal session-cookies.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> the cookie is sensitive, used to authenticate the user, for instance a <em>session-cookie</em> </li>
-  <li> the <code>HttpOnly</code> attribute offer an additional protection (not the case for an <em>XSRF-TOKEN cookie</em> / CSRF token for example)
-  </li>
+  <li>the cookie is sensitive, used to authenticate the user, for instance a <em>session-cookie</em></li>
+  <li>the <code>HttpOnly</code> attribute offer an additional protection (not the case for an <em>XSRF-TOKEN cookie</em> / CSRF token for
+  example)</li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> By default the <code>HttpOnly</code> flag should be set to <em>true</em> for most of the cookies and it’s mandatory for session /
-  sensitive-security cookies. </li>
+  <li>By default the <code>HttpOnly</code> flag should be set to <em>true</em> for most of the cookies and it’s mandatory for session /
+  sensitive-security cookies.</li>
 </ul>
 <h2>Sensitive Code Example</h2>
 <p>If you create a security-sensitive cookie in your JAVA code:</p>
@@ -33,13 +33,13 @@ c.setHttpOnly(true); // Compliant: this sensitive cookie is protected against th
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a> </li>
-  <li> <a href="https://owasp.org/www-community/HttpOnly">OWASP HttpOnly</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)">Top 10 2017 Category A7 - Cross-Site Scripting
-  (XSS)</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/1004">CWE-1004 - Sensitive Cookie Without 'HttpOnly' Flag</a> </li>
-  <li> Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#HTTPONLY_COOKIE">HTTPONLY_COOKIE</a> </li>
-  <li> STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222575">Application Security and
-  Development: V-222575</a> - The application must set the HTTPOnly flag on session cookies. </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a></li>
+  <li><a href="https://owasp.org/www-community/HttpOnly">OWASP HttpOnly</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)">Top 10 2017 Category A7 - Cross-Site Scripting
+  (XSS)</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/1004">CWE-1004 - Sensitive Cookie Without 'HttpOnly' Flag</a></li>
+  <li>Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#HTTPONLY_COOKIE">HTTPONLY_COOKIE</a></li>
+  <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222575">Application Security and
+  Development: V-222575</a> - The application must set the HTTPOnly flag on session cookies.</li>
 </ul>
 

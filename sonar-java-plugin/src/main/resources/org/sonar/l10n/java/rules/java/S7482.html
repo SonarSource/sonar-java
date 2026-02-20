@@ -3,9 +3,9 @@
 the initializer function is to set up the gatherer’s private state object.</p>
 <p>The gatherer interface provides factory methods that create gatherers without taking an initializer as an argument:</p>
 <ul>
-  <li> <code>ofSequential(Gatherer.Integrator&lt;Void,T,R&gt; integrator)</code> </li>
-  <li> <code>ofSequential(Gatherer.Integrator&lt;Void,T,R&gt; integrator, BiConsumer&lt;Void, Gatherer.Downstream&lt;? super R&gt;&gt;
-  finisher)</code> </li>
+  <li><code>ofSequential(Gatherer.Integrator&lt;Void,T,R&gt; integrator)</code></li>
+  <li><code>ofSequential(Gatherer.Integrator&lt;Void,T,R&gt; integrator, BiConsumer&lt;Void, Gatherer.Downstream&lt;? super R&gt;&gt;
+  finisher)</code></li>
 </ul>
 <p>Using these specific factory methods to create stateless gatherers is preferable because it clearly communicates their stateless nature.</p>
 <p>This rule reports the use of <code>ofSequential(Gatherer.Integrator&lt;Void,T,R&gt; integrator, BiConsumer&lt;Void, Gatherer.Downstream&lt;? super

@@ -15,10 +15,10 @@ seeding a CSPRNG, we introduce a significant weakness that can be exploited by a
 <p>One of the primary use cases for CSPRNGs is generating cryptographic keys. If an attacker can predict the seed used to initialize the random number
 generator, they may be able to derive the same keys. Depending on the use case, this can lead to multiple severe outcomes, such as:</p>
 <ul>
-  <li> Being able to decrypt sensitive documents, leading to privacy breaches or identity theft. </li>
-  <li> Gaining access to a private key used for signing, allowing an attacker to forge digital signatures and impersonate legitimate entities. </li>
-  <li> Bypassing authentication mechanisms that rely on public-key infrastructure (PKI), which can be abused to gain unauthorized access to systems or
-  networks. </li>
+  <li>Being able to decrypt sensitive documents, leading to privacy breaches or identity theft.</li>
+  <li>Gaining access to a private key used for signing, allowing an attacker to forge digital signatures and impersonate legitimate entities.</li>
+  <li>Bypassing authentication mechanisms that rely on public-key infrastructure (PKI), which can be abused to gain unauthorized access to systems or
+  networks.</li>
 </ul>
 <h4>Session hijacking and man-in-the-middle attack</h4>
 <p>Another scenario where this vulnerability can be exploited is in the generation of session tokens or nonces for secure communication protocols. If
@@ -58,21 +58,21 @@ strong algorithm for its number generation.</p>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/security/SecureRandom.html">Class
-  <code>java.security.SecureRandom</code></a> </li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/security/SecureRandom.html">Class
+  <code>java.security.SecureRandom</code></a></li>
 </ul>
 <h3>Standards</h3>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
-  Misconfiguration</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m10-insufficient-cryptography">Mobile Top 10 2024 Category M10 -
-  Insufficient Cryptography</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/330">CWE-330 - Use of Insufficiently Random Values</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/332">CWE-332 - Insufficient Entropy in PRNG</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/336">CWE-336 - Same Seed in Pseudo-Random Number Generator (PRNG)</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/337">CWE-337 - Predictable Seed in Pseudo-Random Number Generator (PRNG)</a> </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC63-J.+Ensure+that+SecureRandom+is+properly+seeded">CERT, MSC63J.</a> - Ensure that
-  SecureRandom is properly seeded </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
+  Misconfiguration</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m10-insufficient-cryptography">Mobile Top 10 2024 Category M10 -
+  Insufficient Cryptography</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/330">CWE-330 - Use of Insufficiently Random Values</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/332">CWE-332 - Insufficient Entropy in PRNG</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/336">CWE-336 - Same Seed in Pseudo-Random Number Generator (PRNG)</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/337">CWE-337 - Predictable Seed in Pseudo-Random Number Generator (PRNG)</a></li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/display/java/MSC63-J.+Ensure+that+SecureRandom+is+properly+seeded">CERT, MSC63J.</a> - Ensure that
+  SecureRandom is properly seeded</li>
 </ul>
 
