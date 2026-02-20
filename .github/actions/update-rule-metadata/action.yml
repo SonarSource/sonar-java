@@ -1,0 +1,73 @@
+name: Update Rule Metadata
+description: Runs rule-api.jar update
+
+inputs:
+  post-update:
+    description: 'Extra commands to run after rule-api.jar update'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v4
+
+      - name: Setup JFrog
+        uses: SonarSource/jfrog-setup-wrapper@v3
+        with:
+          artifactoryRoleSuffix: private-reader
+
+      - name: Setup Rule API
+        shell: bash
+        run: |
+          jfrog rt curl -sLf "sonarsource-private-releases/com/sonarsource/rule-api/rule-api/%5BRELEASE%5D/rule-api-%5BRELEASE%5D.jar" -o rule-api.jar
+          echo "Latest com.sonarsource.rule-api:rule-api release:"
+          jar xf rule-api.jar META-INF/MANIFEST.MF
+          grep 'Implementation-Version' META-INF/MANIFEST.MF
+        working-directory: /tmp
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        # use mise if possible
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Getting Vault Secrets
+        id: secrets
+        uses: SonarSource/vault-action-wrapper@320bd31b03e5dacaac6be51bbbb15adf7caccc32 # v3.1.0
+        with:
+          secrets: |
+            development/github/token/{REPO_OWNER_NAME_DASH}-rspec token | GITHUB_TOKEN_RSPEC;
+
+      - name: Update Files
+        env:
+          GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN_RSPEC }}
+        shell: bash
+        run: |
+          java -jar "/tmp/rule-api.jar" update
+      
+      - name: Custom Update
+        if: ${{ inputs.post-update }}
+        run: ${{ inputs.post-update }}
+
+      - name: Create PR
+        id: create-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_BRANCH_NAME: "gh-action/update-rule-metadata.${{ github.run_id }}"
+        shell: bash
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git checkout -b "${{ env.PR_BRANCH_NAME }}"
+          git commit -m 'Update rule metadata' -a
+          git push --set-upstream origin "${{ env.PR_BRANCH_NAME }}"
+          URL=$(gh pr create -B master --title 'Update rule metadata' --body '')
+          echo "url=${URL}" >> $GITHUB_OUTPUT
+
+      - name: Summary
+        shell: bash
+        run: |
+          echo "Generated ${{steps.create-pr.outputs.url}}." >> $GITHUB_STEP_SUMMARY
+          echo "Tip: close and reopen the PR to trigger CI. " >> $GITHUB_STEP_SUMMARY
