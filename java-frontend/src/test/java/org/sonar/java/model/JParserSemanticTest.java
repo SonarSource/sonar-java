@@ -1287,7 +1287,7 @@ class JParserSemanticTest {
 
     assertThat(recovered.isTypeSymbol()).isFalse();
     assertThat(recovered.isVariableSymbol()).isFalse();
-    assertThat(recovered.isMethodSymbol()).isFalse();
+    assertThat(recovered.isMethodSymbol()).isTrue();
     assertThat(recovered.isPackageSymbol()).isFalse();
 
     assertThat(recovered.isAbstract()).isFalse();
