@@ -1,5 +1,7 @@
 // import module
 import module java.base;
+import java.logging.Logger;
+
 // compact source file
 void main() {}
 
@@ -9,5 +11,10 @@ void main() {}
     Child() {
       IO.println("Hello from Child constructor");
       super();
+    }
+
+    Child(int i) {
+      IO.println("Hello from Child constructor");
+      IO.println("Hello from Child constructor");
     }
   }
