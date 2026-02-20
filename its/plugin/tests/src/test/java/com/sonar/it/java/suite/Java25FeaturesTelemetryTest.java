@@ -21,10 +21,11 @@ import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.sonar.java.telemetry.TelemetryKey;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MultiModuleTelemetryTest {
+public class Java25FeaturesTelemetryTest {
 
   @ClassRule
   public static OrchestratorRule orchestrator = JavaTestSuite.ORCHESTRATOR;
@@ -32,20 +33,18 @@ public class MultiModuleTelemetryTest {
   @Test
   public void test() {
     MavenBuild build = TestUtils.createMavenBuild()
-      .setPom(TestUtils.projectPom("multi-module"))
+      .setPom(TestUtils.projectPom("java-features"))
       .setCleanPackageSonarGoals()
       .setDebugLogs(true);
 
     String projectKey = "org.sonarsource.it.projects:parent-project";
-    TestUtils.provisionProject(orchestrator, projectKey, "multi-module", "java", "multi-module");
+    TestUtils.provisionProject(orchestrator, projectKey, "java-features", "java", "multi-module");
 
     BuildResult buildResult = orchestrator.executeBuild(build);
 
     assertThat(buildResult.getLogs())
-      .containsOnlyOnce("Telemetry java.language.version: 8")
-      .containsOnlyOnce("Telemetry java.module_count: 2")
-      .containsOnlyOnce("Telemetry java.scanner_app: ScannerMaven")
-      .containsOnlyOnce("Telemetry java.is_autoscan: false")
-      .containsOnlyOnce("Telemetry java.dependency.lombok: 1.18.30,1.18.38");
+      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY.key(), 1))
+      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_MODULE_IMPORT.key(), 1))
+      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_COMPACT_SOURCE_FILES.key(), 1));
   }
 }
