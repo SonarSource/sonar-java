@@ -1,5 +1,5 @@
 {
-  "title": "Subclass fields should be initialized before \"super()\"",
+  "title": "Subclass fields should be initialized before calls to \"super()\" or \"this()\"",
   "type": "BUG",
   "status": "ready",
   "remediation": {
@@ -9,7 +9,7 @@
   "tags": [
     "java25"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-8447",
   "sqKey": "S8447",
   "scope": "All",
@@ -17,7 +17,7 @@
   "code": {
     "impacts": {
       "MAINTAINABILITY": "LOW",
-      "RELIABILITY": "LOW"
+      "RELIABILITY": "HIGH"
     },
     "attribute": "CONVENTIONAL"
   }
