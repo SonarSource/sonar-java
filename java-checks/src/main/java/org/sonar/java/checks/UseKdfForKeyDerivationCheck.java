@@ -16,7 +16,8 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Locale;
+import java.util.List;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -31,7 +32,23 @@ public class UseKdfForKeyDerivationCheck extends AbstractMethodDetection impleme
 
   private static final String MESSAGE = "Use the KDF API instead of %s for key derivation.";
 
-  private static final String KDF = "KDF";
+  private final static List<String> PRF = List.of(
+    "HmacSHA1",
+    "HmacSHA224",
+    "HmacSHA256",
+    "HmacSHA384",
+    "HmacSHA512",
+    "HmacSHA512/224",
+    "HmacSHA512/256",
+    "HmacSHA3-224",
+    "HmacSHA3-256",
+    "HmacSHA3-384",
+    "HmacSHA3-512"
+  );
+  private final static List<String> KFD_ALGORITHMS = Stream.concat(
+    Stream.of("HKDF-SHA256", "HKDF-SHA384", "HKDF-SHA512"),
+    PRF.stream().map("PBKDF2With%s"::formatted)
+  ).toList();
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -49,7 +66,7 @@ public class UseKdfForKeyDerivationCheck extends AbstractMethodDetection impleme
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree firstArg = mit.arguments().get(0);
     String algorithm = ExpressionsHelper.getConstantValueAsString(firstArg).value();
-    if (algorithm != null && algorithm.toUpperCase(Locale.ROOT).contains(KDF)) {
+    if (algorithm != null && KFD_ALGORITHMS.contains(algorithm)) {
       String className = mit.methodSymbol().owner().name();
       reportIssue(mit, String.format(MESSAGE, className));
     }
