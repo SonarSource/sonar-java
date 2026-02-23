@@ -1,0 +1,54 @@
+<p>A <code>ScopedValue</code> must be accessible within the functional task where it is bound. Creating a new instance directly inside a
+<code>ScopedValue.where()</code> call makes the key unreachable, as there is no variable name to reference when calling <code>.get()</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>The primary purpose of a <code>ScopedValue</code> is to provide a way to share data without passing it as method arguments. To retrieve the value
+using <code>.get()</code>, you must have access to the <code>ScopedValue</code> instance (the key).</p>
+<p>If a <code>ScopedValue</code> is instantiated anonymously within the <code>.where()</code> method, it is "lost" immediately after the binding is
+created. The code inside the <code>Runnable</code> or <code>Callable</code> has no way to reference that specific instance to retrieve the associated
+value, rendering the scoped value useless.</p>
+<h2>How to fix it</h2>
+<p>Assign the <code>ScopedValue</code> instance to a stable reference — typically a <code>static final</code> field — before using it in a binding.
+This allows different parts of the code to refer to the same key to set and retrieve values.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class Renderer {
+
+  public void process() {
+    // Noncompliant: The ScopedValue instance is anonymous and unreachable inside the run method
+    ScopedValue.where(ScopedValue.newInstance(), "DARK").run(() -&gt; {
+        render();
+    });
+  }
+
+  void render() {
+    // There is no way to call .get() here because the key is unknown
+  }
+
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class Renderer {
+
+  // Compliant: The ScopedValue is assigned to a constant that can be referenced elsewhere
+  private static final ScopedValue&lt;String&gt; THEME = ScopedValue.newInstance();
+
+  public void process() {
+    ScopedValue.where(THEME, "DARK").run(() -&gt; {
+        render();
+    });
+  }
+
+  void render() {
+    System.out.println("Theme is: " + THEME.get());
+  }
+
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://openjdk.org/jeps/506">JEP 506: Scoped Values</a></li>
+</ul>
+
