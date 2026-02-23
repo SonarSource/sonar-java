@@ -1,4 +1,4 @@
-package checks.innerStaticClassesCheck;
+package checks.InnerStaticClassesCheck;
 
 class Fruit {
   private int value;
