@@ -49,7 +49,11 @@ public enum TelemetryKey {
   // The last element of dependency keys should be the same as the name of its jar.
   JAVA_DEPENDENCY_LOMBOK("java.dependency.lombok"),
   JAVA_DEPENDENCY_SPRING_BOOT("java.dependency.spring-boot"),
-  JAVA_DEPENDENCY_SPRING_WEB("java.dependency.spring-web");
+  JAVA_DEPENDENCY_SPRING_WEB("java.dependency.spring-web"),
+
+  JAVA_FEATURE_MODULE_IMPORT("java.feature.module_import"),
+  JAVA_FEATURE_COMPACT_SOURCE_FILES("java.feature.compact_source_files"),
+  JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY("java.feature.flexible_constructor_body");
 
   public interface SpeedKeys {
     TelemetryKey sizeCharsKey();
