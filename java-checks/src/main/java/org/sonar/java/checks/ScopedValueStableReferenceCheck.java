@@ -16,17 +16,19 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S8465")
 public class ScopedValueStableReferenceCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
+
+  private static final List<Tree.Kind> VALID_PARENTS = List.of(Tree.Kind.ASSIGNMENT, Tree.Kind.VARIABLE);
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -37,21 +39,16 @@ public class ScopedValueStableReferenceCheck extends AbstractMethodDetection imp
   protected MethodMatchers getMethodInvocationMatchers() {
     return MethodMatchers.create()
       .ofTypes("java.lang.ScopedValue")
-      .names("where")
-      .withAnyParameters()
+      .names("newInstance")
+      .addWithoutParametersMatcher()
       .build();
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    ExpressionTree scopedValue = mit.arguments().get(0);
-    if (!scopedValue.is(Tree.Kind.METHOD_INVOCATION)) {
-      return;
-    }
-    MethodInvocationTree methodInvocation = (MethodInvocationTree) scopedValue;
-    if (methodInvocation.methodSymbol().owner().type().fullyQualifiedName().equals("java.lang.ScopedValue") &&
-      methodInvocation.methodSymbol().name().equals("newInstance")) {
-      reportIssue(methodInvocation, "Consider using a stable reference for ScopedValue instances.");
+    // It only makes sense to assign a new instance of a ScopedValue to a variable or a field.
+    if (!VALID_PARENTS.contains(mit.parent().kind())) {
+      reportIssue(mit, "Consider using a stable reference for ScopedValue instances.");
     }
   }
 
