@@ -43,8 +43,8 @@ public class Java25FeaturesTelemetryTest {
     BuildResult buildResult = orchestrator.executeBuild(build);
 
     assertThat(buildResult.getLogs())
-      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY.key(), 1))
-      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_MODULE_IMPORT.key(), 1))
-      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_COMPACT_SOURCE_FILES.key(), 1));
+      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY.key(), 2))
+      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_MODULE_IMPORT.key(), 3))
+      .containsOnlyOnce("Telemetry %s: %d".formatted(TelemetryKey.JAVA_FEATURE_COMPACT_SOURCE_FILES.key(), 2));
   }
 }

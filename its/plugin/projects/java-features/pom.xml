@@ -11,5 +11,6 @@
   <url>http://maven.apache.org</url>
   <modules>
     <module>module_a</module>
+    <module>module_b</module>
   </modules>
 </project>
