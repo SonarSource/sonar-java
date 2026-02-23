@@ -32,7 +32,7 @@ public class UseKdfForKeyDerivationCheck extends AbstractMethodDetection impleme
 
   private static final String MESSAGE = "Use the KDF API instead of %s for key derivation.";
 
-  private final static List<String> PRF = List.of(
+  private static final List<String> PRF = List.of(
     "HmacSHA1",
     "HmacSHA224",
     "HmacSHA256",
@@ -45,7 +45,7 @@ public class UseKdfForKeyDerivationCheck extends AbstractMethodDetection impleme
     "HmacSHA3-384",
     "HmacSHA3-512"
   );
-  private final static List<String> KFD_ALGORITHMS = Stream.concat(
+  private static final List<String> KFD_ALGORITHMS = Stream.concat(
     Stream.of("HKDF-SHA256", "HKDF-SHA384", "HKDF-SHA512"),
     PRF.stream().map("PBKDF2With%s"::formatted)
   ).toList();
