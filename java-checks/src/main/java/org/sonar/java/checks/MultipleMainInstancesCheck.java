@@ -18,7 +18,6 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
@@ -28,8 +27,6 @@ import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-//https://github.com/SonarSource/sonar-java/pull/5455
 
 @Rule(key = "S8446")
 public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
@@ -56,7 +53,7 @@ public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor impl
 
     // at this point : 1 main method in members and at least 1 main method in superclasses
     var singleMainMethod = membersMainMethods.get(0);
-    boolean isOverriding = Optional.ofNullable(singleMainMethod.isOverriding()).orElse(false);
+    boolean isOverriding = Boolean.TRUE.equals(singleMainMethod.isOverriding());
 
     // override case
     var mainWithHigherPriorityInSuper = superMainMethods.stream().filter(superMainMethod ->
