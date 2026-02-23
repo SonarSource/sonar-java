@@ -66,9 +66,10 @@ public class Measurer extends SubscriptionVisitor {
       sonarFile = context.getInputFile();
       var metricsComputer = ((MetricsScannerContext) context).getMetricsComputer();
       noSonarFilter.noSonarInFile(sonarFile, metricsComputer.getNoSonarLines(context.getTree()));
-      if (!isSonarLintContext()) {
-        saveMetricOnFile(CoreMetrics.NCLOC, metricsComputer.getLinesOfCode(context.getTree()));
+      if (isSonarLintContext()) {
+        return;
       }
+      saveMetricOnFile(CoreMetrics.NCLOC, metricsComputer.getLinesOfCode(context.getTree()));
     }
   }
 
