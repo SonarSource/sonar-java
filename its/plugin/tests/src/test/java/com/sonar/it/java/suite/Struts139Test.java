@@ -59,7 +59,8 @@ public class Struts139Test {
     String fileKey = componentKey("org/apache/struts/action/", "Action.java");
     assertThat(getMeasureAsInteger(fileKey, "files")).isEqualTo(1);
     assertThat(getMeasureAsInteger(PROJECT_STRUTS, "lines")).isEqualTo(65059);
-    assertThat(getMeasureAsInteger(PROJECT_STRUTS, "ncloc")).isEqualTo(27577);
+    assertThat(getMeasureAsInteger(PROJECT_STRUTS, "ncloc"))
+      .isIn(27577, /*FIXME SONAR-27110 Can be removed when ITs will be run with SQS 2026.2+*/33231);
     // 208 getter/setter
     assertThat(getMeasureAsInteger(PROJECT_STRUTS, "functions")).isEqualTo(2730 + 208);
 
