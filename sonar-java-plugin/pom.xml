@@ -293,7 +293,7 @@
                 </licenseUrlReplacement>
                 <licenseUrlReplacement>
                     <regexp>http://www.opensource.org/licenses/bsd-license.php</regexp>
-                    <replacement>${project.baseUri}/license-resources/fasterxml.txt</replacement>
+                    <replacement>${project.baseUri}/license-resources/bsd.txt</replacement>
                 </licenseUrlReplacement>
             </licenseUrlReplacements>
             <licenseUrlFileNameSanitizers>
