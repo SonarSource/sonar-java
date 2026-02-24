@@ -40,6 +40,11 @@ on:
         description: "Integrate into SQS"
         type: boolean
         default: true
+      issue-categories:
+        description: "Jira issue categories to include in the release notes"
+        required: false
+        type: string
+        default: "New Feature,False Positive,False Negative,Bug,Improvement,Task"
 
 jobs:
   release:
@@ -70,6 +75,7 @@ jobs:
       verbose: ${{ github.event.inputs.verbose == 'true' }}
       use-jira-sandbox: ${{ github.event.inputs.dry-run == 'true' }}
       is-draft-release: ${{ github.event.inputs.dry-run == 'true' }}
+      issue-categories: ${{ github.event.inputs.issue-categories }}
 
   bump_versions:
     name: Bump versions
