@@ -342,6 +342,31 @@
             </execution>
           </executions>
         </plugin>
+
+       <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.4.0</version>
+          <executions>
+            <execution>
+              <id>copy-main-license</id>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>copy-resources</goal>
+              </goals>
+              <configuration>
+                <resources>
+                  <resource>
+                    <directory>..</directory>
+                    <includes>
+                      <include>LICENSE.txt</include>
+                    </includes>
+                  </resource>
+                </resources>
+                <outputDirectory>${project.build.directory}/temp-licenses</outputDirectory>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
     </plugins>
   </build>
 

@@ -197,7 +197,7 @@ When dependencies change, update the committed license files using the `updateLi
 ```sh
 mvn clean package -PupdateLicenses
 ```
-This regenerates licenses in `src/main/resources/licenses/` based on current project dependencies.
+This regenerates licenses in `sonar-java-plugin/src/main/resources/licenses/` based on current project dependencies.
 
 ### License
 
