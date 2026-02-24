@@ -192,6 +192,13 @@ The expected results are listed in [src/test/resources](its/autoscan/src/test/re
 #### Debugging Integration Tests
 You can debug ITs by adding `-Dmaven.binary=mvnDebug` as an option when running the tests. This will cause the analyzer JVM to wait for a debugger to be attached before continuing.
 
+### Updating licenses:
+When dependencies change, update the committed license files using the `updateLicenses` profile:
+```sh
+mvn clean package -PupdateLicenses
+```
+This regenerates licenses in `src/main/resources/licenses/` based on current project dependencies.
+
 ### License
 
 Copyright 2012-2026 SonarSource.
