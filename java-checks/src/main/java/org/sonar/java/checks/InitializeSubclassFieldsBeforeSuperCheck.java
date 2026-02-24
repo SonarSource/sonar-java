@@ -79,8 +79,8 @@ public final class InitializeSubclassFieldsBeforeSuperCheck extends FlexibleCons
   ) {
     BlockTree methodBlock;
     if (method == null || (methodBlock = method.block()) == null) {
-      // Can't resolve body, conservatively assume field may be used.
-      return true;
+      // Can't resolve body, assume field is not used to avoid false positives
+      return false;
     }
     SymbolUsedVisitor symbolUsedVisitor = new SymbolUsedVisitor(symbol, childClass, visitedMethods);
     methodBlock.body().forEach(statement -> statement.accept(symbolUsedVisitor));

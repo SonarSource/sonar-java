@@ -173,21 +173,10 @@ public class InitializeSubclassFieldsBeforeSuperSample {
 
       Middle() {
         super();
-        this.label = "value"; // Noncompliant
+        this.label = "value"; // Compliant : cannot resolve describe() implementation, conservative approach is to not flag
       }
 
       abstract void describe();
-    }
-
-    abstract class Leaf extends Middle {
-      Leaf() {
-        super();
-      }
-
-      @Override
-      void describe() {
-        IO.println(label);
-      }
     }
   }
 
