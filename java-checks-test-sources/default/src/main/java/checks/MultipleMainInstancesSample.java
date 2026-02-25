@@ -67,7 +67,7 @@ public class MultipleMainInstancesSample {
     }
 
     class Child extends Parent {
-      void main(String[] args) { // Noncompliant {{Override main from Parent to avoid introducing multiple main methods.}}
+      void main(String[] args) { // Compliant, args may be used for other purposes, and it will shadow the parent main method
         System.out.println("Static main in child class detected; shadowing instance main.");
       }
     }
@@ -156,7 +156,7 @@ public class MultipleMainInstancesSample {
     }
 
     class NonCompliantChild extends Parent {
-      void main(String[] args) { // Noncompliant {{Override main from GrandParent to avoid introducing multiple main methods.}}
+      void main(String[] args) { // Compliant, args may be used for other purposes, and it will shadow the grandparent main method
         System.out.println("Child main method detected; shadowing grandparent main.");
       }
     }

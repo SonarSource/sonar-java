@@ -59,25 +59,17 @@ public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor impl
     var mainWithHigherPriorityInSuper = superMainMethods.stream().filter(superMainMethod ->
       MethodTreeUtils.compareMainMethodPriority(singleMainMethod, superMainMethod) < 0
     ).findFirst();
-    mainWithHigherPriorityInSuper.ifPresentOrElse(
+
+    // if mainWithHigherPriorityInSuper.isEmpty() it means that
+    // Parent main method has no args and class main method has args that may
+    // be used for other purposes, and it will shadow the parent main method - do not report an issue in this case
+    mainWithHigherPriorityInSuper.ifPresent(
       // there is a main method in superclasses with higher priority than the one in members, so the one in members will not be the entry point
       superMainMethod -> reportIssue(
         singleMainMethod.simpleName(),
         "This 'main' method will not be the entry point because another inherited 'main' from %s takes precedence."
           .formatted(enclosingClassName(superMainMethod))
-      ),
-      // there is no main method in superclasses with higher priority than the one in members, so the one in members will be the entry point, but if it is not overriding, it is
-      // a problem as it introduces multiple main methods
-      () -> {
-        if (!isOverriding) {
-          var superMainMethod = superMainMethods.get(0);
-          reportIssue(
-            singleMainMethod,
-            "Override main from %s to avoid introducing multiple main methods."
-              .formatted(enclosingClassName(superMainMethod))
-          );
-        }
-      }
+      )
     );
   }
 
