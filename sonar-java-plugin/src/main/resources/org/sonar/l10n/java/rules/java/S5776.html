@@ -26,8 +26,8 @@ private Object get() {
 </pre>
 <h3>Compliant solution</h3>
 <ul>
-  <li> For JUnit &gt;= 4.13, use <a
-  href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a>: </li>
+  <li>For JUnit &gt;= 4.13, use <a
+  href="https://github.com/junit-team/junit4/wiki/Exception-testing#using-assertthrows-method">org.junit.Assert.assertThrows</a>:</li>
 </ul>
 <pre>
 Assert.assertThrows(IndexOutOfBoundsException.class, () -&gt; get());
@@ -35,7 +35,7 @@ Assert.assertThrows(IndexOutOfBoundsException.class, () -&gt; get());
 Assert.assertEquals(0, 1);
 </pre>
 <ul>
-  <li> For JUnit &lt; 4.13, use the <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a>: </li>
+  <li>For JUnit &lt; 4.13, use the <a href="https://github.com/junit-team/junit4/wiki/Exception-testing#trycatch-idiom">try-catch idiom</a>:</li>
 </ul>
 <pre>
 try {
@@ -46,6 +46,6 @@ Assert.assertEquals(0, 1); // Correctly fails.
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a> </li>
+  <li><a href="https://github.com/junit-team/junit4/wiki/Exception-testing">JUnit exception testing documentation</a></li>
 </ul>
 

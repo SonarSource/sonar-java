@@ -7,10 +7,10 @@ elements conditionally are ignored.</p>
 <h2>How to fix it</h2>
 <p>You can use:</p>
 <ul>
-  <li> <code>Arrays.copyOf</code> to copy an entire array into another array </li>
-  <li> <code>System.arraycopy</code> to copy only a subset of an array into another array </li>
-  <li> <code>Arrays.asList</code> to create a new list with the contents of the array </li>
-  <li> <code>Collections.addAll</code> to add the elements of a collection into another collection </li>
+  <li><code>Arrays.copyOf</code> to copy an entire array into another array</li>
+  <li><code>System.arraycopy</code> to copy only a subset of an array into another array</li>
+  <li><code>Arrays.asList</code> to create a new list with the contents of the array</li>
+  <li><code>Collections.addAll</code> to add the elements of a collection into another collection</li>
 </ul>
 <p>Note that <code>Arrays.asList</code> returns a fixed-size <code>List</code>, so further steps are required if a non-fixed-size <code>List</code> is
 needed.</p>
@@ -55,12 +55,12 @@ public void makeCopiesConditional(int[] source) {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a
+  <li><a
   href="https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#copyOf-T:A-int-:~:text=1.6-,copyOf,-public%20static%C2%A0byte">docs.oracle</a>
-  - Arrays.copyOf documentation </li>
-  <li> <a
-  href="https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#asList-T…​-:~:text=1.6-,asList,-%40SafeVarargs%0Apublic%20static">docs.oracle</a> - Arrays.asList documentation </li>
-  <li> <a
-  href="https://docs.oracle.com/javase/8/docs/api/java/lang/System.html#arraycopy-java.lang.Object-int-java.lang.Object-int-int-:~:text=1.5-,arraycopy,-public%20static%C2%A0void">docs.oracle</a> - System.arraycopy documentation </li>
+  - Arrays.copyOf documentation</li>
+  <li><a
+  href="https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#asList-T…​-:~:text=1.6-,asList,-%40SafeVarargs%0Apublic%20static">docs.oracle</a> - Arrays.asList documentation</li>
+  <li><a
+  href="https://docs.oracle.com/javase/8/docs/api/java/lang/System.html#arraycopy-java.lang.Object-int-java.lang.Object-int-int-:~:text=1.5-,arraycopy,-public%20static%C2%A0void">docs.oracle</a> - System.arraycopy documentation</li>
 </ul>
 

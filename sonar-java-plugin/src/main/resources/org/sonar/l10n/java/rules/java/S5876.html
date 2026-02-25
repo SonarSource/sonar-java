@@ -4,13 +4,13 @@ impersonate the user’s session. This kind of attack is called session fixation
 <p>Session fixation attacks take advantage of the way web applications manage session identifiers. Here’s how a session fixation attack typically
 works:</p>
 <ul>
-  <li> When a user visits a website or logs in, a session is created for them. </li>
-  <li> This session is assigned a unique session identifier, stored in a cookie, in local storage, or through URL parameters. </li>
-  <li> In a session fixation attack, an attacker tricks a user into using a predetermined session identifier controlled by the attacker. For example,
-  the attacker sends the victim an email containing a link with this predetermined session identifier. </li>
-  <li> When the victim clicks on the link, the web application does not create a new session identifier but uses this identifier known to the
-  attacker. </li>
-  <li> At this point, the attacker can hijack and impersonate the victim’s session. </li>
+  <li>When a user visits a website or logs in, a session is created for them.</li>
+  <li>This session is assigned a unique session identifier, stored in a cookie, in local storage, or through URL parameters.</li>
+  <li>In a session fixation attack, an attacker tricks a user into using a predetermined session identifier controlled by the attacker. For example,
+  the attacker sends the victim an email containing a link with this predetermined session identifier.</li>
+  <li>When the victim clicks on the link, the web application does not create a new session identifier but uses this identifier known to the
+  attacker.</li>
+  <li>At this point, the attacker can hijack and impersonate the victim’s session.</li>
 </ul>
 <h3>What is the potential impact?</h3>
 <p>Session fixation attacks pose a significant security risk to web applications and their users. By exploiting this vulnerability, attackers can gain
@@ -53,16 +53,16 @@ protected void configure(HttpSecurity http) throws Exception {
 during the authentication process.</p>
 <p>Here’s how session fixation protection typically works:</p>
 <ol>
-  <li> When a user visits a website or logs in, a session is created for them. This session is assigned a unique session identifier, which is stored
-  in a cookie or passed through URL parameters. </li>
-  <li> In a session fixation attack, an attacker tricks a user into using a predetermined session identifier controlled by the attacker. This allows
-  the attacker to potentially gain unauthorized access to the user’s session. </li>
-  <li> To protect against session fixation attacks, session fixation protection mechanisms come into play during the authentication process. When a
-  user successfully authenticates, this mechanism generates a new session identifier for the user’s session. </li>
-  <li> The old session identifier, which may have been manipulated by the attacker, is invalidated and no longer associated with the user’s session.
-  This ensures that any attempts by the attacker to use the fixed session identifier are rendered ineffective. </li>
-  <li> The user is then assigned the new session identifier, which is used for subsequent requests and session tracking. This new session identifier
-  is typically stored in a new session cookie or passed through URL parameters. </li>
+  <li>When a user visits a website or logs in, a session is created for them. This session is assigned a unique session identifier, which is stored in
+  a cookie or passed through URL parameters.</li>
+  <li>In a session fixation attack, an attacker tricks a user into using a predetermined session identifier controlled by the attacker. This allows
+  the attacker to potentially gain unauthorized access to the user’s session.</li>
+  <li>To protect against session fixation attacks, session fixation protection mechanisms come into play during the authentication process. When a
+  user successfully authenticates, this mechanism generates a new session identifier for the user’s session.</li>
+  <li>The old session identifier, which may have been manipulated by the attacker, is invalidated and no longer associated with the user’s session.
+  This ensures that any attempts by the attacker to use the fixed session identifier are rendered ineffective.</li>
+  <li>The user is then assigned the new session identifier, which is used for subsequent requests and session tracking. This new session identifier is
+  typically stored in a new session cookie or passed through URL parameters.</li>
 </ol>
 <p>By regenerating the session identifier upon authentication, session fixation protection helps ensure that the user’s session is tied to a new,
 secure identifier that the attacker cannot predict or control. This mitigates the risk of an attacker gaining unauthorized access to the user’s
@@ -76,15 +76,15 @@ the migration of session attributes to a new session outside of the authenticati
 Protection</a></p>
 <h3>Standards</h3>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
-  Authentication Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">Top 10 2017 Category A2 - Broken Authentication</a>
-  </li>
-  <li> <a href="https://owasp.org/www-community/attacks/Session_fixation">OWASP Session Fixation</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/384">CWE-384 - Session Fixation</a> </li>
-  <li> STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222579">Application Security and
-  Development: V-222579</a> - Applications must use system-generated session identifiers that protect against session fixation. </li>
-  <li> STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222582">Application Security and
-  Development: V-222582</a> - The application must not re-use or recycle session IDs. </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
+  Authentication Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">Top 10 2017 Category A2 - Broken
+  Authentication</a></li>
+  <li><a href="https://owasp.org/www-community/attacks/Session_fixation">OWASP Session Fixation</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/384">CWE-384 - Session Fixation</a></li>
+  <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222579">Application Security and
+  Development: V-222579</a> - Applications must use system-generated session identifiers that protect against session fixation.</li>
+  <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222582">Application Security and
+  Development: V-222582</a> - The application must not re-use or recycle session IDs.</li>
 </ul>
 

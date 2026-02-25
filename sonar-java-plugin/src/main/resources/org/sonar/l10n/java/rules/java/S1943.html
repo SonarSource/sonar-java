@@ -4,72 +4,71 @@ break for customers who use different encodings in ways that are extremely diffi
 reproduce when it’s time to fix them.</p>
 <p>This rule detects uses of the following classes and methods:</p>
 <ul>
-  <li> <code>FileReader</code> </li>
-  <li> <code>FileWriter</code> </li>
-  <li> String constructors with a <code>byte[]</code> argument but no <code>Charset</code> argument
+  <li><code>FileReader</code></li>
+  <li><code>FileWriter</code></li>
+  <li>String constructors with a <code>byte[]</code> argument but no <code>Charset</code> argument
     <ul>
-      <li> <code>String(byte[] bytes)</code> </li>
-      <li> <code>String(byte[] bytes, int offset, int length)</code> </li>
-    </ul>  </li>
-  <li> <code>String.getBytes()</code> </li>
-  <li> <code>String.getBytes(int srcBegin, int srcEnd, byte[] dst, int dstBegin)</code> </li>
-  <li> <code>InputStreamReader(InputStream in)</code> </li>
-  <li> <code>OutputStreamWriter(OutputStream out)</code> </li>
-  <li> <code>ByteArrayOutputStream.toString()</code> </li>
-  <li> Some <code>Formatter</code> constructors
+      <li><code>String(byte[] bytes)</code></li>
+      <li><code>String(byte[] bytes, int offset, int length)</code></li>
+    </ul></li>
+  <li><code>String.getBytes()</code></li>
+  <li><code>String.getBytes(int srcBegin, int srcEnd, byte[] dst, int dstBegin)</code></li>
+  <li><code>InputStreamReader(InputStream in)</code></li>
+  <li><code>OutputStreamWriter(OutputStream out)</code></li>
+  <li><code>ByteArrayOutputStream.toString()</code></li>
+  <li>Some <code>Formatter</code> constructors
     <ul>
-      <li> <code>Formatter(String fileName)</code> </li>
-      <li> <code>Formatter(File file)</code> </li>
-      <li> <code>Formatter(OutputStream os)</code> </li>
-    </ul>  </li>
-  <li> Some <code>Scanner</code> constructors
+      <li><code>Formatter(String fileName)</code></li>
+      <li><code>Formatter(File file)</code></li>
+      <li><code>Formatter(OutputStream os)</code></li>
+    </ul></li>
+  <li>Some <code>Scanner</code> constructors
     <ul>
-      <li> <code>Scanner(File source)</code> </li>
-      <li> <code>Scanner(Path source)</code> </li>
-      <li> <code>Scanner(InputStream source)</code> </li>
-    </ul>  </li>
-  <li> Some <code>PrintStream</code> constructors
+      <li><code>Scanner(File source)</code></li>
+      <li><code>Scanner(Path source)</code></li>
+      <li><code>Scanner(InputStream source)</code></li>
+    </ul></li>
+  <li>Some <code>PrintStream</code> constructors
     <ul>
-      <li> <code>PrintStream(File file)</code> </li>
-      <li> <code>PrintStream(OutputStream out)</code> </li>
-      <li> <code>PrintStream(OutputStream out, boolean autoFlush)</code> </li>
-      <li> <code>PrintStream(String fileName)</code> </li>
-    </ul>  </li>
-  <li> Some <code>PrintWriter</code> constructors
+      <li><code>PrintStream(File file)</code></li>
+      <li><code>PrintStream(OutputStream out)</code></li>
+      <li><code>PrintStream(OutputStream out, boolean autoFlush)</code></li>
+      <li><code>PrintStream(String fileName)</code></li>
+    </ul></li>
+  <li>Some <code>PrintWriter</code> constructors
     <ul>
-      <li> <code>PrintWriter(File file)</code> </li>
-      <li> <code>PrintWriter(OutputStream out)</code> </li>
-      <li> <code>PrintWriter(OutputStream out, boolean autoFlush)</code> </li>
-      <li> <code>PrintWriter(String fileName)</code> </li>
-    </ul>  </li>
-  <li> methods from Apache commons-io library which accept an encoding argument when that argument is null, and overloads of those methods that omit
+      <li><code>PrintWriter(File file)</code></li>
+      <li><code>PrintWriter(OutputStream out)</code></li>
+      <li><code>PrintWriter(OutputStream out, boolean autoFlush)</code></li>
+      <li><code>PrintWriter(String fileName)</code></li>
+    </ul></li>
+  <li>methods from Apache commons-io library which accept an encoding argument when that argument is null, and overloads of those methods that omit
   the encoding argument
     <ul>
-      <li> <code>IOUtils.copy(InputStream, Writer)</code> </li>
-      <li> <code>IOUtils.copy(Reader, OutputStream)</code> </li>
-      <li> <code>IOUtils.readLines(InputStream)</code> </li>
-      <li> <code>IOUtils.toByteArray(Reader)</code> </li>
-      <li> <code>IOUtils.toByteArray(String)</code> </li>
-      <li> <code>IOUtils.toCharArray(InputStream)</code> </li>
-      <li> <code>IOUtils.toInputStream(TypeCriteria.subtypeOf(CharSequence))</code> </li>
-      <li> <code>IOUtils.toString(byte[])</code> </li>
-      <li> <code>IOUtils.toString(URI)</code> </li>
-      <li> <code>IOUtils.toString(URL)</code> </li>
-      <li> <code>IOUtils.write(char[], OutputStream)</code> </li>
-      <li> <code>IOUtils.write(CharSequence, OutputStream)</code> </li>
-      <li> <code>IOUtils.writeLines(Collection, String, OutputStream)</code> </li>
-      <li> <code>FileUtils.readFileToString(File)</code> </li>
-      <li> <code>FileUtils.readLines(File)</code> </li>
-      <li> <code>FileUtils.write(File, CharSequence)</code> </li>
-      <li> <code>FileUtils.write(File, CharSequence, boolean)</code> </li>
-      <li> <code>FileUtils.writeStringToFile(File, String)</code> </li>
-    </ul>  </li>
+      <li><code>IOUtils.copy(InputStream, Writer)</code></li>
+      <li><code>IOUtils.copy(Reader, OutputStream)</code></li>
+      <li><code>IOUtils.readLines(InputStream)</code></li>
+      <li><code>IOUtils.toByteArray(Reader)</code></li>
+      <li><code>IOUtils.toByteArray(String)</code></li>
+      <li><code>IOUtils.toCharArray(InputStream)</code></li>
+      <li><code>IOUtils.toInputStream(TypeCriteria.subtypeOf(CharSequence))</code></li>
+      <li><code>IOUtils.toString(byte[])</code></li>
+      <li><code>IOUtils.toString(URI)</code></li>
+      <li><code>IOUtils.toString(URL)</code></li>
+      <li><code>IOUtils.write(char[], OutputStream)</code></li>
+      <li><code>IOUtils.write(CharSequence, OutputStream)</code></li>
+      <li><code>IOUtils.writeLines(Collection, String, OutputStream)</code></li>
+      <li><code>FileUtils.readFileToString(File)</code></li>
+      <li><code>FileUtils.readLines(File)</code></li>
+      <li><code>FileUtils.write(File, CharSequence)</code></li>
+      <li><code>FileUtils.write(File, CharSequence, boolean)</code></li>
+      <li><code>FileUtils.writeStringToFile(File, String)</code></li>
+    </ul></li>
 </ul>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/pzdGBQ">CERT, STR04-J.</a> - Use compatible character encodings when communicating string data
-  between JVMs </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/ujZGBQ">CERT, STR50-J.</a> - Use the appropriate method for counting characters in a string
-  </li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/pzdGBQ">CERT, STR04-J.</a> - Use compatible character encodings when communicating string data
+  between JVMs</li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/ujZGBQ">CERT, STR50-J.</a> - Use the appropriate method for counting characters in a string</li>
 </ul>
 

@@ -8,11 +8,11 @@ HTTP request. The server verifies the credentials and grants access if they are 
 include these credentials.</p>
 <p>Basic authentication is considered insecure for several reasons:</p>
 <ul>
-  <li> It transmits user credentials in plain text, making them susceptible to interception and eavesdropping. </li>
-  <li> It relies solely on the server’s ability to verify the provided credentials. There is no mechanism for additional security measures like
-  multi-factor authentication or account lockouts after multiple failed login attempts. </li>
-  <li> It does not provide a way to manage user sessions securely. The client typically includes the credentials in every request, which creates more
-  opportunities for an attacker to steal these credentials. </li>
+  <li>It transmits user credentials in plain text, making them susceptible to interception and eavesdropping.</li>
+  <li>It relies solely on the server’s ability to verify the provided credentials. There is no mechanism for additional security measures like
+  multi-factor authentication or account lockouts after multiple failed login attempts.</li>
+  <li>It does not provide a way to manage user sessions securely. The client typically includes the credentials in every request, which creates more
+  opportunities for an attacker to steal these credentials.</li>
 </ul>
 <p>These security limitations make basic authentication an insecure choice for authentication or authorization over HTTP.</p>
 <h3>What is the potential impact?</h3>
@@ -95,17 +95,17 @@ safe.</p>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> MDN web docs - <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication">HTTP authentication</a> </li>
+  <li>MDN web docs - <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication">HTTP authentication</a></li>
 </ul>
 <h3>Standards</h3>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
-  Exposure</a> </li>
-  <li> <a href="https://cheatsheetseries.owasp.org/cheatsheets/Web_Service_Security_Cheat_Sheet.html#user-authentication">OWASP Web Service Security
-  Cheat Sheet</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/522">CWE-522 - Insufficiently Protected Credentials</a> </li>
-  <li> STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222533">Application Security and
-  Development: V-222533</a> - The application must authenticate all network connected endpoint devices before establishing any connection. </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
+  Exposure</a></li>
+  <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Web_Service_Security_Cheat_Sheet.html#user-authentication">OWASP Web Service Security
+  Cheat Sheet</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/522">CWE-522 - Insufficiently Protected Credentials</a></li>
+  <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222533">Application Security and
+  Development: V-222533</a> - The application must authenticate all network connected endpoint devices before establishing any connection.</li>
 </ul>
 

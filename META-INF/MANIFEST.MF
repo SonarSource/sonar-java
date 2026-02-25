@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven 3.9.11
+Built-By: runner
+Build-Jdk: 17.0.2
+Class-Path: lib/slf4j-api-2.0.6.jar lib/http-request-6.0.jar lib/javax.w
+ s.rs-api-2.1.1.jar lib/json-simple-1.1.1.jar lib/gson-2.13.2.jar lib/er
+ ror_prone_annotations-2.41.0.jar lib/jcommander-1.82.jar lib/jsr305-3.0
+ .2.jar lib/commons-io-2.21.0.jar lib/jsoup-1.21.2.jar lib/jackson-core-
+ 2.20.1.jar lib/jackson-annotations-2.20.jar lib/github-api-1.329.jar li
+ b/commons-lang3-3.18.0.jar lib/jackson-databind-2.18.2.jar lib/asciidoc
+ torj-3.0.1.jar lib/asciidoctorj-api-3.0.1.jar lib/jruby-9.4.14.0.jar li
+ b/jruby-base-9.4.14.0.jar lib/asm-9.7.1.jar lib/asm-commons-9.7.1.jar l
+ ib/asm-tree-9.7.1.jar lib/asm-util-9.7.1.jar lib/asm-analysis-9.7.1.jar
+  lib/jnr-netdb-1.2.0.jar lib/jnr-enxio-0.32.18.jar lib/jnr-unixsocket-0
+ .38.23.jar lib/jnr-posix-3.1.20.jar lib/jnr-constants-0.10.4.jar lib/jn
+ r-ffi-2.2.17.jar lib/jnr-a64asm-1.0.0.jar lib/jnr-x86asm-1.0.2.jar lib/
+ jffi-1.3.13.jar lib/jffi-1.3.13-native.jar lib/joni-2.2.5.jar lib/jcodi
+ ngs-1.0.63.jar lib/dirgra-0.3.jar lib/invokebinder-1.13.jar lib/options
+ -1.6.jar lib/jzlib-1.1.5.jar lib/joda-time-2.12.7.jar lib/jitescript-0.
+ 4.1.jar lib/backport9-1.13.jar lib/crac-1.5.0.jar lib/jruby-stdlib-9.4.
+ 14.0.jar lib/natural-comparator-1.1.jar lib/progressbar-0.10.1.jar lib/
+ jline-terminal-3.24.1.jar lib/jline-native-3.24.1.jar lib/org.eclipse.j
+ git-7.5.0.202512021534-r.jar lib/JavaEWAH-1.2.3.jar lib/commons-codec-1
+ .20.0.jar lib/slf4j-nop-2.0.17.jar
+Main-Class: com.sonarsource.ruleapi.Main
+Build-Time: 2026-02-19T01:35:48+0000
+Implementation-Build: dc279c774020accf30c1a71def9a7ba50ddac436
+Implementation-Version: 2.19.0.5763
+

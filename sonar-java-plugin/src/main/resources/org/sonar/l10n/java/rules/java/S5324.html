@@ -7,19 +7,19 @@ applications have stored on the external storage.</p>
 <h2>Ask Yourself Whether</h2>
 <p>Your application uses external storage to:</p>
 <ul>
-  <li> store files that contain sensitive data. </li>
-  <li> store files that are not meant to be shared with other application. </li>
-  <li> store files that are critical for the application to work. </li>
+  <li>store files that contain sensitive data.</li>
+  <li>store files that are not meant to be shared with other application.</li>
+  <li>store files that are critical for the application to work.</li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> Use internal storage whenever possible as the system prevents other apps from accessing this location. </li>
-  <li> Only use external storage if you need to share non-sensitive files with other applications. </li>
-  <li> If your application has to use the external storage to store sensitive data, make sure it encrypts the files using <a
-  href="https://developer.android.com/reference/androidx/security/crypto/EncryptedFile">EncryptedFile</a>. </li>
-  <li> Data coming from external storage should always be considered untrusted and should be validated. </li>
-  <li> As some external storage can be removed, make sure to never store files on it that are critical for the usability of your application. </li>
+  <li>Use internal storage whenever possible as the system prevents other apps from accessing this location.</li>
+  <li>Only use external storage if you need to share non-sensitive files with other applications.</li>
+  <li>If your application has to use the external storage to store sensitive data, make sure it encrypts the files using <a
+  href="https://developer.android.com/reference/androidx/security/crypto/EncryptedFile">EncryptedFile</a>.</li>
+  <li>Data coming from external storage should always be considered untrusted and should be validated.</li>
+  <li>As some external storage can be removed, make sure to never store files on it that are critical for the usability of your application.</li>
 </ul>
 <h2>Sensitive Code Example</h2>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -45,15 +45,15 @@ public class AccessExternalFiles {
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a> </li>
-  <li> <a href="https://developer.android.com/privacy-and-security/security-tips#ExternalStorage">Android Security tips on external file storage</a>
-  </li>
-  <li> OWASP - <a href="https://mas.owasp.org/checklists/MASVS-STORAGE/">Mobile AppSec Verification Standard - Data Storage and Privacy
-  Requirements</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m2-insecure-data-storage">Mobile Top 10 2016 Category M2 - Insecure
-  Data Storage</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m9-insecure-data-storage">Mobile Top 10 2024 Category M9 - Insecure
-  Data Storage</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/312">CWE-312 - Cleartext Storage of Sensitive Information</a> </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a></li>
+  <li><a href="https://developer.android.com/privacy-and-security/security-tips#ExternalStorage">Android Security tips on external file
+  storage</a></li>
+  <li>OWASP - <a href="https://mas.owasp.org/checklists/MASVS-STORAGE/">Mobile AppSec Verification Standard - Data Storage and Privacy
+  Requirements</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m2-insecure-data-storage">Mobile Top 10 2016 Category M2 - Insecure Data
+  Storage</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m9-insecure-data-storage">Mobile Top 10 2024 Category M9 - Insecure Data
+  Storage</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/312">CWE-312 - Cleartext Storage of Sensitive Information</a></li>
 </ul>
 

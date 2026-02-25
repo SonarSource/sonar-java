@@ -7,10 +7,10 @@ Spring recommends that you only annotate concrete classes (and methods of concre
 invoked will populate the cache. Subsequent calls will always return the cached value, even if it’s the other implementation being called.</p>
 <h3>What is the potential impact?</h3>
 <ul>
-  <li> <strong>Confusing Code</strong>: Developers may mistakenly believe that caching is in effect, leading to confusion and incorrect assumptions
-  about application performance. </li>
-  <li> <strong>Unreliable Code</strong>: Annotating interface methods as <code>@Cacheable</code> hides the cache name from the implementing classes,
-  making it hard to detect where a conflict of names might occur, causing unexpected results at runtime. </li>
+  <li><strong>Confusing Code</strong>: Developers may mistakenly believe that caching is in effect, leading to confusion and incorrect assumptions
+  about application performance.</li>
+  <li><strong>Unreliable Code</strong>: Annotating interface methods as <code>@Cacheable</code> hides the cache name from the implementing classes,
+  making it hard to detect where a conflict of names might occur, causing unexpected results at runtime.</li>
 </ul>
 <p>This rule raises an issue when an interface or an interface method is annotated with a <code>@Cache*</code> annotation.</p>
 <h2>How to fix it</h2>
@@ -84,7 +84,7 @@ public class RomeBioparc implements Zoo {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> Spring - <a href="https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html#cache-annotation-enable">Declarative
-  Annotation-based Caching</a> </li>
+  <li>Spring - <a href="https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html#cache-annotation-enable">Declarative
+  Annotation-based Caching</a></li>
 </ul>
 

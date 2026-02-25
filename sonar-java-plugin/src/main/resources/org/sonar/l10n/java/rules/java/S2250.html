@@ -4,38 +4,38 @@ constant time, but the time required to execute <code>ConcurrentLinkedQueue.size
 elements in the collection. When the collection is large, this could therefore be an expensive operation.</p>
 <p>This rule raises an issue when the following O(n) methods are called outside of constructors on class fields:</p>
 <ul>
-  <li> <code>ArrayList</code>
+  <li><code>ArrayList</code>
     <ul>
-      <li> <code>contains</code> </li>
-      <li> <code>remove</code> </li>
-    </ul>  </li>
-  <li> <code>LinkedList</code>
+      <li><code>contains</code></li>
+      <li><code>remove</code></li>
+    </ul></li>
+  <li><code>LinkedList</code>
     <ul>
-      <li> <code>get</code> </li>
-      <li> <code>contains</code> </li>
-    </ul>  </li>
-  <li> <code>ConcurrentLinkedQueue</code>
+      <li><code>get</code></li>
+      <li><code>contains</code></li>
+    </ul></li>
+  <li><code>ConcurrentLinkedQueue</code>
     <ul>
-      <li> <code>size</code> </li>
-      <li> <code>contains</code> </li>
-    </ul>  </li>
-  <li> <code>ConcurrentLinkedDeque</code>
+      <li><code>size</code></li>
+      <li><code>contains</code></li>
+    </ul></li>
+  <li><code>ConcurrentLinkedDeque</code>
     <ul>
-      <li> <code>size</code> </li>
-      <li> <code>contains</code> </li>
-    </ul>  </li>
-  <li> <code>CopyOnWriteArrayList</code>
+      <li><code>size</code></li>
+      <li><code>contains</code></li>
+    </ul></li>
+  <li><code>CopyOnWriteArrayList</code>
     <ul>
-      <li> <code>add</code> </li>
-      <li> <code>contains</code> </li>
-      <li> <code>remove</code> </li>
-    </ul>  </li>
-  <li> <code>CopyOnWriteArraySet</code>
+      <li><code>add</code></li>
+      <li><code>contains</code></li>
+      <li><code>remove</code></li>
+    </ul></li>
+  <li><code>CopyOnWriteArraySet</code>
     <ul>
-      <li> <code>add</code> </li>
-      <li> <code>contains</code> </li>
-      <li> <code>remove</code> </li>
-    </ul>  </li>
+      <li><code>add</code></li>
+      <li><code>contains</code></li>
+      <li><code>remove</code></li>
+    </ul></li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre>

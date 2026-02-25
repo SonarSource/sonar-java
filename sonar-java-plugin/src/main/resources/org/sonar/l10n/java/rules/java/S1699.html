@@ -3,10 +3,10 @@
 method.</p>
 <p>For example:</p>
 <ul>
-  <li> The subclass class constructor starts by contract by calling the parent class constructor. </li>
-  <li> The parent class constructor calls the method, which has been overridden in the child class. </li>
-  <li> If the behavior of the child class method depends on fields that are initialized in the child class constructor, unexpected behavior (like a
-  <code>NullPointerException</code>) can result, because the fields aren’t initialized yet. </li>
+  <li>The subclass class constructor starts by contract by calling the parent class constructor.</li>
+  <li>The parent class constructor calls the method, which has been overridden in the child class.</li>
+  <li>If the behavior of the child class method depends on fields that are initialized in the child class constructor, unexpected behavior (like a
+  <code>NullPointerException</code>) can result, because the fields aren’t initialized yet.</li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre>
@@ -38,8 +38,8 @@ public class Child extends Parent {
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/8zZGBQ">CERT, MET05-J.</a> - Ensure that constructors do not call overridable methods </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/6ns-BQ">CERT, OOP50-CPP.</a> - Do not invoke virtual functions from constructors or destructors
-  </li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/8zZGBQ">CERT, MET05-J.</a> - Ensure that constructors do not call overridable methods</li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/6ns-BQ">CERT, OOP50-CPP.</a> - Do not invoke virtual functions from constructors or
+  destructors</li>
 </ul>
 

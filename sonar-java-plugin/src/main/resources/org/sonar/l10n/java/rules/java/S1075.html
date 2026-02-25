@@ -1,10 +1,10 @@
 <h2>Why is this an issue?</h2>
 <p>Hard-coding a URI makes it difficult to test a program for a variety of reasons:</p>
 <ul>
-  <li> path literals are not always portable across operating systems </li>
-  <li> a given absolute path may not exist in a specific test environment </li>
-  <li> a specified Internet URL may not be available when executing the tests </li>
-  <li> production environment filesystems usually differ from the development environment </li>
+  <li>path literals are not always portable across operating systems</li>
+  <li>a given absolute path may not exist in a specific test environment</li>
+  <li>a specified Internet URL may not be available when executing the tests</li>
+  <li>production environment filesystems usually differ from the development environment</li>
 </ul>
 <p>In addition, hard-coded URIs can contain sensitive information, like IP addresses, and they should not be stored in the code.</p>
 <p>For all those reasons, a URI should never be hard coded. Instead, it should be replaced by a customizable parameter.</p>
@@ -13,9 +13,9 @@
 <h3>Exceptions</h3>
 <p>This rule does not raise an issue when:</p>
 <ul>
-  <li> A constant path is relative and contains at most two parts. </li>
-  <li> A constant path is used in an annotation </li>
-  <li> A path is annotated </li>
+  <li>A constant path is relative and contains at most two parts.</li>
+  <li>A constant path is used in an annotation</li>
+  <li>A path is annotated</li>
 </ul>
 <h2>How to fix it</h2>
 <h3>Code examples</h3>
