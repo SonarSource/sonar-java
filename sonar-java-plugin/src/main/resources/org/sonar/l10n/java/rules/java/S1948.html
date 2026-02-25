@@ -9,11 +9,11 @@ could cause application crashes and open the door to attackers. In general, a <c
 not exhibit unexpected behaviour when an instance is serialized.</p>
 <p>This rule raises an issue on:</p>
 <ul>
-  <li> Non-<code>Serializable</code> fields. </li>
-  <li> When a field is assigned a non-<code>Serializable</code> type within the class. </li>
-  <li> Collection fields when they are not <code>private</code>. Values that are not serializable could be added to these collections externally. Due
+  <li>Non-<code>Serializable</code> fields.</li>
+  <li>When a field is assigned a non-<code>Serializable</code> type within the class.</li>
+  <li>Collection fields when they are not <code>private</code>. Values that are not serializable could be added to these collections externally. Due
   to type erasure, it cannot be guaranteed that the collection will only contain serializable objects at runtime despite being declared as a
-  collection of serializable types. </li>
+  collection of serializable types.</li>
 </ul>
 <h2>How to fix it</h2>
 <p>Consider the following scenario.</p>
@@ -96,10 +96,10 @@ public class Person implements Serializable {
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/594">CWE-594 - Saving Unserializable Objects to Disk</a> </li>
-  <li> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Serializable.html">Interface Serializable - Java SE 11 API
-  Documentation</a> </li>
-  <li> <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Serializable.html">Interface Serializable - Java SE 17 API
-  Documentation</a> </li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/594">CWE-594 - Saving Unserializable Objects to Disk</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Serializable.html">Interface Serializable - Java SE 11 API
+  Documentation</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Serializable.html">Interface Serializable - Java SE 17 API
+  Documentation</a></li>
 </ul>
 

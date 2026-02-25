@@ -1,9 +1,9 @@
 <h2>Why is this an issue?</h2>
 <p>The use of increment and decrement operators in method calls or in combination with other arithmetic operators is not recommended, because:</p>
 <ul>
-  <li> It can significantly impair the readability of the code. </li>
-  <li> It introduces additional side effects into a statement, with the potential for undefined behavior. </li>
-  <li> It is safer to use these operators in isolation from any other arithmetic operators. </li>
+  <li>It can significantly impair the readability of the code.</li>
+  <li>It introduces additional side effects into a statement, with the potential for undefined behavior.</li>
+  <li>It is safer to use these operators in isolation from any other arithmetic operators.</li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre>
@@ -21,9 +21,9 @@ bar++;
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/StYxBQ">CERT, EXP30-C.</a> - Do not depend on the order of evaluation for side effects </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/IXw-BQ">CERT, EXP50-CPP.</a> - Do not depend on the order of evaluation for side effects </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/NDdGBQ">CERT, EXP05-J.</a> - Do not follow a write by a subsequent write or read of the same
-  object within an expression </li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/StYxBQ">CERT, EXP30-C.</a> - Do not depend on the order of evaluation for side effects</li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/IXw-BQ">CERT, EXP50-CPP.</a> - Do not depend on the order of evaluation for side effects</li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/NDdGBQ">CERT, EXP05-J.</a> - Do not follow a write by a subsequent write or read of the same
+  object within an expression</li>
 </ul>
 

@@ -10,8 +10,8 @@ same time. A classic example of this is the methods <code>T get()</code> (output
 interface <code>java.util.List</code>. We could construct cases with invalid typing in <code>List</code> if <code>T</code> were not invariant.</p>
 <p>Wildcards can be employed to achieve covariance or contravariance in situations where the type parameter appears in one position only:</p>
 <ul>
-  <li> <code>&lt;? extends Foo&gt;</code> for covariance (input positions) </li>
-  <li> <code>&lt;? super Foo&gt;</code> for contravariance (output positions) </li>
+  <li><code>&lt;? extends Foo&gt;</code> for covariance (input positions)</li>
+  <li><code>&lt;? super Foo&gt;</code> for contravariance (output positions)</li>
 </ul>
 <p>However, covariance is ineffective for the return type of a method since it is not an input position. Making it contravariant also has no effect
 since it is the receiver of the return value which must be contravariant (use-site variance in Java). Consequently, a return type containing wildcards
@@ -35,18 +35,18 @@ List&lt;Lifeform&gt; getLifeforms() { ... }       // Compliant, using supertype 
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.oracle.com/javase/tutorial/extra/generics/wildcards.html">The Java™ Tutorials - Wildcards</a> </li>
+  <li><a href="https://docs.oracle.com/javase/tutorial/extra/generics/wildcards.html">The Java™ Tutorials - Wildcards</a></li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> <a href="https://medium.com/javarevisited/variance-in-java-and-scala-63af925d21dc">Sinisa Louc - A Complete Guide to Variance in Java and
-  Scala</a> </li>
-  <li> <a href="https://web.archive.org/web/20240206045705/https://kotlinexpertise.com/kotlin-generics-and-variance-vs-java/">Kotlin Expertise Blog -
-  Kotlin Generics and Variance (Compared to Java)</a> </li>
-  <li> <a href="https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)">Wikipedia - Covariance and contravariance (computer
-  science)</a> </li>
-  <li> <a href="https://schneide.blog/2015/05/11/declaration-site-and-use-site-variance-explained/">Schneide Blog - Declaration-site and use-site
-  variance explained</a> </li>
-  <li> <a href="https://en.wikipedia.org/wiki/Liskov_substitution_principle">Wikipedia - Liskov substitution principle</a> </li>
+  <li><a href="https://medium.com/javarevisited/variance-in-java-and-scala-63af925d21dc">Sinisa Louc - A Complete Guide to Variance in Java and
+  Scala</a></li>
+  <li><a href="https://web.archive.org/web/20240206045705/https://kotlinexpertise.com/kotlin-generics-and-variance-vs-java/">Kotlin Expertise Blog -
+  Kotlin Generics and Variance (Compared to Java)</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)">Wikipedia - Covariance and contravariance (computer
+  science)</a></li>
+  <li><a href="https://schneide.blog/2015/05/11/declaration-site-and-use-site-variance-explained/">Schneide Blog - Declaration-site and use-site
+  variance explained</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Liskov_substitution_principle">Wikipedia - Liskov substitution principle</a></li>
 </ul>
 

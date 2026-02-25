@@ -2,18 +2,18 @@
 order to prevent DoS attacks.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> size limits are not defined for the different resources of the web application. </li>
-  <li> the web application is not protected by <a href="https://en.wikipedia.org/wiki/Rate_limiting">rate limiting</a> features. </li>
-  <li> the web application infrastructure has limited resources. </li>
+  <li>size limits are not defined for the different resources of the web application.</li>
+  <li>the web application is not protected by <a href="https://en.wikipedia.org/wiki/Rate_limiting">rate limiting</a> features.</li>
+  <li>the web application infrastructure has limited resources.</li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> For most of the features of an application, it is recommended to limit the size of requests to:
+  <li>For most of the features of an application, it is recommended to limit the size of requests to:
     <ul>
-      <li> lower or equal to 8mb for file uploads. </li>
-      <li> lower or equal to 2mb for other requests. </li>
-    </ul>  </li>
+      <li>lower or equal to 8mb for file uploads.</li>
+      <li>lower or equal to 2mb for other requests.</li>
+    </ul></li>
 </ul>
 <p>It is recommended to customize the rule with the limit values that correspond to the web application.</p>
 <h2>Sensitive Code Example</h2>
@@ -50,12 +50,12 @@ public CommonsMultipartResolver multipartResolver() {
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a> </li>
-  <li> <a href="https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html">Owasp Cheat Sheet</a> - Owasp Denial of Service
-  Cheat Sheet </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
-  Misconfiguration</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/770">CWE-770 - Allocation of Resources Without Limits or Throttling</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/400">CWE-400 - Uncontrolled Resource Consumption</a> </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a></li>
+  <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html">Owasp Cheat Sheet</a> - Owasp Denial of Service
+  Cheat Sheet</li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
+  Misconfiguration</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/770">CWE-770 - Allocation of Resources Without Limits or Throttling</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/400">CWE-400 - Uncontrolled Resource Consumption</a></li>
 </ul>
 

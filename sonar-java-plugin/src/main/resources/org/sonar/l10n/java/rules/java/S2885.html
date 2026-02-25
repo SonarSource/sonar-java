@@ -12,10 +12,10 @@ exceptions at runtime.</p>
 shared across different instances of the containing class.</p>
 <p>This rule raises an issue when any of the following instances and their subtypes are marked as <code>static</code>:</p>
 <ul>
-  <li> <code>java.util.Calendar</code>, </li>
-  <li> <code>java.text.DateFormat</code>, </li>
-  <li> <code>javax.xml.xpath.XPath</code>, or </li>
-  <li> <code>javax.xml.validation.SchemaFactory</code>. </li>
+  <li><code>java.util.Calendar</code>,</li>
+  <li><code>java.text.DateFormat</code>,</li>
+  <li><code>javax.xml.xpath.XPath</code>, or</li>
+  <li><code>javax.xml.validation.SchemaFactory</code>.</li>
 </ul>
 <h2>How to fix it</h2>
 <p>Remove the <code>static</code> keyword from non-thread-safe fields.</p>
@@ -37,13 +37,13 @@ public class MyClass {
 <h2>Resources</h2>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> <a href="https://web.mit.edu/6.005/www/fa14/classes/18-thread-safety/">MIT - Thread safety</a> </li>
-  <li> <a href="https://www.baeldung.com/java-thread-safety">Baeldung - Thread safety</a> </li>
-  <li> <a href="https://www.baeldung.com/java-static">Baeldung - Static</a> </li>
+  <li><a href="https://web.mit.edu/6.005/www/fa14/classes/18-thread-safety/">MIT - Thread safety</a></li>
+  <li><a href="https://www.baeldung.com/java-thread-safety">Baeldung - Thread safety</a></li>
+  <li><a href="https://www.baeldung.com/java-static">Baeldung - Static</a></li>
 </ul>
 <h3>Standards</h3>
 <ul>
-  <li> STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222567">Application Security and
-  Development: V-222567</a> - The application must not be vulnerable to race conditions. </li>
+  <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222567">Application Security and
+  Development: V-222567</a> - The application must not be vulnerable to race conditions.</li>
 </ul>
 

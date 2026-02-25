@@ -5,14 +5,14 @@ JUnit5.</p>
 <p>This rule consequently raise issues on <code>setUp()</code> and <code>tearDown()</code> methods which are not annotated in test classes.</p>
 <h3>Noncompliant code example</h3>
 <ul>
-  <li> JUnit4: </li>
+  <li>JUnit4:</li>
 </ul>
 <pre>
 public void setUp() { ... } // Noncompliant; should be annotated with @Before
 public void tearDown() { ... }  // Noncompliant; should be annotated with @After
 </pre>
 <ul>
-  <li> JUnit5: </li>
+  <li>JUnit5:</li>
 </ul>
 <pre>
 public void setUp() { ... } // Noncompliant; should be annotated with @BeforeEach
@@ -20,7 +20,7 @@ public void tearDown() { ... }  // Noncompliant; should be annotated with @After
 </pre>
 <h3>Compliant solution</h3>
 <ul>
-  <li> JUnit4: </li>
+  <li>JUnit4:</li>
 </ul>
 <pre>
 @Before
@@ -30,7 +30,7 @@ public void setUp() { ... }
 public void tearDown() { ... }
 </pre>
 <ul>
-  <li> JUnit5: </li>
+  <li>JUnit5:</li>
 </ul>
 <pre>
 @BeforeEach

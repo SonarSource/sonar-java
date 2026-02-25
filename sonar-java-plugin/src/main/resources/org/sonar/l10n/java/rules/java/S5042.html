@@ -5,18 +5,18 @@ compress irrelevant data (eg: a long string of repeated bytes).</p>
 <h2>Ask Yourself Whether</h2>
 <p>Archives to expand are untrusted and:</p>
 <ul>
-  <li> There is no validation of the number of entries in the archive. </li>
-  <li> There is no validation of the total size of the uncompressed data. </li>
-  <li> There is no validation of the ratio between the compressed and uncompressed archive entry. </li>
+  <li>There is no validation of the number of entries in the archive.</li>
+  <li>There is no validation of the total size of the uncompressed data.</li>
+  <li>There is no validation of the ratio between the compressed and uncompressed archive entry.</li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> Define and control the ratio between compressed and uncompressed data, in general the data compression ratio for most of the legit archives is
-  1 to 3. </li>
-  <li> Define and control the threshold for maximum total size of the uncompressed data. </li>
-  <li> Count the number of file entries extracted from the archive and abort the extraction if their number is greater than a predefined threshold, in
-  particular it’s not recommended to recursively expand archives (an entry of an archive could be also an archive). </li>
+  <li>Define and control the ratio between compressed and uncompressed data, in general the data compression ratio for most of the legit archives is 1
+  to 3.</li>
+  <li>Define and control the threshold for maximum total size of the uncompressed data.</li>
+  <li>Count the number of file entries extracted from the archive and abort the extraction if their number is greater than a predefined threshold, in
+  particular it’s not recommended to recursively expand archives (an entry of an archive could be also an archive).</li>
 </ul>
 <h2>Sensitive Code Example</h2>
 <pre>
@@ -81,15 +81,15 @@ while(entries.hasMoreElements()) {
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a> </li>
-  <li> OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control">Top 10 2017 Category A5 - Broken Access Control</a>
-  </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
-  Misconfiguration</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/409">CWE-409 - Improper Handling of Highly Compressed Data (Data Amplification)</a> </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/display/java/IDS04-J.+Safely+extract+files+from+ZipInputStream">CERT, IDS04-J.</a> - Safely
-  extract files from ZipInputStream </li>
-  <li> <a href="https://www.bamsoftware.com/hacks/zipbomb/">bamsoftware.com</a> - A better Zip Bomb </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a></li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control">Top 10 2017 Category A5 - Broken Access
+  Control</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
+  Misconfiguration</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/409">CWE-409 - Improper Handling of Highly Compressed Data (Data Amplification)</a></li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/display/java/IDS04-J.+Safely+extract+files+from+ZipInputStream">CERT, IDS04-J.</a> - Safely extract
+  files from ZipInputStream</li>
+  <li><a href="https://www.bamsoftware.com/hacks/zipbomb/">bamsoftware.com</a> - A better Zip Bomb</li>
 </ul>
 

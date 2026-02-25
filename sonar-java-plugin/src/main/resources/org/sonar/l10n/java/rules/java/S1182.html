@@ -4,15 +4,15 @@
 it’s probably a mistake.</p>
 <p>The usual convention for <code>Object.clone()</code> according to Oracle’s Javadoc is:</p>
 <ol>
-  <li> <code>x.clone() != x</code> </li>
-  <li> <code>x.clone().getClass() == x.getClass()</code> </li>
-  <li> <code>x.clone().equals(x)</code> </li>
+  <li><code>x.clone() != x</code></li>
+  <li><code>x.clone().getClass() == x.getClass()</code></li>
+  <li><code>x.clone().equals(x)</code></li>
 </ol>
 <p>Obtaining the object that will be returned by calling <code>super.clone()</code> helps to satisfy those invariants:</p>
 <ol>
-  <li> <code>super.clone()</code> returns a new object instance </li>
-  <li> <code>super.clone()</code> returns an object of the same type as the one <code>clone()</code> was called on </li>
-  <li> <code>Object.clone()</code> performs a shallow copy of the object’s state. </li>
+  <li><code>super.clone()</code> returns a new object instance</li>
+  <li><code>super.clone()</code> returns an object of the same type as the one <code>clone()</code> was called on</li>
+  <li><code>Object.clone()</code> performs a shallow copy of the object’s state.</li>
 </ol>
 <h2>How to fix it</h2>
 <p>Ensure that the <code>clone()</code> method calls <code>super.clone()</code> and implement <code>Cloneable</code> in the class or remove the clone
@@ -68,7 +68,7 @@ class Application {
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/580">CWE-580 - clone() Method Without super.clone()</a> </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/FjZGBQ">CERT, MET53-J.</a> - Ensure that the clone() method calls super.clone() </li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/580">CWE-580 - clone() Method Without super.clone()</a></li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/FjZGBQ">CERT, MET53-J.</a> - Ensure that the clone() method calls super.clone()</li>
 </ul>
 

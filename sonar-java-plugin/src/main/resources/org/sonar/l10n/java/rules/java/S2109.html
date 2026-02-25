@@ -4,12 +4,12 @@ documentation, code analysis, and runtime processing.</p>
 <p>Annotations have retention policies that determine in which context they are retained and available for use. There are three retention policies for
 annotations:</p>
 <ul>
-  <li> <code>RetentionPolicy.SOURCE</code> - Annotations are only available during compilation and code analysis. They are not included in the
-  compiled class file and are not available at runtime. E.G. <code>@Override</code>, <code>@SuppressWarnings</code> </li>
-  <li> <code>RetentionPolicy.CLASS</code> - Annotations are included in the compiled class file providing information to the compiler, but they are
-  not retained by the JVM at runtime. This is the default retention policy. E.G. <code>@PreviewFeature</code> </li>
-  <li> <code>RetentionPolicy.RUNTIME</code> - Annotations are included in the compiled class file and available at runtime. They can be accessed and
-  used by the program through reflection. E.G. <code>@FunctionalInterface</code>, <code>@Deprecated</code> </li>
+  <li><code>RetentionPolicy.SOURCE</code> - Annotations are only available during compilation and code analysis. They are not included in the compiled
+  class file and are not available at runtime. E.G. <code>@Override</code>, <code>@SuppressWarnings</code></li>
+  <li><code>RetentionPolicy.CLASS</code> - Annotations are included in the compiled class file providing information to the compiler, but they are not
+  retained by the JVM at runtime. This is the default retention policy. E.G. <code>@PreviewFeature</code></li>
+  <li><code>RetentionPolicy.RUNTIME</code> - Annotations are included in the compiled class file and available at runtime. They can be accessed and
+  used by the program through reflection. E.G. <code>@FunctionalInterface</code>, <code>@Deprecated</code></li>
 </ul>
 <p>It is important to understand that only annotations having the <code>RUNTIME</code> retention policy can be accessed at runtime using reflection.
 For example, the following if condition is true when the method argument is the <code>java.util.function.Function</code> class:</p>
@@ -36,7 +36,7 @@ void execute(Method method) {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/annotation/RetentionPolicy.html">Oracle SDK -
-  java.lang.annotation.RetentionPolicy</a> </li>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/annotation/RetentionPolicy.html">Oracle SDK -
+  java.lang.annotation.RetentionPolicy</a></li>
 </ul>
 

@@ -6,10 +6,10 @@ be preferred over the traditional, more verbose <code>BufferedReader</code>.</p>
 read.</p>
 <p>The modern <code>IO.readln()</code> method:</p>
 <ul>
-  <li> Reduces boilerplate by providing a single-method call for reading lines. </li>
-  <li> Eliminates the need for explicit checked exception handling for standard console input. </li>
-  <li> Allows for an optional prompt string, combining the "print" and "read" steps into one cohesive operation. </li>
-  <li> Avoids the resource management overhead (like <code>try-with-resources</code>) required for manual stream wrappers. </li>
+  <li>Reduces boilerplate by providing a single-method call for reading lines.</li>
+  <li>Eliminates the need for explicit checked exception handling for standard console input.</li>
+  <li>Allows for an optional prompt string, combining the "print" and "read" steps into one cohesive operation.</li>
+  <li>Avoids the resource management overhead (like <code>try-with-resources</code>) required for manual stream wrappers.</li>
 </ul>
 <h2>How to fix it</h2>
 <p>Replace manual stream wrapping of <code>System.in</code> with the static <code>IO.readln()</code> method. If you are using a version of Java where
@@ -46,6 +46,6 @@ void main() {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://openjdk.org/jeps/512">JEP 512: Compact Source Files and Instance Main Methods</a> </li>
+  <li><a href="https://openjdk.org/jeps/512">JEP 512: Compact Source Files and Instance Main Methods</a></li>
 </ul>
 

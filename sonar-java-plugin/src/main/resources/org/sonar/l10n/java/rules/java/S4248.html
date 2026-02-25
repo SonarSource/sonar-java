@@ -6,10 +6,10 @@ regular expressions. Unfortunately that can be hidden behind convenience methods
 <p>It is therefore somewhat easy to inadvertently repeatedly compile the same regular expression at great performance cost with no valid reason.</p>
 <p>This rule raises an issue when:</p>
 <ul>
-  <li> A <code>Pattern</code> is compiled from a <code>String</code> literal or constant and is not stored in a static final reference. </li>
-  <li> <code>String.matches</code>, <code>String.split</code>, <code>String.replaceAll</code> or <code>String.replaceFirst</code> are invoked with a
+  <li>A <code>Pattern</code> is compiled from a <code>String</code> literal or constant and is not stored in a static final reference.</li>
+  <li><code>String.matches</code>, <code>String.split</code>, <code>String.replaceAll</code> or <code>String.replaceFirst</code> are invoked with a
   <code>String</code> literal or constant. In which case the code should be refactored to use a <code>java.util.regex.Pattern</code> while respecting
-  the previous rule. </li>
+  the previous rule.</li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre>
@@ -38,8 +38,8 @@ public void doingSomething(String stringToMatch) {
 <h3>Exceptions</h3>
 <p><code>String.split</code> doesn’t create a regex when the string passed as argument meets either of these 2 conditions:</p>
 <ul>
-  <li> It is a one-char String and this character is not one of the RegEx’s meta characters ".$|()[{^?*+\" </li>
-  <li> It is a two-char String and the first char is the backslash and the second is not the ascii digit or ascii letter. </li>
+  <li>It is a one-char String and this character is not one of the RegEx’s meta characters ".$|()[{^?*+\"</li>
+  <li>It is a two-char String and the first char is the backslash and the second is not the ascii digit or ascii letter.</li>
 </ul>
 <p>In which case no issue will be raised.</p>
 

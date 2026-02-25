@@ -3,14 +3,14 @@
 assertion, otherwise, settings will not be taken into account.</p>
 <p>This rule raises an issue when one of the method (with all similar methods):</p>
 <ul>
-  <li> <code>as</code> </li>
-  <li> <code>describedAs</code> </li>
-  <li> <code>withFailMessage</code> </li>
-  <li> <code>overridingErrorMessage</code> </li>
-  <li> <code>usingComparator</code> </li>
-  <li> <code>usingElementComparator</code> </li>
-  <li> <code>extracting</code> </li>
-  <li> <code>filteredOn</code> </li>
+  <li><code>as</code></li>
+  <li><code>describedAs</code></li>
+  <li><code>withFailMessage</code></li>
+  <li><code>overridingErrorMessage</code></li>
+  <li><code>usingComparator</code></li>
+  <li><code>usingElementComparator</code></li>
+  <li><code>extracting</code></li>
+  <li><code>filteredOn</code></li>
 </ul>
 <p>is called without calling an AssertJ assertion afterward.</p>
 <h3>Noncompliant code example</h3>
@@ -27,6 +27,6 @@ assertThat(actual).usingComparator(new CustomComparator()).isEqualTo(expected);
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://assertj.github.io/doc/#calling-as-after-the-assertion">AssertJ incorrect usage documentation</a> </li>
+  <li><a href="https://assertj.github.io/doc/#calling-as-after-the-assertion">AssertJ incorrect usage documentation</a></li>
 </ul>
 

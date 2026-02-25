@@ -1,11 +1,11 @@
 <p>In Spring the scope of a bean defines the lifecycle and visibility of that bean in the Spring container. There are six scopes:</p>
 <ul>
-  <li> <strong>Singleton</strong>: default, one instance per Spring container </li>
-  <li> <strong>Prototype</strong>: a new instance per bean request </li>
-  <li> <strong>Request</strong>: a new instance per HTTP request </li>
-  <li> <strong>Session</strong>: a new instance per HTTP session </li>
-  <li> <strong>Application</strong>: a new instance per ServletContext </li>
-  <li> <strong>Websocket</strong>: a new instance per Websocket session </li>
+  <li><strong>Singleton</strong>: default, one instance per Spring container</li>
+  <li><strong>Prototype</strong>: a new instance per bean request</li>
+  <li><strong>Request</strong>: a new instance per HTTP request</li>
+  <li><strong>Session</strong>: a new instance per HTTP session</li>
+  <li><strong>Application</strong>: a new instance per ServletContext</li>
+  <li><strong>Websocket</strong>: a new instance per Websocket session</li>
 </ul>
 <p>The last four scopes mentioned, request, session, application and websocket, are only available in a web-aware application.</p>
 <h2>Why is this an issue?</h2>
@@ -17,11 +17,10 @@ as the Singleton bean doesn’t interact correctly with the new instances of the
 <h3>What is the potential impact?</h3>
 <p>When a <code>Singleton</code> bean has a dependency on a bean with a shorter-lived scope, it can lead to the following issues:</p>
 <ul>
-  <li> <strong>Data inconsistency</strong>: any state change in the shorter-lived bean will not be reflected in the Singleton bean. </li>
-  <li> <strong>Incorrect behavior</strong>: using the same instance of the shorter-lived bean, when a new instance is supposed to be created for each
-  new request or session. </li>
-  <li> <strong>Memory leaks</strong>: preventing garbage collection of a shorter-lived bean that allocates a significant amount of data over time.
-  </li>
+  <li><strong>Data inconsistency</strong>: any state change in the shorter-lived bean will not be reflected in the Singleton bean.</li>
+  <li><strong>Incorrect behavior</strong>: using the same instance of the shorter-lived bean, when a new instance is supposed to be created for each
+  new request or session.</li>
+  <li><strong>Memory leaks</strong>: preventing garbage collection of a shorter-lived bean that allocates a significant amount of data over time.</li>
 </ul>
 <h2>How to fix it</h2>
 <p>Inject a shorter-lived bean into a <code>Singleton</code> bean using <strong>ApplicationContext</strong>, <strong>Factories</strong> or
@@ -128,14 +127,14 @@ public class SingletonBean implements ApplicationContextAware {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> Spring Framework - <a href="https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html">Factory Scopes</a> </li>
-  <li> Spring Framework - <a href="https://docs.spring.io/spring-framework/reference/core/beans/standard-annotations.html#beans-inject-named">Beans
-  Inject Named</a> </li>
-  <li> Spring Framework - <a href="https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-method-injection.html">Method
-  Injection</a> </li>
+  <li>Spring Framework - <a href="https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html">Factory Scopes</a></li>
+  <li>Spring Framework - <a href="https://docs.spring.io/spring-framework/reference/core/beans/standard-annotations.html#beans-inject-named">Beans
+  Inject Named</a></li>
+  <li>Spring Framework - <a href="https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-method-injection.html">Method
+  Injection</a></li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> Baeldung - <a href="https://www.baeldung.com/spring-bean-scopes">Spring Bean Scopes</a> </li>
+  <li>Baeldung - <a href="https://www.baeldung.com/spring-bean-scopes">Spring Bean Scopes</a></li>
 </ul>
 

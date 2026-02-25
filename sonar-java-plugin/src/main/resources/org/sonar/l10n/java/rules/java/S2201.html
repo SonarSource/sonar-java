@@ -4,71 +4,71 @@ the function call is useless and should be dropped or the source code doesn’t 
 <p>To prevent generating any false-positives, this rule triggers an issue only on the following predefined list of immutable classes in the Java API
 :</p>
 <ul>
-  <li> <code>java.lang.String</code> </li>
-  <li> <code>java.lang.Boolean</code> </li>
-  <li> <code>java.lang.Integer</code> </li>
-  <li> <code>java.lang.Double</code> </li>
-  <li> <code>java.lang.Float</code> </li>
-  <li> <code>java.lang.Byte</code> </li>
-  <li> <code>java.lang.Character</code> </li>
-  <li> <code>java.lang.Short</code> </li>
-  <li> <code>java.lang.StackTraceElement</code> </li>
-  <li> <code>java.time.DayOfWeek</code> </li>
-  <li> <code>java.time.Duration</code> </li>
-  <li> <code>java.time.Instant</code> </li>
-  <li> <code>java.time.LocalDate</code> </li>
-  <li> <code>java.time.LocalDateTime</code> </li>
-  <li> <code>java.time.LocalTime</code> </li>
-  <li> <code>java.time.Month</code> </li>
-  <li> <code>java.time.MonthDay</code> </li>
-  <li> <code>java.time.OffsetDateTime</code> </li>
-  <li> <code>java.time.OffsetTime</code> </li>
-  <li> <code>java.time.Period</code> </li>
-  <li> <code>java.time.Year</code> </li>
-  <li> <code>java.time.YearMonth</code> </li>
-  <li> <code>java.time.ZonedDateTime</code> </li>
-  <li> <code>java.math.BigInteger</code> </li>
-  <li> <code>java.math.BigDecimal</code> </li>
-  <li> <code>java.util.Optional</code> </li>
+  <li><code>java.lang.String</code></li>
+  <li><code>java.lang.Boolean</code></li>
+  <li><code>java.lang.Integer</code></li>
+  <li><code>java.lang.Double</code></li>
+  <li><code>java.lang.Float</code></li>
+  <li><code>java.lang.Byte</code></li>
+  <li><code>java.lang.Character</code></li>
+  <li><code>java.lang.Short</code></li>
+  <li><code>java.lang.StackTraceElement</code></li>
+  <li><code>java.time.DayOfWeek</code></li>
+  <li><code>java.time.Duration</code></li>
+  <li><code>java.time.Instant</code></li>
+  <li><code>java.time.LocalDate</code></li>
+  <li><code>java.time.LocalDateTime</code></li>
+  <li><code>java.time.LocalTime</code></li>
+  <li><code>java.time.Month</code></li>
+  <li><code>java.time.MonthDay</code></li>
+  <li><code>java.time.OffsetDateTime</code></li>
+  <li><code>java.time.OffsetTime</code></li>
+  <li><code>java.time.Period</code></li>
+  <li><code>java.time.Year</code></li>
+  <li><code>java.time.YearMonth</code></li>
+  <li><code>java.time.ZonedDateTime</code></li>
+  <li><code>java.math.BigInteger</code></li>
+  <li><code>java.math.BigDecimal</code></li>
+  <li><code>java.util.Optional</code></li>
 </ul>
 <p>As well as methods of the following classes:</p>
 <ul>
-  <li> <code>java.util.Collection</code>:
+  <li><code>java.util.Collection</code>:
     <ul>
-      <li> <code>size()</code> </li>
-      <li> <code>isEmpty()</code> </li>
-      <li> <code>contains(...)</code> </li>
-      <li> <code>containsAll(...)</code> </li>
-      <li> <code>iterator()</code> </li>
-      <li> <code>toArray()</code> </li>
-    </ul>  </li>
-  <li> <code>java.util.Map</code>:
+      <li><code>size()</code></li>
+      <li><code>isEmpty()</code></li>
+      <li><code>contains(...)</code></li>
+      <li><code>containsAll(...)</code></li>
+      <li><code>iterator()</code></li>
+      <li><code>toArray()</code></li>
+    </ul></li>
+  <li><code>java.util.Map</code>:
     <ul>
-      <li> <code>size()</code> </li>
-      <li> <code>isEmpty()</code> </li>
-      <li> <code>containsKey(...)</code> </li>
-      <li> <code>containsValue(...)</code> </li>
-      <li> <code>get(...)</code> </li>
-      <li> <code>getOrDefault(...)</code> </li>
-      <li> <code>keySet()</code> </li>
-      <li> <code>entrySet()</code> </li>
-      <li> <code>values()</code> </li>
-    </ul>  </li>
-  <li> <code>java.util.stream.Stream</code>
+      <li><code>size()</code></li>
+      <li><code>isEmpty()</code></li>
+      <li><code>containsKey(...)</code></li>
+      <li><code>containsValue(...)</code></li>
+      <li><code>get(...)</code></li>
+      <li><code>getOrDefault(...)</code></li>
+      <li><code>keySet()</code></li>
+      <li><code>entrySet()</code></li>
+      <li><code>values()</code></li>
+    </ul></li>
+  <li><code>java.util.stream.Stream</code>
     <ul>
-      <li> <code>toArray</code> </li>
-      <li> <code>reduce</code> </li>
-      <li> <code>collect</code> </li>
-      <li> <code>min</code> </li>
-      <li> <code>max</code> </li>
-      <li> <code>count</code> </li>
-      <li> <code>anyMatch</code> </li>
-      <li> <code>allMatch</code> </li>
-      <li> <code>noneMatch</code> </li>
-      <li> <code>findFirst</code> </li>
-      <li> <code>findAny</code> </li>
-      <li> <code>toList</code> </li>
-    </ul>  </li>
+      <li><code>toArray</code></li>
+      <li><code>reduce</code></li>
+      <li><code>collect</code></li>
+      <li><code>min</code></li>
+      <li><code>max</code></li>
+      <li><code>count</code></li>
+      <li><code>anyMatch</code></li>
+      <li><code>allMatch</code></li>
+      <li><code>noneMatch</code></li>
+      <li><code>findFirst</code></li>
+      <li><code>findAny</code></li>
+      <li><code>toList</code></li>
+    </ul></li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre>
@@ -87,8 +87,8 @@ public void handle(String command){
 <h3>Exceptions</h3>
 <p>This rule will not raise an issue when both these conditions are met:</p>
 <ul>
-  <li> The method call is in a <code>try</code> block with an associated <code>catch</code> clause. </li>
-  <li> The method name starts with "parse", "format", "decode" or "valueOf" or the method is <code>String.getBytes(Charset)</code>. </li>
+  <li>The method call is in a <code>try</code> block with an associated <code>catch</code> clause.</li>
+  <li>The method name starts with "parse", "format", "decode" or "valueOf" or the method is <code>String.getBytes(Charset)</code>.</li>
 </ul>
 <pre>
 private boolean textIsInteger(String textToCheck) {
@@ -103,6 +103,6 @@ private boolean textIsInteger(String textToCheck) {
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/xzdGBQ">CERT, EXP00-J.</a> - Do not ignore values returned by methods </li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/xzdGBQ">CERT, EXP00-J.</a> - Do not ignore values returned by methods</li>
 </ul>
 

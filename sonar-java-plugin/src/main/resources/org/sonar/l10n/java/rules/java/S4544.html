@@ -1,29 +1,29 @@
 <p>Using unsafe Jackson deserialization configuration is security-sensitive. It has led in the past to the following vulnerabilities:</p>
 <ul>
-  <li> <a href="https://www.cve.org/CVERecord?id=CVE-2017-4995">CVE-2017-4995</a> </li>
-  <li> <a href="https://www.cve.org/CVERecord?id=CVE-2018-19362">CVE-2018-19362</a> </li>
+  <li><a href="https://www.cve.org/CVERecord?id=CVE-2017-4995">CVE-2017-4995</a></li>
+  <li><a href="https://www.cve.org/CVERecord?id=CVE-2018-19362">CVE-2018-19362</a></li>
 </ul>
 <p>When Jackson is configured to allow Polymorphic Type Handling (aka PTH), formerly known as Polymorphic Deserialization, "deserialization gadgets"
 may allow an attacker to perform remote code execution.</p>
 <p>This rule raises an issue when:</p>
 <ul>
-  <li> <code>enableDefaultTyping()</code> is called on an instance of <code>com.fasterxml.jackson.databind.ObjectMapper</code> or
-  <code>org.codehaus.jackson.map.ObjectMapper</code>. </li>
-  <li> or when the annotation <code>@JsonTypeInfo</code> is set at class, interface or field levels and configured with <code>use =
-  JsonTypeInfo.Id.CLASS</code> or <code>use = Id.MINIMAL_CLASS</code>. </li>
+  <li><code>enableDefaultTyping()</code> is called on an instance of <code>com.fasterxml.jackson.databind.ObjectMapper</code> or
+  <code>org.codehaus.jackson.map.ObjectMapper</code>.</li>
+  <li>or when the annotation <code>@JsonTypeInfo</code> is set at class, interface or field levels and configured with <code>use =
+  JsonTypeInfo.Id.CLASS</code> or <code>use = Id.MINIMAL_CLASS</code>.</li>
 </ul>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> You configured the Jackson deserializer as mentioned above. </li>
-  <li> The serialized data might come from an untrusted source. </li>
+  <li>You configured the Jackson deserializer as mentioned above.</li>
+  <li>The serialized data might come from an untrusted source.</li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> Use the latest patch versions of <code>jackson-databind</code> blocking the already discovered "deserialization gadgets". </li>
-  <li> Avoid using the default typing configuration: <code>ObjectMapper.enableDefaultTyping()</code>. </li>
-  <li> If possible, use <code>@JsonTypeInfo(use = Id.NAME)</code> instead of <code>@JsonTypeInfo(use = Id.CLASS)</code> or <code>@JsonTypeInfo(use =
-  Id. MINIMAL_CLASS)</code> and so rely on <code>@JsonTypeName</code> and <code>@JsonSubTypes</code>. </li>
+  <li>Use the latest patch versions of <code>jackson-databind</code> blocking the already discovered "deserialization gadgets".</li>
+  <li>Avoid using the default typing configuration: <code>ObjectMapper.enableDefaultTyping()</code>.</li>
+  <li>If possible, use <code>@JsonTypeInfo(use = Id.NAME)</code> instead of <code>@JsonTypeInfo(use = Id.CLASS)</code> or <code>@JsonTypeInfo(use =
+  Id. MINIMAL_CLASS)</code> and so rely on <code>@JsonTypeName</code> and <code>@JsonSubTypes</code>.</li>
 </ul>
 <h2>Sensitive Code Example</h2>
 <pre>
@@ -37,17 +37,17 @@ abstract class PhoneNumber {
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">Top 10 2021 Category A8 - Software and Data Integrity
-  Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization">Top 10 2017 Category A8 - Insecure
-  Deserialization</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data">Deserialization of untrusted data</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/502">CWE-502 - Deserialization of Untrusted Data</a> </li>
-  <li> <a href="https://medium.com/@cowtowncoder/on-jackson-cves-dont-panic-here-is-what-you-need-to-know-54cd0d6e8062">On Jackson CVEs: Don’t
-  Panic</a> </li>
-  <li> <a href="https://nvd.nist.gov/vuln/detail/CVE-2017-15095">CVE-2017-1509</a> </li>
-  <li> <a href="https://nvd.nist.gov/vuln/detail/CVE-2017-7525">CVE-2017-7525</a> </li>
-  <li> Derived from FindSecBugs rule <a
-  href="https://find-sec-bugs.github.io/bugs.htm#JACKSON_UNSAFE_DESERIALIZATION">JACKSON_UNSAFE_DESERIALIZATION</a> </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">Top 10 2021 Category A8 - Software and Data Integrity
+  Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization">Top 10 2017 Category A8 - Insecure
+  Deserialization</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data">Deserialization of untrusted data</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/502">CWE-502 - Deserialization of Untrusted Data</a></li>
+  <li><a href="https://medium.com/@cowtowncoder/on-jackson-cves-dont-panic-here-is-what-you-need-to-know-54cd0d6e8062">On Jackson CVEs: Don’t
+  Panic</a></li>
+  <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2017-15095">CVE-2017-1509</a></li>
+  <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2017-7525">CVE-2017-7525</a></li>
+  <li>Derived from FindSecBugs rule <a
+  href="https://find-sec-bugs.github.io/bugs.htm#JACKSON_UNSAFE_DESERIALIZATION">JACKSON_UNSAFE_DESERIALIZATION</a></li>
 </ul>
 
