@@ -53,7 +53,6 @@ public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor impl
 
     // at this point : 1 main method in members and at least 1 main method in superclasses
     var singleMainMethod = membersMainMethods.get(0);
-    boolean isOverriding = Boolean.TRUE.equals(singleMainMethod.isOverriding());
 
     // override case
     var mainWithHigherPriorityInSuper = superMainMethods.stream().filter(superMainMethod ->
