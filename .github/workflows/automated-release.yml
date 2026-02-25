@@ -44,7 +44,7 @@ on:
         description: "Jira issue categories to include in the release notes"
         required: false
         type: string
-        default: "New Feature,False Positive,False Negative,Bug,Improvement,Task"
+        default: "Feature,False Positive,False Negative,Bug,Security,Maintenance"
 
 jobs:
   release:
