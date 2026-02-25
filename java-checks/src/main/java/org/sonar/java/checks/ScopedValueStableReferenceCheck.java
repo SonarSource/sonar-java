@@ -21,23 +21,17 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S8465")
 public class ScopedValueStableReferenceCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
   private static final MethodMatchers WHERE_MATCHER = MethodMatchers.create()
-    .ofTypes("java.lang.ScopedValue")
+    .ofTypes("java.lang.ScopedValue", "java.lang.ScopedValue$Carrier")
     .names("where")
     .withAnyParameters()
-    .build();
-
-  private static final MethodMatchers NEW_INSTANCE_MATCHER = MethodMatchers.create()
-    .ofTypes("java.lang.ScopedValue")
-    .names("newInstance")
-    .addWithoutParametersMatcher()
     .build();
 
   @Override
@@ -52,15 +46,33 @@ public class ScopedValueStableReferenceCheck extends AbstractMethodDetection imp
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    ExpressionTree scopedValue = mit.arguments().get(0);
-    if (!scopedValue.is(Tree.Kind.METHOD_INVOCATION)) {
-      return;
+    ExpressionTree firstArgument = mit.arguments().get(0);
+    var finder = new NewInstanceInvocationFinder();
+    firstArgument.accept(finder);
+    if (finder.invocation != null) {
+      reportIssue(finder.invocation, "Consider using a stable reference for ScopedValue instances.");
+    }
+  }
+
+  private static class NewInstanceInvocationFinder extends BaseTreeVisitor {
+
+    private static final MethodMatchers NEW_INSTANCE_MATCHER = MethodMatchers.create()
+      .ofTypes("java.lang.ScopedValue")
+      .names("newInstance")
+      .addWithoutParametersMatcher()
+      .build();
+
+    public MethodInvocationTree invocation = null;
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (NEW_INSTANCE_MATCHER.matches(tree.methodSymbol())) {
+        invocation = tree;
+        return;
+      }
+      super.visitMethodInvocation(tree);
     }
 
-    MethodInvocationTree methodInvocation = (MethodInvocationTree) scopedValue;
-    if (NEW_INSTANCE_MATCHER.matches(methodInvocation.methodSymbol())) {
-      reportIssue(methodInvocation, "Consider using a stable reference for ScopedValue instances.");
-    }
   }
 
 }
