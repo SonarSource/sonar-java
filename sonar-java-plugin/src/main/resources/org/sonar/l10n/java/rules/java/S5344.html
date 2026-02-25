@@ -1,8 +1,10 @@
 <p>The improper storage of passwords poses a significant security risk to software applications. This vulnerability arises when passwords are stored
 in plaintext or with a fast hashing algorithm. To exploit this vulnerability, an attacker typically requires access to the stored passwords.</p>
 <h2>Why is this an issue?</h2>
-<p>Attackers who would get access to the stored passwords could reuse them without further attacks or with little additional effort.<br> Obtaining the
-plaintext passwords, they could then gain unauthorized access to user accounts, potentially leading to various malicious activities.</p>
+<p>Attackers who would get access to the stored passwords could reuse them without further attacks or with little additional effort.
+  <br>
+  Obtaining the plaintext passwords, they could then gain unauthorized access to user accounts, potentially leading to various malicious
+  activities.</p>
 <h3>What is the potential impact?</h3>
 <p>Plaintext or weakly hashed password storage poses a significant security risk to software applications.</p>
 <h4>Unauthorized Access</h4>
@@ -38,22 +40,29 @@ private SecretKey deriveKey(String password, byte[] salt) throws Exception {
 </pre>
 <h3>How does this work?</h3>
 <h4>Select the correct PBKDF2 parameters</h4>
-<p>If PBKDF2 must be used, be aware that default values might not be considered secure.<br> Depending on the algorithm used, the number of iterations
-should be adjusted to ensure that the derived key is secure. The following are the recommended number of iterations for PBKDF2:</p>
+<p>If PBKDF2 must be used, be aware that default values might not be considered secure.
+  <br>
+  Depending on the algorithm used, the number of iterations should be adjusted to ensure that the derived key is secure. The following are the
+  recommended number of iterations for PBKDF2:</p>
 <ul>
-  <li> PBKDF2-HMAC-SHA1: 1,300,000 iterations </li>
-  <li> PBKDF2-HMAC-SHA256: 600,000 iterations </li>
-  <li> PBKDF2-HMAC-SHA512: 210,000 iterations </li>
+  <li>PBKDF2-HMAC-SHA1: 1,300,000 iterations</li>
+  <li>PBKDF2-HMAC-SHA256: 600,000 iterations</li>
+  <li>PBKDF2-HMAC-SHA512: 210,000 iterations</li>
 </ul>
-<p>Note that PBKDF2-HMAC-SHA256 is recommended by NIST.<br> Iterations are also called "rounds" depending on the library used.</p>
+<p>Note that PBKDF2-HMAC-SHA256 is recommended by NIST.
+  <br>
+  Iterations are also called "rounds" depending on the library used.</p>
 <p>When recommended cost factors are too high in the context of the application or if the performance cost is unacceptable, a cost factor reduction
 might be considered. In that case, it should not be chosen under 100,000.</p>
 <h3>Going the extra mile</h3>
 <h4>Pepper</h4>
 <p>In a defense-in-depth security approach, <strong>peppering</strong> can also be used. This is a security technique where an external secret value
-is added to a password before it is hashed.<br> This makes it more difficult for an attacker to crack the hashed passwords, as they would need to know
-the secret value to generate the correct hash.<br> <a
-href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#peppering">Learn more here</a>.</p>
+is added to a password before it is hashed.
+  <br>
+  This makes it more difficult for an attacker to crack the hashed passwords, as they would need to know the secret value to generate the correct
+  hash.
+  <br>
+  <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#peppering">Learn more here</a>.</p>
 <h2>How to fix it in Spring</h2>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -85,10 +94,10 @@ vulnerable to brute force attacks, especially with bruteforce-attack-oriented ha
 <p>To protect passwords, it is therefore important to choose modern, slow password-hashing algorithms. The following algorithms are, in order of
 strength, the most secure password hashing algorithms to date:</p>
 <ol>
-  <li> Argon2 </li>
-  <li> scrypt </li>
-  <li> bcrypt </li>
-  <li> PBKDF2 </li>
+  <li>Argon2</li>
+  <li>scrypt</li>
+  <li>bcrypt</li>
+  <li>PBKDF2</li>
 </ol>
 <p>Argon2 should be the best choice, and others should be used when the previous one is not available. For systems that must use FIPS-140-certified
 algorithms, PBKDF2 should be used.</p>
@@ -114,23 +123,23 @@ Bcrypt</a>.</p>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> Spring Framework Security Documentation - <a
+  <li>Spring Framework Security Documentation - <a
   href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/crypto/bcrypt/BCryptPasswordEncoder.html">Class
-  BCryptPasswordEncoder</a> </li>
-  <li> OWASP CheatSheet - <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html">Password Storage Cheat Sheet</a>
-  </li>
+  BCryptPasswordEncoder</a></li>
+  <li>OWASP CheatSheet - <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html">Password Storage Cheat
+  Sheet</a></li>
 </ul>
 <h3>Standards</h3>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
-  Exposure</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m10-insufficient-cryptography">Mobile Top 10 2024 Category M10 -
-  Insufficient Cryptography</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/256">CWE-256 - Plaintext Storage of a Password</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/916">CWE-916 - Use of Password Hash With Insufficient Computational Effort</a> </li>
-  <li> STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222542">Application Security and
-  Development: V-222542</a> - The application must only store cryptographic representations of passwords. </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
+  Exposure</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m10-insufficient-cryptography">Mobile Top 10 2024 Category M10 -
+  Insufficient Cryptography</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/256">CWE-256 - Plaintext Storage of a Password</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/916">CWE-916 - Use of Password Hash With Insufficient Computational Effort</a></li>
+  <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222542">Application Security and
+  Development: V-222542</a> - The application must only store cryptographic representations of passwords.</li>
 </ul>
 

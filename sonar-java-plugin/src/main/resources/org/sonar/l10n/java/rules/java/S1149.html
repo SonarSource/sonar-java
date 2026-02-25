@@ -3,10 +3,10 @@
 thread-safe. However, synchronization has a significant negative impact on performance, even when using these collections from a single thread.</p>
 <p>It is often best to use their non-synchronized counterparts:</p>
 <ul>
-  <li> <code>ArrayList</code> or <code>LinkedList</code> instead of <code>Vector</code> </li>
-  <li> <code>Deque</code> instead of <code>Stack</code> </li>
-  <li> <code>HashMap</code> instead of <code>Hashtable</code> </li>
-  <li> <code>StringBuilder</code> instead of <code>StringBuffer</code> </li>
+  <li><code>ArrayList</code> or <code>LinkedList</code> instead of <code>Vector</code></li>
+  <li><code>Deque</code> instead of <code>Stack</code></li>
+  <li><code>HashMap</code> instead of <code>Hashtable</code></li>
+  <li><code>StringBuilder</code> instead of <code>StringBuffer</code></li>
 </ul>
 <p>Even when used in synchronized contexts, you should think twice before using their synchronized counterparts, since their usage can be costly. If
 you are confident the usage is legitimate, you can safely ignore this warning.</p>

@@ -44,28 +44,28 @@ Connection conn = DriverManager.getConnection("jdbc:derby:memory:myDB;create=tru
 <p>It could be tempting to replace the empty password with a hard-coded one. Hard-coding passwords in the code can pose significant security risks.
 Here are a few reasons why it is not recommended:</p>
 <ol>
-  <li> Security Vulnerability: Hard-coded passwords can be easily discovered by anyone who has access to the code, such as other developers or
-  attackers. This can lead to unauthorized access to the database and potential data breaches. </li>
-  <li> Lack of Flexibility: Hard-coded passwords make it difficult to change the password without modifying the code. If the password needs to be
-  updated, it would require recompiling and redeploying the code, which can be time-consuming and error-prone. </li>
-  <li> Version Control Issues: Storing passwords in code can lead to version control issues. If the code is shared or stored in a version control
-  system, the password will be visible to anyone with access to the repository, which is a security risk. </li>
+  <li>Security Vulnerability: Hard-coded passwords can be easily discovered by anyone who has access to the code, such as other developers or
+  attackers. This can lead to unauthorized access to the database and potential data breaches.</li>
+  <li>Lack of Flexibility: Hard-coded passwords make it difficult to change the password without modifying the code. If the password needs to be
+  updated, it would require recompiling and redeploying the code, which can be time-consuming and error-prone.</li>
+  <li>Version Control Issues: Storing passwords in code can lead to version control issues. If the code is shared or stored in a version control
+  system, the password will be visible to anyone with access to the repository, which is a security risk.</li>
 </ol>
 <p>To mitigate these risks, it is recommended to use secure methods for storing and retrieving passwords, such as using environment variables,
 configuration files, or secure key management systems. These methods allow for better security, flexibility, and separation of sensitive information
 from the codebase.</p>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://docs.oracle.com/javase/tutorial/essential/environment/properties.html">Java Properties</a> </li>
+  <li><a href="https://docs.oracle.com/javase/tutorial/essential/environment/properties.html">Java Properties</a></li>
 </ul>
 <h3>Standards</h3>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
-  Authentication Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">Top 10 2017 Category A2 - Broken Authentication</a>
-  </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
-  Exposure</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/521">CWE-521 - Weak Password Requirements</a> </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
+  Authentication Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">Top 10 2017 Category A2 - Broken
+  Authentication</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
+  Exposure</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/521">CWE-521 - Weak Password Requirements</a></li>
 </ul>
 

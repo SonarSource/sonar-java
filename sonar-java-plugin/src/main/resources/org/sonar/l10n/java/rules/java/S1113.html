@@ -7,10 +7,10 @@ discouraged.</p>
 <h3>What is the potential impact?</h3>
 <p>More unexpected issues can be caused by relying on the <code>finalize()</code> method to perform important operations on the application state:</p>
 <ul>
-  <li> The JVM might terminate without ever calling this method on a particular object, leaving an unexpected or incomplete state of the program </li>
-  <li> Uncaught exceptions will be ignored inside this method, making it harder to detect issues that could have been logged otherwise </li>
-  <li> Finalizer methods can also be invoked concurrently, even on single-threaded applications, making it hard to maintain desired program invariants
-  </li>
+  <li>The JVM might terminate without ever calling this method on a particular object, leaving an unexpected or incomplete state of the program</li>
+  <li>Uncaught exceptions will be ignored inside this method, making it harder to detect issues that could have been logged otherwise</li>
+  <li>Finalizer methods can also be invoked concurrently, even on single-threaded applications, making it hard to maintain desired program
+  invariants</li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre>
@@ -28,7 +28,7 @@ public class MyClass {
 attack</em> as described in <em>MET12-J-EX1</em>.</p>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html#jls-12.6">docs.oracle.com</a> - Finalization of Class Instances </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/4jZGBQ">CERT, MET12-J.</a> - Do not use finalizers </li>
+  <li><a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html#jls-12.6">docs.oracle.com</a> - Finalization of Class Instances</li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/4jZGBQ">CERT, MET12-J.</a> - Do not use finalizers</li>
 </ul>
 

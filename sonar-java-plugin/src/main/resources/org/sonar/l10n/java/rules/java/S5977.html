@@ -3,23 +3,23 @@
 functions, undermines the principles of effective testing. In most cases, randomness leads to problems, resulting in code that is unreliable and
 difficult to debug. Consequently, deterministic and reproducible tests are preferred, primarily for the following reasons:</p>
 <ul>
-  <li> When a test fails, the ability to reproduce the conditions that led to the failure is crucial for effective debugging. Randomness can make it
-  difficult or even impossible to pinpoint the root cause, as subsequent runs may not exhibit the same failure. </li>
-  <li> Being able to replay a scenario allows us to easily compare logs between different test runs. </li>
-  <li> Determinism gives us confidence that a bug is fixed when it no longer appears in tests. If they behave randomly, a passing test after a fix
-  might be coincidental due to a specific random input, rather than a genuine resolution of the underlying problem. </li>
-  <li> Flaky tests, which pass or fail intermittently without any code changes, are a significant problem for CI pipelines (continuous integration).
+  <li>When a test fails, the ability to reproduce the conditions that led to the failure is crucial for effective debugging. Randomness can make it
+  difficult or even impossible to pinpoint the root cause, as subsequent runs may not exhibit the same failure.</li>
+  <li>Being able to replay a scenario allows us to easily compare logs between different test runs.</li>
+  <li>Determinism gives us confidence that a bug is fixed when it no longer appears in tests. If they behave randomly, a passing test after a fix
+  might be coincidental due to a specific random input, rather than a genuine resolution of the underlying problem.</li>
+  <li>Flaky tests, which pass or fail intermittently without any code changes, are a significant problem for CI pipelines (continuous integration).
   They erode confidence in the CI system, lead to unnecessary investigations and reruns, and ultimately slow down the development and release process.
-  A stable CI pipeline relies on deterministic test outcomes. </li>
+  A stable CI pipeline relies on deterministic test outcomes.</li>
 </ul>
 <p>This rule raises an issue when <code>new Random()</code> or <code>UUID.randomUUID()</code> are called in test code.</p>
 <h2>How to fix it</h2>
 <ul>
-  <li> When a test uses random numbers to generate inputs, an easy fix is to replace those random inputs with pseudo-random values generated from a
+  <li>When a test uses random numbers to generate inputs, an easy fix is to replace those random inputs with pseudo-random values generated from a
   known seed. By initializing a pseudo-random number generator with a fixed seed, tests can generate sequences of seemingly random data that are
-  reproducible across different test runs. </li>
-  <li> When randomness occurs due to the use of a library function, the solution is to replace the call with a constant. For example, rather than
-  generating a UUID at random, one should use a fixed value. </li>
+  reproducible across different test runs.</li>
+  <li>When randomness occurs due to the use of a library function, the solution is to replace the call with a constant. For example, rather than
+  generating a UUID at random, one should use a fixed value.</li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre>
@@ -34,7 +34,7 @@ UUID userID = UUID.fromString("00000000-000-0000-0000-000000000001");
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://phauer.com/2019/modern-best-practices-testing-java/#use-fixed-data-instead-of-randomized-data">Modern Best Practices for
-  Testing in Java - Philipp Hauer</a> </li>
+  <li><a href="https://phauer.com/2019/modern-best-practices-testing-java/#use-fixed-data-instead-of-randomized-data">Modern Best Practices for
+  Testing in Java - Philipp Hauer</a></li>
 </ul>
 

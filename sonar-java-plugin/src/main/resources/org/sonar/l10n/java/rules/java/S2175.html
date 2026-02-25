@@ -7,17 +7,17 @@ compare said argument with objects already in the collection.</p>
 <p>This rule raises an issue when the type of the argument provided to one of the following methods is unrelated to the type used for the collection
 declaration:</p>
 <ul>
-  <li> <code>Collection.remove(Object o)</code> </li>
-  <li> <code>Collection.removeAll(Collection&lt;?&gt;)</code> </li>
-  <li> <code>Collection.contains(Object o)</code> </li>
-  <li> <code>List.indexOf(Object o)</code> </li>
-  <li> <code>List.lastIndexOf(Object o)</code> </li>
-  <li> <code>Map.containsKey(Object key)</code> </li>
-  <li> <code>Map.containsValue(Object value)</code> </li>
-  <li> <code>Map.get(Object key)</code> </li>
-  <li> <code>Map.getOrDefault(Object key, V defaultValue)</code> </li>
-  <li> <code>Map.remove(Object key)</code> </li>
-  <li> <code>Map.remove(Object key, Object value)</code> </li>
+  <li><code>Collection.remove(Object o)</code></li>
+  <li><code>Collection.removeAll(Collection&lt;?&gt;)</code></li>
+  <li><code>Collection.contains(Object o)</code></li>
+  <li><code>List.indexOf(Object o)</code></li>
+  <li><code>List.lastIndexOf(Object o)</code></li>
+  <li><code>Map.containsKey(Object key)</code></li>
+  <li><code>Map.containsValue(Object value)</code></li>
+  <li><code>Map.get(Object key)</code></li>
+  <li><code>Map.getOrDefault(Object key, V defaultValue)</code></li>
+  <li><code>Map.remove(Object key)</code></li>
+  <li><code>Map.remove(Object key, Object value)</code></li>
 </ul>
 <h2>How to fix it</h2>
 <p>Ask yourself what the purpose of this method call is. Check whether the provided argument and collection are correct in this context and for the
@@ -49,9 +49,9 @@ void listContains(List&lt;String&gt; list, Integer integer) {
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/uDdGBQ">CERT, EXP04-J.</a> - Do not pass arguments to certain Java Collections Framework methods
-  that are a different type than the collection parameter type </li>
-  <li> <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html">Java SE 17 &amp; JDK 17</a> - Collection
-  interface </li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/uDdGBQ">CERT, EXP04-J.</a> - Do not pass arguments to certain Java Collections Framework methods
+  that are a different type than the collection parameter type</li>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html">Java SE 17 &amp; JDK 17</a> - Collection
+  interface</li>
 </ul>
 

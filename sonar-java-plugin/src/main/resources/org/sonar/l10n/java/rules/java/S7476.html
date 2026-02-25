@@ -7,8 +7,8 @@ more slashes can lead to unintended JavaDoc being generated, when migrating to J
 handle such comments as JavaDoc comments if they are not aware of the Java version.</p>
 <h3>Exceptions</h3>
 <ul>
-  <li> The rule does not raise issues on license headers at the start of files because they will not be considered as JavaDoc comments. </li>
-  <li> The rule only raises issues in projects using Java 17 or above, because those projects will likely be migrated to Java 23 or later. </li>
+  <li>The rule does not raise issues on license headers at the start of files because they will not be considered as JavaDoc comments.</li>
+  <li>The rule only raises issues in projects using Java 17 or above, because those projects will likely be migrated to Java 23 or later.</li>
 </ul>
 <h2>How to fix it</h2>
 <p>In versions of Java prior to 23, comments should not start with more than 2 slashes, and from Java 23 forward they should not start with more than
@@ -32,6 +32,6 @@ public void foo(){}
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> OpenJDK - <a href="https://openjdk.org/jeps/467">JEP 467: Markdown Documentation Comments</a> </li>
+  <li>OpenJDK - <a href="https://openjdk.org/jeps/467">JEP 467: Markdown Documentation Comments</a></li>
 </ul>
 

@@ -17,7 +17,7 @@ accessed using the reflection API.</p>
 <h3>Exceptions</h3>
 <p>The rule admits 3 exceptions:</p>
 <ul>
-  <li> Serialization ID fields </li>
+  <li>Serialization ID fields</li>
 </ul>
 <p>The Java serialization runtime associates with each serializable class a version number called <code>serialVersionUID</code>, which is used during
 deserialization to verify that the sender and receiver of a serialized object have loaded classes for that object that are compatible for
@@ -30,7 +30,7 @@ public class MyClass implements java.io.Serializable {
 }
 </pre>
 <ul>
-  <li> Annotated fields and classes annotated with Lombok annotations </li>
+  <li>Annotated fields and classes annotated with Lombok annotations</li>
 </ul>
 <p>The unused field in this class will not be reported by the rule as it is annotated, except if annotation class <code>SomeAnnotation</code> is
 listed in the <code>ignoreAnnotations</code> parameter (see Parameters).</p>
@@ -41,7 +41,7 @@ public class MyClass {
 }
 </pre>
 <ul>
-  <li> Fields from classes with native methods </li>
+  <li>Fields from classes with native methods</li>
 </ul>
 <p>The unused field in this class will not be reported by the rule as it might be used by native code.</p>
 <pre>

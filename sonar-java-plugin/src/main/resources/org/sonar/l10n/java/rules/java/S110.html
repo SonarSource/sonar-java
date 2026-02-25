@@ -6,25 +6,25 @@ becoming too deep is the symptom of systematic use of "inheritance" when other a
 <p>This rule raises an issue when the inheritance tree, starting from <code>Object</code>, has a greater depth than is allowed.</p>
 <p>The rule has one parameter to filter out classes of the count of inheritance. The following rules apply to define this parameter:</p>
 <ul>
-  <li> <code>?</code> matches a single character </li>
-  <li> <code>*</code> matches zero or more characters </li>
-  <li> <code>**</code> matches zero or more packages </li>
+  <li><code>?</code> matches a single character</li>
+  <li><code>*</code> matches zero or more characters</li>
+  <li><code>**</code> matches zero or more packages</li>
 </ul>
 <p>Examples:</p>
 <ul>
-  <li> <code>java.fwk.AbstractFwkClass</code>: the count stops when AbstractFwkClass class is reached. </li>
-  <li> <code>java.fwk.*</code>: any member of java.fwkPackage package is reached. </li>
-  <li> <code>java.fwk.**</code>: same as above, but including sub-packages. </li>
+  <li><code>java.fwk.AbstractFwkClass</code>: the count stops when AbstractFwkClass class is reached.</li>
+  <li><code>java.fwk.*</code>: any member of java.fwkPackage package is reached.</li>
+  <li><code>java.fwk.**</code>: same as above, but including sub-packages.</li>
 </ul>
 <h2>Exceptions:</h2>
 <p>The rule stops counting when it encounters a class from one of the following packages (or sub-packages):</p>
 <ul>
-  <li> <code>android.**</code> </li>
-  <li> <code>com.intellij.**</code> </li>
-  <li> <code>com.persistit.**</code> </li>
-  <li> <code>javax.swing.**</code> </li>
-  <li> <code>org.eclipse.**</code> </li>
-  <li> <code>org.springframework.**</code> </li>
+  <li><code>android.**</code></li>
+  <li><code>com.intellij.**</code></li>
+  <li><code>com.persistit.**</code></li>
+  <li><code>javax.swing.**</code></li>
+  <li><code>org.eclipse.**</code></li>
+  <li><code>org.springframework.**</code></li>
 </ul>
 <h2>Resources</h2>
 <h3>Documentation</h3>

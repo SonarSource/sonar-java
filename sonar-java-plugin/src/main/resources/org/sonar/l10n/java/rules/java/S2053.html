@@ -23,10 +23,10 @@ the salt, the higher the collision probability. In any case, using longer, crypt
 <p>To securely store password hashes, it is a recommended to rely on key derivation functions that are computationally intensive. Examples of such
 functions are:</p>
 <ul>
-  <li> Argon2 </li>
-  <li> PBKDF2 </li>
-  <li> Scrypt </li>
-  <li> Bcrypt </li>
+  <li>Argon2</li>
+  <li>PBKDF2</li>
+  <li>Scrypt</li>
+  <li>Bcrypt</li>
 </ul>
 <p>When they are used for password storage, using a secure, random salt is required.</p>
 <p>However, those functions can also be used for other purposes such as master key derivation or password-based pre-shared key generation. In those
@@ -65,14 +65,14 @@ provides the required security level. It uses a salt length of at least 16 bytes
 <h2>Resources</h2>
 <h3>Standards</h3>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a> </li>
-  <li> OWASP - <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
-  Exposure</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m10-insufficient-cryptography">Mobile Top 10 2024 Category M10 -
-  Insufficient Cryptography</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/759">CWE-759 - Use of a One-Way Hash without a Salt</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/760">CWE-760 - Use of a One-Way Hash with a Predictable Salt</a> </li>
-  <li> STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222542">Application Security and
-  Development: V-222542</a> - The application must only store cryptographic representations of passwords. </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a></li>
+  <li>OWASP - <a href="https://www.owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
+  Exposure</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m10-insufficient-cryptography">Mobile Top 10 2024 Category M10 -
+  Insufficient Cryptography</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/759">CWE-759 - Use of a One-Way Hash without a Salt</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/760">CWE-760 - Use of a One-Way Hash with a Predictable Salt</a></li>
+  <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222542">Application Security and
+  Development: V-222542</a> - The application must only store cryptographic representations of passwords.</li>
 </ul>
 

@@ -3,11 +3,11 @@
 21, there are three of these methods that behave differently between the standard platform threads and the virtual ones.</p>
 <p>For virtual threads:</p>
 <ul>
-  <li> <code>Thread.setDaemon(boolean)</code> will throw an <code>IllegalArgumentException</code> if <code>false</code> is passed as an argument as a
-  virtual thread daemon status is always true. </li>
-  <li> <code>Thread.setPriority(int priority)</code> will never change the actual priority of a virtual thread, which is always equal to
-  <code>Thread.NORM_PRIORITY</code> </li>
-  <li> <code>Thread.getThreadGroup()</code> will return a dummy "VirtualThreads" group that is empty and should not be used </li>
+  <li><code>Thread.setDaemon(boolean)</code> will throw an <code>IllegalArgumentException</code> if <code>false</code> is passed as an argument as a
+  virtual thread daemon status is always true.</li>
+  <li><code>Thread.setPriority(int priority)</code> will never change the actual priority of a virtual thread, which is always equal to
+  <code>Thread.NORM_PRIORITY</code></li>
+  <li><code>Thread.getThreadGroup()</code> will return a dummy "VirtualThreads" group that is empty and should not be used</li>
 </ul>
 <p>This rule reports an issue when one of these methods is invoked on a virtual thread.</p>
 <h3>Code examples</h3>
@@ -23,13 +23,13 @@ var threadGroup = t.getThreadGroup(); // Noncompliant; virtual thread groups sho
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> Java Documentation - <a
-  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.html#setDaemon(boolean)">Thread.setDaemon</a> </li>
-  <li> Java Documentation - <a
-  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.html#setPriority(int)">Thread.setPriority</a> </li>
-  <li> Java Documentation - <a
-  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.html#getThreadGroup()">Thread.getThreadGroup</a> </li>
-  <li> Java Documentation - <a
-  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/ThreadGroup.html#virtualthreadgroup">Virtual threads group</a> </li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.html#setDaemon(boolean)">Thread.setDaemon</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.html#setPriority(int)">Thread.setPriority</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.html#getThreadGroup()">Thread.getThreadGroup</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/ThreadGroup.html#virtualthreadgroup">Virtual threads group</a></li>
 </ul>
 

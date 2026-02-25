@@ -8,7 +8,7 @@ void setCoordinates(int x1, int y1, int z1, int x2, int y2, int z2) { // Noncomp
 </pre>
 <p>The solution can be to:</p>
 <ul>
-  <li> Split the method into smaller ones </li>
+  <li>Split the method into smaller ones</li>
 </ul>
 <pre>
 // Each function does a part of what the original setCoordinates function was doing, so confusion risks are lower
@@ -21,7 +21,7 @@ void setSize(int width, int height, int depth) {
 }
 </pre>
 <ul>
-  <li> Find a better data structure for the parameters that group data in a way that makes sense for the specific application domain </li>
+  <li>Find a better data structure for the parameters that group data in a way that makes sense for the specific application domain</li>
 </ul>
 <pre>
 class Point // In geometry, Point is a logical structure to group data
@@ -39,12 +39,12 @@ void setCoordinates(Point p1, Point p2) {
 <h3>Exceptions</h3>
 <p>Methods annotated with :</p>
 <ul>
-  <li> Spring’s <code>@RequestMapping</code> (and related shortcut annotations, like <code>@GetRequest</code>) </li>
-  <li> JAX-RS API annotations (like <code>@javax.ws.rs.GET</code>) </li>
-  <li> Bean constructor injection with <code>@org.springframework.beans.factory.annotation.Autowired</code> </li>
-  <li> CDI constructor injection with <code>@javax.inject.Inject</code> </li>
-  <li> <code>@com.fasterxml.jackson.annotation.JsonCreator</code> </li>
-  <li> Micronaut’s annotations (like <code>@io.micronaut.http.annotation.Get</code>) </li>
+  <li>Spring’s <code>@RequestMapping</code> (and related shortcut annotations, like <code>@GetRequest</code>)</li>
+  <li>JAX-RS API annotations (like <code>@javax.ws.rs.GET</code>)</li>
+  <li>Bean constructor injection with <code>@org.springframework.beans.factory.annotation.Autowired</code></li>
+  <li>CDI constructor injection with <code>@javax.inject.Inject</code></li>
+  <li><code>@com.fasterxml.jackson.annotation.JsonCreator</code></li>
+  <li>Micronaut’s annotations (like <code>@io.micronaut.http.annotation.Get</code>)</li>
 </ul>
 <p>may have a lot of parameters, encapsulation being possible. Therefore the rule ignores such methods.</p>
 <p>Also, if a class annotated as a Spring component (like <code>@org.springframework.stereotype.Component</code>) has a single constructor, that

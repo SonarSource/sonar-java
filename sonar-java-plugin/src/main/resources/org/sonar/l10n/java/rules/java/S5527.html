@@ -65,9 +65,9 @@ another system’s problems</strong>, as this creates unnecessary dependencies a
 consider replicating its service to a server whose certificate you can change yourself.</p>
 <p>In case the contacted host is located on a development machine, and if there is no other choice, try following this solution:</p>
 <ul>
-  <li> Create a self-signed certificate for that machine. </li>
-  <li> Add this self-signed certificate to the system’s trust store. </li>
-  <li> If the hostname is not <code>localhost</code>, add the hostname in the <code>/etc/hosts</code> file. </li>
+  <li>Create a self-signed certificate for that machine.</li>
+  <li>Add this self-signed certificate to the system’s trust store.</li>
+  <li>If the hostname is not <code>localhost</code>, add the hostname in the <code>/etc/hosts</code> file.</li>
 </ul>
 <p>Here is a sample command to import a certificate to the Java trust store:</p>
 <pre>
@@ -124,9 +124,9 @@ another system’s problems</strong>, as this creates unnecessary dependencies a
 consider replicating its service to a server whose certificate you can change yourself.</p>
 <p>In case the contacted host is located on a development machine, and if there is no other choice, try following this solution:</p>
 <ul>
-  <li> Create a self-signed certificate for that machine. </li>
-  <li> Add this self-signed certificate to the system’s trust store. </li>
-  <li> If the hostname is not <code>localhost</code>, add the hostname in the <code>/etc/hosts</code> file. </li>
+  <li>Create a self-signed certificate for that machine.</li>
+  <li>Add this self-signed certificate to the system’s trust store.</li>
+  <li>If the hostname is not <code>localhost</code>, add the hostname in the <code>/etc/hosts</code> file.</li>
 </ul>
 <p>Here is a sample command to import a certificate to the Java trust store:</p>
 <pre>
@@ -180,9 +180,9 @@ another system’s problems</strong>, as this creates unnecessary dependencies a
 consider replicating its service to a server whose certificate you can change yourself.</p>
 <p>In case the contacted host is located on a development machine, and if there is no other choice, try following this solution:</p>
 <ul>
-  <li> Create a self-signed certificate for that machine. </li>
-  <li> Add this self-signed certificate to the system’s trust store. </li>
-  <li> If the hostname is not <code>localhost</code>, add the hostname in the <code>/etc/hosts</code> file. </li>
+  <li>Create a self-signed certificate for that machine.</li>
+  <li>Add this self-signed certificate to the system’s trust store.</li>
+  <li>If the hostname is not <code>localhost</code>, add the hostname in the <code>/etc/hosts</code> file.</li>
 </ul>
 <p>Here is a sample command to import a certificate to the Java trust store:</p>
 <pre>
@@ -191,24 +191,24 @@ keytool -import -alias myserver -file myserver.crt -keystore cacerts
 <h2>Resources</h2>
 <h3>Standards</h3>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a> </li>
-  <li> OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
-  Authentication Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
-  Exposure</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
-  Misconfiguration</a> </li>
-  <li> OWASP - <a href="https://mas.owasp.org/checklists/MASVS-NETWORK/">Mobile AppSec Verification Standard - Network Communication Requirements</a>
-  </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m3-insecure-communication">Mobile Top 10 2016 Category M3 - Insecure
-  Communication</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m5-insecure-communication">Mobile Top 10 2024 Category M5 - Insecure
-  Communication</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/297">CWE-297 - Improper Validation of Certificate with Host Mismatch</a> </li>
-  <li> STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222550">Application Security and
-  Development: V-222550</a> - The application must validate certificates by constructing a certification path to an accepted trust anchor. </li>
-  <li> <a
-  href="https://wiki.sei.cmu.edu/confluence/display/java/MSC61-J.+Do+not+use+insecure+or+weak+cryptographic+algorithms">https://wiki.sei.cmu.edu/confluence/display/java/MSC61-J.+Do+not+use+insecure+or+weak+cryptographic+algorithms</a> </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a></li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
+  Authentication Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
+  Exposure</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
+  Misconfiguration</a></li>
+  <li>OWASP - <a href="https://mas.owasp.org/checklists/MASVS-NETWORK/">Mobile AppSec Verification Standard - Network Communication
+  Requirements</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m3-insecure-communication">Mobile Top 10 2016 Category M3 - Insecure
+  Communication</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m5-insecure-communication">Mobile Top 10 2024 Category M5 - Insecure
+  Communication</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/297">CWE-297 - Improper Validation of Certificate with Host Mismatch</a></li>
+  <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222550">Application Security and
+  Development: V-222550</a> - The application must validate certificates by constructing a certification path to an accepted trust anchor.</li>
+  <li><a
+  href="https://wiki.sei.cmu.edu/confluence/display/java/MSC61-J.+Do+not+use+insecure+or+weak+cryptographic+algorithms">https://wiki.sei.cmu.edu/confluence/display/java/MSC61-J.+Do+not+use+insecure+or+weak+cryptographic+algorithms</a></li>
 </ul>
 
