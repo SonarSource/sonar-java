@@ -59,7 +59,7 @@ public class MultipleMainInstancesSample {
     }
   }
 
-  public static class NonCompliantChildPrecedence {
+  public static class CompliantChildPrecedence {
     class Parent {
       void main() {
         System.out.println("Parent instance main method.");
@@ -155,13 +155,13 @@ public class MultipleMainInstancesSample {
     class Parent extends GrandParent {
     }
 
-    class NonCompliantChild extends Parent {
+    class CompliantChildPriority extends Parent {
       void main(String[] args) { // Compliant, args may be used for other purposes, and it will shadow the grandparent main method
         System.out.println("Child main method detected; shadowing grandparent main.");
       }
     }
 
-    class CompliantChild extends Parent {
+    class CompliantChildOverride extends Parent {
       @Override
       void main() { // Compliant: This is an instance method that overrides the parent main
         System.out.println("Child instance main method overriding grandparent main.");
