@@ -62,7 +62,7 @@ public class ScopedValueStableReferenceCheck extends AbstractMethodDetection imp
       .addWithoutParametersMatcher()
       .build();
 
-    public MethodInvocationTree invocation = null;
+    private MethodInvocationTree invocation = null;
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
