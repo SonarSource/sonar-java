@@ -4,9 +4,9 @@ lead to incorrect results and unexpected behavior in the program.</p>
 <p>When <code>Math.abs</code> and negation are used on numbers that could be <code>MIN_VALUE</code>, the result can be incorrect due to integer
 overflow. Common methods that can return a <code>MIN_VALUE</code> and raise an issue when used together with <code>Math.abs</code> are:</p>
 <ul>
-  <li> <code>Random.nextInt()</code> and <code>Random.nextLong()</code> </li>
-  <li> <code>hashCode()</code> </li>
-  <li> <code>compareTo()</code> </li>
+  <li><code>Random.nextInt()</code> and <code>Random.nextLong()</code></li>
+  <li><code>hashCode()</code></li>
+  <li><code>compareTo()</code></li>
 </ul>
 <p>Alternatively, the <code>absExact()</code> method throws an <code>ArithmeticException</code> for <code>MIN_VALUE</code>.</p>
 <h3>Noncompliant code example</h3>
@@ -27,6 +27,6 @@ public void doSomething(String str) {
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Math.html#abs(int)">Oracle SDK 20 - Math.abs(int)</a> </li>
+  <li><a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/Math.html#abs(int)">Oracle SDK 20 - Math.abs(int)</a></li>
 </ul>
 

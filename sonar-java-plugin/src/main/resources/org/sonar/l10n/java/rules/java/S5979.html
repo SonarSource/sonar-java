@@ -3,10 +3,10 @@
 need to be initialized explicitly.</p>
 <p>There are several ways to do this:</p>
 <ul>
-  <li> Call <code>MockitoAnnotations.openMocks(this)</code> or&nbsp;<code>MockitoAnnotations.initMocks(this)</code>&nbsp;in a setup method </li>
-  <li> Annotate test class with&nbsp;<code>@RunWith(MockitoJUnitRunner.class)</code>&nbsp;(JUnit 4) </li>
-  <li> Annotate test class with&nbsp;<code>@ExtendWith(MockitoExtension.class)</code>&nbsp;(JUnit 5 Jupiter) </li>
-  <li> Use&nbsp;<code>@Rule public MockitoRule rule = MockitoJUnit.rule();</code> </li>
+  <li>Call <code>MockitoAnnotations.openMocks(this)</code> or&nbsp;<code>MockitoAnnotations.initMocks(this)</code>&nbsp;in a setup method</li>
+  <li>Annotate test class with&nbsp;<code>@RunWith(MockitoJUnitRunner.class)</code>&nbsp;(JUnit 4)</li>
+  <li>Annotate test class with&nbsp;<code>@ExtendWith(MockitoExtension.class)</code>&nbsp;(JUnit 5 Jupiter)</li>
+  <li>Use&nbsp;<code>@Rule public MockitoRule rule = MockitoJUnit.rule();</code></li>
 </ul>
 <p>Test using uninitialized mocks will fail.</p>
 <p>Note that this only applies to annotated Mockito objects. It is not necessary to initialize objects instantiated via <code>Mockito.mock()</code> or
@@ -92,7 +92,7 @@ public class FooTest {
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://site.mockito.org/javadoc/current/org/mockito/MockitoAnnotations.html">Mockito documentation - MockitoAnnotations</a> </li>
-  <li> <a href="https://site.mockito.org/javadoc/current/org/mockito/junit/MockitoRule.html">Mockito documentation - MockitoRule </a> </li>
+  <li><a href="https://site.mockito.org/javadoc/current/org/mockito/MockitoAnnotations.html">Mockito documentation - MockitoAnnotations</a></li>
+  <li><a href="https://site.mockito.org/javadoc/current/org/mockito/junit/MockitoRule.html">Mockito documentation - MockitoRule </a></li>
 </ul>
 

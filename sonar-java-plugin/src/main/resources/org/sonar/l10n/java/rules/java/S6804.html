@@ -11,10 +11,10 @@ constant that does not depend on the Spring context, making the annotation repla
 the method is called.</p>
 <h2>How to fix it</h2>
 <ul>
-  <li> If a property is to be injected, use <code>${propertyName}</code> instead of <code>propertyName</code>. </li>
-  <li> If a SpEL expression is to be evaluated, use <code>#{expression}</code> instead of <code>expression</code>. </li>
-  <li> If you intend to initialize a field with a simple value or with an expression that does not depend on the Spring context, use a standard field
-  initialization statement. </li>
+  <li>If a property is to be injected, use <code>${propertyName}</code> instead of <code>propertyName</code>.</li>
+  <li>If a SpEL expression is to be evaluated, use <code>#{expression}</code> instead of <code>expression</code>.</li>
+  <li>If you intend to initialize a field with a simple value or with an expression that does not depend on the Spring context, use a standard field
+  initialization statement.</li>
 </ul>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -49,12 +49,12 @@ String greeting = "Hello, world!"; // Compliant
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html">Spring
-  Framework API - Annotation Interface Value</a> </li>
+  <li><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Value.html">Spring
+  Framework API - Annotation Interface Value</a></li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> <a href="https://www.baeldung.com/spring-value-annotation">Baeldung - A Quick Guide to Spring @Value</a> </li>
-  <li> <a href="https://www.digitalocean.com/community/tutorials/spring-value-annotation">DigitalOcean - Spring @Value Annotation</a> </li>
+  <li><a href="https://www.baeldung.com/spring-value-annotation">Baeldung - A Quick Guide to Spring @Value</a></li>
+  <li><a href="https://www.digitalocean.com/community/tutorials/spring-value-annotation">DigitalOcean - Spring @Value Annotation</a></li>
 </ul>
 

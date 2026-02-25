@@ -6,14 +6,14 @@ are singletons by default, meaning only one instance of the class is ever instan
 or <code>@Repository</code>, not annotated with <code>@ConfigurationProperties</code>, has non-<code>static</code> members that are not annotated with
 one of:</p>
 <ul>
-  <li> <code>org.springframework.beans.factory.annotation.Autowired</code> </li>
-  <li> <code>org.springframework.beans.factory.annotation.Value</code> </li>
-  <li> <code>javax.annotation.Inject</code> </li>
-  <li> <code>javax.annotation.Resource</code> </li>
-  <li> <code>javax.persistence.PersistenceContext</code> </li>
-  <li> <code>jakarta.annotation.Resource</code> </li>
-  <li> <code>jakarta.inject.Inject</code> </li>
-  <li> <code>jakarta.persistence.PersistenceContext</code> </li>
+  <li><code>org.springframework.beans.factory.annotation.Autowired</code></li>
+  <li><code>org.springframework.beans.factory.annotation.Value</code></li>
+  <li><code>javax.annotation.Inject</code></li>
+  <li><code>javax.annotation.Resource</code></li>
+  <li><code>javax.persistence.PersistenceContext</code></li>
+  <li><code>jakarta.annotation.Resource</code></li>
+  <li><code>jakarta.inject.Inject</code></li>
+  <li><code>jakarta.persistence.PersistenceContext</code></li>
 </ul>
 <h2>How to fix it</h2>
 <p>Add one of these annotations to all non-<code>static</code> members: <code>@Resource</code>, <code>@Inject</code>, <code>@Autowired</code> or

@@ -6,10 +6,10 @@ will propagate them to the servlet container, where the default error-handling m
 server.</p>
 <p>Possible security problems are:</p>
 <ol>
-  <li> <strong>Vulnerability to denial-of-service attacks:</strong> Not caught exceptions can leave the servlet container in an unstable state, which
-  can exhaust the available resources and make the system unavailable in the worst cases. </li>
-  <li> <strong>Exposure of sensitive information:</strong> Exceptions handled by the servlet container, by default, expose detailed error messages or
-  debugging information to the user, which may contain sensitive data such as stack traces, database connection, or system configuration. </li>
+  <li><strong>Vulnerability to denial-of-service attacks:</strong> Not caught exceptions can leave the servlet container in an unstable state, which
+  can exhaust the available resources and make the system unavailable in the worst cases.</li>
+  <li><strong>Exposure of sensitive information:</strong> Exceptions handled by the servlet container, by default, expose detailed error messages or
+  debugging information to the user, which may contain sensitive data such as stack traces, database connection, or system configuration.</li>
 </ol>
 <p>Unfortunately, servlet method signatures do not force developers to handle <code>IOException</code> and <code>ServletException</code>:</p>
 <pre>
@@ -43,9 +43,9 @@ public void doGet(HttpServletRequest request, HttpServletResponse response) thro
 <h2>Resources</h2>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
-  Exposure</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/600">CWE-600 - Uncaught Exception in Servlet</a> </li>
-  <li> <a href="https://wiki.sei.cmu.edu/confluence/x/-zZGBQ">CERT, ERR01-J.</a> - Do not allow exceptions to expose sensitive information </li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
+  Exposure</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/600">CWE-600 - Uncaught Exception in Servlet</a></li>
+  <li><a href="https://wiki.sei.cmu.edu/confluence/x/-zZGBQ">CERT, ERR01-J.</a> - Do not allow exceptions to expose sensitive information</li>
 </ul>
 

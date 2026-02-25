@@ -2,9 +2,9 @@
 <p>Superfluous exceptions within <code>throws</code> clauses have negative effects on the readability and maintainability of the code. An exception in
 a <code>throws</code> clause is superfluous if it is:</p>
 <ul>
-  <li> listed multiple times </li>
-  <li> a subclass of another listed exception </li>
-  <li> not actually thrown by any execution path of the method </li>
+  <li>listed multiple times</li>
+  <li>a subclass of another listed exception</li>
+  <li>not actually thrown by any execution path of the method</li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -25,11 +25,11 @@ void boo() {
 <h3>Exceptions</h3>
 <p>The rule will not raise any issue for exceptions that cannot be thrown from the method body:</p>
 <ul>
-  <li> in interface <code>default</code> methods </li>
-  <li> in overriding and implementating methods </li>
-  <li> in non-private methods that only <code>throw</code>, have empty bodies, or a single return statement. </li>
-  <li> in overridable methods (non-final, or not member of a final class, non-static, non-private), if the exception is documented with a proper
-  JavaDoc </li>
+  <li>in interface <code>default</code> methods</li>
+  <li>in overriding and implementating methods</li>
+  <li>in non-private methods that only <code>throw</code>, have empty bodies, or a single return statement.</li>
+  <li>in overridable methods (non-final, or not member of a final class, non-static, non-private), if the exception is documented with a proper
+  JavaDoc</li>
 </ul>
 <pre>
 interface MyInterface {

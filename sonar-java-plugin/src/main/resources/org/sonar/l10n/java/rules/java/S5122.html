@@ -1,7 +1,7 @@
 <p>Having a permissive Cross-Origin Resource Sharing policy is security-sensitive. It has led in the past to the following vulnerabilities:</p>
 <ul>
-  <li> <a href="https://www.cve.org/CVERecord?id=CVE-2018-0269">CVE-2018-0269</a> </li>
-  <li> <a href="https://www.cve.org/CVERecord?id=CVE-2017-14460">CVE-2017-14460</a> </li>
+  <li><a href="https://www.cve.org/CVERecord?id=CVE-2018-0269">CVE-2018-0269</a></li>
+  <li><a href="https://www.cve.org/CVERecord?id=CVE-2017-14460">CVE-2017-14460</a></li>
 </ul>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy">Same origin policy</a> in browsers prevents, by default and for
 security-reasons, a javascript frontend to perform a cross-origin HTTP request to a resource that has a different origin (domain, protocol, or port)
@@ -10,17 +10,17 @@ href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">CORS</a>, that act
 / relax the same origin policy.</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> You don’t trust the origin specified, example: <code>Access-Control-Allow-Origin: untrustedwebsite.com</code>. </li>
-  <li> Access control policy is entirely disabled: <code>Access-Control-Allow-Origin: *</code> </li>
-  <li> Your access control policy is dynamically defined by a user-controlled input like <a
-  href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin"><code>origin</code></a> header. </li>
+  <li>You don’t trust the origin specified, example: <code>Access-Control-Allow-Origin: untrustedwebsite.com</code>.</li>
+  <li>Access control policy is entirely disabled: <code>Access-Control-Allow-Origin: *</code></li>
+  <li>Your access control policy is dynamically defined by a user-controlled input like <a
+  href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin"><code>origin</code></a> header.</li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <ul>
-  <li> The <code>Access-Control-Allow-Origin</code> header should be set only for a trusted origin and for specific resources. </li>
-  <li> Allow only selected, trusted domains in the <code>Access-Control-Allow-Origin</code> header. Prefer whitelisting domains over blacklisting or
-  allowing any domain (do not use * wildcard nor blindly return the <code>Origin</code> header content without any checks). </li>
+  <li>The <code>Access-Control-Allow-Origin</code> header should be set only for a trusted origin and for specific resources.</li>
+  <li>Allow only selected, trusted domains in the <code>Access-Control-Allow-Origin</code> header. Prefer whitelisting domains over blacklisting or
+  allowing any domain (do not use * wildcard nor blindly return the <code>Origin</code> header content without any checks).</li>
 </ul>
 <h2>Sensitive Code Example</h2>
 <p>Java servlet framework:</p>
@@ -36,9 +36,8 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
 </pre>
 <p>Spring MVC framework:</p>
 <ul>
-  <li> <a
-  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html">CrossOrigin</a>
-  </li>
+  <li><a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html">CrossOrigin</a></li>
 </ul>
 <pre>
 @CrossOrigin // Sensitive
@@ -51,8 +50,8 @@ public class TestController {
 }
 </pre>
 <ul>
-  <li> <a
-  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/cors/CorsConfiguration.html">cors.CorsConfiguration</a> </li>
+  <li><a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/cors/CorsConfiguration.html">cors.CorsConfiguration</a></li>
 </ul>
 <pre>
 CorsConfiguration config = new CorsConfiguration();
@@ -60,8 +59,8 @@ config.addAllowedOrigin("*"); // Sensitive
 config.applyPermitDefaultValues(); // Sensitive
 </pre>
 <ul>
-  <li> <a
-  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/CorsRegistration.html">servlet.config.annotation.CorsConfiguration</a> </li>
+  <li><a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/CorsRegistration.html">servlet.config.annotation.CorsConfiguration</a></li>
 </ul>
 <pre>
 class Insecure implements WebMvcConfigurer {
@@ -95,9 +94,8 @@ protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws Se
 </pre>
 <p>Spring MVC framework:</p>
 <ul>
-  <li> <a
-  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html">CrossOrigin</a>
-  </li>
+  <li><a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/CrossOrigin.html">CrossOrigin</a></li>
 </ul>
 <pre>
 @CrossOrigin("trustedwebsite.com") // Compliant
@@ -110,16 +108,16 @@ public class TestController {
 }
 </pre>
 <ul>
-  <li> <a
-  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/cors/CorsConfiguration.html">cors.CorsConfiguration</a> </li>
+  <li><a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/cors/CorsConfiguration.html">cors.CorsConfiguration</a></li>
 </ul>
 <pre>
 CorsConfiguration config = new CorsConfiguration();
 config.addAllowedOrigin("http://domain2.com"); // Compliant
 </pre>
 <ul>
-  <li> <a
-  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/CorsRegistration.html">servlet.config.annotation.CorsConfiguration</a> </li>
+  <li><a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/CorsRegistration.html">servlet.config.annotation.CorsConfiguration</a></li>
 </ul>
 <pre>
 class Safe implements WebMvcConfigurer {
@@ -143,16 +141,16 @@ public ResponseEntity&lt;String&gt; userControlledOrigin(@RequestHeader("Origin"
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a> </li>
-  <li> OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
-  Authentication Failures</a> </li>
-  <li> <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">developer.mozilla.org</a> - CORS </li>
-  <li> <a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy">developer.mozilla.org</a> - Same origin policy </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
-  Misconfiguration</a> </li>
-  <li> <a href="https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html#cross-origin-resource-sharing">OWASP HTML5 Security
-  Cheat Sheet</a> - Cross Origin Resource Sharing </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/346">CWE-346 - Origin Validation Error</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/942">CWE-942 - Overly Permissive Cross-domain Whitelist</a> </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a></li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
+  Authentication Failures</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">developer.mozilla.org</a> - CORS</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy">developer.mozilla.org</a> - Same origin policy</li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
+  Misconfiguration</a></li>
+  <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html#cross-origin-resource-sharing">OWASP HTML5 Security
+  Cheat Sheet</a> - Cross Origin Resource Sharing</li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/346">CWE-346 - Origin Validation Error</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/942">CWE-942 - Overly Permissive Cross-domain Whitelist</a></li>
 </ul>
 

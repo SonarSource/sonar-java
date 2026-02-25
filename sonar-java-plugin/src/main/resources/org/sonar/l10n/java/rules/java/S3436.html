@@ -9,8 +9,8 @@
 <blockquote>
   <p>Instances of a value-based class …​</p>
   <ul>
-    <li> do not have accessible constructors, but are instead instantiated through factory methods which make no commitment as to the identity of
-    returned instances; </li>
+    <li>do not have accessible constructors, but are instead instantiated through factory methods which make no commitment as to the identity of
+    returned instances;</li>
   </ul>
 </blockquote>
 <p>This means that you can’t be sure you’re the only one trying to lock on any given instance of a value-based class, opening your code up to
@@ -30,6 +30,6 @@ synchronized (fOpt) {  // Noncompliant
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/doc-files/ValueBased.html">Value-based classes</a> </li>
+  <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/doc-files/ValueBased.html">Value-based classes</a></li>
 </ul>
 
