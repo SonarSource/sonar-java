@@ -1,5 +1,8 @@
 package checks.UselessImportCheck;
 
+import module java.logging;
+import module java.logging; // Noncompliant {{Remove this duplicated import.}}
+
 import a.b.c.Foo;
 import a.b.c.Bar;
 import a.b.c.Baz;
@@ -52,6 +55,14 @@ import static checks.UselessImportCheck.Foo2.A.BAR; // Noncompliant
 import static checks.UselessImportCheck.Foo2.A.FLUP; // compliant, used outside of owning class
 import static checks.UselessImportCheck.Foo2.A.qix; // Noncompliant
 
+
+class Logging {
+  private static final Logger LOGGER = Logger.getLogger("FileLogger");
+
+  public static void log(String message) {
+    LOGGER.info(message);
+  }
+}
 
 /**
  * @see {@link ReferencedFromJavadoc}
