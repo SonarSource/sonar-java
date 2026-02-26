@@ -6,27 +6,39 @@ to read, understand, test, and modify.</p>
 <h3>Which syntax in code does impact cognitive complexity score?</h3>
 <p>Here are the core concepts:</p>
 <ul>
-  <li> <strong>Cognitive complexity is incremented each time the code breaks the normal linear reading flow.</strong><br> This concerns, for example,
-  loop structures, conditionals, catches, switches, jumps to labels, and conditions mixing multiple operators. </li>
-  <li> <strong>Each nesting level increases complexity.</strong><br> During code reading, the deeper you go through nested layers, the harder it
-  becomes to keep the context in mind. </li>
-  <li> <strong>Method calls are free</strong><br> A well-picked method name is a summary of multiple lines of code. A reader can first explore a
-  high-level view of what the code is performing then go deeper and deeper by looking at called functions content.<br> <em>Note:</em> This does not
-  apply to recursive calls, those will increment cognitive score. </li>
+  <li><strong>Cognitive complexity is incremented each time the code breaks the normal linear reading flow.</strong>
+    <br>
+    This concerns, for example, loop structures, conditionals, catches, switches, jumps to labels, and conditions mixing multiple operators.</li>
+  <li><strong>Each nesting level increases complexity.</strong>
+    <br>
+    During code reading, the deeper you go through nested layers, the harder it becomes to keep the context in mind.</li>
+  <li><strong>Method calls are free</strong>
+    <br>
+    A well-picked method name is a summary of multiple lines of code. A reader can first explore a high-level view of what the code is performing then
+    go deeper and deeper by looking at called functions content.
+    <br>
+    <em>Note:</em> This does not apply to recursive calls, those will increment cognitive score.</li>
 </ul>
 <p>The method of computation is fully detailed in the pdf linked in the resources.</p>
 <h3>Exceptions</h3>
 <p><code>equals</code> and <code>hashCode</code> methods are ignored because they might be automatically generated and might end up being difficult to
 understand, especially in the presence of many fields.</p>
 <h2>How to fix it</h2>
-<p>Reducing cognitive complexity can be challenging.<br> Here are a few suggestions:</p>
+<p>Reducing cognitive complexity can be challenging.
+  <br>
+  Here are a few suggestions:</p>
 <ul>
-  <li> <strong>Extract complex conditions in a new function.</strong><br> Mixed operators in condition will increase complexity. Extracting the
-  condition in a new function with an appropriate name will reduce cognitive load. </li>
-  <li> <strong>Break down large functions.</strong><br> Large functions can be hard to understand and maintain. If a function is doing too many
-  things, consider breaking it down into smaller, more manageable functions. Each function should have a single responsibility. </li>
-  <li> <strong>Avoid deep nesting by returning early.</strong><br> To avoid the nesting of conditions, process exceptional cases first and return
-  early. </li>
+  <li><strong>Extract complex conditions in a new function.</strong>
+    <br>
+    Mixed operators in condition will increase complexity. Extracting the condition in a new function with an appropriate name will reduce cognitive
+    load.</li>
+  <li><strong>Break down large functions.</strong>
+    <br>
+    Large functions can be hard to understand and maintain. If a function is doing too many things, consider breaking it down into smaller, more
+    manageable functions. Each function should have a single responsibility.</li>
+  <li><strong>Avoid deep nesting by returning early.</strong>
+    <br>
+    To avoid the nesting of conditions, process exceptional cases first and return early.</li>
 </ul>
 <h3>Code examples</h3>
 <p><strong>Extraction of a complex condition in a new function.</strong></p>
@@ -67,8 +79,9 @@ boolean isEligibleForDiscount(User user) {
 </pre>
 <p><strong>Break down large functions.</strong></p>
 <h4>Noncompliant code example</h4>
-<p>For example, consider a function that calculates the total price of a shopping cart, including sales tax and shipping.<br> <em>Note:</em> The code
-is simplified here, to illustrate the purpose. Please imagine there is more happening in the <code>for</code> loops.</p>
+<p>For example, consider a function that calculates the total price of a shopping cart, including sales tax and shipping.
+  <br>
+  <em>Note:</em> The code is simplified here, to illustrate the purpose. Please imagine there is more happening in the <code>for</code> loops.</p>
 <pre data-diff-id="2" data-diff-type="noncompliant">
 double calculateTotal(Cart cart) {
   double total = 0;
@@ -158,11 +171,11 @@ double calculateDiscount(double price, User user) {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> Sonar - <a href="https://www.sonarsource.com/docs/CognitiveComplexity.pdf">Cognitive Complexity</a> </li>
+  <li>Sonar - <a href="https://www.sonarsource.com/docs/CognitiveComplexity.pdf">Cognitive Complexity</a></li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li> Sonar Blog - <a href="https://www.sonarsource.com/blog/5-clean-code-tips-for-reducing-cognitive-complexity/">5 Clean Code Tips for Reducing
-  Cognitive Complexity</a> </li>
+  <li>Sonar Blog - <a href="https://www.sonarsource.com/blog/5-clean-code-tips-for-reducing-cognitive-complexity/">5 Clean Code Tips for Reducing
+  Cognitive Complexity</a></li>
 </ul>
 

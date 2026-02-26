@@ -7,23 +7,23 @@ possible to guess whether the username or password was incorrect during the auth
 amount of valid usernames that will impact the privacy of corresponding users and facilitate other attacks (phishing, password guessing etc …​).</p>
 <h2>Ask Yourself Whether</h2>
 <ul>
-  <li> The application discloses that a username exists in its database: most of the time it’s possible to avoid this kind of leak except for the
-  "registration/sign-on" part of a website because in this case the user must choose a valid username (not already taken by another user). </li>
-  <li> There is no rate limiting and CAPTCHA protection in place for requests involving a username. </li>
+  <li>The application discloses that a username exists in its database: most of the time it’s possible to avoid this kind of leak except for the
+  "registration/sign-on" part of a website because in this case the user must choose a valid username (not already taken by another user).</li>
+  <li>There is no rate limiting and CAPTCHA protection in place for requests involving a username.</li>
 </ul>
 <p>There is a risk if you answered yes to any of those questions.</p>
 <h2>Recommended Secure Coding Practices</h2>
 <p>When a user performs a request involving a username, it should not be possible to spot differences between a valid and incorrect username:</p>
 <ul>
-  <li> Error messages should be generic and not disclose if the username is valid or not. </li>
-  <li> The response time must be similar for a valid username or not. </li>
-  <li> CAPTCHA and other rate limiting solutions should be implemented. </li>
+  <li>Error messages should be generic and not disclose if the username is valid or not.</li>
+  <li>The response time must be similar for a valid username or not.</li>
+  <li>CAPTCHA and other rate limiting solutions should be implemented.</li>
 </ul>
 <h2>Sensitive Code Example</h2>
 <p>In a Spring-security web application the username leaks when:</p>
 <ul>
-  <li> The string used as argument of <a
-  href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/userdetails/UserDetailsService.html">loadUserByUsername</a> method is used in an exception message: </li>
+  <li>The string used as argument of <a
+  href="https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/core/userdetails/UserDetailsService.html">loadUserByUsername</a> method is used in an exception message:</li>
 </ul>
 <pre>
 public String authenticate(String username, String password) {
@@ -38,8 +38,8 @@ public String authenticate(String username, String password) {
 }
 </pre>
 <ul>
-  <li> <a
-  href="https://docs.spring.io/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/core/userdetails/UsernameNotFoundException.html">UsernameNotFoundException</a> is thrown (except when it is in the loadUserByUsername method): </li>
+  <li><a
+  href="https://docs.spring.io/spring-security/site/docs/3.0.x/apidocs/org/springframework/security/core/userdetails/UsernameNotFoundException.html">UsernameNotFoundException</a> is thrown (except when it is in the loadUserByUsername method):</li>
 </ul>
 <pre>
 public String authenticate(String username, String password) {
@@ -51,8 +51,8 @@ public String authenticate(String username, String password) {
 }
 </pre>
 <ul>
-  <li> <a
-  href="https://docs.spring.io/spring-security/site/docs/4.0.x/apidocs/org/springframework/security/authentication/dao/AbstractUserDetailsAuthenticationProvider.html#setHideUserNotFoundExceptions-boolean-">HideUserNotFoundExceptions</a> is set to false: </li>
+  <li><a
+  href="https://docs.spring.io/spring-security/site/docs/4.0.x/apidocs/org/springframework/security/authentication/dao/AbstractUserDetailsAuthenticationProvider.html#setHideUserNotFoundExceptions-boolean-">HideUserNotFoundExceptions</a> is set to false:</li>
 </ul>
 <pre>
 DaoAuthenticationProvider daoauth = new DaoAuthenticationProvider();
@@ -64,7 +64,7 @@ builder.authenticationProvider(daoauth);
 <h2>Compliant Solution</h2>
 <p>In a Spring-security web application:</p>
 <ul>
-  <li> the same message should be used regardless of whether it is the wrong user or password: </li>
+  <li>the same message should be used regardless of whether it is the wrong user or password:</li>
 </ul>
 <pre>
 public String authenticate(String username, String password) throws AuthenticationException {
@@ -81,8 +81,8 @@ public String authenticate(String username, String password) throws Authenticati
 }
 </pre>
 <ul>
-  <li> <a
-  href="https://docs.spring.io/spring-security/site/docs/4.0.x/apidocs/org/springframework/security/authentication/dao/AbstractUserDetailsAuthenticationProvider.html#setHideUserNotFoundExceptions-boolean-">HideUserNotFoundExceptions</a> should be set to true: </li>
+  <li><a
+  href="https://docs.spring.io/spring-security/site/docs/4.0.x/apidocs/org/springframework/security/authentication/dao/AbstractUserDetailsAuthenticationProvider.html#setHideUserNotFoundExceptions-boolean-">HideUserNotFoundExceptions</a> should be set to true:</li>
 </ul>
 <pre>
 DaoAuthenticationProvider daoauth = new DaoAuthenticationProvider();
@@ -93,9 +93,9 @@ builder.authenticationProvider(daoauth);
 </pre>
 <h2>See</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">Top 10 2017 Category A2 - Broken Authentication</a>
-  </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/200">CWE-200 - Exposure of Sensitive Information to an Unauthorized Actor</a> </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">Top 10 2017 Category A2 - Broken
+  Authentication</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/200">CWE-200 - Exposure of Sensitive Information to an Unauthorized Actor</a></li>
 </ul>
 

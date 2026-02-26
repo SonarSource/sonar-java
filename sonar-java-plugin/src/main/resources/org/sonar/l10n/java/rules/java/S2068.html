@@ -5,8 +5,8 @@ open-source applications. This practice exposes your application to significant 
 strings, and for variable names that match any of the patterns from the provided list.</p>
 <p>In the past, it has led to the following vulnerabilities:</p>
 <ul>
-  <li> <a href="https://www.cve.org/CVERecord?id=CVE-2019-13466">CVE-2019-13466</a> </li>
-  <li> <a href="https://www.cve.org/CVERecord?id=CVE-2018-15389">CVE-2018-15389</a> </li>
+  <li><a href="https://www.cve.org/CVERecord?id=CVE-2019-13466">CVE-2019-13466</a></li>
+  <li><a href="https://www.cve.org/CVERecord?id=CVE-2018-15389">CVE-2018-15389</a></li>
 </ul>
 <h2>How to fix it</h2>
 <p>Credentials should be stored in a configuration file that is not committed to the code repository, in a database, or managed by your cloud
@@ -28,12 +28,12 @@ Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/test?" +
 </pre>
 <h2>Resources</h2>
 <ul>
-  <li> OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
-  Authentication Failures</a> </li>
-  <li> OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">Top 10 2017 Category A2 - Broken Authentication</a>
-  </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/798">CWE-798 - Use of Hard-coded Credentials</a> </li>
-  <li> CWE - <a href="https://cwe.mitre.org/data/definitions/259">CWE-259 - Use of Hard-coded Password</a> </li>
-  <li> Derived from FindSecBugs rule <a href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#HARD_CODE_PASSWORD">Hard Coded Password</a> </li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
+  Authentication Failures</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication">Top 10 2017 Category A2 - Broken
+  Authentication</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/798">CWE-798 - Use of Hard-coded Credentials</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/259">CWE-259 - Use of Hard-coded Password</a></li>
+  <li>Derived from FindSecBugs rule <a href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#HARD_CODE_PASSWORD">Hard Coded Password</a></li>
 </ul>
 

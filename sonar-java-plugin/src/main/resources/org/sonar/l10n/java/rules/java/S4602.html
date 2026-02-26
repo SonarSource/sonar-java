@@ -7,9 +7,9 @@ is used on a class belonging to the default package, the entire classpath will b
 <code>BeanDefinitionStoreException</code> because you ended up scanning the Spring Framework package itself.</p>
 <p>This rule raises an issue when:</p>
 <ul>
-  <li> <code>@ComponentScan</code>, <code>@SpringBootApplication</code> and <code>@ServletComponentScan</code> are used on a class belonging to the
-  default package </li>
-  <li> <code>@ComponentScan</code> is explicitly configured with the default package </li>
+  <li><code>@ComponentScan</code>, <code>@SpringBootApplication</code> and <code>@ServletComponentScan</code> are used on a class belonging to the
+  default package</li>
+  <li><code>@ComponentScan</code> is explicitly configured with the default package</li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre>

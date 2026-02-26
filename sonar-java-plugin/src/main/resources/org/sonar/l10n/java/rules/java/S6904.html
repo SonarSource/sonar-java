@@ -2,8 +2,8 @@
 (relationships) between entities in a relational database.</p>
 <p>There are two main values for FetchType:</p>
 <ul>
-  <li> <code>FetchType.EAGER</code>: the association is loaded immediately when the owning entity is loaded. </li>
-  <li> <code>FetchType.LAZY</code>: the association is not loaded unless it is explicitly accessed. </li>
+  <li><code>FetchType.EAGER</code>: the association is loaded immediately when the owning entity is loaded.</li>
+  <li><code>FetchType.LAZY</code>: the association is not loaded unless it is explicitly accessed.</li>
 </ul>
 <p>This rule raises an issue when the <code>fetch</code> argument is explicitly set to <code>FetchType.EAGER</code>.</p>
 <h2>Why is this an issue?</h2>
@@ -31,6 +31,6 @@ private List&lt;ParentEntity&gt; parents;
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://docs.oracle.com/javaee/7/api/javax/persistence/FetchType.html">Java EE 7 API - FetchType</a> </li>
+  <li><a href="https://docs.oracle.com/javaee/7/api/javax/persistence/FetchType.html">Java EE 7 API - FetchType</a></li>
 </ul>
 
