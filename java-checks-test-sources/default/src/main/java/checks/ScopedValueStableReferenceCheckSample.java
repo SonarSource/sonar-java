@@ -28,6 +28,9 @@ class ScopedValueStableReferenceCheckSample {
 //                     ^^^^^^^^^^^^^^^^^^^^^^^^^
     ScopedValue.where(Pair.of(ScopedValue.newInstance(), 0).getLeft(), "scopedValue").run(() -> {}); // Noncompliant {{Consider using a stable reference for ScopedValue instances.}}
 //                            ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ScopedValue<String> scopedValue;
+    ScopedValue.where(Pair.of((scopedValue = ScopedValue.newInstance()), ScopedValue.newInstance()).getLeft(), "scopedValue").run(scopedValue::get); // Noncompliant {{Consider using a stable reference for ScopedValue instances.}}
+//                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   public String readFieldInWhere() {
@@ -37,6 +40,11 @@ class ScopedValueStableReferenceCheckSample {
   public String readLocalVarInWhere() {
     ScopedValue<String> value = ScopedValue.newInstance();
     return ScopedValue.where(value, "local value").call(value::get); // Compliant
+  }
+
+  public String assignLocalVarInWhere() {
+    ScopedValue<String> value;
+    return ScopedValue.where((value = ScopedValue.newInstance()), "local value").call(value::get); // Compliant
   }
 
 }

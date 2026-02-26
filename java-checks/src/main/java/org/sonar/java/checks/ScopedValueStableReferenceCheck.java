@@ -24,6 +24,7 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S8465")
 public class ScopedValueStableReferenceCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
@@ -66,7 +67,7 @@ public class ScopedValueStableReferenceCheck extends AbstractMethodDetection imp
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (NEW_INSTANCE_MATCHER.matches(tree.methodSymbol())) {
+      if (NEW_INSTANCE_MATCHER.matches(tree.methodSymbol()) && !tree.parent().is(Tree.Kind.ASSIGNMENT)) {
         invocation = tree;
         return;
       }
