@@ -16,26 +16,38 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.jupiter.api.Test;
+import java.util.stream.Stream;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class MultipleMainInstancesCheckTest {
 
-  @Test
-  void test() {
+  static Stream<String> testSamples() {
+    return Stream.of(
+      mainCodeSourcesPath("checks/MultipleMainInstancesSample.java"),
+      nonCompilingTestSourcesPath("checks/MultipleMainInstancesNonCompilingSample.java")
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("testSamples")
+  void test(String file) {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MultipleMainInstancesSample.java"))
+      .onFile(file)
       .withCheck(new MultipleMainInstancesCheck())
       .withJavaVersion(25)
       .verifyIssues();
   }
 
-  @Test
-  void test_java_24() {
+  @ParameterizedTest
+  @MethodSource("testSamples")
+  void test_java_24(String file) {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MultipleMainInstancesSample.java"))
+      .onFile(file)
       .withCheck(new MultipleMainInstancesCheck())
       .withJavaVersion(24)
       .verifyNoIssues();

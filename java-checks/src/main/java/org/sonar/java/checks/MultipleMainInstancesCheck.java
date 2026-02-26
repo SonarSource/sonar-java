@@ -82,6 +82,9 @@ public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor impl
     var superClass = ct.superClass();
     while (superClass != null) {
       var superClassTree = superClass.symbolType().symbol().declaration();
+      if (superClassTree == null) {
+        break;
+      }
       findMainMethodsInMembers(superClassTree)
         .forEach(mains::add);
       superClass = superClassTree.superClass();
