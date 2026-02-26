@@ -2,6 +2,8 @@ package checks;
 
 public class ReadlnWithPromptCheckSample {
 
+  private static final String text = IO.readln("Enter your name: "); // Compliant
+
   void nonCompliant() {
     IO.print("Enter your name: ");
     String name = IO.readln(); // Noncompliant {{Use "IO.readln(prompt)" instead of separate "IO.print(prompt)" and "IO.readln()" calls.}}
