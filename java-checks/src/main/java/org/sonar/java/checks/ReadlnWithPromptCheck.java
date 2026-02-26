@@ -58,10 +58,6 @@ public class ReadlnWithPromptCheck extends AbstractMethodDetection implements Ja
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     Tree parent = mit.parent();
-    if (parent == null) {
-      return;
-    }
-
     Tree grandParent = parent.parent();
     if (grandParent == null || !grandParent.is(Tree.Kind.BLOCK)) {
       return;
