@@ -19,14 +19,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class MultipleMainInstancesCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MultipleMainInstancesSample.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/MultipleMainInstancesSample.java"))
       .withCheck(new MultipleMainInstancesCheck())
       .withJavaVersion(25)
       .verifyIssues();
@@ -35,7 +35,7 @@ class MultipleMainInstancesCheckTest {
   @Test
   void test_java_24() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/MultipleMainInstancesSample.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/MultipleMainInstancesSample.java"))
       .withCheck(new MultipleMainInstancesCheck())
       .withJavaVersion(24)
       .verifyNoIssues();
