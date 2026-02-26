@@ -1,5 +1,5 @@
 {
-  "title": "Import declarations should be grouped by specificity",
+  "title": "Module imports should come first and imports should be grouped by kind",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -14,7 +14,7 @@
   "ruleSpecification": "RSPEC-8445",
   "sqKey": "S8445",
   "scope": "All",
-  "quickfix": "targeted",
+  "quickfix": "covered",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "LOW"

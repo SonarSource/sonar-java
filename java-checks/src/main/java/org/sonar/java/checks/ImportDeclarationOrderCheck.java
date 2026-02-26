@@ -20,20 +20,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S8445")
-public class ImportDeclarationOrderCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
-
-  @Override
-  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.isJava25Compatible();
-  }
+public class ImportDeclarationOrderCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -44,75 +43,170 @@ public class ImportDeclarationOrderCheck extends IssuableSubscriptionVisitor imp
   public void visitNode(Tree tree) {
     CompilationUnitTree compilationUnit = (CompilationUnitTree) tree;
 
-    List<ImportTree> imports = new ArrayList<>();
-    // Collect all import statements
-    compilationUnit.imports()
+    List<ImportTree> imports = compilationUnit.imports()
       .stream()
       .filter(importTree -> importTree.is(Tree.Kind.IMPORT))
       .map(ImportTree.class::cast)
-      .forEach(imports::add);
+      .toList();
 
     analyzeImportOrder(imports);
   }
 
   private void analyzeImportOrder(List<ImportTree> imports) {
-    if (imports.size() <= 1) {
+    // if we don't have any module import declarations, we don't raise the issue
+    if (imports.stream().noneMatch(ImportTree::isModule)) {
       return;
     }
 
-    ImportType previousType = ImportType.SENTINEL_IMPORT;
+    if (hasProblematicImport(imports)) {
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(imports.get(0))
+        .withMessage("Import declarations should be organized with module imports first, followed by grouped regular imports and grouped static imports.")
+        .withQuickFix(() -> createQuickFix(imports))
+        .report();
+    }
+  }
+
+  private static JavaQuickFix createQuickFix(List<ImportTree> imports) {
+    // Separate imports by type and determine order
+    List<ImportTree> moduleImports = new ArrayList<>();
+    List<ImportTree> regularImports = new ArrayList<>();
+    List<ImportTree> staticImports = new ArrayList<>();
+    boolean regularFirst = true;
+    boolean orderDetermined = false;
+
     for (ImportTree importTree : imports) {
-      ImportType currentType = classifyImport(importTree);
-
-      if (currentType.ordinal() < previousType.ordinal()) {
-        String message = buildMessage(currentType, previousType);
-        reportIssue(importTree.qualifiedIdentifier(), message);
+      ImportType type = ImportType.fromTree(importTree);
+      switch (type) {
+        case MODULE:
+          moduleImports.add(importTree);
+          break;
+        case REGULAR:
+          regularImports.add(importTree);
+          orderDetermined = true;
+          break;
+        case STATIC:
+          staticImports.add(importTree);
+          if (!orderDetermined) {
+            regularFirst = false;
+            orderDetermined = true;
+          }
+          break;
       }
+    }
 
-      previousType = currentType;
+    // Build the reorganized import section
+    String reorganized = buildReorganizedImports(moduleImports, regularImports, staticImports, regularFirst);
+
+    // Create text edit to replace the entire import section
+    ImportTree firstImport = imports.get(0);
+    ImportTree lastImport = imports.get(imports.size() - 1);
+
+    return JavaQuickFix.newQuickFix("Reorganize imports")
+      .addTextEdit(JavaTextEdit.replaceBetweenTree(firstImport, lastImport, reorganized))
+      .build();
+  }
+
+  private static String buildReorganizedImports(List<ImportTree> moduleImports, List<ImportTree> regularImports,
+                                                 List<ImportTree> staticImports, boolean regularFirst) {
+    StringBuilder reorganized = new StringBuilder();
+
+    // Add module imports first
+    for (ImportTree importTree : moduleImports) {
+      reorganized.append(getImportText(importTree)).append("\n");
+    }
+    reorganized.append("\n");
+    // Add regular and static imports in the determined order
+    if (regularFirst) {
+      appendImportGroup(reorganized, regularImports, !staticImports.isEmpty());
+      appendImportGroup(reorganized, staticImports, false);
+    } else {
+      appendImportGroup(reorganized, staticImports, !regularImports.isEmpty());
+      appendImportGroup(reorganized, regularImports, false);
+    }
+
+    return reorganized.toString().trim();
+  }
+
+  private static void appendImportGroup(StringBuilder builder, List<ImportTree> imports, boolean addBlankLineAfter) {
+    for (ImportTree importTree : imports) {
+      builder.append(getImportText(importTree)).append("\n");
+    }
+    if (addBlankLineAfter) {
+      builder.append("\n");
     }
   }
 
-  private static String buildMessage(ImportType currentType, ImportType previousType) {
-    return String.format("Reorder this %s import to come before %s imports.",
-      currentType.getDescription(),
-      previousType.getDescription());
-  }
-
-  private static ImportType classifyImport(ImportTree importTree) {
-    boolean isWildcard = isWildcardImport(importTree);
-
+  private static String getImportText(ImportTree importTree) {
+    // Build the import statement from the tree structure
+    StringBuilder sb = new StringBuilder("import ");
     if (importTree.isModule()) {
-      return ImportType.MODULE_IMPORT;
+      sb.append("module ");
+    } else if (importTree.isStatic()) {
+      sb.append("static ");
     }
-
-    if (importTree.isStatic()) {
-      return isWildcard ? ImportType.STATIC_PACKAGE_IMPORT : ImportType.STATIC_SINGLE_TYPE_IMPORT;
-    }
-
-    return isWildcard ? ImportType.PACKAGE_IMPORT : ImportType.SINGLE_TYPE_IMPORT;
+    sb.append(ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier())).append(";");
+    return sb.toString();
   }
 
-  private static boolean isWildcardImport(ImportTree importTree) {
-    return "*".equals(importTree.qualifiedIdentifier().lastToken().text());
+  /**
+   * Checks if there is an import that violates the grouping rules.
+   * Returns false if all imports are properly organized.
+   */
+  @VisibleForTesting
+  static boolean hasProblematicImport(List<ImportTree> imports) {
+    boolean seenRegular = false;
+    boolean seenStatic = false;
+    boolean seenStaticAfterRegular = false;
+    boolean seenRegularAfterStatic = false;
+
+    for (ImportTree importTree : imports) {
+      ImportType type = ImportType.fromTree(importTree);
+      switch (type) {
+        case MODULE:
+          if (seenRegular || seenStatic) {
+            return true;
+          }
+
+          break;
+
+        case REGULAR:
+          if (seenStaticAfterRegular) {
+            //regular -> static -> regular
+            return true;
+          }
+
+          seenRegular = true;
+          seenRegularAfterStatic |= seenStatic;
+          break;
+
+        case STATIC:
+          if (seenRegularAfterStatic) {
+            //static -> regular -> static
+            return true;
+          }
+
+          seenStatic = true;
+          seenStaticAfterRegular |= seenRegular;
+          break;
+      }
+    }
+
+    return false;
   }
 
   enum ImportType {
-    SENTINEL_IMPORT("sentinel"),
-    MODULE_IMPORT("module"),
-    PACKAGE_IMPORT("on-demand package"),
-    SINGLE_TYPE_IMPORT("single-type"),
-    STATIC_PACKAGE_IMPORT("static on-demand package"),
-    STATIC_SINGLE_TYPE_IMPORT("static single-type");
+    MODULE, REGULAR, STATIC;
 
-    private final String description;
-
-    ImportType(String description) {
-      this.description = description;
-    }
-
-    public String getDescription() {
-      return description;
+    static ImportType fromTree(ImportTree importTree) {
+      if (importTree.isModule()) {
+        return MODULE;
+      } else if (importTree.isStatic()) {
+        return STATIC;
+      } else {
+        return REGULAR;
+      }
     }
   }
 }

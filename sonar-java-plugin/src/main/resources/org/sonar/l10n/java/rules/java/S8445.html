@@ -1,21 +1,33 @@
-<p>This rule raises an issue when import declarations are not organized into distinct groups based on their kind and specificity level.</p>
+<p>This rule raises an issue when module imports are present but not placed first, or when regular imports and static imports are not properly grouped
+together in files that contain module imports.</p>
 <h2>Why is this an issue?</h2>
-<p>Import declarations should be organized into distinct groups based on their kind to improve readability and make shadowing behavior explicit. The
-grouping order should reflect specificity levels: module imports first (least specific), followed by on-demand package imports (intermediate
-specificity), single-type imports (most specific), then static on-demand imports, and finally single-static imports.</p>
-<p>When imports are mixed or ordered arbitrarily, it becomes harder to understand which declarations might shadow others. Java’s import shadowing
-rules mean that more specific imports can override less specific ones, so organizing imports by specificity makes these relationships clearer and
-improves code maintainability by providing a consistent, predictable structure.</p>
+<p>With the introduction of module imports in Java 25 (JEP 511), it’s important to organize import declarations to improve readability and make
+shadowing behavior explicit when module imports are used. Module imports should come first as they are the least specific and can be shadowed by more
+specific package and type imports.</p>
+<p>When a file contains module imports, regular imports and static imports should each be grouped together, though the relative order within and
+between these groups is flexible. This allows code to follow various established style guides (such as the Google Java Style Guide) while still
+maintaining basic organization that makes import shadowing behavior clear.</p>
+<table>
+  <tbody>
+    <tr>
+      <td>Note</td>
+      <td>This rule only applies to files that contain at least one module import declaration. Files without module imports are not affected by this
+      rule.</td>
+    </tr>
+  </tbody>
+</table>
 <h2>How to fix it</h2>
-<p>Organize import declarations into the following groups, in this order:</p>
+<p>When your code contains module imports, organize import declarations with the following requirements:</p>
 <ol>
-  <li>Module imports (e.g., <code>import module java.base;</code>)</li>
-  <li>On-demand package imports (e.g., <code>import javax.swing.text.*;</code>)</li>
-  <li>Single-type imports (e.g., <code>import java.util.List;</code>)</li>
-  <li>Static on-demand imports (e.g., <code>import static java.util.Collections.*;</code>)</li>
-  <li>Single-static imports (e.g., <code>import static java.util.regex.Pattern.compile;</code>)</li>
+  <li><strong>Module imports must come first</strong> (e.g., <code>import module java.base;</code>)</li>
+  <li><strong>Regular imports should be grouped together</strong> (both wildcard like <code>import javax.swing.text.*;</code> and specific like
+  <code>import java.util.List;</code>)</li>
+  <li><strong>Static imports should be grouped together</strong> (both wildcard like <code>import static java.util.Collections.*;</code> and specific
+  like <code>import static java.util.regex.Pattern.compile;</code>)</li>
 </ol>
-<p>Separate each group with a blank line for better visual organization.</p>
+<p>The relative order between regular and static import groups is flexible, as is the ordering within each group. This allows compliance with various
+style guides while maintaining clear organization.</p>
+<p>If your code does not use module imports, this rule does not apply.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -33,21 +45,17 @@ class Foo {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
-// Module imports
+// Module imports must come first
 import module java.base;
 import module java.desktop;
 
-// On-demand package imports
-import javax.swing.text.*; // resolves the ambiguity of the simple name Element
-
-// Single-type imports
-import java.sql.Date; // resolves the ambiguity of the simple name Date
+// Regular imports grouped together
+import java.sql.Date;
+import javax.swing.text.*;
 import java.util.List;
 
-// Static on-demand imports
+// Static imports grouped together
 import static java.util.Collections.*;
-
-// Single-static imports
 import static java.util.regex.Pattern.compile;
 
 class Foo {
