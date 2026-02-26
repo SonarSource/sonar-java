@@ -1,6 +1,6 @@
 /*
  * SonarQube Java
- * Copyright (C) 2024-2025 SonarSource SA
+ * Copyright (C) 2024-2025 SonarSource Sàrl
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -66,7 +66,7 @@ public class QuickFixesResolver {
     SonarComponents sonarComponents = sonarComponents();
     VisitorsBridgeForQuickFixes visitorsBridge = new VisitorsBridgeForQuickFixes(visitors, DEFAULT_CLASSPATH, sonarComponents, new JavaVersionImpl(22));
 
-    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents);
+    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents, null, null);
     astScanner.setVisitorBridge(visitorsBridge);
 
     astScanner.scan(files);
