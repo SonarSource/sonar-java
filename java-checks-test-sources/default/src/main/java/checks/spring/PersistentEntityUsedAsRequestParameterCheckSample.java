@@ -48,6 +48,20 @@ class PersistentEntityUsedAsRequestParameterCheckSample {
   public class Baz {
   }
 
+  @jakarta.persistence.Entity
+  public class JakartaFoo {
+    private Long id;
+
+    public void setId(Long id) {
+      this.id = id;
+    }
+
+    @jakarta.persistence.Id
+    public Long getId() {
+      return id;
+    }
+  }
+
   @Controller
   class FooController {
 
@@ -105,6 +119,18 @@ class PersistentEntityUsedAsRequestParameterCheckSample {
       String x,
       Foo foo, // Noncompliant
       Doc doc) { // Noncompliant
+    }
+
+    @PostMapping
+    public void jakartaFoo1(JakartaFoo jakartaFoo) { // Noncompliant
+    }
+
+    @GetMapping
+    public void jakartaFoo2(JakartaFoo jakartaFoo) { // Noncompliant
+    }
+
+    @PostMapping
+    public void jakartaFoo3(@PathVariable("id") final JakartaFoo jakartaFoo) { // Compliant
     }
 
     @PostMapping
