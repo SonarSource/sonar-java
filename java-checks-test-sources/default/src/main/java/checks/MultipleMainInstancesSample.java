@@ -168,7 +168,6 @@ public class MultipleMainInstancesSample {
       }
     }
   }
-
 }
 
 // test implicit class

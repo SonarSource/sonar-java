@@ -26,7 +26,7 @@ import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPa
 class MultipleMainInstancesCheckTest {
   private static final List<String> TEST_SOURCES = List.of(
     mainCodeSourcesPath("checks/MultipleMainInstancesSample.java"),
-    nonCompilingTestSourcesPath("checks/MultipleMainInstancesSample.java")
+    nonCompilingTestSourcesPath("checks/MultipleMainInstancesNonCompilingSample.java")
   );
 
   @Test
@@ -44,7 +44,7 @@ class MultipleMainInstancesCheckTest {
   void test_java_24() {
     TEST_SOURCES.forEach(file ->
       CheckVerifier.newVerifier()
-        .onFile(nonCompilingTestSourcesPath("checks/MultipleMainInstancesSample.java"))
+        .onFile(file)
         .withCheck(new MultipleMainInstancesCheck())
         .withJavaVersion(24)
         .verifyNoIssues()
