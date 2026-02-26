@@ -168,6 +168,13 @@ public class MultipleMainInstancesSample {
       }
     }
   }
+
+  public class UnknownSuper extends UndefinedParent {
+    void main() {
+      super();
+      this.x = 0;
+    }
+  }
 }
 
 // test implicit class
