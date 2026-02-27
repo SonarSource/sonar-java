@@ -41,6 +41,12 @@ public class MinimizeBoundScopedValuesCheckSample {
         .where(USER_EMAIL, "john@mail.com")
         .run(this::doWork)
     );
+
+    var c = carrier.get();
+    c.where(USER_ID, "123") // Noncompliant {{Consider grouping the 3 scoped values bound in this chain of method calls into a record class to maintain good performance.}}
+      .where(USER_NAME, "John")
+      .where(USER_EMAIL, "john@mail.com")
+      .run(this::doWork);
   }
 
   public void processTwoOrLess() {
