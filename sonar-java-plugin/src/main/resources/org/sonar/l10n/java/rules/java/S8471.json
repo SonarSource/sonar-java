@@ -1,0 +1,24 @@
+{
+  "title": "Minimize the number of bound ScopedValues for performance",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "java25"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-8471",
+  "sqKey": "S8471",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW",
+      "RELIABILITY": "LOW"
+    },
+    "attribute": "EFFICIENT"
+  }
+}

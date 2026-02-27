@@ -1,0 +1,44 @@
+<p>Java 25 introduced scoped values as a lightweight alternative to thread-local variables. They provide a way to safely and efficiently pass data to
+faraway methods without using method parameters. To maintain good performance, however, the number of scoped values bound at the same time should
+remain low.</p>
+<h2>Why is this an issue?</h2>
+<p>Invocations of <code>ScopedValue.get()</code> typically need to search through enclosing scopes to find the innermost binding and then cache the
+result of this search for subsequent accesses. In the presence of too many scoped values, this cache will have a low hit rate, which will cause poor
+performance.</p>
+<h2>How to fix it</h2>
+<p>To maintain good performance, minimize the number of bound scoped values in use. When multiple values need to be passed, create a record class to
+hold those values and bind a single <code>ScopedValue</code> to an instance of that record, rather than binding multiple separate instances.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+private static final ScopedValue&lt;String&gt; USER_NAME = ScopedValue.newInstance();
+private static final ScopedValue&lt;String&gt; USER_ID = ScopedValue.newInstance();
+private static final ScopedValue&lt;String&gt; USER_EMAIL = ScopedValue.newInstance();
+private static final ScopedValue&lt;String&gt; USER_ROLE = ScopedValue.newInstance();
+
+public void process() {
+    ScopedValue.where(USER_NAME, "John")
+        .where(USER_ID, "123")
+        .where(USER_EMAIL, "john@example.com")
+        .where(USER_ROLE, "admin")
+        .run(() -&gt; doWork());
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+record UserContext(String name, String id, String email, String role) {}
+
+private static final ScopedValue&lt;UserContext&gt; USER_CONTEXT = ScopedValue.newInstance();
+
+public void process() {
+    UserContext context = new UserContext("John", "123", "john@example.com", "admin");
+    ScopedValue.where(USER_CONTEXT, context).run(() -&gt; doWork());
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://docs.oracle.com/en/java/javase/25/docs//api/java.base/java/lang/ScopedValue.html">Oracle Docs - Class
+  ScopedValue&lt;T&gt;</a></li>
+</ul>
+
