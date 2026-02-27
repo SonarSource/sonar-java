@@ -44,7 +44,9 @@ class ScopedValueStableReferenceCheckSample {
 
   public String assignLocalVarInWhere() {
     ScopedValue<String> value;
-    return ScopedValue.where((value = ScopedValue.newInstance()), "local value").call(value::get); // Compliant
+    String result = ScopedValue.where((value = ScopedValue.newInstance()), "local value").call(value::get); // Compliant
+    result = ScopedValue.where((value = ((ScopedValue.newInstance()))), "local value").call(value::get); // Compliant
+    return result;
   }
 
 }

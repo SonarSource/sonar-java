@@ -22,12 +22,13 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S8465")
 public class ScopedValueStableReferenceCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
+
+  private static final String MESSAGE = "Consider using a stable reference for ScopedValue instances.";
 
   private static final MethodMatchers WHERE_MATCHER = MethodMatchers.create()
     .ofTypes("java.lang.ScopedValue", "java.lang.ScopedValue$Carrier")
@@ -46,12 +47,14 @@ public class ScopedValueStableReferenceCheck extends AbstractMethodDetection imp
   }
 
   @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    ExpressionTree firstArgument = mit.arguments().get(0);
+  protected void onMethodInvocationFound(MethodInvocationTree methodInvocation) {
     var finder = new NewInstanceInvocationFinder();
-    firstArgument.accept(finder);
-    if (finder.invocation != null) {
-      reportIssue(finder.invocation, "Consider using a stable reference for ScopedValue instances.");
+    methodInvocation.arguments()
+      .get(0)
+      .accept(finder);
+    MethodInvocationTree newInstanceInvocation = finder.invocation;
+    if (newInstanceInvocation != null) {
+      reportIssue(newInstanceInvocation, MESSAGE);
     }
   }
 
@@ -66,12 +69,21 @@ public class ScopedValueStableReferenceCheck extends AbstractMethodDetection imp
     private MethodInvocationTree invocation = null;
 
     @Override
-    public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (NEW_INSTANCE_MATCHER.matches(tree.methodSymbol()) && !tree.parent().is(Tree.Kind.ASSIGNMENT)) {
-        invocation = tree;
+    public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
+      Tree parent = nearestNonParenthesizedParent(methodInvocation);
+      if (NEW_INSTANCE_MATCHER.matches(methodInvocation.methodSymbol()) && parent != null && !parent.is(Tree.Kind.ASSIGNMENT)) {
+        invocation = methodInvocation;
         return;
       }
-      super.visitMethodInvocation(tree);
+      super.visitMethodInvocation(methodInvocation);
+    }
+
+    private Tree nearestNonParenthesizedParent(Tree tree) {
+      Tree parent = tree.parent();
+      while (parent != null && parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+        parent = parent.parent();
+      }
+      return parent;
     }
 
   }
