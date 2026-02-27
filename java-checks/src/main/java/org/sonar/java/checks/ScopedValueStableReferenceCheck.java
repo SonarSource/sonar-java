@@ -78,7 +78,7 @@ public class ScopedValueStableReferenceCheck extends AbstractMethodDetection imp
       super.visitMethodInvocation(methodInvocation);
     }
 
-    private Tree nearestNonParenthesizedParent(Tree tree) {
+    private static Tree nearestNonParenthesizedParent(Tree tree) {
       Tree parent = tree.parent();
       while (parent != null && parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
         parent = parent.parent();
