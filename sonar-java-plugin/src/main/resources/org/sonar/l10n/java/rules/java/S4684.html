@@ -1,8 +1,11 @@
-<p>With Spring, when a request mapping method is configured to accept bean objects as arguments, the framework will automatically bind HTTP parameters
-to those objects' properties. If the targeted beans are also persistent entities, the framework will also store those properties in the storage
-backend, usually the application’s database.</p>
+<p>Mass assignment occurs when a framework automatically binds user-controlled input to objects that are directly persisted to a database backend. If
+the application does not restrict which fields are writable, an attacker can inject additional properties into a request to overwrite sensitive
+data—such as authorization levels, ownership, or workflow states. This lack of filtering allows internal server-managed properties to be externally
+modified through a single, unfiltered write operation.</p>
 <h2>Why is this an issue?</h2>
-<p>By accepting persistent entities as method arguments, the application allows clients to manipulate the object’s properties directly.</p>
+<p>Because the application does not enforce which fields are writable, an attacker can craft a request containing any document property, including
+those that are meant to be managed exclusively by the server. Fields controlling authorization, ownership, workflow state, or internal identifiers all
+become externally settable through a single unfiltered write operation.</p>
 <h3>What is the potential impact?</h3>
 <p>Attackers could forge malicious HTTP requests that will alter unexpected properties of persistent objects. This can lead to unauthorized
 modifications of the entity’s state. This is known as a <strong>mass assignment</strong> attack.</p>

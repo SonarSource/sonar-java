@@ -1,5 +1,5 @@
 {
-  "title": "Only one \"main\" method should be present",
+  "title": "Only one \"main\" method should be defined in a class",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

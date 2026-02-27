@@ -1,5 +1,5 @@
 {
-  "title": "Persistent entities should not be used as arguments of \"@RequestMapping\" methods",
+  "title": "Database Operations should not be vulnerable to mass assignment",
   "type": "VULNERABILITY",
   "code": {
     "impacts": {
