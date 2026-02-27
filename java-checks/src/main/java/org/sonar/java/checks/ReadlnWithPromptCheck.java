@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S8469")
 public class ReadlnWithPromptCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
-  private static final String MESSAGE = "Use \"IO.readln(prompt)\" instead of separate \"IO.%s(prompt)\" and \"IO.readln()\" calls.";
+  private static final String MESSAGE = "Use \"IO.readln(String prompt)\" instead of separate \"IO.%s(Object obj)\" and \"IO.readln()\" calls.";
 
   private static final MethodMatchers PRINT_MATCHERS = MethodMatchers.create()
     .ofTypes("java.lang.IO")
