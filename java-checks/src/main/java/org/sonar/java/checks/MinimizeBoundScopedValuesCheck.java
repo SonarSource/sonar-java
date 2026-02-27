@@ -18,7 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.sonar.api.internal.apachecommons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
