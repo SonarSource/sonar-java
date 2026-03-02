@@ -54,7 +54,7 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
   public static final MethodMatchers ASSERTJ_SET_CONTEXT_METHODS = MethodMatchers.create()
     .ofSubTypes("org.assertj.core.api.AbstractAssert")
     .name(name -> name.startsWith("extracting") || name.startsWith("using") || name.startsWith("filtered")
-      || "flatExtracting".equals(name) || "map".equals(name) || "flatMap".equals(name))
+      || "flatExtracting".equals(name) || "map".equals(name) || "flatMap".equals(name) || "element".equals(name))
     .withAnyParameters()
     .build();
 

@@ -191,6 +191,12 @@ public class AssertJConsecutiveAssertionCheckSample {
     assertThat(myList.get(1)).isEqualTo("42");
   }
 
+  @Test
+  void assert_on_element() {
+    assertThat(myList).isNotNull().hasSize(2).element(0).isEqualTo("42"); // Compliant, assertions following the call to 'element' apply on a specific element
+    assertThat(myList).element(1).isEqualTo("10");
+  }
+
 
   @Test
   void assert_on_member_select_3() {
