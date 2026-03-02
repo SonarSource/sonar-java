@@ -1,0 +1,21 @@
+{
+  "title": "Prefer \"IO.readln(String prompt)\" rather than \"IO.print(Object obj)\" or \"IO.println(Object obj)\" followed by \"IO.readln()\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-8469",
+  "sqKey": "S8469",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
