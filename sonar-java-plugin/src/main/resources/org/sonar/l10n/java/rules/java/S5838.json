@@ -1,5 +1,5 @@
 {
-  "title": "Chained AssertJ assertions should be simplified to the corresponding dedicated assertion",
+  "title": "AssertJ assertions should be simplified to the corresponding dedicated assertion",
   "type": "CODE_SMELL",
   "code": {
     "impacts": {
