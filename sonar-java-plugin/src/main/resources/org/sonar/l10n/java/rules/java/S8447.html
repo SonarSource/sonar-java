@@ -5,8 +5,8 @@ before they are initialized. In Java 25+, subclass constructors can now initiali
 <p>Traditionally, the explicit constructor invocation (<code>super(…​)</code> or <code>this(…​)</code>) had to be the first statement in a
 constructor, forcing subclass field initialization to happen after the superclass was already constructed. If the superclass constructor calls an
 overridable method, the subclass implementation will see default values (such as <code>null</code>, <code>0</code>, or <code>false</code>) for its
-fields instead of the values intended by the caller. This leads to subtle bugs, `NullPointerException`s, or inconsistent object states that are
-difficult to debug.</p>
+fields instead of the values intended by the caller. This leads to subtle bugs, <code>NullPointerException</code>s, or inconsistent object states that
+are difficult to debug.</p>
 <h2>How to fix it</h2>
 <p>Move the initialization of subclass fields before the <code>super()</code> call. This takes advantage of flexible constructor bodies to ensure that
 the subclass state is established before the superclass constructor begins its execution. Alternatively, if the method in the superclass does not need
@@ -16,10 +16,10 @@ to be overridden, mark it as <code>final</code> or <code>private</code> to preve
 <pre data-diff-id="1" data-diff-type="noncompliant">
 class Super {
     Super() {
-        overriddenMethod();
+        foo();
     }
 
-    void overriddenMethod() {
+    void foo() {
         System.out.println("Base logic");
     }
 }
@@ -29,11 +29,11 @@ class Sub extends Super {
 
     Sub(int x) {
         super();
-        this.x = x; // Noncompliant: x is uninitialized when overriddenMethod is called by Super()
+        this.x = x; // Noncompliant: x is uninitialized when foo is called by Super()
     }
 
     @Override
-    void overriddenMethod() {
+    void foo() {
         System.out.println(x); // Prints 0 instead of the value of x
     }
 }
@@ -42,10 +42,10 @@ class Sub extends Super {
 <pre data-diff-id="1" data-diff-type="compliant">
 class Super {
     Super() {
-        overriddenMethod();
+        foo();
     }
 
-    void overriddenMethod() {
+    void foo() {
         System.out.println("Base logic");
     }
 }
@@ -59,7 +59,7 @@ class Sub extends Super {
     }
 
     @Override
-    void overriddenMethod() {
+    void foo() {
         System.out.println(x); // Prints the expected value
     }
 }
@@ -67,13 +67,13 @@ class Sub extends Super {
 <p>Alternatively, if the method in the superclass does not need to be overridden, it can be marked as <code>final</code> or <code>private</code> to
 prevent the issue entirely.</p>
 <h4>Noncompliant code example</h4>
-<pre data-diff-id="1" data-diff-type="noncompliant">
+<pre data-diff-id="2" data-diff-type="noncompliant">
 class Super {
     Super() {
-        overriddenMethod();
+        foo();
     }
 
-    void overriddenMethod() {
+    void foo() {
         System.out.println("Base logic");
     }
 }
@@ -83,23 +83,23 @@ class Sub extends Super {
 
     Sub(int x) {
         super();
-        this.x = x; // Noncompliant: x is uninitialized when overriddenMethod is called by Super()
+        this.x = x; // Noncompliant: x is uninitialized when foo is called by Super()
     }
 
     @Override
-    void overriddenMethod() {
+    void foo() {
         System.out.println(x); // Prints 0 instead of the value of x
     }
 }
 </pre>
 <h4>Compliant solution</h4>
-<pre data-diff-id="1" data-diff-type="compliant">
+<pre data-diff-id="2" data-diff-type="compliant">
 class Super {
     Super() {
-        overriddenMethod();
+        foo();
     }
 
-    final void finalMethod() {
+    final void foo() {
         System.out.println("Base logic");
     }
 }
@@ -109,13 +109,13 @@ class Sub extends Super {
 
     Sub(int x) {
         super();
-        this.x = x; // Compliant: finalMethod is final, so it cannot be overridden and will not access uninitialized fields
+        this.x = x; // Compliant: foo is final, so it cannot be overridden and will not access uninitialized fields
     }
 }
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li> <a href="https://openjdk.org/jeps/513">JEP 513: Flexible Constructor Bodies</a> </li>
+  <li><a href="https://openjdk.org/jeps/513">JEP 513: Flexible Constructor Bodies</a></li>
 </ul>
 
