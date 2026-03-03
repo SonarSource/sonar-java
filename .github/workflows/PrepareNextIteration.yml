@@ -19,7 +19,7 @@ jobs:
         uses: SonarSource/release-github-actions/update-analyzer@tt/GHA-200_update_plugin
         with:
           release-version: "8.30.0.9999"
-          ticket-key: "GHA-200"
+          ticket-key: "SONAR-9999999999"
           secret-name: sonar-java-release-automation
           plugin-name: "java"
           # plugin-suffix: ""
