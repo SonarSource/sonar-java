@@ -22,12 +22,22 @@ jobs:
 
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      NEXT_VERSION: "${{ inputs.version }}-SNAPSHOT"
 
     steps:
 
       - name: Checkout Sources
         uses: actions/checkout@v4
+
+      - name: Normalize Version
+        id: version
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+$ ]]; then
+            VERSION="${VERSION}.0"
+          fi
+          echo "full-version=${VERSION}-SNAPSHOT" >> $GITHUB_OUTPUT
+
 
       - name: Update Version Number
         run: |
@@ -37,7 +47,7 @@ jobs:
           git config --global core.safecrlf true
           BRANCH="gh-action/next-iteration.${{ github.run_id }}"
           git checkout -b "${BRANCH}"
-          mvn versions:set -DgenerateBackupPoms=false -DnewVersion="${NEXT_VERSION}"
+          mvn versions:set -DgenerateBackupPoms=false -DnewVersion="${{ steps.version.outputs.full-version }}"
           git commit -m 'Prepare next development iteration' -a
           git push --set-upstream origin "${BRANCH}"
           echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
@@ -45,11 +55,11 @@ jobs:
       - name: Create Pull Request
         id: create-pr
         run: |
-          URL=$(gh pr create --draft --base master --title "Prepare next development iteration ${NEXT_VERSION}" --body '')
+          URL=$(gh pr create --draft --base master --title "Prepare next development iteration ${{ steps.version.outputs.full-version }}" --body '')
           echo "url=${URL}" >> $GITHUB_OUTPUT
 
       - name: Summary
         run: |
           echo "Generated ${{steps.create-pr.outputs.url}}." >> $GITHUB_STEP_SUMMARY
-          echo "New version set to ${NEXT_VERSION}." >> $GITHUB_STEP_SUMMARY
+          echo "New version set to ${{ steps.version.outputs.full-version }}." >> $GITHUB_STEP_SUMMARY
           echo "Tip: close and reopen the PR to trigger CI. " >> $GITHUB_STEP_SUMMARY
