@@ -20,9 +20,6 @@ jobs:
       pull-requests: write
       contents: write
 
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     steps:
 
       - name: Checkout Sources
@@ -38,28 +35,20 @@ jobs:
           fi
           echo "full-version=${VERSION}-SNAPSHOT" >> $GITHUB_OUTPUT
 
-
       - name: Update Version Number
         run: |
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git config --global core.autocrlf input
-          git config --global core.safecrlf true
-          BRANCH="gh-action/next-iteration.${{ github.run_id }}"
-          git checkout -b "${BRANCH}"
           mvn versions:set -DgenerateBackupPoms=false -DnewVersion="${{ steps.version.outputs.full-version }}"
-          git commit -m 'Prepare next development iteration' -a
-          git push --set-upstream origin "${BRANCH}"
-          echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
+        uses: SonarSource/release-github-actions/create-pull-request@v1
         id: create-pr
-        run: |
-          URL=$(gh pr create --draft --base master --title "Prepare next development iteration ${{ steps.version.outputs.full-version }}" --body '')
-          echo "url=${URL}" >> $GITHUB_OUTPUT
+        with:
+          commit-message: "Prepare next development iteration ${{ steps.version.outputs.full-version }}"
+          title: "Prepare next development iteration ${{ steps.version.outputs.full-version }}"
+          branch: gh-action/next-iteration
+          branch-suffix: timestamp
 
       - name: Summary
         run: |
-          echo "Generated ${{steps.create-pr.outputs.url}}." >> $GITHUB_STEP_SUMMARY
+          echo "Generated ${{steps.create-pr.outputs.pull-request-url}}." >> $GITHUB_STEP_SUMMARY
           echo "New version set to ${{ steps.version.outputs.full-version }}." >> $GITHUB_STEP_SUMMARY
-          echo "Tip: close and reopen the PR to trigger CI. " >> $GITHUB_STEP_SUMMARY
