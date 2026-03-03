@@ -197,7 +197,6 @@ public class AssertJConsecutiveAssertionCheckSample {
     assertThat(myList).element(1).isEqualTo("10");
   }
 
-
   @Test
   void assert_on_member_select_3() {
     assertThat(getList()).hasSize(2); // Compliant
