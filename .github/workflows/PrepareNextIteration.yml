@@ -22,7 +22,7 @@ jobs:
           ticket-key: "SONAR-9999999999"
           secret-name: sonar-java-release-automation
           plugin-name: "java"
-          # plugin-suffix: ""
+          plugin-suffix: ""
           plugin-artifacts: "java"
           draft: true
           reviewers: tomasz-tylenda-sonarsource
