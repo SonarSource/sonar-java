@@ -20,10 +20,11 @@ jobs:
         with:
           release-version: "8.30.0.9999"
           ticket-key: "GHA-200"
+          secret-name: sonar-java-release-automation
           plugin-name: "java"
           # plugin-suffix: ""
-          secret-name: ${{ inputs.release-automation-secret-name || format('sonar-{0}-release-automation', inputs.plugin-name) }}
           plugin-artifacts: "java"
           draft: true
-          reviewers: ${{ github.actor }}
+          reviewers: tomasz-tylenda-sonarsource
+          base-branch: master
 
