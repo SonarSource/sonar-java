@@ -150,7 +150,7 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
     reportIssue(identifier, String.format("Use an \"%s\" for this field; its operations are atomic.", recommendedType.get()));
   }
 
-  private Optional<String> recommendedType(IdentifierTree identifier) {
+  private static Optional<String> recommendedType(IdentifierTree identifier) {
     Type type = identifier.symbol().type();
     if (type.is("boolean") || type.is("java.lang.Boolean")) {
       return Optional.of("AtomicBoolean");
