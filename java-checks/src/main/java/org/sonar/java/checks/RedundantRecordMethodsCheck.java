@@ -62,18 +62,33 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
 
     for (Tree member : targetRecord.members()) {
       if (member.is(Tree.Kind.CONSTRUCTOR)) {
-        checkConstructor((MethodTree) member, components);
+        checkConstructor((MethodTree) member, components, componentNames);
       } else if (member.is(Tree.Kind.METHOD)) {
         checkMethod((MethodTree) member, components, componentNames);
       }
     }
   }
 
-  private void checkConstructor(MethodTree constructor, List<Symbol.VariableSymbol> components) {
-    if(isAnnotated(constructor)) {
+  private void checkConstructor(MethodTree constructor, List<Symbol.VariableSymbol> components, Set<String> componentNames) {
+    if (constructor.parameters().isEmpty() && constructor.block().body().isEmpty()) {
+      reportIssue(constructor.simpleName(), "Remove this useless empty compact constructor.");
+    }
+
+    if (isAnnotated(constructor)
+      || constructor.parameters().size() != components.size()
+      || !constructor.parameters().stream().allMatch(parameter -> componentNames.contains(parameter.symbol().name()))) {
       return;
     }
-    if (constructor.block().body().isEmpty() || onlyDoesSimpleAssignments(constructor, components)) {
+
+    ConstructorExecutionState executionState = new ConstructorExecutionState(componentNames);
+    constructor.block().body().forEach(executionState::applyStatement);
+
+    if (!executionState.componentsAreFullyAssigned() || executionState.logicAfterAssignments) {
+      return;
+    }
+    if (executionState.logicBeforeAssignments) {
+      reportIssue(constructor.simpleName(), "Consider using a compact constructor here.");
+    } else {
       reportIssue(constructor.simpleName(), "Remove this redundant constructor which is the same as a default one.");
     }
   }
@@ -112,55 +127,101 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
       .findFirst();
   }
 
-  public static boolean onlyDoesSimpleAssignments(MethodTree constructor, List<Symbol.VariableSymbol> components) {
-    if (constructor.parameters().size() != components.size()) {
-      return false;
-    }
-    List<String> componentNames = components.stream().map(Symbol.VariableSymbol::name).toList();
-    ConstructorExecutionState executionState = new ConstructorExecutionState(componentNames);
-    constructor.block().body().forEach(executionState::applyStatement);
-    return executionState.componentsAreFullyAssigned();
-  }
-
   private static boolean isAnnotated(MethodTree method) {
     return !method.modifiers().annotations().isEmpty();
   }
 
   /**
-   * Class to perform a simple symbolic execution of a record constructor. The state keeps track of which components have been
-   * assigned to the corresponding parameters and which parameters have been changed from their initial values.
+   * Class to perform a simple symbolic execution of a record constructor. The state keeps track of which components have been assigned to the corresponding parameters and which
+   * parameters have been changed from their initial values, as well as if the constructor contains logic before or after assignments to components.
    */
   private static class ConstructorExecutionState {
     /**
-     * Immutable list of the components in the record
+     * Immutable set of the names of components in the record.
      */
-    final List<String> componentNames;
+    private final Set<String> componentNames;
 
     /**
-     * Set of names of components of the record that have been assigned to the corresponding parameter so far
+     * Set of names of components of the record that have been assigned to their corresponding parameter so far.
      */
-    Set<String> assignedComponents;
+    private final Set<String> assignedComponents = new HashSet<>();
 
     /**
-     * Set of name of parameters that still hold the value of the argument passed to the constructor
+     * Set of names of parameters that still hold the value of the argument passed to the constructor.
      */
-    Set<String> unchangedParameters;
+    private final Set<String> unchangedParameters = new HashSet<>();
 
-    private ConstructorExecutionState(List<String> componentNames) {
-      assignedComponents = new HashSet<>();
+    /**
+     * Flag indicating whether the constructor has logic before any of the component assignments.
+     */
+    boolean logicBeforeAssignments = false;
+
+    /**
+     * Flag indicating whether the constructor has logic after any of the component assignments.
+     */
+    boolean logicAfterAssignments = false;
+
+    private ConstructorExecutionState(Set<String> componentNames) {
       this.componentNames = componentNames;
-      unchangedParameters = new HashSet<>();
       unchangedParameters.addAll(componentNames);
     }
 
-    private boolean isParameter(Symbol symbol) {
-      return componentNames.contains(symbol.name());
+    public boolean componentsAreFullyAssigned() {
+      return assignedComponents.size() == componentNames.size();
+    }
+
+    public void applyStatement(StatementTree statement) {
+      if (statement instanceof ExpressionStatementTree expression
+        && expression.expression() instanceof AssignmentExpressionTree assignment) {
+        applyAssignment(assignment.variable(), assignment.expression());
+      } else if (statement instanceof IfStatementTree ifStatement) {
+        applyIf(ifStatement);
+      } else if (statement instanceof BlockTree block) {
+        block.body().forEach(this::applyStatement);
+      } else if (this.assignedComponents.isEmpty()) {
+        applyLogic();
+      }
+    }
+
+    private void applyAssignment(ExpressionTree lhs, ExpressionTree rhs) {
+      if (rhs instanceof IdentifierTree identifier
+        && isParameter(identifier.symbol())
+        && unchangedParameters.contains(identifier.name())) {
+        Optional<String> component = getComponent(lhs).filter(name -> name.equals(identifier.name()));
+        if (component.isPresent()) {
+          assignedComponents.add(component.get());
+        } else {
+          applyLogic();
+        }
+      } else if (lhs instanceof IdentifierTree identifier && isParameter(identifier.symbol())) {
+        unchangedParameters.remove(identifier.name());
+      } else {
+        applyLogic();
+      }
+    }
+
+    private void applyIf(IfStatementTree ifStatement) {
+      ConstructorExecutionState stateCopy = copy();
+      applyStatement(ifStatement.thenStatement());
+      StatementTree elseStatement = ifStatement.elseStatement();
+      if (elseStatement != null) {
+        stateCopy.applyStatement(elseStatement);
+      }
+      mergeWith(stateCopy);
+    }
+
+    private void applyLogic() {
+      if (this.assignedComponents.isEmpty()) {
+        logicBeforeAssignments = true;
+      } else {
+        logicAfterAssignments = true;
+      }
     }
 
     /**
      * Return the name of the component if the given expression is of the form `this.name`.
      */
-    public Optional<String> getComponent(ExpressionTree expression) {
+    private Optional<String> getComponent(ExpressionTree expression) {
       if (expression instanceof MemberSelectExpressionTree memberSelect) {
         String name = memberSelect.identifier().name();
         if (componentNames.contains(name)) {
@@ -170,16 +231,8 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
       return Optional.empty();
     }
 
-    private void applyAssignment(ExpressionTree lhs, ExpressionTree rhs) {
-      if (rhs instanceof IdentifierTree identifier
-        && isParameter(identifier.symbol())
-        && unchangedParameters.contains(identifier.name())) {
-        getComponent(lhs)
-          .filter(name -> name.equals(identifier.name()))
-          .ifPresent(assignedComponents::add);
-      } else if (lhs instanceof IdentifierTree identifier && isParameter(identifier.symbol())) {
-        unchangedParameters.remove(identifier.name());
-      }
+    private boolean isParameter(Symbol symbol) {
+      return componentNames.contains(symbol.name());
     }
 
     private ConstructorExecutionState copy() {
@@ -187,37 +240,21 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
       copy.unchangedParameters.clear();
       copy.unchangedParameters.addAll(unchangedParameters);
       copy.assignedComponents.addAll(assignedComponents);
+      copy.logicBeforeAssignments = logicBeforeAssignments;
+      copy.logicAfterAssignments = logicAfterAssignments;
       return copy;
     }
 
     /**
      * When joining two branches of the execution, a component is considered assigned if it was assigned in both branches.
      * A parameter is considered unchanged if it was unchanged on both branches.
+     * Logic before or after assignments is considered present if either branch has them.
      */
     private void mergeWith(ConstructorExecutionState other) {
       assignedComponents.removeIf(component -> !other.assignedComponents.contains(component));
       unchangedParameters.removeIf(component -> !other.unchangedParameters.contains(component));
-    }
-
-    public void applyStatement(StatementTree statement) {
-      if (statement instanceof ExpressionStatementTree expression
-        && expression.expression() instanceof AssignmentExpressionTree assignment) {
-        applyAssignment(assignment.variable(), assignment.expression());
-      } else if (statement instanceof IfStatementTree ifStatement) {
-        ConstructorExecutionState stateCopy = copy();
-        applyStatement(ifStatement.thenStatement());
-        StatementTree elseStatement = ifStatement.elseStatement();
-        if (elseStatement != null) {
-          stateCopy.applyStatement(elseStatement);
-        }
-        mergeWith(stateCopy);
-      } else if (statement instanceof BlockTree block) {
-        block.body().forEach(this::applyStatement);
-      }
-    }
-
-    public boolean componentsAreFullyAssigned() {
-      return assignedComponents.size() == componentNames.size();
+      logicBeforeAssignments = logicBeforeAssignments || other.logicBeforeAssignments;
+      logicAfterAssignments = logicAfterAssignments || other.logicAfterAssignments;
     }
   }
 }

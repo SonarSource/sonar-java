@@ -14,11 +14,7 @@ public class RedundantRecordMethodsCheckSample {
 
     RedundantConstructorAndGetters(String name, int age) { // Noncompliant {{Remove this redundant constructor which is the same as a default one.}}
 //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      System.out.println("Just printing something...");
       this.name = name;
-      int x = 42;
-      variable = new Object();
-      this.someOtherVariable = new Object();
       this.age = age;
     }
 
@@ -47,6 +43,28 @@ public class RedundantRecordMethodsCheckSample {
     public int age() { // Noncompliant {{Remove this redundant method which is the same as a default one.}}
 //             ^^^
       return age;
+    }
+  }
+
+  record ConstructorWithSideEffects(String name, int age) {
+    ConstructorWithSideEffects(String name, int age) { // Noncompliant {{Consider using a compact constructor here.}}
+      sideEffect();
+      this.name = name;
+      this.age = age;
+    }
+
+    public void sideEffect() {
+      System.out.println("Here's a side effect!");
+    }
+  }
+
+  record ThrowingConstructor(String name, int age) {
+    ThrowingConstructor(String name, int age) { // Noncompliant {{Consider using a compact constructor here.}}
+      if (age < 0) {
+        throw new IllegalArgumentException("Negative age");
+      }
+      this.name = name;
+      this.age = age;
     }
   }
 
@@ -85,7 +103,7 @@ public class RedundantRecordMethodsCheckSample {
   }
 
   record EmptyConstructorAndRedundantGetter(String name, int age) {
-    EmptyConstructorAndRedundantGetter { // Noncompliant {{Remove this redundant constructor which is the same as a default one.}}
+    EmptyConstructorAndRedundantGetter { // Noncompliant {{Remove this useless empty compact constructor.}}
 //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     }
 
