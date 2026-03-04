@@ -62,20 +62,22 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
 
     for (Tree member : targetRecord.members()) {
       if (member.is(Tree.Kind.CONSTRUCTOR)) {
-        checkConstructor((MethodTree) member, components, componentNames);
+        checkConstructor((MethodTree) member, componentNames);
       } else if (member.is(Tree.Kind.METHOD)) {
         checkMethod((MethodTree) member, components, componentNames);
       }
     }
   }
 
-  private void checkConstructor(MethodTree constructor, List<Symbol.VariableSymbol> components, Set<String> componentNames) {
+  private void checkConstructor(MethodTree constructor, Set<String> componentNames) {
+    if (isAnnotated(constructor)) {
+      return;
+    }
     if (constructor.parameters().isEmpty() && constructor.block().body().isEmpty()) {
       reportIssue(constructor.simpleName(), "Remove this useless empty compact constructor.");
+      return;
     }
-
-    if (isAnnotated(constructor)
-      || constructor.parameters().size() != components.size()
+    if (constructor.parameters().size() != componentNames.size()
       || !constructor.parameters().stream().allMatch(parameter -> componentNames.contains(parameter.symbol().name()))) {
       return;
     }

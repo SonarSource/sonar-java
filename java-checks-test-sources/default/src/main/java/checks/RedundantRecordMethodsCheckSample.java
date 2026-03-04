@@ -123,6 +123,17 @@ public class RedundantRecordMethodsCheckSample {
     }
   }
 
+  record CompliantConstructorWithSideEffect(String name, int age) {
+    CompliantConstructorWithSideEffect(String name, int age) { // Compliant: the constructor includes side effects after assignments
+      if (age < 0) {
+        throw new IllegalArgumentException("Negative age");
+      }
+      this.name = name.toLowerCase(Locale.ROOT);
+      this.age = age;
+      System.out.println("Hello");
+    }
+  }
+
   record CompliantConstructorComplementAndTransformativeGetter(String name, int age) {
     CompliantConstructorComplementAndTransformativeGetter { // Compliant
       if (age < 0) {
