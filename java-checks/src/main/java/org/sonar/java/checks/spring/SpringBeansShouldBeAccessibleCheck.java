@@ -65,7 +65,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   };
 
   private static final String COMPONENT_SCAN_ANNOTATION = "org.springframework.context.annotation.ComponentScan";
-  private static final Set<String> COMPONENT_SCAN_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "basePackageClasses", "value");
+  private static final Set<String> COMPONENT_SCAN_BASE_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "basePackageClasses", "value");
 
   private static final String CACHE_KEY_PREFIX = "java:S4605:targeted:";
 
@@ -117,16 +117,17 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     String classPackageName = packageNameOf(classTree.symbol());
     SymbolMetadata classSymbolMetadata = classTree.symbol().metadata();
 
-
-    List<SymbolMetadata.AnnotationValue> componentScanValues = classSymbolMetadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
-    if (componentScanValues != null) {
-      componentScanValues.forEach(this::addToScannedPackages);
-    } else if (hasAnnotation(classSymbolMetadata, SpringUtils.SPRING_BOOT_APP_ANNOTATION)) {
-      var targetedPackages = targetedPackages(classPackageName, classSymbolMetadata);
-      packagesScannedBySpringAtProjectLevel.addAll(targetedPackages);
-      packagesScannedBySpringAtFileLevel.addAll(targetedPackages);
-    } else if (hasAnnotation(classSymbolMetadata, SPRING_BEAN_ANNOTATIONS)) {
-      addMessageToMap(classPackageName, classTree.simpleName());
+    // try to apply "direct" annotation first
+    if (!handledByComponentScan(classSymbolMetadata)) {
+      if (hasAnnotation(classSymbolMetadata, SpringUtils.SPRING_BOOT_APP_ANNOTATION)) {
+        // apply scan setting from @SpringBootApplication annotation
+        var targetedPackages = targetedPackages(classPackageName, classSymbolMetadata);
+        packagesScannedBySpringAtProjectLevel.addAll(targetedPackages);
+        packagesScannedBySpringAtFileLevel.addAll(targetedPackages);
+      } else if (hasAnnotation(classSymbolMetadata, SPRING_BEAN_ANNOTATIONS)) {
+        // include this class as a candidate for issue reporting
+        addMessageToMap(classPackageName, classTree.simpleName());
+      }
     }
   }
 
@@ -143,6 +144,20 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
       writeToCache(context, packagesScannedBySpringAtFileLevel);
     }
     packagesScannedBySpringAtFileLevel.clear();
+  }
+
+  private boolean handledByComponentScan(SymbolMetadata classSymbolMetadata) {
+    boolean handledByComponentScan = false;
+    List<SymbolMetadata.AnnotationValue> componentScanAttributes = classSymbolMetadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
+    if (componentScanAttributes != null) {
+      List<SymbolMetadata.AnnotationValue> componentScanBaseAttributes = componentScanAttributes.stream().filter(v -> COMPONENT_SCAN_BASE_ARGUMENTS.contains(v.name())).toList();
+      if (!componentScanBaseAttributes.isEmpty()) {
+        handledByComponentScan = true;
+        componentScanBaseAttributes.forEach(this::addToScannedPackages);
+      }
+    }
+
+    return handledByComponentScan;
   }
 
   private static String cacheKey(InputFile inputFile) {
@@ -200,9 +215,6 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   }
 
   private void addToScannedPackages(SymbolMetadata.AnnotationValue annotationValue) {
-    if (!COMPONENT_SCAN_ARGUMENTS.contains(annotationValue.name())) {
-      return;
-    }
     if (annotationValue.value() instanceof Object[] objects) {
       for (Object o : objects) {
         if (o instanceof String oString) {

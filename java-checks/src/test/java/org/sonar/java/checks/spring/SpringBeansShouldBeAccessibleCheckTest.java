@@ -115,6 +115,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
     List<String> files = Arrays.asList(
       mainCodeSourcesPath(testFolder + "Ko/Ko.java"),
       mainCodeSourcesPath(testFolder + "app/Ok/Ok.java"),
+      mainCodeSourcesPath(testFolder + "app/notOk/NotOkImpl.java"),
       mainCodeSourcesPath(testFolder + "app/SpringBootApp1.java"),
       mainCodeSourcesPath(testFolder + "secondApp/AnotherOk.java"),
       mainCodeSourcesPath(testFolder + "secondApp/SpringBootApp2.java"));
