@@ -59,6 +59,9 @@ jobs:
     with:
       project-name: "SonarJava"
       plugin-name: "java"
+      # Artifacts are matched exactly, so this will prevent updating javascript.
+      plugin-artifacts-sqs: "java"
+      plugin-artifacts-sqc: "java"
       jira-project-key: "SONARJAVA"
       runner-environment: "github-ubuntu-latest-s"
       rule-props-changed: ${{ github.event.inputs.rule-props-changed }}
