@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -86,6 +87,10 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
 
   private void checkAssignment(AssignmentExpressionTree assignment) {
     IdentifierTree assignee = getVariableIdentifier(assignment.variable());
+    if (assignee == null) {
+      return;
+    }
+
     Symbol assigneeSymbol = assignee.symbol();
     if (!assigneeSymbol.isVolatile()) {
       return;
@@ -115,15 +120,8 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
   }
 
   private void reportIssueIfNotInExcludedContext(IdentifierTree identifier) {
-    Type type = identifier.symbol().type();
-    String recommendedType;
-    if (type.is("boolean") || type.is("java.lang.Boolean")) {
-      recommendedType = "AtomicBoolean";
-    } else if (type.is("int") || type.is("java.lang.Integer")) {
-      recommendedType = "AtomicInteger";
-    } else if (type.is("long") || type.is("java.lang.Long")) {
-      recommendedType = "AtomicLong";
-    } else {
+    Optional<String> recommendedType = recommendedType(identifier);
+    if (recommendedType.isEmpty()) {
       return;
     }
 
@@ -149,7 +147,20 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
       current = current.parent();
     }
 
-    reportIssue(identifier, String.format("Use an \"%s\" for this field; its operations are atomic.", recommendedType));
+    reportIssue(identifier, String.format("Use an \"%s\" for this field; its operations are atomic.", recommendedType.get()));
+  }
+
+  private Optional<String> recommendedType(IdentifierTree identifier) {
+    Type type = identifier.symbol().type();
+    if (type.is("boolean") || type.is("java.lang.Boolean")) {
+      return Optional.of("AtomicBoolean");
+    } else if (type.is("int") || type.is("java.lang.Integer")) {
+      return Optional.of("AtomicInteger");
+    } else if (type.is("long") || type.is("java.lang.Long")) {
+      return Optional.of("AtomicLong");
+    } else {
+      return Optional.empty();
+    }
   }
 
   private class SymbolCollector extends BaseTreeVisitor {
