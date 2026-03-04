@@ -16,8 +16,9 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
@@ -26,6 +27,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -38,44 +40,67 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 @Rule(key = "S3078")
 public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisitor {
 
+  private final Set<Tree> visitedUnaryExpressions = new HashSet<>();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
-      Tree.Kind.PREFIX_INCREMENT,
-      Tree.Kind.POSTFIX_INCREMENT,
+    return List.of(
       Tree.Kind.PREFIX_DECREMENT,
+      Tree.Kind.PREFIX_INCREMENT,
       Tree.Kind.POSTFIX_DECREMENT,
-      Tree.Kind.LOGICAL_COMPLEMENT,
+      Tree.Kind.POSTFIX_INCREMENT,
+      Tree.Kind.ASSIGNMENT,
+      Tree.Kind.PLUS_ASSIGNMENT,
+      Tree.Kind.MINUS_ASSIGNMENT,
       Tree.Kind.MULTIPLY_ASSIGNMENT,
       Tree.Kind.DIVIDE_ASSIGNMENT,
       Tree.Kind.REMAINDER_ASSIGNMENT,
-      Tree.Kind.PLUS_ASSIGNMENT,
-      Tree.Kind.MINUS_ASSIGNMENT,
       Tree.Kind.LEFT_SHIFT_ASSIGNMENT,
       Tree.Kind.RIGHT_SHIFT_ASSIGNMENT,
       Tree.Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
+      Tree.Kind.AND_ASSIGNMENT,
       Tree.Kind.XOR_ASSIGNMENT,
-      Tree.Kind.OR_ASSIGNMENT);
+      Tree.Kind.OR_ASSIGNMENT
+    );
   }
 
   @Override
   public void visitNode(Tree tree) {
-    ExpressionTree expression;
-    if (tree instanceof UnaryExpressionTree unaryExpressionTree) {
-      expression = ExpressionUtils.skipParentheses(unaryExpressionTree.expression());
+    if (tree instanceof UnaryExpressionTree unaryExpression) {
+      checkUnaryExpression(unaryExpression);
     } else {
-      expression = ((AssignmentExpressionTree) tree).variable();
+      checkAssignment((AssignmentExpressionTree) tree);
     }
-    IdentifierTree identifier = getVariableIdentifier(expression);
+  }
+
+  private void checkUnaryExpression(UnaryExpressionTree unaryExpression) {
+    if (visitedUnaryExpressions.contains(unaryExpression)) {
+      return;
+    }
+    IdentifierTree identifier = getVariableIdentifier(ExpressionUtils.skipParentheses(unaryExpression.expression()));
     if (identifier == null || !identifier.symbol().isVolatile()) {
       return;
     }
+    reportIssueIfNotInExcludedContext(identifier);
+  }
 
-    if (tree.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
-      checkBooleanToggling(tree, identifier.symbol());
-    } else {
-      checkIncrementDecrement(tree, identifier);
+  private void checkAssignment(AssignmentExpressionTree assignment) {
+    IdentifierTree assignee = getVariableIdentifier(assignment.variable());
+    Symbol assigneeSymbol = assignee.symbol();
+    if (!assigneeSymbol.isVolatile()) {
+      return;
     }
+
+    if (assignment.is(Tree.Kind.ASSIGNMENT)) {
+      SymbolCollector symbolCollector = new SymbolCollector();
+      assignment.expression().accept(symbolCollector);
+      Set<Symbol> symbols = symbolCollector.symbols;
+      if (!symbols.contains(assigneeSymbol)) {
+        return;
+      }
+    }
+
+    reportIssueIfNotInExcludedContext(assignee);
   }
 
   @Nullable
@@ -89,57 +114,65 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
     return null;
   }
 
-  private void checkBooleanToggling(Tree tree, Symbol identifierSymbol) {
-    Tree parent = tree.parent();
-    if (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      checkBooleanToggling(parent, identifierSymbol);
-    } else if (parent.is(Tree.Kind.ASSIGNMENT)) {
-      IdentifierTree variableIdentifier = getVariableIdentifier(((AssignmentExpressionTree) parent).variable());
-      if (variableIdentifier != null && identifierSymbol.equals(variableIdentifier.symbol())) {
-        reportIssueIfNotInExcludedContext(tree, "AtomicBoolean");
-      }
+  private void reportIssueIfNotInExcludedContext(IdentifierTree identifier) {
+    Type type = identifier.symbol().type();
+    String recommendedType;
+    if (type.is("boolean") || type.is("java.lang.Boolean")) {
+      recommendedType = "AtomicBoolean";
+    } else if (type.is("int") || type.is("java.lang.Integer")) {
+      recommendedType = "AtomicInteger";
+    } else if (type.is("long") || type.is("java.lang.Long")) {
+      recommendedType = "AtomicLong";
+    } else {
+      return;
     }
-  }
 
-  private void checkIncrementDecrement(Tree tree, IdentifierTree identifier) {
-    Type symbolType = identifier.symbol().type();
-    if (symbolType.is("int") || symbolType.is("java.lang.Integer")) {
-      reportIssueIfNotInExcludedContext(tree, "AtomicInteger");
-    } else if (symbolType.is("long") || symbolType.is("java.lang.Long")) {
-      reportIssueIfNotInExcludedContext(tree, "AtomicLong");
-    }
-  }
-
-  private void reportIssueIfNotInExcludedContext(Tree tree, String recommendedType) {
-    Tree current = tree.parent();
+    Tree current = identifier.parent();
     boolean foundClass = false;
     while (!foundClass) {
       switch (current.kind()) {
-        case LAMBDA_EXPRESSION,
-          SYNCHRONIZED_STATEMENT,
-          COMPILATION_UNIT:
+        case LAMBDA_EXPRESSION, SYNCHRONIZED_STATEMENT, COMPILATION_UNIT:
           return;
         case METHOD:
           if (ModifiersUtils.hasModifier(((MethodTree) current).modifiers(), Modifier.SYNCHRONIZED)) {
             return;
           }
           break;
-        case ENUM,
-          CLASS,
-          INTERFACE,
-          RECORD,
-          IMPLICIT_CLASS:
+        case ENUM, CLASS, INTERFACE, RECORD, IMPLICIT_CLASS:
           if (!current.is(Tree.Kind.IMPLICIT_CLASS) && ((ClassTree) current).simpleName() == null) {
             return;
           }
-          // we got to a non-anonymous class or implicit class in compact source file, we can safely raise an issue
+          // we got to a non-anonymous class or implicit class in a compact source file, we can safely raise an issue
           foundClass = true;
           break;
-
       }
       current = current.parent();
     }
-    reportIssue(tree, String.format("Use an \"%s\" for this field; its operations are atomic.", recommendedType));
+
+    reportIssue(identifier, String.format("Use an \"%s\" for this field; its operations are atomic.", recommendedType));
+  }
+
+  private class SymbolCollector extends BaseTreeVisitor {
+
+    final Set<Symbol> symbols = new HashSet<>();
+
+    @Override
+    public void visitUnaryExpression(UnaryExpressionTree tree) {
+      visitedUnaryExpressions.add(tree);
+      super.visitUnaryExpression(tree);
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      symbols.add(tree.symbol());
+    }
+
+    @Override
+    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      symbols.add(tree.identifier().symbol());
+      super.visitMemberSelectExpression(tree);
+    }
+
   }
 
 }
