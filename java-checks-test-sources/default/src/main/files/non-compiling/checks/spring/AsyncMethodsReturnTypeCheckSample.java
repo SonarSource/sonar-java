@@ -28,6 +28,7 @@ public class AsyncMethodsReturnTypeCheckSample {
 
   @Async
   public Integer builtinType() { // Noncompliant {{Async methods should return 'void' or a 'Future' type.}}
+//       ^^^^^^^
     return 42;
   }
 

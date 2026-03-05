@@ -23,6 +23,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S6810")
 public class AsyncMethodsReturnTypeCheck extends IssuableSubscriptionVisitor {
@@ -36,13 +37,14 @@ public class AsyncMethodsReturnTypeCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     var mt = (MethodTree) tree;
     if (mt.symbol().metadata().isAnnotatedWith(SpringUtils.ASYNC_ANNOTATION)) {
-      var returnType = mt.returnType();
-      Type symbolType = returnType.symbolType();
+      TypeTree returnType = mt.returnType();
       // returnType can only be null if the method is a constructor. Since the @Async annotation is not allowed on constructors, and since
       // we hence only visit methods, not constructors, we assume that returnType is not null.
-      if (!symbolType.isUnknown() && !symbolType.isVoid() && !symbolType.isSubtypeOf("java.util.concurrent.Future")) {
-        reportIssue(returnType, "Async methods should return 'void' or a 'Future' type.");
+      Type symbolType = returnType.symbolType();
+      if (symbolType.isUnknown() || symbolType.isVoid() || symbolType.isSubtypeOf("java.util.concurrent.Future")) {
+        return;
       }
+      reportIssue(returnType, "Async methods should return 'void' or a 'Future' type.");
     }
   }
 }
