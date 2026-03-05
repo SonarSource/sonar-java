@@ -158,6 +158,19 @@ class SpringBeansShouldBeAccessibleCheckTest {
   }
 
   @Test
+  void testBothAnnotationsTogether() {
+    final String folderApp = BASE_PATH + "mixed/app1/";
+    List<String> testFiles = Arrays.asList(
+      mainCodeSourcesPath(folderApp + "App1.java"),
+      mainCodeSourcesPath(folderApp + "visible/VisibleService.java"));
+
+    CheckVerifier.newVerifier()
+      .onFiles(testFiles)
+      .withCheck(new SpringBeansShouldBeAccessibleCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
   void caching() throws NoSuchAlgorithmException, IOException {
     var unchangedFiles = Stream.of(
       "app/SpringBootApp1.java",
