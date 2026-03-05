@@ -24,7 +24,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class NumberOfAccessedVariablesVisitorTest {
+class NumberOfDefinedVariablesVisitorTest {
 
   @Test
   void zeroVariables() {
@@ -32,7 +32,7 @@ class NumberOfAccessedVariablesVisitorTest {
       " private Object foo(){ }" +
       "}");
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
-    int numberOfVariables = new NumberOfAccessedVariablesVisitor().getNumberOfAccessedVariables(methodTree);
+    int numberOfVariables = new NumberOfDefinedVariablesVisitor().getNumberOfAccessedVariables(methodTree);
     assertThat(numberOfVariables).isZero();
   }
 
@@ -45,7 +45,7 @@ class NumberOfAccessedVariablesVisitorTest {
       + "}" +
       "}");
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
-    int numberOfVariables = new NumberOfAccessedVariablesVisitor().getNumberOfAccessedVariables(methodTree);
+    int numberOfVariables = new NumberOfDefinedVariablesVisitor().getNumberOfAccessedVariables(methodTree);
     assertThat(numberOfVariables).isEqualTo(3);
   }
 
@@ -60,7 +60,7 @@ class NumberOfAccessedVariablesVisitorTest {
       + "}" +
       "}");
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
-    int numberOfVariables = new NumberOfAccessedVariablesVisitor().getNumberOfAccessedVariables(methodTree);
+    int numberOfVariables = new NumberOfDefinedVariablesVisitor().getNumberOfAccessedVariables(methodTree);
     assertThat(numberOfVariables).isEqualTo(2);
   }
 

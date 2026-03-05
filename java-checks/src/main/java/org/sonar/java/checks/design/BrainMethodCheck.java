@@ -59,8 +59,8 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor implements End
   @RuleProperty(key = "nestingThreshold", description = "The maximum nesting level allowed.", defaultValue = "" + DEFAULT_NESTING_THRESHOLD)
   public int nestingThreshold = DEFAULT_NESTING_THRESHOLD;
 
-  @RuleProperty(key = "noavThreshold", description = "The maximum number of accessed variables allowed.", defaultValue = "" + DEFAULT_VARIABLES_THRESHOLD)
-  public int noavThreshold = DEFAULT_VARIABLES_THRESHOLD;
+  @RuleProperty(key = "nodvThreshold", description = "The maximum number of defined local variables allowed.", defaultValue = "" + DEFAULT_VARIABLES_THRESHOLD)
+  public int nodvThreshold = DEFAULT_VARIABLES_THRESHOLD;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -84,19 +84,19 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor implements End
     int cyclomaticComplexity = metricsComputer.getComplexityNodes(methodTree).size();
     int maxNestingLevel = metricsComputer.getMethodNestingLevel(methodTree);
     int linesOfCode = metricsComputer.getLinesOfCode(methodTree.block());
-    int numberOfAccessedVariables = metricsComputer.getNumberOfAccessedVariables(methodTree);
+    int numberOfDefinedVariables = metricsComputer.getNumberOfDefinedVariables(methodTree);
 
     if (linesOfCode >= locThreshold &&
       cyclomaticComplexity >= cyclomaticThreshold &&
       maxNestingLevel >= nestingThreshold &&
-      numberOfAccessedVariables >= noavThreshold) {
+      numberOfDefinedVariables >= nodvThreshold) {
 
-      int brainScore = numberOfAccessedVariables + cyclomaticComplexity + maxNestingLevel * linesOfCode;
+      int brainScore = numberOfDefinedVariables + cyclomaticComplexity + maxNestingLevel * linesOfCode;
       String issueMessage = String.format(ISSUE_MESSAGE,
         linesOfCode, locThreshold - 1,
         cyclomaticComplexity, cyclomaticThreshold - 1,
         maxNestingLevel, nestingThreshold - 1,
-        numberOfAccessedVariables, noavThreshold - 1);
+        numberOfDefinedVariables, nodvThreshold - 1);
 
       AnalyzerMessage analyzerMessage = new AnalyzerMessage(this, context.getInputFile(),
         AnalyzerMessage.textSpanFor(methodTree.simpleName()), issueMessage, 0);

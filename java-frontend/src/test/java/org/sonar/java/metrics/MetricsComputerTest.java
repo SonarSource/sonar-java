@@ -56,9 +56,9 @@ class MetricsComputerTest implements MetricsScannerContext {
     mc.getMethodComplexity(methodTree);
     assertThat(mc.getMethodComplexity()).containsKey(methodTree.hashCode());
     
-    assertThat(mc.getMethodNumberOfAccessedVariables()).isEmpty();
-    mc.getNumberOfAccessedVariables(methodTree);
-    assertThat(mc.getMethodNumberOfAccessedVariables()).containsKey(methodTree.hashCode());
+    assertThat(mc.getMethodNumberOfDefinedVariables()).isEmpty();
+    mc.getNumberOfDefinedVariables(methodTree);
+    assertThat(mc.getMethodNumberOfDefinedVariables()).containsKey(methodTree.hashCode());
     
     assertThat(mc.getTreeLinesOfCode()).isEmpty();
     mc.getLinesOfCode(methodTree);

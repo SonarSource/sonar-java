@@ -20,18 +20,18 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-public class NumberOfAccessedVariablesVisitor extends BaseTreeVisitor {
-  private int numberOfAccessedVariables = 0;
+public class NumberOfDefinedVariablesVisitor extends BaseTreeVisitor {
+  private int numberOfDefinedVariables = 0;
 
   @Override
   public void visitVariable(VariableTree tree) {
-    numberOfAccessedVariables++;
+    numberOfDefinedVariables++;
   }
 
   public int getNumberOfAccessedVariables(MethodTree tree) {
-    numberOfAccessedVariables = 0;
+    numberOfDefinedVariables = 0;
     scan(tree);
-    return numberOfAccessedVariables;
+    return numberOfDefinedVariables;
   }
 
 }
