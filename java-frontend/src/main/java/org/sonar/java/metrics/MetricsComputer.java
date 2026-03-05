@@ -57,7 +57,7 @@ public class MetricsComputer {
   NumberOfDefinedVariablesVisitor methodBodyVisitor = new NumberOfDefinedVariablesVisitor();
 
   public int getNumberOfDefinedVariables(MethodTree tree) {
-    return methodNumberOfDefinedVariables.computeIfAbsent(tree.hashCode(), k -> methodBodyVisitor.getNumberOfAccessedVariables(tree));
+    return methodNumberOfDefinedVariables.computeIfAbsent(tree.hashCode(), k -> methodBodyVisitor.getNumberOfDefinedVariables(tree));
   }
 
   LinesOfCodeVisitor linesOfCodeVisitor = new LinesOfCodeVisitor();

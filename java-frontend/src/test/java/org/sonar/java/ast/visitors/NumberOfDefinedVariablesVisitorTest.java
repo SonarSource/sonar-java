@@ -32,7 +32,7 @@ class NumberOfDefinedVariablesVisitorTest {
       " private Object foo(){ }" +
       "}");
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
-    int numberOfVariables = new NumberOfDefinedVariablesVisitor().getNumberOfAccessedVariables(methodTree);
+    int numberOfVariables = new NumberOfDefinedVariablesVisitor().getNumberOfDefinedVariables(methodTree);
     assertThat(numberOfVariables).isZero();
   }
 
@@ -45,7 +45,7 @@ class NumberOfDefinedVariablesVisitorTest {
       + "}" +
       "}");
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
-    int numberOfVariables = new NumberOfDefinedVariablesVisitor().getNumberOfAccessedVariables(methodTree);
+    int numberOfVariables = new NumberOfDefinedVariablesVisitor().getNumberOfDefinedVariables(methodTree);
     assertThat(numberOfVariables).isEqualTo(3);
   }
 
@@ -60,7 +60,7 @@ class NumberOfDefinedVariablesVisitorTest {
       + "}" +
       "}");
     MethodTree methodTree = (MethodTree) ((ClassTree) cut.types().get(0)).members().get(0);
-    int numberOfVariables = new NumberOfDefinedVariablesVisitor().getNumberOfAccessedVariables(methodTree);
+    int numberOfVariables = new NumberOfDefinedVariablesVisitor().getNumberOfDefinedVariables(methodTree);
     assertThat(numberOfVariables).isEqualTo(2);
   }
 

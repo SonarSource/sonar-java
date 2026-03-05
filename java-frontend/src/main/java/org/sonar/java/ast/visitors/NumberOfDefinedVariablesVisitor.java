@@ -28,7 +28,7 @@ public class NumberOfDefinedVariablesVisitor extends BaseTreeVisitor {
     numberOfDefinedVariables++;
   }
 
-  public int getNumberOfAccessedVariables(MethodTree tree) {
+  public int getNumberOfDefinedVariables(MethodTree tree) {
     numberOfDefinedVariables = 0;
     scan(tree);
     return numberOfDefinedVariables;
