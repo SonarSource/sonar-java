@@ -6,6 +6,16 @@
   too many conditions, using lots of variables, and ultimately making it difficult to understand, maintain and reuse.
   <br>
   It is characterized by high LOC number, high cyclomatic and cognitive complexity, and a large number of variables being used.</p>
+<table>
+  <tbody>
+    <tr>
+      <td>Note</td>
+      <td>This rule uses a modified definition of Brain Method. Instead of the <strong>Number of Accessed Variables (NOAV)</strong> metric described
+      in the original research, this implementation uses the <strong>Number of Defined Variables (NODV)</strong> metric, which counts the number of
+      distinct local variables defined within the method’s scope.</td>
+    </tr>
+  </tbody>
+</table>
 <h3>What is the potential impact?</h3>
 <p>Brain Methods are often hard to cover with tests, because of their deep nesting, and they are error-prone, because of the many local variables they
 usually introduce. Such methods will be very hard to read and understand for anyone outside who created them, and therefore hard to maintain and fix

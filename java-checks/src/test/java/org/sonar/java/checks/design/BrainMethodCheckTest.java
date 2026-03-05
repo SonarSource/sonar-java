@@ -40,7 +40,7 @@ class BrainMethodCheckTest {
     var check = new BrainMethodCheck();
 
     check.locThreshold = 120;
-    check.noavThreshold = 36;
+    check.nodvThreshold = 36;
     check.nestingThreshold = 8;
     check.cyclomaticThreshold = 45;
 
@@ -63,7 +63,7 @@ class BrainMethodCheckTest {
     var check = new BrainMethodCheck();
 
     check.locThreshold = 14;
-    check.noavThreshold = 4;
+    check.nodvThreshold = 4;
     check.cyclomaticThreshold = 5;
 
     CheckVerifier.newVerifier()
@@ -77,7 +77,7 @@ class BrainMethodCheckTest {
     var check = new BrainMethodCheck();
 
     check.locThreshold = 4;
-    check.noavThreshold = 2;
+    check.nodvThreshold = 2;
     check.cyclomaticThreshold = 1;
     check.nestingThreshold = 1;
 

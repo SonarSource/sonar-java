@@ -26,7 +26,7 @@ import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.ast.visitors.MethodNestingLevelVisitor;
-import org.sonar.java.ast.visitors.NumberOfAccessedVariablesVisitor;
+import org.sonar.java.ast.visitors.NumberOfDefinedVariablesVisitor;
 import org.sonar.java.ast.visitors.StatementVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -37,7 +37,7 @@ public class MetricsComputer {
   private final Map<Integer, List<Tree>> methodComplexityNodes = new HashMap<>();
   private final Map<Integer, CognitiveComplexityVisitor.Result> methodComplexity = new HashMap<>();
   private final Map<Integer, Integer> compilationUnityComplexity = new HashMap<>();
-  private final Map<Integer, Integer> methodNumberOfAccessedVariables = new HashMap<>();
+  private final Map<Integer, Integer> methodNumberOfDefinedVariables = new HashMap<>();
   private final Map<Integer, Integer> treeLinesOfCode = new HashMap<>();
   private final Map<Integer, Integer> treeNumberOfStatements = new HashMap<>();
   private final Map<Integer, Integer> treeNumberOfCommentedLines = new HashMap<>();
@@ -54,10 +54,10 @@ public class MetricsComputer {
     return methodComplexity.computeIfAbsent(tree.hashCode(), k -> CognitiveComplexityVisitor.methodComplexity(tree));
   }
 
-  NumberOfAccessedVariablesVisitor methodBodyVisitor = new NumberOfAccessedVariablesVisitor();
+  NumberOfDefinedVariablesVisitor methodBodyVisitor = new NumberOfDefinedVariablesVisitor();
 
-  public int getNumberOfAccessedVariables(MethodTree tree) {
-    return methodNumberOfAccessedVariables.computeIfAbsent(tree.hashCode(), k -> methodBodyVisitor.getNumberOfAccessedVariables(tree));
+  public int getNumberOfDefinedVariables(MethodTree tree) {
+    return methodNumberOfDefinedVariables.computeIfAbsent(tree.hashCode(), k -> methodBodyVisitor.getNumberOfDefinedVariables(tree));
   }
 
   LinesOfCodeVisitor linesOfCodeVisitor = new LinesOfCodeVisitor();
@@ -114,8 +114,8 @@ public class MetricsComputer {
   }
 
   @VisibleForTesting
-  Map<Integer, Integer> getMethodNumberOfAccessedVariables() {
-    return methodNumberOfAccessedVariables;
+  Map<Integer, Integer> getMethodNumberOfDefinedVariables() {
+    return methodNumberOfDefinedVariables;
   }
 
   @VisibleForTesting
