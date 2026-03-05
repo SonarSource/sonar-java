@@ -74,6 +74,11 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
     }
   }
 
+  @Override
+  public void leaveNode(Tree tree) {
+    visitedUnaryExpressions.clear();
+  }
+
   private void checkUnaryExpression(UnaryExpressionTree unaryExpression) {
     if (visitedUnaryExpressions.contains(unaryExpression)) {
       return;
@@ -182,7 +187,6 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
     public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
       symbols.add(tree.identifier().symbol());
       super.visitMemberSelectExpression(tree);
-      visitedUnaryExpressions.clear();
     }
 
   }
