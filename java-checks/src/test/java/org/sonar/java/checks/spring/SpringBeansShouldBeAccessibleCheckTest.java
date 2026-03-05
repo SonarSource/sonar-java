@@ -115,7 +115,6 @@ class SpringBeansShouldBeAccessibleCheckTest {
     List<String> files = Arrays.asList(
       mainCodeSourcesPath(testFolder + "Ko/Ko.java"),
       mainCodeSourcesPath(testFolder + "app/Ok/Ok.java"),
-      mainCodeSourcesPath(testFolder + "app/notOk/NotOkImpl.java"),
       mainCodeSourcesPath(testFolder + "app/SpringBootApp1.java"),
       mainCodeSourcesPath(testFolder + "secondApp/AnotherOk.java"),
       mainCodeSourcesPath(testFolder + "secondApp/SpringBootApp2.java"));
@@ -156,6 +155,19 @@ class SpringBeansShouldBeAccessibleCheckTest {
       .onFiles(fourthAppTestFiles)
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void testBothAnnotationsTogether() {
+    final String folderApp = BASE_PATH + "mixed/app1/";
+    List<String> testFiles = Arrays.asList(
+      mainCodeSourcesPath(folderApp + "App1.java"),
+      mainCodeSourcesPath(folderApp + "visible/VisibleService.java"));
+
+    CheckVerifier.newVerifier()
+      .onFiles(testFiles)
+      .withCheck(new SpringBeansShouldBeAccessibleCheck())
+      .verifyNoIssues();
   }
 
   @Test
