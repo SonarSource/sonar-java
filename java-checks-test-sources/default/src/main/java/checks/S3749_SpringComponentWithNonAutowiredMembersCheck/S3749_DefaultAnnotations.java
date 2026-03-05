@@ -224,12 +224,13 @@ class LombokInjected1 {
 
   private final String injected; // Compliant
   @lombok.NonNull
-  private String notInjectedButNonNull; // Compliant
+  private String injectedNonNull; // Compliant
   private String notInjected; // Noncompliant {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
 //               ^^^^^^^^^^^
 
   public void foo() {
     System.out.println(injected);
+    System.out.println(injectedNonNull);
     System.out.println(notInjected);
   }
 
