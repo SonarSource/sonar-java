@@ -182,6 +182,7 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
     public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
       symbols.add(tree.identifier().symbol());
       super.visitMemberSelectExpression(tree);
+      visitedUnaryExpressions.clear();
     }
 
   }

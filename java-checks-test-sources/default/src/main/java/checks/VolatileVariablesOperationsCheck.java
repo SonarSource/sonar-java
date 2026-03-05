@@ -83,7 +83,8 @@ class VolatileVariablesOperationsCheck {
   }
 
   void assignments() {
-    count1 = 3 * count1 + 2; // Noncompliant
+    // An example such as the one below definitely shouldn't be applied on a volatile field, but it's probably also poor practice to apply it on an atomic field...
+    count1 = 3 * count1 + 2; // Noncompliant {{Use an "AtomicInteger" for this field; its operations are atomic.}}
 //  ^^^^^^
     count1 *= 1; // Noncompliant
 //  ^^^^^^
