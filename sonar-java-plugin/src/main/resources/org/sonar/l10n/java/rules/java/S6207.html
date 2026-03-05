@@ -19,6 +19,16 @@ record Person(String name, int age) {
     return name;
   }
 }
+
+record Person(String name, int age) {
+  Person(String name, int age) { // Noncompliant, this can be implemented with a compact constructor
+    if (age &lt; 0) {
+      throw new IllegalArgumentException("Negative age");
+    }
+    this.name = name;
+    this.age = age;
+  }
+}
 </pre>
 <h3>Compliant solution</h3>
 <pre>
