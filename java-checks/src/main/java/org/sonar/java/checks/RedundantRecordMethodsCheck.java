@@ -78,7 +78,7 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
       return;
     }
     if (constructor.parameters().size() != componentNames.size()
-      || !constructor.parameters().stream().allMatch(parameter -> componentNames.contains(parameter.symbol().name()))) {
+      || constructor.parameters().stream().anyMatch(parameter -> !componentNames.contains(parameter.symbol().name()))) {
       return;
     }
 
