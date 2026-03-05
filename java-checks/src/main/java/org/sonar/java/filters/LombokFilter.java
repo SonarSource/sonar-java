@@ -37,7 +37,6 @@ import org.sonar.java.checks.UselessImportCheck;
 import org.sonar.java.checks.UtilityClassWithPublicConstructorCheck;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.naming.BadFieldNameCheck;
-import org.sonar.java.checks.spring.SpringComponentWithNonAutowiredMembersCheck;
 import org.sonar.java.checks.tests.AssertionTypesCheck;
 import org.sonar.java.checks.unused.UnusedPrivateFieldCheck;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -69,7 +68,6 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     /* S1450 */ PrivateFieldUsedLocallyCheck.class,
     /* S4248 */ RegexPatternsNeedlesslyCheck.class,
     /* S2159 */ SillyEqualsCheck.class,
-    /* S3749 */ SpringComponentWithNonAutowiredMembersCheck.class,
     /* S2325 */ StaticMethodCheck.class,
     /* S1068 */ UnusedPrivateFieldCheck.class,
     /* S1128 */ UselessImportCheck.class,
@@ -130,7 +128,7 @@ public class LombokFilter extends BaseTreeVisitorIssueFilter {
     boolean generatesEquals = usesAnnotation(tree, GENERATE_EQUALS);
 
     excludeLinesIfTrue(generatesEquals || usesAnnotation(tree, GENERATE_UNUSED_FIELD_RELATED_METHODS), tree, UnusedPrivateFieldCheck.class, PrivateFieldUsedLocallyCheck.class);
-    excludeLinesIfTrue(usesAnnotation(tree, GENERATE_CONSTRUCTOR), tree, AtLeastOneConstructorCheck.class, SpringComponentWithNonAutowiredMembersCheck.class);
+    excludeLinesIfTrue(usesAnnotation(tree, GENERATE_CONSTRUCTOR), tree, AtLeastOneConstructorCheck.class);
     excludeLinesIfTrue(generatesEquals, tree, EqualsNotOverriddenInSubclassCheck.class, EqualsNotOverriddenWithCompareToCheck.class);
     excludeLinesIfTrue(generatesNonPublicConstructor(tree), tree, UtilityClassWithPublicConstructorCheck.class);
     boolean isUtilityClass = usesAnnotation(tree, UTILITY_CLASS);
