@@ -16,7 +16,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +25,9 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -37,6 +38,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -64,7 +66,7 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
       if (member.is(Tree.Kind.CONSTRUCTOR)) {
         checkConstructor((MethodTree) member, componentNames);
       } else if (member.is(Tree.Kind.METHOD)) {
-        checkMethod((MethodTree) member, components, componentNames);
+        checkMethod((MethodTree) member, components);
       }
     }
   }
@@ -95,38 +97,30 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private void checkMethod(MethodTree method, List<Symbol.VariableSymbol> components, Set<String> componentsByName) {
-    String methodName = method.symbol().name();
-    if (!componentsByName.contains(methodName)) {
+  private void checkMethod(MethodTree method, List<Symbol.VariableSymbol> components) {
+    if (isAnnotated(method) || !method.parameters().isEmpty()) {
       return;
     }
-    if (onlyReturnsRawValue(method, components)) {
+
+    String methodName = method.symbol().name();
+    Symbol accessedComponent = components.stream().filter(c -> c.name().equals(methodName)).findFirst().orElse(null);
+    if (accessedComponent == null) {
+      return;
+    }
+
+    var accessorVisitor = new AccessorVisitor();
+    method.block().accept(accessorVisitor);
+    if (accessorVisitor.containsLogic) {
+      return;
+    }
+    if (accessorVisitor.returnedExpressions.stream().allMatch(e -> isComponent(e, accessedComponent))) {
       reportIssue(method.simpleName(), "Remove this redundant method which is the same as a default one.");
     }
   }
 
-  public static boolean onlyReturnsRawValue(MethodTree method, Collection<Symbol.VariableSymbol> components) {
-    Optional<ReturnStatementTree> returnStatement = getFirstReturnStatement(method);
-    if (!returnStatement.isPresent()) {
-      return false;
-    }
-    ExpressionTree expression = returnStatement.get().expression();
-    Symbol identifierSymbol;
-    if (expression.is(Tree.Kind.IDENTIFIER)) {
-      identifierSymbol = ((IdentifierTree) expression).symbol();
-    } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      identifierSymbol = (((MemberSelectExpressionTree) expression).identifier()).symbol();
-    } else {
-      return false;
-    }
-    return components.stream().anyMatch(identifierSymbol::equals);
-  }
-
-  private static Optional<ReturnStatementTree> getFirstReturnStatement(MethodTree method) {
-    return method.block().body().stream()
-      .filter(statement -> statement.is(Tree.Kind.RETURN_STATEMENT))
-      .map(ReturnStatementTree.class::cast)
-      .findFirst();
+  private static boolean isComponent(ExpressionTree expression, Symbol component) {
+    return (expression instanceof IdentifierTree identifier && component.equals(identifier.symbol()))
+      || (expression instanceof MemberSelectExpressionTree memberSelect && component.equals(memberSelect.identifier().symbol()));
   }
 
   private static boolean isAnnotated(MethodTree method) {
@@ -257,6 +251,49 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
       unchangedParameters.removeIf(component -> !other.unchangedParameters.contains(component));
       logicBeforeAssignments = logicBeforeAssignments || other.logicBeforeAssignments;
       logicAfterAssignments = logicAfterAssignments || other.logicAfterAssignments;
+    }
+  }
+
+  private static class AccessorVisitor extends BaseTreeVisitor {
+
+    Set<ExpressionTree> returnedExpressions = new HashSet<>();
+
+    boolean containsLogic = false;
+
+    @Override
+    public void visitReturnStatement(ReturnStatementTree tree) {
+      returnedExpressions.add(tree.expression());
+      super.visitReturnStatement(tree);
+    }
+
+    @Override
+    public void visitAssertStatement(AssertStatementTree tree) {
+      containsLogic = true;
+      super.visitAssertStatement(tree);
+    }
+
+    @Override
+    public void visitThrowStatement(ThrowStatementTree tree) {
+      containsLogic = true;
+      super.visitThrowStatement(tree);
+    }
+
+    @Override
+    public void visitExpressionStatement(ExpressionStatementTree tree) {
+      containsLogic = true;
+      super.visitExpressionStatement(tree);
+    }
+
+    @Override
+    public void visitVariable(VariableTree tree) {
+      containsLogic = true;
+      super.visitVariable(tree);
+    }
+
+    @Override
+    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+      containsLogic = true;
+      super.visitAssignmentExpression(tree);
     }
   }
 }
