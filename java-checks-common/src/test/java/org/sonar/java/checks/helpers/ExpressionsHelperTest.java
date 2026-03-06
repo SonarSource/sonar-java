@@ -21,7 +21,9 @@ import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -29,6 +31,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -232,4 +235,35 @@ class ExpressionsHelperTest extends JParserTestUtils {
     var methodInvocationTree =  (MethodInvocationTree) exprStmtTree.expression();
     return methodInvocationTree.arguments().get(0);
   }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"byte", "short", "int", "long", "float", "double", "boolean", "char",
+    "String", "Integer", "Long", "Double", "Float", "Boolean", "java.util.Optional<String>"})
+  void isStandardDataType_basicTypes(String type) {
+    String code = newCode(
+      "void f() {",
+      "  " + type + " x;",
+      "}"
+    );
+    MethodTree method = methodTree(code);
+    VariableTree variable = (VariableTree) method.block().body().get(0);
+    Type variableType = variable.type().symbolType();
+    assertThat(ExpressionsHelper.isStandardDataType(variableType)).isTrue();
+  }
+
+  @Test
+  void isStandardDataType_customClass() {
+    String code = newCode(
+      "static class CustomClass {}",
+      "void f() {",
+      "  CustomClass x;",
+      "}"
+    );
+    // The method is at index 1 (after the CustomClass at index 0)
+    MethodTree method = (MethodTree) classTree(code).members().get(1);
+    VariableTree variable = (VariableTree) method.block().body().get(0);
+    Type type = variable.type().symbolType();
+    assertThat(ExpressionsHelper.isStandardDataType(type)).isFalse();
+  }
+
 }

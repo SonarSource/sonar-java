@@ -1,37 +1,16 @@
-package checks.spring;
+package checks.spring.s6856;
 
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-public class MissingPathVariableAnnotationCheckSample {
-
-  class ParentController {
-    @ModelAttribute("viewCfg")
-    public String getView(@PathVariable("view") final String view){
-      return "";
-    }
-  }
-  class ChildController extends ParentController {
-    @GetMapping("/model/{view}") //Compliant, parent class defines 'view' path var in the model attribute
-    public String list(@ModelAttribute("viewCfg") final String viewConfig){
-      return "";
-    }
-  }
-  class MissingParentChildController extends MissingPathVariableParentInDifferentSample {
-    @GetMapping("/model/{view}") // Noncompliant
-    // FP: parent class in different file, cannot collect the model attribute
-    public String list(@ModelAttribute("parentView") final String viewConfig){
-      return "";
-    }
-  }
+public class MissingPathVariableAnnotationCheck_PathVariable {
 
   @GetMapping("/{name:[a-z-]+}-{version:\\d\\.\\d\\.\\d}{ext:\\.[a-z]+}") // Noncompliant
   public void handleWithoutExt(@PathVariable String name, @PathVariable String version) {}
@@ -241,61 +220,6 @@ public class MissingPathVariableAnnotationCheckSample {
   @GetMapping("/{id}/{a:${placeHolder}xxxx}/{b:${{placeHolder}}}")
   public String getPlaceHolder(@PathVariable String id, @PathVariable String a, @PathVariable String b) {
     return "Hello World";
-  }
-
-  static class ModelA {
-    @ModelAttribute("user")
-    public String getUser(@PathVariable String id, @PathVariable String name) { // always compliant when method  annotated with @ModelAttribute
-      return "user"; // because the case is too complex to handle
-    }
-
-    @ModelAttribute("empty")
-    public String emptyModel(String notPathVariable){
-      return "";
-    }
-
-    @GetMapping("/{id}/{name}")
-    public String get() { // compliant, @ModelAttribute is always called before @GetMapping to generate the model. In our case model attribute
-      // consume the id and name path variables
-      return "Hello World";
-    }
-
-    @GetMapping("/{id}/{name}/{age}") // Compliant
-    public String get2(@PathVariable String age) { // compliant
-      return "Hello World";
-    }
-
-    @GetMapping("/{id}/{name}/{age}") // Noncompliant {{Bind template variable "age" to a method parameter.}}
-    public String get3() {
-      return "Hello World";
-    }
-  }
-
-  static class ModelB {
-    @ModelAttribute("user")
-    public String getUser(@PathVariable String id) {
-      return "user";
-    }
-
-    @ModelAttribute("id")
-    public String getId(@PathVariable String name) {
-      return "id";
-    }
-
-    @GetMapping("/{id}/{name}")
-    public String get() { // compliant
-      return "Hello World";
-    }
-
-    @GetMapping("/{id}/{name}/{age}")
-    public String get2(@PathVariable String age) { // compliant
-      return "Hello World";
-    }
-
-    @GetMapping("/{id}/{name}/{age}") // Noncompliant
-    public String get3() {
-      return "Hello World";
-    }
   }
 
 

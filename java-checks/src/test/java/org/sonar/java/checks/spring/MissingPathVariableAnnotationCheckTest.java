@@ -16,22 +16,69 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class MissingPathVariableAnnotationCheckTest {
-  private static final String TEST_SOURCE_FILE = mainCodeSourcesPath("checks/spring/MissingPathVariableAnnotationCheckSample.java");
+  private static final String TEST_SOURCE_FILE = mainCodeSourcesPath("checks/spring/s6856/MissingPathVariableAnnotationCheck_PathVariable.java");
+  private static final String TEST_SOURCE_FILE_MODEL_ATTRIBUTE = mainCodeSourcesPath("checks/spring/s6856/MissingPathVariableAnnotationCheck_ModelAttribute.java");
+  private static final String SETTER_PROPERTIES_TEST_FILE = mainCodeSourcesPath("checks/spring/s6856/ExtractSetterPropertiesTestData.java");
+
   private static final JavaFileScanner check = new MissingPathVariableAnnotationCheck();
+  private static final Map<String, Type> testTypes = new HashMap<>();
+
+  @BeforeAll
+  static void scanTestFile() {
+    IssuableSubscriptionVisitor typeCollector = new IssuableSubscriptionVisitor() {
+      @Override
+      public java.util.List<Tree.Kind> nodesToVisit() {
+        return java.util.List.of(Tree.Kind.CLASS);
+      }
+
+      @Override
+      public void visitNode(Tree tree) {
+        ClassTree classTree = (ClassTree) tree;
+        Symbol.TypeSymbol symbol = classTree.symbol();
+        testTypes.put(symbol.name(), symbol.type());
+      }
+    };
+
+    CheckVerifier.newVerifier()
+      .onFile(SETTER_PROPERTIES_TEST_FILE)
+      .withCheck(typeCollector)
+      .verifyNoIssues();
+  }
 
   @Test
   void test_compiling() {
     CheckVerifier.newVerifier()
       .onFile(TEST_SOURCE_FILE)
+      .withCheck(check)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_model_attribute() {
+    CheckVerifier.newVerifier()
+      .onFile(TEST_SOURCE_FILE_MODEL_ATTRIBUTE)
       .withCheck(check)
       .verifyIssues();
   }
@@ -46,7 +93,7 @@ class MissingPathVariableAnnotationCheckTest {
   }
 
   @Test
-  void expr() {
+  void test_composed_request_mapping() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/spring/SpringComposedRequestMappingCheck.java")
       .withCheck(check)
@@ -113,6 +160,68 @@ class MissingPathVariableAnnotationCheckTest {
       .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReport.class);
     assertThatThrownBy(() -> MissingPathVariableAnnotationCheck.PathPatternParser.parsePathVariables("{x:{{{}}}"))
       .isInstanceOf(MissingPathVariableAnnotationCheck.DoNotReport.class);
+  }
+
+  @ParameterizedTest(name = "[{index}] {0}")
+  @MethodSource("provideExtractSetterPropertiesTestCases")
+  void test_extractSetterProperties(String typeName, Set<String> expectedProperties, Set<String> unexpectedProperties) {
+    Type type = testTypes.get(typeName);
+    Set<String> properties = MissingPathVariableAnnotationCheck.extractSetterProperties(type);
+
+    if (!expectedProperties.isEmpty()) {
+      assertThat(properties).containsExactlyInAnyOrderElementsOf(expectedProperties);
+    } else {
+      assertThat(properties).isEmpty();
+    }
+
+    if (!unexpectedProperties.isEmpty()) {
+      assertThat(properties).doesNotContainAnyElementsOf(unexpectedProperties);
+    }
+  }
+
+  private static Stream<Arguments> provideExtractSetterPropertiesTestCases() {
+    return Stream.of(
+      Arguments.of(
+        "ExplicitSetters",
+        Set.of("name", "age", "active"),
+        Set.of("invalid", "empty", "multiple", "private", "static")
+      ),
+      Arguments.of(
+        "LombokData",
+        Set.of("project", "year", "month"),
+        Set.of("constant", "staticField")
+      ),
+      Arguments.of(
+        "LombokClassLevelSetter",
+        Set.of("firstName", "lastName"),
+        Set.of("id", "count")
+      ),
+      Arguments.of(
+        "LombokFieldLevelSetter",
+        Set.of("email", "score"),
+        Set.of("noSetter", "staticField")
+      ),
+      Arguments.of(
+        "MixedSetters",
+        Set.of("lombokField", "explicitField"),
+        Set.of()
+      ),
+      Arguments.of(
+        "NoSetters",
+        Set.of(),
+        Set.of("field")
+      ),
+      Arguments.of(
+        "EmptyClass",
+        Set.of(),
+        Set.of()
+      ),
+      Arguments.of(
+        "OnlyGetters",
+        Set.of(),
+        Set.of("name", "age")
+      )
+    );
   }
 
 }

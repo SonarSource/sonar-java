@@ -1,4 +1,4 @@
-package checks.spring;
+package checks.spring.s6856;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;

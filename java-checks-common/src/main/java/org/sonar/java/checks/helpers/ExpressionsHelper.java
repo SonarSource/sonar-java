@@ -51,6 +51,16 @@ import static org.sonar.java.model.JUtils.hasUnknownTypeInHierarchy;
 
 public class ExpressionsHelper {
 
+  private static final Set<String> SIMPLE_TYPES = Set.of(
+    "java.lang.String",
+    "java.lang.Integer",
+    "java.lang.Long",
+    "java.lang.Double",
+    "java.lang.Float",
+    "java.lang.Boolean",
+    "java.util.Optional"
+  );
+
   private ExpressionsHelper() {
   }
 
@@ -275,6 +285,15 @@ public class ExpressionsHelper {
       .map(AssignmentExpressionTree::expression)
       .forEach(assignments::add);
     return assignments;
+  }
+
+  public static boolean isStandardDataType(Type type) {
+    if (type.isPrimitive()) {
+      return true;
+    }
+
+    String fqn = type.fullyQualifiedName();
+    return SIMPLE_TYPES.contains(fqn);
   }
 
 }
