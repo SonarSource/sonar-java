@@ -30,7 +30,7 @@ jobs:
     with:
       publishToBinaries: true
       mavenCentralSync: true
-      slackChannel: squad-jvm-notifs
+      slackChannel: squad-jvm-releases
       # We do not have any inputs if this workflow is triggered by a release event, hence we have to use a fallback for all inputs
       version: ${{ inputs.version || github.event.release.tag_name }}
       releaseId: ${{ inputs.releaseId || github.event.release.id }}
