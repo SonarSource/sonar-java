@@ -51,6 +51,14 @@ class DeadStoreCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_incomplete_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/UnusedVariablesFPCheck.java"))
+      .withCheck(new DeadStoreCheck())
+      .verifyNoIssues();
+  }
+
   private static class EraseSymbols extends BaseTreeVisitor {
 
     @Override
