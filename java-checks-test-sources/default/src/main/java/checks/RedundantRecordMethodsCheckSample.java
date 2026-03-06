@@ -165,7 +165,8 @@ public class RedundantRecordMethodsCheckSample {
   }
 
   record GetterWithBranches(String name, int age) {
-    public String name() {
+    public String name() { // Noncompliant {{Remove this redundant method which is the same as a default one.}}
+//                ^^^^
       if ((new Random()).nextBoolean()) {
         return this.name;
       } else {
@@ -225,6 +226,87 @@ public class RedundantRecordMethodsCheckSample {
         this.arg2 = arg2;
       } else {
         this.arg2 = 0;
+      }
+    }
+  }
+
+  record AccessorWithLoop(String name) {
+    public String name() { // Noncompliant {{Remove this redundant method which is the same as a default one.}}
+//                ^^^^
+      while (true) {
+        return name;
+      }
+    }
+  }
+
+  interface NamedThing {
+
+    String name();
+
+  }
+
+  record AnnotatedAccessor(String name) implements NamedThing {
+    @Override
+    public String name() { // Compliant, no issues are raised for annotated accessors
+      return name;
+    }
+  }
+
+  record DifferentlyNamedAccessor(String name) {
+    public String getName() { // Compliant, no issues are raised for accessors with different names
+      return name;
+    }
+  }
+
+  record AccessorWithParameter(String name) {
+    public String name(int x) { // Compliant, no issues are raised for accessors with parameters
+      return name;
+    }
+  }
+
+  record AccessorWithLogic(String name) {
+    @Override
+    public String name() { // Compliant, no issues are raised for accessors with logic
+      System.out.println("Side effects !");
+      return name;
+    }
+  }
+
+  record AccessorWithLogic2(String name) {
+    public String name() {
+      int x = 42;
+      System.out.println(x);
+      return name;
+    }
+  }
+
+  record AccessorWithAssertion(String name) {
+    @Override
+    public String name() { // Compliant, no issues are raised for accessors with assertions
+      assert name != null;
+      return name;
+    }
+  }
+
+  record AccessorWithThrow(int age) {
+    @Override
+    public int age() { // Compliant, no issues are raised for accessors that throw exceptions
+      if (age < 0) {
+        throw new IllegalStateException("Negative age");
+      }
+      return age;
+    }
+  }
+
+  record AccessorWithValidation(int age) {
+    public int age() { // Compliant, no issues are raised for accessors that validate input
+      validate(age);
+      return age;
+    }
+
+    void validate(int age) {
+      if (age < 0) {
+        throw new IllegalStateException("Negative age");
       }
     }
   }
