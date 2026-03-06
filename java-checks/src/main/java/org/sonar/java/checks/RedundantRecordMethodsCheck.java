@@ -120,7 +120,7 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isComponent(ExpressionTree expression, Symbol component) {
     return (expression instanceof IdentifierTree identifier && component.equals(identifier.symbol()))
-      || expression instanceof MemberSelectExpressionTree memberSelect && component.equals(memberSelect.identifier().symbol());
+      || (expression instanceof MemberSelectExpressionTree memberSelect && component.equals(memberSelect.identifier().symbol()));
   }
 
   private static boolean isAnnotated(MethodTree method) {

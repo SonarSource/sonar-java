@@ -258,6 +258,15 @@ public class RedundantRecordMethodsCheckSample {
     }
   }
 
+  record AccessorSettingField(String name) {
+    private static int AGE;
+
+    public String name() {
+      AGE = 0;
+      return name;
+    }
+  }
+
   record AccessorWithParameter(String name) {
     public String name(int x) { // Compliant, no issues are raised for accessors with parameters
       return name;
@@ -265,7 +274,6 @@ public class RedundantRecordMethodsCheckSample {
   }
 
   record AccessorWithLogic(String name) {
-    @Override
     public String name() { // Compliant, no issues are raised for accessors with logic
       System.out.println("Side effects !");
       return name;
@@ -281,7 +289,6 @@ public class RedundantRecordMethodsCheckSample {
   }
 
   record AccessorWithAssertion(String name) {
-    @Override
     public String name() { // Compliant, no issues are raised for accessors with assertions
       assert name != null;
       return name;
@@ -289,7 +296,6 @@ public class RedundantRecordMethodsCheckSample {
   }
 
   record AccessorWithThrow(int age) {
-    @Override
     public int age() { // Compliant, no issues are raised for accessors that throw exceptions
       if (age < 0) {
         throw new IllegalStateException("Negative age");
@@ -305,7 +311,7 @@ public class RedundantRecordMethodsCheckSample {
     }
 
     void validate(int age) {
-      if (age < 0) {
+      if (this.age < 0) {
         throw new IllegalStateException("Negative age");
       }
     }
