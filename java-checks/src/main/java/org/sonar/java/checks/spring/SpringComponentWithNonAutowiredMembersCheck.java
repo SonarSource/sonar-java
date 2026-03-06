@@ -70,15 +70,22 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
   @Override
   public void visitNode(Tree tree) {
     ClassTree clazzTree = (ClassTree) tree;
-    Set<Symbol> symbolsUsedInConstructors = symbolsUsedInConstructors(clazzTree);
+    SymbolMetadata classMetadata = clazzTree.symbol().metadata();
 
-    if (isSpringSingletonComponent(clazzTree.symbol().metadata())) {
+    if (classMetadata.isAnnotatedWith("lombok.AllArgsConstructor")) {
+      return;
+    }
+    boolean requiredArgsConstructorAnnotationPresent = classMetadata.isAnnotatedWith("lombok.RequiredArgsConstructor");
+
+    Set<Symbol> symbolsUsedInConstructors = symbolsUsedInConstructors(clazzTree);
+    if (isSpringSingletonComponent(classMetadata)) {
       clazzTree.members().stream().filter(v -> v.is(Tree.Kind.VARIABLE))
         .map(VariableTree.class::cast)
         .filter(v -> !v.symbol().isStatic())
         .filter(v -> !isSpringInjectionAnnotated(v.symbol().metadata()))
         .filter(v -> !isCustomInjectionAnnotated(v.symbol().metadata()))
         .filter(v -> !symbolsUsedInConstructors.contains(v.symbol()))
+        .filter(v -> !isInjectedByLombok(v, requiredArgsConstructorAnnotationPresent))
         .forEach(v -> reportIssue(v.simpleName(), "Annotate this member with \"@Autowired\", \"@Resource\", \"@Inject\", or \"@Value\", or remove it."));
     }
   }
@@ -101,6 +108,12 @@ public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscri
 
   private static boolean isUsingConfigurationProperties(SymbolMetadata classMeta) {
     return classMeta.isAnnotatedWith("org.springframework.boot.context.properties.ConfigurationProperties");
+  }
+
+  private static boolean isInjectedByLombok(VariableTree field, boolean requiredArgsConstructorAnnotationPresent) {
+    return requiredArgsConstructorAnnotationPresent
+      && field.initializer() == null
+      && (field.symbol().isFinal() || field.symbol().metadata().isAnnotatedWith("lombok.NonNull"));
   }
 
   private Set<Symbol> symbolsUsedInConstructors(ClassTree clazzTree) {

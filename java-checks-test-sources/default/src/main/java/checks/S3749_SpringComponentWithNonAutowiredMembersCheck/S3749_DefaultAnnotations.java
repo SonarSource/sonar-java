@@ -5,6 +5,8 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,4 +201,52 @@ class JakartaRepo {
 
   @jakarta.annotation.Resource
   String email2 = null; // Compliant
+}
+
+@Service
+@RequiredArgsConstructor
+class LombokInjected {
+
+  private final String injected; // Compliant
+  private String notInjected; // Noncompliant {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+//               ^^^^^^^^^^^
+
+  public void foo() {
+    System.out.println(injected);
+    System.out.println(notInjected);
+  }
+
+}
+
+@Component
+@RequiredArgsConstructor
+class LombokInjected1 {
+
+  private final String injected; // Compliant
+  @lombok.NonNull
+  private String injectedNonNull; // Compliant
+  private String notInjected; // Noncompliant {{Annotate this member with "@Autowired", "@Resource", "@Inject", or "@Value", or remove it.}}
+//               ^^^^^^^^^^^
+
+  public void foo() {
+    System.out.println(injected);
+    System.out.println(injectedNonNull);
+    System.out.println(notInjected);
+  }
+
+}
+
+@Service
+@AllArgsConstructor
+class LombokInjected2 {
+
+  private final String injected; // Compliant
+  private String notInjected; // Compliant
+
+
+  public void foo() {
+    System.out.println(injected);
+    System.out.println(notInjected);
+  }
+
 }
