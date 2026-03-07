@@ -26,7 +26,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -34,6 +36,9 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.java.checks.helpers.ExpressionsHelper.isStandardDataType;
+import static org.sonar.java.checks.helpers.MethodTreeUtils.isSetterLike;
 
 @Rule(key = "S6856")
 public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisitor {
@@ -50,6 +55,10 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     "org.springframework.web.bind.annotation.PutMapping",
     "org.springframework.web.bind.annotation.DeleteMapping",
     "org.springframework.web.bind.annotation.PatchMapping");
+
+  private static final Set<String> LOMBOK_SETTER_ANNOTATIONS = Set.of(
+    "lombok.Data",
+    "lombok.Setter");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -163,7 +172,7 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       templateVariables.add(new UriInfo<>(ann, templateVariablesFromMapping(values)));
     }
 
-    // we handle the case where a path variable doesn't match to an uri parameter (/{aParam}/)
+    // we handle the case where a path variable doesn't match to uri parameter (/{aParam}/)
     Set<String> allTemplateVariables = templateVariables.stream()
       .flatMap(uri -> uri.value().stream())
       .collect(Collectors.toSet());
@@ -182,10 +191,14 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       return;
     }
 
+    // finally, we handle the case where a uri parameter (/{aParam}/) doesn't match to path- or ModelAttribute- inherited variables
     Set<String> allPathVariables = methodParameters.stream()
       .map(ParameterInfo::value)
       .collect(Collectors.toSet());
+    // Add properties inherited from @ModelAttribute methods
     allPathVariables.addAll(modelAttributeMethodParameters);
+    // Add properties inherited from @ModelAttribute class parameters
+    allPathVariables.addAll(extractModelAttributeClassProperties(method));
 
     templateVariables.stream()
       .filter(uri -> !allPathVariables.containsAll(uri.value()))
@@ -263,6 +276,73 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
 
   private static String removePropertyPlaceholder(String path){
     return path.replaceAll(PROPERTY_PLACEHOLDER_PATTERN, "");
+  }
+
+  private static Set<String> extractModelAttributeClassProperties(MethodTree method) {
+    Set<String> properties = new HashSet<>();
+
+    for (var parameter : method.parameters()) {
+      SymbolMetadata metadata = parameter.symbol().metadata();
+      Type parameterType = parameter.type().symbolType();
+
+      if (!metadata.isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION) || parameterType.isUnknown()
+        || isStandardDataType(parameterType) || parameterType.isSubtypeOf(MAP)) {
+        continue;
+      }
+
+      // Extract setter properties from the class
+      properties.addAll(extractSetterProperties(parameterType));
+    }
+
+    return properties;
+  }
+
+  @VisibleForTesting
+  static Set<String> extractSetterProperties(Type type) {
+    Symbol.TypeSymbol typeSymbol = type.symbol();
+
+    // Extract properties from Lombok-generated setters
+    Set<String> properties = new HashSet<>(checkForLombokSetters(typeSymbol));
+
+    // Extract properties from explicit setter methods
+    for (Symbol member : typeSymbol.memberSymbols()) {
+      if (!member.isMethodSymbol()) {
+        continue;
+      }
+
+      Symbol.MethodSymbol method = (Symbol.MethodSymbol) member;
+
+      // Check if it's a setter and extract a property name
+      isSetterLike(method).ifPresent(properties::add);
+    }
+
+    return properties;
+  }
+
+  private static Set<String> checkForLombokSetters(Symbol.TypeSymbol typeSymbol) {
+    Set<String> properties = new HashSet<>();
+
+    // Check if the class has Lombok annotations that generate setters
+    boolean hasLombokSetters = typeSymbol.metadata().annotations().stream()
+      .anyMatch(annotation -> LOMBOK_SETTER_ANNOTATIONS.contains(annotation.symbol().type().fullyQualifiedName()));
+
+    // Extract properties from fields if Lombok generates setters
+    for (Symbol.VariableSymbol field : typeSymbol.memberSymbols().stream().filter(Symbol::isVariableSymbol).map(Symbol.VariableSymbol.class::cast).toList()) {
+      if (field.isStatic() || field.isFinal()) {
+        continue;
+      }
+
+      // Check if field has @Setter annotation at field level
+      boolean hasFieldLevelSetter = field.metadata().annotations().stream()
+        .anyMatch(annotation -> "lombok.Setter".equals(annotation.symbol().type().fullyQualifiedName()));
+
+      // Add property if class-level or field-level Lombok setter exists
+      if (hasLombokSetters || hasFieldLevelSetter) {
+        properties.add(field.name());
+      }
+    }
+
+    return properties;
   }
 
   static class PathPatternParser {

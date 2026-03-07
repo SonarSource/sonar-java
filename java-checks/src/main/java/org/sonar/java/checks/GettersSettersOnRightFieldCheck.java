@@ -33,6 +33,9 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.java.checks.helpers.MethodTreeUtils.isGetterLike;
+import static org.sonar.java.checks.helpers.MethodTreeUtils.isSetterLike;
+
 @Rule(key = "S4275")
 public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor {
 
@@ -46,39 +49,6 @@ public class GettersSettersOnRightFieldCheck extends IssuableSubscriptionVisitor
     MethodTree methodTree = (MethodTree) tree;
     isGetterLike(methodTree.symbol()).ifPresent(fieldName -> checkGetter(fieldName, methodTree));
     isSetterLike(methodTree.symbol()).ifPresent(fieldName -> checkSetter(fieldName, methodTree));
-  }
-
-  private static Optional<String> isGetterLike(Symbol.MethodSymbol methodSymbol) {
-    if (!methodSymbol.parameterTypes().isEmpty() || isPrivateStaticOrAbstract(methodSymbol)) {
-      return Optional.empty();
-    }
-    String methodName = methodSymbol.name();
-    if (methodName.length() > 3 && methodName.startsWith("get")) {
-      return Optional.of(lowerCaseFirstLetter(methodName.substring(3)));
-    }
-    if (methodName.length() > 2 && methodName.startsWith("is")) {
-      return Optional.of(lowerCaseFirstLetter(methodName.substring(2)));
-    }
-    return Optional.empty();
-  }
-
-  private static Optional<String> isSetterLike(Symbol.MethodSymbol methodSymbol) {
-    if (methodSymbol.parameterTypes().size() != 1 || isPrivateStaticOrAbstract(methodSymbol)) {
-      return Optional.empty();
-    }
-    String methodName = methodSymbol.name();
-    if (methodName.length() > 3 && methodName.startsWith("set") && methodSymbol.returnType().type().isVoid()) {
-      return Optional.of(lowerCaseFirstLetter(methodName.substring(3)));
-    }
-    return Optional.empty();
-  }
-
-  private static boolean isPrivateStaticOrAbstract(Symbol.MethodSymbol methodSymbol) {
-    return methodSymbol.isPrivate() || methodSymbol.isStatic() || methodSymbol.isAbstract();
-  }
-
-  private static String lowerCaseFirstLetter(String methodName) {
-    return Character.toLowerCase(methodName.charAt(0)) + methodName.substring(1);
   }
 
   private void checkGetter(String fieldName, MethodTree methodTree) {
