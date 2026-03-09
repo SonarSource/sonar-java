@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
@@ -36,7 +37,9 @@ public class SwitchAtLeastThreeCasesCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
+
     int count = 0;
+    boolean hasDefault = false;
     for (CaseGroupTree caseGroup : switchStatementTree.cases()) {
       // whenever there is a type, record or guarded pattern, it would decrease readability to replace the switch by if
       // so we don't raise an issue
@@ -44,10 +47,23 @@ public class SwitchAtLeastThreeCasesCheck extends IssuableSubscriptionVisitor {
         return;
       }
       count += totalLabelCount(caseGroup);
+      if (containsDefaultLabel(caseGroup)) {
+        hasDefault = true;
+      }
     }
-    if (count < 3) {
-      reportIssue(switchStatementTree.switchKeyword(), "Replace this \"switch\" statement by \"if\" statements to increase readability.");
+
+    if (count >= 3) {
+      return;
     }
+
+    // Switching over an enum without a default case will cause a compilation error
+    // if a new enum constant is added. Therefore, using if-then should not be recommended.
+    Symbol.TypeSymbol typeSymbol = switchStatementTree.expression().symbolType().symbol();
+    if (typeSymbol.isEnum() && !hasDefault) {
+      return;
+    }
+
+    reportIssue(switchStatementTree.switchKeyword(), "Replace this \"switch\" statement by \"if\" statements to increase readability.");
   }
 
   /**
@@ -67,6 +83,15 @@ public class SwitchAtLeastThreeCasesCheck extends IssuableSubscriptionVisitor {
       total += sz > 0 ? sz : 1;
     }
     return total;
+  }
+
+  private static boolean containsDefaultLabel(CaseGroupTree caseGroup) {
+    for (CaseLabelTree label: caseGroup.labels()) {
+      if ("default".equals(label.caseOrDefaultKeyword().text())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static boolean hasLabelWithAllowedPattern(CaseGroupTree caseGroupTree) {
