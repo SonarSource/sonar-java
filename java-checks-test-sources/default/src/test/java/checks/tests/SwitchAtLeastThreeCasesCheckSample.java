@@ -79,4 +79,33 @@ public class SwitchAtLeastThreeCasesCheckSample {
       doSomethingElse();
     }
   }
+
+  public enum SmallEnum {
+    ONE,
+    TWO
+  }
+
+  public void switchOverSmallEnum1(SmallEnum smallEnum) {
+    switch (smallEnum) {
+      case ONE -> {
+        System.out.println("1");
+      }
+      case TWO -> {
+        System.out.println("2");
+      }
+    };
+  }
+
+  public int switchOverSmallEnum2(SmallEnum smallEnum) {
+    int ret = -1;
+    switch (smallEnum) {
+      case ONE:
+        ret = 1;
+        break;
+      case TWO:
+        ret = 2;
+        break;
+    };
+    return ret;
+  }
 }
