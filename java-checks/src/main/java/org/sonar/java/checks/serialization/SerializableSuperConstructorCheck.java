@@ -21,15 +21,19 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.AnnotationsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2055")
 public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisitor {
+
+  private static final String LOMBOK_NO_ARGS_CONSTRUCTOR_ANNOTATION = "lombok.NoArgsConstructor";
 
   private static final MethodMatchers WRITE_REPLACE = MethodMatchers.create()
     .ofAnyType()
@@ -60,7 +64,8 @@ public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisit
     return superclass != null
       && !superclass.isUnknown()
       && !isSerializable(superclass)
-      && !hasNonPrivateNoArgConstructor(superclass);
+      && !hasNonPrivateNoArgConstructor(superclass)
+      && !hasCompliantGeneratedNoArgConstructor(superclass);
   }
 
   private static boolean isSerializable(Type type) {
@@ -78,6 +83,34 @@ public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisit
       }
     }
     return constructors.isEmpty();
+  }
+
+  private static boolean hasCompliantGeneratedNoArgConstructor(Type type) {
+    return type.symbol()
+      .metadata()
+      .annotations()
+      .stream()
+      .anyMatch(annotation -> isLombokNoArgConstructorGenerator(annotation.symbol().type()) && !hasPrivateAccess(annotation));
+  }
+
+  private static boolean isLombokNoArgConstructorGenerator(Type symbolType) {
+    if (symbolType.isUnknown()) {
+      return AnnotationsHelper.annotationTypeIdentifier(LOMBOK_NO_ARGS_CONSTRUCTOR_ANNOTATION).equals(symbolType.name());
+    }
+    return LOMBOK_NO_ARGS_CONSTRUCTOR_ANNOTATION.equals(symbolType.fullyQualifiedName());
+  }
+
+  private static boolean hasPrivateAccess(SymbolMetadata.AnnotationInstance annotation) {
+    return annotation.values()
+      .stream()
+      .anyMatch(v -> "access".equals(v.name()) && "PRIVATE".equals(getAccessLevel(v.value())));
+  }
+
+  private static String getAccessLevel(Object value) {
+    if (value instanceof Symbol symbol) {
+      return symbol.name();
+    }
+    return null;
   }
 
   private static boolean implementsSerializableMethods(Symbol.TypeSymbol classSymbol) {
