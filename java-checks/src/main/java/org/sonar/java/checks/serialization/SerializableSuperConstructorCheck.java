@@ -103,14 +103,7 @@ public class SerializableSuperConstructorCheck extends IssuableSubscriptionVisit
   private static boolean hasPrivateAccess(SymbolMetadata.AnnotationInstance annotation) {
     return annotation.values()
       .stream()
-      .anyMatch(v -> "access".equals(v.name()) && "PRIVATE".equals(getAccessLevel(v.value())));
-  }
-
-  private static String getAccessLevel(Object value) {
-    if (value instanceof Symbol symbol) {
-      return symbol.name();
-    }
-    return null;
+      .anyMatch(v -> "access".equals(v.name()) && "PRIVATE".equals(((Symbol) v.value()).name()));
   }
 
   private static boolean implementsSerializableMethods(Symbol.TypeSymbol classSymbol) {
