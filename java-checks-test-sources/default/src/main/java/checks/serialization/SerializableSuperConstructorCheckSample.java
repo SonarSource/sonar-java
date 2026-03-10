@@ -2,6 +2,8 @@ package checks.serialization;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 class NonSerializableWithoutConstructor {}
 
@@ -45,4 +47,35 @@ class S2055_Az<T> implements Serializable {
 
 class S2055_Bz2 extends S2055_Az<String> implements Serializable {
   S2055_Bz2(String arg1) { super(arg1); }
+}
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+class NonSerializableWithLombokPrivateNoArgsConstructor {
+  int field;
+
+  public NonSerializableWithLombokPrivateNoArgsConstructor(int field) {
+    this.field = field;
+  }
+}
+
+@NoArgsConstructor
+class NonSerializableWithLombokNoArgsConstructor {
+  int field;
+
+  public NonSerializableWithLombokNoArgsConstructor(int field) {
+    this.field = field;
+  }
+}
+
+class S2055_LombokPrivate extends NonSerializableWithLombokPrivateNoArgsConstructor implements Serializable { // Noncompliant {{Add a no-arg constructor to "NonSerializableWithLombokPrivateNoArgsConstructor".}}
+//                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  S2055_LombokPrivate(int field) {
+    super(field);
+  }
+}
+
+class S2055_LombokPublic extends NonSerializableWithLombokNoArgsConstructor implements Serializable { // Compliant
+  S2055_LombokPublic(int field) {
+    super(field);
+  }
 }
