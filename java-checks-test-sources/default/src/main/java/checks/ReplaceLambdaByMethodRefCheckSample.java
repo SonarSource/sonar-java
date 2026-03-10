@@ -358,6 +358,11 @@ class CastCheck {
 //                ^^
     // fix@qf_cast2 {{Replace with "TestA[][].class::cast"}}
     // edit@qf_cast2 [[sc=10;ec=40]] {{TestA[][].class::cast}}
+
+    strings.stream().allMatch(it -> "x1".equals(it)); // Noncompliant {{Replace this lambda with method reference '"x1"::equals'.}} [[quickfixes=qf_str_lit]]
+//                               ^^
+    // fix@qf_str_lit {{Replace with ""x1"::equals"}}
+    // edit@qf_str_lit [[sc=31;ec=52]] {{"x1"::equals}}
   }
 
   int notStatic(int x) {
