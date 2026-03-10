@@ -1,5 +1,5 @@
 {
-  "title": "\"@PathVariable\" annotation should be present if a path variable is used",
+  "title": "Path template variables should be properly bound to method parameters",
   "type": "BUG",
   "status": "ready",
   "remediation": {

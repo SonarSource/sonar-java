@@ -21,13 +21,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -41,7 +45,7 @@ import static org.sonar.java.checks.helpers.ExpressionsHelper.isStandardDataType
 import static org.sonar.java.checks.helpers.MethodTreeUtils.isSetterLike;
 
 @Rule(key = "S6856")
-public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisitor {
+public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
   private static final String PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable";
   private static final String MAP = "java.util.Map";
   private static final String MODEL_ATTRIBUTE_ANNOTATION = "org.springframework.web.bind.annotation.ModelAttribute";
@@ -59,6 +63,10 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   private static final Set<String> LOMBOK_SETTER_ANNOTATIONS = Set.of(
     "lombok.Data",
     "lombok.Setter");
+
+  private static final String BIND_PARAM_ANNOTATION = "org.springframework.web.bind.annotation.BindParam";
+
+  private SpringWebVersion springWebVersion;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -191,14 +199,14 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       return;
     }
 
-    // finally, we handle the case where a uri parameter (/{aParam}/) doesn't match to path- or ModelAttribute- inherited variables
+    // finally, we handle the case where a uri parameter (/{aParam}/) doesn't match to path-, ModelAttribute-, or class / record inherited variables
     Set<String> allPathVariables = methodParameters.stream()
       .map(ParameterInfo::value)
       .collect(Collectors.toSet());
     // Add properties inherited from @ModelAttribute methods
     allPathVariables.addAll(modelAttributeMethodParameters);
-    // Add properties inherited from @ModelAttribute class parameters
-    allPathVariables.addAll(extractModelAttributeClassProperties(method));
+    // Add properties inherited from class and record parameters
+    allPathVariables.addAll(extractClassAndRecordProperties(method));
 
     templateVariables.stream()
       .filter(uri -> !allPathVariables.containsAll(uri.value()))
@@ -278,20 +286,29 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     return path.replaceAll(PROPERTY_PLACEHOLDER_PATTERN, "");
   }
 
-  private static Set<String> extractModelAttributeClassProperties(MethodTree method) {
+  private boolean requiresModelAttributeAnnotation(SymbolMetadata metadata) {
+    // for spring-web < 5.3 we need to use ModelAttribute annotation to extract properties from classes / records
+    return springWebVersion == SpringWebVersion.LESS_THAN_5_3 && !metadata.isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION);
+  }
+
+  private Set<String> extractClassAndRecordProperties(MethodTree method) {
     Set<String> properties = new HashSet<>();
 
     for (var parameter : method.parameters()) {
-      SymbolMetadata metadata = parameter.symbol().metadata();
       Type parameterType = parameter.type().symbolType();
-
-      if (!metadata.isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION) || parameterType.isUnknown()
-        || isStandardDataType(parameterType) || parameterType.isSubtypeOf(MAP)) {
+      if (parameterType.isUnknown()
+        || isStandardDataType(parameterType) || parameterType.isSubtypeOf(MAP)
+        || requiresModelAttributeAnnotation(parameter.symbol().metadata())) {
         continue;
       }
 
-      // Extract setter properties from the class
-      properties.addAll(extractSetterProperties(parameterType));
+      if (parameterType.isSubtypeOf("java.lang.Record") && springWebVersion != SpringWebVersion.LESS_THAN_5_3) {
+        // Extract record's components
+        properties.addAll(extractRecordProperties(parameterType));
+      } else if (parameterType.isClass()) {
+        // Extract setter properties from the class
+        properties.addAll(extractSetterProperties(parameterType));
+      }
     }
 
     return properties;
@@ -343,6 +360,33 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
     }
 
     return properties;
+  }
+
+  @VisibleForTesting
+  static Set<String> extractRecordProperties(Type type) {
+    Set<String> properties = new HashSet<>();
+    // For records, extract component names from the record components
+    // Records automatically generate accessor methods for their components
+    type.symbol().memberSymbols().stream()
+      .filter(Symbol::isVariableSymbol)
+      .map(Symbol.VariableSymbol.class::cast)
+      .filter(f -> !f.isStatic())
+      .forEach(field -> properties.add(getComponentName(field)));
+
+    return properties;
+  }
+
+  private static String getComponentName(Symbol.VariableSymbol field) {
+    // Check if the component has @BindParam annotation for custom binding name
+    String componentName = field.name();
+    var bindParamValues = field.metadata().valuesForAnnotation(BIND_PARAM_ANNOTATION);
+    if (bindParamValues != null) {
+      Object value = bindParamValues.get(0).value();
+      if (value instanceof String bindParamName && !bindParamName.isEmpty()) {
+        componentName = bindParamName;
+      }
+    }
+    return componentName;
   }
 
   static class PathPatternParser {
@@ -473,5 +517,24 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
       return path.substring(start, pos - 1);
     }
 
+  }
+
+  @Override
+  public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
+    Optional<Version> springWebCurrentVersion = dependencyFinder.apply("spring-web");
+    if (springWebCurrentVersion.isEmpty()) {
+      return false;
+    }
+    springWebVersion = getSpringWebVersion(springWebCurrentVersion.get());
+    return true;
+  }
+
+  private static SpringWebVersion getSpringWebVersion(Version springWebVersion) {
+    return  (springWebVersion.isLowerThan("5.3") ? SpringWebVersion.LESS_THAN_5_3 : SpringWebVersion.START_FROM_5_3);
+  }
+
+  private enum SpringWebVersion {
+    LESS_THAN_5_3,
+    START_FROM_5_3;
   }
 }
