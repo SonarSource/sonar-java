@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -79,6 +80,9 @@ public class ExpressionsHelper {
     if (expr.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree idt = (IdentifierTree) expr;
       pieces.push(idt.name());
+    }
+    if (expr instanceof LiteralTree literal) {
+      pieces.push(literal.token().text());
     }
 
     StringBuilder sb = new StringBuilder();
