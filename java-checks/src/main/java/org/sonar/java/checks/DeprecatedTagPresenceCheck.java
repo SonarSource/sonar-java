@@ -27,7 +27,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.deprecatedAnnotation;
 import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.getAnnotationAttributeValue;
-import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.hasJavadocDeprecatedTag;
+import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.hasJavadocDeprecatedTagWithoutLegitimateDocumentation;
 import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.reportTreeForDeprecatedTree;
 
 @Rule(key = "S1133")
@@ -40,7 +40,7 @@ public class DeprecatedTagPresenceCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasDeprecatedAnnotation(tree) || hasJavadocDeprecatedTag(tree)) {
+    if (hasDeprecatedAnnotation(tree) || hasJavadocDeprecatedTagWithoutLegitimateDocumentation(tree)) {
       reportIssue(reportTreeForDeprecatedTree(tree), "Do not forget to remove this deprecated code someday.");
     }
   }
