@@ -1994,7 +1994,7 @@
   {
     "ruleKey": "S5042",
     "hasTruePositives": true,
-    "falseNegatives": 0,
+    "falseNegatives": 8,
     "falsePositives": 0
   },
   {
