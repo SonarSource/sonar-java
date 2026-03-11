@@ -29,7 +29,7 @@ import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.deprecatedAn
 import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.getAnnotationAttributeValue;
 import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.hasJavadocDeprecatedTag;
 import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.hasJavadocDeprecatedTagWithoutLegitimateDocumentation;
-import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.reportTreeForDeprecatedTree;
+import static org.sonar.java.checks.helpers.TreeHelper.reportTree;
 
 @Rule(key = "S1133")
 public class DeprecatedTagPresenceCheck extends IssuableSubscriptionVisitor {
@@ -42,7 +42,7 @@ public class DeprecatedTagPresenceCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     if ((hasDeprecatedAnnotation(tree) && !hasJavadocDeprecatedTag(tree)) || hasJavadocDeprecatedTagWithoutLegitimateDocumentation(tree)) {
-      reportIssue(reportTreeForDeprecatedTree(tree), "Do not forget to remove this deprecated code someday.");
+      reportIssue(reportTree(tree), "Do not forget to remove this deprecated code someday.");
     }
   }
 
@@ -52,12 +52,8 @@ public class DeprecatedTagPresenceCheck extends IssuableSubscriptionVisitor {
       return false;
     }
     Optional<Boolean> forRemovalValue = getAnnotationAttributeValue(annotation, "forRemoval", Boolean.class);
-    // If forRemoval was not specified, we consider the deprecated code should be removed in the future.
-    if (forRemovalValue.isEmpty()) {
-      return true;
-    }
-    // Otherwise, we check the value of forRemoval and return that, so that only @Deprecated(forRemoval = true) is considered.
-    return Boolean.TRUE.equals(forRemovalValue.get());
+    // If forRemoval was not specified or equals true, we consider the deprecated code should be removed in the future.
+    return forRemovalValue.map(Boolean.TRUE::equals).orElse(true);
   }
 
 }

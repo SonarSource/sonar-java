@@ -1,0 +1,84 @@
+<h2>Why is this an issue?</h2>
+<p>When multiple Javadoc comments (<code>/** */</code> and <code>/// ///</code>) are placed consecutively above a class, method, or field, only the
+last one (the one closest to the documented element) will be processed by the Javadoc tool. Any preceding Javadoc comments become "dangling" comments
+that are ignored by the documentation generator.</p>
+<p>This pattern is counter-intuitive and can lead to several problems:</p>
+<ul>
+  <li>Important documentation may be accidentally omitted from the generated Javadoc</li>
+  <li>Developers may mistakenly believe that all Javadoc comments are being included in the documentation</li>
+  <li>The presence of multiple Javadoc blocks creates confusion about which documentation is actually used</li>
+  <li>Dangling Javadoc comments may contain outdated or incorrect information that appears to be part of the documentation but is actually
+  ignored</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Remove or merge the dangling Javadoc comments, keeping only the Javadoc comment that is immediately adjacent to the documented element.</p>
+<p>If the dangling comment contains useful information, merge it into the active Javadoc comment. If the dangling comment is outdated or unnecessary,
+remove it entirely.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+/**
+ * This is a dangling javadoc comment that will be ignored.
+ */
+/**
+ * This is the actual javadoc that will be used.
+ * @param name the name parameter
+ */
+public void setName(String name) { // Noncompliant - dangling Javadoc comment above
+  this.name = name;
+}
+</pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+/**
+ * Old documentation that is no longer relevant.
+ */
+/**
+ * Updated documentation for this class.
+ */
+public class User { // Noncompliant - dangling Javadoc comment above
+  private String name;
+}
+</pre>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+/**
+ * This traditional javadoc will be ignored.
+ */
+/// This markdown javadoc will be used.
+/// Represents a customer entity.
+public class Customer { // Noncompliant - dangling traditional Javadoc before markdown Javadoc
+  private String customerId;
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+/**
+ * Sets the name parameter.
+ * @param name the name parameter
+ */
+public void setName(String name) { // Compliant
+  this.name = name;
+}
+</pre>
+<pre data-diff-id="2" data-diff-type="compliant">
+/**
+ * Updated documentation for this class.
+ */
+public class User { // Compliant
+  private String name;
+}
+</pre>
+<pre data-diff-id="3" data-diff-type="compliant">
+/// Represents a customer entity.
+/// This markdown javadoc will be used.
+public class Customer { // Compliant
+  private String customerId;
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://docs.oracle.com/en/java/javase/21/docs/specs/javadoc/doc-comment-spec.html">Javadoc Documentation Comment
+  Specification</a></li>
+  <li><a href="https://www.oracle.com/technical-resources/articles/java/javadoc-tool.html">How to Write Doc Comments for the Javadoc Tool</a></li>
+</ul>
+

@@ -143,4 +143,15 @@ public class PublicApiChecker {
       // Get last element of stream, as the last javadoc comment is the one we are looking for.
       .reduce((first, second) -> second);
   }
+
+  public static int getApiJavadocsCount(Tree tree) {
+    if (!tree.is(API_KINDS)) {
+      return 0;
+    }
+    return (int) tree.firstToken()
+      .trivias()
+      .stream()
+      .filter(trivia -> trivia.isComment(CommentKind.JAVADOC, CommentKind.MARKDOWN))
+      .count();
+  }
 }
