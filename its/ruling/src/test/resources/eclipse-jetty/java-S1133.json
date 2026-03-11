@@ -24,8 +24,7 @@
 915
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnectionStatistics.java": [
-24,
-30
+24
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ServletRequestHttpWrapper.java": [
 193

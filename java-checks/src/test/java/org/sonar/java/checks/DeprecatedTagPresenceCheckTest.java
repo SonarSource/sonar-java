@@ -19,12 +19,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+
 class DeprecatedTagPresenceCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/DeprecatedTagPresenceCheck.java")
+      .onFile(nonCompilingTestSourcesPath("checks/DeprecatedTagPresenceCheckSample.java"))
       .withCheck(new DeprecatedTagPresenceCheck())
       .verifyIssues();
   }

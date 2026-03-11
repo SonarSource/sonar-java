@@ -16,8 +16,14 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.CheckForNull;
+
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -33,15 +39,83 @@ import static org.sonar.java.model.ExpressionUtils.annotationAttributeName;
 
 public class DeprecatedCheckerHelper {
 
+  private static final String DEPRECATED_TAG = "@deprecated";
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
   private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
+
+  private static final Set<String> MIGRATION_GUIDANCE_KEYWORDS = Set.of(
+    "replaced by",
+    "see ",
+    "prefer",
+    "migrate to",
+    "{@link"
+  );
+
+  private static final Set<String> REMOVAL_TIMELINE_TERMS = Set.of(
+    "will be removed in",
+    "removed in version",
+    "to be removed in",
+    "scheduled for removal",
+    "deprecated since"
+  );
+
+  private static final Pattern DEPRECATED_TAG_CONTENT_PATTERN = Pattern.compile(
+    DEPRECATED_TAG + "(.*)(?:\\n\\s*\\*\\s*@|$)",
+    Pattern.DOTALL
+  );
 
   private DeprecatedCheckerHelper() {
     // Helper class, should not be implemented.
   }
 
   public static boolean hasJavadocDeprecatedTag(Tree tree) {
-    return PublicApiChecker.getApiJavadoc(tree).filter(comment -> comment.contains("@deprecated")).isPresent();
+    return PublicApiChecker.getApiJavadoc(tree)
+      .filter(comment -> comment.contains(DEPRECATED_TAG))
+      .isPresent();
+  }
+
+  public static boolean hasJavadocDeprecatedTagWithoutLegitimateDocumentation(Tree tree) {
+    return PublicApiChecker.getApiJavadoc(tree)
+      .filter(comment -> comment.contains(DEPRECATED_TAG))
+      .filter(comment -> !hasLegitimateDeprecationDocumentation(comment))
+      .isPresent();
+  }
+
+  @VisibleForTesting
+  static boolean hasLegitimateDeprecationDocumentation(String javadoc) {
+    String deprecatedSection = extractDeprecatedTagContent(javadoc);
+    if (deprecatedSection.isEmpty()) {
+      return false;
+    }
+
+    // Check for migration guidance indicators or removal timeline
+    return hasMigrationGuidance(deprecatedSection) || hasRemovalTimeline(deprecatedSection);
+  }
+
+  private static String extractDeprecatedTagContent(String javadoc) {
+    // Extract content from @deprecated (including linebreaks) until next javadoc tag or end
+    // Pattern: @deprecated followed by everything until (newline + whitespaces + * + whitespaces + @) or end
+    Matcher matcher = DEPRECATED_TAG_CONTENT_PATTERN.matcher(javadoc);
+
+    if (!matcher.find()) {
+      return "";
+    }
+
+    String content = matcher.group(1);
+    // Clean up javadoc formatting: remove leading asterisks and extra whitespace from continuation lines
+    return content.replaceAll("(?m)^\\s*\\*\\s*", " ").trim();
+  }
+
+  private static boolean hasMigrationGuidance(String deprecatedContent) {
+    String lowerContent = deprecatedContent.toLowerCase(Locale.ROOT);
+    return (lowerContent.contains("use") && (lowerContent.contains("instead") || lowerContent.contains("new")))
+      || MIGRATION_GUIDANCE_KEYWORDS.stream().anyMatch(lowerContent::contains);
+  }
+
+  private static boolean hasRemovalTimeline(String deprecatedContent) {
+    String lowerContent = deprecatedContent.toLowerCase(Locale.ROOT);
+    return REMOVAL_TIMELINE_TERMS.stream()
+      .anyMatch(lowerContent::contains);
   }
 
   @CheckForNull
