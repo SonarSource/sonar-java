@@ -36,14 +36,18 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModule;
+import static org.sonar.java.test.classpath.TestClasspathUtils.SPRING_32_MODULE;
 
 class MissingPathVariableAnnotationCheckTest {
   private static final String TEST_SOURCE_FILE = mainCodeSourcesPath("checks/spring/s6856/MissingPathVariableAnnotationCheck_PathVariable.java");
   private static final String TEST_SOURCE_FILE_MODEL_ATTRIBUTE = mainCodeSourcesPath("checks/spring/s6856/MissingPathVariableAnnotationCheck_ModelAttribute.java");
   private static final String SETTER_PROPERTIES_TEST_FILE = mainCodeSourcesPath("checks/spring/s6856/ExtractSetterPropertiesTestData.java");
+  private static final String RECORD_COMPONENTS_TEST_FILE = mainCodeSourcesPathInModule(SPRING_32_MODULE, "checks/ExtractRecordPropertiesTestData.java");
 
   private static final JavaFileScanner check = new MissingPathVariableAnnotationCheck();
   private static final Map<String, Type> testTypes = new HashMap<>();
+  private static final Map<String, Type> testRecords = new HashMap<>();
 
   @BeforeAll
   static void scanTestFile() {
@@ -67,6 +71,29 @@ class MissingPathVariableAnnotationCheckTest {
       .verifyNoIssues();
   }
 
+  @BeforeAll
+  static void scanRecordTestFile() {
+    IssuableSubscriptionVisitor recordCollector = new IssuableSubscriptionVisitor() {
+      @Override
+      public java.util.List<Tree.Kind> nodesToVisit() {
+        return java.util.List.of(Tree.Kind.CLASS, Tree.Kind.RECORD);
+      }
+
+      @Override
+      public void visitNode(Tree tree) {
+        ClassTree classTree = (ClassTree) tree;
+        Symbol.TypeSymbol symbol = classTree.symbol();
+        testRecords.put(symbol.name(), symbol.type());
+      }
+    };
+
+    CheckVerifier.newVerifier()
+      .onFile(RECORD_COMPONENTS_TEST_FILE)
+      .withCheck(recordCollector)
+      .withClassPath(SPRING_32_MODULE.getClassPath())
+      .verifyNoIssues();
+  }
+
   @Test
   void test_compiling() {
     CheckVerifier.newVerifier()
@@ -80,6 +107,15 @@ class MissingPathVariableAnnotationCheckTest {
     CheckVerifier.newVerifier()
       .onFile(TEST_SOURCE_FILE_MODEL_ATTRIBUTE)
       .withCheck(check)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_classes_and_records() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPathInModule(SPRING_32_MODULE, "checks/MissingPathVariableAnnotationCheck_classAndRecord.java"))
+      .withCheck(check)
+      .withClassPath(SPRING_32_MODULE.getClassPath())
       .verifyIssues();
   }
 
@@ -220,6 +256,40 @@ class MissingPathVariableAnnotationCheckTest {
         "OnlyGetters",
         Set.of(),
         Set.of("name", "age")
+      )
+    );
+  }
+
+  @ParameterizedTest(name = "[{index}] {0}")
+  @MethodSource("provideExtractRecordPropertiesTestCases")
+  void test_extractRecordProperties(String typeName, Set<String> expectedComponents) {
+    Type type = testRecords.get(typeName);
+    Set<String> components = MissingPathVariableAnnotationCheck.extractRecordProperties(type);
+
+    if (!expectedComponents.isEmpty()) {
+      assertThat(components).containsExactlyInAnyOrderElementsOf(expectedComponents);
+    } else {
+      assertThat(components).isEmpty();
+    }
+  }
+
+  private static Stream<Arguments> provideExtractRecordPropertiesTestCases() {
+    return Stream.of(
+      Arguments.of(
+        "RecordWithComponents",
+        Set.of("project", "year", "month")
+      ),
+      Arguments.of(
+        "EmptyRecord",
+        Set.of()
+      ),
+      Arguments.of(
+        "RecordWithBindParam",
+        Set.of("order-name", "details")
+      ),
+      Arguments.of(
+        "RecordMixedBindParam",
+        Set.of("project-id", "name", "user-id")
       )
     );
   }

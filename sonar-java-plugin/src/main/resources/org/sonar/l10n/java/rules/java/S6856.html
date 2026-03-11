@@ -5,8 +5,14 @@ capture path variables from the URI. These annotations map HTTP requests to spec
 module and are commonly used to define the routes for different HTTP operations in a RESTful API.</p>
 <p>If a method has a path template containing a placeholder, like "/api/resource/{id}", and there’s no <code>@PathVariable</code> annotation on a
 method parameter to capture the id path variable, Spring will disregard the id variable.</p>
-<p>This rule will raise an issue if a method has a path template with a placeholder, but no corresponding <code>@PathVariable</code>, or
-vice-versa.</p>
+<p>Path variables can also be automatically bound to class or record properties when used as method parameters (without <code>@PathVariable</code>).
+For Spring Web versions prior to 5.3, the <code>@ModelAttribute</code> annotation is required on the parameter to enable binding to class properties.
+Starting with Spring Web 5.3, this binding happens automatically without requiring <code>@ModelAttribute</code>. For classes, Spring binds path
+variables to properties that have setter methods (including Lombok-generated setters). For records (Spring Web 5.3+), Spring binds path variables to
+record components through their accessor methods. The <code>@BindParam</code> annotation can be used on record components to specify custom binding
+names.</p>
+<p>This rule will raise an issue if a method has a path template with a placeholder, but no corresponding <code>@PathVariable</code>, matching class
+property, or matching record component, or vice-versa.</p>
 <h2>How to fix it</h2>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -33,12 +39,92 @@ public ResponseEntity&lt;String&gt; getAssetById(@PathVariable Long id) {
   return ResponseEntity.ok("Fetching asset with ID: " + id);
 }
 </pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+// Spring Web &lt; 5.3: Class properties require @ModelAttribute
+@Data
+class UserRequest {
+  private String userId;
+  private String accountId;
+}
+
+@GetMapping("/api/user/{userId}/{accountId}")
+public ResponseEntity&lt;String&gt; getUser(UserRequest request) { // Noncompliant - @ModelAttribute annotation is required for Spring Web &lt; 5.3
+  return ResponseEntity.ok("User: " + request.getUserId());
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+// Spring Web &lt; 5.3: Class properties require @ModelAttribute
+@Data
+class UserRequest {
+  private String userId;
+  private String accountId;
+}
+
+@GetMapping("/api/user/{userId}/{accountId}")
+public ResponseEntity&lt;String&gt; getUser(@ModelAttribute UserRequest request) { // Compliant - @ModelAttribute enables binding to class properties
+  return ResponseEntity.ok("User: " + request.getUserId());
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="4" data-diff-type="noncompliant">
+// Spring Web 5.3+: Class properties
+@Data
+class UserRequest {
+  private String userId;
+  private String accountId;
+}
+
+@GetMapping("/api/user/{userId}/{companyId}")
+public ResponseEntity&lt;String&gt; getUser(UserRequest request) { // Noncompliant - 'companyId' path variable doesn't match any property with a setter
+  return ResponseEntity.ok("User: " + request.getUserId());
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="4" data-diff-type="compliant">
+// Spring Web 5.3+: Class properties
+@Data
+class UserRequest {
+  private String userId;
+  private String accountId;
+}
+
+@GetMapping("/api/user/{userId}/{accountId}")
+public ResponseEntity&lt;String&gt; getUser(UserRequest request) { // Compliant - path variables match properties with setters
+  return ResponseEntity.ok("User: " + request.getUserId());
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+// Spring Web 5.3+: Record components
+record OrderRequest(String orderId, String customerId) {}
+
+@GetMapping("/api/order/{order-id}/{customer-id}")
+public ResponseEntity&lt;String&gt; getOrder(OrderRequest request) { // Noncompliant - Record component names don't match path variables
+  return ResponseEntity.ok("Order: " + request.orderId());
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+// Spring Web 5.3+: Record components
+record OrderRequest(@BindParam("order-id") String orderId, @BindParam("customer-id") String customerId) {}
+
+@GetMapping("/api/order/{order-id}/{customer-id}")
+public ResponseEntity&lt;String&gt; getOrder(OrderRequest request) { // Compliant - @BindParam maps component names to path variables
+  return ResponseEntity.ok("Order: " + request.orderId());
+}
+</pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
   <li><a href="https://spring.io/guides/tutorials/rest/">Spring IO - Building REST services with Spring</a></li>
   <li><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html">Spring
   Framework API - PathVariable</a></li>
+  <li><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/ModelAttribute.html">Spring
+  Framework API - ModelAttribute</a></li>
+  <li><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/BindParam.html">Spring
+  Framework API - BindParam</a></li>
   <li><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html">Spring
   Framework API - GetMapping</a></li>
   <li><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PostMapping.html">Spring

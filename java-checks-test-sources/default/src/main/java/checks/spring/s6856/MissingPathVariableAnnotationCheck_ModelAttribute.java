@@ -10,20 +10,22 @@ public class MissingPathVariableAnnotationCheck_ModelAttribute {
 
   class ParentController {
     @ModelAttribute("viewCfg")
-    public String getView(@PathVariable("view") final String view){
+    public String getView(@PathVariable("view") final String view) {
       return "";
     }
   }
+
   class ChildController extends ParentController {
     @GetMapping("/model/{view}") //Compliant, parent class defines 'view' path var in the model attribute
-    public String list(@ModelAttribute("viewCfg") final String viewConfig){
+    public String list(@ModelAttribute("viewCfg") final String viewConfig) {
       return "";
     }
   }
+
   class MissingParentChildController extends MissingPathVariableParentInDifferentSample {
     @GetMapping("/model/{view}") // Noncompliant
     // FP: parent class in different file, cannot collect the model attribute
-    public String list(@ModelAttribute("parentView") final String viewConfig){
+    public String list(@ModelAttribute("parentView") final String viewConfig) {
       return "";
     }
   }
@@ -35,7 +37,7 @@ public class MissingPathVariableAnnotationCheck_ModelAttribute {
     }
 
     @ModelAttribute("empty")
-    public String emptyModel(String notPathVariable){
+    public String emptyModel(String notPathVariable) {
       return "";
     }
 
@@ -208,6 +210,17 @@ public class MissingPathVariableAnnotationCheck_ModelAttribute {
       @ModelAttribute String name // Standard type - no extraction
     ) {
       return "result";
+    }
+  }
+
+  // Test case: Records: must be noncompliant for spring-web < 5.3
+  record ReportRecord(String project, int year, String month) {
+  }
+
+  static class RecordBinding {
+    @GetMapping("/reports/{project}/{year}/{month}") // Noncompliant
+    public String getReport(ReportRecord record) {
+      return "reportDetails";
     }
   }
 }
