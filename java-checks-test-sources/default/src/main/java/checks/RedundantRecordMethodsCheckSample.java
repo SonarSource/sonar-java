@@ -305,15 +305,13 @@ public class RedundantRecordMethodsCheckSample {
   }
 
   record AccessorWithValidation(int age) {
-    public int age() { // Compliant, no issues are raised for accessors that validate input
+    public int age() { // Compliant, no issues are raised for accessors that call methods
       validate(age);
       return age;
     }
 
     void validate(int age) {
-      if (this.age < 0) {
-        throw new IllegalStateException("Negative age");
-      }
+      // Do something with potential side effects.
     }
   }
 }

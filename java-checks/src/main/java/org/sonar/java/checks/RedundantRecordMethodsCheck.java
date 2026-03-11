@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
@@ -119,7 +120,7 @@ public class RedundantRecordMethodsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isComponent(ExpressionTree expression, Symbol component) {
-    return (expression instanceof IdentifierTree identifier && component.equals(identifier.symbol()))
+    return (ExpressionUtils.skipParentheses(expression) instanceof IdentifierTree identifier && component.equals(identifier.symbol()))
       || (expression instanceof MemberSelectExpressionTree memberSelect && component.equals(memberSelect.identifier().symbol()));
   }
 
