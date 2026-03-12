@@ -1,11 +1,6 @@
 name: Prepare Next Development Iteration
 
 on:
-  workflow_call:
-    inputs:
-      version:
-        required: true
-        type: string
   workflow_dispatch:
     inputs:
       version:

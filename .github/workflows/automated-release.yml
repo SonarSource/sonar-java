@@ -73,14 +73,6 @@ jobs:
       use-jira-sandbox: ${{ github.event.inputs.dry-run == 'true' }}
       is-draft-release: ${{ github.event.inputs.dry-run == 'true' }}
       issue-categories: "Feature,False Positive,False Negative,Bug,Security,Maintenance"
-
-  bump_versions:
-    name: Bump versions
-    if: ${{ github.event.inputs.bump-version == 'true' }}
-    needs: release
-    uses: ./.github/workflows/PrepareNextIteration.yml
-    permissions:
-      contents: write
-      pull-requests: write
-    with:
-      version: ${{ needs.release.outputs.new-version }}
+      bump-version: ${{ github.event.inputs.bump-version == 'true' }}
+      bump-version-normalize: true
+      bump-version-tool: maven
