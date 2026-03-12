@@ -4,14 +4,22 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.Optional;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarFile;
 
 public class ZipEntryCheck {
 
@@ -92,4 +100,62 @@ public class ZipEntryCheck {
     return "thymeleaf/welcome";
   }
 
+}
+
+class TarUtilities {
+  private TarUtilities() {
+    /* This utility class should not be instantiated */
+  }
+
+  public static List<TarArchiveEntry> getAllEntries(TarFile file) {
+    return file.getEntries(); // Noncompliant {{Make sure that expanding this archive file is safe here.}}
+    //          ^^^^^^^^^^
+  }
+
+  public static Optional<TarArchiveEntry> getNext(TarArchiveInputStream stream) throws IOException {
+    return Optional.of(stream.getNextEntry()); // Noncompliant {{Make sure that expanding this archive file is safe here.}}
+    //                        ^^^^^^^^^^^^
+  }
+
+  public static long getEntrySize(TarArchiveEntry entry) {
+    return entry.getSize(); // Noncompliant {{Make sure that expanding this archive file is safe here.}}
+    //           ^^^^^^^
+  }
+}
+
+class SevenZUtilities {
+  private SevenZUtilities() {
+    /* This utility class should not be instantiated */
+  }
+
+  public static Iterable<SevenZArchiveEntry> getAllEntries(SevenZFile file) {
+    return file.getEntries(); // Noncompliant {{Make sure that expanding this archive file is safe here.}}
+    //          ^^^^^^^^^^
+  }
+
+  public static long getEntrySize(SevenZArchiveEntry entry) {
+    return entry.getSize(); // Noncompliant {{Make sure that expanding this archive file is safe here.}}
+    //           ^^^^^^^
+  }
+}
+
+class ApacheCommonsZipUtilities {
+  private ApacheCommonsZipUtilities() {
+    /* This utility class should not be instantiated */
+  }
+
+  public static Enumeration<org.apache.commons.compress.archivers.zip.ZipArchiveEntry> getAllEntries(org.apache.commons.compress.archivers.zip.ZipFile file) {
+    return file.getEntries(); // Noncompliant {{Make sure that expanding this archive file is safe here.}}
+    //          ^^^^^^^^^^
+  }
+
+  public static Optional<org.apache.commons.compress.archivers.zip.ZipArchiveEntry> getNext(org.apache.commons.compress.archivers.zip.ZipArchiveInputStream stream) throws IOException {
+    return Optional.of(stream.getNextEntry()); // Noncompliant {{Make sure that expanding this archive file is safe here.}}
+    //                        ^^^^^^^^^^^^
+  }
+
+  public static long getEntrySize(org.apache.commons.compress.archivers.zip.ZipArchiveEntry entry) {
+    return entry.getSize(); // Noncompliant {{Make sure that expanding this archive file is safe here.}}
+    //           ^^^^^^^
+  }
 }

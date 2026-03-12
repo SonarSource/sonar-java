@@ -38,12 +38,19 @@ public class ZipEntryCheck extends IssuableSubscriptionVisitor {
       .addWithoutParametersMatcher()
       .build(),
     MethodMatchers.create()
-      .ofSubTypes("java.util.zip.ZipEntry")
+      .ofSubTypes("org.apache.commons.compress.archivers.tar.TarFile",
+        "org.apache.commons.compress.archivers.sevenz.SevenZFile",
+        "org.apache.commons.compress.archivers.zip.ZipFile")
+      .names("getEntries")
+      .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.util.zip.ZipEntry", "org.apache.commons.compress.archivers.ArchiveEntry")
       .names("getSize")
       .addWithoutParametersMatcher()
       .build(),
     MethodMatchers.create()
-      .ofSubTypes("java.util.zip.ZipInputStream")
+      .ofSubTypes("java.util.zip.ZipInputStream", "org.apache.commons.compress.archivers.ArchiveInputStream")
       .names("getNextEntry")
       .addWithoutParametersMatcher()
       .build()
