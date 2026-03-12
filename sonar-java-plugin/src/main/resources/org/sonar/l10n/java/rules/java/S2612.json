@@ -1,6 +1,6 @@
 {
-  "title": "Setting loose POSIX file permissions is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "File permissions should not be set to world-accessible values",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "MEDIUM"

@@ -3,7 +3,7 @@
   "type": "VULNERABILITY",
   "code": {
     "impacts": {
-      "SECURITY": "BLOCKER"
+      "SECURITY": "MEDIUM"
     },
     "attribute": "TRUSTWORTHY"
   },
@@ -17,7 +17,7 @@
     "cwe",
     "cert"
   ],
-  "defaultSeverity": "Blocker",
+  "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2068",
   "sqKey": "S2068",
   "scope": "Main",

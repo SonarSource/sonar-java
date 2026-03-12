@@ -13,7 +13,7 @@
   "ruleSpecification": "RSPEC-7629",
   "sqKey": "S7629",
   "scope": "All",
-  "quickfix": "unknown",
+  "quickfix": "covered",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "LOW"
