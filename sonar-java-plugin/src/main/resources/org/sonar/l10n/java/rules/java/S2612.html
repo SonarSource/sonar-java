@@ -1,16 +1,28 @@
+<h2>Why is this an issue?</h2>
 <p>In Unix file system permissions, the "<code>others</code>" category refers to all users except the owner of the file system resource and the
 members of the group assigned to this resource.</p>
 <p>Granting permissions to this category can lead to unintended access to files or directories that could allow attackers to obtain sensitive
 information, disrupt services or elevate privileges.</p>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>The application is designed to be run on a multi-user environment.</li>
-  <li>Corresponding files and directories may contain confidential information.</li>
-</ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>The most restrictive possible permissions should be assigned to files and directories.</p>
-<h2>Sensitive Code Example</h2>
+<h3>What is the potential impact?</h3>
+<h4>Unauthorized access to sensitive information</h4>
+<p>When file or directory permissions grant access to all users on a system (often represented as "others" or "everyone" in permission models),
+attackers who gain access to any user account can read sensitive files containing credentials, configuration data, API keys, database passwords,
+personal information, or proprietary business data. This exposure can lead to data breaches, identity theft, compliance violations, and competitive
+disadvantage.</p>
+<h4>Service disruption and data corruption</h4>
+<p>Granting write permissions to broad user categories allows any user on the system to modify or delete critical files and directories. Attackers or
+compromised low-privileged accounts can corrupt application data, modify configuration files to alter system behavior or disrupt services, or delete
+important resources, leading to service outages, system instability, data loss, and denial of service.</p>
+<h4>Privilege escalation</h4>
+<p>When executable files or scripts have overly permissive permissions, especially when combined with special permission bits that allow programs to
+execute with the permissions of the file owner or group rather than the executing user, attackers can replace legitimate executables with malicious
+code. When these modified files are executed by privileged users or processes, the attacker’s code runs with elevated privileges, potentially enabling
+them to escalate from a low-privileged account to root or administrator access, install backdoors, or pivot to other systems in the network.</p>
+<h2>How to fix it</h2>
+<p>Remove permissions for the "others" category by not adding OTHERS_READ, OTHERS_WRITE, or OTHERS_EXECUTE permissions to the permission set. If these
+permissions were previously added, explicitly remove them using the <code>remove()</code> method.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
     public void setPermissions(String filePath) throws IOException {
         Set&lt;PosixFilePermission&gt; perms = new HashSet&lt;PosixFilePermission&gt;();
@@ -22,20 +34,14 @@ information, disrupt services or elevate privileges.</p>
         perms.add(PosixFilePermission.GROUP_READ);
         perms.add(PosixFilePermission.GROUP_EXECUTE);
         // others permissions
-        perms.add(PosixFilePermission.OTHERS_READ); // Sensitive
-        perms.add(PosixFilePermission.OTHERS_WRITE); // Sensitive
-        perms.add(PosixFilePermission.OTHERS_EXECUTE); // Sensitive
+        perms.add(PosixFilePermission.OTHERS_READ); // Noncompliant
+        perms.add(PosixFilePermission.OTHERS_WRITE); // Noncompliant
+        perms.add(PosixFilePermission.OTHERS_EXECUTE); // Noncompliant
 
         Files.setPosixFilePermissions(Paths.get(filePath), perms);
     }
 </pre>
-<pre data-diff-id="2" data-diff-type="noncompliant">
-    public void setOthersPermissionsHardCoded(String filePath ) {
-        Files.setPosixFilePermissions(Paths.get(filePath), PosixFilePermissions.fromString("rwxrwxrwx")); // Sensitive
-    }
-</pre>
-<h2>Compliant Solution</h2>
-<p>On operating systems that implement POSIX standard. This will throw a <code>UnsupportedOperationException</code> on Windows.</p>
+<h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
     public void setPermissions(String filePath) throws IOException {
         Set&lt;PosixFilePermission&gt; perms = new HashSet&lt;PosixFilePermission&gt;();
@@ -54,26 +60,23 @@ information, disrupt services or elevate privileges.</p>
         Files.setPosixFilePermissions(Paths.get(filePath), perms);
     }
 </pre>
-<pre data-diff-id="2" data-diff-type="compliant">
-    public void setOthersPermissionsHardCoded(String filePath ) {
-        Files.setPosixFilePermissions(Paths.get(filePath), PosixFilePermissions.fromString("rwxrwx---"));
-    }
-</pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
+  <li>OWASP File Permission Testing Guide - <a
+  href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/09-Test_File_Permission">OWASP guidance on testing file permissions in web applications</a></li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/266">CWE-266 - Incorrect Privilege Assignment</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/732">CWE-732 - Incorrect Permission Assignment for Critical Resource</a></li>
+  <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222430">Application Security and
+  Development: V-222430</a> - The application must execute without excessive account permissions</li>
   <li>OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a></li>
   <li>OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a></li>
-  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control">Top 10 2017 Category A5 - Broken Access
-  Control</a></li>
-  <li><a
-  href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/09-Test_File_Permission">OWASP File Permission</a></li>
-  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/732">CWE-732 - Incorrect Permission Assignment for Critical Resource</a></li>
-  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/266">CWE-266 - Incorrect Privilege Assignment</a></li>
-  <li><a href="https://wiki.sei.cmu.edu/confluence/display/java/FIO01-J.+Create+files+with+appropriate+access+permissions">CERT, FIO01-J.</a> - Create
-  files with appropriate access permissions</li>
-  <li><a href="https://wiki.sei.cmu.edu/confluence/display/c/FIO06-C.+Create+files+with+appropriate+access+permissions">CERT, FIO06-C.</a> - Create
-  files with appropriate access permissions</li>
-  <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222430">Application Security and
-  Development: V-222430</a> - The application must execute without excessive account permissions.</li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control">Top 10 2017 Category A5 - Broken Access Control -
+  OWASP Top 10 2017</a></li>
+  <li>CERT FIO01-J - <a href="https://wiki.sei.cmu.edu/confluence/display/java/FIO01-J.+Create+files+with+appropriate+access+permissions">CERT
+  guideline for creating files with appropriate access permissions in Java</a></li>
 </ul>
 

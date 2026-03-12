@@ -14,7 +14,7 @@
   "ruleSpecification": "RSPEC-7475",
   "sqKey": "S7475",
   "scope": "All",
-  "quickfix": "targeted",
+  "quickfix": "covered",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "INFO"

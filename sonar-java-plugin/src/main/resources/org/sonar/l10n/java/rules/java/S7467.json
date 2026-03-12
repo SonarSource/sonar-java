@@ -13,7 +13,7 @@
   "ruleSpecification": "RSPEC-7467",
   "sqKey": "S7467",
   "scope": "All",
-  "quickfix": "targeted",
+  "quickfix": "covered",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "LOW"

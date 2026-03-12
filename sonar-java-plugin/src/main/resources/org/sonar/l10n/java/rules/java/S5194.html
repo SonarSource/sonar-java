@@ -2,49 +2,76 @@
 <p>Many existing switch statements are essentially simulations of switch expressions, where each arm either assigns to a common target variable or
 returns a value. Expressing this as a statement is roundabout, repetitive, and error-prone.</p>
 <p>Java 14 added support for switch expressions, which provide more succinct and less error-prone version of switch.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-void day_of_week(DoW day) {
-    int numLetters;
-    switch (day) {  // Noncompliant
-      case MONDAY:
-      case FRIDAY:
-      case SUNDAY:
-        numLetters = 6;
-        break;
-      case TUESDAY:
-        numLetters = 7;
-        break;
-      case THURSDAY:
-      case SATURDAY:
-        numLetters = 8;
-        break;
-      case WEDNESDAY:
-        numLetters = 9;
-        break;
-      default:
-        throw new IllegalStateException("Wat: " + day);
-    }
-}
-
-int return_switch(int x) {
-    switch (x) { // Noncompliant
-      case 1:
-        return 1;
-      case 2:
-        return 2;
-      default:
-        throw new IllegalStateException();
-    }
+<h3>Noncompliant code examples</h3>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+void countLetters(String day) {
+  int numLetters;
+  switch (day) {
+    case "Monday", "Friday", "Sunday":
+      numLetters = 6;
+      break;
+    case "Tuesday":
+      numLetters = 7;
+      break;
+    case "Thursday", "Saturday":
+      numLetters = 8;
+      break;
+    case "Wednesday":
+      numLetters = 9;
+      break;
+    default:
+      throw new IllegalArgumentException("Invalid day: " + day);
+  }
+  System.out.println(numLetters);
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
-int numLetters = switch (day) {
-    case MONDAY, FRIDAY, SUNDAY -&gt; 6;
-    case TUESDAY                -&gt; 7;
-    case THURSDAY, SATURDAY     -&gt; 8;
-    case WEDNESDAY              -&gt; 9;
-};
+<pre data-diff-id="2" data-diff-type="noncompliant">
+Day dayOfWeek(String text) {
+  switch (text) {
+    case "Monday":
+      return Day.MONDAY;
+    case "Tuesday":
+      return Day.TUESDAY;
+    case "Wednesday":
+      return Day.WEDNESDAY;
+    case "Thursday":
+      return Day.THURSDAY;
+    case "Friday":
+      return Day.FRIDAY;
+    case "Saturday":
+      return Day.SATURDAY;
+    case "Sunday":
+      return Day.SUNDAY;
+    default:
+      throw new IllegalArgumentException("Invalid day: " + text);
+  }
+}
+</pre>
+<h3>Compliant solutions</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+void countLetters(String day) {
+  int numLetters = switch (day) {
+    case "Monday", "Friday", "Sunday" -&gt; 6;
+    case "Tuesday" -&gt; 7;
+    case "Thursday", "Saturday" -&gt; 8;
+    case "Wednesday" -&gt; 9;
+    default -&gt; throw new IllegalArgumentException("Invalid day: " + day);
+  };
+  System.out.println(numLetters);
+}
+</pre>
+<pre data-diff-id="2" data-diff-type="compliant">
+Day dayOfWeek(String text) {
+    return switch (text) {
+      case "Monday" -&gt; Day.MONDAY;
+      case "Tuesday" -&gt; Day.TUESDAY;
+      case "Wednesday" -&gt; Day.WEDNESDAY;
+      case "Thursday" -&gt; Day.THURSDAY;
+      case "Friday" -&gt; Day.FRIDAY;
+      case "Saturday" -&gt; Day.SATURDAY;
+      case "Sunday" -&gt; Day.SUNDAY;
+      default -&gt; throw new IllegalArgumentException("Invalid day: " + text);
+    };
+  }
 </pre>
 
