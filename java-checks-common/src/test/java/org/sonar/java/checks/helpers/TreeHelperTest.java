@@ -17,12 +17,17 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.Set;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -94,5 +99,89 @@ class TreeHelperTest extends JParserTestUtils {
       assertThat(actual).isNull();
     }
     return actual;
+  }
+
+  @ParameterizedTest(name = "[{index}] {1}")
+  @MethodSource("reportTreeTestCases")
+  void reportTree(String code, String description, TreeExtractor treeExtractor, @Nullable String expectedName) {
+    Tree tree = treeExtractor.extract(code);
+    Tree reportTree = TreeHelper.reportTree(tree);
+
+    if (expectedName != null) {
+      assertThat(reportTree).isInstanceOf(IdentifierTree.class);
+      assertThat(((IdentifierTree) reportTree).name()).isEqualTo(expectedName);
+    } else {
+      assertThat(reportTree).isSameAs(tree);
+    }
+  }
+
+  private static Stream<Arguments> reportTreeTestCases() {
+    return Stream.of(
+      Arguments.of(
+        "class MyClass { }",
+        "Class",
+        (TreeExtractor) TreeHelperTest::classTree,
+        "MyClass"
+      ),
+      Arguments.of(
+        "interface MyInterface { }",
+        "Interface",
+        (TreeExtractor) TreeHelperTest::classTree,
+        "MyInterface"
+      ),
+      Arguments.of(
+        "enum MyEnum { }",
+        "Enum",
+        (TreeExtractor) TreeHelperTest::classTree,
+        "MyEnum"
+      ),
+      Arguments.of(
+        "record MyRecord() { }",
+        "Record",
+        (TreeExtractor) TreeHelperTest::classTree,
+        "MyRecord"
+      ),
+      Arguments.of(
+        "@interface MyAnnotation { }",
+        "Annotation",
+        (TreeExtractor) TreeHelperTest::classTree,
+        "MyAnnotation"
+      ),
+      Arguments.of(
+        newCode("void myMethod() { }"),
+        "Method",
+        (TreeExtractor) TreeHelperTest::methodTree,
+        "myMethod"
+      ),
+      Arguments.of(
+        "class A { A() { } }",
+        "Constructor",
+        (TreeExtractor) code -> classTree(code).members().get(0),
+        "A"
+      ),
+      Arguments.of(
+        "class A { String myField; }",
+        "Field",
+        (TreeExtractor) code -> classTree(code).members().get(0),
+        "myField"
+      ),
+      Arguments.of(
+        newCode("void method() { int localVar = 42; }"),
+        "Local variable",
+        (TreeExtractor) code -> methodTree(code).block().body().get(0),
+        "localVar"
+      ),
+      Arguments.of(
+        newCode("void method() { if (true) { } }"),
+        "Other tree (if statement)",
+        (TreeExtractor) code -> methodTree(code).block().body().get(0),
+        null
+      )
+    );
+  }
+
+  @FunctionalInterface
+  private interface TreeExtractor {
+    Tree extract(String code);
   }
 }

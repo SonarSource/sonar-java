@@ -19,10 +19,15 @@ package org.sonar.java.checks.helpers;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
+
+import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
 
 public class TreeHelper {
   private TreeHelper() {
@@ -46,6 +51,18 @@ public class TreeHelper {
       tree = tree.parent();
     }
     return null;
+  }
+
+  public static Tree reportTree(Tree tree) {
+    Tree reportTree = tree;
+    if (reportTree.is(PublicApiChecker.classKinds())) {
+      reportTree = ExpressionsHelper.reportOnClassTree((ClassTree) reportTree);
+    } else if (reportTree.is(PublicApiChecker.methodKinds())) {
+      reportTree = ((MethodTree) reportTree).simpleName();
+    } else if (reportTree.is(Tree.Kind.VARIABLE)) {
+      reportTree = ((VariableTree) reportTree).simpleName();
+    }
+    return reportTree;
   }
 
   private static class ReachableMethodsFinder extends BaseTreeVisitor {

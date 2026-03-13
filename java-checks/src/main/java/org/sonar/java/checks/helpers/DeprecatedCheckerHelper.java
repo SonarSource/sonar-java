@@ -147,18 +147,6 @@ public class DeprecatedCheckerHelper {
     return null;
   }
 
-  public static Tree reportTreeForDeprecatedTree(Tree tree) {
-    Tree reportTree = tree;
-    if (reportTree.is(PublicApiChecker.classKinds())) {
-      reportTree = ExpressionsHelper.reportOnClassTree((ClassTree) reportTree);
-    } else if (reportTree.is(PublicApiChecker.methodKinds())) {
-      reportTree = ((MethodTree) reportTree).simpleName();
-    } else if (reportTree.is(Tree.Kind.VARIABLE)) {
-      reportTree = ((VariableTree) reportTree).simpleName();
-    }
-    return reportTree;
-  }
-
   private static boolean isDeprecated(AnnotationTree tree) {
     return tree.annotationType().is(Kind.IDENTIFIER) &&
       "Deprecated".equals(((IdentifierTree) tree.annotationType()).name());

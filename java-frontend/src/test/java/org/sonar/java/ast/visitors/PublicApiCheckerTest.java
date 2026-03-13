@@ -24,8 +24,12 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -143,6 +147,137 @@ class PublicApiCheckerTest {
       assertThat(apiJavadoc)
         .isPresent()
         .contains("/**\n* documented\n*/");
+    }
+
+    @ParameterizedTest(name = "[{index}] {1}")
+    @MethodSource("getApiJavadocsCountTestCases")
+    void getApiJavadocsCount(String code, String description, TreeExtractor treeExtractor, int expectedCount) {
+      CompilationUnitTree cut = JParserTestUtils.parse(code);
+      Tree tree = treeExtractor.extract(cut);
+      assertThat(PublicApiChecker.getApiJavadocsCount(tree))
+        .as(description)
+        .isEqualTo(expectedCount);
+    }
+
+    private static Stream<Arguments> getApiJavadocsCountTestCases() {
+      return Stream.of(
+        Arguments.of(
+          "class A { }",
+          "No javadoc",
+          (TreeExtractor) cut -> cut.types().get(0),
+          0
+        ),
+        Arguments.of(
+          """
+          /**
+           * documented
+           */
+          class A { }
+          """,
+          "Single javadoc",
+          (TreeExtractor) cut -> cut.types().get(0),
+          1
+        ),
+        Arguments.of(
+          """
+          /**
+           * first javadoc
+           */
+          /**
+           * second javadoc
+           */
+          class A { }
+          """,
+          "Multiple javadocs (2)",
+          (TreeExtractor) cut -> cut.types().get(0),
+          2
+        ),
+        Arguments.of(
+          """
+          /**
+           * first javadoc
+           */
+          /**
+           * second javadoc
+           */
+          /**
+           * third javadoc
+           */
+          class A { }
+          """,
+          "Three javadocs",
+          (TreeExtractor) cut -> cut.types().get(0),
+          3
+        ),
+        Arguments.of(
+          """
+          class A {
+            /**
+             * old documentation
+             */
+            /**
+             * actual documentation
+             */
+            public void foo() { }
+          }
+          """,
+          "Method with multiple javadocs",
+          (TreeExtractor) cut -> ((ClassTree) cut.types().get(0)).members().get(0),
+          2
+        ),
+        Arguments.of(
+          """
+          class A {
+            /**
+             * first comment
+             */
+            /**
+             * second comment
+             */
+            public String field;
+          }
+          """,
+          "Field with multiple javadocs",
+          (TreeExtractor) cut -> ((ClassTree) cut.types().get(0)).members().get(0),
+          2
+        ),
+        Arguments.of(
+          """
+          /**
+           * traditional javadoc
+           */
+          /// markdown javadoc
+          class A { }
+          """,
+          "Traditional and markdown javadoc",
+          (TreeExtractor) cut -> cut.types().get(0),
+          2
+        ),
+        Arguments.of(
+          """
+          /// markdown javadoc
+          class A { }
+          """,
+          "Markdown javadoc",
+          (TreeExtractor) cut -> cut.types().get(0),
+          1
+        ),
+        Arguments.of(
+          "class A { void foo() { int x = 1 + 2; } }",
+          "Non-API kind returns zero",
+          (TreeExtractor) cut -> {
+            ClassTree classTree = (ClassTree) cut.types().get(0);
+            MethodTree method = (MethodTree) classTree.members().get(0);
+            return method.block().body().get(0);
+          },
+          0
+        )
+      );
+    }
+
+    @FunctionalInterface
+    private interface TreeExtractor {
+      Tree extract(CompilationUnitTree cut);
     }
   }
 

@@ -24,7 +24,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
-import static org.sonar.java.checks.helpers.DeprecatedCheckerHelper.reportTreeForDeprecatedTree;
+import static org.sonar.java.checks.helpers.TreeHelper.reportTree;
 
 @DeprecatedRuleKey(ruleKey = "MissingDeprecatedCheck", repositoryKey = "squid")
 @Rule(key = "S1123")
@@ -39,10 +39,10 @@ public class MissingDeprecatedCheck extends AbstractMissingDeprecatedChecker {
     boolean hasDeprecatedAnnotation = deprecatedAnnotation != null;
     if (hasDeprecatedAnnotation) {
       if (!hasJavadocDeprecatedTag) {
-        reportIssue(reportTreeForDeprecatedTree(tree), "Add the missing @deprecated Javadoc tag.");
+        reportIssue(reportTree(tree), "Add the missing @deprecated Javadoc tag.");
       }
     } else if (hasJavadocDeprecatedTag) {
-      reportIssue(reportTreeForDeprecatedTree(tree), "Add the missing @Deprecated annotation.");
+      reportIssue(reportTree(tree), "Add the missing @Deprecated annotation.");
     }
   }
 
