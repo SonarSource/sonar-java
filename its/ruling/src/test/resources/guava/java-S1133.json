@@ -1,20 +1,4 @@
 {
-"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
-925
-],
-"com.google.guava:guava:src/com/google/common/base/Converter.java": [
-366
-],
-"com.google.guava:guava:src/com/google/common/base/Objects.java": [
-131,
-149,
-165,
-190,
-203
-],
-"com.google.guava:guava:src/com/google/common/cache/LoadingCache.java": [
-132
-],
 "com.google.guava:guava:src/com/google/common/collect/ArrayTable.java": [
 375,
 489
@@ -133,15 +117,8 @@
 80
 ],
 "com.google.guava:guava:src/com/google/common/collect/Iterators.java": [
-117,
 189,
 1252
-],
-"com.google.guava:guava:src/com/google/common/collect/MapConstraint.java": [
-56
-],
-"com.google.guava:guava:src/com/google/common/collect/MapConstraints.java": [
-53
 ],
 "com.google.guava:guava:src/com/google/common/collect/MapMaker.java": [
 205,
@@ -162,12 +139,6 @@
 "com.google.guava:guava:src/com/google/common/collect/Ordering.java": [
 176
 ],
-"com.google.guava:guava:src/com/google/common/collect/Range.java": [
-447
-],
-"com.google.guava:guava:src/com/google/common/collect/Sets.java": [
-518
-],
 "com.google.guava:guava:src/com/google/common/collect/UnmodifiableIterator.java": [
 46
 ],
@@ -175,38 +146,11 @@
 42,
 52
 ],
-"com.google.guava:guava:src/com/google/common/hash/BloomFilter.java": [
-150
-],
 "com.google.guava:guava:src/com/google/common/io/ByteArrayDataOutput.java": [
 48
 ],
-"com.google.guava:guava:src/com/google/common/io/InputSupplier.java": [
-34
-],
-"com.google.guava:guava:src/com/google/common/io/LittleEndianDataOutputStream.java": [
-74
-],
-"com.google.guava:guava:src/com/google/common/io/OutputSupplier.java": [
-34
-],
-"com.google.guava:guava:src/com/google/common/reflect/TypeToken.java": [
-415,
-428
-],
-"com.google.guava:guava:src/com/google/common/util/concurrent/FutureFallback.java": [
-41
-],
 "com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java": [
-427,
-498,
 734,
-1007,
-1057,
-1824,
-1882
-],
-"com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
-282
+1824
 ]
 }

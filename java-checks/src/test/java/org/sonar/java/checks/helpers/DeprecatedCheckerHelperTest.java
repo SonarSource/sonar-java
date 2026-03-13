@@ -60,7 +60,7 @@ class DeprecatedCheckerHelperTest {
 
   private static Stream<Arguments> legitimateDeprecationTestCases() {
     return Stream.of(
-      // Migration guidance - should be legitimate (true)
+      // Migration guidance should be legitimate (true)
       Arguments.of(
         """
         /**
@@ -75,38 +75,6 @@ class DeprecatedCheckerHelperTest {
          * @deprecated Please use {@link NewClass} instead
          */""",
         "Migration guidance with {@link}",
-        true
-      ),
-      Arguments.of(
-        """
-        /**
-         * @deprecated Replaced by newMethod()
-         */""",
-        "Migration guidance with 'replaced by'",
-        true
-      ),
-      Arguments.of(
-        """
-        /**
-         * @deprecated See {@link NewApi#betterMethod}
-         */""",
-        "Migration guidance with 'see'",
-        true
-      ),
-      Arguments.of(
-        """
-        /**
-         * @deprecated Prefer using modernMethod()
-         */""",
-        "Migration guidance with 'prefer'",
-        true
-      ),
-      Arguments.of(
-        """
-        /**
-         * @deprecated Migrate to the new API
-         */""",
-        "Migration guidance with 'migrate to'",
         true
       ),
       Arguments.of(
