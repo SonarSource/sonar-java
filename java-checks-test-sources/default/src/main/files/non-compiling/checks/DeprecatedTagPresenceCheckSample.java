@@ -95,43 +95,43 @@ class LegitimateDeprecation {
   }
 
   /**
-   * @deprecated Replaced by newMethod()
+   * @deprecated Scheduled for removal in version 2.0
    */
   public void oldMethod3() { // Compliant
   }
 
   /**
-   * @deprecated Scheduled for removal in version 2.0
+   * @deprecated Use newApi() instead.
    */
   public void oldMethod4() { // Compliant
   }
 
   /**
-   * @deprecated Use newApi() instead.
-   */
-  public void oldMethod5() { // Compliant
-  }
-
-  /**
    * @deprecated See {@link NewApi#betterMethod}
    */
-  public void oldMethod6() { // Compliant
+  public void oldMethod5() { // Noncompliant
   }
 
   /**
    * @deprecated Prefer using modernMethod()
    */
-  public void oldMethod7() { // Compliant
+  public void oldMethod6() { // Noncompliant
   }
 
   /**
    * @deprecated Migrate to the new API
    */
-  public void oldMethod8() { // Compliant
+  public void oldMethod7() { // Noncompliant
   }
 
   /**
    * @deprecated Removed in version 3.0
+   */
+  public void oldMethod8() { // Compliant
+  }
+
+  /**
+   * @deprecated To be removed in future releases
    */
   public void oldMethod9() { // Compliant
   }
@@ -139,23 +139,31 @@ class LegitimateDeprecation {
   /**
    * @deprecated To be removed in future releases
    */
-  public void oldMethod10() { // Compliant
+  @Deprecated
+  public void methodWithDeprecatedAnnotationAndTag() { // Compliant
   }
 
   /**
    * @deprecated deprecated since version 1.5, use newMethod() instead
    */
-  public void oldMethod11() { // Compliant
+  public void oldMethod10() { // Compliant
   }
 
   /**
    * @deprecated This is old and not useful
    */
-  public void oldMethod12() { // Noncompliant
+  public void oldMethod11() { // Noncompliant
   }
 
   /**
    * @deprecated
+   */
+  public void oldMethod12() { // Noncompliant
+  }
+
+  /**
+   * Some javadoc
+   * @deprecated This method is outdated
    */
   public void oldMethod13() { // Noncompliant
   }
@@ -164,6 +172,7 @@ class LegitimateDeprecation {
    * Some javadoc
    * @deprecated This method is outdated
    */
+  @Deprecated
   public void oldMethod14() { // Noncompliant
   }
 

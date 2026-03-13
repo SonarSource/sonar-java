@@ -43,14 +43,6 @@ public class DeprecatedCheckerHelper {
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
   private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
 
-  private static final Set<String> MIGRATION_GUIDANCE_KEYWORDS = Set.of(
-    "replaced by",
-    "see ",
-    "prefer",
-    "migrate to",
-    "{@link"
-  );
-
   private static final Set<String> REMOVAL_TIMELINE_TERMS = Set.of(
     "will be removed in",
     "removed in version",
@@ -108,8 +100,7 @@ public class DeprecatedCheckerHelper {
 
   private static boolean hasMigrationGuidance(String deprecatedContent) {
     String lowerContent = deprecatedContent.toLowerCase(Locale.ROOT);
-    return (lowerContent.contains("use") && (lowerContent.contains("instead") || lowerContent.contains("new")))
-      || MIGRATION_GUIDANCE_KEYWORDS.stream().anyMatch(lowerContent::contains);
+    return lowerContent.contains("use") && (lowerContent.contains("instead") || lowerContent.contains("new"));
   }
 
   private static boolean hasRemovalTimeline(String deprecatedContent) {
