@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
@@ -46,7 +47,10 @@ public class SwitchAtLeastThreeCasesCheck extends IssuableSubscriptionVisitor {
       count += totalLabelCount(caseGroup);
     }
     if (count < 3) {
-      reportIssue(switchStatementTree.switchKeyword(), "Replace this \"switch\" statement by \"if\" statements to increase readability.");
+      Symbol.TypeSymbol typeSymbol = switchStatementTree.expression().symbolType().symbol();
+      if (!typeSymbol.isUnknown() && !typeSymbol.isEnum()) {
+        reportIssue(switchStatementTree.switchKeyword(), "Replace this \"switch\" statement by \"if\" statements to increase readability.");
+      }
     }
   }
 
