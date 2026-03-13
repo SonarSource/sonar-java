@@ -6,7 +6,9 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "tags": [],
+  "tags": [
+    "java25"
+  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-8465",
   "sqKey": "S8465",
