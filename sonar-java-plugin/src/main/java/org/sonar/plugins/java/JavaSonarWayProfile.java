@@ -26,10 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
-import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.ProfileRegistrar;
-import org.sonarsource.analyzer.commons.BuiltInQualityProfileJsonLoader;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**
@@ -66,12 +64,10 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
   @Override
   public void define(Context context) {
     NewBuiltInQualityProfile sonarWay = context.createBuiltInQualityProfile("Sonar way", Java.KEY);
-    Set<RuleKey> ruleKeys = new HashSet<>(sonarJavaSonarWayRuleKeys());
-    if (profileRegistrars != null) {
-      for (ProfileRegistrar profileRegistrar : profileRegistrars) {
-        profileRegistrar.register(ruleKeys::addAll);
-      }
-    }
+    Set<RuleKey> ruleKeys = QualityProfileUtils.registerRulesFromJson(
+      SONAR_WAY_PATH,
+      this.profileRegistrars
+    );
 
     // Former activation mechanism, it should be removed once sonar-security and sonar-dataflow-bug-detection
     // support the new mechanism:
@@ -89,9 +85,7 @@ public class JavaSonarWayProfile implements BuiltInQualityProfilesDefinition {
   }
 
   static Set<RuleKey> sonarJavaSonarWayRuleKeys() {
-    return BuiltInQualityProfileJsonLoader.loadActiveKeysFromJsonProfile(SONAR_WAY_PATH).stream()
-      .map(rule -> RuleKey.of(GeneratedCheckList.REPOSITORY_KEY, rule))
-      .collect(Collectors.toSet());
+    return QualityProfileUtils.loadRuleKeys(SONAR_WAY_PATH);
   }
 
   @VisibleForTesting
