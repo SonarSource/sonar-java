@@ -52,7 +52,7 @@ class JavaAgenticWayProfileTest {
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile actualProfile = profilesPerLanguages.get("java").get("AI Quality Profile");
     assertThat(actualProfile.isDefault()).isFalse();
     assertThat(actualProfile.rules())
-      .hasSize(468)
+      .hasSize(467)
       .extracting(BuiltInQualityProfilesDefinition.BuiltInActiveRule::ruleKey)
       .doesNotContainAnyElementsOf(List.of(
         "S101",

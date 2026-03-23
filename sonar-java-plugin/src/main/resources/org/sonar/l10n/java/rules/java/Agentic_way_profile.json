@@ -1,7 +1,6 @@
 {
   "name": "AI Quality Profile",
   "ruleKeys": [
-    "S100",
     "S106",
     "S107",
     "S108",
