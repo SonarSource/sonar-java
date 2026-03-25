@@ -98,6 +98,14 @@ jobs:
         run: |
           cd its/ruling
           mvn package --batch-mode "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+      - name: Upload Actual Results On Failure
+        if: failure()
+        uses: ./.github/actions/upload-actual
+        with:
+          name: ${{ matrix.item.runner }}_${{ matrix.item.profile }}
+          it-dir: its/ruling
+          expected-dir: src/test/resources
+          actual-dir: target/actual
 
   plugin-qa:
     strategy:
@@ -323,6 +331,14 @@ jobs:
           -Dmaven.test.redirectTestOutputToFile=false
           -Dparallel=methods
           -DuseUnlimitedThreads=true
+      - name: Upload Actual Results On Failure
+        if: failure()
+        uses: ./.github/actions/upload-actual
+        with:
+          name: autoscan
+          it-dir: its/autoscan
+          expected-dir: src/test/resources/autoscan/diffs
+          actual-dir: target/actual/autoscan-diffs
 
   qa-os-win:
     name: Build and Unit Test on Windows
