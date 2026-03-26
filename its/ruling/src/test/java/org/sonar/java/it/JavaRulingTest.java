@@ -71,11 +71,17 @@ public class JavaRulingTest {
   private static final String INCREMENTAL_ANALYSIS_KEY = "sonar.java.skipUnchanged";
   private static final String SONAR_CACHING_ENABLED_KEY = "sonar.analysisCache.enabled";
 
-  // by default all rules are enabled, if you want to enable just a subset of rules you can specify the list of
-  // rule keys from the command line using "rules" property, i.e. mvn test -Drules=S100,S101
+  /**
+   * By default, all rules are enabled.
+   * If you want to enable just a subset of rules, you can specify the list of rule keys from the command line
+   * using the "sonarRules" property, i.e.
+   * <pre>{@code
+   * mvn test -DsonarRules=S100,S101
+   * }</pre>
+   */
   private static final ImmutableSet<String> SUBSET_OF_ENABLED_RULES = ImmutableSet.copyOf(
       Splitter.on(',').trimResults().omitEmptyStrings().splitToList(
-          System.getProperty("rules", "")
+          System.getProperty("sonarRules", "")
       )
   );
 
