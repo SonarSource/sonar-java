@@ -347,6 +347,7 @@ public class JavaRulingTest {
       .setSourceEncoding("UTF-8")
       .setSourceDirs(".")
       .setDebugLogs(true)
+      .setProperty("sonar.search.javaAdditionalOpts", "-Dbootstrap.system_call_filter=false")
       // Dummy sonar.java.binaries to pass validation
       .setProperty("sonar.java.binaries", "asynch")
       .setProperty("sonar.java.source", "1.5");
