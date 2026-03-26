@@ -1,0 +1,127 @@
+/*
+ * SonarQube Java
+ * Copyright (C) 2012-2025 SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the Sonar Source-Available License Version 1, as published by SonarSource SA.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+package org.sonar.plugins.java;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.api.rule.RuleKey;
+import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
+import org.sonar.java.GeneratedCheckList;
+import org.sonar.java.annotations.VisibleForTesting;
+import org.sonar.plugins.java.api.ProfileRegistrar;
+import org.sonarsource.analyzer.commons.BuiltInQualityProfileJsonLoader;
+
+
+/**
+ * Defines a Java quality profile including rules from sonar-java, Java SE, DBD and Security.
+ */
+abstract class BuiltInJavaQualityProfile implements BuiltInQualityProfilesDefinition {
+  private static final Logger LOG = LoggerFactory.getLogger(BuiltInJavaQualityProfile.class);
+
+  static final String SECURITY_RULES_CLASS_NAME = "com.sonar.plugins.security.api.JavaRules";
+  static final String DBD_RULES_CLASS_NAME = "com.sonarsource.plugins.dbd.api.JavaRules";
+  static final String SECURITY_RULE_KEYS_METHOD_NAME = "getSecurityRuleKeys";
+  static final String DBD_RULE_KEYS_METHOD_NAME = "getDataflowBugDetectionRuleKeys";
+  static final String GET_REPOSITORY_KEY = "getRepositoryKey";
+  static final String SECURITY_REPOSITORY_KEY = "javasecurity";
+  static final String DBD_REPOSITORY_KEY = "javabugs";
+
+
+  protected final ProfileRegistrar[] profileRegistrars;
+
+  BuiltInJavaQualityProfile(@Nullable ProfileRegistrar[] profileRegistrars) {
+    this.profileRegistrars = profileRegistrars;
+  }
+
+  abstract String getProfileName();
+
+  abstract String getPathToJsonProfile();
+
+  abstract boolean isDefault();
+
+  @Override
+  public void define(Context context) {
+    // Create a new profile
+    BuiltInQualityProfilesDefinition.NewBuiltInQualityProfile profile = context.createBuiltInQualityProfile(getProfileName(), Java.KEY);
+    // Load rules from local JSON
+    Set<RuleKey> ruleKeys = registerRulesFromJson(getPathToJsonProfile(), profileRegistrars);
+
+    // FIXME as part of SONARJAVA-6207
+    // Former activation mechanism, it should be removed once sonar-security and sonar-dataflow-bug-detection
+    // support the new mechanism:
+    // <code> registrarContext.internal().registerDefaultQualityProfileRules(ruleKeys); </code>
+    // For now, it still uses reflexion if rules are not yet defined
+    if (ruleKeys.stream().noneMatch(rule -> SECURITY_REPOSITORY_KEY.equals(rule.repository()))) {
+      ruleKeys.addAll(getSecurityRuleKeys());
+    }
+    if (ruleKeys.stream().noneMatch(rule -> DBD_REPOSITORY_KEY.equals(rule.repository()))) {
+      ruleKeys.addAll(getDataflowBugDetectionRuleKeys());
+    }
+
+    ruleKeys.forEach(ruleKey -> profile.activateRule(ruleKey.repository(), ruleKey.rule()));
+    profile.setDefault(isDefault());
+    profile.done();
+  }
+
+  static Set<RuleKey> registerRulesFromJson(String pathToJsonProfile, @Nullable ProfileRegistrar[] profileRegistrars) {
+    Set<RuleKey> ruleKeys = new HashSet<>(loadRuleKeys(pathToJsonProfile));
+    if (profileRegistrars != null) {
+      for (ProfileRegistrar profileRegistrar : profileRegistrars) {
+        profileRegistrar.register(ruleKeys::addAll);
+      }
+    }
+
+    return ruleKeys;
+  }
+
+  static Set<RuleKey> loadRuleKeys(final String pathToJsonProfile) {
+    return BuiltInQualityProfileJsonLoader.loadActiveKeysFromJsonProfile(pathToJsonProfile).stream()
+      .map(rule -> RuleKey.of(GeneratedCheckList.REPOSITORY_KEY, rule))
+      .collect(Collectors.toSet());
+  }
+
+  @VisibleForTesting
+  Set<RuleKey> getSecurityRuleKeys() {
+    return getExternalRuleKeys(SECURITY_RULES_CLASS_NAME, SECURITY_RULE_KEYS_METHOD_NAME, "security");
+  }
+
+  @VisibleForTesting
+  Set<RuleKey> getDataflowBugDetectionRuleKeys() {
+    return getExternalRuleKeys(DBD_RULES_CLASS_NAME, DBD_RULE_KEYS_METHOD_NAME, "dataflow bug detection");
+  }
+
+  @VisibleForTesting
+  Set<RuleKey> getExternalRuleKeys(String className, String ruleKeysMethod, String rulesCategory) {
+    try {
+      Class<?> javaRulesClass = Class.forName(className);
+      Method getRuleKeysMethod = javaRulesClass.getMethod(ruleKeysMethod);
+      Set<String> ruleKeys = (Set<String>) getRuleKeysMethod.invoke(null);
+      Method getRepositoryKeyMethod = javaRulesClass.getMethod(GET_REPOSITORY_KEY);
+      String repositoryKey = (String) getRepositoryKeyMethod.invoke(null);
+      return ruleKeys.stream().map(k -> RuleKey.of(repositoryKey, k)).collect(Collectors.toSet());
+    } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+      LOG.debug(String.format("[%s], no %s rules added to %s java profile: %s", e.getClass().getSimpleName(), rulesCategory, getProfileName(), e.getMessage()));
+    }
+    return new HashSet<>();
+  }
+}

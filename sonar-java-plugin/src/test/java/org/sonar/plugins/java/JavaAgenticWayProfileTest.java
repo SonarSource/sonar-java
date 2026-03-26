@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.csv.CSVFormat;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
@@ -118,16 +119,19 @@ class JavaAgenticWayProfileTest {
       ));
   }
 
-  @Disabled("This method should be used as a utility method to generate a quality profile from a CSV file")
+
+  @Test
+  @Disabled("A utility method to generate a quality profile from a CSV file")
   void generate_ai_quality_profile() throws IOException {
-    generate(
+    Path generatedQualityProfile = generate(
       Path.of("Path", "to", "your", "input.csv"),
       RULE_DESCRIPTION_DIRECTORY.resolve("Agentic_way_profile.json"),
       "AI Quality Profile"
     );
+    Assertions.fail(String.format("The generated quality profile was written to %s".formatted(generatedQualityProfile)));
   }
 
-  public static Path generate(Path input, Path output, String profileName) throws IOException {
+  static Path generate(Path input, Path output, String profileName) throws IOException {
     CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
       .setHeader()
       .setSkipHeaderRecord(true)

@@ -16,37 +16,32 @@
  */
 package org.sonar.plugins.java;
 
-import java.util.Set;
 import javax.annotation.Nullable;
-import org.sonar.api.rule.RuleKey;
-import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
 import org.sonar.plugins.java.api.ProfileRegistrar;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 @SonarLintSide
-public class JavaAgenticWayProfile implements BuiltInQualityProfilesDefinition {
-  private final ProfileRegistrar[] profileRegistrars;
-
-  /**
-   * Constructor used by Pico container (SC) when no ProfileRegistrar are available
-   */
+public class JavaAgenticWayProfile extends BuiltInJavaQualityProfile {
   public JavaAgenticWayProfile() {
     this(null);
   }
 
   public JavaAgenticWayProfile(@Nullable ProfileRegistrar[] profileRegistrars) {
-    this.profileRegistrars = profileRegistrars;
+    super(profileRegistrars);
   }
 
   @Override
-  public void define(Context context) {
-    NewBuiltInQualityProfile agenticWay = context.createBuiltInQualityProfile("AI Quality Profile", Java.KEY);
-    Set<RuleKey> ruleKeys = QualityProfileUtils.registerRulesFromJson(
-      "/org/sonar/l10n/java/rules/java/Agentic_way_profile.json",
-      this.profileRegistrars
-    );
+  String getProfileName() {
+    return "AI Quality Profile";
+  }
 
-    ruleKeys.forEach(ruleKey -> agenticWay.activateRule(ruleKey.repository(), ruleKey.rule()));
-    agenticWay.done();
+  @Override
+  String getPathToJsonProfile() {
+    return "/org/sonar/l10n/java/rules/java/Agentic_way_profile.json";
+  }
+
+  @Override
+  boolean isDefault() {
+    return false;
   }
 }
