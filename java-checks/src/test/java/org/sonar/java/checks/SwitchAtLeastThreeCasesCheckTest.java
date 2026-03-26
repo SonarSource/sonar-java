@@ -31,4 +31,12 @@ class SwitchAtLeastThreeCasesCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/SwitchAtLeastThreeCasesCheckSample.java"))
+      .withCheck(new SwitchAtLeastThreeCasesCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }
