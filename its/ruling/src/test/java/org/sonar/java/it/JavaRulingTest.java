@@ -17,8 +17,6 @@
 package org.sonar.java.it;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.sonar.orchestrator.build.Build;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
@@ -40,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -79,7 +78,7 @@ public class JavaRulingTest {
    * mvn test -DsonarRules=S100,S101
    * }</pre>
    */
-  private static final ImmutableSet<String> SUBSET_OF_ENABLED_RULES = ImmutableSet.copyOf(
+  private static final Set<String> SUBSET_OF_ENABLED_RULES = Set.copyOf(
       Splitter.on(',').trimResults().omitEmptyStrings().splitToList(
           System.getProperty("sonarRules", "")
       )
@@ -114,23 +113,20 @@ public class JavaRulingTest {
 
   @BeforeClass
   public static void prepare_quality_profiles() throws Exception {
-    ImmutableMap<String, ImmutableMap<String, String>> rulesParameters = ImmutableMap.<String, ImmutableMap<String, String>>builder()
-      .put(
-        "S1120",
-        ImmutableMap.of("indentationLevel", "4"))
-      .put(
+    Map<String, Map<String, String>> rulesParameters = Map.of(
+        "S1120", Map.of("indentationLevel", "4"),
         "S1451",
-        ImmutableMap.of(
+        Map.of(
           "headerFormat",
           """
             
             /*
              * Copyright (c) 1998, 2006, Oracle and/or its affiliates. All rights reserved.
-             * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."""))
-      .put("S5961", ImmutableMap.of("MaximumAssertionNumber", "50"))
-      .put("S6539", ImmutableMap.of("couplingThreshold", "20"))
-      .build();
-    ImmutableSet<String> disabledRules = ImmutableSet.of(
+             * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."""),
+        "S5961", Map.of("MaximumAssertionNumber", "50"),
+        "S6539", Map.of("couplingThreshold", "20")
+      );
+    Set<String> disabledRules = Set.of(
       "S1874",
       "CycleBetweenPackages",
       // disable because it generates too many issues, performance reasons
