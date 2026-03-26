@@ -120,13 +120,17 @@ Failing to do so will produce inconsistencies with the expected results.
 
 From the `its/ruling` folder, launch the ruling tests:
 
-    mvn clean install -Pit-ruling -DcommunityEditionTestsOnly=true 
+    mvn clean install -Pit-ruling -DcommunityEditionTestsOnly=true
     # Alternatively
     JAVA_HOME=/my/local/java21/jdk/ mvn clean install -Pit-ruling -DcommunityEditionTestsOnly=true
 
-Note for internal contributors: in order to also execute the tests that depend on the SonarQube Server Enterprise Edition, use: 
+Note for internal contributors: in order to also execute the tests that depend on the SonarQube Server Enterprise Edition, use:
 
     mvn clean install -Pit-ruling
+
+To run the ruling tests for only a subset of rules, use the `sonarRules` property with a comma-separated list of rule keys:
+
+    mvn clean install -Pit-ruling -DsonarRules=S100,S101
 
 This test gives you the opportunity to examine the issues created by each rule and make sure they're what you expect. Any implemented rule is highly likely to raise issues on the multiple projects we use as ruling code base.
 
