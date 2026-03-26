@@ -16,7 +16,6 @@
  */
 package org.sonar.java.it;
 
-import com.google.common.base.Splitter;
 import com.sonar.orchestrator.build.Build;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
@@ -78,11 +77,11 @@ public class JavaRulingTest {
    * mvn test -DsonarRules=S100,S101
    * }</pre>
    */
-  private static final Set<String> SUBSET_OF_ENABLED_RULES = Set.copyOf(
-      Splitter.on(',').trimResults().omitEmptyStrings().splitToList(
-          System.getProperty("sonarRules", "")
-      )
-  );
+  private static final Set<String> SUBSET_OF_ENABLED_RULES =
+    Arrays.stream(System.getProperty("sonarRules", "").split(","))
+      .map(String::trim)
+      .filter(s -> !s.isEmpty())
+      .collect(Collectors.toSet());
 
   @ClassRule
   public static TemporaryFolder tmpDumpOldFolder = new TemporaryFolder();
