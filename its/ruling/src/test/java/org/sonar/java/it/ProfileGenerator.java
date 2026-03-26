@@ -16,7 +16,6 @@
  */
 package org.sonar.java.it;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
 import com.sonar.orchestrator.locator.FileLocation;
@@ -45,7 +44,7 @@ public class ProfileGenerator {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProfileGenerator.class);
 
-  static void generate(OrchestratorRule orchestrator, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
+  static void generate(OrchestratorRule orchestrator, Map<String, Map<String, String>> rulesParameters,
     Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
     generate(orchestrator, null, rulesParameters, excluded, subsetOfEnabledRules, activatedRuleKeys);
   }
@@ -53,7 +52,7 @@ public class ProfileGenerator {
   /**
    * @return the list of enabled rule keys for the given profile
    */
-  static void generate(OrchestratorRule orchestrator, @Nullable String qualityProfile, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
+  static void generate(OrchestratorRule orchestrator, @Nullable String qualityProfile, Map<String, Map<String, String>> rulesParameters,
     Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
     try {
       LOG.info("Generating profile containing all the rules");
