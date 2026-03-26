@@ -16,12 +16,11 @@
  */
 package org.sonar.java.it;
 
-import com.google.common.io.Files;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
 import com.sonar.orchestrator.locator.FileLocation;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -88,7 +87,7 @@ public class ProfileGenerator {
         .append("</profile>");
 
       File file = File.createTempFile("profile", ".xml");
-      Files.asCharSink(file, StandardCharsets.UTF_8).write(sb);
+      Files.writeString(file.toPath(), sb);
       LOG.info("Restoring profile to SonarQube");
       orchestrator.getServer().restoreProfile(FileLocation.of(file));
       file.delete();
