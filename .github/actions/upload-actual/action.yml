@@ -34,11 +34,12 @@ runs:
         IT_DIR: ${{ inputs.it-dir }}
         EXPECTED_DIR: ${{ inputs.expected-dir }}
         ACTUAL_DIR: ${{ inputs.actual-dir }}
+        NAME: ${{ inputs.name }}
       run: |
         cd "${IT_DIR}"
         mkdir -p target
         diff --unified --recursive --strip-trailing-cr "${EXPECTED_DIR}" "${ACTUAL_DIR}" > "target/test.diff" || true
-        npx diff2html-cli --input file --style side --file "target/diff_${{ inputs.name }}.html" -- "target/test.diff"
+        npx diff2html-cli --input file --style side --file "target/diff_${NAME}.html" -- "target/test.diff"
 
     - name: Upload Diff Report
       uses: actions/upload-artifact@v4
