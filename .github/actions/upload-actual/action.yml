@@ -1,0 +1,49 @@
+name: Upload Actual Results
+description: Upload test artifacts and diffs when an integration test fails
+
+inputs:
+  name:
+    description: Name used for the uploaded artifacts. We upload actual_name and diff_name.
+    required: true
+  it-dir:
+    description: Path to integration tests.
+    required: true
+  expected-dir:
+    description: Relative path to expected test results.
+    required: true
+  actual-dir:
+    description: Relative path to actual test results.
+    required: true
+
+env:
+  RETENTION_DAYS: 7
+
+runs:
+  using: composite
+  steps:
+    - name: Upload Actual Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: actual_${{ inputs.name }}
+        path: ${{ inputs.it-dir }}/${{ inputs.actual-dir }}
+        retention-days: ${{ env.RETENTION_DAYS }}
+
+    - name: Generate Diff Report
+      shell: bash
+      env:
+        IT_DIR: ${{ inputs.it-dir }}
+        EXPECTED_DIR: ${{ inputs.expected-dir }}
+        ACTUAL_DIR: ${{ inputs.actual-dir }}
+        NAME: ${{ inputs.name }}
+      run: |
+        cd "${IT_DIR}"
+        mkdir -p target
+        diff --unified --recursive --strip-trailing-cr "${EXPECTED_DIR}" "${ACTUAL_DIR}" > "target/test.diff" || true
+        npx diff2html-cli --input file --style side --file "target/diff_${NAME}.html" -- "target/test.diff"
+
+    - name: Upload Diff Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: diff_${{ inputs.name }}
+        path: ${{ inputs.it-dir }}/target/diff_${{ inputs.name }}.html
+        retention-days: ${{ env.RETENTION_DAYS }}
