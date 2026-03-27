@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class JavaAgenticWayProfileTest {
 
-  private static final Path RULE_DESCRIPTION_DIRECTORY = Path.of("sonar-java-plugin", "src", "main", "resources", "org", "sonar", "l10n", "java", "rules", "java");
+  private static final Path RULE_DESCRIPTION_DIRECTORY = Path.of("src", "main", "resources", "org", "sonar", "l10n", "java", "rules", "java");
 
   @Test
   void profile_is_registered_as_expected() {
@@ -48,9 +48,9 @@ class JavaAgenticWayProfileTest {
 
     Map<String, Map<String, BuiltInQualityProfilesDefinition.BuiltInQualityProfile>> profilesPerLanguages = context.profilesByLanguageAndName();
     assertThat(profilesPerLanguages).containsOnlyKeys("java");
-    assertThat(profilesPerLanguages.get("java")).containsOnlyKeys("AI Quality Profile");
+    assertThat(profilesPerLanguages.get("java")).containsOnlyKeys("Sonar agentic AI");
 
-    BuiltInQualityProfilesDefinition.BuiltInQualityProfile actualProfile = profilesPerLanguages.get("java").get("AI Quality Profile");
+    BuiltInQualityProfilesDefinition.BuiltInQualityProfile actualProfile = profilesPerLanguages.get("java").get("Sonar agentic AI");
     assertThat(actualProfile.isDefault()).isFalse();
     assertThat(actualProfile.rules())
       .hasSize(467)
@@ -124,9 +124,9 @@ class JavaAgenticWayProfileTest {
   @Disabled("A utility method to generate a quality profile from a CSV file")
   void generate_ai_quality_profile() throws IOException {
     Path generatedQualityProfile = generate(
-      Path.of("Path", "to", "your", "input.csv"),
-      RULE_DESCRIPTION_DIRECTORY.resolve("Agentic_way_profile.json"),
-      "AI Quality Profile"
+      Path.of("Path to your CSV input file relative to sonar-java-plugin"),
+      RULE_DESCRIPTION_DIRECTORY.resolve("Sonar_agentic_ai_profile.json"),
+      JavaAgenticWayProfile.PROFILE_NAME
     );
     Assertions.fail(String.format("The generated quality profile was written to %s".formatted(generatedQualityProfile)));
   }
@@ -177,10 +177,10 @@ class JavaAgenticWayProfileTest {
 
   private static Set<String> getImplementedRuleKeys() throws IOException {
     if (!Files.isDirectory(RULE_DESCRIPTION_DIRECTORY)) {
-      throw new IllegalStateException("This should not happen!");
+      throw new IllegalStateException("Could not find path to %s".formatted(RULE_DESCRIPTION_DIRECTORY));
     }
     return Files.list(RULE_DESCRIPTION_DIRECTORY)
-      .filter(path -> !path.endsWith("_profile.json"))
+      .filter(path -> !path.toString().endsWith("_profile.json"))
       .map(path -> {
         String fileName = path.getFileName().toString();
         return fileName.substring(0, fileName.lastIndexOf('.'));

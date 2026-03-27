@@ -22,6 +22,8 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 
 @SonarLintSide
 public class JavaAgenticWayProfile extends BuiltInJavaQualityProfile {
+  static final String PROFILE_NAME = "Sonar agentic AI";
+
   public JavaAgenticWayProfile() {
     this(null);
   }
@@ -32,12 +34,12 @@ public class JavaAgenticWayProfile extends BuiltInJavaQualityProfile {
 
   @Override
   String getProfileName() {
-    return "AI Quality Profile";
+    return PROFILE_NAME;
   }
 
   @Override
   String getPathToJsonProfile() {
-    return "/org/sonar/l10n/java/rules/java/Agentic_way_profile.json";
+    return "/org/sonar/l10n/java/rules/java/Sonar_agentic_ai_profile.json";
   }
 
   @Override
