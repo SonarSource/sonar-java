@@ -3,11 +3,6 @@ name: Pull Request Created
 on:
   pull_request:
     types: ["opened"]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.github/CODEOWNERS'
-      - 'LICENSE'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

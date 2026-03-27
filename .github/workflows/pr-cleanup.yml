@@ -2,11 +2,6 @@ name: Cleanup PR Resources
 on:
   pull_request:
     types: [closed]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.github/CODEOWNERS'
-      - 'LICENSE'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

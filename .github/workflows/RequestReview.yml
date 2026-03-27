@@ -3,11 +3,6 @@ name: Request review
 on:
   pull_request:
     types: ["review_requested"]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.github/CODEOWNERS'
-      - 'LICENSE'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

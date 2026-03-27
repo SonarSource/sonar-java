@@ -5,17 +5,7 @@ on:
       - master
       - branch-*
       - dogfood-*
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.github/CODEOWNERS'
-      - 'LICENSE'
   pull_request:
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.github/CODEOWNERS'
-      - 'LICENSE'
   workflow_dispatch:
   schedule:
     - cron: "30 1 * * *" # Run daily at 1:30 AM UTC
