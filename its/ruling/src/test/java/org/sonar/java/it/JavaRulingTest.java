@@ -100,7 +100,7 @@ public class JavaRulingTest {
     OrchestratorRuleBuilder orchestratorBuilder = OrchestratorRule.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
       .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
-      .setOrchestratorProperty("sonar.search.javaAdditionalOpts", "-Dbootstrap.system_call_filter=false")
+//      .setOrchestratorProperty("sonar.search.javaAdditionalOpts", "-Dbootstrap.system_call_filter=false")
       .setServerProperty("sonar.search.javaAdditionalOpts", "-Dbootstrap.system_call_filter=false")
       .addPlugin(FileLocation.of(TestClasspathUtils.findModuleJarPath("../../sonar-java-plugin").toFile()))
       .addPlugin(MavenLocation.of("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.11.0.2659"));
@@ -349,7 +349,7 @@ public class JavaRulingTest {
       .setSourceEncoding("UTF-8")
       .setSourceDirs(".")
       .setDebugLogs(true)
-      .setProperty("sonar.search.javaAdditionalOpts", "-Dbootstrap.system_call_filter=false")
+      //.setProperty("sonar.search.javaAdditionalOpts", "-Dbootstrap.system_call_filter=false")
       // Dummy sonar.java.binaries to pass validation
       .setProperty("sonar.java.binaries", "asynch")
       .setProperty("sonar.java.source", "1.5");
