@@ -26,6 +26,7 @@ jobs:
     permissions:
       id-token: write
       contents: write
+    timeout-minutes: 60
     uses: SonarSource/gh-action_release/.github/workflows/main.yaml@v6
     with:
       publishToBinaries: true

@@ -5,6 +5,11 @@ on:
     branches:
       - master
       - 'dogfood/**'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/CODEOWNERS'
+      - 'LICENSE'
 # commenting 'delete' action, as it is triggered way too often
 #  delete:
 #    branches:
@@ -14,6 +19,7 @@ jobs:
   dogfood_merge:
     runs-on: github-ubuntu-latest-s
     name: Update dogfood branch
+    timeout-minutes: 15
     permissions:
       id-token: write # required for SonarSource/vault-action-wrapper
     steps:

@@ -43,6 +43,7 @@ on:
 jobs:
   release:
     name: Release
+    timeout-minutes: 60
     uses: SonarSource/release-github-actions/.github/workflows/automated-release.yml@v1
     permissions:
       statuses: read

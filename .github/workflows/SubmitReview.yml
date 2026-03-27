@@ -8,6 +8,7 @@ jobs:
   SubmitReview_job:
     name: Submit Review
     runs-on: github-ubuntu-latest-s
+    timeout-minutes: 15
     permissions:
       id-token: write
       pull-requests: read

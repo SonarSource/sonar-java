@@ -15,6 +15,7 @@ jobs:
   releasability-status:
     name: Releasability status
     runs-on: github-ubuntu-latest-s
+    timeout-minutes: 30
     permissions:
       id-token: write
       statuses: write

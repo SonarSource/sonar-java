@@ -3,11 +3,21 @@ name: Request review
 on:
   pull_request:
     types: ["review_requested"]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/CODEOWNERS'
+      - 'LICENSE'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   RequestReview_job:
     name: Request review
     runs-on: github-ubuntu-latest-s
+    timeout-minutes: 15
     permissions:
       id-token: write
     # For external PR, ticket should be moved manually

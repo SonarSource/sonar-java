@@ -3,11 +3,21 @@ name: Pull Request Closed
 on:
   pull_request:
     types: [closed]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/CODEOWNERS'
+      - 'LICENSE'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   PullRequestMerged_job:
     name: Pull Request Merged
     runs-on: github-ubuntu-latest-s
+    timeout-minutes: 15
     permissions:
       id-token: write
       pull-requests: read

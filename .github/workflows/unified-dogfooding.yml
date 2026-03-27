@@ -7,6 +7,7 @@ on:
 jobs:
   unified-platform-dogfooding:
     runs-on: github-ubuntu-latest-l
+    timeout-minutes: 60
     name: Unified Platform Dogfooding
     permissions:
       id-token: write

@@ -11,6 +11,7 @@ jobs:
   Next-Iteration-Job:
     name: Next Iteration Job
     runs-on: github-ubuntu-latest-s
+    timeout-minutes: 15
     permissions:
       pull-requests: write
       contents: write

@@ -15,6 +15,7 @@ jobs:
     if: >-
       contains(fromJSON('["main", "master"]'), github.event.check_suite.head_branch) || startsWith(github.event.check_suite.head_branch, 'dogfood-') || startsWith(github.event.check_suite.head_branch, 'branch-')
     runs-on: github-ubuntu-latest-s
+    timeout-minutes: 15
     steps:
       - name: Send Slack Notification
         env:

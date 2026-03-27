@@ -2,10 +2,20 @@ name: Cleanup PR Resources
 on:
   pull_request:
     types: [closed]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/CODEOWNERS'
+      - 'LICENSE'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   cleanup:
     runs-on: github-ubuntu-latest-s  # Public repo
+    timeout-minutes: 15
     permissions:
       actions: write
     steps:
