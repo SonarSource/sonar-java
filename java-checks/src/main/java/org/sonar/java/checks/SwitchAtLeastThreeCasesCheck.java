@@ -56,10 +56,11 @@ public class SwitchAtLeastThreeCasesCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    // Switching over an enum without a default case will cause a compilation error
-    // if a new enum constant is added. Therefore, using if-then should not be recommended.
+    // Do not suggest replacing exhaustive switches over small enums.
+    // It does not aid readability and can lead to error-prone code when
+    // "->" switch is used (adding new enum constant would cause compilation error).
     Symbol.TypeSymbol typeSymbol = switchStatementTree.expression().symbolType().symbol();
-    if (typeSymbol.isEnum() && !hasDefault) {
+    if (typeSymbol.isEnum() && !hasDefault && enumConstantCount(typeSymbol) == count) {
       return;
     }
 
@@ -92,6 +93,15 @@ public class SwitchAtLeastThreeCasesCheck extends IssuableSubscriptionVisitor {
       }
     }
     return false;
+  }
+
+  /**
+   * Number of constants declared in the enum. Note, that it excludes fields and methods.
+   */
+  private static long enumConstantCount(Symbol.TypeSymbol typeSymbol) {
+    return typeSymbol.memberSymbols().stream()
+      .filter(s -> s.isVariableSymbol() && s.isEnum())
+      .count();
   }
 
   private static boolean hasLabelWithAllowedPattern(CaseGroupTree caseGroupTree) {

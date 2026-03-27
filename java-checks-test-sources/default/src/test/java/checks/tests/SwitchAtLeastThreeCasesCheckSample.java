@@ -122,4 +122,59 @@ public class SwitchAtLeastThreeCasesCheckSample {
     }
     return ret;
   }
+
+  public enum LargeEnum {
+    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+  };
+
+  public String switchOverLargeEnum(LargeEnum largeEnum) {
+    String mood = "excited";
+    switch (largeEnum) { // Noncompliant
+      case FRIDAY:
+        mood = "love";
+        break;
+    }
+    return mood;
+  }
+
+  public enum SmallEnumWithMethods {
+    PUBLIC("pub"),
+    PRIVATE("prv");
+
+    enum Weird {A, B, C}
+
+    private final String label;
+
+    SmallEnumWithMethods(String label) {
+      this.label = label;
+    }
+
+    public String getLabel() {
+      return label;
+    }
+
+    public int spaceRequired() {
+      return label.length();
+    }
+  }
+
+  public int switchSmallEnumWithMethods1(SmallEnumWithMethods largeEnum) {
+    int ret = -1;
+    switch (largeEnum) { // Compliant
+      case PRIVATE:
+        ret = 1;
+        break;
+      case PUBLIC:
+        ret = 2;
+        break;
+    }
+    return ret;
+  }
+
+  public void switchSmallEnumWithMethods2(SmallEnumWithMethods largeEnum) {
+    switch (largeEnum) { // Compliant
+      case PRIVATE, PUBLIC:
+        System.out.println("Same, Same");
+    }
+  }
 }
