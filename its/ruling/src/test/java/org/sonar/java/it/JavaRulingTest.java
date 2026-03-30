@@ -147,6 +147,8 @@ public class JavaRulingTest {
       .forEach(ruleKey -> Fail.fail("Specified rule does not exist: " + ruleKey));
 
     prepareDumpOldFolder();
+
+    Files.createDirectories(Paths.get("target", "performance"));
   }
 
   @AfterClass
@@ -361,6 +363,19 @@ public class JavaRulingTest {
     executeBuildWithCommonProperties(build, projectName);
   }
 
+  /**
+   * Vibe-bot runs this test when testing samples; so it's excluded from the GitHub Actions workflow.
+   */
+  @Test
+  public void vibebot() throws IOException {
+    String projectName = "vibebot";
+    File pomFile = FileLocation.of("../vibebot/pom.xml").getFile().getCanonicalFile();
+    prepareProject("org.vibebot:vibebot", projectName);
+    MavenBuild build = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests");
+    build.setProperty("sonar.projectKey", "org.vibebot:vibebot");
+    executeBuildWithCommonProperties(build, projectName);
+  }
+
   private static MavenBuild test_project(String projectKey, String projectName) throws IOException {
     return test_project(projectKey, null, projectName);
   }
@@ -377,7 +392,6 @@ public class JavaRulingTest {
   private static MavenBuild test_existing_project(String projectKey, String projectName) throws IOException {
     String pomLocation = "../sources/" + projectName + "/pom.xml";
     File pomFile = FileLocation.of(pomLocation).getFile().getCanonicalFile();
-    //prepareProject(projectKey, projectName);
     MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests");
     mavenBuild.setProperty("sonar.projectKey", projectKey);
     return mavenBuild;
@@ -400,7 +414,8 @@ public class JavaRulingTest {
     build.setProperty("sonar.scanner.skipJreProvisioning", "true");
     build.setProperty("sonar.cpd.exclusions", "**/*")
       .setProperty("sonar.java.performance.measure", "true")
-      .setProperty("sonar.java.performance.measure.path", "target/performance/sonar.java.performance.measure.json")
+      .setProperty("sonar.java.performance.measure.path",
+        Paths.get("target/performance/sonar.java.performance.measure.json").toAbsolutePath().toString())
       .setProperty("sonar.import_unknown_files", "true")
       .setProperty("sonar.skipPackageDesign", "true")
       .setProperty("sonar.lits.dump.old", effectiveDumpOldFolder.resolve(projectName).toString())
