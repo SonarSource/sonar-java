@@ -23,7 +23,7 @@ import org.sonar.plugins.java.api.ProfileRegistrar;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**
- * define built-in profile
+ * Define the default Sonar way profile.
  */
 @SonarLintSide
 public class JavaSonarWayProfile extends BuiltInJavaQualityProfile {
@@ -55,7 +55,7 @@ public class JavaSonarWayProfile extends BuiltInJavaQualityProfile {
     return true;
   }
 
-  public static Set<RuleKey> sonarJavaSonarWayRuleKeys() {
+  static Set<RuleKey> sonarJavaSonarWayRuleKeys() {
     return loadRuleKeys(SONAR_WAY_PATH);
   }
 }
