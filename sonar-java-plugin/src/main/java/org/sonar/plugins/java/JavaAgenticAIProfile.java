@@ -16,46 +16,34 @@
  */
 package org.sonar.plugins.java;
 
-import java.util.Set;
 import javax.annotation.Nullable;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.java.api.ProfileRegistrar;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
-/**
- * Define the default Sonar way profile.
- */
 @SonarLintSide
-public class JavaSonarWayProfile extends BuiltInJavaQualityProfile {
-  static final String SONAR_WAY_PATH = "/org/sonar/l10n/java/rules/java/Sonar_way_profile.json";
+public class JavaAgenticAIProfile extends BuiltInJavaQualityProfile {
+  static final String PROFILE_NAME = "Sonar agentic AI";
 
-  /**
-   * Constructor used by Pico container (SC) when no ProfileRegistrar are available
-   */
-  public JavaSonarWayProfile() {
+  public JavaAgenticAIProfile() {
     this(null);
   }
 
-  public JavaSonarWayProfile(@Nullable ProfileRegistrar[] profileRegistrars) {
+  public JavaAgenticAIProfile(@Nullable ProfileRegistrar[] profileRegistrars) {
     super(profileRegistrars);
   }
 
   @Override
   String getProfileName() {
-    return "Sonar way";
+    return PROFILE_NAME;
   }
 
   @Override
   String getPathToJsonProfile() {
-    return SONAR_WAY_PATH;
+    return "/org/sonar/l10n/java/rules/java/Sonar_agentic_ai_profile.json";
   }
 
   @Override
   boolean isDefault() {
-    return true;
-  }
-
-  static Set<RuleKey> sonarJavaSonarWayRuleKeys() {
-    return loadRuleKeys(SONAR_WAY_PATH);
+    return false;
   }
 }

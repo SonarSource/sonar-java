@@ -62,6 +62,7 @@ class JavaSonarWayProfileTest {
     assertThat(activeRules.stream().filter(r -> r.repoKey().equals("common-java"))).isEmpty();
     assertThat(activeRules).as("Expected number of rules in profile").hasSizeGreaterThanOrEqualTo(268);
     assertThat(profile.name()).isEqualTo("Sonar way");
+    assertThat(profile.isDefault()).isTrue();
     Set<RuleKey> keys = new HashSet<>();
     for (BuiltInQualityProfilesDefinition.BuiltInActiveRule activeRule : activeRules) {
       keys.add(RuleKey.of(activeRule.repoKey(), activeRule.ruleKey()));
@@ -95,40 +96,29 @@ class JavaSonarWayProfileTest {
   void should_contains_security_rules_if_present() {
     // no security rules available
     com.sonar.plugins.security.api.JavaRules.ruleKeys = new HashSet<>();
-    assertThat(JavaSonarWayProfile.getSecurityRuleKeys()).isEmpty();
+    assertThat(new JavaSonarWayProfile().getSecurityRuleKeys()).isEmpty();
 
     // one security rule available
     com.sonar.plugins.security.api.JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S3649"));
-    assertThat(JavaSonarWayProfile.getSecurityRuleKeys()).containsOnly(RuleKey.of("security-repo-key", "S3649"));
-  }
-
-  @Test
-  void should_contains_dataflow_bug_detection_rules_if_present() {
-    // no dataflow bug detection rules available
-    com.sonarsource.plugins.dbd.api.JavaRules.ruleKeys = new HashSet<>();
-    assertThat(JavaSonarWayProfile.getDataflowBugDetectionRuleKeys()).isEmpty();
-
-    // one dataflow bug detection rule available
-    com.sonarsource.plugins.dbd.api.JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S6322"));
-    assertThat(JavaSonarWayProfile.getDataflowBugDetectionRuleKeys()).containsOnly(RuleKey.of("dbd-repo-key", "S6322"));
+    assertThat(new JavaSonarWayProfile().getSecurityRuleKeys()).containsOnly(RuleKey.of("security-repo-key", "S3649"));
   }
 
   @Test
   void external_rule_keys_missing_class() {
-    JavaSonarWayProfile.getExternalRuleKeys("silly.name", "getDataflowBugDetectionRuleKeys", "ruleCategory");
+    new JavaSonarWayProfile().getExternalRuleKeys("silly.name", "getDataflowBugDetectionRuleKeys", "ruleCategory");
     assertThat(logTester.logs(Level.DEBUG)).containsExactly("[ClassNotFoundException], no ruleCategory rules added to Sonar way java profile: silly.name");
   }
 
   @Test
   void external_rule_keys_missing_method() {
-    JavaSonarWayProfile.getExternalRuleKeys(DBD_RULES_CLASS_NAME, "nonExistingRuleKeysMethod", "ruleCategory");
+    new JavaSonarWayProfile().getExternalRuleKeys(DBD_RULES_CLASS_NAME, "nonExistingRuleKeysMethod", "ruleCategory");
     assertThat(logTester.logs(Level.DEBUG))
       .containsExactly("[NoSuchMethodException], no ruleCategory rules added to Sonar way java profile: com.sonarsource.plugins.dbd.api.JavaRules.nonExistingRuleKeysMethod()");
   }
 
   @Test
   void external_rule_keys_method_throws_exception() {
-    JavaSonarWayProfile.getExternalRuleKeys(DBD_RULES_CLASS_NAME, "methodThrowingException", "ruleCategory");
+    new JavaSonarWayProfile().getExternalRuleKeys(DBD_RULES_CLASS_NAME, "methodThrowingException", "ruleCategory");
     assertThat(logTester.logs(Level.DEBUG)).containsExactly("[InvocationTargetException], no ruleCategory rules added to Sonar way java profile: null");
   }
 }
