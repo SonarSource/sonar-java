@@ -42,7 +42,7 @@ class JavaAgenticWayProfileTest {
 
   @Test
   void profile_is_registered_as_expected() {
-    JavaAgenticWayProfile profile = new JavaAgenticWayProfile();
+    JavaAgenticAIProfile profile = new JavaAgenticAIProfile();
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profile.define(context);
 
@@ -126,7 +126,7 @@ class JavaAgenticWayProfileTest {
     Path generatedQualityProfile = generate(
       Path.of("Path to your CSV input file relative to sonar-java-plugin"),
       RULE_DESCRIPTION_DIRECTORY.resolve("Sonar_agentic_ai_profile.json"),
-      JavaAgenticWayProfile.PROFILE_NAME
+      JavaAgenticAIProfile.PROFILE_NAME
     );
     Assertions.fail(String.format("The generated quality profile was written to %s".formatted(generatedQualityProfile)));
   }

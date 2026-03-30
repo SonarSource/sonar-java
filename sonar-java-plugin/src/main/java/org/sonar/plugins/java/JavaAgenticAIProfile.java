@@ -21,14 +21,14 @@ import org.sonar.plugins.java.api.ProfileRegistrar;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 @SonarLintSide
-public class JavaAgenticWayProfile extends BuiltInJavaQualityProfile {
+public class JavaAgenticAIProfile extends BuiltInJavaQualityProfile {
   static final String PROFILE_NAME = "Sonar agentic AI";
 
-  public JavaAgenticWayProfile() {
+  public JavaAgenticAIProfile() {
     this(null);
   }
 
-  public JavaAgenticWayProfile(@Nullable ProfileRegistrar[] profileRegistrars) {
+  public JavaAgenticAIProfile(@Nullable ProfileRegistrar[] profileRegistrars) {
     super(profileRegistrars);
   }
 

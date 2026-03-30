@@ -62,7 +62,7 @@ public class JavaPlugin implements Plugin {
       list.addAll(SurefireExtensions.getExtensions());
       list.add(DroppedPropertiesSensor.class);
       list.add(JavaSonarWayProfile.class);
-      list.add(JavaAgenticWayProfile.class);
+      list.add(JavaAgenticAIProfile.class);
       list.add(ClasspathForMain.class);
 
       ExternalReportExtensions.define(context);
