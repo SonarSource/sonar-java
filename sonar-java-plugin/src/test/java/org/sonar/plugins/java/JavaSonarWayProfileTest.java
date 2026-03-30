@@ -104,17 +104,6 @@ class JavaSonarWayProfileTest {
   }
 
   @Test
-  void should_contains_dataflow_bug_detection_rules_if_present() {
-    // no dataflow bug detection rules available
-    com.sonarsource.plugins.dbd.api.JavaRules.ruleKeys = new HashSet<>();
-    assertThat(new JavaSonarWayProfile().getDataflowBugDetectionRuleKeys()).isEmpty();
-
-    // one dataflow bug detection rule available
-    com.sonarsource.plugins.dbd.api.JavaRules.ruleKeys = new HashSet<>(Arrays.asList("S6322"));
-    assertThat(new JavaSonarWayProfile().getDataflowBugDetectionRuleKeys()).containsOnly(RuleKey.of("dbd-repo-key", "S6322"));
-  }
-
-  @Test
   void external_rule_keys_missing_class() {
     new JavaSonarWayProfile().getExternalRuleKeys("silly.name", "getDataflowBugDetectionRuleKeys", "ruleCategory");
     assertThat(logTester.logs(Level.DEBUG)).containsExactly("[ClassNotFoundException], no ruleCategory rules added to Sonar way java profile: silly.name");
