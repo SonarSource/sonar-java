@@ -1,7 +1,7 @@
 name: Unified Dogfooding scans
 on:
   schedule:
-    - cron: '0 4 * * *' # Run the workflow every day at 04:00 UTC
+    - cron: "0 4 * * 1-5" # Run the workflow Mon-Fri at 04:00 UTC
   workflow_dispatch:
 
 jobs:
