@@ -41,8 +41,10 @@ abstract class BuiltInJavaQualityProfile implements BuiltInQualityProfilesDefini
   static final String SECURITY_RULES_CLASS_NAME = "com.sonar.plugins.security.api.JavaRules";
   static final String DBD_RULES_CLASS_NAME = "com.sonarsource.plugins.dbd.api.JavaRules";
   static final String SECURITY_RULE_KEYS_METHOD_NAME = "getSecurityRuleKeys";
+  static final String DBD_RULE_KEYS_METHOD_NAME = "getDataflowBugDetectionRuleKeys";
   static final String GET_REPOSITORY_KEY = "getRepositoryKey";
   static final String SECURITY_REPOSITORY_KEY = "javasecurity";
+  static final String DBD_REPOSITORY_KEY = "javabugs";
 
 
   protected final ProfileRegistrar[] profileRegistrars;
@@ -72,6 +74,9 @@ abstract class BuiltInJavaQualityProfile implements BuiltInQualityProfilesDefini
     if (ruleKeys.stream().noneMatch(rule -> SECURITY_REPOSITORY_KEY.equals(rule.repository()))) {
       ruleKeys.addAll(getSecurityRuleKeys());
     }
+    if (ruleKeys.stream().noneMatch(rule -> DBD_REPOSITORY_KEY.equals(rule.repository()))) {
+      ruleKeys.addAll(getDataflowBugDetectionRuleKeys());
+    }
 
     ruleKeys.forEach(ruleKey -> profile.activateRule(ruleKey.repository(), ruleKey.rule()));
     profile.setDefault(isDefault());
@@ -98,6 +103,11 @@ abstract class BuiltInJavaQualityProfile implements BuiltInQualityProfilesDefini
   @VisibleForTesting
   Set<RuleKey> getSecurityRuleKeys() {
     return getExternalRuleKeys(SECURITY_RULES_CLASS_NAME, SECURITY_RULE_KEYS_METHOD_NAME, "security");
+  }
+
+  @VisibleForTesting
+  Set<RuleKey> getDataflowBugDetectionRuleKeys() {
+    return getExternalRuleKeys(DBD_RULES_CLASS_NAME, DBD_RULE_KEYS_METHOD_NAME, "dataflow bug detection");
   }
 
   @VisibleForTesting
