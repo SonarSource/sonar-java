@@ -17,6 +17,7 @@ concurrency:
 env:
   USE_DEVELOCITY: true
   DEVELOCITY_URL: https://develocity-public.sonar.build/
+  MAVEN_OUTPUT_ARGS: "--errors --show-version"
 
 jobs:
   build:
@@ -97,7 +98,7 @@ jobs:
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
         run: |
           cd its/ruling
-          mvn package --batch-mode "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=methods -DuseUnlimitedThreads=true
+          mvn package ${MAVEN_OUTPUT_ARGS} "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -Dparallel=methods -DuseUnlimitedThreads=true
       - name: Upload Actual Results On Failure
         if: failure()
         uses: ./.github/actions/upload-actual
@@ -152,7 +153,7 @@ jobs:
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
         run: |
           cd its/plugin
-          mvn package --batch-mode -Pit-plugin -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Dparallel=classes -DuseUnlimitedThreads=true
+          mvn package ${MAVEN_OUTPUT_ARGS} -Pit-plugin -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -Dparallel=classes -DuseUnlimitedThreads=true
 
   sanity:
     name: Sanity Test
@@ -194,7 +195,7 @@ jobs:
           SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
           MAVEN_OPTS: "-Xmx8g"
         run: |
-          mvn verify --batch-mode -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
+          mvn verify ${MAVEN_OUTPUT_ARGS} -f sonar-java-plugin/pom.xml -Psanity -Dtest=SanityTest
 
   test-analyze:
     name: Test Analyze
