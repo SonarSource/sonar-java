@@ -62,12 +62,13 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
     List<Location> secondaryLocations = new ArrayList<>();
     for (StatementTree statementTree : catchTree.block().body()) {
       IdentifierTree exceptionIdentifier = catchTree.parameter().simpleName();
-      if (isLogging && statementTree.is(Tree.Kind.THROW_STATEMENT) &&
-        isExceptionUsed(exceptionIdentifier, ((ThrowStatementTree) statementTree).expression())) {
-
-        secondaryLocations.add(new Location("Thrown exception.", ((ThrowStatementTree) statementTree).expression()));
-        reportIssue(catchTree.parameter(), "Either log this exception and handle it, or rethrow it with some contextual information.", secondaryLocations, 0);
-        return;
+      if (isLogging && statementTree.is(Tree.Kind.THROW_STATEMENT)) {
+        ExpressionTree thrown = ((ThrowStatementTree) statementTree).expression();
+        if (!thrown.is(Tree.Kind.NEW_CLASS) && isExceptionUsed(exceptionIdentifier, thrown)) {
+          secondaryLocations.add(new Location("Thrown exception.", thrown));
+          reportIssue(catchTree.parameter(), "Either log this exception and handle it, or rethrow it with some contextual information.", secondaryLocations, 0);
+          return;
+        }
       }
       if (isLoggingMethod(statementTree, exceptionIdentifier)) {
         secondaryLocations.add(new Location("Logging statement.", statementTree));
