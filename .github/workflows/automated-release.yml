@@ -57,7 +57,7 @@ jobs:
       plugin-artifacts-sqs: "java"
       plugin-artifacts-sqc: "java"
       jira-project-key: "SONARJAVA"
-      runner-environment: "github-ubuntu-latest-s"
+      runner-environment: "sonar-xs-public"
       rule-props-changed: false
       short-description: ${{ github.event.inputs.short-description }}
       new-version: ${{ github.event.inputs.new-version }}

@@ -21,7 +21,7 @@ env:
 
 jobs:
   build:
-    runs-on: github-ubuntu-latest-m  # Public repo uses custom GitHub-hosted runner
+    runs-on: sonar-m-public
     name: Build
     permissions:
       id-token: write  # Required for Vault OIDC authentication
@@ -56,8 +56,8 @@ jobs:
       fail-fast: false
       matrix:
         item:
-          - { runner: github-ubuntu-latest-m, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
-          - { runner: github-ubuntu-latest-m, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
+          - { runner: sonar-m-public, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
+          - { runner: sonar-m-public, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
           - { runner: github-windows-latest-m, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
           - { runner: github-windows-latest-m, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
     name: Ruling QA
@@ -125,7 +125,7 @@ jobs:
     needs:
       - build
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: github-ubuntu-latest-m
+    runs-on: sonar-m-public
     permissions:
       id-token: write
       contents: write
@@ -168,7 +168,7 @@ jobs:
     needs:
       - build
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: github-ubuntu-latest-m
+    runs-on: sonar-m-public
     permissions:
       id-token: write
       contents: write
@@ -210,7 +210,7 @@ jobs:
     needs:
       - build
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: github-ubuntu-latest-l
+    runs-on: sonar-l-public
     permissions:
       id-token: write
       contents: write
@@ -245,7 +245,7 @@ jobs:
     needs:
       - build
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: github-ubuntu-latest-m
+    runs-on: sonar-m-public
     permissions:
       id-token: write
       contents: write
@@ -292,7 +292,7 @@ jobs:
     needs:
       - build
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: github-ubuntu-latest-m
+    runs-on: sonar-m-public
     permissions:
       id-token: write
       contents: write
@@ -383,7 +383,7 @@ jobs:
       - autoscan
       - qa-os-win
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: github-ubuntu-latest-s  # Public repo uses custom GitHub-hosted runners
+    runs-on: sonar-s-public
     name: Promote
     permissions:
       id-token: write

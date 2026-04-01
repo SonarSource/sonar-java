@@ -5,7 +5,7 @@ on:
 
 jobs:
   cleanup:
-    runs-on: github-ubuntu-latest-s  # Public repo
+    runs-on: sonar-xs-public  # Public repo
     permissions:
       actions: write
     steps:

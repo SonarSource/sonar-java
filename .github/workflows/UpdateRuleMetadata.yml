@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 jobs:
   rule-metadata-update:
-    runs-on: github-ubuntu-latest-s
+    runs-on: sonar-xs-public
     permissions:
       id-token: write
       contents: write

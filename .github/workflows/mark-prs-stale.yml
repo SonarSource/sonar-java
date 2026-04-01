@@ -6,7 +6,7 @@ on:
 
 jobs:
   stale:
-    runs-on: github-ubuntu-latest-s
+    runs-on: sonar-xs-public
     permissions:
       issues: write
       pull-requests: write
