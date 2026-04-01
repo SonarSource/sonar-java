@@ -39,7 +39,7 @@ public class JavaAgenticAIProfile extends BuiltInJavaQualityProfile {
 
   @Override
   String getPathToJsonProfile() {
-    return "/org/sonar/l10n/java/rules/java/Sonar_agentic_ai_profile.json";
+    return "/org/sonar/l10n/java/rules/java/Sonar_agentic_AI_profile.json";
   }
 
   @Override
