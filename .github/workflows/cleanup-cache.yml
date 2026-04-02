@@ -1,0 +1,33 @@
+name: Cleanup S3 Cache
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch name (e.g., 'feature/my-branch'). Leave empty to list all entries."
+        required: false
+        type: string
+        default: ""
+      key:
+        description: "Cache key prefix (e.g., 'sccache-Linux-')"
+        required: false
+        type: string
+        default: ""
+      dry-run:
+        description: "Preview deletions without executing them"
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  cleanup:
+    runs-on: github-ubuntu-latest-s
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: SonarSource/gh-action_cache/cleanup@v1
+        with:
+          branch: ${{ inputs.branch }}
+          key: ${{ inputs.key }}
+          dry-run: ${{ inputs.dry-run }}
