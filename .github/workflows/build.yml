@@ -56,10 +56,10 @@ jobs:
       fail-fast: false
       matrix:
         item:
-          - { runner: github-ubuntu-latest-m, profile: without-sonarqube-project }
-          - { runner: github-ubuntu-latest-m, profile: only-sonarqube-project }
-          - { runner: github-windows-latest-m, profile: without-sonarqube-project }
-          - { runner: github-windows-latest-m, profile: only-sonarqube-project }
+          - { runner: github-ubuntu-latest-m, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
+          - { runner: github-ubuntu-latest-m, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
+          - { runner: github-windows-latest-m, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
+          - { runner: github-windows-latest-m, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
     name: Ruling QA
     needs:
       - build
@@ -91,6 +91,10 @@ jobs:
         with:
           secrets: |
             development/github/token/licenses-ro token | GITHUB_TOKEN;
+      - name: Orchestrator Cache
+        uses: ./.github/actions/orchestrator-cache
+        with:
+          sq-version: ${{ matrix.item.sq_version }}
       - name: Run ruling tests
         shell: bash # Set explicitly so Bash is used on Windows runners too.
         env:
@@ -98,7 +102,7 @@ jobs:
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
         run: |
           cd its/ruling
-          mvn package ${MAVEN_OUTPUT_ARGS} "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=LATEST_RELEASE -Dmaven.test.redirectTestOutputToFile=false -Dparallel=methods -DuseUnlimitedThreads=true
+          mvn package ${MAVEN_OUTPUT_ARGS} "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -Dparallel=methods -DuseUnlimitedThreads=true
       - name: Upload Actual Results On Failure
         if: failure()
         uses: ./.github/actions/upload-actual
@@ -148,6 +152,10 @@ jobs:
         with:
           secrets: |
             development/github/token/licenses-ro token | GITHUB_TOKEN;
+      - name: Orchestrator Cache
+        uses: ./.github/actions/orchestrator-cache
+        with:
+          sq-version: ${{ matrix.item.sq_version }}
       - name: Plugin QA
         env:
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
