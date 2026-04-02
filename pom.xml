@@ -113,6 +113,8 @@
     <test-java-agent-directory>${project.build.directory}/test-java-agent-libs</test-java-agent-directory>
     <jacoco-agent-jar>org.jacoco.agent-${version.jacoco.plugin}-runtime.jar</jacoco-agent-jar>
     <mockito-agent-jar>mockito-core-${mockito-core.version}.jar</mockito-agent-jar>
+
+    <slf4j.version>1.7.30</slf4j.version>
   </properties>
 
   <distributionManagement>
@@ -266,7 +268,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.30</version>
+        <version>${slf4j.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
