@@ -36,6 +36,7 @@ import static org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 
 @Rule(key = "S2139")
 public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
+  private static final String MESSAGE = "Either log this exception and handle it, or rethrow it with some contextual information.";
   private static final String JAVA_UTIL_LOGGING_LOGGER = "java.util.logging.Logger";
   private static final String SLF4J_LOGGER = "org.slf4j.Logger";
   private static final MethodMatchers LOGGING_METHODS = MethodMatchers.or(
@@ -66,7 +67,7 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
         ExpressionTree thrown = ((ThrowStatementTree) statementTree).expression();
         if (!thrown.is(Tree.Kind.NEW_CLASS) && isExceptionUsed(exceptionIdentifier, thrown)) {
           secondaryLocations.add(new Location("Thrown exception.", thrown));
-          reportIssue(catchTree.parameter(), "Either log this exception and handle it, or rethrow it with some contextual information.", secondaryLocations, 0);
+          reportIssue(catchTree.parameter(), MESSAGE, secondaryLocations, 0);
           return;
         }
       }
