@@ -52,6 +52,7 @@ import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rule.RuleScope;
 import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.AnnotationUtils;
@@ -463,6 +464,55 @@ class JavaSensorTest {
   }
 
   @Test
+  void custom_file_scanner_is_not_filtered_in_autoscan() throws IOException {
+    MapSettings settings = new MapSettings();
+    settings.setProperty("sonar.internal.analysis.autoscan", "true");
+
+    SensorContextTester context = SensorContextTester.create(new File("src/test/files").getAbsoluteFile())
+      .setSettings(settings)
+      .setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
+
+    DefaultFileSystem fs = context.fileSystem();
+    fs.setWorkDir(tmp.newFolder().toPath());
+
+    File mainFile = new File(fs.baseDir(), "CodeWithIssues.java");
+    fs.add(new TestInputFileBuilder("", mainFile.getName()).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
+      .setType(InputFile.Type.MAIN).initMetadata(Files.readString(mainFile.toPath())).setCharset(UTF_8).build());
+
+    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
+    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(mock(FileLinesContext.class));
+    ClasspathForTest javaTestClasspath = new ClasspathForTest(context.config(), fs);
+    ClasspathForMain javaClasspath = new ClasspathForMain(context.config(), fs);
+    DefaultJavaResourceLocator resourceLocator = createDefaultJavaResourceLocator(context.config(), fs);
+
+    CustomFileScannerHook hook = new CustomFileScannerHook();
+    CheckRegistrar[] checkRegistrars = new CheckRegistrar[] {new CustomRegistrar(), hook};
+
+    ActiveRulesBuilder activeRulesBuilder = new ActiveRulesBuilder();
+    GeneratedCheckList.getChecks().stream()
+      .map(check -> AnnotationUtils.getAnnotation(check, org.sonar.check.Rule.class).key())
+      .map(key -> new NewActiveRule.Builder().setRuleKey(RuleKey.of("java", key)).build())
+      .forEach(activeRulesBuilder::addRule);
+    Stream.of("CustomMainCheck", "CustomJspCheck", "CustomTestCheck")
+      .map(key -> new NewActiveRule.Builder().setRuleKey(RuleKey.of("CustomRepository", key)).build())
+      .forEach(activeRulesBuilder::addRule);
+
+    CheckFactory specificCheckFactory = new CheckFactory(activeRulesBuilder.build());
+    SonarComponents components = new SonarComponents(fileLinesContextFactory, fs,
+      javaClasspath, javaTestClasspath, specificCheckFactory, context.activeRules(), checkRegistrars, null, null);
+
+    JavaSensor jss = new JavaSensor(components, fs, resourceLocator, context.config(), mock(NoSonarFilter.class), null, telemetry);
+    jss.execute(context);
+
+    assertThat(hook.scanFileCount).as("Custom file scanner should be called even in autoscan mode").isPositive();
+
+    assertThat(context.allIssues())
+      .extracting(issue -> issue.ruleKey().toString())
+      .as("Rule-based autoscan filtering should still apply")
+      .doesNotContain("CustomRepository:CustomMainCheck");
+  }
+
+  @Test
   void test_describe_sensor() throws IOException {
     DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
     SonarComponents sonarComponents = createSonarComponentsMock(createContext(InputFile.Type.MAIN));
@@ -560,6 +610,20 @@ class JavaSensorTest {
       registrarContext.registerClassesForRepository("CustomRepository",
         List.of(CustomMainCheck.class, CustomJspCheck.class),
         List.of(CustomTestCheck.class));
+    }
+  }
+
+  public static class CustomFileScannerHook implements CheckRegistrar, JavaFileScanner {
+    int scanFileCount;
+
+    @Override
+    public void register(RegistrarContext registrarContext) {
+      registrarContext.registerCustomFileScanner(RuleScope.ALL, this);
+    }
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      scanFileCount++;
     }
   }
 
