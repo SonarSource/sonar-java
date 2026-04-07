@@ -1,0 +1,32 @@
+name: Setup Orchestrator Cache
+description: Sets up orchestrator cache
+
+inputs:
+  sq-version:
+    description: 'SonarQube version. If DEV, cache will be disabled.'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set Orchestrator Cache Variables
+      shell: bash
+      run: |
+        # year-week
+        CACHE_KEY=$(date +'%Y-%U')
+        echo "ORCHESTRATOR_CACHE_KEY=$CACHE_KEY" >> $GITHUB_ENV
+        echo "ORCHESTRATOR_HOME=${{ github.workspace }}/orchestrator" >> $GITHUB_ENV
+
+    - name: Cache Orchestrator
+      if: inputs.sq-version != 'DEV'
+      uses: SonarSource/gh-action_cache@v1
+      with:
+        path: ${{ env.ORCHESTRATOR_HOME }}
+        key: orchestrator-${{ inputs.sq-version }}-${{ env.ORCHESTRATOR_CACHE_KEY }}-${{ github.run_id }}
+        restore-keys: orchestrator-${{ inputs.sq-version }}-${{ env.ORCHESTRATOR_CACHE_KEY }}-
+
+    - name: Setup Orchestrator Home Directory
+      shell: bash
+      run: |
+        mkdir -p "$ORCHESTRATOR_HOME"
+        ls -lRh "$ORCHESTRATOR_HOME"
