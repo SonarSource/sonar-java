@@ -20,6 +20,7 @@ import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
+import com.sonar.orchestrator.locator.Locators;
 import com.sonar.orchestrator.locator.MavenLocation;
 import java.io.File;
 import java.util.List;
@@ -154,7 +155,7 @@ public class JavaTest {
   @Test
   public void should_execute_rule_on_test() {
     MavenLocation junit411 = MavenLocation.of("junit", "junit", "4.11");
-    orchestrator.getConfiguration().locators().copyToDirectory(junit411, tmp.getRoot());
+    new Locators(orchestrator.getConfiguration()).copyToDirectory(junit411, tmp.getRoot());
     MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("java-inner-classes"))
       .setProperty("sonar.java.test.binaries", "target/test-classes")
