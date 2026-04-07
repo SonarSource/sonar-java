@@ -119,7 +119,7 @@ class JavaSensorTest {
   @Test
   void test_issues_creation_on_main_file() throws IOException {
     // Expected issues : the number of methods violating BadMethodName rule. Currently, 18 tests.
-    testIssueCreation(InputFile.Type.MAIN, 15);
+    testIssueCreation(InputFile.Type.MAIN, 16);
 
     Map<String, String> telemetryMap = telemetry.toMap();
     assertThat(telemetryMap).containsOnlyKeys(
@@ -135,7 +135,7 @@ class JavaSensorTest {
       "java.scanner_app");
     assertThat(telemetryMap.get("java.analysis.main.success.size_chars")).matches("\\d{5}");
     assertThat(telemetryMap.get("java.analysis.main.success.time_ms")).matches("\\d+");
-    assertThat(telemetryMap).containsEntry("java.analysis.main.success.type_error_count", "199");
+    assertThat(telemetryMap).containsEntry("java.analysis.main.success.type_error_count", "205");
   }
 
   @Test
@@ -157,7 +157,7 @@ class JavaSensorTest {
       "java.scanner_app");
     assertThat(telemetryMap.get("java.analysis.test.success.size_chars")).matches("\\d{5}");
     assertThat(telemetryMap.get("java.analysis.test.success.time_ms")).matches("\\d+");
-    assertThat(telemetryMap).containsEntry("java.analysis.test.success.type_error_count", "199");
+    assertThat(telemetryMap).containsEntry("java.analysis.test.success.type_error_count", "205");
   }
 
   private static int lineNumberOfTheMethodWithNoSonar(FileSystem fs) throws IOException {
