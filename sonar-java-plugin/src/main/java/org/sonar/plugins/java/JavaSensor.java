@@ -137,7 +137,7 @@ public class JavaSensor implements Sensor {
       autoScanCompatibleRules.addAll(sonarComponents.getAdditionalAutoScanCompatibleRuleKeys());
 
       return checks -> checks.stream()
-        .filter(check -> sonarComponents.getRuleKey(check).map(autoScanCompatibleRules::contains).orElse(false))
+        .filter(check -> sonarComponents.getRuleKey(check).map(autoScanCompatibleRules::contains).orElse(true))
         .toList();
     } else {
       return UnaryOperator.identity();
