@@ -30,6 +30,7 @@ runs:
 
     - name: Configure NPM
       uses: SonarSource/ci-github-actions/config-npm@v1
+      if: runner.os != 'Windows'
 
     - name: Generate Diff Report
       shell: bash
