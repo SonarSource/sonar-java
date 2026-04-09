@@ -121,7 +121,7 @@ jobs:
           - ${{ github.event_name == 'schedule' }}
         exclude:
           - sq_version: DEV
-            is_nightly: true
+            is_nightly: false
     name: Plugin QA
     needs:
       - build
