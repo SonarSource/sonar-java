@@ -116,11 +116,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        item:
-          - sq_version: LATEST_RELEASE
-            java_version: 21
+        sq_version: ['LATEST_RELEASE', 'DEV']
+        is_nightly:
+          - ${{ github.event_name == 'schedule' }}
+        exclude:
           - sq_version: DEV
-            java_version: 21
+            is_nightly: false
     name: Plugin QA
     needs:
       - build
@@ -139,7 +140,7 @@ jobs:
         with:
           version: 2025.7.12
       - name: Select Java Version
-        run: mise use java@${{ matrix.item.java_version}}
+        run: mise use java@21
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
@@ -155,13 +156,13 @@ jobs:
       - name: Orchestrator Cache
         uses: ./.github/actions/orchestrator-cache
         with:
-          sq-version: ${{ matrix.item.sq_version }}
+          sq-version: ${{ matrix.sq_version }}
       - name: Plugin QA
         env:
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
         run: |
           cd its/plugin
-          mvn package ${MAVEN_OUTPUT_ARGS} -Pit-plugin -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -Dparallel=classes -DuseUnlimitedThreads=true
+          mvn package ${MAVEN_OUTPUT_ARGS} -Pit-plugin -Dsonar.runtimeVersion=${{ matrix.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -Dparallel=classes -DuseUnlimitedThreads=true
 
   sanity:
     name: Sanity Test
