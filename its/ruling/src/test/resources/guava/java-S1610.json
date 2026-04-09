@@ -26,6 +26,9 @@
 "com.google.guava:guava:src/com/google/common/io/CharSink.java": [
 49
 ],
+"com.google.guava:guava:src/com/google/common/io/CharSource.java": [
+66
+],
 "com.google.guava:guava:src/com/google/common/reflect/TypeCapture.java": [
 29
 ],
