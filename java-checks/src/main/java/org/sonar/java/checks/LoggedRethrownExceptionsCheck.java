@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,6 +37,7 @@ import static org.sonar.plugins.java.api.JavaFileScannerContext.Location;
 
 @Rule(key = "S2139")
 public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
+  private static final String MESSAGE = "Either log this exception and handle it, or rethrow it with some contextual information.";
   private static final String JAVA_UTIL_LOGGING_LOGGER = "java.util.logging.Logger";
   private static final String SLF4J_LOGGER = "org.slf4j.Logger";
   private static final MethodMatchers LOGGING_METHODS = MethodMatchers.or(
@@ -62,18 +64,23 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
     List<Location> secondaryLocations = new ArrayList<>();
     for (StatementTree statementTree : catchTree.block().body()) {
       IdentifierTree exceptionIdentifier = catchTree.parameter().simpleName();
-      if (isLogging && statementTree.is(Tree.Kind.THROW_STATEMENT) &&
-        isExceptionUsed(exceptionIdentifier, ((ThrowStatementTree) statementTree).expression())) {
-
-        secondaryLocations.add(new Location("Thrown exception.", ((ThrowStatementTree) statementTree).expression()));
-        reportIssue(catchTree.parameter(), "Either log this exception and handle it, or rethrow it with some contextual information.", secondaryLocations, 0);
-        return;
+      if (isLogging && statementTree.is(Tree.Kind.THROW_STATEMENT)) {
+        ExpressionTree thrown = ((ThrowStatementTree) statementTree).expression();
+        if ((!thrown.is(Tree.Kind.NEW_CLASS) || isSameExceptionType((NewClassTree) thrown, catchTree)) && isExceptionUsed(exceptionIdentifier, thrown)) {
+          secondaryLocations.add(new Location("Thrown exception.", thrown));
+          reportIssue(catchTree.parameter(), MESSAGE, secondaryLocations, 0);
+          return;
+        }
       }
       if (isLoggingMethod(statementTree, exceptionIdentifier)) {
         secondaryLocations.add(new Location("Logging statement.", statementTree));
         isLogging = true;
       }
     }
+  }
+
+  private static boolean isSameExceptionType(NewClassTree thrown, CatchTree catchTree) {
+    return thrown.symbolType().equals(catchTree.parameter().symbol().type());
   }
 
   private static boolean isLoggingMethod(StatementTree statementTree, IdentifierTree exceptionIdentifier) {

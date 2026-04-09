@@ -15,12 +15,9 @@ class LoggedRethrownExceptionsCheckSample {
     Logger logger = java.util.logging.Logger.getAnonymousLogger("");
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant {{Either log this exception and handle it, or rethrow it with some contextual information.}}
-//           ^^^^^^^^^^^^^^
+    } catch (SQLException e) { // Compliant
       logger.log(Level.ALL, "", e);
-//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       throw new MySQLException(contextInfo, e);
-//          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
     }
 
     try {
@@ -32,14 +29,14 @@ class LoggedRethrownExceptionsCheckSample {
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       logger.log(Level.ALL, "MyError: " + e);
       throw new MySQLException(contextInfo, e);
     }
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       logger.log(Level.ALL, e.getMessage());
       throw new MySQLException(contextInfo, e);
     }
@@ -54,84 +51,84 @@ class LoggedRethrownExceptionsCheckSample {
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       logger.logp(Level.ALL, "foo", "bar", e.getMessage());
       throw new MySQLException(contextInfo, e);
     }
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       logger.logrb(Level.ALL, "foo", "bar", "", e.getMessage());
       throw new MySQLException(contextInfo, e);
     }
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       logger.config(e.getMessage());
       throw new MySQLException(contextInfo, e);
     }
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       logger.info(e.getMessage());
       throw new MySQLException(contextInfo, e);
     }
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       logger.throwing("foo", "bar", e);
       throw new MySQLException(contextInfo, e);
     }
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       logger.severe(e.getMessage());
       throw new MySQLException(contextInfo, e);
     }
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       logger.warning(e.getMessage());
       throw new MySQLException(contextInfo, e);
     }
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       slf4jLogger.debug(e.getMessage());
       throw new MySQLException(contextInfo, e);
     }
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       slf4jLogger.error(e.getMessage());
       throw new MySQLException(contextInfo, e);
     }
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       slf4jLogger.info(e.getMessage());
       throw new MySQLException(contextInfo, e);
     }
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       slf4jLogger.trace(e.getMessage());
       throw new MySQLException(contextInfo, e);
     }
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant
+    } catch (SQLException e) { // Compliant
       slf4jLogger.warn(e.getMessage());
       throw new MySQLException(contextInfo, e);
     }
@@ -188,6 +185,41 @@ class LoggedRethrownExceptionsCheckSample {
     try {
       doSomething();
     } catch (SQLException e) { // Compliant
+    }
+
+    try {
+      doSomething();
+    } catch (SQLException e) { // Noncompliant {{Either log this exception and handle it, or rethrow it with some contextual information.}}
+      logger.log(Level.ALL, "", e);
+      throw e;
+    }
+
+    try {
+      doSomething();
+    } catch (SQLException e) { // Noncompliant
+      logger.log(Level.ALL, "MyError: " + e);
+      throw e;
+    }
+
+    try {
+      doSomething();
+    } catch (SQLException e) { // Noncompliant
+      slf4jLogger.error(e.getMessage());
+      throw e;
+    }
+
+    try {
+      doSomething();
+    } catch (SQLException e) { // Noncompliant
+      logger.log(Level.ALL, "", e);
+      throw new SQLException("operation context", e);
+    }
+
+    try {
+      doSomething();
+    } catch (SQLException e) { // Compliant
+      logger.log(Level.ALL, "", e);
+      throw new RuntimeException("operation failed", e);
     }
 
     Exception e1 = new Exception();

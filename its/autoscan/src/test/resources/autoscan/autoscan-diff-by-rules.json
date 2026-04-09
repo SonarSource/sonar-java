@@ -914,7 +914,7 @@
   {
     "ruleKey": "S2139",
     "hasTruePositives": true,
-    "falseNegatives": 5,
+    "falseNegatives": 1,
     "falsePositives": 0
   },
   {
