@@ -20,16 +20,12 @@
 237,
 262
 ],
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCompliance.java": [
-150,
-158,
-164
-],
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCookie.java": [
 241,
 273,
 275,
 302,
+666,
 392,
 516
 ],
