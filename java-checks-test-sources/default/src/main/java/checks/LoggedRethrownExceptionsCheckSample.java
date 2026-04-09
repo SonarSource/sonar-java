@@ -210,7 +210,7 @@ class LoggedRethrownExceptionsCheckSample {
 
     try {
       doSomething();
-    } catch (SQLException e) { // Noncompliant - same exception type reconstructed
+    } catch (SQLException e) { // Noncompliant
       logger.log(Level.ALL, "", e);
       throw new SQLException("operation context", e);
     }
