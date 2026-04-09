@@ -1,6 +1,7 @@
 {
-  "title": "Creating cookies without the \"secure\" flag is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Cookies should have the \"secure\" flag",
+  "type": "VULNERABILITY",
+  "quickfix": "unknown",
   "code": {
     "impacts": {
       "SECURITY": "LOW"
@@ -49,6 +50,5 @@
     "STIG ASD_V5R3": [
       "V-222576"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }
