@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -65,7 +66,7 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
       IdentifierTree exceptionIdentifier = catchTree.parameter().simpleName();
       if (isLogging && statementTree.is(Tree.Kind.THROW_STATEMENT)) {
         ExpressionTree thrown = ((ThrowStatementTree) statementTree).expression();
-        if (!thrown.is(Tree.Kind.NEW_CLASS) && isExceptionUsed(exceptionIdentifier, thrown)) {
+        if ((!thrown.is(Tree.Kind.NEW_CLASS) || isSameExceptionType((NewClassTree) thrown, catchTree)) && isExceptionUsed(exceptionIdentifier, thrown)) {
           secondaryLocations.add(new Location("Thrown exception.", thrown));
           reportIssue(catchTree.parameter(), MESSAGE, secondaryLocations, 0);
           return;
@@ -76,6 +77,10 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
         isLogging = true;
       }
     }
+  }
+
+  private static boolean isSameExceptionType(NewClassTree thrown, CatchTree catchTree) {
+    return thrown.symbolType().equals(catchTree.parameter().symbol().type());
   }
 
   private static boolean isLoggingMethod(StatementTree statementTree, IdentifierTree exceptionIdentifier) {

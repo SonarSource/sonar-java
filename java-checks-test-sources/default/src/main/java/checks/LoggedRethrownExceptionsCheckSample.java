@@ -210,6 +210,13 @@ class LoggedRethrownExceptionsCheckSample {
 
     try {
       doSomething();
+    } catch (SQLException e) { // Noncompliant - same exception type reconstructed
+      logger.log(Level.ALL, "", e);
+      throw new SQLException("operation context", e);
+    }
+
+    try {
+      doSomething();
     } catch (SQLException e) { // Compliant
       logger.log(Level.ALL, "", e);
       throw new RuntimeException("operation failed", e);
