@@ -84,6 +84,13 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <!-- Fixes "Defaulting to no-operation (NOP) logger", which results in missing logs from the orchestrator. -->
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>test</scope>
+    </dependency>
     <!-- not a direct code dependency, but needed to download it and install it into SonarQube -->
     <dependency>
       <groupId>org.sonarsource.java</groupId>
