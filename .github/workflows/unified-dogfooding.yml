@@ -6,7 +6,7 @@ on:
 
 jobs:
   unified-platform-dogfooding:
-    runs-on: sonar-l-public
+    runs-on: github-ubuntu-latest-l
     name: Unified Platform Dogfooding
     permissions:
       id-token: write
