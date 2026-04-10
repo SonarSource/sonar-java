@@ -1,12 +1,24 @@
 {
+"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
+1040,
+1063,
+1090,
+1156
+],
 "com.google.guava:guava:src/com/google/common/base/Splitter.java": [
 176
 ],
 "com.google.guava:guava:src/com/google/common/base/Strings.java": [
 78
 ],
+"com.google.guava:guava:src/com/google/common/io/CharSource.java": [
+423
+],
 "com.google.guava:guava:src/com/google/common/io/Files.java": [
 730
+],
+"com.google.guava:guava:src/com/google/common/io/LineBuffer.java": [
+104
 ],
 "com.google.guava:guava:src/com/google/common/net/InetAddresses.java": [
 233,

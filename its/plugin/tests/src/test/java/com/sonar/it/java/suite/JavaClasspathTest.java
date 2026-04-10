@@ -20,6 +20,7 @@ import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
+import com.sonar.orchestrator.locator.Locators;
 import com.sonar.orchestrator.locator.MavenLocation;
 import java.io.File;
 import java.nio.file.Path;
@@ -67,7 +68,7 @@ public class JavaClasspathTest {
     File subFolder = new File(tmp.getRoot(), "subFolder");
     // Use a folder with comma to test proper property parsing
     File subSubFolder = new File(subFolder, "sub,SubFolder");
-    ORCHESTRATOR.getConfiguration().locators().copyToDirectory(guava, subSubFolder);
+    new Locators(ORCHESTRATOR.getConfiguration()).copyToDirectory(guava, subSubFolder);
 
     aarPath = new File(new File(TestUtils.projectDir("using-aar-dep"), "lib"), "cache-1.3.0.aar").getAbsolutePath();
     guavaJarPathEscaped = "\"" + new File(subSubFolder.getAbsolutePath(), guava.getFilename()).getAbsolutePath() + "\"";
