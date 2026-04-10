@@ -342,7 +342,7 @@ jobs:
         run: >
           mvn clean package --batch-mode --errors --show-version
           --activate-profiles it-autoscan
-          "-Dsonar.runtimeVersion=$SQ_VERSION"
+          -Dsonar.runtimeVersion="$SQ_VERSION"
           -Dmaven.test.redirectTestOutputToFile=false
           -Dparallel=methods
           -DuseUnlimitedThreads=true
