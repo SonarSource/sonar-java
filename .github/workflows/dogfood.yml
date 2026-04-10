@@ -19,7 +19,7 @@ jobs:
     steps:
     - name: get secrets
       id: secrets
-      uses: SonarSource/vault-action-wrapper@d1c1ab4ca5ad07fd9cdfe1eff038a39673dfca64  # tag=2.4.2-1
+      uses: SonarSource/vault-action-wrapper@c154b4a417b51cb98dd71137f49bf20e77c56820  # v3.4.0
       with:
         secrets: |
           development/kv/data/slack webhook | SLACK_WEBHOOK;
