@@ -16,7 +16,7 @@ concurrency:
 
 env:
   USE_DEVELOCITY: true
-  DEVELOCITY_URL: https://develocity-public.sonar.build/
+  DEVELOCITY_URL: https://develocity.sonar.build/
   MAVEN_OUTPUT_ARGS: "--errors --show-version"
 
 jobs:
