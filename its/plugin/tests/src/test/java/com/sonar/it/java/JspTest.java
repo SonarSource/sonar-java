@@ -72,7 +72,7 @@ public class JspTest {
 
     MavenBuild build = TestUtils.createMavenBuild().setPom(TestUtils.projectPom(PROJECT))
       .setCleanPackageSonarGoals()
-      .setDebugLogs(true)
+      .setProperty("org.slf4j.simpleLogger.log.org.sonarsource", "debug")
       .setProperty("sonar.scm.disabled", "true");
     TestUtils.provisionProject(ENTERPRISE_ORCHESTRATOR_OR_NULL, "org.sonarsource.it.projects:" + PROJECT, PROJECT, "java", "jsp");
     BuildResult buildResult = ENTERPRISE_ORCHESTRATOR_OR_NULL.executeBuild(build);

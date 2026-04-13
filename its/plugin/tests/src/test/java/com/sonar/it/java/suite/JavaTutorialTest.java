@@ -39,7 +39,7 @@ public class JavaTutorialTest {
     MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("java-tutorial"))
       .setCleanPackageSonarGoals()
-      .setDebugLogs(true);
+      .setProperty("org.slf4j.simpleLogger.log.org.sonarsource", "debug");
     String projectKey = "org.sonarsource.it.projects:java-tutorial";
     TestUtils.provisionProject(orchestrator, projectKey, "java-tutorial", "java", "java-tutorial");
     executeAndAssertBuild(build, projectKey);
@@ -54,7 +54,7 @@ public class JavaTutorialTest {
       .setProperty("sonar.projectKey", projectKey)
       .setProperty("sonar.projectName", projectName)
       .setProperty("sonar.java.experimental.batchModeSizeInKB", "8000")
-      .setDebugLogs(true);
+      .setProperty("org.slf4j.simpleLogger.log.org.sonarsource", "debug");
     TestUtils.provisionProject(orchestrator, projectKey, projectName, "java", "java-tutorial");
     executeAndAssertBuild(build, projectKey);
   }

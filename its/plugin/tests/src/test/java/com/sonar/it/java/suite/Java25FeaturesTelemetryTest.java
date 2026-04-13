@@ -35,7 +35,7 @@ public class Java25FeaturesTelemetryTest {
     MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("java-features"))
       .setCleanPackageSonarGoals()
-      .setDebugLogs(true);
+      .setProperty("org.slf4j.simpleLogger.log.org.sonarsource", "debug");
 
     String projectKey = "org.sonarsource.it.projects:parent-project";
     TestUtils.provisionProject(orchestrator, projectKey, "java-features", "java", "multi-module");
