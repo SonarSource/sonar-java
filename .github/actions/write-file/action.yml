@@ -1,0 +1,23 @@
+name: Write File
+description: Writes a file with the given content
+
+inputs:
+  file-path:
+    description: 'Path to the file to write.'
+    required: true
+  content:
+    description: 'Content to write to the file.'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Write Content to File
+      shell: bash
+      env:
+        FILE_PATH: ${{ inputs.file-path }}
+        CONTENT: ${{ inputs.content }}
+      run: |
+        mkdir -p "$(dirname "$FILE_PATH")"
+        echo "$CONTENT" > "$FILE_PATH"
+        echo "$CONTENT"
