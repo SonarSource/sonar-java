@@ -34,7 +34,7 @@ public class MultiModuleTelemetryTest {
     MavenBuild build = TestUtils.createMavenBuild()
       .setPom(TestUtils.projectPom("multi-module"))
       .setCleanPackageSonarGoals()
-      .setDebugLogs(true);
+      .setProperty("org.slf4j.simpleLogger.log.org.sonarsource", "debug");
 
     String projectKey = "org.sonarsource.it.projects:parent-project";
     TestUtils.provisionProject(orchestrator, projectKey, "multi-module", "java", "multi-module");
