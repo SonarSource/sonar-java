@@ -80,8 +80,9 @@ jobs:
       - name: Select Java Version
         run: mise use java@21
       - name: Configure Maven
-        uses: SonarSource/ci-github-actions/config-maven@v1
+        uses: SonarSource/ci-github-actions/config-maven@tt/cache
         with:
+          cache-fragment: ${{ toJSON(matrix.item) }}
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
@@ -142,8 +143,9 @@ jobs:
       - name: Select Java Version
         run: mise use java@21
       - name: Configure Maven
-        uses: SonarSource/ci-github-actions/config-maven@v1
+        uses: SonarSource/ci-github-actions/config-maven@tt/cache
         with:
+          cache-fragment: ${{ matrix.item.sq_version }}
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
