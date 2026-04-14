@@ -41,7 +41,7 @@ public final class UnitTestUtils {
 
   private static final String ORG_JUNIT_TEST = "org.junit.Test";
   public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile(
-    "(assert|verify|fail|should|check|expect|validate|andExpect).*" +
+    "(assert|verify|fail|should|check|expect|validate|andExpect|approve).*" +
     // Eclipse Vert.x with JUnit 5 (VertxTestContext)
       "|laxCheckpoint|succeedingThenComplete");
   private static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
