@@ -1020,12 +1020,12 @@
       <groupId>org.approvej</groupId>
       <artifactId>core</artifactId>
       <version>1.6.0</version>
+    <dependency>
+      <groupId>org.approvej</groupId>
+      <artifactId>core</artifactId>
+      <version>1.6.0</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-    <groupId>com.approvaltests</groupId>
-    <artifactId>approvaltests</artifactId>
-    <version>30.1.0</version>
     <scope>test</scope>
 </dependency>
   </dependencies>
