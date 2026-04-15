@@ -64,6 +64,7 @@ class AssertionsInTestsCheckTest {
     "JMockit",
     "Awaitility",
     "AssertJ",
+    "ApproveJ",
     "Custom"
   })
   void test(String framework) {
