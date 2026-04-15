@@ -20,7 +20,7 @@ jobs:
       - name: Checkout Sources
         uses: actions/checkout@v4
 
-      - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
+      - uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3.6.3
         with:
           version: 2025.7.12
 
