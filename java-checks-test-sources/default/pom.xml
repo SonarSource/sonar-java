@@ -1020,8 +1020,8 @@
       <groupId>org.approvej</groupId>
       <artifactId>core</artifactId>
       <version>1.6.0</version>
-    <scope>test</scope>
-</dependency>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
