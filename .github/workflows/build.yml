@@ -79,6 +79,11 @@ jobs:
           version: 2025.7.12
       - name: Select Java Version
         run: mise use java@21
+      - name: Ensure Separate Job Cache Key
+        uses: ./.github/actions/write-file
+        with:
+          file-path: target/just_for_cache_key_calculation/pom.xml
+          content: ${{ github.job }}-${{ toJSON(matrix.item) }}
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
@@ -141,6 +146,11 @@ jobs:
           version: 2025.7.12
       - name: Select Java Version
         run: mise use java@21
+      - name: Ensure Separate Job Cache Key
+        uses: ./.github/actions/write-file
+        with:
+          file-path: target/just_for_cache_key_calculation/pom.xml
+          content: ${{ github.job }}-${{ matrix.sq_version }}
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
@@ -186,6 +196,11 @@ jobs:
           secrets: |
             development/kv/data/next url | SONAR_HOST_URL;
             development/kv/data/next token | SONAR_TOKEN;
+      - name: Ensure Separate Job Cache Key
+        uses: ./.github/actions/write-file
+        with:
+          file-path: target/just_for_cache_key_calculation/pom.xml
+          content: ${{ github.job }}
       - uses: SonarSource/ci-github-actions/config-maven@v1
         with:
           artifactory-reader-role: private-reader
@@ -263,6 +278,11 @@ jobs:
           secrets: |
             development/kv/data/next url | SONAR_HOST_URL;
             development/kv/data/next token | SONAR_TOKEN;
+      - name: Ensure Separate Job Cache Key
+        uses: ./.github/actions/write-file
+        with:
+          file-path: target/just_for_cache_key_calculation/pom.xml
+          content: ${{ github.job }}
       - uses: SonarSource/ci-github-actions/config-maven@v1
         with:
           artifactory-reader-role: private-reader
@@ -315,6 +335,11 @@ jobs:
             development/kv/data/next url | SONAR_HOST_URL;
             development/kv/data/next token | SONAR_TOKEN;
             development/github/token/licenses-ro token | GITHUB_TOKEN;
+      - name: Ensure Separate Job Cache Key
+        uses: ./.github/actions/write-file
+        with:
+          file-path: target/just_for_cache_key_calculation/pom.xml
+          content: ${{ github.job }}
       - uses: SonarSource/ci-github-actions/config-maven@v1
         with:
           artifactory-reader-role: private-reader
@@ -369,6 +394,11 @@ jobs:
       - uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3.2.0
         with:
           version: 2025.7.12
+      - name: Ensure Separate Job Cache Key
+        uses: ./.github/actions/write-file
+        with:
+          file-path: target/just_for_cache_key_calculation/pom.xml
+          content: ${{ github.job }}
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
         with:
