@@ -154,12 +154,13 @@ abstract class A {
     bar();
   }
 
-  void useless_return_try_finally(boolean condition) {
+  void duplicate_useless_return(boolean condition) {
     try {
       if (condition) {
         return; // Noncompliant
       }
     } finally {}
+    return; // Noncompliant
   }
 
 }
