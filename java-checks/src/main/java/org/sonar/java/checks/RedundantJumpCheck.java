@@ -60,7 +60,8 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
 
       successorWithoutJump = nonEmptySuccessor(successorWithoutJump);
       Iterator<Block> successors = block.successors().iterator();
-      if (successors.hasNext() && nonEmptySuccessor(successors.next()).equals(successorWithoutJump)) {
+
+      if (successors.hasNext() && nonEmptySuccessor(successors.next()).equals(successorWithoutJump) && !successorWithoutJump.isFinallyBlock()) {
         reportIssue(terminator, "Remove this redundant jump.");
       }
     }

@@ -127,4 +127,39 @@ abstract class A {
       }
     }
   }
+
+  void useful_return_try_finally(boolean condition) {
+    try {
+      if (condition) {
+        return;
+      }
+    } catch (Exception e) {} finally {}
+    bar();
+  }
+
+  void useless_return_try_finally(boolean condition) {
+    try {
+      if (condition) {
+        return; // Noncompliant
+      }
+    } catch (Exception e) {} finally {}
+  }
+
+  void useful_return_without_catch(boolean condition) {
+    try {
+      if (condition) {
+        return;
+      }
+    } finally {}
+    bar();
+  }
+
+  void useless_return_try_finally(boolean condition) {
+    try {
+      if (condition) {
+        return; // Noncompliant
+      }
+    } finally {}
+  }
+
 }
