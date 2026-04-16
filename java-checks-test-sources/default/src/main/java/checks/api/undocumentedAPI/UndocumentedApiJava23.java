@@ -51,7 +51,7 @@ public class UndocumentedApiJava23 {
   }
 
   /// Documented, but not the type.
-  public class SomethingGenericBad<T> { // Noncompliant {{Document the parameter(s): <T>}}
+  public class SomethingGenericBad<T> { // Noncompliant {{Document the type parameter(s): <T>}}
   }
 
   /// Documented.

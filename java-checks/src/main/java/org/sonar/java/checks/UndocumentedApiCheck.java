@@ -129,7 +129,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
       } else {
         Set<String> undocumentedParameters = javadoc.undocumentedParameters();
         if (!undocumentedParameters.isEmpty()) {
-          context.reportIssue(this, reportTree, "Document the parameter(s): " + undocumentedParameters.stream().collect(Collectors.joining(", ")));
+          String label = getParamLabel(tree);
+          context.reportIssue(this, reportTree, "Document the " + label + undocumentedParameters.stream().collect(Collectors.joining(", ")));
         }
         if (hasNonVoidReturnType(tree) && javadoc.noReturnDescription()) {
           context.reportIssue(this, reportTree, "Document this method return value.");
@@ -151,6 +152,10 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
       && ((MethodTree) tree).parameters().isEmpty()
       // if return description is there, then it will be validated later
       && !javadoc.noReturnDescription();
+  }
+
+  private static String getParamLabel(Tree tree) {
+    return (tree.is(Kind.CLASS) || tree.is(Kind.INTERFACE)) ? "type parameter(s): " : "parameter(s): ";
   }
 
   private static String getType(Tree tree) {
