@@ -67,7 +67,9 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor {
         }
       }
     } else {
-      expectedLines = headerFormat.split("(?:\r)?\n|\r");
+      if (headerFormat.isEmpty()) {
+        expectedLines = new String[]{};
+      } else {expectedLines = headerFormat.split("(?:\r)?\n|\r");}
     }
     visitFile();
   }

@@ -98,6 +98,18 @@ class FileHeaderCheckTest {
       .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class3.java"))
       .withCheck(check)
       .verifyNoIssues();
+
+    check = new FileHeaderCheck();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class4.java"))
+      .withCheck(check)
+      .verifyNoIssues();
+
+    check = new FileHeaderCheck();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class5.java"))
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
   @Test
