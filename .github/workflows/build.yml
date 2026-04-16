@@ -400,3 +400,34 @@ jobs:
       - uses: SonarSource/ci-github-actions/promote@v1
         with:
           promote-pull-request: true
+
+  trigger-a3s-integration:
+    name: Trigger A3S Integration Tests
+    needs:
+      - promote
+      - build
+    if: ${{ needs.build.outputs.deployed }} #TODO: uncomment: #&& github.ref == 'refs/heads/master' }}
+    runs-on: sonar-xs-public
+    permissions:
+      id-token: write
+    steps:
+      - id: secrets
+        uses: SonarSource/vault-action-wrapper@320bd31b03e5dacaac6be51bbbb15adf7caccc32 # v3.1.0
+        with:
+          secrets: |
+            development/github/token/{REPO_OWNER_NAME_DASH}-workflow-dispatch token | GITHUB_TOKEN;
+      - name: Trigger integration tests in sonar-analysis-as-a-service
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
+          #TODO: ref should be master
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: 'SonarSource',
+              repo: 'sonar-analysis-as-a-service',
+              workflow_id: 'update-sonar-java-and-test.yml',
+              ref: 'lp/add-sonar-java-integration-testing',
+              inputs: {
+                sonar_java_build_number: '${{ needs.build.outputs.build-number }}'
+              }
+            });
