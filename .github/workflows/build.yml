@@ -82,7 +82,7 @@ jobs:
       - name: Ensure Separate Job Cache Key
         uses: ./.github/actions/write-file
         with:
-          file-path: just_for_cache_key_calculation/pom.xml
+          file-path: target/just_for_cache_key_calculation/pom.xml
           content: ${{ github.job }}-${{ toJSON(matrix.item) }}
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
@@ -149,7 +149,7 @@ jobs:
       - name: Ensure Separate Job Cache Key
         uses: ./.github/actions/write-file
         with:
-          file-path: just_for_cache_key_calculation/pom.xml
+          file-path: target/just_for_cache_key_calculation/pom.xml
           content: ${{ github.job }}-${{ matrix.sq_version }}
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
@@ -199,7 +199,7 @@ jobs:
       - name: Ensure Separate Job Cache Key
         uses: ./.github/actions/write-file
         with:
-          file-path: just_for_cache_key_calculation/pom.xml
+          file-path: target/just_for_cache_key_calculation/pom.xml
           content: ${{ github.job }}
       - uses: SonarSource/ci-github-actions/config-maven@v1
         with:
@@ -281,7 +281,7 @@ jobs:
       - name: Ensure Separate Job Cache Key
         uses: ./.github/actions/write-file
         with:
-          file-path: just_for_cache_key_calculation/pom.xml
+          file-path: target/just_for_cache_key_calculation/pom.xml
           content: ${{ github.job }}
       - uses: SonarSource/ci-github-actions/config-maven@v1
         with:
@@ -338,7 +338,7 @@ jobs:
       - name: Ensure Separate Job Cache Key
         uses: ./.github/actions/write-file
         with:
-          file-path: just_for_cache_key_calculation/pom.xml
+          file-path: target/just_for_cache_key_calculation/pom.xml
           content: ${{ github.job }}
       - uses: SonarSource/ci-github-actions/config-maven@v1
         with:
@@ -397,7 +397,7 @@ jobs:
       - name: Ensure Separate Job Cache Key
         uses: ./.github/actions/write-file
         with:
-          file-path: just_for_cache_key_calculation/pom.xml
+          file-path: target/just_for_cache_key_calculation/pom.xml
           content: ${{ github.job }}
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v1
