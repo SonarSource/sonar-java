@@ -114,8 +114,15 @@ class FileHeaderCheckTest {
       .verifyNoIssues();
 
     check = new FileHeaderCheck();
+    check.headerFormat = "";
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/ClassDefaultHeader.java"))
+      .withCheck(check)
+      .verifyNoIssues();
+
+    check = new FileHeaderCheck();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class6.java"))
       .withCheck(check)
       .verifyNoIssues();
   }
