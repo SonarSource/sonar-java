@@ -20,7 +20,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Rule;
@@ -130,14 +129,14 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
         Set<String> undocumentedParameters = javadoc.undocumentedParameters();
         if (!undocumentedParameters.isEmpty()) {
           String label = getParamLabel(tree);
-          context.reportIssue(this, reportTree, "Document the " + label + undocumentedParameters.stream().collect(Collectors.joining(", ")));
+          context.reportIssue(this, reportTree, "Document the " + label + String.join(", ", undocumentedParameters));
         }
         if (hasNonVoidReturnType(tree) && javadoc.noReturnDescription()) {
           context.reportIssue(this, reportTree, "Document this method return value.");
         }
         Set<String> undocumentedExceptions = javadoc.undocumentedThrownExceptions();
         if (!undocumentedExceptions.isEmpty()) {
-          context.reportIssue(this, reportTree, "Document this method thrown exception(s): " + undocumentedExceptions.stream().collect(Collectors.joining(", ")));
+          context.reportIssue(this, reportTree, "Document this method thrown exception(s): " + String.join(", ", undocumentedExceptions));
         }
       }
     }
