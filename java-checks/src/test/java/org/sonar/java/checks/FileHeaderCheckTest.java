@@ -151,6 +151,20 @@ class FileHeaderCheckTest {
       .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Regex4.java"))
       .withCheck(check)
       .verifyIssues();
+
+    check = new FileHeaderCheck();
+    check.isRegularExpression = true;
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Regex5.java"))
+      .withCheck(check)
+      .verifyNoIssues();
+
+    check = new FileHeaderCheck();
+    check.isRegularExpression = true;
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Regex6.java"))
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
   @Test

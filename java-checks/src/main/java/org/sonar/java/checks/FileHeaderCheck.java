@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -58,18 +59,21 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor {
   @Override
   public void setContext(JavaFileScannerContext context) {
     super.context = context;
-    if (isRegularExpression) {
-      if (searchPattern == null) {
-        try {
-          searchPattern = Pattern.compile(getHeaderFormat(), Pattern.DOTALL);
-        } catch (IllegalArgumentException e) {
-          throw new IllegalArgumentException("[" + getClass().getSimpleName() + "] Unable to compile the regular expression: " + headerFormat, e);
-        }
-      }
+    if (headerFormat.isEmpty()) {
+      expectedLines = new String[]{};
+      isRegularExpression = false;
     } else {
-      if (headerFormat.isEmpty()) {
-        expectedLines = new String[]{};
-      } else {expectedLines = headerFormat.split("(?:\r)?\n|\r");}
+      if (isRegularExpression) {
+        if (searchPattern == null) {
+          try {
+            searchPattern = Pattern.compile(getHeaderFormat(), Pattern.DOTALL);
+          } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("[" + getClass().getSimpleName() + "] Unable to compile the regular expression: " + headerFormat, e);
+          }
+        }
+      } else {
+        expectedLines = headerFormat.split("(?:\r)?\n|\r");
+      }
     }
     visitFile();
   }
@@ -116,7 +120,6 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor {
     } else {
       result = false;
     }
-
     return result;
   }
 
