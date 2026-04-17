@@ -155,7 +155,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private static String getParamLabel(Tree tree) {
-    return (tree.is(Kind.CLASS) || tree.is(Kind.INTERFACE)) ? "type parameter(s): " : "parameter(s): ";
+    return (tree.is(Kind.CLASS) || tree.is(Kind.INTERFACE) || tree.is(Kind.RECORD)) ? "type parameter(s): " : "parameter(s): ";
   }
 
   private static String getType(Tree tree) {
@@ -168,10 +168,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
         return "field";
       case ANNOTATION_TYPE:
         return "annotation";
-      case CLASS,
-        INTERFACE,
-        ENUM,
-        RECORD:
+      case CLASS, INTERFACE, ENUM, RECORD:
         return ((ClassTree) tree).declarationKeyword().text();
       default:
         return "";
