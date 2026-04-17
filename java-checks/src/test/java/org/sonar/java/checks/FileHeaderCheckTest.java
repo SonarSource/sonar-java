@@ -100,14 +100,22 @@ class FileHeaderCheckTest {
       .verifyNoIssues();
 
     check = new FileHeaderCheck();
+    check.headerFormat = "";
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class4.java"))
       .withCheck(check)
       .verifyNoIssues();
 
     check = new FileHeaderCheck();
+    check.headerFormat = "";
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class5.java"))
+      .withCheck(check)
+      .verifyNoIssues();
+
+    check = new FileHeaderCheck();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class6.java"))
       .withCheck(check)
       .verifyNoIssues();
   }
@@ -153,6 +161,7 @@ class FileHeaderCheckTest {
       .verifyIssues();
 
     check = new FileHeaderCheck();
+    check.headerFormat = "";
     check.isRegularExpression = true;
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Regex5.java"))
@@ -160,6 +169,7 @@ class FileHeaderCheckTest {
       .verifyNoIssues();
 
     check = new FileHeaderCheck();
+    check.headerFormat = "";
     check.isRegularExpression = true;
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Regex6.java"))
