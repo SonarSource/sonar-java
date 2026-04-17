@@ -31,7 +31,14 @@ import java.util.regex.Pattern;
 @Rule(key = "S1451")
 public class FileHeaderCheck extends IssuableSubscriptionVisitor {
 
-  private static final String DEFAULT_HEADER_FORMAT = "";
+  private static final String DEFAULT_HEADER_FORMAT = """
+    /*
+     * <Your-Product-Name>
+     * Copyright (c) <Year-From>-<Year-To> <Your-Company-Name>
+     *
+     * Please configure this header in your SonarCloud/SonarQube quality profile.
+     */
+    """;
   private static final String MESSAGE = "Add or update the header of this file.";
 
   @RuleProperty(
@@ -59,7 +66,7 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor {
   public void setContext(JavaFileScannerContext context) {
     super.context = context;
     if (headerFormat.isEmpty()) {
-      expectedLines = new String[]{};
+      expectedLines = new String[] {};
       isRegularExpression = false;
     } else {
       if (isRegularExpression) {
@@ -79,7 +86,7 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor {
 
   private String getHeaderFormat() {
     String format = headerFormat;
-    if(format.charAt(0) != '^') {
+    if (format.charAt(0) != '^') {
       format = "^" + format;
     }
     return format;
