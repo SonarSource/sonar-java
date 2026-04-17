@@ -16,7 +16,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
