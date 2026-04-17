@@ -68,7 +68,7 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor {
       }
     } else {
       if (headerFormat.isEmpty()) {
-        expectedLines = new String[]{};
+        expectedLines = new String[] {};
       } else {
         expectedLines = headerFormat.split("(?:\r)?\n|\r");
       }
@@ -78,7 +78,7 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor {
 
   private String getHeaderFormat() {
     String format = headerFormat;
-    if(format.charAt(0) != '^') {
+    if (format.charAt(0) != '^') {
       format = "^" + format;
     }
     return format;
