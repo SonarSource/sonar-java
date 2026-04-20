@@ -101,13 +101,13 @@ class FileHeaderCheckTest {
 
     check = new FileHeaderCheck();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class4.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/ClassBlankLine.java"))
       .withCheck(check)
       .verifyNoIssues();
 
     check = new FileHeaderCheck();
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class5.java"))
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/ClassNoBlankLine.java"))
       .withCheck(check)
       .verifyNoIssues();
   }
