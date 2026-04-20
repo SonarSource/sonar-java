@@ -146,6 +146,50 @@ class JTypeTest {
   }
 
   @Test
+  void primitiveWrapperType(){
+    Type booleanType = type("boolean");
+    assertThat(booleanType.primitiveWrapperType()).isEqualTo(type("java.lang.Boolean"));
+    assertThat(booleanType.primitiveWrapperType()).isNotEqualTo(type("java.lang.Byte"));
+  }
+
+  @Test
+  void non_primitive_type_has_no_primitive() {
+    Type stringType = type("java.lang.String");
+    assertThat(stringType.primitiveType()).isNull();
+  }
+
+  @Test
+  void non_primitive_wrapper_tpe_has_no_primitive_wrapper() {
+    Type stringType = type("java.lang.String");
+    assertThat(stringType.primitiveWrapperType()).isNull();
+  }
+
+  @Test
+  void primitiveWrapperType_returns_null_when_semantic_cannot_resolve_wrapper_type() {
+    // Sema that can resolve primitives, but fails to resolve wrapper types, which can happen when the classpath is not correctly set up
+    var brokenSema = spy(sema);
+    when(brokenSema.resolveType("java.lang.Byte")).thenReturn(null);
+
+    var primitiveBinding = sema.resolveType("byte");
+    var primitiveType = new JType(brokenSema, primitiveBinding);
+
+    assertThat(primitiveType.primitiveWrapperType()).isNull();
+  }
+
+  @Test
+  void primitiveType_returns_null_when_semantic_cannot_resolve_primitive_type() {
+    // Sema that can resolve wrapper types, but fails to resolve a primitive, this should never happen in practice,
+    // but we want to make sure it doesn't throw an exception and returns null instead
+    var brokenSema = spy(sema);
+    when(brokenSema.resolveType("byte")).thenReturn(null);
+
+    var wrapperBinding = sema.resolveType("java.lang.Byte");
+    var wrapperType = new JType(brokenSema, wrapperBinding);
+
+    assertThat(wrapperType.primitiveType()).isNull();
+  }
+
+  @Test
   void declaringType(){
     Type byteType = type("java.lang.Byte");
     assertThat(byteType.declaringType()).isEqualTo(byteType);
@@ -166,7 +210,7 @@ class JTypeTest {
   }
 
   @ParameterizedTest
-  @MethodSource("names")
+  @MethodSource("fullyQualifiedNamesToNames")
   void names(String expectedFullyQualifiedName, String expectedName) {
     assertThat(type(expectedFullyQualifiedName))
       .is(expectedFullyQualifiedName)
@@ -174,7 +218,7 @@ class JTypeTest {
       .hasToString(expectedName);
   }
 
-  private static Stream<Arguments> names() {
+  private static Stream<Arguments> fullyQualifiedNamesToNames() {
     return Stream.of(
       Arguments.of("int", "int"),
       Arguments.of("int[][]", "int[][]"),
