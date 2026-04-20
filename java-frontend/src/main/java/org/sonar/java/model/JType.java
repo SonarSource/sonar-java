@@ -137,7 +137,11 @@ final class JType implements Type, Type.ArrayType {
       if (name == null) {
         return null;
       }
-      primitiveWrapperType = sema.type(sema.resolveType(name));
+      ITypeBinding resolvedType = sema.resolveType(name);
+      if (resolvedType == null) {
+        return null;
+      }
+      primitiveWrapperType = sema.type(resolvedType);
     }
     return primitiveWrapperType;
   }
@@ -150,7 +154,11 @@ final class JType implements Type, Type.ArrayType {
       if (name == null) {
         return null;
       }
-      primitiveType = sema.type(sema.resolveType(name));
+      ITypeBinding resolvedType = sema.resolveType(name);
+      if (resolvedType == null) {
+        return null;
+      }
+      primitiveType = sema.type(resolvedType);
     }
     return primitiveType;
   }
