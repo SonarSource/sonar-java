@@ -1,5 +1,7 @@
+
 package checks.FileHeaderCheck;
 
-public class Regex6 {
+public class ClassBlankLine {
 }
 // Compliant
+

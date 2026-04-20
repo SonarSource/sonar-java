@@ -1,7 +1,5 @@
-
 package checks.FileHeaderCheck;
 
-public class Class4 {
+public class RegexNoBlankLine {
 }
 // Compliant
-

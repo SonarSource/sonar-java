@@ -1,5 +1,5 @@
 package checks.FileHeaderCheck;
 
-public class Class5 {
+public class ClassNoBlankLine {
 }
 // Compliant
