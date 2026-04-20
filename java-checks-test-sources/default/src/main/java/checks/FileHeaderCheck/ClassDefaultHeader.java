@@ -6,6 +6,6 @@
  */
 package checks.FileHeaderCheck;
 
-public class Class6 {
+public class ClassDefaultHeader {
 }
 // Compliant (default header)
