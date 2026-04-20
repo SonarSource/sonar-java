@@ -374,21 +374,6 @@ class JavaSensorTest {
     assertThat(new String(Files.readAllBytes(defaultPerformanceFile), UTF_8)).contains("\"JavaSensor\"");
   }
 
-  /*
-   * @Test
-   * void test_java_version_automatically_accepts_enablePreview_flag_when_maximum_version() throws IOException {
-   * MapSettings settings = new MapSettings();
-   * settings.setProperty("sonar.java.source", JavaVersionImpl.MAX_SUPPORTED);
-   * settings.setProperty("sonar.java.enablePreview", "True");
-   * Path workDir = tmp.newFolder().toPath();
-   * executeJavaSensorForPerformanceMeasure(settings, workDir);
-   * assertThat(logTester.logs(Level.WARN)).isEmpty();
-   * List<String> infoLogs = logTester.logs(Level.INFO);
-   * assertThat(infoLogs).contains("Configured Java source version (sonar.java.source): " + JavaVersionImpl.MAX_SUPPORTED +
-   * ", preview features enabled (sonar.java.enablePreview): true");
-   * }
-   */
-
   @Test
   void test_java_version_automatically_disables_enablePreview_flag_when_version_is_less_than_maximum_version() throws IOException {
     MapSettings settings = new MapSettings();
