@@ -374,18 +374,20 @@ class JavaSensorTest {
     assertThat(new String(Files.readAllBytes(defaultPerformanceFile), UTF_8)).contains("\"JavaSensor\"");
   }
 
-  /*@Test
-  void test_java_version_automatically_accepts_enablePreview_flag_when_maximum_version() throws IOException {
-    MapSettings settings = new MapSettings();
-    settings.setProperty("sonar.java.source", JavaVersionImpl.MAX_SUPPORTED);
-    settings.setProperty("sonar.java.enablePreview", "True");
-    Path workDir = tmp.newFolder().toPath();
-    executeJavaSensorForPerformanceMeasure(settings, workDir);
-    assertThat(logTester.logs(Level.WARN)).isEmpty();
-    List<String> infoLogs = logTester.logs(Level.INFO);
-    assertThat(infoLogs).contains("Configured Java source version (sonar.java.source): " + JavaVersionImpl.MAX_SUPPORTED +
-      ", preview features enabled (sonar.java.enablePreview): true");
-  }*/
+  /*
+   * @Test
+   * void test_java_version_automatically_accepts_enablePreview_flag_when_maximum_version() throws IOException {
+   * MapSettings settings = new MapSettings();
+   * settings.setProperty("sonar.java.source", JavaVersionImpl.MAX_SUPPORTED);
+   * settings.setProperty("sonar.java.enablePreview", "True");
+   * Path workDir = tmp.newFolder().toPath();
+   * executeJavaSensorForPerformanceMeasure(settings, workDir);
+   * assertThat(logTester.logs(Level.WARN)).isEmpty();
+   * List<String> infoLogs = logTester.logs(Level.INFO);
+   * assertThat(infoLogs).contains("Configured Java source version (sonar.java.source): " + JavaVersionImpl.MAX_SUPPORTED +
+   * ", preview features enabled (sonar.java.enablePreview): true");
+   * }
+   */
 
   @Test
   void test_java_version_automatically_disables_enablePreview_flag_when_version_is_less_than_maximum_version() throws IOException {
@@ -397,8 +399,7 @@ class JavaSensorTest {
     executeJavaSensorForPerformanceMeasure(settings, workDir);
     assertThat(logTester.logs(Level.WARN)).contains(
       "sonar.java.enablePreview is set but will be discarded as the Java version is less than the max supported version (" +
-        version + " < " + JavaVersionImpl.MAX_SUPPORTED + ")"
-    );
+        version + " < " + JavaVersionImpl.MAX_SUPPORTED + ")");
     List<String> infoLogs = logTester.logs(Level.INFO);
     assertThat(infoLogs).contains("Configured Java source version (sonar.java.source): " + version +
       ", preview features enabled (sonar.java.enablePreview): false");
@@ -412,8 +413,7 @@ class JavaSensorTest {
     Path workDir = tmp.newFolder().toPath();
     executeJavaSensorForPerformanceMeasure(settings, workDir);
     assertThat(logTester.logs(Level.WARN)).noneMatch(
-      log -> log.startsWith("sonar.java.enablePreview is set but will be discarded as the Java version is less than the max supported version")
-    );
+      log -> log.startsWith("sonar.java.enablePreview is set but will be discarded as the Java version is less than the max supported version"));
     List<String> infoLogs = logTester.logs(Level.INFO);
     assertThat(infoLogs).noneMatch(log -> log.startsWith("Configured Java source version (sonar.java.source):"));
   }
@@ -429,15 +429,12 @@ class JavaSensorTest {
         "CustomRepository:CustomMainCheck",
         "CustomRepository:CustomJspCheck",
         "CustomRepository:CustomTestCheck",
-        // not in SonarWay (FileHeaderCheck)
-        "java:S1451",
         // main check in SonarWay (DefaultPackageCheck)
         "java:S1220",
         // main check in SonarWay, not supported by autoscan (CombineCatchCheck)
         "java:S2147",
         // test check in SonarWay (NoTestInTestClassCheck)
-        "java:S2187"
-      );
+        "java:S2187");
   }
 
   @Test
@@ -451,16 +448,15 @@ class JavaSensorTest {
         // main check in SonarWay
         "java:S1220",
         // test check in SonarWay
-        "java:S2187"
-      ).doesNotContain(
-      "CustomRepository:CustomMainCheck",
-      "CustomRepository:CustomJspCheck",
-      "CustomRepository:CustomTestCheck",
-      // main check in SonarWay, not supported by autoscan (CombineCatchCheck)
-      "java:S2147",
-      // not in SonarWay (FileHeaderCheck)
-      "java:S1451"
-    );
+        "java:S2187")
+      .doesNotContain(
+        "CustomRepository:CustomMainCheck",
+        "CustomRepository:CustomJspCheck",
+        "CustomRepository:CustomTestCheck",
+        // main check in SonarWay, not supported by autoscan (CombineCatchCheck)
+        "java:S2147",
+        // not in SonarWay (FileHeaderCheck)
+        "java:S1451");
   }
 
   @Test
