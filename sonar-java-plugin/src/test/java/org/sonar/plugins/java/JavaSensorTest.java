@@ -429,6 +429,8 @@ class JavaSensorTest {
         "CustomRepository:CustomMainCheck",
         "CustomRepository:CustomJspCheck",
         "CustomRepository:CustomTestCheck",
+        // not in SonarWay (CatchUsesExceptionWithContextCheck)
+        "java:S1166",
         // main check in SonarWay (DefaultPackageCheck)
         "java:S1220",
         // main check in SonarWay, not supported by autoscan (CombineCatchCheck)
