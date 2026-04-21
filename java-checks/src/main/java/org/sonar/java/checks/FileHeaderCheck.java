@@ -47,7 +47,6 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor {
     defaultValue = "false")
   public boolean isRegularExpression = false;
 
-  private String[] expectedLines;
   private Pattern searchPattern = null;
 
   @Override
@@ -58,18 +57,26 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor {
   @Override
   public void setContext(JavaFileScannerContext context) {
     super.context = context;
-    if (isRegularExpression) {
-      if (searchPattern == null) {
-        try {
-          searchPattern = Pattern.compile(getHeaderFormat(), Pattern.DOTALL);
-        } catch (IllegalArgumentException e) {
-          throw new IllegalArgumentException("[" + getClass().getSimpleName() + "] Unable to compile the regular expression: " + headerFormat, e);
-        }
-      }
-    } else {
-      expectedLines = headerFormat.split("(?:\r)?\n|\r");
+
+    if (headerFormat.isEmpty()) {
+      checkExpectedLines(new String[] {});
+      return;
     }
-    visitFile();
+
+    if (!isRegularExpression) {
+      String[] expectedLines = headerFormat.split("(?:\r)?\n|\r");
+      checkExpectedLines(expectedLines);
+      return;
+    }
+
+    if (searchPattern == null) {
+      try {
+        searchPattern = Pattern.compile(getHeaderFormat(), Pattern.DOTALL);
+      } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException("[" + getClass().getSimpleName() + "] Unable to compile the regular expression: " + headerFormat, e);
+      }
+    }
+    checkRegularExpression(context.getFileContent());
   }
 
   private String getHeaderFormat() {
@@ -80,13 +87,9 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor {
     return format;
   }
 
-  private void visitFile() {
-    if (isRegularExpression) {
-      checkRegularExpression(context.getFileContent());
-    } else {
-      if (!matches(expectedLines, context.getFileLines())) {
-        addIssueOnFile(MESSAGE);
-      }
+  private void checkExpectedLines(String[] expectedLines) {
+    if (!matches(expectedLines, context.getFileLines())) {
+      addIssueOnFile(MESSAGE);
     }
   }
 
@@ -104,9 +107,9 @@ public class FileHeaderCheck extends IssuableSubscriptionVisitor {
       result = true;
 
       Iterator<String> it = lines.iterator();
-      for (int i = 0; i < expectedLines.length; i++) {
+      for (String expectedLine : expectedLines) {
         String line = it.next();
-        if (!line.equals(expectedLines[i])) {
+        if (!line.equals(expectedLine)) {
           result = false;
           break;
         }

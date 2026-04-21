@@ -98,6 +98,26 @@ class FileHeaderCheckTest {
       .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class3.java"))
       .withCheck(check)
       .verifyNoIssues();
+
+    check = new FileHeaderCheck();
+    check.headerFormat = "";
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/ClassBlankLine.java"))
+      .withCheck(check)
+      .verifyNoIssues();
+
+    check = new FileHeaderCheck();
+    check.headerFormat = "";
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/ClassNoBlankLine.java"))
+      .withCheck(check)
+      .verifyNoIssues();
+
+    check = new FileHeaderCheck();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/ClassDefaultHeader.java"))
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
   @Test
@@ -139,6 +159,22 @@ class FileHeaderCheckTest {
       .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Regex4.java"))
       .withCheck(check)
       .verifyIssues();
+
+    check = new FileHeaderCheck();
+    check.headerFormat = "";
+    check.isRegularExpression = true;
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/ClassBlankLine.java"))
+      .withCheck(check)
+      .verifyNoIssues();
+
+    check = new FileHeaderCheck();
+    check.headerFormat = "";
+    check.isRegularExpression = true;
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/ClassNoBlankLine.java"))
+      .withCheck(check)
+      .verifyNoIssues();
   }
 
   @Test
