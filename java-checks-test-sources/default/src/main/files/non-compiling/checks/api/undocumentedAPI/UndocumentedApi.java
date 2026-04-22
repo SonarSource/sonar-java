@@ -67,7 +67,7 @@ public class AClass { // Noncompliant {{Document this public class by adding an 
 /**
  * This is a Javadoc comment
  */
-public class MyClass<T> implements Runnable { // Noncompliant {{Document the parameter(s): <T>}}
+public class MyClass<T> implements Runnable { // Noncompliant {{Document the type parameter(s): <T>}}
 
  private int status;                            // Compliant - not public
 
@@ -329,6 +329,13 @@ class A {
     public void doSomething() { } // Compliant - Override
   }
 
+}
+
+/**
+ * Description.
+ */
+public record MyRecord<U>(U a, int b) { // Noncompliant {{Document the type parameter(s): <U>}}
+  //          ^^^^^^^^
 }
 
 @interface MyAnnotation {}

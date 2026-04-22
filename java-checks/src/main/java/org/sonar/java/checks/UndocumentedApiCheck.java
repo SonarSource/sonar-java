@@ -20,7 +20,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Rule;
@@ -129,14 +128,15 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
       } else {
         Set<String> undocumentedParameters = javadoc.undocumentedParameters();
         if (!undocumentedParameters.isEmpty()) {
-          context.reportIssue(this, reportTree, "Document the parameter(s): " + undocumentedParameters.stream().collect(Collectors.joining(", ")));
+          String label = getParamLabel(tree);
+          context.reportIssue(this, reportTree, "Document the " + label + String.join(", ", undocumentedParameters));
         }
         if (hasNonVoidReturnType(tree) && javadoc.noReturnDescription()) {
           context.reportIssue(this, reportTree, "Document this method return value.");
         }
         Set<String> undocumentedExceptions = javadoc.undocumentedThrownExceptions();
         if (!undocumentedExceptions.isEmpty()) {
-          context.reportIssue(this, reportTree, "Document this method thrown exception(s): " + undocumentedExceptions.stream().collect(Collectors.joining(", ")));
+          context.reportIssue(this, reportTree, "Document this method thrown exception(s): " + String.join(", ", undocumentedExceptions));
         }
       }
     }
@@ -153,6 +153,10 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
       && !javadoc.noReturnDescription();
   }
 
+  private static String getParamLabel(Tree tree) {
+    return (tree.is(Kind.CLASS) || tree.is(Kind.INTERFACE) || tree.is(Kind.RECORD)) ? "type parameter(s): " : "parameter(s): ";
+  }
+
   private static String getType(Tree tree) {
     switch (tree.kind()) {
       case CONSTRUCTOR:
@@ -163,10 +167,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
         return "field";
       case ANNOTATION_TYPE:
         return "annotation";
-      case CLASS,
-        INTERFACE,
-        ENUM,
-        RECORD:
+      case CLASS, INTERFACE, ENUM, RECORD:
         return ((ClassTree) tree).declarationKeyword().text();
       default:
         return "";
