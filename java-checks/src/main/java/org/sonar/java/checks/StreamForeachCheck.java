@@ -16,5 +16,30 @@
  */
 package org.sonar.java.checks;
 
-public class StreamForeachCheck {
+import java.util.List;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+public class StreamForeachCheck extends IssuableSubscriptionVisitor {
+
+  private static final MethodMatchers STREAM_FOREACH_METHOD = MethodMatchers.create()
+    .ofTypes("java.util.stream.Stream")
+    .names("forEach")
+    .withAnyParameters()
+    .build();
+
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return List.of(Tree.Kind.METHOD_INVOCATION);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    MethodInvocationTree mit = (MethodInvocationTree) tree;
+    if (STREAM_FOREACH_METHOD.matches(mit)) {
+      reportIssue(mit, "Replace unnecessary call to .stream().forEach() by .forEach()");
+    }
+  }
 }
