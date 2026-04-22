@@ -20,11 +20,19 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S3706")
 public class StreamForeachCheck extends IssuableSubscriptionVisitor {
+
+  private static final MethodMatchers STREAM_METHOD = MethodMatchers.create()
+    .ofTypes("java.util.Collection")
+    .names("stream")
+    .withAnyParameters()
+    .build();
 
   private static final MethodMatchers STREAM_FOREACH_METHOD = MethodMatchers.create()
     .ofTypes("java.util.stream.Stream")
@@ -41,7 +49,17 @@ public class StreamForeachCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
     if (STREAM_FOREACH_METHOD.matches(mit)) {
-      reportIssue(mit, "Replace unnecessary call to .stream().forEach() by .forEach()");
+      checkUnnecessaryForEach(mit);
+    }
+  }
+
+  private void checkUnnecessaryForEach(MethodInvocationTree mit) {
+    ExpressionTree methodSelect = mit.methodSelect();
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree receiver = ((MemberSelectExpressionTree) methodSelect).expression();
+      if (receiver.is(Tree.Kind.METHOD_INVOCATION) && STREAM_METHOD.matches((MethodInvocationTree) receiver)) {
+        reportIssue(mit, "Replace unnecessary call to .stream().forEach() by .forEach()");
+      }
     }
   }
 }
