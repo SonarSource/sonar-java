@@ -31,7 +31,13 @@ import java.util.regex.Pattern;
 @Rule(key = "S1451")
 public class FileHeaderCheck extends IssuableSubscriptionVisitor {
 
-  private static final String DEFAULT_HEADER_FORMAT = "";
+  private static final String DEFAULT_HEADER_FORMAT = """
+    /*
+     * <Your-Product-Name>
+     * Copyright (c) <Year-From>-<Year-To> <Your-Company-Name>
+     *
+     * Please configure this header in your SonarCloud/SonarQube quality profile.
+     */""";
   private static final String MESSAGE = "Add or update the header of this file.";
 
   @RuleProperty(
