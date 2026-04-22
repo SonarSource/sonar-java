@@ -17,11 +17,13 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+@Rule(key = "S3706")
 public class StreamForeachCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatchers STREAM_FOREACH_METHOD = MethodMatchers.create()
