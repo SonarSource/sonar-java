@@ -331,6 +331,13 @@ class A {
 
 }
 
+/**
+ * Description.
+ */
+public record MyRecord<U>(U a, int b) { // Noncompliant {{Document the type parameter(s): <U>}}
+  //          ^^^^^^^^
+}
+
 @interface MyAnnotation {}
 
 class UsesVisibleForTesting {
