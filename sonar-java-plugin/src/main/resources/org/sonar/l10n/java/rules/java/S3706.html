@@ -1,0 +1,12 @@
+<h2>Why is this an issue?</h2>
+<p>There’s no need to invoke <code>stream()</code> on a <code>Collection</code> before a <code>forEach</code> call because each
+<code>Collection</code> has its own <code>forEach</code> method.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+identifiers.stream().forEach(System.out::println);  // Noncompliant
+</pre>
+<h3>Compliant solution</h3>
+<pre>
+identifiers.forEach(System.out::println);  // Noncompliant
+</pre>
+
