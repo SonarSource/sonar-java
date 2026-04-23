@@ -16,13 +16,11 @@
  */
 package org.sonar.java.it;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Files;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
 import com.sonar.orchestrator.locator.FileLocation;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +43,7 @@ public class ProfileGenerator {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProfileGenerator.class);
 
-  static void generate(OrchestratorRule orchestrator, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
+  static void generate(OrchestratorRule orchestrator, Map<String, Map<String, String>> rulesParameters,
     Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
     generate(orchestrator, null, rulesParameters, excluded, subsetOfEnabledRules, activatedRuleKeys);
   }
@@ -53,7 +51,7 @@ public class ProfileGenerator {
   /**
    * @return the list of enabled rule keys for the given profile
    */
-  static void generate(OrchestratorRule orchestrator, @Nullable String qualityProfile, ImmutableMap<String, ImmutableMap<String, String>> rulesParameters,
+  static void generate(OrchestratorRule orchestrator, @Nullable String qualityProfile, Map<String, Map<String, String>> rulesParameters,
     Set<String> excluded, Set<String> subsetOfEnabledRules, Set<String> activatedRuleKeys) {
     try {
       LOG.info("Generating profile containing all the rules");
@@ -89,7 +87,7 @@ public class ProfileGenerator {
         .append("</profile>");
 
       File file = File.createTempFile("profile", ".xml");
-      Files.asCharSink(file, StandardCharsets.UTF_8).write(sb);
+      Files.writeString(file.toPath(), sb);
       LOG.info("Restoring profile to SonarQube");
       orchestrator.getServer().restoreProfile(FileLocation.of(file));
       file.delete();

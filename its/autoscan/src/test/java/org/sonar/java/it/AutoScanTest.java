@@ -16,7 +16,6 @@
  */
 package org.sonar.java.it;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -228,7 +227,7 @@ public class AutoScanTest {
 
   private static List<String> generateSonarWay(OrchestratorRule orchestrator) {
     Set<String> results = new TreeSet<>(RULE_KEY_COMPARATOR);
-    ProfileGenerator.generate(orchestrator, "Sonar Way", ImmutableMap.of(), Collections.emptySet(), Collections.emptySet(), results);
+    ProfileGenerator.generate(orchestrator, "Sonar Way", Map.of(), Collections.emptySet(), Collections.emptySet(), results);
     return new ArrayList<>(results);
   }
 
