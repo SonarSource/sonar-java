@@ -2,17 +2,38 @@ package checks;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public class StreamForeachCheck {
 
-  void unnecessaryStreamForEach(Collection<T> collection) {
-    collection.stream().forEach(System.out::println);  // Noncompliant
+  void unnecessaryStreamForEach(Collection<Integer> collection) {
+    collection.stream().forEach(System.out::println); // Noncompliant
   }
 
-  void compliantCollectionForEach(Collection<T> collection) {
-    collection.forEach(System.out::println);  // Compliant
+  void compliantCollectionForEach(Collection<Integer> collection) {
+    collection.forEach(System.out::println); // Compliant
   }
 
-  void necessaryFilterForEach(List<String> list) {list.stream().filter(s -> !s.isEmpty()).forEach(System.out::println);}
+  void necessaryFilterForEach(Collection<String> col) {
+    col.stream().filter(s -> !s.isEmpty()).forEach(System.out::println);
+  }
+
+  void unnecessaryForEachOnSet(Set<String> set) {
+    set.stream().forEach(e -> System.out.println("Element: " + e)); // Noncompliant
+  }
+
+  void unnecessaryForEachOnList(List<String> list) {
+    list.stream().forEach(e -> System.out.println("Element: " + e)); // Noncompliant
+  }
+
+  void necessaryForEachOnParallelStream(Set<String> set) {
+    set.parallelStream().forEach(System.out::println); // Compliant
+  }
+
+  void sequentialStreamForEach(Collection<String> col) {
+    Stream<String> s = col.stream();
+    s.forEach(System.out::println); // Compliant (the rule ignores this case)
+  }
 
 }
