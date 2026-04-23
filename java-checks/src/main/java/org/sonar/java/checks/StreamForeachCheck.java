@@ -29,13 +29,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class StreamForeachCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatchers STREAM_METHOD = MethodMatchers.create()
-    .ofTypes("java.util.Collection")
+    .ofSubTypes("java.util.Collection")
     .names("stream")
     .withAnyParameters()
     .build();
 
   private static final MethodMatchers STREAM_FOREACH_METHOD = MethodMatchers.create()
-    .ofTypes("java.util.stream.Stream")
+    .ofSubTypes("java.util.stream.Stream")
     .names("forEach")
     .withAnyParameters()
     .build();
