@@ -56,7 +56,7 @@ public class StreamForeachCheck extends IssuableSubscriptionVisitor {
       && msetForEach.expression() instanceof MethodInvocationTree mitStream
       && STREAM_METHOD.matches(mitStream)
       && mitStream.methodSelect() instanceof MemberSelectExpressionTree msetStream) {
-      reportIssue(msetStream.identifier(), msetForEach.identifier(), "Replace unnecessary call to .stream().forEach() by .forEach()");
+      reportIssue(msetStream.identifier(), msetForEach.identifier(), "Simplify the code by replacing .stream().forEach() with .forEach().");
     }
   }
 }

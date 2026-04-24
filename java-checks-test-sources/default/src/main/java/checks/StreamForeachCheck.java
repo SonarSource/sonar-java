@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 public class StreamForeachCheck {
 
   void unnecessaryStreamForEach(Collection<Integer> collection) {
-    collection.stream().forEach(System.out::println); // Noncompliant {{Replace unnecessary call to .stream().forEach() by .forEach()}}
+    collection.stream().forEach(System.out::println); // Noncompliant {{Simplify the code by replacing .stream().forEach() with .forEach().}}
     //         ^^^^^^^^^^^^^^^^
   }
 
