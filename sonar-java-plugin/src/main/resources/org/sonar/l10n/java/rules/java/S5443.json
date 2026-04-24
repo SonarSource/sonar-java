@@ -1,6 +1,7 @@
 {
-  "title": "Using publicly writable directories is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Temporary files should not be created in publicly writable directories",
+  "type": "VULNERABILITY",
+  "quickfix": "unknown",
   "code": {
     "impacts": {
       "SECURITY": "HIGH"
@@ -8,8 +9,13 @@
     "attribute": "COMPLETE"
   },
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
   "tags": [
-    "cwe"
+    "cwe",
+    "former-hotspot"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5443",
@@ -36,6 +42,5 @@
     "STIG ASD_V5R3": [
       "V-222567"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }

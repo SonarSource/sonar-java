@@ -1,6 +1,6 @@
 {
-  "title": "Exposing native code through JavaScript interfaces is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Native methods should not be exposed to untrusted WebView content",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -8,7 +8,8 @@
   },
   "tags": [
     "cwe",
-    "android"
+    "android",
+    "former-hotspot"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-7409",
@@ -26,7 +27,7 @@
       "A5"
     ],
     "CWE": [
-      79
+      749
     ]
   },
   "quickfix": "unknown",

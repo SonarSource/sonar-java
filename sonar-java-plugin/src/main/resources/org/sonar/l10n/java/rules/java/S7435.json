@@ -1,13 +1,16 @@
 {
-  "title": "Processing persistent unique identifiers is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Avoid using persistent unique identifiers",
+  "type": "VULNERABILITY",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "android"
+    "android",
+    "ios",
+    "cwe",
+    "former-hotspot"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-7435",

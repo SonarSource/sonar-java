@@ -1,14 +1,11 @@
-<p>Operating systems have global directories where any user has write access. Those folders are mostly used as temporary storage areas like
-<code>/tmp</code> in Linux based systems. An application manipulating files from these folders is exposed to race conditions on filenames: a malicious
-user can try to create a file with a predictable name before the application does. A successful attack can result in other files being accessed,
-modified, corrupted or deleted. This risk is even higher if the application runs with elevated permissions.</p>
-<p>In the past, it has led to the following vulnerabilities:</p>
-<ul>
-  <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2012-2451">CVE-2012-2451</a></li>
-  <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2015-1838">CVE-2015-1838</a></li>
-</ul>
-<p>This rule raises an issue whenever it detects a hard-coded path to a publicly writable directory like <code>/tmp</code> (see examples below). It
-also detects access to environment variables that point to publicly writable directories, e.g., <code>TMP</code> and <code>TMPDIR</code>.</p>
+<p>Using publicly writable directories such as <code>/tmp</code> to store temporary files exposes an application to race condition
+vulnerabilities.</p>
+<h2>Why is this an issue?</h2>
+<p>Operating systems provide globally writable directories—such as <code>/tmp</code> on Linux or <code>\Windows\Temp</code> on Windows—where any user
+can create, read, and modify files. When an application creates files in these directories with predictable names, it becomes vulnerable to race
+conditions: an attacker can create a file with the same name before the application does, potentially causing the application to read or write
+attacker-controlled content.</p>
+<p>This rule raises an issue when it detects hard-coded paths to publicly writable directories, such as:</p>
 <ul>
   <li><code>/tmp</code></li>
   <li><code>/var/tmp</code></li>
@@ -24,38 +21,36 @@ also detects access to environment variables that point to publicly writable dir
   <li><code>\Windows\Temp</code></li>
   <li><code>\Temp</code></li>
   <li><code>\TMP</code></li>
+  <li><code>%USERPROFILE%\AppData\Local\Temp</code></li>
 </ul>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>Files are read from or written into a publicly writable folder</li>
-  <li>The application creates files with predictable names into a publicly writable folder</li>
-</ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<ul>
-  <li>Use a dedicated sub-folder with tightly controlled permissions</li>
-  <li>Use secure-by-design APIs to create temporary files. Such API will make sure:
-    <ul>
-      <li>The generated filename is unpredictable</li>
-      <li>The file is readable and writable only by the creating user ID</li>
-      <li>The file descriptor is not inherited by child processes</li>
-      <li>The file will be destroyed as soon as it is closed</li>
-    </ul></li>
-</ul>
-<h2>Sensitive Code Example</h2>
-<pre>
-new File("/tmp/myfile.txt"); // Sensitive
-Paths.get("/tmp/myfile.txt"); // Sensitive
+<p>It also raises an issue when it detects reads of environment variables that point to publicly writable directories: <code>TMP</code>,
+<code>TMPDIR</code>, and <code>TEMP</code>.</p>
+<h3>What is the potential impact?</h3>
+<h4>Information disclosure</h4>
+<p>By winning the race condition, an attacker can access files written by the application to a publicly writable directory. If those files contain
+sensitive data—credentials, session tokens, or personal information—the attacker can read them before the application removes them.</p>
+<h4>Data tampering</h4>
+<p>An attacker can replace or modify a file before the application reads it, causing the application to process attacker-controlled content. This can
+result in data corruption, unexpected behavior, or indirect code execution. The risk is significantly higher when the application runs with elevated
+privileges.</p>
+<h2>How to fix it in Java SE</h2>
+<p>Use the secure-by-design APIs from <code>java.io</code> and <code>java.nio</code> that create temporary files with unpredictable names and
+appropriate permissions.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+new File("/tmp/myfile.txt"); // Noncompliant
+Paths.get("/tmp/myfile.txt"); // Noncompliant
 
-java.io.File.createTempFile("prefix", "suffix"); // Sensitive, will be in the default temporary-file directory.
-java.nio.file.Files.createTempDirectory("prefix"); // Sensitive, will be in the default temporary-file directory.
+java.io.File.createTempFile("prefix", "suffix"); // Noncompliant: will be in the default temporary-file directory.
+java.nio.file.Files.createTempDirectory("prefix"); // Noncompliant: will be in the default temporary-file directory.
 </pre>
-<pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
 Map&lt;String, String&gt; env = System.getenv();
-env.get("TMP"); // Sensitive
+env.get("TMP"); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 new File("/myDirectory/myfile.txt");  // Compliant
 
 File.createTempFile("prefix", "suffix", new File("/mySecureDirectory"));  // Compliant
@@ -71,7 +66,15 @@ else {
   f.setExecutable(true, true);
 }
 </pre>
-<h2>See</h2>
+<pre data-diff-id="2" data-diff-type="compliant">
+File.createTempFile("prefix", "suffix", new File("/mySecureDirectory"));  // Compliant
+</pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li><a href="https://owasp.org/www-community/vulnerabilities/Insecure_Temporary_File">OWASP, Insecure Temporary File</a></li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A5_2017-Broken_Access_Control">Top 10 2017 Category A5 - Broken Access
@@ -80,7 +83,6 @@ else {
   Exposure</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/377">CWE-377 - Insecure Temporary File</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/379">CWE-379 - Creation of Temporary File in Directory with Incorrect Permissions</a></li>
-  <li><a href="https://owasp.org/www-community/vulnerabilities/Insecure_Temporary_File">OWASP, Insecure Temporary File</a></li>
   <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222567">Application Security and
   Development: V-222567</a> - The application must not be vulnerable to race conditions.</li>
 </ul>

@@ -1,40 +1,47 @@
 <p>JNDI supports the deserialization of objects from LDAP directories, which can lead to remote code execution.</p>
-<p>This rule raises an issue when an LDAP search query is executed with <code>SearchControls</code> configured to allow deserialization.</p>
-<h2>Ask Yourself Whether</h2>
+<h2>Why is this an issue?</h2>
+<p>JNDI can deserialize Java objects returned by an LDAP directory when <code>SearchControls</code> is configured with the
+<code>returningObjFlag</code> parameter set to <code>true</code>. If the LDAP directory is untrusted or has been compromised, an attacker can inject a
+malicious serialized object that executes arbitrary code on the server when deserialized.</p>
+<h3>What is the potential impact?</h3>
+<p>If successfully exploited, an attacker who can control the content of the LDAP directory can craft a malicious serialized object that, when
+deserialized, executes arbitrary code on the server. This can lead to full system compromise, including data exfiltration, malware installation, or
+lateral movement within the network.</p>
+<h2>How to fix it</h2>
+<p>Set the <code>returningObjFlag</code> parameter to <code>false</code> when constructing <code>SearchControls</code> to prevent JNDI from
+deserializing objects returned by the LDAP directory.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+DirContext ctx = new InitialDirContext();
+// ...
+ctx.search(query, filter,
+        new SearchControls(scope, countLimit, timeLimit, attributes,
+            true, // Noncompliant: allows deserialization
+            deref));
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+DirContext ctx = new InitialDirContext();
+// ...
+ctx.search(query, filter,
+        new SearchControls(scope, countLimit, timeLimit, attributes,
+            false,
+            deref));
+</pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
 <ul>
-  <li>The application connects to an untrusted LDAP directory.</li>
-  <li>User-controlled objects can be stored in the LDAP directory.</li>
+  <li><a href="https://www.blackhat.com/docs/us-16/materials/us-16-Munoz-A-Journey-From-JNDI-LDAP-Manipulation-To-RCE-wp.pdf">BlackHat USA 2016 - A
+  Journey From JNDI/LDAP Manipulation to RCE</a></li>
+  <li><a href="https://find-sec-bugs.github.io/bugs.htm#LDAP_ENTRY_POISONING">FindSecBugs - LDAP_ENTRY_POISONING</a></li>
 </ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>It is recommended to disable deserialization of LDAP objects.</p>
-<h2>Sensitive Code Example</h2>
-<pre>
-DirContext ctx = new InitialDirContext();
-// ...
-ctx.search(query, filter,
-        new SearchControls(scope, countLimit, timeLimit, attributes,
-            true, // Noncompliant; allows deserialization
-            deref));
-</pre>
-<h2>Compliant Solution</h2>
-<pre>
-DirContext ctx = new InitialDirContext();
-// ...
-ctx.search(query, filter,
-        new SearchControls(scope, countLimit, timeLimit, attributes,
-            false, // Compliant
-            deref));
-</pre>
-<h2>See</h2>
+<h3>Standards</h3>
 <ul>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/502">CWE-502 - Deserialization of Untrusted Data</a></li>
   <li>OWASP - <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">Top 10 2021 Category A8 - Software and Data Integrity
   Failures</a></li>
-  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/502">CWE-502 - Deserialization of Untrusted Data</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A8_2017-Insecure_Deserialization">Top 10 2017 Category A8 - Insecure
   Deserialization</a></li>
-  <li><a href="https://www.blackhat.com/docs/us-16/materials/us-16-Munoz-A-Journey-From-JNDI-LDAP-Manipulation-To-RCE-wp.pdf">BlackHat
-  presentation</a></li>
-  <li>Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#LDAP_ENTRY_POISONING">LDAP_ENTRY_POISONING</a></li>
 </ul>
 

@@ -1,28 +1,26 @@
+<p>This rule is deprecated, and will eventually be removed.</p>
 <p>Successful Zip Bomb attacks occur when an application expands untrusted archive files without controlling the size of the expanded data, which can
 lead to denial of service. A Zip bomb is usually a malicious archive file of a few kilobytes of compressed data but turned into gigabytes of
 uncompressed data. To achieve this extreme <a href="https://en.wikipedia.org/wiki/Data_compression_ratio">compression ratio</a>, attackers will
 compress irrelevant data (eg: a long string of repeated bytes).</p>
-<h2>Ask Yourself Whether</h2>
-<p>Archives to expand are untrusted and:</p>
-<ul>
-  <li>There is no validation of the number of entries in the archive.</li>
-  <li>There is no validation of the total size of the uncompressed data.</li>
-  <li>There is no validation of the ratio between the compressed and uncompressed archive entry.</li>
-</ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<ul>
-  <li>Define and control the ratio between compressed and uncompressed data, in general the data compression ratio for most of the legit archives is 1
-  to 3.</li>
-  <li>Define and control the threshold for maximum total size of the uncompressed data.</li>
-  <li>Count the number of file entries extracted from the archive and abort the extraction if their number is greater than a predefined threshold, in
-  particular it’s not recommended to recursively expand archives (an entry of an archive could be also an archive).</li>
-</ul>
-<h2>Sensitive Code Example</h2>
-<pre>
+<h2>Why is this an issue?</h2>
+<p>Expanding archive files without controlling the size of the extracted data can lead to denial of service. A Zip bomb is a malicious archive of a
+few kilobytes of compressed data that expands into gigabytes of uncompressed data by compressing highly repetitive content. Applications that fail to
+validate the number of entries, total uncompressed size, or compression ratio of an archive are vulnerable to this attack.</p>
+<h3>What is the potential impact?</h3>
+<h4>Denial of service</h4>
+<p>An attacker who can supply a malicious archive can exhaust the server’s disk space, memory, or CPU by triggering unbounded decompression. This can
+make the application completely unavailable to legitimate users and may require manual intervention to recover the affected system.</p>
+<h2>How to fix it in Java SE</h2>
+<p>Validate the number of entries, total uncompressed size, and compression ratio when extracting archive files. Do not rely on <a
+href="https://docs.oracle.com/javase/7/docs/api/java/util/zip/ZipEntry.html#getSize()">getSize</a> to retrieve the uncompressed size, as this value
+comes from archive headers that can be forged; calculate the actual size while reading.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 File f = new File("ZipBomb.zip");
 ZipFile zipFile = new ZipFile(f);
-Enumeration&lt;? extends ZipEntry&gt; entries = zipFile.entries(); // Sensitive
+Enumeration&lt;? extends ZipEntry&gt; entries = zipFile.entries(); // Noncompliant
 
 while(entries.hasMoreElements()) {
   ZipEntry ze = entries.nextElement();
@@ -30,19 +28,16 @@ while(entries.hasMoreElements()) {
   Files.copy(zipFile.getInputStream(ze), out.toPath(), StandardCopyOption.REPLACE_EXISTING);
 }
 </pre>
-<h2>Compliant Solution</h2>
-<p>Do not rely on <a href="https://docs.oracle.com/javase/7/docs/api/java/util/zip/ZipEntry.html#getSize()">getsize</a> to retrieve the size of an
-uncompressed entry because this method returns what is defined in the archive headers which can be forged by attackers, instead calculate the actual
-entry size when unzipping it:</p>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 File f = new File("ZipBomb.zip");
 ZipFile zipFile = new ZipFile(f);
 Enumeration&lt;? extends ZipEntry&gt; entries = zipFile.entries();
 
 int THRESHOLD_ENTRIES = 10000;
-int THRESHOLD_SIZE = 1000000000; // 1 GB
+long THRESHOLD_SIZE = 1000000000L; // 1 GB
 double THRESHOLD_RATIO = 10;
-int totalSizeArchive = 0;
+long totalSizeArchive = 0;
 int totalEntryArchive = 0;
 
 while(entries.hasMoreElements()) {
@@ -56,7 +51,7 @@ while(entries.hasMoreElements()) {
   byte[] buffer = new byte[2048];
   int totalSizeEntry = 0;
 
-  while((nBytes = in.read(buffer)) &gt; 0) { // Compliant
+  while((nBytes = in.read(buffer)) &gt; 0) {
       out.write(buffer, 0, nBytes);
       totalSizeEntry += nBytes;
       totalSizeArchive += nBytes;
@@ -79,7 +74,12 @@ while(entries.hasMoreElements()) {
   }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li><a href="https://www.bamsoftware.com/hacks/zipbomb/">bamsoftware.com</a> - A better Zip Bomb</li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a></li>
   <li>OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a></li>
@@ -88,8 +88,7 @@ while(entries.hasMoreElements()) {
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
   Misconfiguration</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/409">CWE-409 - Improper Handling of Highly Compressed Data (Data Amplification)</a></li>
-  <li><a href="https://wiki.sei.cmu.edu/confluence/display/java/IDS04-J.+Safely+extract+files+from+ZipInputStream">CERT, IDS04-J.</a> - Safely extract
-  files from ZipInputStream</li>
-  <li><a href="https://www.bamsoftware.com/hacks/zipbomb/">bamsoftware.com</a> - A better Zip Bomb</li>
+  <li>CERT - <a href="https://wiki.sei.cmu.edu/confluence/display/java/IDS04-J.+Safely+extract+files+from+ZipInputStream">CERT, IDS04-J.</a> - Safely
+  extract files from ZipInputStream</li>
 </ul>
 

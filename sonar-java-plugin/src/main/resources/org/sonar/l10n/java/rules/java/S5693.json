@@ -1,6 +1,6 @@
 {
-  "title": "Allowing requests with excessive content length is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "HTTP request content length should be limited",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "MEDIUM"
@@ -12,8 +12,10 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
+  "quickfix": "unknown",
   "tags": [
-    "cwe"
+    "cwe",
+    "former-hotspot"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-5693",
@@ -40,6 +42,5 @@
       "12.1.1",
       "12.1.3"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }
