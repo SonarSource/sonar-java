@@ -1,33 +1,21 @@
-<p>Using JavaScript interfaces in WebViews to expose Java objects is unsafe. Doing so allows JavaScript to invoke Java methods, potentially giving
-attackers access to data or sensitive app functionality. WebViews might include untrusted sources such as third-party iframes, making this
-functionality particularly risky. As JavaScript interfaces are passed to every frame in the WebView, those iframes are also able to access the exposed
-Java object.</p>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>The content in the WebView is fully trusted and secure.</li>
-  <li>Potentially untrusted iframes could be loaded in the WebView.</li>
-  <li>The JavaScript interface has to be exposed for the entire lifecycle of the WebView.</li>
-  <li>The exposed Java object might be called by untrusted sources.</li>
-</ul>
-<p>There is a risk if you answered yes to any of these questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<h3>Disable JavaScript</h3>
-<p>If it is possible to disable JavaScript in the WebView, this is the most secure option. By default, JavaScript is disabled in a WebView, so
-<code>webSettings.setJavaScriptEnabled(false)</code> does not need to be explicitly called. Of course, sometimes it is necessary to enable JavaScript,
-in which case the following recommendations should be considered.</p>
-<h3>Remove JavaScript interface when loading untrusted content</h3>
-<p>JavaScript interfaces can be removed at a later point. It is recommended to remove the JavaScript interface when it is no longer needed. If it is
-needed for a longer time, consider removing it before loading untrusted content. This can be done by calling
-<code>webView.removeJavascriptInterface("interfaceName")</code>.</p>
-<p>A good place to do this is inside the <code>shouldInterceptRequest</code> method of a <code>WebViewClient</code>, where you can check the URL or
-resource being loaded and remove the interface if the content is untrusted.</p>
-<h3>Alternative methods to implement native bridges</h3>
-<p>If a native bridge has to be added to the WebView, and it is impossible to remove it at a later point, consider using an alternative method that
-offers more control over the communication flow. <code>WebViewCompat.postWebMessage</code>/<code>WebViewCompat.addWebMessageListener</code> and
-<code>WebMessagePort.postMessage</code> offer more ways to validate incoming and outgoing messages, such as by being able to restrict the origins that
-can send messages to the JavaScript bridge.</p>
-<h2>Sensitive Code Example</h2>
-<pre>
+<p>WebView JavaScript interfaces expose native application methods to JavaScript code running in an embedded web view. If the web view loads untrusted
+content, any script — including attacker-controlled code — can call those native methods directly.</p>
+<h2>Why is this an issue?</h2>
+<p>Once a JavaScript interface is registered on a web view, the exposed native object is accessible to all JavaScript running in that web view,
+including scripts in untrusted third-party iframes. Web views may load content from sources that are not fully trusted, and JavaScript interfaces are
+propagated to every frame, not just the top-level page. An attacker who can inject or control JavaScript in any frame can therefore call the exposed
+native methods directly.</p>
+<h3>What is the potential impact?</h3>
+<h4>Unauthorized access to sensitive data or functionality</h4>
+<p>An attacker who controls JavaScript in the WebView — for example, through a malicious third-party iframe embedded in an otherwise legitimate page —
+can invoke exposed native methods without restriction. Depending on what the methods expose, this can lead to unauthorized access to sensitive user
+data, execution of privileged application functionality, or full compromise of the application’s security model.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<p>The following code is vulnerable because it registers a native interface that is accessible to all JavaScript running in the WebView, including
+JavaScript from untrusted sources such as third-party iframes.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class ExampleActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +23,7 @@ public class ExampleActivity extends AppCompatActivity {
 
         WebView webView = new WebView(this);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(new JavaScriptBridge(), "androidBridge"); // Sensitive
+        webView.addJavascriptInterface(new JavaScriptBridge(), "androidBridge"); // Noncompliant
     }
 
     public static class JavaScriptBridge {
@@ -46,40 +34,8 @@ public class ExampleActivity extends AppCompatActivity {
     }
 }
 </pre>
-<h2>Compliant Solution</h2>
-<p>The most secure option is to disable JavaScript entirely. {rule:java:S6362} further explains why it should not be enabled unless absolutely
-necessary.</p>
-<pre>
-public class ExampleActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        WebView webView = new WebView(this);
-        webView.getSettings().setJavaScriptEnabled(false);
-    }
-}
-</pre>
-<p>If possible, remove the JavaScript interface after it is no longer needed, or before loading any untrusted content.</p>
-<pre>
-public class ExampleActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        WebView webView = new WebView(this);
-        webView.getSettings().setJavaScriptEnabled(true);
-
-        webView.addJavascriptInterface(new JavaScriptBridge(), "androidBridge");
-
-        // Sometime later, before unsafe content is loaded, remove the JavaScript interface
-        webView.removeJavascriptInterface("androidBridge");
-    }
-}
-</pre>
-<p>If a JavaScript bridge must be used, consider using <code>WebViewCompat.addWebMessageListener</code> instead. This allows you to restrict the
-origins that can send messages to the JavaScript bridge.</p>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class ExampleActivity extends AppCompatActivity {
     private static final Set&lt;String&gt; ALLOWED_ORIGINS = Collections.singleton("https://example.com");
 
@@ -110,17 +66,36 @@ public class ExampleActivity extends AppCompatActivity {
     }
 }
 </pre>
-<h2>See</h2>
+<table>
+  <tbody>
+    <tr>
+      <td>Note</td>
+      <td>If the interface cannot be replaced immediately, it can be removed before loading untrusted content.</td>
+    </tr>
+  </tbody>
+</table>
+<pre>
+webView.addJavascriptInterface(new JavaScriptBridge(), "androidBridge");
+// ...
+// Remove the interface before loading untrusted content
+webView.removeJavascriptInterface("androidBridge");
+webView.loadUrl("https://untrusted.example.com");
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
   <li>Android Documentation - <a href="https://developer.android.com/privacy-and-security/risks/insecure-webview-native-bridges">Insecure WebView
   native bridges</a></li>
   <li>Android Documentation - <a href="https://developer.android.com/reference/androidx/webkit/WebViewCompat">WebViewCompat API reference</a></li>
+</ul>
+<h3>Standards</h3>
+<ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m4-insufficient-input-output-validation.html">Mobile Top 10 2024
   Category M4 - Insufficient Input/Output Validation</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m8-security-misconfiguration.html">Mobile Top 10 2024 Category M8 -
   Security Misconfiguration</a></li>
-  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/79">CWE-79 - Improper Neutralization of Input During Web Page Generation</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/749">CWE-749 - Exposed Dangerous Method or Function</a></li>
 </ul>
 <h3>Related rules</h3>
 <ul>

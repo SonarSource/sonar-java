@@ -1,6 +1,6 @@
 {
-  "title": "Enabling file access for WebViews is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "WebViews should not allow unrestricted file access",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "MEDIUM"
@@ -14,7 +14,8 @@
   },
   "tags": [
     "cwe",
-    "android"
+    "android",
+    "former-hotspot"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6363",

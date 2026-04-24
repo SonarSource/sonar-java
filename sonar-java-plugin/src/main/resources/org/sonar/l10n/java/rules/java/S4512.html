@@ -1,31 +1,18 @@
-<p>Setting JavaBean properties is security sensitive. Doing it with untrusted values has led in the past to the following vulnerability:</p>
-<ul>
-  <li><a href="https://www.cve.org/CVERecord?id=CVE-2014-0114">CVE-2014-0114</a></li>
-</ul>
-<p>JavaBeans can have their properties or nested properties set by population functions. An attacker can leverage this feature to push into the
-JavaBean malicious data that can compromise the software integrity. A typical attack will try to manipulate the ClassLoader and finally execute
-malicious code.</p>
-<p>This rule raises an issue when:</p>
-<ul>
-  <li>BeanUtils.populate(…​) or BeanUtilsBean.populate(…​) from <a href="http://commons.apache.org/proper/commons-beanutils/">Apache Commons
-  BeanUtils</a> are called</li>
-  <li>BeanUtils.setProperty(…​) or BeanUtilsBean.setProperty(…​) from <a href="http://commons.apache.org/proper/commons-beanutils/">Apache Commons
-  BeanUtils</a> are called</li>
-  <li>org.springframework.beans.BeanWrapper.setPropertyValue(…​) or org.springframework.beans.BeanWrapper.setPropertyValues(…​) from Spring is
-  called</li>
-</ul>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>the new property values might have been tampered with or provided by an untrusted source.</li>
-  <li>sensitive properties can be modified, for example: <code>class.classLoader</code></li>
-</ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>Sanitize all values used as JavaBean properties.</p>
-<p>Don’t set any sensitive properties. Keep full control over which properties are set. If the property names are provided by an unstrusted source,
-filter them with a whitelist.</p>
-<h2>Sensitive Code Example</h2>
-<pre>
+<p>Setting JavaBean properties from untrusted user input can allow an attacker to manipulate arbitrary object properties, including sensitive
+internals such as <code>class.classLoader</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>JavaBean property population functions such as <code>BeanUtils.populate()</code>, <code>BeanUtils.setProperty()</code>,
+<code>BeanUtilsBean.populate()</code>, and <code>BeanUtilsBean.setProperty()</code> from Apache Commons BeanUtils, and
+<code>BeanWrapper.setPropertyValue()</code> and <code>BeanWrapper.setPropertyValues()</code> from Spring, allow setting arbitrary bean properties by
+name. When the property names or values are derived from untrusted input without validation, an attacker can set sensitive properties — for example,
+<code>class.classLoader</code> — and use them to load and execute malicious code.</p>
+<h3>What is the potential impact?</h3>
+<p>If successfully exploited, this vulnerability can lead to remote code execution, full application compromise, data exfiltration, or lateral
+movement within the network.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 Company bean = new Company();
 HashMap map = new HashMap();
 Enumeration names = request.getParameterNames();
@@ -33,17 +20,35 @@ while (names.hasMoreElements()) {
     String name = (String) names.nextElement();
     map.put(name, request.getParameterValues(name));
 }
-BeanUtils.populate(bean, map); // Sensitive: "map" is populated with data coming from user input, here "request.getParameterNames()"
+BeanUtils.populate(bean, map); // Noncompliant: "map" is populated with data coming from user input, here "request.getParameterNames()"
 </pre>
-<h2>See</h2>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+Company bean = new Company();
+HashMap map = new HashMap();
+Set&lt;String&gt; allowedProperties = Set.of("name", "address"); // define allowed properties
+Enumeration names = request.getParameterNames();
+while (names.hasMoreElements()) {
+    String name = (String) names.nextElement();
+    if (allowedProperties.contains(name)) {
+        map.put(name, request.getParameterValues(name));
+    }
+}
+BeanUtils.populate(bean, map);
+</pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
 <ul>
+  <li><a href="https://www.cve.org/CVERecord?id=CVE-2014-0114">CVE-2014-0114</a></li>
+  <li><a href="https://find-sec-bugs.github.io/bugs.htm#BEAN_PROPERTY_INJECTION">FindSecBugs - BEAN_PROPERTY_INJECTION</a></li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/915">CWE-915 - Improperly Controlled Modification of Dynamically-Determined Object
+  Attributes</a></li>
   <li>OWASP - <a href="https://owasp.org/Top10/A03_2021-Injection/">Top 10 2021 Category A3 - Injection</a></li>
   <li>OWASP - <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">Top 10 2021 Category A8 - Software and Data Integrity
   Failures</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A1_2017-Injection">Top 10 2017 Category A1 - Injection</a></li>
-  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/915">CWE-915 - Improperly Controlled Modification of Dynamically-Determined Object
-  Attributes</a></li>
-  <li><a href="https://wiki.sei.cmu.edu/confluence/x/hDdGBQ">CERT, MSC61-J.</a> - Do not use insecure or weak cryptographic algorithms</li>
-  <li>Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#BEAN_PROPERTY_INJECTION">BEAN_PROPERTY_INJECTION</a></li>
 </ul>
 

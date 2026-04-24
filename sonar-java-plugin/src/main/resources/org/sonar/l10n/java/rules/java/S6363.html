@@ -1,40 +1,77 @@
-<p>Granting file access to WebViews, particularly through the <code>file://</code> scheme, introduces a risk of local file inclusion vulnerabilities.
-The severity of this risk depends heavily on the specific settings configured for the WebView. Overly permissive settings can allow malicious scripts
-to access a wide range of local files, potentially exposing sensitive data such as Personally Identifiable Information (PII) or private application
-data, leading to data breaches and other security compromises.</p>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>You open files that may be created or altered by external sources.</li>
-  <li>You open arbitrary URLs from external sources.</li>
-</ul>
-<p>There is a risk if you answered yes to any of these questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>Avoid opening <code>file://</code> URLs from external sources in WebView components. If your application accepts arbitrary URLs from external
-sources, do not enable this functionality.</p>
-<p>On Android, it is recommended to use <code>androidx.webkit.WebViewAssetLoader</code> to access files, including assets and resources, via a custom,
-controllable scheme.</p>
-<p>On iOS, it is recommended to use Bundles to access local files, keeping access limited a controlled subset using the
-<code>allowingReadAccessTo</code> parameter of the <code>loadFileURL</code> method. If <code>allowFileAccessFromFileURLs</code> and
-<code>allowUniversalAccessFromFileURLs</code> are not enabled, it is not possible to access files outside the intended directory. It is also possible
-to create a custom scheme to access local files, but this is more complex and might lead to unintended security issues.</p>
-<p>For enhanced security, ensure that the options to load <code>file://</code> URLs are explicitly set to false.</p>
-<h2>Sensitive Code Example</h2>
-<pre>
+<p>Granting file access to WebViews, particularly through the <code>file://</code> scheme, can expose sensitive local files to malicious scripts.</p>
+<h2>Why is this an issue?</h2>
+<p>WebViews can be configured to allow scripts to access local files through the <code>file://</code> scheme. When file access settings are enabled,
+JavaScript running within the WebView can read files from the device’s local file system, including sensitive application data.</p>
+<p>Settings such as <code>setAllowFileAccess</code>, <code>setAllowContentAccess</code>, <code>allowFileAccessFromFileURLs</code>, and
+<code>allowUniversalAccessFromFileURLs</code> control this behavior on Android.</p>
+<h3>What is the potential impact?</h3>
+<h4>Data exposure</h4>
+<p>If a malicious script is loaded in a WebView with file access enabled, it can read arbitrary files from the device’s local file system. This
+includes sensitive application data, user credentials, authentication tokens, and Personally Identifiable Information (PII) stored in local files.</p>
+<h4>Loss of confidentiality</h4>
+<p>Exposed data can be exfiltrated to attacker-controlled servers, leading to account compromise, identity theft, and data breaches.</p>
+<h2>How to fix it</h2>
+<p>Use <code>WebViewAssetLoader</code> to load local files instead of directly accessing them via <code>file://</code> URLs. This approach serves
+assets over a secure <code>https://appassets.androidplatform.net</code> URL, effectively isolating the WebView from the local file system.</p>
+<p>The file access settings are disabled by default in modern Android versions. To prevent possible security issues in
+<code>Build.VERSION_CODES.Q</code> and earlier, it is still recommended to explicitly set those values to false.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 WebView webView = (WebView) findViewById(R.id.webview);
-webView.getSettings().setAllowFileAccess(true); // Sensitive
-webView.getSettings().setAllowContentAccess(true); // Sensitive
+webView.setWebViewClient(new WebViewClient());
+webView.getSettings().setAllowFileAccess(true); // Noncompliant
+webView.getSettings().setAllowFileAccessFromFileURLs(true); // Noncompliant
+webView.getSettings().setAllowUniversalAccessFromFileURLs(true); // Noncompliant
+webView.getSettings().setAllowContentAccess(true); // Noncompliant
+webView.loadUrl("file:///android_asset/example.html");
 </pre>
-<h2>Compliant Solution</h2>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import android.net.Uri;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import androidx.annotation.RequiresApi;
+import androidx.webkit.WebViewAssetLoader;
 
 WebView webView = (WebView) findViewById(R.id.webview);
+WebViewAssetLoader assetLoader = new WebViewAssetLoader.Builder()
+    .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
+    .build();
+
+webView.setWebViewClient(new WebViewClient() {
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+        return assetLoader.shouldInterceptRequest(request.getUrl());
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+        return assetLoader.shouldInterceptRequest(Uri.parse(url));
+    }
+});
+
 webView.getSettings().setAllowFileAccess(false);
+webView.getSettings().setAllowFileAccessFromFileURLs(false);
+webView.getSettings().setAllowUniversalAccessFromFileURLs(false);
 webView.getSettings().setAllowContentAccess(false);
+
+webView.loadUrl("https://appassets.androidplatform.net/assets/example.html");
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Android Documentation - <a href="https://developer.android.com/privacy-and-security/risks/webview-unsafe-file-inclusion">WebViews - Unsafe File
+  Inclusion</a></li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
@@ -47,7 +84,5 @@ webView.getSettings().setAllowContentAccess(false);
   Requirements</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/79">CWE-79 - Improper Neutralization of Input During Web Page Generation ('Cross-site
   Scripting')</a></li>
-  <li>Android Documentation - <a href="https://developer.android.com/privacy-and-security/risks/webview-unsafe-file-inclusion">WebViews - Unsafe File
-  Inclusion</a></li>
 </ul>
 

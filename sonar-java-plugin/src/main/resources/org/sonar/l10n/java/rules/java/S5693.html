@@ -1,58 +1,56 @@
-<p>Rejecting requests with significant content length is a good practice to control the network traffic intensity and thus resource consumption in
-order to prevent DoS attacks.</p>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>size limits are not defined for the different resources of the web application.</li>
-  <li>the web application is not protected by <a href="https://en.wikipedia.org/wiki/Rate_limiting">rate limiting</a> features.</li>
-  <li>the web application infrastructure has limited resources.</li>
-</ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<ul>
-  <li>For most of the features of an application, it is recommended to limit the size of requests to:
-    <ul>
-      <li>lower or equal to 8mb for file uploads.</li>
-      <li>lower or equal to 2mb for other requests.</li>
-    </ul></li>
-</ul>
-<p>It is recommended to customize the rule with the limit values that correspond to the web application.</p>
-<h2>Sensitive Code Example</h2>
-<p>With default limit value of 8388608 (8MB).</p>
-<p>A 100 MB file is allowed to be uploaded:</p>
-<pre>
+<p>Enforcing a maximum HTTP request content length limits how much data the server must accept per request, which helps control resource use and
+reduces the risk of denial-of-service attacks.</p>
+<h2>Why is this an issue?</h2>
+<p>Accepting HTTP requests without an upper bound on their content length exposes the application to Denial of Service (DoS) attacks. An attacker can
+send arbitrarily large requests that exhaust server memory, disk space, or processing capacity before the application can reject them. This rule
+detects when no maximum content length is configured, or when the configured limit exceeds the recommended thresholds (8 MB for file uploads, 2 MB for
+other requests).</p>
+<h3>What is the potential impact?</h3>
+<h4>Denial of Service</h4>
+<p>An attacker who can send oversized HTTP requests can exhaust server resources—memory, CPU threads, or network bandwidth—causing the application to
+slow down or become completely unavailable. Even a single large upload can tie up a worker process and prevent other users from being served.</p>
+<h2>How to fix it in Spring</h2>
+<p>Limit the upload size by setting a maximum value on the multipart resolver or multipart configuration factory.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 @Bean(name = "multipartResolver")
 public CommonsMultipartResolver multipartResolver() {
   CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-  multipartResolver.setMaxUploadSize(104857600); // Sensitive (100MB)
+  multipartResolver.setMaxUploadSize(104857600); // Noncompliant
   return multipartResolver;
 }
 
 @Bean(name = "multipartResolver")
 public CommonsMultipartResolver multipartResolver() {
-  CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(); // Sensitive, by default if maxUploadSize property is not defined, there is no limit and thus it's insecure
+  CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(); // Noncompliant
   return multipartResolver;
 }
 
 @Bean
 public MultipartConfigElement multipartConfigElement() {
-  MultipartConfigFactory factory = new MultipartConfigFactory(); // Sensitive, no limit by default
+  MultipartConfigFactory factory = new MultipartConfigFactory(); // Noncompliant
   return factory.createMultipartConfig();
 }
 </pre>
-<h2>Compliant Solution</h2>
-<p>File upload size is limited to 8 MB:</p>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 @Bean(name = "multipartResolver")
 public CommonsMultipartResolver multipartResolver() {
-  multipartResolver.setMaxUploadSize(8388608); // Compliant (8 MB)
+  CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+  multipartResolver.setMaxUploadSize(8388608);
   return multipartResolver;
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html">OWASP Cheat Sheet</a> - Denial of Service Cheat
+  Sheet</li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a></li>
-  <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html">Owasp Cheat Sheet</a> - Owasp Denial of Service
-  Cheat Sheet</li>
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
   Misconfiguration</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/770">CWE-770 - Allocation of Resources Without Limits or Throttling</a></li>

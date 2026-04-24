@@ -1,6 +1,6 @@
 {
-  "title": "Authorizing non-authenticated users to use keys in the Android KeyStore is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Android KeyStore keys should require user authentication",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "MEDIUM"
@@ -14,7 +14,8 @@
   },
   "tags": [
     "cwe",
-    "android"
+    "android",
+    "former-hotspot"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6288",

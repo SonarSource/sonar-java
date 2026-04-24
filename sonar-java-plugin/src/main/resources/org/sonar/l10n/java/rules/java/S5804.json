@@ -1,6 +1,6 @@
 {
-  "title": "Allowing user enumeration is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Authentication mechanisms should not permit user enumeration.",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "MEDIUM"
@@ -12,9 +12,11 @@
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
+  "quickfix": "unknown",
   "tags": [
     "cwe",
-    "spring"
+    "spring",
+    "former-hotspot"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-5804",
@@ -22,7 +24,8 @@
   "scope": "Main",
   "securityStandards": {
     "CWE": [
-      200
+      200,
+      203
     ],
     "OWASP": [
       "A2"
@@ -41,6 +44,5 @@
       "7.3.3",
       "8.3.4"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }
