@@ -52,10 +52,11 @@ public class StreamForeachCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkUnnecessaryForEach(MethodInvocationTree mitForEach) {
-    if (mitForEach.methodSelect() instanceof MemberSelectExpressionTree mset
-      && mset.expression() instanceof MethodInvocationTree mitStream
-      && STREAM_METHOD.matches(mitStream)) {
-      reportIssue(mitStream, "Replace unnecessary call to .stream().forEach() by .forEach()");
+    if (mitForEach.methodSelect() instanceof MemberSelectExpressionTree msetForEach
+      && msetForEach.expression() instanceof MethodInvocationTree mitStream
+      && STREAM_METHOD.matches(mitStream)
+      && mitStream.methodSelect() instanceof MemberSelectExpressionTree msetStream) {
+      reportIssue(msetStream.identifier(), msetForEach.identifier(), "Replace unnecessary call to .stream().forEach() by .forEach()");
     }
   }
 }

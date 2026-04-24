@@ -27,6 +27,15 @@ class StreamForeachCheckTest {
     StreamForeachCheck check = new StreamForeachCheck();
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/StreamForeachCheck.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
+
+  @Test
+  void testWithoutSemantic() {
+    StreamForeachCheck check = new StreamForeachCheck();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StreamForeachCheck.java"))
       .withoutSemantic()
       .withCheck(check)
       .verifyIssues();
