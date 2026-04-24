@@ -20,7 +20,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -31,7 +30,7 @@ public class StreamForeachCheck extends IssuableSubscriptionVisitor {
   private static final MethodMatchers STREAM_METHOD = MethodMatchers.create()
     .ofSubTypes("java.util.Collection")
     .names("stream")
-    .withAnyParameters()
+    .addWithoutParametersMatcher()
     .build();
 
   private static final MethodMatchers STREAM_FOREACH_METHOD = MethodMatchers.create()
@@ -47,19 +46,16 @@ public class StreamForeachCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    MethodInvocationTree mit = (MethodInvocationTree) tree;
-    if (STREAM_FOREACH_METHOD.matches(mit)) {
+    if (tree instanceof MethodInvocationTree mit && STREAM_FOREACH_METHOD.matches(mit)) {
       checkUnnecessaryForEach(mit);
     }
   }
 
-  private void checkUnnecessaryForEach(MethodInvocationTree mit) {
-    ExpressionTree methodSelect = mit.methodSelect();
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      ExpressionTree receiver = ((MemberSelectExpressionTree) methodSelect).expression();
-      if (receiver.is(Tree.Kind.METHOD_INVOCATION) && STREAM_METHOD.matches((MethodInvocationTree) receiver)) {
-        reportIssue(mit, "Replace unnecessary call to .stream().forEach() by .forEach()");
-      }
+  private void checkUnnecessaryForEach(MethodInvocationTree mitForEach) {
+    if (mitForEach.methodSelect() instanceof MemberSelectExpressionTree mset
+      && mset.expression() instanceof MethodInvocationTree mitStream
+      && STREAM_METHOD.matches(mitStream)) {
+      reportIssue(mitStream, "Replace unnecessary call to .stream().forEach() by .forEach()");
     }
   }
 }
