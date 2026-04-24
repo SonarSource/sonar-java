@@ -1,27 +1,37 @@
-<p>The use of a non-standard algorithm is dangerous because a determined attacker may be able to break the algorithm and compromise whatever data has
-been protected. Standard algorithms like <code>SHA-256</code>, <code>SHA-384</code>, <code>SHA-512</code>, …​ should be used instead.</p>
-<p>This rule tracks creation of <code>java.security.MessageDigest</code> subclasses.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<ul>
-  <li>Use a standard algorithm instead of creating a custom one.</li>
-</ul>
-<h2>Sensitive Code Example</h2>
-<pre>
+<p>Cryptographic operations should use proven, standard algorithms rather than custom implementations.</p>
+<h2>Why is this an issue?</h2>
+<p>Non-standard cryptographic algorithms are those that have not been publicly vetted by the security community or that implement cryptographic
+primitives in a custom way. Creating a custom cryptographic algorithm by subclassing standard cryptographic base classes bypasses the rigorous testing
+and peer review that established algorithms undergo. Custom implementations are likely to contain subtle flaws that could be exploited to break the
+protection the algorithm is supposed to provide.</p>
+<h3>What is the potential impact?</h3>
+<h4>Data compromise</h4>
+<p>When an attacker discovers a flaw in a custom cryptographic algorithm, they may be able to decrypt any data protected by it. Depending on the
+application, this could expose passwords, personal data, financial records, or other sensitive information.</p>
+<h2>How to fix it</h2>
+<p>This rule detects custom implementations of <code>java.security.MessageDigest</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class MyCryptographicAlgorithm extends MessageDigest {
   ...
 }
 </pre>
-<h2>Compliant Solution</h2>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 MessageDigest digest = MessageDigest.getInstance("SHA-256");
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Derived from FindSecBugs rule <a href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#CUSTOM_MESSAGE_DIGEST">MessageDigest is
+  Custom</a></li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
   Exposure</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/327">CWE-327 - Use of a Broken or Risky Cryptographic Algorithm</a></li>
-  <li>Derived from FindSecBugs rule <a href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#CUSTOM_MESSAGE_DIGEST">MessageDigest is
-  Custom</a></li>
 </ul>
 

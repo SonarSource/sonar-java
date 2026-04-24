@@ -1,38 +1,47 @@
-<p>In AWS, long-term access keys will be valid until you manually revoke them. This makes them highly sensitive as any exposure can have serious
-consequences and should be used with care.</p>
-<p>This rule will trigger when encountering an instantiation of <code>com.amazonaws.auth.BasicAWSCredentials</code>.</p>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>The access key is used directly in an application or AWS CLI script running on an Amazon EC2 instance.</li>
-  <li>Cross-account access is needed.</li>
-  <li>The access keys need to be embedded within a mobile application.</li>
-  <li>Existing identity providers (SAML 2.0, on-premises identity store) already exists.</li>
-</ul>
-<p>For more information, see <a href="https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles">Use IAM roles
-instead of long-term access keys</a>.</p>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>Consider using IAM roles or other features of the AWS Security Token Service that provide temporary credentials, limiting the risks.</p>
-<h2>Sensitive Code Example</h2>
-<pre>
+<p>In AWS, long-term access keys provide persistent programmatic access to AWS services but carry a higher risk than temporary credentials because
+they do not expire automatically.</p>
+<h2>Why is this an issue?</h2>
+<p>This rule detects uses of <code>com.amazonaws.auth.BasicAWSCredentials</code>, a class that creates long-term credential objects. Unlike temporary
+credentials, long-term access keys remain valid indefinitely until manually revoked, making them a persistent risk if exposed. Using long-term keys in
+application code increases the risk of accidental exposure and makes credential rotation harder to enforce.</p>
+<h3>What is the potential impact?</h3>
+<p>If a long-term access key is exposed through source code, configuration files, or logs, an attacker gains persistent access to AWS resources until
+the key is manually revoked. This can lead to unauthorized access to sensitive data, privilege escalation, or significant financial costs from
+resource abuse.</p>
+<h2>How to fix it</h2>
+<p>The preferred approach is to avoid static credentials entirely by using IAM roles, which provide short-lived credentials automatically. On EC2,
+ECS, or Lambda, assign an IAM role to the instance or task — the AWS SDK picks up the credentials without any code changes via the default credential
+provider chain.</p>
+<p>Where temporary credentials must be obtained programmatically, use <a href="https://docs.aws.amazon.com/STS/latest/APIReference/Welcome.html">AWS
+STS</a> to request short-lived session credentials.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 // ...
 
-AWSCredentials awsCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
+AWSCredentials awsCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
-<p>Example for AWS STS (see <a href="https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/prog-services-sts.html">Getting Temporary Credentials
-with AWS STS</a>).</p>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+// session_creds obtained via an STS AssumeRole call
 BasicSessionCredentials sessionCredentials = new BasicSessionCredentials(
    session_creds.getAccessKeyId(),
    session_creds.getSecretAccessKey(),
    session_creds.getSessionToken());
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li><a href="https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html">Best practices for managing AWS access keys</a></li>
-  <li><a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html">Managing access keys for IAM users</a></li>
+  <li><a href="https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html">AWS - Best practices for managing AWS access
+  keys</a></li>
+  <li><a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html">AWS - Managing access keys for IAM users</a></li>
+  <li><a href="https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/prog-services-sts.html">AWS - Getting Temporary Credentials with AWS
+  STS</a></li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/798">CWE-798 - Use of Hard-coded Credentials</a></li>
 </ul>
 

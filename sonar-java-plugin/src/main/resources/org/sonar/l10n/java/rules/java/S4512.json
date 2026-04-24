@@ -1,6 +1,6 @@
 {
-  "title": "Setting JavaBean properties is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "JavaBean properties should not be populated from untrusted input",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "HIGH"
@@ -14,7 +14,8 @@
   },
   "tags": [
     "cwe",
-    "cert"
+    "cert",
+    "former-hotspot"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4512",

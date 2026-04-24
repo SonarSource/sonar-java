@@ -1,6 +1,6 @@
 {
-  "title": "Accessing Android external storage is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Sensitive data should not be stored in Android external storage",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "HIGH"
@@ -8,9 +8,14 @@
     "attribute": "COMPLETE"
   },
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1h"
+  },
   "tags": [
     "cwe",
-    "android"
+    "android",
+    "former-hotspot"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5324",

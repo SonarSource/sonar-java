@@ -1,6 +1,6 @@
 {
-  "title": "Using long-term access keys is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Long-term AWS access keys should not be used",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "MEDIUM"
@@ -13,7 +13,8 @@
     "constantCost": "1h"
   },
   "tags": [
-    "aws"
+    "aws",
+    "former-hotspot"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6263",

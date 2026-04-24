@@ -1,22 +1,24 @@
 {
-  "title": "Expanding archive files without controlling resource consumption is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Expanding archive files should not be done without controlling resource consumption",
+  "type": "CODE_SMELL",
+  "quickfix": "unknown",
   "code": {
     "impacts": {
-      "SECURITY": "HIGH"
+      "RELIABILITY": "MEDIUM"
     },
     "attribute": "COMPLETE"
   },
-  "status": "ready",
+  "status": "deprecated",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
   "tags": [
     "cwe",
-    "cert"
+    "cert",
+    "former-hotspot"
   ],
-  "defaultSeverity": "Critical",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-5042",
   "sqKey": "S5042",
   "scope": "Main",
@@ -38,6 +40,5 @@
     "ASVS 4.0": [
       "12.1.2"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }
