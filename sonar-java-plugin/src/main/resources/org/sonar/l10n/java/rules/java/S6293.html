@@ -1,35 +1,37 @@
-<p>Android comes with Android KeyStore, a secure container for storing key materials. It’s possible to define certain keys to be unlocked when users
-authenticate using biometric credentials. This way, even if the application process is compromised, the attacker cannot access keys, as presence of
-the authorized user is required.</p>
-<p>These keys can be used, to encrypt, sign or create a message authentication code (MAC) as proof that the authentication result has not been
-tampered with. This protection defeats the scenario where an attacker with physical access to the device would try to hook into the application
-process and call the <code>onAuthenticationSucceeded</code> method directly. Therefore he would be unable to extract the sensitive data or to perform
-the critical operations protected by the biometric authentication.</p>
-<h2>Ask Yourself Whether</h2>
-<p>The application contains:</p>
-<ul>
-  <li>Cryptographic keys / sensitive information that need to be protected using biometric authentication.</li>
-</ul>
-<p>There is a risk if you answered yes to this question.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>It’s recommended to tie the biometric authentication to a cryptographic operation by using a <code>CryptoObject</code> during authentication.</p>
-<h2>Sensitive Code Example</h2>
-<p>A <code>CryptoObject</code> is not used during authentication:</p>
-<pre>
+<p>Biometric authentication on Android should be tied to a cryptographic operation to prevent attackers from bypassing the authentication result.</p>
+<h2>Why is this an issue?</h2>
+<p>Android KeyStore allows defining keys that require biometric authentication before use. When <code>BiometricPrompt.authenticate</code> is called
+without a <code>CryptoObject</code>, the authentication result can be tampered with. An attacker with physical access to the device could hook into
+the application process and call <code>onAuthenticationSucceeded</code> directly, bypassing the biometric check entirely.</p>
+<h3>What is the potential impact?</h3>
+<h4>Authentication bypass</h4>
+<p>If biometric authentication is not tied to a cryptographic operation, an attacker with physical access to the device can bypass the authentication.
+This could allow unauthorized access to sensitive data or critical operations that the biometric check was meant to protect.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<p>A <code>CryptoObject</code> should be passed to the <code>authenticate</code> method to bind the biometric authentication to a cryptographic
+operation.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 // ...
 BiometricPrompt biometricPrompt = new BiometricPrompt(activity, executor, callback);
 // ...
 biometricPrompt.authenticate(promptInfo); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
-<p>A <code>CryptoObject</code> is used during authentication:</p>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 // ...
 BiometricPrompt biometricPrompt = new BiometricPrompt(activity, executor, callback);
 // ...
-biometricPrompt.authenticate(promptInfo, new BiometricPrompt.CryptoObject(cipher)); // Compliant
+biometricPrompt.authenticate(promptInfo, new BiometricPrompt.CryptoObject(cipher));
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://developer.android.com/training/sign-in/biometric-auth">developer.android.com</a> - Use a cryptographic solution that depends on
+  authentication</li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/">Top 10 2021 Category A7 - Identification and
   Authentication Failures</a></li>
@@ -39,8 +41,6 @@ biometricPrompt.authenticate(promptInfo, new BiometricPrompt.CryptoObject(cipher
   - Insecure Authentication/Authorization</a></li>
   <li>OWASP - <a href="https://mas.owasp.org/checklists/MASVS-AUTH/">Mobile AppSec Verification Standard - Authentication and Session Management
   Requirements</a></li>
-  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/287">CWE-287 - Improper Authentication</a></li>
-  <li><a href="https://developer.android.com/training/sign-in/biometric-auth">developer.android.com</a> - Use a cryptographic solution that depends on
-  authentication</li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/1390">CWE-1390 - Weak Authentication</a></li>
 </ul>
 

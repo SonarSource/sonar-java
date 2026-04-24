@@ -1,6 +1,11 @@
 {
-  "title": "Using unsafe Jackson deserialization configuration is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Jackson deserialization should not use unsafe configuration",
+  "type": "VULNERABILITY",
+  "quickfix": "unknown",
+  "tags": [
+    "cwe",
+    "former-hotspot"
+  ],
   "code": {
     "impacts": {
       "SECURITY": "HIGH"
@@ -12,9 +17,6 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "tags": [
-    "cwe"
-  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-4544",
   "sqKey": "S4544",
@@ -40,6 +42,5 @@
       "5.5.1",
       "5.5.3"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }

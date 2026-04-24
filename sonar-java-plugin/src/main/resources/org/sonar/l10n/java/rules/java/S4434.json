@@ -1,6 +1,6 @@
 {
-  "title": "Allowing deserialization of LDAP objects is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Deserialization of Java objects from LDAP should be disabled",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "MEDIUM"
@@ -13,7 +13,8 @@
     "constantCost": "2min"
   },
   "tags": [
-    "cwe"
+    "cwe",
+    "former-hotspot"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-4434",

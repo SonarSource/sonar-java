@@ -1,11 +1,11 @@
 {
-  "title": "Disclosing fingerprints from web application technologies is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Web application technologies should not disclose version information",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "LOW"
     },
-    "attribute": "COMPLETE"
+    "attribute": "TRUSTWORTHY"
   },
   "status": "ready",
   "remediation": {
@@ -13,12 +13,14 @@
     "constantCost": "5min"
   },
   "tags": [
-    "cwe"
+    "cwe",
+    "former-hotspot"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-5689",
   "sqKey": "S5689",
   "scope": "Main",
+  "quickfix": "unknown",
   "securityStandards": {
     "CWE": [
       200
@@ -34,6 +36,5 @@
       "7.3.3",
       "8.3.4"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }

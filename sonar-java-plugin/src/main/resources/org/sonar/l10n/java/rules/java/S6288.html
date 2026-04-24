@@ -1,44 +1,55 @@
-<p>Android KeyStore is a secure container for storing key materials, in particular it prevents key materials extraction, i.e. when the application
-process is compromised, the attacker cannot extract keys but may still be able to use them. It’s possible to enable an Android security feature, user
-authentication, to restrict usage of keys to only authenticated users. The lock screen has to be unlocked with defined credentials
-(pattern/PIN/password, biometric).</p>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>The application requires prohibiting the use of keys in case of compromise of the application process.</li>
-  <li>The key material is used in the context of a highly sensitive application like a e-banking mobile app.</li>
-</ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>It’s recommended to enable user authentication (by setting <code>setUserAuthenticationRequired</code> to <code>true</code> during key generation)
-to use keys for a limited duration of time (by setting appropriate values to <code>setUserAuthenticationValidityDurationSeconds</code>), after which
-the user must re-authenticate.</p>
-<h2>Sensitive Code Example</h2>
-<p>Any user can use the key:</p>
-<pre>
+<p>Android KeyStore is a secure container for storing cryptographic key material. It prevents key extraction: even if the application process is
+compromised, an attacker cannot extract keys from the KeyStore, though they may still use them to perform cryptographic operations. Enabling user
+authentication restricts key usage to authenticated users only, requiring the lock screen to be unlocked with a defined credential (PIN, password,
+pattern, or biometric).</p>
+<h2>Why is this an issue?</h2>
+<p>When cryptographic keys are configured without requiring user authentication, any code running within the application process can use those keys
+freely. On Android, this happens when a <code>KeyGenParameterSpec.Builder</code> is built without calling
+<code>setUserAuthenticationRequired(true)</code>.</p>
+<h3>What is the potential impact?</h3>
+<p>If the application process is compromised, an attacker can use unprotected keys to decrypt sensitive data, forge digital signatures, or impersonate
+the user without their knowledge. Although the key material itself cannot be extracted from the secure storage, it can still be used to perform
+cryptographic operations on behalf of the attacker.</p>
+<h2>How to fix it</h2>
+<p>Call <code>setUserAuthenticationRequired(true)</code> on the <code>KeyGenParameterSpec.Builder</code> to restrict key use to authenticated users
+only. The lock screen must be unlocked with a defined credential (PIN, password, pattern, or biometric) before the key can be used. Use
+<code>setUserAuthenticationParameters</code> to configure the authentication timeout and the accepted credential types; after the timeout expires, the
+user must re-authenticate.</p>
+<h3>Code examples</h3>
+<p>The following code creates a cryptographic key without requiring user authentication, allowing any code running in the application process to use
+it.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
 
-KeyGenParameterSpec builder = new KeyGenParameterSpec.Builder("test_secret_key_noncompliant", KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT) // Noncompliant
+KeyGenParameterSpec builder = new KeyGenParameterSpec.Builder("example-key", KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT) // Noncompliant
     .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
     .build();
 
 keyGenerator.init(builder);
 </pre>
-<h2>Compliant Solution</h2>
-<p>The use of the key is limited to authenticated users (for a duration of time defined to 60 seconds):</p>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
 
-KeyGenParameterSpec builder = new KeyGenParameterSpec.Builder("test_secret_key", KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+KeyGenParameterSpec builder = new KeyGenParameterSpec.Builder("example-key", KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
     .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
     .setUserAuthenticationRequired(true)
-    .setUserAuthenticationParameters (60, KeyProperties.AUTH_DEVICE_CREDENTIAL)
+    .setUserAuthenticationParameters (60, KeyProperties.AUTH_DEVICE_CREDENTIAL) // 60 seconds
     .build();
 
-keyGenerator.init(builder)
+keyGenerator.init(builder);
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Android Developers - <a href="https://developer.android.com/privacy-and-security/keystore">Android keystore system</a></li>
+  <li>Android Developers - <a href="https://developer.android.com/privacy-and-security/keystore#UserAuthentication">Require user authentication for
+  key use</a></li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a></li>
   <li>OWASP - <a href="https://mas.owasp.org/checklists/MASVS-STORAGE/">Mobile AppSec Verification Standard - Authentication and Session Management
@@ -50,8 +61,5 @@ keyGenerator.init(builder)
   <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m10-insufficient-cryptography">Mobile Top 10 2024 Category M10 -
   Insufficient Cryptography</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/522">CWE-522 - Insufficiently Protected Credentials</a></li>
-  <li><a href="https://developer.android.com/privacy-and-security/keystore">developer.android.com</a> - Android keystore system</li>
-  <li><a href="https://developer.android.com/privacy-and-security/keystore#UserAuthentication">developer.android.com</a> - Require user authentication
-  for key use</li>
 </ul>
 

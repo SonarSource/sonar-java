@@ -1,6 +1,6 @@
 {
-  "title": "Using biometric authentication without a cryptographic solution is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Biometric authentication should be cryptographically bound",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "MEDIUM"
@@ -14,7 +14,8 @@
   },
   "tags": [
     "cwe",
-    "android"
+    "android",
+    "former-hotspot"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6293",
@@ -22,7 +23,7 @@
   "scope": "Main",
   "securityStandards": {
     "CWE": [
-      287
+      1390
     ],
     "OWASP Mobile": [
       "M4"

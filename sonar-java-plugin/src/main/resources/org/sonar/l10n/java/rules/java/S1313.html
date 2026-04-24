@@ -1,42 +1,23 @@
-<p>Hardcoding IP addresses is security-sensitive. It has led in the past to the following vulnerabilities:</p>
+<p>IP addresses hardcoded in source code couple the application to a specific infrastructure configuration. Today’s services have an ever-changing
+architecture due to their scaling and redundancy needs. When an IP address changes, every hardcoded occurrence must be found and updated, which has an
+impact on development, delivery, and deployment:</p>
 <ul>
-  <li><a href="https://www.cve.org/CVERecord?id=CVE-2006-5901">CVE-2006-5901</a></li>
-  <li><a href="https://www.cve.org/CVERecord?id=CVE-2005-3725">CVE-2005-3725</a></li>
+  <li>Developers must fix the code every time the address changes, instead of having an operations team update a configuration file.</li>
+  <li>It leads to using the same address in every environment (dev, staging, QA, production).</li>
 </ul>
-<p>Today’s services have an ever-changing architecture due to their scaling and redundancy needs. It is a mistake to think that a service will always
-have the same IP address. When it does change, the hardcoded IP will have to be modified too. This will have an impact on the product development,
-delivery, and deployment:</p>
-<ul>
-  <li>The developers will have to do a rapid fix every time this happens, instead of having an operation team change a configuration file.</li>
-  <li>It misleads to use the same address in every environment (dev, sys, qa, prod).</li>
-</ul>
-<p>Last but not least it has an effect on application security. Attackers might be able to decompile the code and thereby discover a potentially
-sensitive address. They can perform a Denial of Service attack on the service, try to get access to the system, or try to spoof the IP address to
-bypass security checks. Such attacks can always be possible, but in the case of a hardcoded IP address solving the issue will take more time, which
-will increase an attack’s impact.</p>
-<h2>Ask Yourself Whether</h2>
-<p>The disclosed IP address is sensitive, e.g.:</p>
-<ul>
-  <li>Can give information to an attacker about the network topology.</li>
-  <li>It’s a personal (assigned to an identifiable person) IP address.</li>
-</ul>
-<p>There is a risk if you answered yes to any of these questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>Don’t hard-code the IP address in the source code, instead make it configurable with environment variables, configuration files, or a similar
-approach. Alternatively, if confidentially is not required a domain name can be used since it allows to change the destination quickly without having
-to rebuild the software.</p>
-<h2>Sensitive Code Example</h2>
-<pre>
-String ip = "192.168.12.42"; // Sensitive
-Socket socket = new Socket(ip, 6667);
-</pre>
-<h2>Compliant Solution</h2>
-<pre>
-String ip = System.getenv("IP_ADDRESS"); // Compliant
-Socket socket = new Socket(ip, 6667);
-</pre>
-<h2>Exceptions</h2>
-<p>No issue is reported for the following cases because they are not considered sensitive:</p>
+<h2>Why is this an issue?</h2>
+<p>Hardcoding an IP address embeds infrastructure configuration directly into the application. This means any change to the network environment—such
+as moving a service to a different host or scaling horizontally—requires a code modification and a full redeployment. Unlike a domain name, a
+hardcoded address also makes it harder to use different values across environments such as development, staging, and production.</p>
+<h3>What is the potential impact?</h3>
+<h4>Environment coupling</h4>
+<p>A hardcoded IP address is the same in every environment the application runs in. This makes it difficult to point development, staging, and
+production builds at different infrastructure without modifying the source code.</p>
+<h4>Increased deployment friction</h4>
+<p>Any change to the target host—such as migrating a service, scaling out, or rotating infrastructure—requires a code change and a full redeployment
+cycle. This prevents operational teams from making infrastructure adjustments independently and slows down incident response.</p>
+<h3>Exceptions</h3>
+<p>No issue is reported for the following well-known, special-purpose addresses, as they do not represent configurable infrastructure endpoints:</p>
 <ul>
   <li>Loopback addresses 127.0.0.0/8 in CIDR notation (from 127.0.0.0 to 127.255.255.255)</li>
   <li>Broadcast address 255.255.255.255</li>
@@ -48,11 +29,24 @@ Socket socket = new Socket(ip, 6667);
   <li>Addresses in the range 2001:db8::/32, reserved for documentation purposes by <a href="https://datatracker.ietf.org/doc/html/rfc3849">RFC
   3849</a></li>
 </ul>
-<h2>See</h2>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<p>The following code contains a hardcoded IP address instead of reading it from configuration or environment variables.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+String ip = "192.168.12.42"; // Noncompliant
+Socket socket = new Socket(ip, 6667);
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+String ip = System.getenv("IP_ADDRESS");
+Socket socket = new Socket(ip, 6667);
+</pre>
+<h2>Resources</h2>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
   Exposure</a></li>
-  <li><a href="https://wiki.sei.cmu.edu/confluence/x/OjdGBQ">CERT, MSC03-J.</a> - Never hard code sensitive information</li>
 </ul>
 

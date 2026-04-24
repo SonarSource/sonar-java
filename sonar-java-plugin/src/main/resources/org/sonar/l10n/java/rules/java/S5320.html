@@ -1,21 +1,22 @@
-<p>In Android applications, broadcasting intents is security-sensitive. For example, it has led in the past to the following vulnerability:</p>
-<ul>
-  <li><a href="https://www.cve.org/CVERecord?id=CVE-2018-9489">CVE-2018-9489</a></li>
-</ul>
-<p>By default, broadcasted intents are visible to every application, exposing all sensitive information they contain.</p>
-<p>This rule raises an issue when an intent is broadcasted without specifying any "receiver permission".</p>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>The intent contains sensitive information.</li>
-  <li>Intent reception is not restricted.</li>
-</ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>Restrict the access to broadcasted intents. See <a
-href="https://developer.android.com/guide/components/broadcasts.html#restricting_broadcasts_with_permissions">Android documentation</a> for more
-information.</p>
-<h2>Sensitive Code Example</h2>
-<pre>
+<p>Broadcasted intents in Android are visible to every application by default, which can expose sensitive information.</p>
+<h2>Why is this an issue?</h2>
+<p>By default, broadcasted intents are visible to every application on the device, exposing all sensitive information that intents contain. This rule
+raises an issue when an intent is broadcasted without specifying a receiver permission.</p>
+<p>Methods like <code>sendBroadcast</code>, <code>sendBroadcastAsUser</code>, <code>sendOrderedBroadcast</code>, and
+<code>sendOrderedBroadcastAsUser</code> that are called without a receiver permission parameter or with <code>null</code> for the permission allow any
+application to receive the broadcast.</p>
+<h3>What is the potential impact?</h3>
+<h4>Information disclosure</h4>
+<p>If an intent contains sensitive data such as user credentials, personal information, or internal application state, any malicious application
+installed on the same device can intercept and read this data.</p>
+<h4>Privilege escalation</h4>
+<p>A malicious application could listen for broadcasted intents to trigger unauthorized actions or manipulate application behavior, potentially
+gaining access to functionality that should be restricted.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<p>The following code broadcasts an intent without specifying a receiver permission, making it accessible to all applications on the device.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,20 +32,20 @@ public class MyIntentBroadcast {
                           BroadcastReceiver resultReceiver, Handler scheduler, int initialCode,
                           String initialData, Bundle initialExtras,
                           String broadcastPermission) {
-        context.sendBroadcast(intent); // Sensitive
-        context.sendBroadcastAsUser(intent, user); // Sensitive
+        context.sendBroadcast(intent); // Noncompliant
+        context.sendBroadcastAsUser(intent, user); // Noncompliant
 
         // Broadcasting intent with "null" for receiverPermission
-        context.sendBroadcast(intent, null); // Sensitive
-        context.sendBroadcastAsUser(intent, user, null); // Sensitive
-        context.sendOrderedBroadcast(intent, null); // Sensitive
+        context.sendBroadcast(intent, null); // Noncompliant
+        context.sendBroadcastAsUser(intent, user, null); // Noncompliant
+        context.sendOrderedBroadcast(intent, null); // Noncompliant
         context.sendOrderedBroadcastAsUser(intent, user, null, resultReceiver,
-                scheduler, initialCode, initialData, initialExtras); // Sensitive
+                scheduler, initialCode, initialData, initialExtras); // Noncompliant
     }
 }
 </pre>
-<h2>Compliant Solution</h2>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -64,12 +65,18 @@ public class MyIntentBroadcast {
         context.sendBroadcast(intent, broadcastPermission);
         context.sendBroadcastAsUser(intent, user, broadcastPermission);
         context.sendOrderedBroadcast(intent, broadcastPermission);
-        context.sendOrderedBroadcastAsUser(intent, user,broadcastPermission, resultReceiver,
+        context.sendOrderedBroadcastAsUser(intent, user, broadcastPermission, resultReceiver,
                 scheduler, initialCode, initialData, initialExtras);
     }
 }
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://developer.android.com/guide/components/broadcasts.html#restricting_broadcasts_with_permissions">Android documentation</a> -
+  Broadcast Overview - Security considerations and best practices</li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a></li>
   <li>OWASP - <a href="https://mas.owasp.org/checklists/MASVS-PLATFORM/">Mobile AppSec Verification Standard - Platform Interaction
@@ -81,7 +88,5 @@ public class MyIntentBroadcast {
   <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m8-security-misconfiguration">Mobile Top 10 2024 Category M8 - Security
   Misconfiguration</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/927">CWE-927 - Use of Implicit Intent for Sensitive Communication</a></li>
-  <li><a href="https://developer.android.com/guide/components/broadcasts.html#restricting_broadcasts_with_permissions">Android documentation</a> -
-  Broadcast Overview - Security considerations and best practices</li>
 </ul>
 

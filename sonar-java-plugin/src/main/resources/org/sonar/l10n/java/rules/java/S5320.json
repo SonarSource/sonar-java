@@ -1,18 +1,23 @@
 {
-  "title": "Broadcasting intents is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Intents should not be broadcast without receiver permissions",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
-      "SECURITY": "HIGH"
+      "SECURITY": "MEDIUM"
     },
     "attribute": "COMPLETE"
   },
   "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
   "tags": [
     "cwe",
-    "android"
+    "android",
+    "former-hotspot"
   ],
-  "defaultSeverity": "Critical",
+  "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-5320",
   "sqKey": "S5320",
   "scope": "Main",
