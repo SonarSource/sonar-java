@@ -1,6 +1,11 @@
 name: Update Rule Metadata
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      jira-issue:
+        description: 'Jira issue key to link the PR to (e.g., SONARJAVA-123456).'
+        required: false
 
 jobs:
   rule-metadata-update:
@@ -12,8 +17,9 @@ jobs:
     steps:
       - name: Update Rule Metadata
         id: update-rule-metadata
-        uses: SonarSource/release-github-actions/update-rule-metadata@v1
+        uses: SonarSource/release-github-actions/update-rule-metadata@tt/update-rule-metadata-jira-issue
         with:
+          jira-issue: ${{ inputs.jira-issue }}
           labels: ''
           rspec-token-suffix: 'rspec'
           post-update: |
