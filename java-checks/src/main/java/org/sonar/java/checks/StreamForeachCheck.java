@@ -68,7 +68,7 @@ public class StreamForeachCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private List<JavaQuickFix> computeQuickFix(MemberSelectExpressionTree msetStream, MethodInvocationTree mitStream) {
+  private static List<JavaQuickFix> computeQuickFix(MemberSelectExpressionTree msetStream, MethodInvocationTree mitStream) {
     return List.of(
       JavaQuickFix.newQuickFix("Remove .stream() call")
         .addTextEdit(JavaTextEdit.removeBetweenTree(msetStream.operatorToken(), mitStream))
