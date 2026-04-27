@@ -18,11 +18,14 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 
 @Rule(key = "S3706")
 public class StreamForeachCheck extends IssuableSubscriptionVisitor {
@@ -56,7 +59,19 @@ public class StreamForeachCheck extends IssuableSubscriptionVisitor {
       && msetForEach.expression() instanceof MethodInvocationTree mitStream
       && STREAM_METHOD.matches(mitStream)
       && mitStream.methodSelect() instanceof MemberSelectExpressionTree msetStream) {
-      reportIssue(msetStream.identifier(), msetForEach.identifier(), "Simplify the code by replacing .stream().forEach() with .forEach().");
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onRange(msetStream.identifier(), msetForEach.identifier())
+        .withMessage("Simplify the code by replacing .stream().forEach() with .forEach().")
+        .withQuickFixes(() -> computeQuickFix(msetStream, mitStream))
+        .report();
     }
+  }
+
+  private List<JavaQuickFix> computeQuickFix(MemberSelectExpressionTree msetStream, MethodInvocationTree mitStream) {
+    return List.of(
+      JavaQuickFix.newQuickFix("Remove .stream() call")
+        .addTextEdit(JavaTextEdit.removeBetweenTree(msetStream.operatorToken(), mitStream))
+        .build());
   }
 }
