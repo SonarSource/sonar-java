@@ -100,8 +100,8 @@ class JavaRulesDefinitionTest {
     definition.define(context);
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
-    RulesDefinition.Rule hardcodedIdRule = repository.rule("S1313");
-    assertThat(hardcodedIdRule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S1313"));
+    RulesDefinition.Rule hardcodedIdRule = repository.rule("S4790");
+    assertThat(hardcodedIdRule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "S4790"));
     assertThat(hardcodedIdRule.type()).isEqualTo(RuleType.SECURITY_HOTSPOT);
     // SonarLint explicitly exclude hotspot on its side.
     assertThat(hardcodedIdRule.activatedByDefault()).isTrue();
