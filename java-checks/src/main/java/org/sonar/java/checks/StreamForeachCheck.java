@@ -63,15 +63,14 @@ public class StreamForeachCheck extends IssuableSubscriptionVisitor {
         .forRule(this)
         .onRange(msetStream.identifier(), msetForEach.identifier())
         .withMessage("Simplify the code by replacing .stream().forEach() with .forEach().")
-        .withQuickFixes(() -> computeQuickFix(msetStream, mitStream))
+        .withQuickFix(() -> computeQuickFix(msetStream, mitStream))
         .report();
     }
   }
 
-  private static List<JavaQuickFix> computeQuickFix(MemberSelectExpressionTree msetStream, MethodInvocationTree mitStream) {
-    return List.of(
-      JavaQuickFix.newQuickFix("Remove .stream() call")
+  private static JavaQuickFix computeQuickFix(MemberSelectExpressionTree msetStream, MethodInvocationTree mitStream) {
+    return JavaQuickFix.newQuickFix("Remove the call to \".stream()\"")
         .addTextEdit(JavaTextEdit.removeBetweenTree(msetStream.operatorToken(), mitStream))
-        .build());
+        .build();
   }
 }

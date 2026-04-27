@@ -37,14 +37,14 @@ public class StreamForeachCheck {
     s.forEach(System.out::println); // Compliant (the rule ignores this case)
   }
 
-  // fix@qf1 {{Remove .stream() call}}
+  // fix@qf1 {{Remove the call to ".stream()"}}
   // edit@qf1 [[sc=15;ec=24]] {{}}
   void quickFix(Collection<Integer> collection) {
     collection.stream().forEach(System.out::println); // Noncompliant [[quickfixes=qf1]]
     //         ^^^^^^^^^^^^^^^^
   }
 
-  // fix@qf2 {{Remove .stream() call}}
+  // fix@qf2 {{Remove the call to ".stream()"}}
   // edit@qf2 [[sc=8;ec=17]] {{}}
   void quickFix2(Set<String> set) {
     set.stream().forEach(e -> System.out.println("Element: " + e)); // Noncompliant [[quickfixes=qf2]]
