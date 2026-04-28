@@ -54,11 +54,18 @@ class MissingDeprecatedCheckSample {
   }
 
   @java.lang.Deprecated
-  public void foo9() {
+  public void foo9() { // Noncompliant {{Add the missing @deprecated Javadoc tag.}}
 
     @Deprecated
     int local1 = 0;
 
+  }
+
+  /**
+   * @deprecated Use foo12() instead.
+   */
+  @java.lang.Deprecated
+  public void foo12() {
   }
 
   /**
