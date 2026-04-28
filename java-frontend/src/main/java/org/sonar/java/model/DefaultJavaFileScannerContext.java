@@ -108,9 +108,7 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
     List<RegexCheck.RegexIssueLocation> mainLocations = new RegexCheck.RegexIssueLocation(regexTree, message).toSingleLocationItems();
     if (mainLocations.size() > 1) {
       // handle other main locations as secondaries with same message
-      mainLocations.subList(1, mainLocations.size())
-        .stream()
-        .forEach(completedSecondaries::add);
+      completedSecondaries.addAll(mainLocations.subList(1, mainLocations.size()));
     }
     completedSecondaries.addAll(secondaries);
 

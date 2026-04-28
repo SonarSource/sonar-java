@@ -36,8 +36,7 @@ class ValueBasedUtilsTest {
     CompilationUnitTree tree = JParserTestUtils.parse(file);
 
     List<Tree> members = ((ClassTree) tree.types().get(0)).members();
-    members.stream()
-      .forEach(member -> checkMember((VariableTree)member));
+    members.forEach(member -> checkMember((VariableTree)member));
   }
 
   private static void checkMember(VariableTree member) {

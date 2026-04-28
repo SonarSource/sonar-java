@@ -606,7 +606,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   }
 
   public void collectUndefinedTypes(String pathToFile, Set<JProblem> undefinedTypes) {
-    undefinedTypes.stream().forEach(problem -> {
+    undefinedTypes.forEach(problem -> {
       List<String> filesAffectedByProblem = problemsToFilePaths.computeIfAbsent(problem, key -> new ArrayList<>());
       filesAffectedByProblem.add(pathToFile);
     });
