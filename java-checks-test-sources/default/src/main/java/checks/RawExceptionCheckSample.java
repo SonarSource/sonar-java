@@ -1,5 +1,9 @@
 package checks;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.security.PrivilegedActionException;
+
 public class RawExceptionCheckSample {
 
   public void throws_Throwable() throws Throwable { // Noncompliant
@@ -30,6 +34,110 @@ public class RawExceptionCheckSample {
 
   public void throws_RuntimeException() {
     throw new RuntimeException(); // Noncompliant
+  }
+
+  public String wraps_specific_checked_exception() {
+    try {
+      return readFromBlockingSource();
+    } catch (IOException | InterruptedException e) {
+      throw new RuntimeException(e); // Compliant
+    }
+  }
+
+  public String wraps_specific_checked_exception_with_message() {
+    try {
+      return readFromBlockingSource();
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to read", e); // Compliant
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e); // Compliant
+    }
+  }
+
+  public String wraps_direct_derived_checked_exception_cause() {
+    try {
+      return readPrivilegedValue();
+    } catch (PrivilegedActionException e) {
+      throw new RuntimeException("Failed to read", e.getCause()); // Compliant
+    }
+  }
+
+  public String wraps_local_derived_checked_exception_cause() {
+    try {
+      return invokeReflectively();
+    } catch (InvocationTargetException e) {
+      Throwable target = e.getTargetException();
+      throw new Error("Failed to invoke", target); // Compliant
+    }
+  }
+
+  public String wraps_generic_exception() {
+    try {
+      return readFromBlockingSource();
+    } catch (Exception e) {
+      throw new RuntimeException(e); // Noncompliant
+    }
+  }
+
+  public String wraps_throwable() {
+    try {
+      return readFromBlockingSource();
+    } catch (Throwable e) {
+      throw new RuntimeException(e); // Noncompliant
+    }
+  }
+
+  public String wraps_unchecked_exception() {
+    try {
+      return readFromBlockingSource();
+    } catch (IllegalStateException e) {
+      throw new RuntimeException(e); // Noncompliant
+    } catch (IOException | InterruptedException e) {
+      return "";
+    }
+  }
+
+  public String wraps_mixed_checked_and_unchecked_exceptions() {
+    try {
+      return readFromBlockingSource();
+    } catch (IOException | IllegalStateException e) {
+      throw new RuntimeException(e); // Noncompliant
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e); // Compliant
+    }
+  }
+
+  public String wraps_checked_exception_without_cause() {
+    try {
+      return readFromBlockingSource();
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to read"); // Noncompliant
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e); // Compliant
+    }
+  }
+
+  public String wraps_unrelated_throwable() {
+    try {
+      return readFromBlockingSource();
+    } catch (IOException e) {
+      Throwable unrelated = new InterruptedException();
+      throw new RuntimeException(unrelated); // Noncompliant
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e); // Compliant
+    }
+  }
+
+  private String readFromBlockingSource() throws IOException, InterruptedException {
+    return "";
+  }
+
+  private String readPrivilegedValue() throws PrivilegedActionException {
+    return "";
+  }
+
+  private String invokeReflectively() throws InvocationTargetException {
+    return "";
   }
 
   public void throws_custom() throws MyOtherException { // Compliant
