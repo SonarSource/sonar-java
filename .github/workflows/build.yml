@@ -92,7 +92,7 @@ jobs:
           develocity-url: ${{ env.DEVELOCITY_URL }}
       - name: Getting Vault Secrets
         id: secrets
-        uses: SonarSource/vault-action-wrapper@320bd31b03e5dacaac6be51bbbb15adf7caccc32 # v3.1.0
+        uses: SonarSource/vault-action-wrapper@v3
         with:
           secrets: |
             development/github/token/licenses-ro token | GITHUB_TOKEN;
@@ -159,7 +159,7 @@ jobs:
           develocity-url: ${{ env.DEVELOCITY_URL }}
       - name: Getting Vault Secrets
         id: secrets
-        uses: SonarSource/vault-action-wrapper@320bd31b03e5dacaac6be51bbbb15adf7caccc32 # v3.1.0
+        uses: SonarSource/vault-action-wrapper@v3
         with:
           secrets: |
             development/github/token/licenses-ro token | GITHUB_TOKEN;
