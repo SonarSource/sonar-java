@@ -17,11 +17,13 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.FluentReporting;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -29,12 +31,18 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.UnionTypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "S00112", repositoryKey = "squid")
@@ -81,12 +89,83 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
     if (tree.expression().is(Tree.Kind.NEW_CLASS)) {
-      TypeTree exception = ((NewClassTree) tree.expression()).identifier();
-      if (isRawException(exception.symbolType())) {
+      NewClassTree newClassTree = (NewClassTree) tree.expression();
+      TypeTree exception = newClassTree.identifier();
+      if (isRawException(exception.symbolType()) && !isSpecificCheckedExceptionWrapper(newClassTree)) {
         reportIssue(exception);
       }
     }
     super.visitThrowStatement(tree);
+  }
+
+  private static boolean isSpecificCheckedExceptionWrapper(NewClassTree newClassTree) {
+    if (!isAllowedWrapperType(newClassTree.identifier().symbolType())) {
+      return false;
+    }
+    Tree catchTree = ExpressionUtils.getParentOfType(newClassTree, Tree.Kind.CATCH);
+    if (!(catchTree instanceof CatchTree enclosingCatch)) {
+      return false;
+    }
+    VariableTree catchParameter = enclosingCatch.parameter();
+    return caughtTypes(catchParameter).stream().allMatch(RawExceptionCheck::isSpecificCheckedException) &&
+      newClassTree.arguments().stream().anyMatch(argument -> isCaughtExceptionCause(argument, catchParameter.symbol()));
+  }
+
+  private static boolean isAllowedWrapperType(Type type) {
+    return type.is("java.lang.RuntimeException") || type.is("java.lang.Error");
+  }
+
+  private static List<Type> caughtTypes(VariableTree catchParameter) {
+    TypeTree type = catchParameter.type();
+    if (type.is(Tree.Kind.UNION_TYPE)) {
+      return ((UnionTypeTree) type).typeAlternatives().stream()
+        .map(TypeTree::symbolType)
+        .toList();
+    }
+    return Collections.singletonList(type.symbolType());
+  }
+
+  private static boolean isSpecificCheckedException(Type type) {
+    return type.isUnknown() || (type.isSubtypeOf("java.lang.Throwable") &&
+      !isRawException(type) &&
+      !type.isSubtypeOf("java.lang.RuntimeException") &&
+      !type.isSubtypeOf("java.lang.Error"));
+  }
+
+  private static boolean isCaughtExceptionCause(ExpressionTree argument, Symbol catchParameterSymbol) {
+    ExpressionTree expression = ExpressionUtils.skipParentheses(argument);
+    return isIdentifierForSymbol(expression, catchParameterSymbol) ||
+      isCauseMethodInvocation(expression, catchParameterSymbol) ||
+      isLocalVariableInitializedWithCause(expression, catchParameterSymbol);
+  }
+
+  private static boolean isLocalVariableInitializedWithCause(ExpressionTree expression, Symbol catchParameterSymbol) {
+    if (!(expression instanceof IdentifierTree identifier) ||
+      !(identifier.symbol() instanceof Symbol.VariableSymbol variableSymbol) ||
+      !variableSymbol.isLocalVariable() ||
+      !variableSymbol.isEffectivelyFinal()) {
+      return false;
+    }
+    VariableTree declaration = variableSymbol.declaration();
+    ExpressionTree initializer = declaration == null ? null : declaration.initializer();
+    return initializer != null && isCauseMethodInvocation(initializer, catchParameterSymbol);
+  }
+
+  private static boolean isCauseMethodInvocation(ExpressionTree expression, Symbol catchParameterSymbol) {
+    ExpressionTree normalizedExpression = ExpressionUtils.skipParentheses(expression);
+    if (!(normalizedExpression instanceof MethodInvocationTree methodInvocationTree) ||
+      !methodInvocationTree.arguments().isEmpty() ||
+      !(methodInvocationTree.methodSelect() instanceof MemberSelectExpressionTree memberSelect)) {
+      return false;
+    }
+    String methodName = memberSelect.identifier().name();
+    return ("getCause".equals(methodName) || "getTargetException".equals(methodName)) &&
+      isIdentifierForSymbol(memberSelect.expression(), catchParameterSymbol);
+  }
+
+  private static boolean isIdentifierForSymbol(ExpressionTree expression, Symbol symbol) {
+    ExpressionTree normalizedExpression = ExpressionUtils.skipParentheses(expression);
+    return normalizedExpression instanceof IdentifierTree identifier && identifier.symbol().equals(symbol);
   }
 
   private void reportIssue(Tree tree) {
