@@ -13,6 +13,14 @@ class RawExceptionCheckSample {
     unknown();
   }
 
+  void wraps_unresolved_checked_exception() {
+    try {
+      unknown();
+    } catch (SpecificCheckedException e) {
+      throw new RuntimeException(e); // Compliant
+    }
+  }
+
   void doSomething() { return null; }
   void doSomethingElse() throws Exception { return null; } // Noncompliant
 }

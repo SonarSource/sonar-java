@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -108,21 +109,25 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
     }
     VariableTree catchParameter = enclosingCatch.parameter();
     return caughtTypes(catchParameter).stream().allMatch(RawExceptionCheck::isSpecificCheckedException) &&
-      newClassTree.arguments().stream().anyMatch(argument -> isCaughtExceptionCause(argument, catchParameter.symbol()));
+      newClassTree.arguments().stream().anyMatch(argument -> isCaughtExceptionCause(argument, catchParameter));
   }
 
   private static boolean isAllowedWrapperType(Type type) {
     return type.is("java.lang.RuntimeException") || type.is("java.lang.Error");
   }
 
-  private static List<Type> caughtTypes(VariableTree catchParameter) {
+  private static List<TypeTree> caughtTypes(VariableTree catchParameter) {
     TypeTree type = catchParameter.type();
     if (type.is(Tree.Kind.UNION_TYPE)) {
-      return ((UnionTypeTree) type).typeAlternatives().stream()
-        .map(TypeTree::symbolType)
-        .toList();
+      return ((UnionTypeTree) type).typeAlternatives();
     }
-    return Collections.singletonList(type.symbolType());
+    return Collections.singletonList(type);
+  }
+
+  private static boolean isSpecificCheckedException(TypeTree typeTree) {
+    Type type = typeTree.symbolType();
+    return isSpecificCheckedException(type) ||
+      (!type.isUnknown() && !type.isSubtypeOf("java.lang.Throwable") && isSpecificExceptionTypeName(typeTree));
   }
 
   private static boolean isSpecificCheckedException(Type type) {
@@ -132,14 +137,34 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
       !type.isSubtypeOf("java.lang.Error"));
   }
 
-  private static boolean isCaughtExceptionCause(ExpressionTree argument, Symbol catchParameterSymbol) {
-    ExpressionTree expression = ExpressionUtils.skipParentheses(argument);
-    return isIdentifierForSymbol(expression, catchParameterSymbol) ||
-      isCauseMethodInvocation(expression, catchParameterSymbol) ||
-      isLocalVariableInitializedWithCause(expression, catchParameterSymbol);
+  private static boolean isSpecificExceptionTypeName(TypeTree typeTree) {
+    String typeName = simpleTypeName(typeTree);
+    return typeName != null &&
+      !"Throwable".equals(typeName) &&
+      !"Error".equals(typeName) &&
+      !"Exception".equals(typeName) &&
+      !"RuntimeException".equals(typeName) &&
+      !typeName.endsWith("RuntimeException") &&
+      !typeName.endsWith("Error");
   }
 
-  private static boolean isLocalVariableInitializedWithCause(ExpressionTree expression, Symbol catchParameterSymbol) {
+  private static String simpleTypeName(TypeTree typeTree) {
+    return switch (typeTree.kind()) {
+      case IDENTIFIER -> ((IdentifierTree) typeTree).name();
+      case MEMBER_SELECT -> ((MemberSelectExpressionTree) typeTree).identifier().name();
+      case PARAMETERIZED_TYPE -> simpleTypeName(((ParameterizedTypeTree) typeTree).type());
+      default -> null;
+    };
+  }
+
+  private static boolean isCaughtExceptionCause(ExpressionTree argument, VariableTree catchParameter) {
+    ExpressionTree expression = ExpressionUtils.skipParentheses(argument);
+    return isIdentifierForCatchParameter(expression, catchParameter) ||
+      isCauseMethodInvocation(expression, catchParameter) ||
+      isLocalVariableInitializedWithCause(expression, catchParameter);
+  }
+
+  private static boolean isLocalVariableInitializedWithCause(ExpressionTree expression, VariableTree catchParameter) {
     if (!(expression instanceof IdentifierTree identifier) ||
       !(identifier.symbol() instanceof Symbol.VariableSymbol variableSymbol) ||
       !variableSymbol.isLocalVariable() ||
@@ -148,10 +173,10 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
     }
     VariableTree declaration = variableSymbol.declaration();
     ExpressionTree initializer = declaration == null ? null : declaration.initializer();
-    return initializer != null && isCauseMethodInvocation(initializer, catchParameterSymbol);
+    return initializer != null && isCauseMethodInvocation(initializer, catchParameter);
   }
 
-  private static boolean isCauseMethodInvocation(ExpressionTree expression, Symbol catchParameterSymbol) {
+  private static boolean isCauseMethodInvocation(ExpressionTree expression, VariableTree catchParameter) {
     ExpressionTree normalizedExpression = ExpressionUtils.skipParentheses(expression);
     if (!(normalizedExpression instanceof MethodInvocationTree methodInvocationTree) ||
       !methodInvocationTree.arguments().isEmpty() ||
@@ -160,12 +185,20 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
     }
     String methodName = memberSelect.identifier().name();
     return ("getCause".equals(methodName) || "getTargetException".equals(methodName)) &&
-      isIdentifierForSymbol(memberSelect.expression(), catchParameterSymbol);
+      isIdentifierForCatchParameter(memberSelect.expression(), catchParameter);
   }
 
-  private static boolean isIdentifierForSymbol(ExpressionTree expression, Symbol symbol) {
+  private static boolean isIdentifierForCatchParameter(ExpressionTree expression, VariableTree catchParameter) {
     ExpressionTree normalizedExpression = ExpressionUtils.skipParentheses(expression);
-    return normalizedExpression instanceof IdentifierTree identifier && identifier.symbol().equals(symbol);
+    if (!(normalizedExpression instanceof IdentifierTree identifier)) {
+      return false;
+    }
+    Symbol symbol = catchParameter.symbol();
+    Symbol identifierSymbol = identifier.symbol();
+    if (!symbol.isUnknown() && !identifierSymbol.isUnknown()) {
+      return identifierSymbol.equals(symbol);
+    }
+    return identifier.name().equals(catchParameter.simpleName().name());
   }
 
   private void reportIssue(Tree tree) {
