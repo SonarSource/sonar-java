@@ -4,10 +4,6 @@
 38,
 42
 ],
-"jboss-ejb3-tutorial:blob/src/org/jboss/tutorial/blob/bean/LobTesterBean.java": [
-64,
-150
-],
 "jboss-ejb3-tutorial:cachedentity/src/org/jboss/tutorial/cachedentity/client/CachedEntityRun.java": [
 45,
 75
@@ -36,22 +32,14 @@
 "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsConfirmInterceptor.java": [
 97
 ],
-"jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsMDB.java": [
-54
-],
 "jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/EmailSystemBean.java": [
-126,
-137
+126
 ],
 "jboss-ejb3-tutorial:jboss_deployment_descriptor/src/org/jboss/tutorial/jboss_deployment_descriptor/client/Client.java": [
 65,
 98,
 112,
 135
-],
-"jboss-ejb3-tutorial:jndibinding/src/org/jboss/tutorial/jndibinding/bean/CustomerBean.java": [
-68,
-84
 ],
 "jboss-ejb3-tutorial:partial_deployment_descriptor/src/org/jboss/tutorial/partial_deployment_descriptor/client/Client.java": [
 65
