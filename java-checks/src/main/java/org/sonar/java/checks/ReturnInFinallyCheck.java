@@ -25,6 +25,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
@@ -68,6 +69,13 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
   public void visitMethod(MethodTree tree) {
     treeKindStack.push(tree.kind());
     super.visitMethod(tree);
+    treeKindStack.pop();
+  }
+
+  @Override
+  public void visitLambdaExpression(LambdaExpressionTree tree) {
+    treeKindStack.push(tree.kind());
+    super.visitLambdaExpression(tree);
     treeKindStack.pop();
   }
 

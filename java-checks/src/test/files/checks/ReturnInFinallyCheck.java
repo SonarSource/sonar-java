@@ -70,6 +70,21 @@ enum A {
 
 }
 
+class LambdaInFinally {
+  void test() {
+    try {
+    } finally {
+      java.util.function.Predicate<String> p = s -> {
+        return s.isEmpty(); // Compliant - return exits the lambda, not the finally block
+      };
+      java.util.function.Supplier<String> supplier = () -> {
+        if (true) return "a"; // Compliant
+        return "b"; // Compliant
+      };
+    }
+  }
+}
+
 class FPs {
 
   int i;
