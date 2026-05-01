@@ -50,11 +50,16 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S112")
 public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
+  private static final String JAVA_LANG_ERROR = "java.lang.Error";
+  private static final String JAVA_LANG_EXCEPTION = "java.lang.Exception";
+  private static final String JAVA_LANG_RUNTIME_EXCEPTION = "java.lang.RuntimeException";
+
   private static final List<String> RAW_EXCEPTIONS = Arrays.asList(
-    "java.lang.Throwable",
-    "java.lang.Error",
-    "java.lang.Exception",
-    "java.lang.RuntimeException");
+    JAVA_LANG_THROWABLE,
+    JAVA_LANG_ERROR,
+    JAVA_LANG_EXCEPTION,
+    JAVA_LANG_RUNTIME_EXCEPTION);
 
   private FluentReporting context;
   private JavaVersion javaVersion;
@@ -113,7 +118,7 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
   }
 
   private static boolean isAllowedWrapperType(Type type) {
-    return type.is("java.lang.RuntimeException") || type.is("java.lang.Error");
+    return type.is(JAVA_LANG_RUNTIME_EXCEPTION) || type.is(JAVA_LANG_ERROR);
   }
 
   private static List<TypeTree> caughtTypes(VariableTree catchParameter) {
@@ -127,14 +132,14 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
   private static boolean isSpecificCheckedException(TypeTree typeTree) {
     Type type = typeTree.symbolType();
     return isSpecificCheckedException(type) ||
-      (!type.isUnknown() && !type.isSubtypeOf("java.lang.Throwable") && isSpecificExceptionTypeName(typeTree));
+      (!type.isUnknown() && !type.isSubtypeOf(JAVA_LANG_THROWABLE) && isSpecificExceptionTypeName(typeTree));
   }
 
   private static boolean isSpecificCheckedException(Type type) {
-    return type.isUnknown() || (type.isSubtypeOf("java.lang.Throwable") &&
+    return type.isUnknown() || (type.isSubtypeOf(JAVA_LANG_THROWABLE) &&
       !isRawException(type) &&
-      !type.isSubtypeOf("java.lang.RuntimeException") &&
-      !type.isSubtypeOf("java.lang.Error"));
+      !type.isSubtypeOf(JAVA_LANG_RUNTIME_EXCEPTION) &&
+      !type.isSubtypeOf(JAVA_LANG_ERROR));
   }
 
   private static boolean isSpecificExceptionTypeName(TypeTree typeTree) {
