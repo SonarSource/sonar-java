@@ -173,7 +173,7 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
       return false;
     } else {
       Tree.Kind parentOfControlFlowStatement = treeKindStack.stream()
-        .filter(t -> t == Tree.Kind.BLOCK || t == Tree.Kind.METHOD)
+        .filter(t -> t == Tree.Kind.BLOCK || t == Tree.Kind.METHOD || t == Tree.Kind.LAMBDA_EXPRESSION)
         .findFirst()
         .orElse(Tree.Kind.METHOD);
       return parentOfControlFlowStatement == Tree.Kind.BLOCK;

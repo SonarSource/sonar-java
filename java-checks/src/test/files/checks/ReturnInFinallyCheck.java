@@ -79,6 +79,9 @@ class LambdaInFinally {
       };
       java.util.function.Supplier<String> supplier = () -> {
         if (true) return "a"; // Compliant
+        for (int i = 0; i < 10; i++) {
+          return; // Compliant
+        }
         return "b"; // Compliant
       };
     }
