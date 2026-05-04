@@ -100,14 +100,12 @@ class FileHeaderCheckTest {
       .verifyNoIssues();
 
     check = new FileHeaderCheck();
-    check.headerFormat = "";
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/ClassBlankLine.java"))
       .withCheck(check)
       .verifyNoIssues();
 
     check = new FileHeaderCheck();
-    check.headerFormat = "";
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/ClassNoBlankLine.java"))
       .withCheck(check)
