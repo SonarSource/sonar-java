@@ -20,9 +20,9 @@ jobs:
       - name: Checkout Sources
         uses: actions/checkout@v4
 
-      - uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3.6.3
+      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
         with:
-          version: 2025.7.12
+          version: 2026.5.0
 
       - name: Normalize Version
         id: version
