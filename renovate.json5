@@ -8,4 +8,13 @@
     "java-checks-test-sources/**",
     "java-surefire/src/test/resources/**",
   ],
+  packageRules: [
+    {
+      matchPackageNames: [
+        "org.sonarsource.sslr*"
+      ],
+      groupName: "SSLR",
+      groupSlug: "sslr",
+    }
+  ],
 }
