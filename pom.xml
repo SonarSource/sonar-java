@@ -98,7 +98,7 @@
     <sonar.sca.exclusions>its/**,java-checks-test-sources/**</sonar.sca.exclusions>
     <analyzer.commons.version>2.18.0.3393</analyzer.commons.version>
     <orchestrator.version>6.1.0.3962</orchestrator.version>
-    <sslr.version>1.24.0.633</sslr.version>
+    <sslr.version>1.25.1.3886</sslr.version>
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
     <!-- Use more recent version than the one in parent-oss to support jreMinVersion -->
