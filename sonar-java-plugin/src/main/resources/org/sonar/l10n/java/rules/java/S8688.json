@@ -1,0 +1,27 @@
+{
+  "title": "Time-based \".now()\" methods should specify a ZoneId or a Clock",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java8",
+    "pitfall",
+    "timezone",
+    "datetime"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-8688",
+  "sqKey": "S8688",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH",
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  }
+}

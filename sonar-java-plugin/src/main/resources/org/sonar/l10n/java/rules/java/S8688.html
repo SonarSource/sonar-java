@@ -1,0 +1,72 @@
+<p>This rule raises an issue when calling <code>.now()</code> without arguments on <code>java.time</code> API classes that support time zone
+specification, such as <code>LocalDateTime</code>, <code>ZonedDateTime</code>, or <code>OffsetDateTime</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>The <code>java.time</code> API provides various classes for working with dates and times. Many of these classes have a <code>.now()</code> method
+that returns the current date/time. When called without arguments, these methods use the system’s default time zone.</p>
+<p>Relying on the system default time zone can lead to several problems:</p>
+<ul>
+  <li><strong>Portability issues</strong>: The same code may produce different results on different machines (developer laptops, CI servers,
+  production servers) if they have different default time zones configured.</li>
+  <li><strong>Implicit behavior</strong>: Future maintainers of the code must understand that the system default is being used, which is not obvious
+  from reading the code.</li>
+  <li><strong>Testing difficulties</strong>: Unit tests may pass in one environment but fail in another due to time zone differences.</li>
+  <li><strong>Deployment risks</strong>: Moving code between environments (e.g., from a server in Europe to one in Asia) can change behavior
+  unexpectedly.</li>
+</ul>
+<p>By explicitly specifying a <code>ZoneId</code> or a <code>Clock</code> object, you make your intent clear and ensure consistent behavior across all
+environments. This applies to the following classes:</p>
+<ul>
+  <li><code>LocalDateTime</code></li>
+  <li><code>LocalDate</code></li>
+  <li><code>LocalTime</code></li>
+  <li><code>MonthDay</code></li>
+  <li><code>OffsetDateTime</code></li>
+  <li><code>OffsetTime</code></li>
+  <li><code>Year</code></li>
+  <li><code>YearMonth</code></li>
+  <li><code>ZonedDateTime</code></li>
+</ul>
+<p>Note that even though <code>LocalDateTime</code> and similar "Local" classes don’t store time zone information, their <code>.now()</code> methods
+still use the system default to determine what "now" means.</p>
+<h3>What is the potential impact?</h3>
+<p>Using system default time zones can lead to:</p>
+<ul>
+  <li><strong>Inconsistent behavior</strong> across different deployment environments</li>
+  <li><strong>Failed assertions</strong> in tests when run in different time zones</li>
+  <li><strong>Data integrity issues</strong> if timestamps are used for business logic that depends on specific time zones</li>
+  <li><strong>Debugging challenges</strong> when trying to reproduce issues that only occur in certain environments</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Explicitly specify the time zone by passing a <code>ZoneId</code> or a <code>Clock</code> to the <code>.now()</code> method. If you genuinely want
+to use the system default, make this explicit by using <code>ZoneId.systemDefault()</code>. If you need a specific time zone, use
+<code>ZoneId.of()</code> with the appropriate zone identifier.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+LocalDateTime dt = LocalDateTime.now(); // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+// Option 1: Make system default explicit
+LocalDateTime dt1 = LocalDateTime.now(ZoneId.systemDefault());
+
+// Option 2: Use a specific time zone
+LocalDateTime dt2 = LocalDateTime.now(ZoneId.of("Europe/Zurich"));
+
+// Option 3: Use UTC for server-side operations
+LocalDateTime dt3 = LocalDateTime.now(ZoneId.of("UTC"));
+
+// Option 4: Provide a Clock
+Clock myClock = Clock.systemUTC();
+LocalDateTime dt4 = LocalDateTime.now(myClock);
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java SE Documentation - ZoneId - <a href="https://docs.oracle.com/javase/8/docs/api/java/time/ZoneId.html">Official documentation for the ZoneId
+  class</a></li>
+  <li>Java SE Documentation - LocalDateTime - <a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html">Official documentation
+  for the LocalDateTime class</a></li>
+  <li>IANA Time Zone Database - <a href="https://www.iana.org/time-zones">The source of time zone identifiers used by Java</a></li>
+</ul>
+
