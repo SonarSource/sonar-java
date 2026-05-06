@@ -86,7 +86,7 @@
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-    <sonar.version>25.1.0.102122</sonar.version>
+    <sonar.version>26.4.0.121862</sonar.version>
     <!-- Required by shadow scans -->
     <sonar.organization>sonarsource</sonar.organization>
     <!--
@@ -94,7 +94,7 @@
       at SonarSource/sonarqube/gradle.properties
      -->
     <sonar.plugin.api.version>13.0.0.3026</sonar.plugin.api.version>
-    <sonarlint.plugin.api.version>10.13.0.79996</sonarlint.plugin.api.version>
+    <sonarlint.plugin.api.version>11.2.2.85453</sonarlint.plugin.api.version>
     <sonar.sca.exclusions>its/**,java-checks-test-sources/**</sonar.sca.exclusions>
     <analyzer.commons.version>2.18.0.3393</analyzer.commons.version>
     <orchestrator.version>6.1.0.3962</orchestrator.version>
