@@ -69,6 +69,8 @@ public class InstantConversionsCheckSample {
 //               ^^^^^^^^^^^^^^^^^^^^^^^
     LocalDate.from((TemporalAccessor) instant); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
 //                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    LocalDateTime.from((instant)); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
+//                     ^^^^^^^^^
 
     Instant.from(instant); // Compliant
     Instant.from(temporal); // Compliant
