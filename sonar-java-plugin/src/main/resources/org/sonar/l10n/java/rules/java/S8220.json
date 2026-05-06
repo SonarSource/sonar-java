@@ -1,0 +1,25 @@
+{
+  "title": "Conversions to and from Instant should use explicit timezone handling",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "java8",
+    "datetime"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-8220",
+  "sqKey": "S8220",
+  "scope": "Main",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "BLOCKER",
+      "MAINTAINABILITY": "BLOCKER"
+    },
+    "attribute": "LOGICAL"
+  }
+}
