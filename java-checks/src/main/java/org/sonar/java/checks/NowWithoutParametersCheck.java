@@ -17,12 +17,14 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+@Rule(key = "S8688")
 public class NowWithoutParametersCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatchers NOW = MethodMatchers.create()
