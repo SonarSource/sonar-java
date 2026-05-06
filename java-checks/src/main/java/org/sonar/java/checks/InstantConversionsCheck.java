@@ -35,7 +35,7 @@ public class InstantConversionsCheck extends AbstractMethodDetection implements 
   private static final String INSTANT = "java.time.Instant";
   private static final String TEMPORAL_ACCESSOR = "java.time.temporal.TemporalAccessor";
 
-  private static final String[] LOCAL_DATE_AND_TIME_TYPES = {
+  private static final String[] LOCAL_DATE_TIME_TYPES = {
     "java.time.LocalDate",
     "java.time.LocalTime",
     "java.time.LocalDateTime",
@@ -46,14 +46,26 @@ public class InstantConversionsCheck extends AbstractMethodDetection implements 
     "java.time.YearMonth"
   };
 
+  private static final String[] ZONE_AWARE_DATE_TIME_TYPES = {
+    "java.time.ZonedDateTime",
+    "java.time.OffsetDateTime",
+    "java.time.OffsetTime"
+  };
+
   private static final MethodMatchers INSTANT_FROM_MATCHER = MethodMatchers.create()
     .ofTypes(INSTANT)
     .names("from")
     .addParametersMatcher(TEMPORAL_ACCESSOR)
     .build();
 
-  private static final MethodMatchers LOCAL_DATE_AND_TIME_FROM_MATCHER = MethodMatchers.create()
-    .ofTypes(LOCAL_DATE_AND_TIME_TYPES)
+  private static final MethodMatchers LOCAL_DATE_TIME_FROM_MATCHER = MethodMatchers.create()
+    .ofTypes(LOCAL_DATE_TIME_TYPES)
+    .names("from")
+    .addParametersMatcher(TEMPORAL_ACCESSOR)
+    .build();
+
+  private static final MethodMatchers ZONE_AWARE_DATE_TIME_FROM_MATCHER = MethodMatchers.create()
+    .ofTypes(ZONE_AWARE_DATE_TIME_TYPES)
     .names("from")
     .addParametersMatcher(TEMPORAL_ACCESSOR)
     .build();
@@ -65,19 +77,24 @@ public class InstantConversionsCheck extends AbstractMethodDetection implements 
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.or(INSTANT_FROM_MATCHER, LOCAL_DATE_AND_TIME_FROM_MATCHER);
+    return MethodMatchers.or(INSTANT_FROM_MATCHER, LOCAL_DATE_TIME_FROM_MATCHER, ZONE_AWARE_DATE_TIME_FROM_MATCHER);
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    Type sourceType = skipParenthesesAndCasts(mit.arguments().get(0)).symbolType();
-    if ((INSTANT_FROM_MATCHER.matches(mit) && isLocalDateOrTime(sourceType)) || (LOCAL_DATE_AND_TIME_FROM_MATCHER.matches(mit) && sourceType.is(INSTANT))) {
-      reportIssue(mit.arguments().get(0), "Provide explicit timezone information when converting between local date/time types and \"Instant\".");
+    ExpressionTree argument = mit.arguments().get(0);
+    Type argumentType = skipParenthesesAndCasts(argument).symbolType();
+    if (INSTANT_FROM_MATCHER.matches(mit) && isLocalDateOrTime(argumentType)) {
+      reportIssue(argument, "Provide explicit timezone information when converting from a local date/time type to an instant.");
+    } else if (LOCAL_DATE_TIME_FROM_MATCHER.matches(mit) && argumentType.is(INSTANT)) {
+      reportIssue(argument, "Provide explicit timezone information when converting from an instant to a local date/time type.");
+    } else if (ZONE_AWARE_DATE_TIME_FROM_MATCHER.matches(mit) && (argumentType.is(INSTANT) || isLocalDateOrTime(argumentType))) {
+      reportIssue(argument, "Provide explicit timezone information when converting from a local date/time type or an instant to a timezone aware type.");
     }
   }
 
   private static boolean isLocalDateOrTime(Type type) {
-    return Arrays.stream(LOCAL_DATE_AND_TIME_TYPES).anyMatch(type::is);
+    return Arrays.stream(LOCAL_DATE_TIME_TYPES).anyMatch(type::is);
   }
 
   private static ExpressionTree skipParenthesesAndCasts(ExpressionTree expression) {

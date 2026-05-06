@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.MonthDay;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneId;
@@ -17,67 +18,93 @@ import java.time.temporal.TemporalAccessor;
 
 public class InstantConversionsCheckSample {
 
-  void instantToLocal(Instant instant, ZoneId zone) {
-    LocalDate.from(instant); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
-//                 ^^^^^^^
-    LocalTime.from(instant); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
-//                 ^^^^^^^
-    LocalDateTime.from(instant); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
-//                     ^^^^^^^
-    DayOfWeek.from(instant); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
-//                 ^^^^^^^
-    Month.from(instant); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
-//             ^^^^^^^
-    MonthDay.from(instant); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
-//                ^^^^^^^
-    Year.from(instant); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
-//            ^^^^^^^
-    YearMonth.from(instant); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
-//                 ^^^^^^^
+  private Instant instant;
+  private TemporalAccessor temporalAccessor;
+  private LocalDate date;
+  private LocalTime time;
+  private LocalDateTime dateTime;
+  private MonthDay monthDay;
+  private Year year;
+  private YearMonth yearMonth;
+  private ZonedDateTime zonedDateTime;
+  private OffsetDateTime offsetDateTime;
+  private OffsetTime offsetTime;
+  private ZoneId zoneId;
+  private ZoneOffset zoneOffset;
 
-    LocalDate.from(instant.atZone(zone)); // Compliant
-    LocalTime.from(instant.atZone(zone)); // Compliant
-    LocalDateTime.ofInstant(instant, zone); // Compliant
-    Year.from(instant.atZone(zone)); // Compliant
-  }
-
-  void localToInstant(LocalDate date, LocalTime time, LocalDateTime dateTime, MonthDay monthDay, Year year, YearMonth yearMonth) {
-    Instant.from(date); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
+  void instant() {
+    Instant.from(date); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type to an instant.}}
 //               ^^^^
-    Instant.from(time); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
+    Instant.from(time); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type to an instant.}}
 //               ^^^^
-    Instant.from(dateTime); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
+    Instant.from(dateTime); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type to an instant.}}
 //               ^^^^^^^^
-    Instant.from(DayOfWeek.MONDAY); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
+    Instant.from(DayOfWeek.MONDAY); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type to an instant.}}
 //               ^^^^^^^^^^^^^^^^
-    Instant.from(Month.JANUARY); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
+    Instant.from(Month.JANUARY); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type to an instant.}}
 //               ^^^^^^^^^^^^^
-    Instant.from(monthDay); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
+    Instant.from(monthDay); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type to an instant.}}
 //               ^^^^^^^^
-    Instant.from(year); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
+    Instant.from(year); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type to an instant.}}
 //               ^^^^
-    Instant.from(yearMonth); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
+    Instant.from(yearMonth); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type to an instant.}}
 //               ^^^^^^^^^
+    Instant.from((TemporalAccessor) date); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type to an instant.}}
+//               ^^^^^^^^^^^^^^^^^^^^^^^
 
+    Instant.from(zonedDateTime); // Compliant
+    Instant.from(temporalAccessor); // Compliant
+    Instant.from(offsetDateTime); // Compliant
+    Instant.from(offsetTime); // Compliant
+    Instant.from(zonedDateTime); // Compliant
     Instant.from(date.atStartOfDay(ZoneId.systemDefault())); // Compliant
-    date.atStartOfDay(ZoneId.systemDefault()).toInstant(); // Compliant
+    date.atStartOfDay(zoneId).toInstant(); // Compliant
     date.atStartOfDay().toInstant(ZoneOffset.UTC); // Compliant
   }
 
-  void castsAndOtherTemporalTypes(LocalDate date, Instant instant, TemporalAccessor temporal, OffsetDateTime offsetDateTime, ZonedDateTime zonedDateTime) {
-    Instant.from((TemporalAccessor) date); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
-//               ^^^^^^^^^^^^^^^^^^^^^^^
-    LocalDate.from((TemporalAccessor) instant); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
-//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-    LocalDateTime.from((instant)); // Noncompliant {{Provide explicit timezone information when converting between local date/time types and "Instant".}}
-//                     ^^^^^^^^^
+  void localDateTimeTypes() {
+    LocalDate.from(instant); // Noncompliant {{Provide explicit timezone information when converting from an instant to a local date/time type.}}
+//                 ^^^^^^^
+    LocalTime.from(instant); // Noncompliant {{Provide explicit timezone information when converting from an instant to a local date/time type.}}
+//                 ^^^^^^^
+    LocalDateTime.from(instant); // Noncompliant {{Provide explicit timezone information when converting from an instant to a local date/time type.}}
+//                     ^^^^^^^
+    DayOfWeek.from(instant); // Noncompliant {{Provide explicit timezone information when converting from an instant to a local date/time type.}}
+//                 ^^^^^^^
+    Month.from(instant); // Noncompliant {{Provide explicit timezone information when converting from an instant to a local date/time type.}}
+//             ^^^^^^^
+    MonthDay.from(instant); // Noncompliant {{Provide explicit timezone information when converting from an instant to a local date/time type.}}
+//                ^^^^^^^
+    Year.from(instant); // Noncompliant {{Provide explicit timezone information when converting from an instant to a local date/time type.}}
+//            ^^^^^^^
+    YearMonth.from(instant); // Noncompliant {{Provide explicit timezone information when converting from an instant to a local date/time type.}}
+//                 ^^^^^^^
 
-    Instant.from(instant); // Compliant
-    Instant.from(temporal); // Compliant
-    Instant.from(offsetDateTime); // Compliant
-    Instant.from(zonedDateTime); // Compliant
-    LocalDate.from(temporal); // Compliant
-    LocalDate.from(offsetDateTime); // Compliant
-    LocalDate.from(zonedDateTime); // Compliant
+    LocalDate.from(instant.atZone(zoneId)); // Compliant
+    LocalTime.from(instant.atZone(zoneId)); // Compliant
+    LocalDateTime.ofInstant(instant, zoneId); // Compliant
+    LocalDateTime.from(instant.atOffset(zoneOffset)); // Compliant
+    Year.from(instant.atZone(zoneId)); // Compliant
   }
+
+  void zoneAwareDateTimeTypes() {
+    ZonedDateTime.from(instant); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type or an instant to a timezone aware type.}}
+//                     ^^^^^^^
+    ZonedDateTime.from(dateTime); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type or an instant to a timezone aware type.}}
+//                     ^^^^^^^^
+    OffsetDateTime.from(instant); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type or an instant to a timezone aware type.}}
+//                      ^^^^^^^
+    OffsetTime.from(instant); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type or an instant to a timezone aware type.}}
+//                  ^^^^^^^
+    LocalDate.from((TemporalAccessor) instant); // Noncompliant {{Provide explicit timezone information when converting from an instant to a local date/time type.}}
+//                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ZonedDateTime.from(((TemporalAccessor) instant)); // Noncompliant {{Provide explicit timezone information when converting from a local date/time type or an instant to a timezone aware type.}}
+//                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    ZonedDateTime.ofInstant(instant, zoneId); // Compliant
+    ZonedDateTime.from(dateTime.atZone(zoneId)); // Compliant
+    OffsetDateTime.from(instant.atOffset(ZoneOffset.UTC)); // Compliant
+    OffsetTime.from(instant.atOffset(ZoneOffset.UTC)); // Compliant
+  }
+
 }
