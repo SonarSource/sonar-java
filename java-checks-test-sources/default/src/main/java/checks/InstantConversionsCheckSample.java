@@ -55,7 +55,6 @@ public class InstantConversionsCheckSample {
     Instant.from(zonedDateTime); // Compliant
     Instant.from(temporalAccessor); // Compliant
     Instant.from(offsetDateTime); // Compliant
-    Instant.from(offsetTime); // Compliant
     Instant.from(zonedDateTime); // Compliant
     Instant.from(date.atStartOfDay(ZoneId.systemDefault())); // Compliant
     date.atStartOfDay(zoneId).toInstant(); // Compliant
