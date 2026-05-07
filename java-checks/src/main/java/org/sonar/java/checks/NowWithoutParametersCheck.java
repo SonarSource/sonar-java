@@ -19,13 +19,15 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S8688")
-public class NowWithoutParametersCheck extends IssuableSubscriptionVisitor {
+public class NowWithoutParametersCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private static final MethodMatchers NOW = MethodMatchers.create()
     .ofTypes("java.time.LocalDate", "java.time.LocalDateTime", "java.time.LocalTime", "java.time.MonthDay", "java.time.OffsetDateTime",
@@ -33,6 +35,11 @@ public class NowWithoutParametersCheck extends IssuableSubscriptionVisitor {
     .names("now")
     .addWithoutParametersMatcher()
     .build();
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava8Compatible();
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -45,5 +52,4 @@ public class NowWithoutParametersCheck extends IssuableSubscriptionVisitor {
       reportIssue(mset.identifier(), mit, "Explicitly specify the time zone by passing a ZoneId or a Clock to the .now() method.");
     }
   }
-
 }
