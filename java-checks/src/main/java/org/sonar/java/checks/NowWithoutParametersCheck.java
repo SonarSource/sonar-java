@@ -46,8 +46,6 @@ public class NowWithoutParametersCheck extends AbstractMethodDetection implement
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (NOW_MATCHER.matches(mit) && mit.methodSelect() instanceof MemberSelectExpressionTree mset) {
-      reportIssue(mset.identifier(), mit, "Explicitly specify the time zone by passing a ZoneId or a Clock to the .now() method.");
-    }
+    reportIssue(((MemberSelectExpressionTree) mit.methodSelect()).identifier(), mit, "Explicitly specify the time zone by passing a ZoneId or a Clock to the .now() method.");
   }
 }
