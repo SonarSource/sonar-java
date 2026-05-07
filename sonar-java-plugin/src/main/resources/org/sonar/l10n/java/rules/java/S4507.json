@@ -17,7 +17,8 @@
     "error-handling",
     "spring",
     "debug",
-    "user-experience"
+    "user-experience",
+    "former-hotspot"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-4507",
