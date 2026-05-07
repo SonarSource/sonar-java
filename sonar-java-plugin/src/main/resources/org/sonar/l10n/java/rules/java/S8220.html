@@ -1,18 +1,22 @@
-<p>This is an issue when code attempts to directly convert between local date and time classes and <code>Instant</code> without specifying timezone
-information, which will cause a <code>DateTimeException</code> at runtime.</p>
+<p>Directly converting between local and timezone-aware types requires an explicit <code>ZoneId</code> or <code>ZoneOffset</code> to bridge the gap.
+If this context is omitted, the operation fails with a <code>DateTimeException</code> at runtime, as the API refuses to resolve the ambiguity by
+assuming a default timezone.</p>
 <h2>Why is this an issue?</h2>
 <p>The <code>java.time</code> API distinguishes between local and absolute time. Classes such as <code>LocalDate</code>, <code>LocalTime</code> and
 <code>LocalDateTime</code> represent "wall-clock" time: human-readable date and time components that exist independent of any specific location. In
-contrast, the <code>Instant</code> class represents a single, unambiguous point on the UTC timeline.</p>
+contrast, the <code>Instant</code> class represents a single, unambiguous point on the UTC timeline, and <code>ZonedDateTime</code> and
+<code>OffsetDateTime</code> correspond to moments in time associated with a specific timezone or UTC offset.</p>
 <p>Because local classes lack a geographical context, they cannot be mapped to the global timeline without a time zone (<code>ZoneId</code>) or UTC
 offset (<code>ZoneOffset</code>). Consequently, attempting a direct conversion between these types without providing the missing temporal context will
 result in a <code>DateTimeException</code>, as the Java runtime cannot make arbitrary assumptions about missing timezone information.</p>
+<p>Similarly, an <code>Instant</code> cannot be transformed into a <code>ZonedDateTime</code> or <code>OffsetDateTime</code> without explicitly
+specifying the target zone, as a single moment in time translates to different wall-clock values across the globe.</p>
 <h3>What is the potential impact?</h3>
-<p>This causes runtime failures with <code>DateTimeException</code>, leading to application crashes. It is particularly problematic in production,
-where timezone bugs may only surface in different geographical regions.</p>
+<p>This issue causes runtime failures with <code>DateTimeException</code>, leading to application crashes. It is particularly problematic in
+production, where timezone bugs may only surface in different geographical regions.</p>
 <h2>How to fix it</h2>
 <p>Provide explicit timezone information (<code>ZoneId</code> or <code>ZoneOffset</code>) when converting between one of the following local date/time
-types and <code>Instant</code>:</p>
+types and <code>Instant</code>, <code>ZonedDateTime</code>, <code>OffsetDateTime</code> or <code>OffsetTime</code>:</p>
 <ul>
   <li><code>LocalDate</code></li>
   <li><code>LocalTime</code></li>
@@ -23,6 +27,8 @@ types and <code>Instant</code>:</p>
   <li><code>Year</code></li>
   <li><code>YearMonth</code></li>
 </ul>
+<p>When converting an <code>Instant</code> to a <code>ZonedDateTime</code>, <code>OffsetDateTime</code> or <code>OffsetTime</code>, explicit timezone
+or offset information should also be specified.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -37,6 +43,16 @@ Instant instant = Instant.from(date); // Noncompliant - throws a DateTimeExcepti
 <pre data-diff-id="3" data-diff-type="noncompliant">
 public Year fromInstant(Instant instant) {
     return Year.from(instant); // Noncompliant - throws a DateTimeException
+}
+</pre>
+<pre data-diff-id="4" data-diff-type="noncompliant">
+public ZonedDateTime fromInstant(Instant instant) {
+    return ZonedDateTime.from(instant); // Noncompliant - throws a DateTimeException
+}
+</pre>
+<pre data-diff-id="5" data-diff-type="noncompliant">
+public ZonedDateTime fromLocalDateTime(LocalDateTime localDateTime) {
+    return ZonedDateTime.from(localDateTime); // Noncompliant - throws a DateTimeException
 }
 </pre>
 <h4>Compliant solution</h4>
@@ -59,12 +75,30 @@ public Year fromInstant(Instant instant, ZoneId zone) {
     return Year.from(instant.atZone(zone)); // Compliant
 }
 </pre>
+<pre data-diff-id="4" data-diff-type="compliant">
+public ZonedDateTime fromInstant(Instant instant, ZoneId zone) {
+    return ZonedDateTime.ofInstant(instant, zone); // Compliant
+}
+</pre>
+<pre data-diff-id="5" data-diff-type="compliant">
+public ZonedDateTime fromLocalDateTime(LocalDateTime localDateTime, ZoneId zone) {
+    return ZonedDateTime.from(localDateTime.atZone(zone)); // Compliant
+}
+</pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
   <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/LocalDateTime.html">Official documentation for the LocalDateTime
   class</a></li>
-  <li><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html">Official documentation for the Instant class</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/ZonedDateTime.html">Official documentation of the ZonedDateTime
+  class</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/OffsetDateTime.html">Official documentation of the
+  OffsetDateTime class</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Instant.html">Official documentation for the Instant
+  class</a></li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
   <li><a href="https://www.codecentric.de/en/knowledge-hub/blog/time">It’s About Time</a></li>
 </ul>
 

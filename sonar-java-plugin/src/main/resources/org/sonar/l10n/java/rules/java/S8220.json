@@ -1,5 +1,5 @@
 {
-  "title": "Conversions to and from Instant should use explicit timezone handling",
+  "title": "Conversions between local and timezone-aware types should use explicit timezone handling",
   "type": "BUG",
   "status": "ready",
   "remediation": {
