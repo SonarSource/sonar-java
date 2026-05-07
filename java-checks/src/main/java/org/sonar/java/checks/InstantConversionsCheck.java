@@ -100,10 +100,10 @@ public class InstantConversionsCheck extends AbstractMethodDetection implements 
   private static ExpressionTree skipParenthesesAndCasts(ExpressionTree expression) {
     ExpressionTree result = expression;
     while (true) {
-      if (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-        result = ((ParenthesizedTree) result).expression();
-      } else if (result.is(Tree.Kind.TYPE_CAST)) {
-        result = ((TypeCastTree) result).expression();
+      if (result instanceof ParenthesizedTree parenthesizedTree) {
+        result = parenthesizedTree.expression();
+      } else if (result instanceof TypeCastTree typeCastTree) {
+        result = typeCastTree.expression();
       } else {
         return result;
       }
