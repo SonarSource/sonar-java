@@ -1992,12 +1992,6 @@
     "falsePositives": 0
   },
   {
-    "ruleKey": "S5042",
-    "hasTruePositives": true,
-    "falseNegatives": 8,
-    "falsePositives": 0
-  },
-  {
     "ruleKey": "S5122",
     "hasTruePositives": true,
     "falseNegatives": 18,
