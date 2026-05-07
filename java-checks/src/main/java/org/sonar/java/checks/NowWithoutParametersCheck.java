@@ -16,20 +16,18 @@
  */
 package org.sonar.java.checks;
 
-import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S8688")
-public class NowWithoutParametersCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+public class NowWithoutParametersCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
-  private static final MethodMatchers NOW = MethodMatchers.create()
+  private static final MethodMatchers NOW_MATCHER = MethodMatchers.create()
     .ofTypes("java.time.LocalDate", "java.time.LocalDateTime", "java.time.LocalTime", "java.time.MonthDay", "java.time.OffsetDateTime",
       "java.time.OffsetTime", "java.time.Year", "java.time.YearMonth", "java.time.ZonedDateTime")
     .names("now")
@@ -42,13 +40,13 @@ public class NowWithoutParametersCheck extends IssuableSubscriptionVisitor imple
   }
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.METHOD_INVOCATION);
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return NOW_MATCHER;
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    if (tree instanceof MethodInvocationTree mit && NOW.matches(mit) && mit.methodSelect() instanceof MemberSelectExpressionTree mset) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    if (NOW_MATCHER.matches(mit) && mit.methodSelect() instanceof MemberSelectExpressionTree mset) {
       reportIssue(mset.identifier(), mit, "Explicitly specify the time zone by passing a ZoneId or a Clock to the .now() method.");
     }
   }
