@@ -1,0 +1,101 @@
+<p>Reading the system clock directly within unit tests introduces non-determinism. Tests that rely on the current wall-clock time are "flaky": they
+may pass today but fail tomorrow, or behave differently depending on the time zone and local time of the CI/CD runner.</p>
+<p>To ensure that they are repeatable and predictable, <code>.now()</code> methods like <code>LocalDate.now()</code>,
+<code>LocalDateTime.now()</code>, or <code>Instant.now()</code> should only be called with a fixed clock in unit tests. <code>Clock.system(ZoneId
+zone)</code>, <code>Clock.systemDefaultZone()</code> and <code>Clock.systemUTC()</code> should also be avoided in tests.</p>
+<h2>Why is this an issue?</h2>
+<p>When a test uses the system clock, it relies on an external, uncontrollable state. This makes it impossible to:</p>
+<ul>
+  <li>Test edge cases (like leap years or daylight saving time transitions) consistently.</li>
+  <li>Verify logic that depends on a specific point in time without manually changing the environment clock.</li>
+  <li>Guarantee that a test suite will yield the same results across different execution environments.</li>
+</ul>
+<h2>How to fix it</h2>
+<p>The best practice is to inject a <code>java.time.Clock</code> instance into the class or method being tested. In production code,
+<code>Clock.systemDefaultZone()</code> can be used, whereas in test code, <code>Clock.fixed(Instant fixedInstant, ZoneId zone)</code> should be
+called, or a mock <code>Clock</code> be injected. This ensures that tests remain deterministic regardless of when or where they are run.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>The test below is flaky because assumes that the second call to <code>Instant.now()</code> returns an instant that is later than the first, which
+might not be true depending on the environment in which the test is run.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Test
+void testTimeDifference() {
+    Instant instant1 = Instant.now();
+    Instant instant2 = Instant.now();
+    assertTrue(instant1.isBefore(instant2)); // Noncompliant
+}
+</pre>
+<p>In the second example below, the service uses a static call to <code>Instant.now()</code>. This makes it impossible to mock the time without using
+advanced (and often discouraged) static mocking techniques.</p>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+public class SecurityService {
+    public boolean isTokenValid(Instant issuedAt) {
+        return issuedAt.isAfter(Instant.now().minus(1, ChronoUnit.HOURS));
+    }
+}
+
+public class SecurityServiceTest {
+    @Test
+    void testTokenValidation() {
+        SecurityService service = new SecurityService();
+        assertTrue(service.isTokenValid(Instant.now().minusSeconds(60))); // Noncompliant: the test is non-deterministic and depends on the execution time.
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<p>Here, the first instant is guaranteed to be before the second, because it is fixed, and the second is explicitly set to a later moment.</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Test
+void testTimeDifference() {
+    Instant instant1 = Instant.now(Clock.fixed(Instant.parse("2026-05-07T10:00:00Z"), ZoneOffset.UTC)); // Compliant
+    Instant instant2 = instant1.plus(1, ChronoUnit.MINUTES);
+    assertTrue(instant1.isBefore(instant2));
+}
+</pre>
+<p>In the solution below, the Clock is a field in the class (often injected by a framework like Spring). In the test, we use @Mock to control exactly
+what time the service "thinks" it is.</p>
+<pre data-diff-id="2" data-diff-type="compliant">
+public class SecurityService {
+    private final Clock clock;
+
+    public SecurityService(Clock clock) {
+        this.clock = clock;
+    }
+
+    public boolean isTokenValid(Instant issuedAt) {
+        return issuedAt.isAfter(Instant.now(clock).minus(1, ChronoUnit.HOURS));
+    }
+}
+
+@ExtendWith(MockitoExtension.class)
+public class SecurityServiceTest {
+    @Mock
+    private Clock clock;
+
+    @Test
+    void testTokenValidationWithMock() {
+        Instant fixedPoint = Instant.parse("2026-05-07T10:00:00Z");
+
+        // Stub the mock clock to behave like a fixed clock.
+        when(clock.instant()).thenReturn(fixedPoint);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+
+        SecurityService service = new SecurityService(clock);
+
+        Instant issuedAt = Instant.parse("2026-05-07T09:30:00Z");
+        assertTrue(service.isTokenValid(issuedAt)); // Compliant: this is now deterministic, as 09:30 is within 1 hour of 10:00.
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Clock.html">Official documentation for the Clock class</a></li>
+</ul>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li><a href="https://berrueta.net/software/2025/06/14/testing-and-time.html">Testing and Time in Java</a></li>
+  <li><a href="https://www.baeldung.com/java-override-system-time">Overriding System Time for Testing in Java</a></li>
+</ul>
+
