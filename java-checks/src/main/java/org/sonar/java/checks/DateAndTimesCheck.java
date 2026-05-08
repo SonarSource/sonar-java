@@ -30,7 +30,8 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
 
   private static final MethodMatchers METHOD_MATCHERS = MethodMatchers.or(
     MethodMatchers.create().ofTypes("java.util.Calendar").names("getInstance").withAnyParameters().build(),
-    MethodMatchers.create().ofTypes("java.util.Date").constructor().withAnyParameters().build());
+    MethodMatchers.create().ofTypes("java.util.Date").constructor().withAnyParameters().build(),
+    MethodMatchers.create().ofSubTypes("org.joda.time").constructor().withAnyParameters().build());
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
