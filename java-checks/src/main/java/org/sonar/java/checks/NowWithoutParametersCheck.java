@@ -17,7 +17,10 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -46,6 +49,19 @@ public class NowWithoutParametersCheck extends AbstractMethodDetection implement
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(((MemberSelectExpressionTree) mit.methodSelect()).identifier(), mit, "Explicitly specify the time zone by passing a ZoneId or a Clock to the .now() method.");
+    MemberSelectExpressionTree mset = (MemberSelectExpressionTree) mit.methodSelect();
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onRange(mset.identifier(), mit)
+      .withMessage("Explicitly specify the time zone by passing a ZoneId or a Clock to the .now() method.")
+      .withQuickFix(() -> computeQuickFix(mit))
+      .report();
   }
+
+  private static JavaQuickFix computeQuickFix(MethodInvocationTree mit) {
+    return JavaQuickFix.newQuickFix("Explicitly use the system default by adding \"ZoneId.systemDefault()\"")
+      .addTextEdit(JavaTextEdit.replaceTree(mit.arguments(), "(ZoneId.systemDefault())"))
+      .build();
+  }
+
 }

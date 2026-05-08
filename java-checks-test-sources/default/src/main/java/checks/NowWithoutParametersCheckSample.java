@@ -58,4 +58,18 @@ public class NowWithoutParametersCheckSample {
     //          ^^^^^
   }
 
+  // fix@qf1 {{Explicitly use the system default by adding "ZoneId.systemDefault()"}}
+  // edit@qf1 [[sc=47;ec=49]] {{(ZoneId.systemDefault())}}
+  void quickfix() {
+    LocalDateTime dateTime = LocalDateTime.now(); // Noncompliant [[quickfixes=qf1]]
+    //                                     ^^^^^
+  }
+
+  // fix@qf2 {{Explicitly use the system default by adding "ZoneId.systemDefault()"}}
+  // edit@qf2 [[sc=41;ec=43]] {{(ZoneId.systemDefault())}}
+  void quickfix2() {
+    String formatted = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE); // Noncompliant [[quickfixes=qf2]]
+    //                               ^^^^^
+  }
+
 }

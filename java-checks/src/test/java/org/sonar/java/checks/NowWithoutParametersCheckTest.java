@@ -30,4 +30,5 @@ class NowWithoutParametersCheckTest {
       .withCheck(new NowWithoutParametersCheck())
       .verifyIssues();
   }
+
 }
