@@ -16,11 +16,15 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -30,8 +34,7 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
 
   private static final MethodMatchers METHOD_MATCHERS = MethodMatchers.or(
     MethodMatchers.create().ofTypes("java.util.Calendar").names("getInstance").withAnyParameters().build(),
-    MethodMatchers.create().ofTypes("java.util.Date").constructor().withAnyParameters().build(),
-    MethodMatchers.create().ofSubTypes("org.joda.time").constructor().withAnyParameters().build());
+    MethodMatchers.create().ofTypes("java.util.Date").constructor().withAnyParameters().build());
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -50,12 +53,27 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
 
   private void reportIssue(Tree tree) {
     reportIssue(tree, "Use the Java 8 Date and Time API instead." + context.getJavaVersion().java8CompatibilityMessage());
-
   }
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
     return version.isJava8Compatible();
+  }
+
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return List.of(Tree.Kind.IMPORT,  Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (tree instanceof ImportTree importTree) {
+      String qualifiedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
+      if (qualifiedName.startsWith("org.joda.time")) {
+        reportIssue(importTree);
+      }
+    }
+    super.visitNode(tree);
   }
 
 }

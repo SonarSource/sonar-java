@@ -1,7 +1,9 @@
 import java.util.Date;
 import java.util.Locale;
 import java.util.Calendar;
-import org.joda.time.DateTime;
+import org.joda.time.DateTime; // Noncompliant {{Use the Java 8 Date and Time API instead.}}
+import org.joda.time.*; // Noncompliant {{Use the Java 8 Date and Time API instead.}}
+import java.time;
 
 class A {
   void javaUtil() {
@@ -16,10 +18,5 @@ class A {
     christmas = Calendar.getInstance(Locale.CANADA); // Noncompliant
     //          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     christmas.setTime(df.parse("25.12.2020"));
-  }
-
-  void jodaTime() {
-    DateTime dt = new DateTime(); // Noncompliant {{Use the Java 8 Date and Time API instead.}}
-    //            ^^^^^^^^^^^^^^
   }
 }
