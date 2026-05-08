@@ -16,7 +16,7 @@
   "ruleSpecification": "RSPEC-8688",
   "sqKey": "S8688",
   "scope": "All",
-  "quickfix": "unknown",
+  "quickfix": "covered",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "HIGH",
