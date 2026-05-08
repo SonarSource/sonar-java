@@ -27,17 +27,15 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
-import static org.sonar.java.checks.helpers.UnitTestUtils.FAIL_METHOD_MATCHER;
+import static org.sonar.java.checks.helpers.UnitTestUtils.isTryCatchFail;
 
 public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscriptionVisitor {
 
@@ -122,7 +120,7 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
   }
 
   private void visitTryStatement(TryStatementTree tryStatementTree) {
-    if (isTryCatchFail(tryStatementTree)) {
+    if (isTryCatchFail(tryStatementTree.block())) {
       List<Type> expectedTypes = tryStatementTree.catches().stream().map(c -> c.parameter().type().symbolType()).toList();
       reportMultipleCallInTree(expectedTypes, tryStatementTree.block(), tryStatementTree.tryKeyword(), "body of this try/catch");
     }
@@ -157,20 +155,6 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
       }
     }
     return Optional.empty();
-  }
-
-  private static boolean isTryCatchFail(TryStatementTree tree) {
-    List<StatementTree> statementTrees = tree.block().body();
-    if (!statementTrees.isEmpty()) {
-      StatementTree lastElement = statementTrees.get(statementTrees.size() - 1);
-      if (lastElement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-        ExpressionTree expressionTree = ((ExpressionStatementTree) lastElement).expression();
-        if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-          return FAIL_METHOD_MATCHER.matches((MethodInvocationTree) expressionTree);
-        }
-      }
-    }
-    return false;
   }
 
   abstract void reportMultipleCallInTree(List<Type> expectedExceptions, Tree treeToVisit, Tree reportLocation, String placeToRefactor);

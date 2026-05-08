@@ -57,6 +57,10 @@ class ExpectedExceptionFilter {
   @org.junit.jupiter.api.Test
   void junit5AssertThrowsExpectedBroadException() {
     org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> LocalDate.from(instant)); // NoIssue
+    org.junit.jupiter.api.Assertions.assertThrows(() -> LocalDate.from(instant)); // NoIssue
+    org.junit.jupiter.api.Assertions.assertThrowsExactly(DateTimeException.class, () -> LocalDateTime.from(instant)); // NoIssue
+    org.junit.jupiter.api.Assertions.assertThrowsExactly(DateTimeParseException.class, () -> LocalDateTime.from(instant)); // NoIssue
+    org.junit.jupiter.api.Assertions.assertThrowsExactly(RuntimeException.class, () -> LocalDateTime.from(instant)); // WithIssue
   }
 
   @org.junit.jupiter.api.Test
@@ -86,6 +90,7 @@ class ExpectedExceptionFilter {
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isInstanceOf(RuntimeException.class); // NoIssue
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isInstanceOf(IllegalArgumentException.class); // WithIssue
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isExactlyInstanceOf(RuntimeException.class); // WithIssue
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isInstanceOf(DateTimeException.class); // NoIssue
   }
 
   @org.junit.jupiter.api.Test
@@ -108,6 +113,8 @@ class ExpectedExceptionFilter {
   void assertjTypedShortcuts() {
     org.assertj.core.api.Assertions.assertThatRuntimeException().isThrownBy(() -> Instant.from(date)); // NoIssue
     org.assertj.core.api.Assertions.assertThatIllegalArgumentException().isThrownBy(() -> Instant.from(date)); // WithIssue
+    BDDAssertions.thenRuntimeException().isThrownBy(() -> Instant.from(date)); // NoIssue
+
   }
 
   @org.junit.jupiter.api.Test
@@ -130,6 +137,13 @@ class ExpectedExceptionFilter {
       Instant.from(date); // WithIssue
       org.junit.Assert.fail();
     } catch (IllegalArgumentException e) {
+      // expected
+    }
+
+    try {
+      Instant.from(date); // NoIssue
+      org.junit.Assert.fail();
+    } catch (DateTimeException | IllegalArgumentException e) {
       // expected
     }
   }

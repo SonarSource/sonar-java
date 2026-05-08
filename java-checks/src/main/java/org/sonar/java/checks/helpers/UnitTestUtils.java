@@ -30,9 +30,13 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static java.util.Arrays.asList;
@@ -42,7 +46,7 @@ public final class UnitTestUtils {
   private static final String ORG_JUNIT_TEST = "org.junit.Test";
   public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile(
     "(assert|verify|fail|should|check|expect|validate|andExpect|approve).*" +
-    // Eclipse Vert.x with JUnit 5 (VertxTestContext)
+      // Eclipse Vert.x with JUnit 5 (VertxTestContext)
       "|laxCheckpoint|succeedingThenComplete");
   private static final Pattern TEST_METHODS_PATTERN = Pattern.compile("test.*|.*Test");
 
@@ -63,8 +67,8 @@ public final class UnitTestUtils {
         "io.restassured.response.ValidatableResponseOptions", // restassured 3.x and 4.x
         "io.restassured.module.mockmvc.response.ValidatableMockMvcResponse" // spring mock mvc extending the io.restassured library
       )
-      .name(name -> "body".equals(name) ||
-        "time".equals(name) ||
+      .name(name -> "body" .equals(name) ||
+        "time" .equals(name) ||
         name.startsWith("time") ||
         name.startsWith("content") ||
         name.startsWith("status") ||
@@ -93,21 +97,21 @@ public final class UnitTestUtils {
 
   public static final MethodMatchers FAIL_METHOD_MATCHER = MethodMatchers.or(
     MethodMatchers.create().ofTypes(
-      // JUnit 5
-      "org.junit.jupiter.api.Assertions",
-      // JUnit 4
-      "org.junit.Assert",
-      // JUnit 3
-      "junit.framework.Assert",
-      // Fest assert
-      "org.fest.assertions.Fail",
-      // AssertJ
-      "org.assertj.core.api.Fail",
-      "org.assertj.core.api.Assertions")
+        // JUnit 5
+        "org.junit.jupiter.api.Assertions",
+        // JUnit 4
+        "org.junit.Assert",
+        // JUnit 3
+        "junit.framework.Assert",
+        // Fest assert
+        "org.fest.assertions.Fail",
+        // AssertJ
+        "org.assertj.core.api.Fail",
+        "org.assertj.core.api.Assertions")
       .names("fail").withAnyParameters().build(),
     MethodMatchers.create().ofTypes(
-      // AssertJ
-      "org.assertj.core.api.Assertions")
+        // AssertJ
+        "org.assertj.core.api.Assertions")
       .names("failBecauseExceptionWasNotThrown").withAnyParameters().build());
 
   public static final MethodMatchers ASSERTIONS_METHOD_MATCHER = MethodMatchers.or(
@@ -209,8 +213,8 @@ public final class UnitTestUtils {
     return symbol.metadata().isAnnotatedWith(ORG_JUNIT_TEST)
       // JUnit 4 considers as test any method overriding another annotated with @Test
       || symbol.overriddenSymbols().stream()
-        .map(Symbol::metadata)
-        .anyMatch(meta -> meta.isAnnotatedWith(ORG_JUNIT_TEST));
+      .map(Symbol::metadata)
+      .anyMatch(meta -> meta.isAnnotatedWith(ORG_JUNIT_TEST));
   }
 
   public static boolean isTestClass(ClassTree classTree) {
@@ -243,10 +247,24 @@ public final class UnitTestUtils {
     if (TEST_METHODS_PATTERN.matcher(methodName).matches()) {
       return !REACTIVE_X_TEST_METHODS.matches(methodSymbol);
     }
-    if ("verify".equals(methodName) || "failing".equals(methodName)) {
+    if ("verify" .equals(methodName) || "failing" .equals(methodName)) {
       return !VERTX_TEST_CONTEXT_METHODS.matches(methodSymbol);
     }
 
     return ASSERTION_METHODS_PATTERN.matcher(methodName).matches();
   }
+
+  public static boolean isTryCatchFail(BlockTree block) {
+    List<StatementTree> statements = block.body();
+    if (statements.isEmpty()) {
+      return false;
+    }
+    StatementTree lastStatement = statements.get(statements.size() - 1);
+    if (lastStatement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+      ExpressionTree expression = ((ExpressionStatementTree) lastStatement).expression();
+      return expression.is(Tree.Kind.METHOD_INVOCATION) && FAIL_METHOD_MATCHER.matches((MethodInvocationTree) expression);
+    }
+    return false;
+  }
+
 }

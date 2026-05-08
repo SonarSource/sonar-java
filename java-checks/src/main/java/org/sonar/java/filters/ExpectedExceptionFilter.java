@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.Set;
 import org.sonar.java.checks.InstantConversionsCheck;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
-import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -29,21 +28,22 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
-import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 
+import static org.sonar.java.checks.helpers.UnitTestUtils.isTryCatchFail;
+
 public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
+
+  private static final String ASSERTJ_ASSERTIONS = "org.assertj.core.api.Assertions";
 
   private static final MethodMatchers ASSERT_THROWS_MATCHER = MethodMatchers.create()
     .ofTypes("org.junit.Assert", "org.junit.jupiter.api.Assertions", "org.testng.Assert", "org.testng.AssertJUnit")
@@ -52,25 +52,25 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
     .build();
 
   private static final MethodMatchers ASSERTJ_CATCH_THROWABLE_OF_TYPE = MethodMatchers.create()
-    .ofTypes("org.assertj.core.api.Assertions")
+    .ofTypes(ASSERTJ_ASSERTIONS)
     .names("catchThrowableOfType")
     .addParametersMatcher("org.assertj.core.api.ThrowableAssert$ThrowingCallable", "java.lang.Class")
     .build();
 
   private static final MethodMatchers ASSERTJ_ASSERT_CODE = MethodMatchers.create()
-    .ofTypes("org.assertj.core.api.Assertions")
+    .ofTypes(ASSERTJ_ASSERTIONS)
     .names("assertThatCode", "assertThatThrownBy")
     .withAnyParameters()
     .build();
 
   private static final MethodMatchers ASSERTJ_EXCEPTION_OF_TYPE = MethodMatchers.create()
-    .ofTypes("org.assertj.core.api.Assertions", "org.assertj.core.api.BDDAssertions")
+    .ofTypes(ASSERTJ_ASSERTIONS, "org.assertj.core.api.BDDAssertions")
     .names("assertThatExceptionOfType", "thenExceptionOfType")
     .addParametersMatcher("java.lang.Class")
     .build();
 
   private static final MethodMatchers ASSERTJ_TYPED_EXCEPTION = MethodMatchers.create()
-    .ofTypes("org.assertj.core.api.Assertions", "org.assertj.core.api.BDDAssertions")
+    .ofTypes(ASSERTJ_ASSERTIONS, "org.assertj.core.api.BDDAssertions")
     .names("assertThatException", "assertThatRuntimeException", "thenException", "thenRuntimeException")
     .withAnyParameters()
     .build();
@@ -144,11 +144,7 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
           excludeLines(mit.arguments().get(0), InstantConversionsCheck.class);
         }
       });
-    } else if (ASSERTJ_EXCEPTION_OF_TYPE.matches(mit) && isDateTimeExceptionClass(mit.arguments().get(0), false)) {
-      MethodTreeUtils.subsequentMethodInvocation(mit, ASSERTJ_IS_THROWN_BY).ifPresent(subsequentMit ->
-        excludeLines(subsequentMit.arguments().get(0), InstantConversionsCheck.class)
-      );
-    } else if (ASSERTJ_TYPED_EXCEPTION.matches(mit)) {
+    } else if (ASSERTJ_TYPED_EXCEPTION.matches(mit) || (ASSERTJ_EXCEPTION_OF_TYPE.matches(mit) && isDateTimeExceptionClass(mit.arguments().get(0), false))) {
       MethodTreeUtils.subsequentMethodInvocation(mit, ASSERTJ_IS_THROWN_BY).ifPresent(subsequentMit ->
         excludeLines(subsequentMit.arguments().get(0), InstantConversionsCheck.class)
       );
@@ -173,19 +169,6 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
 
   private static boolean isTryCatchFailExpectingDateTimeException(TryStatementTree tryStatement) {
     return isTryCatchFail(tryStatement.block()) && tryStatement.catches().stream().anyMatch(ExpectedExceptionFilter::isDateTimeExceptionCatch);
-  }
-
-  private static boolean isTryCatchFail(BlockTree block) {
-    List<StatementTree> statements = block.body();
-    if (statements.isEmpty()) {
-      return false;
-    }
-    StatementTree lastStatement = statements.get(statements.size() - 1);
-    if (lastStatement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      ExpressionTree expression = ((ExpressionStatementTree) lastStatement).expression();
-      return expression.is(Tree.Kind.METHOD_INVOCATION) && UnitTestUtils.FAIL_METHOD_MATCHER.matches((MethodInvocationTree) expression);
-    }
-    return false;
   }
 
   private static boolean isDateTimeException(Type type, boolean exact) {
