@@ -90,7 +90,7 @@ class ExpectedExceptionFilter {
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isInstanceOf(RuntimeException.class); // NoIssue
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isInstanceOf(IllegalArgumentException.class); // WithIssue
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isExactlyInstanceOf(RuntimeException.class); // WithIssue
-    org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isInstanceOf(DateTimeException.class); // NoIssue
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isExactlyInstanceOf(DateTimeException.class); // NoIssue
   }
 
   @org.junit.jupiter.api.Test
