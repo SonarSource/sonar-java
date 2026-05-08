@@ -34,15 +34,11 @@ public class SystemClockCheck extends AbstractMethodDetection {
         "java.time.YearMonth",
         "java.time.ZonedDateTime",
         "java.time.OffsetDateTime",
-        "java.time.OffsetTime")
+        "java.time.OffsetTime",
+        "java.time.Instant")
       .names("now")
       .addWithoutParametersMatcher()
       .addParametersMatcher("java.time.ZoneId")
-      .build(),
-    MethodMatchers.create()
-      .ofTypes("java.time.Instant")
-      .names("now")
-      .addWithoutParametersMatcher()
       .build(),
     MethodMatchers.create()
       .ofTypes("java.time.Clock")
@@ -58,7 +54,7 @@ public class SystemClockCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(mit, "Replace this use of the system clock with a fixed clock.");
+    reportIssue(mit, "Do not use the system clock in tests.");
   }
 
 }
