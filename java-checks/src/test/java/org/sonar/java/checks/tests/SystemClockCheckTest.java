@@ -21,10 +21,10 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
-public class SystemClockCheckTest {
+class SystemClockCheckTest {
 
   @Test
-  public void test() {
+  void test() {
     CheckVerifier.newVerifier()
       .onFile(testCodeSourcesPath("checks/tests/SystemClockCheckSample.java"))
       .withCheck(new SystemClockCheck())
