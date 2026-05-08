@@ -19,8 +19,7 @@
     "bad-practice",
     "cert",
     "hibernate",
-    "sql",
-    "former-hotspot"
+    "sql"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2077",
