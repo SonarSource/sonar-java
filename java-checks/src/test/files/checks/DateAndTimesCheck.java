@@ -3,7 +3,7 @@ import java.util.Locale;
 import java.util.Calendar;
 import org.joda.time.DateTime; // Noncompliant {{Use the Java 8 Date and Time API instead.}}
 import org.joda.time.*; // Noncompliant {{Use the Java 8 Date and Time API instead.}}
-import java.time;
+import java.time.LocalDateTime;
 
 class A {
   void javaUtil() {

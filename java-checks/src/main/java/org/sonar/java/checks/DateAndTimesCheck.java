@@ -62,14 +62,16 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.IMPORT,  Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    List<Tree.Kind> kinds = new java.util.ArrayList<>(super.nodesToVisit());
+    kinds.add(Tree.Kind.IMPORT);
+    return kinds;
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (tree instanceof ImportTree importTree) {
       String qualifiedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
-      if (qualifiedName.startsWith("org.joda.time")) {
+      if (qualifiedName.startsWith("org.joda.time.")) {
         reportIssue(importTree);
       }
     }
