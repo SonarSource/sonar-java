@@ -27,6 +27,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 @Rule(key = "S8688")
 public class NowWithoutParametersCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
+  private static final String MESSAGE = "Explicitly specify the time zone by passing a ZoneId or a Clock to the .now() method.";
+
   private static final MethodMatchers NOW_MATCHER = MethodMatchers.create()
     .ofTypes("java.time.LocalDate", "java.time.LocalDateTime", "java.time.LocalTime", "java.time.MonthDay", "java.time.OffsetDateTime",
       "java.time.OffsetTime", "java.time.Year", "java.time.YearMonth", "java.time.ZonedDateTime")
@@ -46,6 +48,10 @@ public class NowWithoutParametersCheck extends AbstractMethodDetection implement
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(((MemberSelectExpressionTree) mit.methodSelect()).identifier(), mit, "Explicitly specify the time zone by passing a ZoneId or a Clock to the .now() method.");
+    if (mit.methodSelect() instanceof MemberSelectExpressionTree memberSelectExpression) {
+      reportIssue(memberSelectExpression.identifier(), mit, MESSAGE);
+    } else {
+      reportIssue(mit, MESSAGE);
+    }
   }
 }
