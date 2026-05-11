@@ -1,0 +1,9 @@
+{
+  "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/DateGenerator.java": [
+    21,
+    22
+  ],
+  "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/DateParser.java": [
+    22
+  ]
+}
