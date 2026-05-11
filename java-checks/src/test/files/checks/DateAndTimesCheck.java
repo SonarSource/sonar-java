@@ -1,22 +1,20 @@
-import java.util.Date;
-import java.util.Locale;
-import java.util.Calendar;
+import java.util.Date; // Noncompliant {{Use the Java 8 Date and Time API instead.}}
+import java.util.Calendar; // Noncompliant
+
+// java.util.Date and java.util.Calendar subclasses
+import java.sql.Date; // Noncompliant
+import java.util.GregorianCalendar; // Noncompliant
+
+import java.util.Locale; // Compliant (locale can be used in other contexts than date and time)
+
 import org.joda.time.DateTime; // Noncompliant {{Use the Java 8 Date and Time API instead.}}
 import org.joda.time.*; // Noncompliant {{Use the Java 8 Date and Time API instead.}}
-import java.time.LocalDateTime;
+
+import java.time.LocalDateTime; // Compliant
 
 class A {
   void javaUtil() {
-    Date now = new Date(); // Noncompliant {{Use the Java 8 Date and Time API instead.}}
-    //         ^^^^^^^^^^
-    now = new Date(1499159427440L); // Noncompliant
-    //    ^^^^^^^^^^^^^^^^^^^^^^^^
-    DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-
-    Calendar christmas  = Calendar.getInstance(); // Noncompliant
-    //                    ^^^^^^^^^^^^^^^^^^^^^^
-    christmas = Calendar.getInstance(Locale.CANADA); // Noncompliant
-    //          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    christmas.setTime(df.parse("25.12.2020"));
+    Date now = new Date();
+    Calendar christmas  = Calendar.getInstance();
   }
 }

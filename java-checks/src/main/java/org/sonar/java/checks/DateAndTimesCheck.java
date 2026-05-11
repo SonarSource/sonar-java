@@ -19,37 +19,16 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2143")
-public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
-
-  private static final MethodMatchers METHOD_MATCHERS = MethodMatchers.or(
-    MethodMatchers.create().ofTypes("java.util.Calendar").names("getInstance").withAnyParameters().build(),
-    MethodMatchers.create().ofTypes("java.util.Date").constructor().withAnyParameters().build());
-
-  @Override
-  protected MethodMatchers getMethodInvocationMatchers() {
-    return METHOD_MATCHERS;
-  }
-
-  @Override
-  protected void onConstructorFound(NewClassTree newClassTree) {
-    reportIssue(newClassTree);
-  }
-
-  @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(mit);
-  }
+public class DateAndTimesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private void reportIssue(Tree tree) {
     reportIssue(tree, "Use the Java 8 Date and Time API instead." + context.getJavaVersion().java8CompatibilityMessage());
@@ -62,20 +41,25 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    List<Tree.Kind> kinds = new java.util.ArrayList<>(super.nodesToVisit());
-    kinds.add(Tree.Kind.IMPORT);
-    return kinds;
+    return List.of(Tree.Kind.IMPORT);
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (tree instanceof ImportTree importTree) {
       String qualifiedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
-      if (qualifiedName.startsWith("org.joda.time.")) {
+      if (qualifiedName.startsWith("org.joda.time.") || isJavaUtilDateSubclass(qualifiedName) || isJavaUtilCalendarSubclass(qualifiedName)) {
         reportIssue(importTree);
       }
     }
-    super.visitNode(tree);
+  }
+
+  private boolean isJavaUtilDateSubclass(String qualifiedName) {
+    return context.getSemanticModel() instanceof Sema semanticModel && semanticModel.getClassType(qualifiedName).isSubtypeOf("java.util.Date");
+  }
+
+  private boolean isJavaUtilCalendarSubclass(String qualifiedName) {
+    return context.getSemanticModel() instanceof Sema semanticModel && semanticModel.getClassType(qualifiedName).isSubtypeOf("java.util.Calendar");
   }
 
 }
