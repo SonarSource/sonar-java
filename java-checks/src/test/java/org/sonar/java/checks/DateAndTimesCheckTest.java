@@ -30,4 +30,13 @@ class DateAndTimesCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_wildcard_import() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DateAndTimesCheckWildcardImport.java")
+      .withCheck(new DateAndTimesCheck())
+      .withJavaVersion(8)
+      .verifyIssues();
+  }
+
 }

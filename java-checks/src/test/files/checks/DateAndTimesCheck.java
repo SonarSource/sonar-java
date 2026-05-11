@@ -17,8 +17,10 @@ import static java.util.Date.from; // Noncompliant
 
 class A {
   void javaUtil() {
-    Date now = new Date();
-    Calendar christmas  = Calendar.getInstance();
+    Date now = new Date(); // Noncompliant
+    //         ^^^^^^^^^^
+    Calendar christmas  = Calendar.getInstance(); // Noncompliant
+    //                    ^^^^^^^^^^^^^^^^^^^^^^
     Date epochDate = from(Instant.EPOCH);
   }
 }

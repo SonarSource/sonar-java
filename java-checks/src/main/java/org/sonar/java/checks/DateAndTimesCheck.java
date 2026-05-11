@@ -19,16 +19,33 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S2143")
-public class DateAndTimesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
+
+  private static final MethodMatchers CALENDAR_GET_INSTANCE =
+    MethodMatchers.create()
+      .ofSubTypes("java.util.Calendar")
+      .names("getInstance")
+      .withAnyParameters()
+      .build();
+
+  private static final MethodMatchers DATE_CONSTRUCTOR =
+    MethodMatchers.create()
+      .ofSubTypes("java.util.Date")
+      .constructor()
+      .withAnyParameters()
+      .build();
 
   private void reportIssue(Tree tree) {
     reportIssue(tree, "Use the Java 8 Date and Time API instead." + context.getJavaVersion().java8CompatibilityMessage());
@@ -41,7 +58,9 @@ public class DateAndTimesCheck extends IssuableSubscriptionVisitor implements Ja
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.IMPORT);
+    List<Tree.Kind> nodes = new java.util.ArrayList<>(super.nodesToVisit());
+    nodes.add(Tree.Kind.IMPORT);
+    return nodes;
   }
 
   @Override
@@ -54,10 +73,26 @@ public class DateAndTimesCheck extends IssuableSubscriptionVisitor implements Ja
         reportIssue(importTree);
       }
     }
+    super.visitNode(tree);
+  }
+
+  @Override
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(CALENDAR_GET_INSTANCE, DATE_CONSTRUCTOR);
+  }
+
+  @Override
+  protected void onConstructorFound(NewClassTree newClassTree) {
+    reportIssue(newClassTree);
+  }
+
+  @Override
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    reportIssue(mit);
   }
 
   private boolean isSubclassOrStaticMethodOf(String qualifiedName, String superclass) {
-    return qualifiedName.startsWith(superclass)
+    return qualifiedName.startsWith(superclass + ".")
       || (context.getSemanticModel() instanceof Sema semanticModel && semanticModel.getClassType(qualifiedName).isSubtypeOf(superclass));
   }
 
