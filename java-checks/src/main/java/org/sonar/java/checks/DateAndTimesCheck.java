@@ -48,18 +48,18 @@ public class DateAndTimesCheck extends IssuableSubscriptionVisitor implements Ja
   public void visitNode(Tree tree) {
     if (tree instanceof ImportTree importTree) {
       String qualifiedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
-      if (qualifiedName.startsWith("org.joda.time.") || isJavaUtilDateSubclass(qualifiedName) || isJavaUtilCalendarSubclass(qualifiedName)) {
+      if (qualifiedName.startsWith("org.joda.time.")
+        || isSubclassOrStaticMethodOf(qualifiedName, "java.util.Date")
+        || isSubclassOrStaticMethodOf(qualifiedName, "java.util.Calendar")) {
         reportIssue(importTree);
       }
     }
   }
 
-  private boolean isJavaUtilDateSubclass(String qualifiedName) {
-    return context.getSemanticModel() instanceof Sema semanticModel && semanticModel.getClassType(qualifiedName).isSubtypeOf("java.util.Date");
+  private boolean isSubclassOrStaticMethodOf(String qualifiedName, String superclass) {
+    return qualifiedName.startsWith(superclass)
+      || (context.getSemanticModel() instanceof Sema semanticModel && semanticModel.getClassType(qualifiedName).isSubtypeOf(superclass));
   }
 
-  private boolean isJavaUtilCalendarSubclass(String qualifiedName) {
-    return context.getSemanticModel() instanceof Sema semanticModel && semanticModel.getClassType(qualifiedName).isSubtypeOf("java.util.Calendar");
-  }
 
 }

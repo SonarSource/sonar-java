@@ -11,10 +11,14 @@ import org.joda.time.DateTime; // Noncompliant {{Use the Java 8 Date and Time AP
 import org.joda.time.*; // Noncompliant {{Use the Java 8 Date and Time API instead.}}
 
 import java.time.LocalDateTime; // Compliant
+import java.time.Instant; // Compliant
+
+import static java.util.Date.from; // Noncompliant
 
 class A {
   void javaUtil() {
     Date now = new Date();
     Calendar christmas  = Calendar.getInstance();
+    Date epochDate = from(Instant.EPOCH);
   }
 }
