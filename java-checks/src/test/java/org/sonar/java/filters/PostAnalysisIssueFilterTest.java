@@ -59,7 +59,7 @@ class PostAnalysisIssueFilterTest {
 
   @Test
   void number_of_issue_filters() {
-    assertThat(postAnalysisIssueFilter.issueFilters()).hasSize(6);
+    assertThat(postAnalysisIssueFilter.issueFilters()).hasSize(7);
   }
 
   @Test
@@ -106,7 +106,7 @@ class PostAnalysisIssueFilterTest {
   @Test
   void issue_filter_should_scan_file_with_all_filters() {
     postAnalysisIssueFilter.scanFile(context);
-    verify(context, times(6)).getInputFile();
+    verify(context, times(7)).getInputFile();
   }
 
 }
