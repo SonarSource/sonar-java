@@ -14,6 +14,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static java.time.ZonedDateTime.now;
+
 public class NowWithoutParametersCheckSample {
 
   void nowWithoutParameters() {
@@ -35,6 +37,8 @@ public class NowWithoutParametersCheckSample {
     //                              ^^^^^
     ZonedDateTime zonedDateTime = ZonedDateTime.now(); // Noncompliant {{Explicitly specify the time zone by passing a ZoneId or a Clock to the .now() method.}}
     //                                          ^^^^^
+    ZonedDateTime zonedDateTime1 = now(); // Noncompliant {{Explicitly specify the time zone by passing a ZoneId or a Clock to the .now() method.}}
+    //                             ^^^^^
   }
 
   void nowWithParameters(Clock clock, ZoneId zoneId) {
