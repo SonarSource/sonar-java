@@ -49,6 +49,11 @@ class ExpectedExceptionFilter {
     OffsetDateTime.from(instant); // WithIssue
   }
 
+  @org.testng.annotations.Test(expectedExceptions = {IllegalArgumentException.class, DateTimeException.class})
+  public void testngExpectedMultipleException() {
+    OffsetDateTime.from(instant); // NoIssue
+  }
+
   @org.junit.jupiter.api.Test
   void junit5AssertThrowsExpectedDateTimeException() {
     org.junit.jupiter.api.Assertions.assertThrows(DateTimeException.class, () -> Instant.from(date)); // NoIssue

@@ -135,12 +135,12 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
       excludeLines(mit.arguments().get(0), InstantConversionsCheck.class);
     } else if (ASSERTJ_ASSERT_CODE.matches(mit)) {
       MethodTreeUtils.subsequentMethodInvocation(mit, ASSERTJ_INSTANCE_OF_PREDICATES).ifPresent(subsequentMit -> {
-        if (anyHasDateTimeExceptionType(subsequentMit.arguments(), false)) {
+        if (hasDateTimeExceptionType(subsequentMit.arguments(), false)) {
           excludeLines(mit.arguments().get(0), InstantConversionsCheck.class);
         }
       });
       MethodTreeUtils.subsequentMethodInvocation(mit, ASSERTJ_EXACT_INSTANCE_OF_PREDICATES).ifPresent(subsequentMit -> {
-        if (anyHasDateTimeExceptionType(subsequentMit.arguments(), true)) {
+        if (hasDateTimeExceptionType(subsequentMit.arguments(), true)) {
           excludeLines(mit.arguments().get(0), InstantConversionsCheck.class);
         }
       });
@@ -188,7 +188,7 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
   private static Optional<Type> classLiteralType(ExpressionTree expression) {
     if (expression.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expression;
-      if ("class" .equals(memberSelect.identifier().name())) {
+      if ("class".equals(memberSelect.identifier().name())) {
         return Optional.of(memberSelect.expression().symbolType());
       }
     }
@@ -229,7 +229,7 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
     return expression.is(Tree.Kind.ASSIGNMENT) ? ((AssignmentExpressionTree) expression).expression() : expression;
   }
 
-  private static boolean anyHasDateTimeExceptionType(List<ExpressionTree> expressions, boolean exact) {
+  private static boolean hasDateTimeExceptionType(List<ExpressionTree> expressions, boolean exact) {
     return expressions.stream().anyMatch(expression -> isDateTimeExceptionClass(expression, exact));
   }
 
