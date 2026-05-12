@@ -13,9 +13,12 @@
     25
   ],
   "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java": [
-    29
+    29,
+    252,
+    273
   ],
   "org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
-    39
+    39,
+    681
   ]
 }
