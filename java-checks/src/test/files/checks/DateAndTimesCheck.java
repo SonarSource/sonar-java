@@ -14,7 +14,8 @@ import java.time.LocalDateTime; // Compliant
 import java.time.Instant; // Compliant
 
 import static java.util.Date.from; // Noncompliant
-import static java.sql.Date.from; // Compliant (limitation)
+import static java.sql.Date.from; // Noncompliant
+import static org.joda.time.Minutes.minutesBetween; // Noncompliant
 
 class A {
   void javaUtil() {

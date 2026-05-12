@@ -67,10 +67,11 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
   @Override
   public void visitNode(Tree tree) {
     if (tree instanceof ImportTree importTree) {
-      String qualifiedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
+      String concatenatedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
+      String qualifiedName = importTree.isStatic() ? concatenatedName.substring(0, concatenatedName.lastIndexOf('.')) : concatenatedName;
       if (qualifiedName.startsWith("org.joda.time.")
-        || isSubclassOrStaticMethodOf(qualifiedName, "java.util.Date")
-        || isSubclassOrStaticMethodOf(qualifiedName, "java.util.Calendar")) {
+        || isSubclassOf(qualifiedName, "java.util.Date")
+        || isSubclassOf(qualifiedName, "java.util.Calendar")) {
         reportIssue(importTree);
       }
     }
@@ -92,9 +93,8 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
     reportIssue(mit);
   }
 
-  private boolean isSubclassOrStaticMethodOf(String qualifiedName, String superclass) {
-    return qualifiedName.startsWith(superclass + ".")
-      || (context.getSemanticModel() instanceof Sema semanticModel && semanticModel.getClassType(qualifiedName).isSubtypeOf(superclass));
+  private boolean isSubclassOf(String qualifiedName, String superclass) {
+    return context.getSemanticModel() instanceof Sema semanticModel && semanticModel.getClassType(qualifiedName).isSubtypeOf(superclass);
   }
 
 
