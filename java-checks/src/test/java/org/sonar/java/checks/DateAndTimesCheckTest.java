@@ -42,7 +42,7 @@ class DateAndTimesCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/DateAndTimesCheckNoSemantic.java")
+      .onFile("src/test/files/checks/DateAndTimesCheck.java")
       .withCheck(new DateAndTimesCheck())
       .withJavaVersion(8)
       .withoutSemantic()

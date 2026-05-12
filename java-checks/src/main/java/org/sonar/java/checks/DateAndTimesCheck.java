@@ -18,13 +18,13 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -48,6 +48,12 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
       .withAnyParameters()
       .build();
 
+  private static final Set<String> KNOWN_JAVA_UTIL_DATE_TIME_CLASSES = Set.of(
+    "java.util.Date", "java.util.Calendar",
+    "java.sql.Date", "java.sql.Time", "java.sql.Timestamp",
+    "java.util.GregorianCalendar"
+  );
+
   private void reportIssue(Tree tree) {
     reportIssue(tree, "Use the Java 8 Date and Time API instead." + context.getJavaVersion().java8CompatibilityMessage());
   }
@@ -70,8 +76,7 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
       String concatenatedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
       String qualifiedName = importTree.isStatic() ? concatenatedName.substring(0, concatenatedName.lastIndexOf('.')) : concatenatedName;
       if (qualifiedName.startsWith("org.joda.time.")
-        || isSubclassOf(qualifiedName, "java.util.Date")
-        || isSubclassOf(qualifiedName, "java.util.Calendar")) {
+        || KNOWN_JAVA_UTIL_DATE_TIME_CLASSES.stream().anyMatch(qualifiedName::startsWith)){
         reportIssue(importTree);
       }
     }
@@ -92,10 +97,5 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     reportIssue(mit);
   }
-
-  private boolean isSubclassOf(String qualifiedName, String superclass) {
-    return context.getSemanticModel() instanceof Sema semanticModel && semanticModel.getClassType(qualifiedName).isSubtypeOf(superclass);
-  }
-
 
 }

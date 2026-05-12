@@ -7,6 +7,6 @@ class A {
     Calendar christmas  = Calendar.getInstance(); // Noncompliant
     //                    ^^^^^^^^^^^^^^^^^^^^^^
     Calendar gregorianCalendar = GregorianCalendar.getInstance(); // Noncompliant
-    Timestamp timestamp = new Timestamp(1735689600000L); // Compliant, the rule ignores this case (limitation)
+    Timestamp timestamp = new Timestamp(1735689600000L); // Compliant, the rule ignores this case (known limitation)
   }
 }
