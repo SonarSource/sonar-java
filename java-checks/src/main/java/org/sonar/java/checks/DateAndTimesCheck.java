@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -58,7 +59,7 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    List<Tree.Kind> nodes = new java.util.ArrayList<>(super.nodesToVisit());
+    List<Tree.Kind> nodes = new ArrayList<>(super.nodesToVisit());
     nodes.add(Tree.Kind.IMPORT);
     return nodes;
   }
