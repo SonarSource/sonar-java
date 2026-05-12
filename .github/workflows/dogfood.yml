@@ -12,7 +12,7 @@ on:
 
 jobs:
   dogfood_merge:
-    runs-on: sonar-m-docker
+    runs-on: warp-custom-ubuntu-24-04
     name: Update dogfood branch
     permissions:
       id-token: write # required for SonarSource/vault-action-wrapper
