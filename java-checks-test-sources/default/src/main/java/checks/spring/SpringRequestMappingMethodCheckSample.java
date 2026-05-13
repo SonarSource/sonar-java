@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/home")
 public class SpringRequestMappingMethodCheckSample {
 
-  @RequestMapping("/") // Noncompliant {{Make sure allowing safe and unsafe HTTP methods is safe here.}}
+  @RequestMapping("/") // Noncompliant {{Do not use @RequestMapping without specifying the allowed HTTP methods.}}
 // ^^^^^^^^^^^^^^
   String home() {
     return "Hello from get";
@@ -31,8 +31,7 @@ public class SpringRequestMappingMethodCheckSample {
     return "Hello from get";
   }
 
-  @RequestMapping(path = "/delete", method = {RequestMethod.GET, RequestMethod.POST}) // Noncompliant {{Make sure allowing safe and unsafe HTTP methods is safe here.}}
-//                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  @RequestMapping(path = "/delete", method = {RequestMethod.GET, RequestMethod.POST}) // Compliant - explicit methods
   String delete(@RequestParam("id") String id) {
     return "Hello from delete";
   }
@@ -47,7 +46,7 @@ public class SpringRequestMappingMethodCheckSample {
     return "unsafe";
   }
 
-  @RequestMapping(path = "/all", method = { // Noncompliant
+  @RequestMapping(path = "/all", method = { // Compliant - explicit methods
     RequestMethod.GET, RequestMethod.HEAD, RequestMethod.OPTIONS, RequestMethod.TRACE,
     RequestMethod.DELETE, RequestMethod.PATCH, RequestMethod.POST, RequestMethod.PUT
   })
@@ -64,17 +63,17 @@ public class SpringRequestMappingMethodCheckSample {
       return "Hello from get";
     }
 
-    @RequestMapping(value = "/post", method = RequestMethod.POST) // Noncompliant
+    @RequestMapping(value = "/post", method = RequestMethod.POST) // Compliant - explicit methods
     String post() {
       return "Hello from post";
     }
 
-    @RequestMapping(value = "/put", method = RequestMethod.PUT) // Noncompliant
+    @RequestMapping(value = "/put", method = RequestMethod.PUT) // Compliant - explicit methods
     String put() {
       return "Hello from put";
     }
 
-    @RequestMapping(value = "/delete", method = RequestMethod.DELETE) // Noncompliant
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE) // Compliant - explicit methods
     String delete() {
       return "Hello from delete";
     }
@@ -83,12 +82,12 @@ public class SpringRequestMappingMethodCheckSample {
   @RestController
   @RequestMapping(path = "/update", method = RequestMethod.POST)
   public static class UpdateController {
-    @RequestMapping(value = "/", method = RequestMethod.GET) // Noncompliant
+    @RequestMapping(value = "/", method = RequestMethod.GET) // Compliant - explicit methods
     String get() {
       return "Hello from get";
     }
 
-    @RequestMapping(value = "/head", method = RequestMethod.HEAD) // Noncompliant
+    @RequestMapping(value = "/head", method = RequestMethod.HEAD) // Compliant - explicit methods
     String head() {
       return "Hello from head";
     }
@@ -128,7 +127,7 @@ public class SpringRequestMappingMethodCheckSample {
 
   public static class DummyFoo implements Dummy {
 
-    @RequestMapping(path = "/other") // Noncompliant
+    @RequestMapping(path = "/other") // Noncompliant {{Do not use @RequestMapping without specifying the allowed HTTP methods.}}
     String get() {
       return "Hello from get";
     }

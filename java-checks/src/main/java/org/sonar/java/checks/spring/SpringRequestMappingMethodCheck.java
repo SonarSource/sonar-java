@@ -16,12 +16,9 @@
  */
 package org.sonar.java.checks.spring;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -29,7 +26,6 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -43,12 +39,7 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
   private static final String REQUEST_MAPPING_CLASS = "org.springframework.web.bind.annotation.RequestMapping";
 
   private static final String REQUEST_METHOD = "method";
-  public static final String MESSAGE = "Make sure allowing safe and unsafe HTTP methods is safe here.";
-
-  private boolean classHasSafeMethods;
-  private boolean classHasUnsafeMethods;
-  private boolean methodHasSafeMethods;
-  private boolean methodHasUnsafeMethods;
+  public static final String MESSAGE = "Do not use @RequestMapping without specifying the allowed HTTP methods.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -58,34 +49,17 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    resetFlags();
-    findRequestMappingAnnotation(classTree.modifiers())
-      .flatMap(SpringRequestMappingMethodCheck::findRequestMethods)
-      .filter(this::mixesSafeAndUnsafeMethodsOnClass)
-      .ifPresent(methods -> reportIssue(methods, MESSAGE));
     classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .forEach(member -> checkMethod((MethodTree) member, classTree.symbol()));
   }
 
   private void checkMethod(MethodTree method, Symbol.TypeSymbol classSymbol) {
-    Optional<AnnotationTree> requestMappingAnnotation = findRequestMappingAnnotation(method.modifiers());
-    Optional<ExpressionTree> requestMethods = requestMappingAnnotation
-      .flatMap(SpringRequestMappingMethodCheck::findRequestMethods);
-
-    if (requestMethods.isPresent()) {
-      Optional<ExpressionTree> expressionTree = requestMethods
-        .filter(this::mixesSafeAndUnsafeMethodsOnMethod);
-      if (expressionTree.isPresent()) {
-        reportIssue(expressionTree.get(), MESSAGE);
-      } else {
-        if ((classHasSafeMethods && methodHasUnsafeMethods) || (classHasUnsafeMethods && methodHasSafeMethods)) {
-          reportIssue(requestMethods.get(), MESSAGE);
-        }
+    findRequestMappingAnnotation(method.modifiers()).ifPresent(annotation -> {
+      if (findRequestMethods(annotation).isEmpty() && !inheritRequestMethod(classSymbol)) {
+        reportIssue(annotation.annotationType(), MESSAGE);
       }
-    } else if (requestMappingAnnotation.isPresent() && !inheritRequestMethod(classSymbol)) {
-      reportIssue(requestMappingAnnotation.get().annotationType(), MESSAGE);
-    }
+    });
   }
 
   private static Optional<AnnotationTree> findRequestMappingAnnotation(ModifiersTree modifiers) {
@@ -118,43 +92,6 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
       }
     }
     return false;
-  }
-
-  private boolean mixesSafeAndUnsafeMethodsOnClass(ExpressionTree requestMethodsAssignment) {
-    HttpMethodVisitor visitor = new HttpMethodVisitor();
-    requestMethodsAssignment.accept(visitor);
-    classHasSafeMethods = visitor.hasSafeMethods;
-    classHasUnsafeMethods = visitor.hasUnsafeMethods;
-    return visitor.hasSafeMethods && visitor.hasUnsafeMethods;
-  }
-
-  private boolean mixesSafeAndUnsafeMethodsOnMethod(ExpressionTree requestMethodsAssignment) {
-    HttpMethodVisitor visitor = new HttpMethodVisitor();
-    requestMethodsAssignment.accept(visitor);
-    methodHasSafeMethods = visitor.hasSafeMethods;
-    methodHasUnsafeMethods = visitor.hasUnsafeMethods;
-    return visitor.hasSafeMethods && visitor.hasUnsafeMethods;
-  }
-
-  private void resetFlags() {
-    classHasSafeMethods = false;
-    classHasUnsafeMethods = false;
-    methodHasSafeMethods = false;
-    methodHasUnsafeMethods = false;
-  }
-
-  private static class HttpMethodVisitor extends BaseTreeVisitor {
-    private static final Set<String> SAFE_METHODS = new HashSet<>(Arrays.asList("GET", "HEAD", "OPTIONS", "TRACE"));
-    private static final Set<String> UNSAFE_METHODS = new HashSet<>(Arrays.asList("DELETE", "PATCH", "POST", "PUT"));
-
-    private boolean hasSafeMethods = false;
-    private boolean hasUnsafeMethods = false;
-
-    @Override
-    public void visitIdentifier(IdentifierTree tree) {
-      hasSafeMethods |= SAFE_METHODS.contains(tree.name());
-      hasUnsafeMethods |= UNSAFE_METHODS.contains(tree.name());
-    }
   }
 
 }
