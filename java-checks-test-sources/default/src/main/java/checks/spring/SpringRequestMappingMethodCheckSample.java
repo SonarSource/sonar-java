@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/home")
 public class SpringRequestMappingMethodCheckSample {
 
-  @RequestMapping("/") // Noncompliant {{Do not use @RequestMapping without specifying the allowed HTTP methods.}}
+  @RequestMapping("/") // Noncompliant {{Explicitly specify the HTTP methods this endpoint accepts.}}
 // ^^^^^^^^^^^^^^
   String home() {
     return "Hello from get";
@@ -128,7 +128,7 @@ public class SpringRequestMappingMethodCheckSample {
 
   public static class DummyFoo implements Dummy {
 
-    @RequestMapping(path = "/other") // Noncompliant {{Do not use @RequestMapping without specifying the allowed HTTP methods.}}
+    @RequestMapping(path = "/other") // Noncompliant {{Explicitly specify the HTTP methods this endpoint accepts.}}
     String get() {
       return "Hello from get";
     }

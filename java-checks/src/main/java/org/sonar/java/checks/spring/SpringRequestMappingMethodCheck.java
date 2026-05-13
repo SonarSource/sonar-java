@@ -40,7 +40,7 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
   private static final String ERROR_CONTROLLER_CLASS = "org.springframework.boot.web.servlet.error.ErrorController";
 
   private static final String REQUEST_METHOD = "method";
-  public static final String MESSAGE = "Do not use @RequestMapping without specifying the allowed HTTP methods.";
+  public static final String MESSAGE = "Explicitly specify the HTTP methods this endpoint accepts.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
