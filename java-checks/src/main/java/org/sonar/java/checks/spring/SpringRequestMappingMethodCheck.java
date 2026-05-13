@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor {
 
   private static final String REQUEST_MAPPING_CLASS = "org.springframework.web.bind.annotation.RequestMapping";
+  private static final String ERROR_CONTROLLER_CLASS = "org.springframework.boot.web.servlet.error.ErrorController";
 
   private static final String REQUEST_METHOD = "method";
   public static final String MESSAGE = "Do not use @RequestMapping without specifying the allowed HTTP methods.";
@@ -49,6 +50,9 @@ public class SpringRequestMappingMethodCheck extends IssuableSubscriptionVisitor
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
+    if (classTree.symbol().type().isSubtypeOf(ERROR_CONTROLLER_CLASS)) {
+      return;
+    }
     classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .forEach(member -> checkMethod((MethodTree) member, classTree.symbol()));

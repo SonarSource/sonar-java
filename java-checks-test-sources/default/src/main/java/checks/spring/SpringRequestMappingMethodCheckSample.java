@@ -1,5 +1,6 @@
 package checks.spring;
 
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -130,6 +131,15 @@ public class SpringRequestMappingMethodCheckSample {
     @RequestMapping(path = "/other") // Noncompliant {{Do not use @RequestMapping without specifying the allowed HTTP methods.}}
     String get() {
       return "Hello from get";
+    }
+  }
+
+  @RestController
+  public static class CustomErrorController implements ErrorController {
+
+    @RequestMapping("/error") // Compliant - ErrorController implementations are excluded
+    String error() {
+      return "error";
     }
   }
 
