@@ -136,6 +136,11 @@ public class SpringRequestMappingMethodCheckSample {
 
   @RestController
   public static class CustomErrorController implements ErrorController {
+    
+    @Override
+    public String getErrorPath() {
+      return "/error";
+    }
 
     @RequestMapping("/error") // Compliant - ErrorController implementations are excluded
     String error() {
