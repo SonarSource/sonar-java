@@ -99,7 +99,7 @@ The "Sanity Test" is a test that runs all checks against all the test source fil
 
 #### Plugin Test
 
-The "Plugin Test" is an integration test suite that verifies plugin features such as metric calculation, coverage, etc. To launch it:
+The "Plugin Test" is an integration test suite that verifies plugin features such as metric calculation, coverage, etc. To launch it, build the plugin first (`mvn clean install`), then run:
 
     mvn clean install -Pit-plugin -DcommunityEditionTestsOnly=true
 
