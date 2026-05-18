@@ -107,14 +107,14 @@
     <artifactsToPublish>${project.groupId}:sonar-java-plugin:jar</artifactsToPublish>
 
     <!-- Overrides parent pom to use a more recent version of jacoco -->
-    <version.jacoco.plugin>0.8.13</version.jacoco.plugin>
+    <version.jacoco.plugin>0.8.14</version.jacoco.plugin>
 
-    <mockito-core.version>5.18.0</mockito-core.version>
+    <mockito-core.version>5.23.0</mockito-core.version>
     <test-java-agent-directory>${project.build.directory}/test-java-agent-libs</test-java-agent-directory>
     <jacoco-agent-jar>org.jacoco.agent-${version.jacoco.plugin}-runtime.jar</jacoco-agent-jar>
     <mockito-agent-jar>mockito-core-${mockito-core.version}.jar</mockito-agent-jar>
 
-    <slf4j.version>1.7.30</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
   </properties>
 
   <distributionManagement>
@@ -208,7 +208,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>33.4.8-jre</version>
+        <version>33.6.0-jre</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
@@ -236,7 +236,7 @@
       <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
-        <version>5.11.2</version>
+        <version>5.14.4</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -290,17 +290,17 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-expression</artifactId>
-        <version>6.2.11</version>
+        <version>6.2.18</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.19.0</version>
+        <version>2.22.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.13.1</version>
+        <version>2.14.0</version>
         <scope>compile</scope>
       </dependency>
       <!-- staxmate is used by java-surefire -->
