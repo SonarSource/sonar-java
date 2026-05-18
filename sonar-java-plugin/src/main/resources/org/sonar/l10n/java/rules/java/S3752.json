@@ -1,6 +1,6 @@
 {
-  "title": "Allowing both safe and unsafe HTTP methods is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "HTTP routes should restrict allowed HTTP methods",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "LOW"
@@ -8,13 +8,15 @@
     "attribute": "COMPLETE"
   },
   "status": "ready",
+  "quickfix": "unknown",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
     "cwe",
-    "spring"
+    "spring",
+    "former-hotspot"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-3752",
@@ -41,6 +43,5 @@
       "13.2.3",
       "4.2.2"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }
