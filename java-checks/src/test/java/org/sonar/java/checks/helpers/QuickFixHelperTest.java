@@ -25,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 import org.sonar.java.Preconditions;
 import org.sonar.java.checks.helpers.QuickFixHelper.ImportSupplier;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -51,7 +52,10 @@ class QuickFixHelperTest {
 
   static class VariableWithoutNext implements ArgumentsProvider {
     @Override
-    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+    public Stream<? extends Arguments> provideArguments(ParameterDeclarations parameterDeclarations, ExtensionContext extensionContext) {
+      if (parameterDeclarations.getAll().size() != 1) {
+        throw new IllegalArgumentException("Exactly one parameter is expected.");
+      }
       return Stream.of(
         arguments("record A(int target, int ignore) { }"),
         arguments("record A(int ignore, int target) { }"),
@@ -84,7 +88,10 @@ class QuickFixHelperTest {
 
   static class VariableWithoutPrevious implements ArgumentsProvider {
     @Override
-    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+    public Stream<? extends Arguments> provideArguments(ParameterDeclarations parameterDeclarations, ExtensionContext extensionContext) {
+      if (parameterDeclarations.getAll().size() != 1) {
+        throw new IllegalArgumentException("Exactly one parameter is expected.");
+      }
       return Stream.of(
         arguments("record A(int target, int ignore) { }"),
         arguments("record A(int ignore, int target) { }"),
@@ -117,7 +124,10 @@ class QuickFixHelperTest {
 
   static class VariableWithPrevious implements ArgumentsProvider {
     @Override
-    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+    public Stream<? extends Arguments> provideArguments(ParameterDeclarations parameterDeclarations, ExtensionContext extensionContext) {
+      if (parameterDeclarations.getAll().size() != 1) {
+        throw new IllegalArgumentException("Exactly one parameter is expected.");
+      }
       return Stream.of(
         arguments("class A { int previous, target = 42; }"),
         arguments("class A { int ignore, previous, target = 42; }"),
@@ -137,7 +147,10 @@ class QuickFixHelperTest {
 
   static class VariableWithNext implements ArgumentsProvider {
     @Override
-    public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+    public Stream<? extends Arguments> provideArguments(ParameterDeclarations parameterDeclarations, ExtensionContext extensionContext) {
+      if (parameterDeclarations.getAll().size() != 1) {
+        throw new IllegalArgumentException("Exactly one parameter is expected.");
+      }
       return Stream.of(
         arguments("class A { int target, next = 42; }"),
         arguments("class A { int ignore, target, next = 42; }"),
