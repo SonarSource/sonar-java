@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
@@ -28,6 +29,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+@Rule(key = "S8694")
 public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
   private static final MethodMatchers LOCAL_DATE_OF_MATCHER = MethodMatchers.create()
@@ -80,7 +82,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     .addParametersMatcher("int")
     .build();
 
-  private static final MethodMatchers OF_USING_MONTH_ENUMS = MethodMatchers.or(LOCAL_DATE_OF_MATCHER, LOCAL_DATE_TIME_OF_MATCHER, OFFSET_DATE_TIME_OF_MATCHER,
+  private static final MethodMatchers DATE_OF_MATCHERS = MethodMatchers.or(LOCAL_DATE_OF_MATCHER, LOCAL_DATE_TIME_OF_MATCHER, OFFSET_DATE_TIME_OF_MATCHER,
     ZONED_DATE_TIME_OF_MATCHER, YEAR_MONTH_OF_MATCHER);
 
   private static final MethodMatchers GET_MONTH_VALUE_MATCHER = MethodMatchers.create()
@@ -106,8 +108,13 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   private static final String DAY_ISSUE_MESSAGE = "Use a \"java.time.DayOfWeek\" enum constant instead of this int literal.";
 
   @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava8Compatible();
+  }
+
+  @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.or(OF_USING_MONTH_ENUMS, DAY_OF_WEEK_OF_MATCHER, MONTH_OF_MATCHER, MONTH_DAY_OF_MATCHER);
+    return MethodMatchers.or(DATE_OF_MATCHERS, DAY_OF_WEEK_OF_MATCHER, MONTH_OF_MATCHER, MONTH_DAY_OF_MATCHER);
   }
 
   @Override
@@ -120,7 +127,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (OF_USING_MONTH_ENUMS.matches(mit)) {
+    if (DATE_OF_MATCHERS.matches(mit)) {
       ExpressionTree secondArgument = mit.arguments().get(1);
       if (isIntLiteral(secondArgument)) {
         reportIssue(secondArgument, MONTH_ISSUE_MESSAGE);
@@ -155,21 +162,15 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   }
 
   private void checkComparison(BinaryExpressionTree binaryExpressionTree,  ExpressionTree methodCallSide, ExpressionTree literalSide) {
-    if (methodCallSide.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) methodCallSide;
-      if (MethodMatchers.or(GET_MONTH_VALUE_MATCHER, MONTH_GET_VALUE_MATCHER).matches(mit) && isIntLiteral(literalSide)) {
+    if (methodCallSide instanceof MethodInvocationTree mit && isIntLiteral(literalSide)) {
+      if (MethodMatchers.or(GET_MONTH_VALUE_MATCHER, MONTH_GET_VALUE_MATCHER).matches(mit)) {
         reportIssue(binaryExpressionTree, MONTH_ISSUE_MESSAGE);
         return;
       }
-      if (DAY_OF_WEEK_GET_VALUE_MATCHER.matches(mit) && isIntLiteral(literalSide)) {
+      if (DAY_OF_WEEK_GET_VALUE_MATCHER.matches(mit)) {
         reportIssue(binaryExpressionTree, DAY_ISSUE_MESSAGE);
       }
     }
-  }
-
-  @Override
-  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.isJava8Compatible();
   }
 
   private static boolean isIntLiteral(ExpressionTree arg) {
