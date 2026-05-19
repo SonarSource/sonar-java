@@ -44,6 +44,11 @@ public class SystemClockCheck extends AbstractMethodDetection {
       .ofTypes("java.time.Clock")
       .names("systemUTC", "systemDefaultZone", "system")
       .withAnyParameters()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.lang.System")
+      .names("currentTimeMillis")
+      .addWithoutParametersMatcher()
       .build()
   );
 
