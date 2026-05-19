@@ -39,19 +39,20 @@ import static java.util.Collections.singletonList;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-  JavaExtensionsTest.class,
-  JavaTutorialTest.class,
-  UnitTestsTest.class,
-  JavaTest.class,
-  JavaComplexityTest.class,
-  PackageInfoTest.class,
-  Struts139Test.class,
-  JavaClasspathTest.class,
-  SuppressWarningTest.class,
-  SonarLintTest.class,
-  ExternalReportTest.class,
+  CacheEnabledTest.class,
   DuplicationTest.class,
-  MultiModuleTelemetryTest.class
+  ExternalReportTest.class,
+  JavaClasspathTest.class,
+  JavaComplexityTest.class,
+  JavaExtensionsTest.class,
+  JavaTest.class,
+  JavaTutorialTest.class,
+  MultiModuleTelemetryTest.class,
+  PackageInfoTest.class,
+  SonarLintTest.class,
+  Struts139Test.class,
+  SuppressWarningTest.class,
+  UnitTestsTest.class
 })
 public class JavaTestSuite {
 
