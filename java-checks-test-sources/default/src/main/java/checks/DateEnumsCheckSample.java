@@ -27,6 +27,7 @@ public class DateEnumsCheckSample {
     MonthDay md = MonthDay.of(2, 16); // Noncompliant
     //                        ^
     MonthDay monthDay = MonthDay.of(+2, 16); // Noncompliant
+    LocalDate ld = LocalDate.of(2024, -1, 15); // Noncompliant
     DayOfWeek day = DayOfWeek.of(2); // Noncompliant {{Use a "java.time.DayOfWeek" enum constant instead of this int literal.}}
     Month month = Month.of(10); // Noncompliant {{Use a "java.time.Month" enum constant instead of this int literal.}}
 
@@ -52,7 +53,7 @@ public class DateEnumsCheckSample {
       //^^^^^^^^^^^^^^^^^^^^^
       return true;
     }
-    return date.getMonthValue() < 2; // Compliant
+    return date.getMonthValue() < 2; // Compliant; this comparison cannot be made using enum constants
   }
 
   boolean compliantDateManipulation(LocalDate date, DayOfWeek day, Month month) {

@@ -104,6 +104,8 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     .addWithoutParametersMatcher()
     .build();
 
+  private static final MethodMatchers MONTH_VALUE_MATCHERS = MethodMatchers.or(GET_MONTH_VALUE_MATCHER, MONTH_GET_VALUE_MATCHER);
+
   private static final String MONTH_ISSUE_MESSAGE = "Use a \"java.time.Month\" enum constant instead of this int literal.";
   private static final String DAY_ISSUE_MESSAGE = "Use a \"java.time.DayOfWeek\" enum constant instead of this int literal.";
 
@@ -140,8 +142,8 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       reportIssue(firstArgument, DAY_ISSUE_MESSAGE);
       return;
     }
-    if (MONTH_OF_MATCHER.matches(mit)
-      || MONTH_DAY_OF_MATCHER.matches(mit)
+    if ((MONTH_OF_MATCHER.matches(mit)
+      || MONTH_DAY_OF_MATCHER.matches(mit))
       && isIntLiteral(firstArgument)) {
       reportIssue(firstArgument, MONTH_ISSUE_MESSAGE);
     }
@@ -155,19 +157,24 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       ExpressionTree leftOperand = binaryExpressionTree.leftOperand();
       ExpressionTree rightOperand = binaryExpressionTree.rightOperand();
       // Check if left is method call and right is literal
-      checkComparison(binaryExpressionTree, leftOperand, rightOperand);
+      if (leftOperand instanceof MethodInvocationTree mit) {
+        checkComparison(binaryExpressionTree, mit, rightOperand);
+        return;
+      }
       // Check if right is method call and left is literal
-      checkComparison(binaryExpressionTree, rightOperand, leftOperand);
+      if (rightOperand instanceof MethodInvocationTree mit) {
+        checkComparison(binaryExpressionTree, mit , leftOperand);
+      }
     }
   }
 
-  private void checkComparison(BinaryExpressionTree binaryExpressionTree,  ExpressionTree methodCallSide, ExpressionTree literalSide) {
-    if (methodCallSide instanceof MethodInvocationTree mit && isIntLiteral(literalSide)) {
-      if (MethodMatchers.or(GET_MONTH_VALUE_MATCHER, MONTH_GET_VALUE_MATCHER).matches(mit)) {
+  private void checkComparison(BinaryExpressionTree binaryExpressionTree, MethodInvocationTree methodInvocationSide, ExpressionTree literalSide) {
+    if (isIntLiteral(literalSide)) {
+      if (MONTH_VALUE_MATCHERS.matches(methodInvocationSide)) {
         reportIssue(binaryExpressionTree, MONTH_ISSUE_MESSAGE);
         return;
       }
-      if (DAY_OF_WEEK_GET_VALUE_MATCHER.matches(mit)) {
+      if (DAY_OF_WEEK_GET_VALUE_MATCHER.matches(methodInvocationSide)) {
         reportIssue(binaryExpressionTree, DAY_ISSUE_MESSAGE);
       }
     }
