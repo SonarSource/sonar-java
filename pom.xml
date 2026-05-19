@@ -115,6 +115,8 @@
     <mockito-agent-jar>mockito-core-${mockito-core.version}.jar</mockito-agent-jar>
 
     <slf4j.version>1.7.30</slf4j.version>
+
+    <junit-jupiter.version>5.14.3</junit-jupiter.version>
   </properties>
 
   <distributionManagement>
@@ -244,6 +246,24 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.13.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit-jupiter.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${junit-jupiter.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>${junit-jupiter.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
