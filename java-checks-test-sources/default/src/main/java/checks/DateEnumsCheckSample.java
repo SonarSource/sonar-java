@@ -30,7 +30,8 @@ public class DateEnumsCheckSample {
     LocalDate ld = LocalDate.of(2024, -1, 15); // Noncompliant
     DayOfWeek day = DayOfWeek.of(2); // Noncompliant {{Use a "java.time.DayOfWeek" enum constant instead of this int literal.}}
     Month month = Month.of(10); // Noncompliant {{Use a "java.time.Month" enum constant instead of this int literal.}}
-
+    DayOfWeek parenthesized = DayOfWeek.of((-3)); // Noncompliant {{Use a "java.time.DayOfWeek" enum constant instead of this int literal.}}
+    DayOfWeek parenthesizedOutside = DayOfWeek.of(-(3)); // Noncompliant {{Use a "java.time.DayOfWeek" enum constant instead of this int literal.}}
   }
 
   void compliantDateCreation(int monthNumber) {

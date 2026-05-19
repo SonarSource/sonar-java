@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -32,43 +33,46 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S8694")
 public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
-  private static final MethodMatchers LOCAL_DATE_OF_MATCHER = MethodMatchers.create()
-    .ofTypes("java.time.LocalDate")
-    .names("of")
-    .addParametersMatcher("int", "int", "int")
-    .build();
+  private static final MethodMatchers METHOD_WITH_MONTH_AS_SECOND_ARGUMENT = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("java.time.LocalDate")
+      .names("of")
+      .addParametersMatcher("int", "int", "int")
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.time.LocalDateTime")
+      .names("of")
+      .addParametersMatcher("int", "int", "int", "int", "int")
+      .addParametersMatcher("int", "int", "int", "int", "int", "int")
+      .addParametersMatcher("int", "int", "int", "int", "int", "int", "int")
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.time.OffsetDateTime")
+      .names("of")
+      .addParametersMatcher("int", "int", "int", "int", "int", "int", "int", "java.time.ZoneOffset")
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.time.ZonedDateTime")
+      .names("of")
+      .addParametersMatcher("int", "int", "int", "int", "int", "int", "int", "java.time.ZoneId")
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.time.YearMonth")
+      .names("of")
+      .addParametersMatcher("int", "int")
+      .build());
 
-  private static final MethodMatchers LOCAL_DATE_TIME_OF_MATCHER = MethodMatchers.create()
-    .ofTypes("java.time.LocalDateTime")
-    .names("of")
-    .addParametersMatcher("int", "int", "int", "int", "int")
-    .addParametersMatcher("int", "int", "int", "int", "int", "int")
-    .addParametersMatcher("int", "int", "int", "int", "int", "int", "int")
-    .build();
-
-  private static final MethodMatchers OFFSET_DATE_TIME_OF_MATCHER = MethodMatchers.create()
-    .ofTypes("java.time.OffsetDateTime")
-    .names("of")
-    .addParametersMatcher("int", "int", "int", "int", "int", "int", "int", "java.time.ZoneOffset")
-    .build();
-
-  private static final MethodMatchers ZONED_DATE_TIME_OF_MATCHER = MethodMatchers.create()
-    .ofTypes("java.time.ZonedDateTime")
-    .names("of")
-    .addParametersMatcher("int", "int", "int", "int", "int", "int", "int", "java.time.ZoneId")
-    .build();
-
-  private static final MethodMatchers YEAR_MONTH_OF_MATCHER = MethodMatchers.create()
-    .ofTypes("java.time.YearMonth")
-    .names("of")
-    .addParametersMatcher("int", "int")
-    .build();
-
-  private static final MethodMatchers MONTH_DAY_OF_MATCHER = MethodMatchers.create()
-    .ofTypes("java.time.MonthDay")
-    .names("of")
-    .addParametersMatcher("int", "int")
-    .build();
+  private static final MethodMatchers METHOD_WITH_MONTH_AS_FIRST_ARGUMENT = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("java.time.MonthDay")
+      .names("of")
+      .addParametersMatcher("int", "int")
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.time.Month")
+      .names("of")
+      .addParametersMatcher("int")
+      .build());
 
   private static final MethodMatchers DAY_OF_WEEK_OF_MATCHER = MethodMatchers.create()
     .ofTypes("java.time.DayOfWeek")
@@ -76,35 +80,24 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     .addParametersMatcher("int")
     .build();
 
-  private static final MethodMatchers MONTH_OF_MATCHER = MethodMatchers.create()
-    .ofTypes("java.time.Month")
-    .names("of")
-    .addParametersMatcher("int")
-    .build();
-
-  private static final MethodMatchers DATE_OF_MATCHERS = MethodMatchers.or(LOCAL_DATE_OF_MATCHER, LOCAL_DATE_TIME_OF_MATCHER, OFFSET_DATE_TIME_OF_MATCHER,
-    ZONED_DATE_TIME_OF_MATCHER, YEAR_MONTH_OF_MATCHER);
-
-  private static final MethodMatchers GET_MONTH_VALUE_MATCHER = MethodMatchers.create()
-    .ofTypes("java.time.LocalDate", "java.time.LocalDateTime", "java.time.OffsetDateTime", "java.time.ZonedDateTime",
-      "java.time.YearMonth", "java.time.MonthDay")
-    .names("getMonthValue")
-    .addWithoutParametersMatcher()
-    .build();
-
-  private static final MethodMatchers MONTH_GET_VALUE_MATCHER = MethodMatchers.create()
-    .ofTypes("java.time.Month")
-    .names("getValue")
-    .addWithoutParametersMatcher()
-    .build();
+  private static final MethodMatchers METHOD_TO_GET_MONTH_VALUE_AS_INT = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("java.time.LocalDate", "java.time.LocalDateTime", "java.time.OffsetDateTime", "java.time.ZonedDateTime",
+        "java.time.YearMonth", "java.time.MonthDay")
+      .names("getMonthValue")
+      .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.time.Month")
+      .names("getValue")
+      .addWithoutParametersMatcher()
+      .build());
 
   private static final MethodMatchers DAY_OF_WEEK_GET_VALUE_MATCHER = MethodMatchers.create()
     .ofTypes("java.time.DayOfWeek")
     .names("getValue")
     .addWithoutParametersMatcher()
     .build();
-
-  private static final MethodMatchers MONTH_VALUE_MATCHERS = MethodMatchers.or(GET_MONTH_VALUE_MATCHER, MONTH_GET_VALUE_MATCHER);
 
   private static final String MONTH_ISSUE_MESSAGE = "Use a \"java.time.Month\" enum constant instead of this int literal.";
   private static final String DAY_ISSUE_MESSAGE = "Use a \"java.time.DayOfWeek\" enum constant instead of this int literal.";
@@ -116,7 +109,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.or(DATE_OF_MATCHERS, DAY_OF_WEEK_OF_MATCHER, MONTH_OF_MATCHER, MONTH_DAY_OF_MATCHER);
+    return MethodMatchers.or(METHOD_WITH_MONTH_AS_SECOND_ARGUMENT, METHOD_WITH_MONTH_AS_FIRST_ARGUMENT, DAY_OF_WEEK_OF_MATCHER);
   }
 
   @Override
@@ -129,7 +122,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (DATE_OF_MATCHERS.matches(mit)) {
+    if (METHOD_WITH_MONTH_AS_SECOND_ARGUMENT.matches(mit)) {
       ExpressionTree secondArgument = mit.arguments().get(1);
       if (isIntLiteral(secondArgument)) {
         reportIssue(secondArgument, MONTH_ISSUE_MESSAGE);
@@ -142,8 +135,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       reportIssue(firstArgument, DAY_ISSUE_MESSAGE);
       return;
     }
-    if ((MONTH_OF_MATCHER.matches(mit)
-      || MONTH_DAY_OF_MATCHER.matches(mit))
+    if (METHOD_WITH_MONTH_AS_FIRST_ARGUMENT.matches(mit)
       && isIntLiteral(firstArgument)) {
       reportIssue(firstArgument, MONTH_ISSUE_MESSAGE);
     }
@@ -163,14 +155,14 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       }
       // Check if right is method call and left is literal
       if (rightOperand instanceof MethodInvocationTree mit) {
-        checkComparison(binaryExpressionTree, mit , leftOperand);
+        checkComparison(binaryExpressionTree, mit, leftOperand);
       }
     }
   }
 
   private void checkComparison(BinaryExpressionTree binaryExpressionTree, MethodInvocationTree methodInvocationSide, ExpressionTree literalSide) {
     if (isIntLiteral(literalSide)) {
-      if (MONTH_VALUE_MATCHERS.matches(methodInvocationSide)) {
+      if (METHOD_TO_GET_MONTH_VALUE_AS_INT.matches(methodInvocationSide)) {
         reportIssue(binaryExpressionTree, MONTH_ISSUE_MESSAGE);
         return;
       }
@@ -181,11 +173,13 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   }
 
   private static boolean isIntLiteral(ExpressionTree arg) {
-    if (arg.is(Tree.Kind.INT_LITERAL)) {
+    ExpressionTree argWithoutParentheses = ExpressionUtils.skipParentheses(arg);
+    if (argWithoutParentheses.is(Tree.Kind.INT_LITERAL)) {
       return true;
     }
-    if (arg.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
-      return ((UnaryExpressionTree) arg).expression().is(Tree.Kind.INT_LITERAL);
+    if (argWithoutParentheses.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
+      ExpressionTree expressionWithoutParentheses = ExpressionUtils.skipParentheses(((UnaryExpressionTree) argWithoutParentheses).expression());
+      return expressionWithoutParentheses.is(Tree.Kind.INT_LITERAL);
     }
     return false;
   }
