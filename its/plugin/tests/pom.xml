@@ -119,6 +119,11 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
             <argLine>-server</argLine>
+            <includes>
+              <include>com/sonar/it/java/suite/*TestSuite.java</include>
+              <include>com/sonar/it/java/suite/NewTest.java</include>
+              <include>com/sonar/it/java/*Test.java</include>
+            </includes>
           </configuration>
         </plugin>
         <plugin>
