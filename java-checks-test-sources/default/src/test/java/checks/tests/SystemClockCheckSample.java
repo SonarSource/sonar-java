@@ -56,6 +56,13 @@ class SystemClockCheckSample {
   }
 
   @Test
+  void testSystemMethods() {
+    long currentTimeMillis = System.currentTimeMillis(); // Noncompliant {{Do not use the system clock in tests.}}
+//                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    long currentTimeNanos = System.nanoTime(); // Compliant: nanoTime is typically used to measure elapsed time in tests
+  }
+
+  @Test
   void testFixedClock() {
     Instant start = Instant.now(Clock.fixed(Instant.parse("2026-05-07T10:00:00Z"), ZoneOffset.UTC)); // Compliant
     Instant later = start.plus(1, ChronoUnit.MINUTES);
