@@ -1,0 +1,196 @@
+<p>Using numeric literals instead of <code>Month</code> or <code>DayOfWeek</code> enum constants when working with Java’s <code>java.time</code> API
+reduces code readability and can lead to errors.</p>
+<h2>Why is this an issue?</h2>
+<p>The <code>java.time</code> API introduced in Java 8 provides two convenient enums: <code>Month</code> for months of the year and
+<code>DayOfWeek</code> for days of the week. These enums make code more readable and self-documenting compared to numeric literals.</p>
+<p>When you write <code>LocalDate.of(2024, 1, 15)</code>, it’s not immediately clear whether the month parameter is zero-indexed (like the old
+<code>Calendar</code> API) or one-indexed. A reader must either memorize the API or look it up. In contrast, <code>LocalDate.of(2024, Month.JANUARY,
+15)</code> is unambiguous and instantly understandable.</p>
+<h2>How to fix it</h2>
+<p>Replace numeric literals in your code with their corresponding <code>java.time.Month</code> or <code>java.time.DayOfWeek</code> enum constants when
+creating or manipulating dates. Most factory methods in the <code>java.time</code> API have overloads that accept enums instead of integers.</p>
+<p>Use the following mapping to update your values:</p>
+<table style="width: 70%;">
+  <colgroup>
+    <col>
+    <col>
+    <col>
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Month</th>
+      <th>DayOfWeek</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <p>1</p>
+      </td>
+      <td>
+        <p><code>Month.JANUARY</code></p>
+      </td>
+      <td>
+        <p><code>DayOfWeek.MONDAY</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>2</p>
+      </td>
+      <td>
+        <p><code>Month.FEBRUARY</code></p>
+      </td>
+      <td>
+        <p><code>DayOfWeek.TUESDAY</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>3</p>
+      </td>
+      <td>
+        <p><code>Month.MARCH</code></p>
+      </td>
+      <td>
+        <p><code>DayOfWeek.WEDNESDAY</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>4</p>
+      </td>
+      <td>
+        <p><code>Month.APRIL</code></p>
+      </td>
+      <td>
+        <p><code>DayOfWeek.THURSDAY</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>5</p>
+      </td>
+      <td>
+        <p><code>Month.MAY</code></p>
+      </td>
+      <td>
+        <p><code>DayOfWeek.FRIDAY</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>6</p>
+      </td>
+      <td>
+        <p><code>Month.JUNE</code></p>
+      </td>
+      <td>
+        <p><code>DayOfWeek.SATURDAY</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>7</p>
+      </td>
+      <td>
+        <p><code>Month.JULY</code></p>
+      </td>
+      <td>
+        <p><code>DayOfWeek.SUNDAY</code></p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>8</p>
+      </td>
+      <td>
+        <p><code>Month.AUGUST</code></p>
+      </td>
+      <td>
+        <p>-</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>9</p>
+      </td>
+      <td>
+        <p><code>Month.SEPTEMBER</code></p>
+      </td>
+      <td>
+        <p>-</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>10</p>
+      </td>
+      <td>
+        <p><code>Month.OCTOBER</code></p>
+      </td>
+      <td>
+        <p>-</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>11</p>
+      </td>
+      <td>
+        <p><code>Month.NOVEMBER</code></p>
+      </td>
+      <td>
+        <p>-</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>12</p>
+      </td>
+      <td>
+        <p><code>Month.DECEMBER</code></p>
+      </td>
+      <td>
+        <p>-</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+LocalDate date = LocalDate.of(2024, 1, 15); // Noncompliant; "1" is used to represent January
+YearMonth yearMonth = YearMonth.of(2024, 6); // Noncompliant; "6" is used to represent June
+</pre>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+LocalDate date = LocalDate.now(ZoneOffset.UTC);
+if (date.getMonthValue() == 9) { // Noncompliant; "9" is used to represent September
+    // Handle September
+}
+DayOfWeek today = LocalDate.now(ZoneId.of("Europe/Paris")).getDayOfWeek();
+boolean isWeekend = today.getValue() == 6 || today.getValue() == 7; // Noncompliant; "6" and "7" are used to represent Saturday and Sunday
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+LocalDate date = LocalDate.of(2024, Month.JANUARY, 15);
+YearMonth yearMonth = YearMonth.of(2024, Month.JUNE);
+</pre>
+<pre data-diff-id="3" data-diff-type="compliant">
+LocalDate date = LocalDate.now(ZoneOffset.UTC);
+if (date.getMonth() == Month.SEPTEMBER) {
+    // Handle September
+}
+DayOfWeek today = LocalDate.now(ZoneId.of("Europe/Paris")).getDayOfWeek();
+boolean isWeekend = today == DayOfWeek.SATURDAY || today == DayOfWeek.SUNDAY;
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/DayOfWeek.html">Official documentation for the DayOfWeek enum
+  class</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Month.html">Official documentation of the Month enum
+  class</a></li>
+</ul>
+
