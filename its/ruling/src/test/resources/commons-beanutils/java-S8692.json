@@ -1,0 +1,48 @@
+{
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsBenchCase.java": [
+186,
+190,
+198,
+202,
+219,
+223,
+231,
+235,
+252,
+256,
+264,
+268,
+285,
+289,
+297,
+301,
+318,
+322,
+330,
+334,
+352,
+356,
+364,
+368
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsBenchCase.java": [
+175,
+179,
+187,
+191,
+208,
+212,
+220,
+224,
+241,
+245,
+253,
+257
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java": [
+66
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DateConverterTestBase.java": [
+105
+]
+}

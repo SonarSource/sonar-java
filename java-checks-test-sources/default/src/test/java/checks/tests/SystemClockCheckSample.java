@@ -38,6 +38,7 @@ class SystemClockCheckSample {
     assertTrue(now.isBefore(now2));
   }
 
+  @Test
   void testLocalDateTimeTypes() {
     LocalDateTime dateTime1 = LocalDateTime.now(Clock.systemUTC()); // Noncompliant {{Do not use the system clock in tests.}}
 //                                              ^^^^^^^^^^^^^^^^^
