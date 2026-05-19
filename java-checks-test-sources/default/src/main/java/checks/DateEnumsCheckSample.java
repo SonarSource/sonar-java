@@ -14,21 +14,21 @@ import java.time.ZonedDateTime;
 public class DateEnumsCheckSample {
 
   void noncompliantDateCreation() {
-    LocalDate date = LocalDate.of(2024, 1, 15); // Noncompliant {{Use `java.time.Month` enum instead of this int literal}}
+    LocalDate date = LocalDate.of(2024, 1, 15); // Noncompliant {{Use a "java.time.Month" enum constant instead of this int literal.}}
     //                                  ^
-    LocalDateTime dateTime = LocalDateTime.of(2024, 10, 15, 1, 20); // Noncompliant {{Use `java.time.Month` enum instead of this int literal}}
+    LocalDateTime dateTime = LocalDateTime.of(2024, 10, 15, 1, 20); // Noncompliant {{Use a "java.time.Month" enum constant instead of this int literal.}}
     //                                              ^^
-    OffsetDateTime offsetDateTime = OffsetDateTime.of(2025, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC); // Noncompliant {{Use `java.time.Month` enum instead of this int literal}}
+    OffsetDateTime offsetDateTime = OffsetDateTime.of(2025, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC); // Noncompliant
     //                                                      ^
-    ZonedDateTime zdt = ZonedDateTime.of(2026, 12, 21, 3, 33, 33, 4, ZoneId.of("Europe/Paris")); // Noncompliant {{Use `java.time.Month` enum instead of this int literal}}
+    ZonedDateTime zdt = ZonedDateTime.of(2026, 12, 21, 3, 33, 33, 4, ZoneId.of("Europe/Paris")); // Noncompliant
     //                                         ^^
     YearMonth ym = YearMonth.of(2025, 3); // Noncompliant
     //                                ^
     MonthDay md = MonthDay.of(2, 16); // Noncompliant
     //                        ^
     MonthDay monthDay = MonthDay.of(+2, 16); // Noncompliant
-    DayOfWeek day = DayOfWeek.of(2); // Noncompliant {{Use `java.time.DayOfWeek` enum instead of this int literal}}
-    Month month = Month.of(10); // Noncompliant {{Use `java.time.Month` enum instead of this int literal}}
+    DayOfWeek day = DayOfWeek.of(2); // Noncompliant {{Use a "java.time.DayOfWeek" enum constant instead of this int literal.}}
+    Month month = Month.of(10); // Noncompliant {{Use a "java.time.Month" enum constant instead of this int literal.}}
 
   }
 
@@ -40,15 +40,15 @@ public class DateEnumsCheckSample {
   }
 
   boolean noncompliantDateManipulation(LocalDate date, DayOfWeek day, Month month) {
-    if (date.getMonthValue() == 9) { // Noncompliant
+    if (date.getMonthValue() == 9) { // Noncompliant {{Use a "java.time.Month" enum constant instead of this int literal.}}
       //^^^^^^^^^^^^^^^^^^^^^^^^^
       return true;
     }
-    if (day.getValue() != 3){// Noncompliant
+    if (day.getValue() != 3){// Noncompliant {{Use a "java.time.DayOfWeek" enum constant instead of this int literal.}}
       //^^^^^^^^^^^^^^^^^^^
       return true;
     }
-    if (3 == month.getValue()){// Noncompliant
+    if (3 == month.getValue()){// Noncompliant {{Use a "java.time.Month" enum constant instead of this int literal.}}
       //^^^^^^^^^^^^^^^^^^^^^
       return true;
     }

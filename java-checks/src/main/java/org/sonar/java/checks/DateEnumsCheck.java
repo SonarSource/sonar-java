@@ -90,11 +90,20 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     .addWithoutParametersMatcher()
     .build();
 
-  private static final MethodMatchers GET_VALUE_MATCHER = MethodMatchers.create()
-    .ofTypes("java.time.DayOfWeek", "java.time.Month")
+  private static final MethodMatchers MONTH_GET_VALUE_MATCHER = MethodMatchers.create()
+    .ofTypes("java.time.Month")
     .names("getValue")
     .addWithoutParametersMatcher()
     .build();
+
+  private static final MethodMatchers DAY_OF_WEEK_GET_VALUE_MATCHER = MethodMatchers.create()
+    .ofTypes("java.time.DayOfWeek")
+    .names("getValue")
+    .addWithoutParametersMatcher()
+    .build();
+
+  private static final String MONTH_ISSUE_MESSAGE = "Use a \"java.time.Month\" enum constant instead of this int literal.";
+  private static final String DAY_ISSUE_MESSAGE = "Use a \"java.time.DayOfWeek\" enum constant instead of this int literal.";
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -111,23 +120,23 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    if (OF_USING_MONTH_ENUMS.matches(mit)) {
+      ExpressionTree secondArgument = mit.arguments().get(1);
+      if (isIntLiteral(secondArgument)) {
+        reportIssue(secondArgument, MONTH_ISSUE_MESSAGE);
+        return;
+      }
+    }
     ExpressionTree firstArgument = mit.arguments().get(0);
     if (DAY_OF_WEEK_OF_MATCHER.matches(mit)
       && isIntLiteral(firstArgument)) {
-      reportIssue(firstArgument, "Use `java.time.DayOfWeek` enum instead of this int literal");
+      reportIssue(firstArgument, DAY_ISSUE_MESSAGE);
       return;
     }
     if (MONTH_OF_MATCHER.matches(mit)
       || MONTH_DAY_OF_MATCHER.matches(mit)
       && isIntLiteral(firstArgument)) {
-      reportIssue(firstArgument, "Use `java.time.Month` enum instead of this int literal");
-      return;
-    }
-    if (OF_USING_MONTH_ENUMS.matches(mit)) {
-      ExpressionTree secondArgument = mit.arguments().get(1);
-      if (isIntLiteral(secondArgument)) {
-        reportIssue(secondArgument, "Use `java.time.Month` enum instead of this int literal");
-      }
+      reportIssue(firstArgument, MONTH_ISSUE_MESSAGE);
     }
   }
 
@@ -148,8 +157,12 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   private void checkComparison(BinaryExpressionTree binaryExpressionTree,  ExpressionTree methodCallSide, ExpressionTree literalSide) {
     if (methodCallSide.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) methodCallSide;
-      if (MethodMatchers.or(GET_MONTH_VALUE_MATCHER, GET_VALUE_MATCHER).matches(mit) && isIntLiteral(literalSide)) {
-        reportIssue(binaryExpressionTree, "Use an enum instead of this numeric value");
+      if (MethodMatchers.or(GET_MONTH_VALUE_MATCHER, MONTH_GET_VALUE_MATCHER).matches(mit) && isIntLiteral(literalSide)) {
+        reportIssue(binaryExpressionTree, MONTH_ISSUE_MESSAGE);
+        return;
+      }
+      if (DAY_OF_WEEK_GET_VALUE_MATCHER.matches(mit) && isIntLiteral(literalSide)) {
+        reportIssue(binaryExpressionTree, DAY_ISSUE_MESSAGE);
       }
     }
   }
