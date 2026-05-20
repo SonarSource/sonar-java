@@ -6,11 +6,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -66,11 +69,19 @@ class SystemClockCheckSample {
   }
 
   @Test
-  void testDate() {
+  void testDateAndCalendar() {
     Date date = new Date(); // Noncompliant {{Do not use the system clock in tests.}}
 //              ^^^^^^^^^^
     Date date2 = new Date(100000); // Compliant
     assertEquals(date, date2);
+    Calendar calendar = Calendar.getInstance(); // Noncompliant {{Do not use the system clock in tests.}}
+//                      ^^^^^^^^^^^^^^^^^^^^^^
+    Calendar calendar2 = Calendar.getInstance(TimeZone.getDefault()); // Noncompliant {{Do not use the system clock in tests.}}
+//                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    Calendar calendar3 = Calendar.getInstance(Locale.getDefault()); // Noncompliant {{Do not use the system clock in tests.}}
+//                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    assertEquals(calendar.getTime(), calendar2.getTime());
+    assertEquals(calendar2.getTime(), calendar3.getTime());
   }
 
   @Test
