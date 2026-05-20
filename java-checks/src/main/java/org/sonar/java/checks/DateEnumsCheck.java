@@ -22,7 +22,6 @@ import java.util.Objects;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
@@ -32,7 +31,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.java.reporting.JavaTextEdit;
 
@@ -248,18 +246,6 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   private String getValueReplacement(MethodInvocationTree methodInvocationSide, BinaryExpressionTree binaryExpressionTree, String enumName) {
     String variableName = Objects.requireNonNull(((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression().firstToken()).text();
     return variableName + " " + binaryExpressionTree.operatorToken().text() + " " + enumName;
-  }
-
-  private static boolean isIntLiteral(ExpressionTree arg) {
-    ExpressionTree argWithoutParentheses = ExpressionUtils.skipParentheses(arg);
-    if (argWithoutParentheses.is(Tree.Kind.INT_LITERAL)) {
-      return true;
-    }
-    if (argWithoutParentheses.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
-      ExpressionTree expressionWithoutParentheses = ExpressionUtils.skipParentheses(((UnaryExpressionTree) argWithoutParentheses).expression());
-      return expressionWithoutParentheses.is(Tree.Kind.INT_LITERAL);
-    }
-    return false;
   }
 
   private int getIntLiteral(ExpressionTree arg) {
