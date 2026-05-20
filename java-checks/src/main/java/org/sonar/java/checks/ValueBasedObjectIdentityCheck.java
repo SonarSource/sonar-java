@@ -64,7 +64,7 @@ public class ValueBasedObjectIdentityCheck extends IssuableSubscriptionVisitor i
     }
   }
 
-  private boolean isValueBasedTypeExcludingPrimitiveWrappers(Type type) {
+  private static boolean isValueBasedTypeExcludingPrimitiveWrappers(Type type) {
     // We need to exclude wrappers for primitive classes to avoid duplicating issues with S4973.
     return isValueBasedType(type) && !type.isPrimitiveWrapper();
   }
