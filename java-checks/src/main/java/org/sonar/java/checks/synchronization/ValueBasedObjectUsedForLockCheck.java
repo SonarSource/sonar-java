@@ -16,34 +16,21 @@
  */
 package org.sonar.java.checks.synchronization;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.java.model.TypeUtils.isValueBasedType;
+
 @Rule(key = "S3436")
 public class ValueBasedObjectUsedForLockCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
-
-  private static final List<String> VALUE_BASED_TYPES = Arrays.asList(
-    "java.time.chrono.HijrahDate",
-    "java.time.chrono.JapaneseDate",
-    "java.time.chrono.MinguoDate",
-    "java.time.chrono.ThaiBuddhistDate",
-    "java.util.Optional",
-    "java.util.OptionalDouble",
-    "java.util.OptionalLong",
-    "java.util.OptionalInt");
-
-  private static final String JAVA_TIME_CLOCK = "java.time.Clock";
-  private static final Pattern JAVA_TIME_PACKAGE_PATTERN = Pattern.compile("java\\.time\\.\\w+");
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -64,14 +51,6 @@ public class ValueBasedObjectUsedForLockCheck extends IssuableSubscriptionVisito
         expressionType.name(),
         context.getJavaVersion().java8CompatibilityMessage()));
     }
-  }
-
-  private static boolean isValueBasedType(Type type) {
-    if (type.isUnknown() || type.is(JAVA_TIME_CLOCK)) {
-      return false;
-    }
-    return VALUE_BASED_TYPES.stream().anyMatch(type::is)
-      || JAVA_TIME_PACKAGE_PATTERN.matcher(type.fullyQualifiedName()).matches();
   }
 
 }

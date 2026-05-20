@@ -1,0 +1,26 @@
+{
+  "title": "Value-based classes should be compared using their value",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java8",
+    "datetime",
+    "suspicious"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-8696",
+  "sqKey": "S8696",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM",
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  }
+}
