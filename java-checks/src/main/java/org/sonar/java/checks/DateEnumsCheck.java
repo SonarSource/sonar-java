@@ -171,13 +171,13 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       .build();
   }
 
-  private String getMonthEnumName(int month) {
+  private static String getMonthEnumName(int month) {
     String[] monthNames = {"JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
       "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"};
     return "Month." + monthNames[month - 1];
   }
 
-  private String getDayOfWeekEnumName(int month) {
+  private static String getDayOfWeekEnumName(int month) {
     String[] dayOfWeekNames = {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY",
       "SUNDAY"};
     return "DayOfWeek." + dayOfWeekNames[month - 1];
@@ -242,18 +242,18 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     String variableName = Objects.requireNonNull(((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression().firstToken()).text();
     String enumName = getMonthEnumName(literal);
     String comparisonOperator = binaryExpressionTree.operatorToken().text();
-    return isReversed ? enumName + " " + comparisonOperator + " " + variableName + ".getMonth()"
-      : variableName + ".getMonth() " + comparisonOperator + " " + enumName;
+    return isReversed ? (enumName + " " + comparisonOperator + " " + variableName + ".getMonth()")
+      : (variableName + ".getMonth() " + comparisonOperator + " " + enumName);
   }
 
-  private String getValueReplacement(MethodInvocationTree methodInvocationSide, BinaryExpressionTree binaryExpressionTree, String enumName, boolean  isReversed) {
+  private static String getValueReplacement(MethodInvocationTree methodInvocationSide, BinaryExpressionTree binaryExpressionTree, String enumName, boolean  isReversed) {
     String variableName = Objects.requireNonNull(((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression().firstToken()).text();
     String comparisonOperator = binaryExpressionTree.operatorToken().text();
-    return isReversed ? enumName + " " + comparisonOperator + " " + variableName
-      : variableName + " " + comparisonOperator + " " + enumName;
+    return isReversed ? (enumName + " " + comparisonOperator + " " + variableName)
+      : (variableName + " " + comparisonOperator + " " + enumName);
   }
 
-  private int getIntLiteral(ExpressionTree arg) {
+  private static int getIntLiteral(ExpressionTree arg) {
     if (arg.is(Tree.Kind.INT_LITERAL)) {
       String literalValue = ((LiteralTree) arg).value();
       return Integer.parseInt(literalValue);
@@ -261,11 +261,11 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     return -1;
   }
 
-  private boolean isValidMonth(int month) {
+  private static boolean isValidMonth(int month) {
     return month >= 1 && month <= 12;
   }
 
-  private boolean isValidDay(int day) {
+  private static boolean isValidDay(int day) {
     return day >= 1 && day <= 7;
   }
 }
