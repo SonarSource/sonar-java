@@ -18,17 +18,23 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.java.reporting.JavaTextEdit;
 
 @Rule(key = "S8694")
 public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
@@ -80,18 +86,18 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     .addParametersMatcher("int")
     .build();
 
-  private static final MethodMatchers METHOD_TO_GET_MONTH_VALUE_AS_INT = MethodMatchers.or(
-    MethodMatchers.create()
+  private static final MethodMatchers GET_MONTH_VALUE_MATCHER = MethodMatchers.create()
       .ofTypes("java.time.LocalDate", "java.time.LocalDateTime", "java.time.OffsetDateTime", "java.time.ZonedDateTime",
         "java.time.YearMonth", "java.time.MonthDay")
       .names("getMonthValue")
       .addWithoutParametersMatcher()
-      .build(),
-    MethodMatchers.create()
+      .build();
+
+  private static final MethodMatchers MONTH_GET_VALUE_MATCHER = MethodMatchers.create()
       .ofTypes("java.time.Month")
       .names("getValue")
       .addWithoutParametersMatcher()
-      .build());
+      .build();
 
   private static final MethodMatchers DAY_OF_WEEK_GET_VALUE_MATCHER = MethodMatchers.create()
     .ofTypes("java.time.DayOfWeek")
@@ -124,21 +130,59 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (METHOD_WITH_MONTH_AS_SECOND_ARGUMENT.matches(mit)) {
       ExpressionTree secondArgument = mit.arguments().get(1);
-      if (isIntLiteral(secondArgument)) {
-        reportIssue(secondArgument, MONTH_ISSUE_MESSAGE);
+      int secondArgumentLiteral = getIntLiteral(secondArgument);
+      if (isValidMonth(secondArgumentLiteral)) {
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(secondArgument)
+          .withMessage(MONTH_ISSUE_MESSAGE)
+          .withQuickFix(() -> computeQuickfix(secondArgument,
+            getMonthEnumName(secondArgumentLiteral)))
+          .report();
         return;
       }
     }
     ExpressionTree firstArgument = mit.arguments().get(0);
+    int firstArgumentLiteral = getIntLiteral(firstArgument);
     if (DAY_OF_WEEK_OF_MATCHER.matches(mit)
-      && isIntLiteral(firstArgument)) {
-      reportIssue(firstArgument, DAY_ISSUE_MESSAGE);
+      && isValidDay(firstArgumentLiteral)) {
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(firstArgument)
+        .withMessage(DAY_ISSUE_MESSAGE)
+        .withQuickFix(() -> computeQuickfix(firstArgument,
+          getDayOfWeekEnumName(firstArgumentLiteral)))
+        .report();
       return;
     }
     if (METHOD_WITH_MONTH_AS_FIRST_ARGUMENT.matches(mit)
-      && isIntLiteral(firstArgument)) {
-      reportIssue(firstArgument, MONTH_ISSUE_MESSAGE);
+      && isValidMonth(firstArgumentLiteral)) {
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(firstArgument)
+        .withMessage(MONTH_ISSUE_MESSAGE)
+        .withQuickFix(() -> computeQuickfix(firstArgument,
+          getMonthEnumName(firstArgumentLiteral)))
+        .report();
     }
+  }
+
+  private static JavaQuickFix computeQuickfix(Tree replacedTree, String replacement) {
+    return JavaQuickFix.newQuickFix(String.format("Replace with %s.", replacement))
+      .addTextEdit(JavaTextEdit.replaceTree(replacedTree, replacement))
+      .build();
+  }
+
+  private String getMonthEnumName(int month) {
+    String[] monthNames = {"JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+      "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"};
+    return "Month." + monthNames[month - 1];
+  }
+
+  private String getDayOfWeekEnumName(int month) {
+    String[] dayOfWeekNames = {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY",
+      "SUNDAY"};
+    return "DayOfWeek." + dayOfWeekNames[month - 1];
   }
 
   @Override
@@ -160,16 +204,50 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     }
   }
 
-  private void checkComparison(BinaryExpressionTree binaryExpressionTree, MethodInvocationTree methodInvocationSide, ExpressionTree literalSide) {
-    if (isIntLiteral(literalSide)) {
-      if (METHOD_TO_GET_MONTH_VALUE_AS_INT.matches(methodInvocationSide)) {
-        reportIssue(binaryExpressionTree, MONTH_ISSUE_MESSAGE);
+  private void checkComparison(BinaryExpressionTree binaryExpressionTree,
+    MethodInvocationTree methodInvocationSide, ExpressionTree literalSide) {
+    int intLiteral = getIntLiteral(literalSide);
+    if (intLiteral != -1) {
+      if (GET_MONTH_VALUE_MATCHER.matches(methodInvocationSide)) {
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(binaryExpressionTree)
+          .withMessage(MONTH_ISSUE_MESSAGE)
+          .withQuickFix(() -> computeQuickfix(binaryExpressionTree,
+            getMonthValueReplacement(methodInvocationSide, binaryExpressionTree, intLiteral)))
+          .report();
+        return;
+      }
+      if (MONTH_GET_VALUE_MATCHER.matches(methodInvocationSide)) {
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(binaryExpressionTree)
+          .withMessage(MONTH_ISSUE_MESSAGE)
+          .withQuickFix(() -> computeQuickfix(binaryExpressionTree,
+            getValueReplacement(methodInvocationSide, binaryExpressionTree, getMonthEnumName(intLiteral))))
+          .report();
         return;
       }
       if (DAY_OF_WEEK_GET_VALUE_MATCHER.matches(methodInvocationSide)) {
-        reportIssue(binaryExpressionTree, DAY_ISSUE_MESSAGE);
+        QuickFixHelper.newIssue(context)
+          .forRule(this)
+          .onTree(binaryExpressionTree)
+          .withMessage(DAY_ISSUE_MESSAGE)
+          .withQuickFix(() -> computeQuickfix(binaryExpressionTree,
+            getValueReplacement(methodInvocationSide, binaryExpressionTree, getDayOfWeekEnumName(intLiteral))))
+          .report();
       }
     }
+  }
+
+  private String getMonthValueReplacement(MethodInvocationTree methodInvocationSide, BinaryExpressionTree binaryExpressionTree, int literal) {
+    String variableName = Objects.requireNonNull(((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression().firstToken()).text();
+    return variableName + ".getMonth() " + binaryExpressionTree.operatorToken().text() + " " + getMonthEnumName(literal);
+  }
+
+  private String getValueReplacement(MethodInvocationTree methodInvocationSide, BinaryExpressionTree binaryExpressionTree, String enumName) {
+    String variableName = Objects.requireNonNull(((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression().firstToken()).text();
+    return variableName + " " + binaryExpressionTree.operatorToken().text() + " " + enumName;
   }
 
   private static boolean isIntLiteral(ExpressionTree arg) {
@@ -182,5 +260,21 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       return expressionWithoutParentheses.is(Tree.Kind.INT_LITERAL);
     }
     return false;
+  }
+
+  private int getIntLiteral(ExpressionTree arg) {
+    if (arg.is(Tree.Kind.INT_LITERAL)) {
+      String literalValue = ((LiteralTree) arg).value();
+      return Integer.parseInt(literalValue);
+    }
+    return -1;
+  }
+
+  private boolean isValidMonth(int month) {
+    return month >= 1 && month <= 12;
+  }
+
+  private boolean isValidDay(int day) {
+    return day >= 1 && day <= 7;
   }
 }
