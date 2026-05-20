@@ -56,7 +56,7 @@ public class SystemClockCheck extends AbstractMethodDetection {
     MethodMatchers.create()
       .ofTypes("java.util.Date")
       .constructor()
-      .withAnyParameters()
+      .addWithoutParametersMatcher()
       .build()
   );
 
