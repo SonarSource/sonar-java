@@ -11,16 +11,16 @@
     "datetime",
     "tests"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-8692",
   "sqKey": "S8692",
   "scope": "Tests",
-  "quickfix": "unknown",
+  "quickfix": "infeasible",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "HIGH",
       "RELIABILITY": "MEDIUM"
     },
-    "attribute": "CONVENTIONAL"
+    "attribute": "TRUSTWORTHY"
   }
 }
