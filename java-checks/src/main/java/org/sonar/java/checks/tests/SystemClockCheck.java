@@ -20,9 +20,12 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 
 @Rule(key = "S8692")
 public class SystemClockCheck extends AbstractMethodDetection {
+
+  private static final String MESSAGE = "Do not use the system clock in tests.";
 
   private static final MethodMatchers SYSTEM_CLOCK_MATCHERS = MethodMatchers.or(
     MethodMatchers.create()
@@ -49,6 +52,11 @@ public class SystemClockCheck extends AbstractMethodDetection {
       .ofTypes("java.lang.System")
       .names("currentTimeMillis")
       .addWithoutParametersMatcher()
+      .build(),
+    MethodMatchers.create()
+      .ofTypes("java.util.Date")
+      .constructor()
+      .withAnyParameters()
       .build()
   );
 
@@ -58,8 +66,13 @@ public class SystemClockCheck extends AbstractMethodDetection {
   }
 
   @Override
+  protected void onConstructorFound(NewClassTree newClass) {
+    reportIssue(newClass, MESSAGE);
+  }
+
+  @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(mit, "Do not use the system clock in tests.");
+    reportIssue(mit, MESSAGE);
   }
 
 }

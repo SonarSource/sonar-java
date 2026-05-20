@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
@@ -61,6 +62,12 @@ class SystemClockCheckSample {
 //                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
     long currentTimeNanos = System.nanoTime(); // Compliant: nanoTime is typically used to measure elapsed time in tests
     assertTrue(currentTimeMillis < currentTimeNanos);
+  }
+
+  @Test
+  void testDate() {
+    Date date = new Date(); // Noncompliant {{Do not use the system clock in tests.}}
+//              ^^^^^^^^^^
   }
 
   @Test
