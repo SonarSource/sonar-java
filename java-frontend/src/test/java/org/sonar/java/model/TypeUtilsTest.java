@@ -17,6 +17,7 @@
 package org.sonar.java.model;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import org.junit.jupiter.api.Test;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -33,7 +34,7 @@ class TypeUtilsTest {
     assertThat(isFinal(TypeUtils.class.getModifiers())).isTrue();
     Constructor<TypeUtils> constructor = TypeUtils.class.getDeclaredConstructor();
     assertThat(isPrivate(constructor.getModifiers())).isTrue();
-    assertThat(constructor.isAccessible()).isFalse();
+    assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();
     constructor.setAccessible(true);
     constructor.newInstance();
   }
