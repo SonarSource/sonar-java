@@ -1,8 +1,10 @@
 <p>Reading the system clock directly within unit tests introduces non-determinism. Tests that rely on the current wall-clock time are "flaky": they
 may pass today but fail tomorrow, or behave differently depending on the time zone and local time of the CI/CD runner.</p>
 <p>To ensure that they are repeatable and predictable, <code>.now()</code> methods like <code>LocalDate.now()</code>,
-<code>LocalDateTime.now()</code>, or <code>Instant.now()</code> should only be called with a fixed clock in unit tests. <code>Clock.system(ZoneId
-zone)</code>, <code>Clock.systemDefaultZone()</code> and <code>Clock.systemUTC()</code> should also be avoided in tests.</p>
+<code>LocalDateTime.now()</code>, or <code>Instant.now()</code> should only be called with a fixed clock in unit tests. Legacy APIs such as
+<code>System.currentTimeMillis()</code>, <code>new Date()</code>, and <code>Calendar.getInstance()</code> have the same problem and should be replaced
+with clock injection. Other methods that explicitly call the system clock, such as <code>Clock.system(ZoneId zone)</code>,
+<code>Clock.systemDefaultZone()</code> and <code>Clock.systemUTC()</code> should also be avoided in tests.</p>
 <h2>Why is this an issue?</h2>
 <p>When a test uses the system clock, it relies on an external, uncontrollable state. This makes it impossible to:</p>
 <ul>
