@@ -46,7 +46,6 @@ import org.sonarsource.sonarlint.core.test.utils.plugins.Plugin;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.fail;
 import static org.sonarsource.sonarlint.core.rpc.protocol.common.Language.JAVA;
 
 public class SonarLintIntegrationTest {
@@ -117,8 +116,6 @@ public class SonarLintIntegrationTest {
         tuple("java:S1220", null),
         tuple("java:S2925", new TextRangeDto(7, 21, 7, 26))
       );
-
-    fail("Validate that SonarLintIntegrationTest runs on CI");
   }
 
   @SonarLintTest
