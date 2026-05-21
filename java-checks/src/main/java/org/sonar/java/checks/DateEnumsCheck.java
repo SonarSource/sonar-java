@@ -198,33 +198,15 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     int intLiteral = getIntLiteral(literalSide);
     if (intLiteral != -1) {
       if (GET_MONTH_VALUE_MATCHER.matches(methodInvocationSide) && isValidMonth(intLiteral)) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
-          .onTree(binaryExpressionTree)
-          .withMessage(MONTH_ISSUE_MESSAGE)
-          .withQuickFix(() -> computeQuickfix(binaryExpressionTree,
-            getMonthValueReplacement(methodInvocationSide, binaryExpressionTree, intLiteral, isReversed)))
-          .report();
+        reportAndCreateQuickfix(binaryExpressionTree, getMonthValueReplacement(methodInvocationSide, binaryExpressionTree, intLiteral, isReversed), MONTH_ISSUE_MESSAGE);
         return;
       }
       if (MONTH_GET_VALUE_MATCHER.matches(methodInvocationSide)  && isValidMonth(intLiteral)) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
-          .onTree(binaryExpressionTree)
-          .withMessage(MONTH_ISSUE_MESSAGE)
-          .withQuickFix(() -> computeQuickfix(binaryExpressionTree,
-            getValueReplacement(methodInvocationSide, binaryExpressionTree, getMonthEnumName(intLiteral), isReversed)))
-          .report();
+        reportAndCreateQuickfix(binaryExpressionTree, getValueReplacement(methodInvocationSide, binaryExpressionTree, getMonthEnumName(intLiteral), isReversed), MONTH_ISSUE_MESSAGE);
         return;
       }
       if (DAY_OF_WEEK_GET_VALUE_MATCHER.matches(methodInvocationSide)  && isValidDay(intLiteral)) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
-          .onTree(binaryExpressionTree)
-          .withMessage(DAY_ISSUE_MESSAGE)
-          .withQuickFix(() -> computeQuickfix(binaryExpressionTree,
-            getValueReplacement(methodInvocationSide, binaryExpressionTree, getDayOfWeekEnumName(intLiteral), isReversed)))
-          .report();
+        reportAndCreateQuickfix(binaryExpressionTree, getValueReplacement(methodInvocationSide, binaryExpressionTree, getDayOfWeekEnumName(intLiteral), isReversed), DAY_ISSUE_MESSAGE);
       }
     }
   }
