@@ -129,13 +129,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       ExpressionTree secondArgument = mit.arguments().get(1);
       int secondArgumentLiteral = getIntLiteral(secondArgument);
       if (isValidMonth(secondArgumentLiteral)) {
-        QuickFixHelper.newIssue(context)
-          .forRule(this)
-          .onTree(secondArgument)
-          .withMessage(MONTH_ISSUE_MESSAGE)
-          .withQuickFix(() -> computeQuickfix(secondArgument,
-            getMonthEnumName(secondArgumentLiteral)))
-          .report();
+        reportComparisonIssue(secondArgument, getMonthEnumName(secondArgumentLiteral), MONTH_ISSUE_MESSAGE);
         return;
       }
     }
@@ -143,25 +137,23 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     int firstArgumentLiteral = getIntLiteral(firstArgument);
     if (DAY_OF_WEEK_OF_MATCHER.matches(mit)
       && isValidDay(firstArgumentLiteral)) {
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
-        .onTree(firstArgument)
-        .withMessage(DAY_ISSUE_MESSAGE)
-        .withQuickFix(() -> computeQuickfix(firstArgument,
-          getDayOfWeekEnumName(firstArgumentLiteral)))
-        .report();
+      reportComparisonIssue(firstArgument, getDayOfWeekEnumName(firstArgumentLiteral), DAY_ISSUE_MESSAGE);
       return;
     }
     if (METHOD_WITH_MONTH_AS_FIRST_ARGUMENT.matches(mit)
       && isValidMonth(firstArgumentLiteral)) {
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
-        .onTree(firstArgument)
-        .withMessage(MONTH_ISSUE_MESSAGE)
-        .withQuickFix(() -> computeQuickfix(firstArgument,
-          getMonthEnumName(firstArgumentLiteral)))
-        .report();
+      reportComparisonIssue(firstArgument, getMonthEnumName(firstArgumentLiteral), MONTH_ISSUE_MESSAGE);
     }
+  }
+
+  private void reportComparisonIssue(ExpressionTree arg, String replacement, String issueMessage) {
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(arg)
+      .withMessage(issueMessage)
+      .withQuickFix(() -> computeQuickfix(arg,
+        replacement))
+      .report();
   }
 
   private static JavaQuickFix computeQuickfix(Tree replacedTree, String replacement) {
