@@ -1,0 +1,47 @@
+<p>Using <code>.from()</code> to instantiate <code>LocalDate</code>, <code>LocalTime</code>, <code>YearMonth</code>, or <code>Year</code>
+from a <em>current time</em> expression is unnecessarily verbose when a direct <code>.now()</code> or <code>.now(ZoneId)</code> factory
+method is available.</p>
+<h2>Why is this an issue?</h2>
+<p>The following patterns create intermediate objects that are immediately discarded:</p>
+<ul>
+  <li><code>Type.from(Instant.now())</code> &rarr; use <code>Type.now()</code></li>
+  <li><code>Type.from(Instant.now().atZone(zone))</code> &rarr; use <code>Type.now(zone)</code></li>
+  <li><code>Type.from(ZonedDateTime.now(zone))</code> &rarr; use <code>Type.now(zone)</code></li>
+  <li><code>Type.from(OffsetDateTime.now(zone))</code> &rarr; use <code>Type.now(zone)</code></li>
+  <li><code>YearMonth.from(LocalDate.now(zone))</code> &rarr; use <code>YearMonth.now(zone)</code></li>
+  <li><code>Year.from(LocalDate.now(zone))</code> or <code>Year.from(YearMonth.now(zone))</code> &rarr; use <code>Year.now(zone)</code></li>
+</ul>
+<p>Calling <code>.now()</code> directly on the target type is more concise, avoids allocating objects whose sole purpose is immediate
+conversion, and makes the intent clearer.</p>
+<p>Note that <code>.from()</code> is still appropriate when the argument is an existing temporal variable (not a fresh <code>now()</code>
+call), for example <code>LocalDate.from(existingInstant.atZone(zone))</code>.</p>
+<h2>How to fix it</h2>
+<p>Replace <code>Type.from(nowExpression)</code> with <code>Type.now()</code> or <code>Type.now(zone)</code> directly on the target
+type.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import java.time.*;
+
+LocalDate date1 = LocalDate.from(Instant.now());                          // Noncompliant
+LocalDate date2 = LocalDate.from(Instant.now().atZone(ZoneId.of("UTC"))); // Noncompliant
+LocalDate date3 = LocalDate.from(ZonedDateTime.now(ZoneId.of("UTC")));    // Noncompliant
+LocalDate date4 = LocalDate.from(OffsetDateTime.now(ZoneId.of("UTC")));   // Noncompliant
+Year      year  = Year.from(YearMonth.now(ZoneId.of("UTC")));             // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import java.time.*;
+
+LocalDate date1 = LocalDate.now();
+LocalDate date2 = LocalDate.now(ZoneId.of("UTC"));
+LocalDate date3 = LocalDate.now(ZoneId.of("UTC"));
+LocalDate date4 = LocalDate.now(ZoneId.of("UTC"));
+Year      year  = Year.now(ZoneId.of("UTC"));
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java SE Documentation - <a href="https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html">java.time package</a></li>
+  <li>Java SE Documentation - <a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDate.html#now-java.time.ZoneId-">LocalDate.now(ZoneId) factory method</a></li>
+</ul>
