@@ -27,6 +27,7 @@ import org.sonarqube.ws.Issues.Issue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.Assert.fail;
 
 public class ExternalReportTest {
 
@@ -49,6 +50,8 @@ public class ExternalReportTest {
     assertThat(issue.getMessage()).contains("package-info.java");
     assertThat(issue.getSeverity()).isEqualTo(Severity.MAJOR);
     assertThat(issue.getDebt()).isEqualTo("5min");
+
+    fail("Validate that we still run existing tests");
   }
 
   @Test

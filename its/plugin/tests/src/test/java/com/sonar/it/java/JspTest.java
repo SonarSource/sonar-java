@@ -34,6 +34,7 @@ import org.junit.Test;
 import static com.sonar.it.java.suite.TestUtils.extractTelemetryLogs;
 import static com.sonar.it.java.suite.TestUtils.patternWithLiteralDot;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 public class JspTest {
 
@@ -111,5 +112,7 @@ public class JspTest {
         Telemetry java.module_count: 1
         Telemetry java.scanner_app: ScannerMaven
         """));
+
+    fail("Validate that we still run existing tests");
   }
 }
