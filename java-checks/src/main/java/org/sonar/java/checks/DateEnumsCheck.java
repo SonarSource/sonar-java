@@ -18,7 +18,6 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -206,7 +205,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     MethodInvocationTree methodInvocationSide, ExpressionTree literalSide, boolean isReversed) {
     int intLiteral = getIntLiteral(literalSide);
     if (intLiteral != -1) {
-      if (GET_MONTH_VALUE_MATCHER.matches(methodInvocationSide)) {
+      if (GET_MONTH_VALUE_MATCHER.matches(methodInvocationSide) && isValidMonth(intLiteral)) {
         QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(binaryExpressionTree)
@@ -216,7 +215,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
           .report();
         return;
       }
-      if (MONTH_GET_VALUE_MATCHER.matches(methodInvocationSide)) {
+      if (MONTH_GET_VALUE_MATCHER.matches(methodInvocationSide)  && isValidMonth(intLiteral)) {
         QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(binaryExpressionTree)
@@ -226,7 +225,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
           .report();
         return;
       }
-      if (DAY_OF_WEEK_GET_VALUE_MATCHER.matches(methodInvocationSide)) {
+      if (DAY_OF_WEEK_GET_VALUE_MATCHER.matches(methodInvocationSide)  && isValidDay(intLiteral)) {
         QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(binaryExpressionTree)
@@ -239,18 +238,20 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   }
 
   private String getMonthValueReplacement(MethodInvocationTree methodInvocationSide, BinaryExpressionTree binaryExpressionTree, int literal, boolean isReversed) {
-    String variableName = Objects.requireNonNull(((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression().firstToken()).text();
+    ExpressionTree receiver = ((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression();
+    String receiverText = QuickFixHelper.contentForTree(receiver, context);
     String enumName = getMonthEnumName(literal);
     String comparisonOperator = binaryExpressionTree.operatorToken().text();
-    return isReversed ? (enumName + " " + comparisonOperator + " " + variableName + ".getMonth()")
-      : (variableName + ".getMonth() " + comparisonOperator + " " + enumName);
+    return isReversed ? (enumName + " " + comparisonOperator + " " + receiverText + ".getMonth()")
+      : (receiverText + ".getMonth() " + comparisonOperator + " " + enumName);
   }
 
-  private static String getValueReplacement(MethodInvocationTree methodInvocationSide, BinaryExpressionTree binaryExpressionTree, String enumName, boolean  isReversed) {
-    String variableName = Objects.requireNonNull(((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression().firstToken()).text();
+  private String getValueReplacement(MethodInvocationTree methodInvocationSide, BinaryExpressionTree binaryExpressionTree, String enumName, boolean isReversed) {
+    ExpressionTree receiver = ((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression();
+    String receiverText = QuickFixHelper.contentForTree(receiver, context);
     String comparisonOperator = binaryExpressionTree.operatorToken().text();
-    return isReversed ? (enumName + " " + comparisonOperator + " " + variableName)
-      : (variableName + " " + comparisonOperator + " " + enumName);
+    return isReversed ? (enumName + " " + comparisonOperator + " " + receiverText)
+      : (receiverText + " " + comparisonOperator + " " + enumName);
   }
 
   private static int getIntLiteral(ExpressionTree arg) {

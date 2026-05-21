@@ -103,6 +103,9 @@ public class DateEnumsCheckSample {
       // fix@qf8 {{Replace with Month.MARCH == month.}}
       // edit@qf8 [[sc=9;ec=30]]{{Month.MARCH == month}}
     }
+    boolean isSeptember = (LocalDate.now().getMonthValue() == 9); // Noncompliant [[quickfixes=qf9]]
+      // fix@qf9 {{Replace with LocalDate.now().getMonth() == Month.SEPTEMBER.}}
+      // edit@qf9 [[sc=27;ec=63]]{{LocalDate.now().getMonth() == Month.SEPTEMBER}}
   }
 
 }
