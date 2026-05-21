@@ -129,7 +129,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       ExpressionTree secondArgument = mit.arguments().get(1);
       int secondArgumentLiteral = getIntLiteral(secondArgument);
       if (isValidMonth(secondArgumentLiteral)) {
-        reportComparisonIssue(secondArgument, getMonthEnumName(secondArgumentLiteral), MONTH_ISSUE_MESSAGE);
+        reportAndCreateQuickfix(secondArgument, getMonthEnumName(secondArgumentLiteral), MONTH_ISSUE_MESSAGE);
         return;
       }
     }
@@ -137,16 +137,16 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     int firstArgumentLiteral = getIntLiteral(firstArgument);
     if (DAY_OF_WEEK_OF_MATCHER.matches(mit)
       && isValidDay(firstArgumentLiteral)) {
-      reportComparisonIssue(firstArgument, getDayOfWeekEnumName(firstArgumentLiteral), DAY_ISSUE_MESSAGE);
+      reportAndCreateQuickfix(firstArgument, getDayOfWeekEnumName(firstArgumentLiteral), DAY_ISSUE_MESSAGE);
       return;
     }
     if (METHOD_WITH_MONTH_AS_FIRST_ARGUMENT.matches(mit)
       && isValidMonth(firstArgumentLiteral)) {
-      reportComparisonIssue(firstArgument, getMonthEnumName(firstArgumentLiteral), MONTH_ISSUE_MESSAGE);
+      reportAndCreateQuickfix(firstArgument, getMonthEnumName(firstArgumentLiteral), MONTH_ISSUE_MESSAGE);
     }
   }
 
-  private void reportComparisonIssue(ExpressionTree arg, String replacement, String issueMessage) {
+  private void reportAndCreateQuickfix(ExpressionTree arg, String replacement, String issueMessage) {
     QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(arg)
