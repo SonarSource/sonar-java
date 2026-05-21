@@ -1,0 +1,26 @@
+{
+  "title": "The system clock should not be used in unit tests",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1h"
+  },
+  "tags": [
+    "java8",
+    "datetime",
+    "tests"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-8692",
+  "sqKey": "S8692",
+  "scope": "Tests",
+  "quickfix": "infeasible",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH",
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "TRUSTWORTHY"
+  }
+}

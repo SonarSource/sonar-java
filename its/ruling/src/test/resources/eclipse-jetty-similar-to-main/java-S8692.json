@@ -1,0 +1,17 @@
+{
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java": [
+139
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java": [
+693,
+744,
+801,
+835,
+1008,
+1010,
+1296,
+1298,
+1715,
+1743
+]
+}

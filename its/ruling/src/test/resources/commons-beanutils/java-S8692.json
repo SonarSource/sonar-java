@@ -1,0 +1,71 @@
+{
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsBenchCase.java": [
+186,
+190,
+198,
+202,
+219,
+223,
+231,
+235,
+252,
+256,
+264,
+268,
+285,
+289,
+297,
+301,
+318,
+322,
+330,
+334,
+352,
+356,
+364,
+368
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
+149
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
+643
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanMapDecoratorTestCase.java": [
+50
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaRowSetTestCase.java": [
+403
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsBenchCase.java": [
+175,
+179,
+187,
+191,
+208,
+212,
+220,
+224,
+241,
+245,
+253,
+257
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java": [
+66
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DateConverterTestBase.java": [
+105,
+379
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/NumberConverterTestBase.java": [
+321,
+344
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/SqlTimestampConverterTestCase.java": [
+59
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverterTestCase.java": [
+443
+]
+}
