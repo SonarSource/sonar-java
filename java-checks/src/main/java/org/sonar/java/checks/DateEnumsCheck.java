@@ -231,7 +231,11 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   private static int getIntLiteral(ExpressionTree arg) {
     if (arg.is(Tree.Kind.INT_LITERAL)) {
       String literalValue = ((LiteralTree) arg).value();
-      return Integer.parseInt(literalValue);
+      try  {
+        return Integer.parseInt(literalValue);
+      } catch (NumberFormatException e) {
+        return -1;
+      }
     }
     return -1;
   }
