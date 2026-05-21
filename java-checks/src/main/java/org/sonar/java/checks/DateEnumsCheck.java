@@ -198,15 +198,18 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     int intLiteral = getIntLiteral(literalSide);
     if (intLiteral != -1) {
       if (GET_MONTH_VALUE_MATCHER.matches(methodInvocationSide) && isValidMonth(intLiteral)) {
-        reportAndCreateQuickfix(binaryExpressionTree, getMonthValueReplacement(methodInvocationSide, binaryExpressionTree, intLiteral, isReversed), MONTH_ISSUE_MESSAGE);
+        reportAndCreateQuickfix(binaryExpressionTree, getMonthValueReplacement(methodInvocationSide,
+          binaryExpressionTree, intLiteral, isReversed), MONTH_ISSUE_MESSAGE);
         return;
       }
       if (MONTH_GET_VALUE_MATCHER.matches(methodInvocationSide)  && isValidMonth(intLiteral)) {
-        reportAndCreateQuickfix(binaryExpressionTree, getValueReplacement(methodInvocationSide, binaryExpressionTree, getMonthEnumName(intLiteral), isReversed), MONTH_ISSUE_MESSAGE);
+        reportAndCreateQuickfix(binaryExpressionTree, getValueReplacement(methodInvocationSide,
+          binaryExpressionTree, getMonthEnumName(intLiteral), isReversed), MONTH_ISSUE_MESSAGE);
         return;
       }
       if (DAY_OF_WEEK_GET_VALUE_MATCHER.matches(methodInvocationSide)  && isValidDay(intLiteral)) {
-        reportAndCreateQuickfix(binaryExpressionTree, getValueReplacement(methodInvocationSide, binaryExpressionTree, getDayOfWeekEnumName(intLiteral), isReversed), DAY_ISSUE_MESSAGE);
+        reportAndCreateQuickfix(binaryExpressionTree, getValueReplacement(methodInvocationSide,
+          binaryExpressionTree, getDayOfWeekEnumName(intLiteral), isReversed), DAY_ISSUE_MESSAGE);
       }
     }
   }
