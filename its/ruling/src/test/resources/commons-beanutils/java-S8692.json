@@ -25,6 +25,9 @@
 364,
 368
 ],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
+149
+],
 "commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
 643
 ],
@@ -56,9 +59,13 @@
 379
 ],
 "commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/NumberConverterTestBase.java": [
-321
+321,
+344
 ],
 "commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/SqlTimestampConverterTestCase.java": [
 59
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/DateLocaleConverterTestCase.java": [
+443
 ]
 }
