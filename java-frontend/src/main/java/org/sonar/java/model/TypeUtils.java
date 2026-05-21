@@ -24,14 +24,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 public final class TypeUtils {
 
   private static final List<String> VALUE_BASED_TYPES = Arrays.asList(
-    "java.lang.Boolean",
-    "java.lang.Byte",
-    "java.lang.Character",
-    "java.lang.Double",
-    "java.lang.Float",
-    "java.lang.Integer",
-    "java.lang.Long",
-    "java.lang.Short",
     "java.util.Optional",
     "java.util.OptionalDouble",
     "java.util.OptionalInt",
@@ -42,7 +34,7 @@ public final class TypeUtils {
     "java.time.chrono.ThaiBuddhistDate"
   );
 
-  private static final Pattern JAVA_TIME_PACKAGE_PATTERN = Pattern.compile("java\\.time\\.\\w+");
+  private static final Pattern JAVA_TIME_PACKAGE_PATTERN = Pattern.compile("^java\\.time\\.\\w+");
   private static final String JAVA_TIME_CLOCK = "java.time.Clock";
 
   private TypeUtils() {
@@ -54,7 +46,7 @@ public final class TypeUtils {
     if (type.isUnknown() || type.is(JAVA_TIME_CLOCK)) {
       return false;
     }
-    return VALUE_BASED_TYPES.stream().anyMatch(type::is) || JAVA_TIME_PACKAGE_PATTERN.matcher(type.fullyQualifiedName()).matches();
+    return type.isPrimitiveWrapper() || VALUE_BASED_TYPES.stream().anyMatch(type::is) || JAVA_TIME_PACKAGE_PATTERN.matcher(type.fullyQualifiedName()).matches();
   }
 
 }

@@ -34,9 +34,6 @@ class TypeUtilsTest {
     assertThat(isFinal(TypeUtils.class.getModifiers())).isTrue();
     Constructor<TypeUtils> constructor = TypeUtils.class.getDeclaredConstructor();
     assertThat(isPrivate(constructor.getModifiers())).isTrue();
-    assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();
-    constructor.setAccessible(true);
-    constructor.newInstance();
   }
 
   @Test
