@@ -1,6 +1,7 @@
 package checks;
 
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -18,10 +19,6 @@ public class DateEnumsCheckSample {
     //                                  ^
     LocalDateTime dateTime = LocalDateTime.of(2024, 10, 15, 1, 20); // Noncompliant {{Use a "java.time.Month" enum constant instead of this int literal.}}
     //                                              ^^
-    OffsetDateTime offsetDateTime = OffsetDateTime.of(2025, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC); // Noncompliant
-    //                                                      ^
-    ZonedDateTime zdt = ZonedDateTime.of(2026, 12, 21, 3, 33, 33, 4, ZoneId.of("Europe/Paris")); // Noncompliant
-    //                                         ^^
     YearMonth ym = YearMonth.of(2025, 3); // Noncompliant
     //                                ^
     MonthDay md = MonthDay.of(2, 16); // Noncompliant
@@ -30,15 +27,18 @@ public class DateEnumsCheckSample {
     LocalDate ld = LocalDate.of(2024, -1, 15); // Compliant; ignored by the rule to keep it simple
     DayOfWeek day = DayOfWeek.of(2); // Noncompliant {{Use a "java.time.DayOfWeek" enum constant instead of this int literal.}}
     Month month = Month.of(10); // Noncompliant {{Use a "java.time.Month" enum constant instead of this int literal.}}
-    DayOfWeek parenthesized = DayOfWeek.of((-3)); // Compliant; ignored by the rule to keep it simple
-    DayOfWeek parenthesizedOutside = DayOfWeek.of(-(3)); // Compliant; ignored by the rule to keep it simple
   }
 
   void compliantDateCreation(int monthNumber) {
     LocalDate date = LocalDate.of(2024, Month.JANUARY, 15);
     LocalDateTime dateTime = LocalDateTime.of(2024, Month.DECEMBER, 25, 10, 30);
     YearMonth yearMonth = YearMonth.of(2024, Month.JUNE);
+    MonthDay monthDay = MonthDay.of(Month.FEBRUARY, 16);
     LocalDateTime dateTimeWithVariable = LocalDateTime.of(2024, monthNumber, 25, 10, 30);
+    OffsetDateTime offsetDateTime = OffsetDateTime.of(2025, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC); // Compliant; no "of" method available with a Month enum
+    ZonedDateTime zdt = ZonedDateTime.of(2026, 12, 21, 3, 33, 33, 4, ZoneId.of("Europe/Paris")); // Compliant; no "of" method available with a Month enum
+    DayOfWeek parenthesized = DayOfWeek.of((-3)); // Compliant; ignored by the rule to keep it simple
+    DayOfWeek parenthesizedOutside = DayOfWeek.of(-(3)); // Compliant; ignored by the rule to keep it simple
   }
 
   boolean noncompliantDateManipulation(LocalDate date, DayOfWeek day, Month month) {
@@ -83,11 +83,11 @@ public class DateEnumsCheckSample {
 
     DayOfWeek day = DayOfWeek.of(2); // Noncompliant [[quickfixes=qf4]]
     // fix@qf4 {{Replace with DayOfWeek.TUESDAY.}}
-    // edit@qf4 [[sc=34;ec=35]]{{DayOfWeek.TUESDAY}}
+    // edit@qf4 [[sc=21;ec=36]]{{DayOfWeek.TUESDAY}}
 
     Month month = Month.of(12); // Noncompliant [[quickfixes=qf5]]
     // fix@qf5 {{Replace with Month.DECEMBER.}}
-    // edit@qf5 [[sc=28;ec=30]]{{Month.DECEMBER}}
+    // edit@qf5 [[sc=19;ec=31]]{{Month.DECEMBER}}
   }
 
   void quickfixDateManipulation(LocalDate date, DayOfWeek day, Month month) {

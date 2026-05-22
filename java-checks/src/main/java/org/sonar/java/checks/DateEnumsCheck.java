@@ -50,32 +50,22 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       .addParametersMatcher("int", "int", "int", "int", "int", "int", "int")
       .build(),
     MethodMatchers.create()
-      .ofTypes("java.time.OffsetDateTime")
-      .names("of")
-      .addParametersMatcher("int", "int", "int", "int", "int", "int", "int", "java.time.ZoneOffset")
-      .build(),
-    MethodMatchers.create()
-      .ofTypes("java.time.ZonedDateTime")
-      .names("of")
-      .addParametersMatcher("int", "int", "int", "int", "int", "int", "int", "java.time.ZoneId")
-      .build(),
-    MethodMatchers.create()
       .ofTypes("java.time.YearMonth")
       .names("of")
       .addParametersMatcher("int", "int")
       .build());
 
-  private static final MethodMatchers METHOD_WITH_MONTH_AS_FIRST_ARGUMENT = MethodMatchers.or(
-    MethodMatchers.create()
-      .ofTypes("java.time.MonthDay")
-      .names("of")
-      .addParametersMatcher("int", "int")
-      .build(),
-    MethodMatchers.create()
-      .ofTypes("java.time.Month")
-      .names("of")
-      .addParametersMatcher("int")
-      .build());
+  private static final MethodMatchers MONTH_DAY_OF_MATCHER = MethodMatchers.create()
+    .ofTypes("java.time.MonthDay")
+    .names("of")
+    .addParametersMatcher("int", "int")
+    .build();
+
+  private static final MethodMatchers MONTH_OF_MATCHER = MethodMatchers.create()
+    .ofTypes("java.time.Month")
+    .names("of")
+    .addParametersMatcher("int")
+    .build();
 
   private static final MethodMatchers DAY_OF_WEEK_OF_MATCHER = MethodMatchers.create()
     .ofTypes("java.time.DayOfWeek")
@@ -84,17 +74,17 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     .build();
 
   private static final MethodMatchers GET_MONTH_VALUE_MATCHER = MethodMatchers.create()
-      .ofTypes("java.time.LocalDate", "java.time.LocalDateTime", "java.time.OffsetDateTime", "java.time.ZonedDateTime",
-        "java.time.YearMonth", "java.time.MonthDay")
-      .names("getMonthValue")
-      .addWithoutParametersMatcher()
-      .build();
+    .ofTypes("java.time.LocalDate", "java.time.LocalDateTime", "java.time.OffsetDateTime", "java.time.ZonedDateTime",
+      "java.time.YearMonth", "java.time.MonthDay")
+    .names("getMonthValue")
+    .addWithoutParametersMatcher()
+    .build();
 
   private static final MethodMatchers MONTH_GET_VALUE_MATCHER = MethodMatchers.create()
-      .ofTypes("java.time.Month")
-      .names("getValue")
-      .addWithoutParametersMatcher()
-      .build();
+    .ofTypes("java.time.Month")
+    .names("getValue")
+    .addWithoutParametersMatcher()
+    .build();
 
   private static final MethodMatchers DAY_OF_WEEK_GET_VALUE_MATCHER = MethodMatchers.create()
     .ofTypes("java.time.DayOfWeek")
@@ -112,7 +102,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.or(METHOD_WITH_MONTH_AS_SECOND_ARGUMENT, METHOD_WITH_MONTH_AS_FIRST_ARGUMENT, DAY_OF_WEEK_OF_MATCHER);
+    return MethodMatchers.or(METHOD_WITH_MONTH_AS_SECOND_ARGUMENT, MONTH_OF_MATCHER, MONTH_DAY_OF_MATCHER, DAY_OF_WEEK_OF_MATCHER);
   }
 
   @Override
@@ -137,10 +127,15 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     int firstArgumentLiteral = getIntLiteral(firstArgument);
     if (DAY_OF_WEEK_OF_MATCHER.matches(mit)
       && isValidDay(firstArgumentLiteral)) {
-      reportAndCreateQuickfix(firstArgument, getDayOfWeekEnumName(firstArgumentLiteral), DAY_ISSUE_MESSAGE);
+      reportAndCreateQuickfix(mit, getDayOfWeekEnumName(firstArgumentLiteral), DAY_ISSUE_MESSAGE);
       return;
     }
-    if (METHOD_WITH_MONTH_AS_FIRST_ARGUMENT.matches(mit)
+    if (MONTH_OF_MATCHER.matches(mit)
+      && isValidMonth(firstArgumentLiteral)) {
+      reportAndCreateQuickfix(mit, getMonthEnumName(firstArgumentLiteral), MONTH_ISSUE_MESSAGE);
+      return;
+    }
+    if (MONTH_DAY_OF_MATCHER.matches(mit)
       && isValidMonth(firstArgumentLiteral)) {
       reportAndCreateQuickfix(firstArgument, getMonthEnumName(firstArgumentLiteral), MONTH_ISSUE_MESSAGE);
     }
@@ -151,8 +146,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       .forRule(this)
       .onTree(arg)
       .withMessage(issueMessage)
-      .withQuickFix(() -> computeQuickfix(arg,
-        replacement))
+      .withQuickFix(() -> computeQuickfix(arg, replacement))
       .report();
   }
 
@@ -202,12 +196,12 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
           binaryExpressionTree, intLiteral, isReversed), MONTH_ISSUE_MESSAGE);
         return;
       }
-      if (MONTH_GET_VALUE_MATCHER.matches(methodInvocationSide)  && isValidMonth(intLiteral)) {
+      if (MONTH_GET_VALUE_MATCHER.matches(methodInvocationSide) && isValidMonth(intLiteral)) {
         reportAndCreateQuickfix(binaryExpressionTree, getValueReplacement(methodInvocationSide,
           binaryExpressionTree, getMonthEnumName(intLiteral), isReversed), MONTH_ISSUE_MESSAGE);
         return;
       }
-      if (DAY_OF_WEEK_GET_VALUE_MATCHER.matches(methodInvocationSide)  && isValidDay(intLiteral)) {
+      if (DAY_OF_WEEK_GET_VALUE_MATCHER.matches(methodInvocationSide) && isValidDay(intLiteral)) {
         reportAndCreateQuickfix(binaryExpressionTree, getValueReplacement(methodInvocationSide,
           binaryExpressionTree, getDayOfWeekEnumName(intLiteral), isReversed), DAY_ISSUE_MESSAGE);
       }
@@ -234,7 +228,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   private static int getIntLiteral(ExpressionTree arg) {
     if (arg.is(Tree.Kind.INT_LITERAL)) {
       String literalValue = ((LiteralTree) arg).value();
-      try  {
+      try {
         return Integer.parseInt(literalValue);
       } catch (NumberFormatException e) {
         return -1;
