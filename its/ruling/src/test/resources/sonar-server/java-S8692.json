@@ -6,9 +6,7 @@
 254
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/batch/ProjectDataLoaderMediumTest.java": [
-609,
-620,
-621
+609
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ComponentCleanerServiceTest.java": [
 137
@@ -70,11 +68,7 @@
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/TransitionServiceTest.java": [
 95
 ],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/index/IssueIndexDebtTest.java": [
-76
-],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/index/IssueIndexTest.java": [
-107,
 1254
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/index/IssueIndexerTest.java": [
@@ -98,25 +92,8 @@
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/measure/custom/ws/SearchActionTest.java": [
 183
 ],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/measure/index/ProjectMeasuresIndexTest.java": [
-1384,
-1393,
-1402
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/measure/index/ProjectMeasuresIndexTextSearchTest.java": [
-293
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/measure/ws/ComponentTreeActionTest.java": [
-144,
-146
-],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/TestDefaultOrganizationProvider.java": [
 39
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/index/PermissionIndexerTester.java": [
-41,
-48,
-55
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/ws/DbMigrationStatusActionTest.java": [
 72
@@ -127,9 +104,6 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/ws/MigrateDbActionTest.java": [
 63
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/projecttag/ws/SearchActionTest.java": [
-116
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/ws/InheritanceActionTest.java": [
 257,
@@ -148,10 +122,6 @@
 271,
 289,
 290
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/search/BaseDocTest.java": [
-109,
-135
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/test/index/TestIndexerTest.java": [
 120
