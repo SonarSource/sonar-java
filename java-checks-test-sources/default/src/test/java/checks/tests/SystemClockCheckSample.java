@@ -62,8 +62,7 @@ class SystemClockCheckSample {
 
   @Test
   void testSystemMethods() {
-    long currentTimeMillis = System.currentTimeMillis(); // Noncompliant {{Do not use the system clock in tests.}}
-//                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    long currentTimeMillis = System.currentTimeMillis(); // Compliant: currentTimeMillis is typically used to measure elapsed time in tests
     long currentTimeNanos = System.nanoTime(); // Compliant: nanoTime is typically used to measure elapsed time in tests
     assertTrue(currentTimeMillis < currentTimeNanos);
   }
