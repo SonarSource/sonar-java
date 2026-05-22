@@ -27,6 +27,7 @@ public class DateEnumsCheckSample {
     LocalDate ld = LocalDate.of(2024, -1, 15); // Compliant; ignored by the rule to keep it simple
     DayOfWeek day = DayOfWeek.of(2); // Noncompliant {{Use a "java.time.DayOfWeek" enum constant instead of this int literal.}}
     Month month = Month.of(10); // Noncompliant {{Use a "java.time.Month" enum constant instead of this int literal.}}
+    //            ^^^^^^^^^^^^
   }
 
   void compliantDateCreation(int monthNumber) {
@@ -86,6 +87,7 @@ public class DateEnumsCheckSample {
     // edit@qf4 [[sc=21;ec=36]]{{DayOfWeek.TUESDAY}}
 
     Month month = Month.of(12); // Noncompliant [[quickfixes=qf5]]
+    int i = month.getValue();
     // fix@qf5 {{Replace with Month.DECEMBER.}}
     // edit@qf5 [[sc=19;ec=31]]{{Month.DECEMBER}}
   }
