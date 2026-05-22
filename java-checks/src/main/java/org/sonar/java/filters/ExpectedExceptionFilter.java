@@ -120,28 +120,40 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
     String methodName = tree.methodSymbol().name();
     Arguments arguments = tree.arguments();
     if (ASSERT_THROWS_METHODS.contains(methodName) && arguments.size() >= 2) {
-      int expectedTypeIndex = firstArgumentIsMessage(arguments) ? 1 : 0;
-      int executableIndex = expectedTypeIndex + 1;
-      if (arguments.size() > executableIndex && containsExpectedExceptions(arguments.get(expectedTypeIndex), expectedExceptions)) {
-        excludeLines(arguments.get(executableIndex), filteredRule);
-      }
+      excludeFromAssertThrows(arguments, expectedExceptions, filteredRule);
     } else if ("catchThrowableOfType".equals(methodName) && arguments.size() > 1 && containsExpectedExceptions(arguments.get(1), expectedExceptions)) {
       excludeLines(arguments.get(0), filteredRule);
     } else if (ASSERT_CODE_METHODS.contains(methodName)) {
-      subsequentMethodInvocation(tree, INSTANCEOF_METHODS).ifPresent(mit -> {
-        if (!arguments.isEmpty() && mit.arguments().stream().anyMatch(expression -> containsExpectedExceptions(expression, expectedExceptions))) {
-          excludeLines(arguments.get(0), filteredRule);
-        }
-      });
+      excludeFromAssertCode(tree, arguments, expectedExceptions, filteredRule);
     } else if (ASSERT_EXCEPTION_METHODS.contains(methodName) ||
       (ASSERT_OF_TYPE_METHODS.contains(methodName) && !arguments.isEmpty() && containsExpectedExceptions(arguments.get(0), expectedExceptions))) {
-      subsequentMethodInvocation(tree, Set.of("isThrownBy")).ifPresent(mit -> {
-        Arguments mitArguments = mit.arguments();
-        if (!mitArguments.isEmpty()) {
-          excludeLines(mitArguments.get(0), filteredRule);
-        }
-      });
+      excludeIsThrownBy(tree, filteredRule);
     }
+  }
+
+  private void excludeFromAssertThrows(Arguments arguments, Set<String> expectedExceptions, Class<? extends JavaCheck> filteredRule) {
+    int expectedTypeIndex = firstArgumentIsMessage(arguments) ? 1 : 0;
+    int executableIndex = expectedTypeIndex + 1;
+    if (arguments.size() > executableIndex && containsExpectedExceptions(arguments.get(expectedTypeIndex), expectedExceptions)) {
+      excludeLines(arguments.get(executableIndex), filteredRule);
+    }
+  }
+
+  private void excludeFromAssertCode(MethodInvocationTree tree, Arguments arguments, Set<String> expectedExceptions, Class<? extends JavaCheck> filteredRule) {
+    subsequentMethodInvocation(tree, INSTANCEOF_METHODS).ifPresent(mit -> {
+      if (!arguments.isEmpty() && mit.arguments().stream().anyMatch(expression -> containsExpectedExceptions(expression, expectedExceptions))) {
+        excludeLines(arguments.get(0), filteredRule);
+      }
+    });
+  }
+
+  private void excludeIsThrownBy(MethodInvocationTree tree, Class<? extends JavaCheck> filteredRule) {
+    subsequentMethodInvocation(tree, Set.of("isThrownBy")).ifPresent(mit -> {
+      Arguments mitArguments = mit.arguments();
+      if (!mitArguments.isEmpty()) {
+        excludeLines(mitArguments.get(0), filteredRule);
+      }
+    });
   }
 
   /**
