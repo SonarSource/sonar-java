@@ -15,7 +15,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-8688",
   "sqKey": "S8688",
-  "scope": "All",
+  "scope": "Main",
   "quickfix": "unknown",
   "code": {
     "impacts": {
