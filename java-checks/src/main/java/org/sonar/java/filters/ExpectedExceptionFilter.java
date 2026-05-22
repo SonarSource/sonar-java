@@ -125,17 +125,22 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
       if (arguments.size() > executableIndex && containsExpectedExceptions(arguments.get(expectedTypeIndex), expectedExceptions)) {
         excludeLines(arguments.get(executableIndex), filteredRule);
       }
-    } else if ("catchThrowableOfType".equals(methodName) && containsExpectedExceptions(arguments.get(1), expectedExceptions)) {
+    } else if ("catchThrowableOfType".equals(methodName) && arguments.size() > 1 && containsExpectedExceptions(arguments.get(1), expectedExceptions)) {
       excludeLines(arguments.get(0), filteredRule);
     } else if (ASSERT_CODE_METHODS.contains(methodName)) {
       subsequentMethodInvocation(tree, INSTANCEOF_METHODS).ifPresent(mit -> {
-        if (mit.arguments().stream().anyMatch(expression -> containsExpectedExceptions(expression, expectedExceptions))) {
+        if (!arguments.isEmpty() && mit.arguments().stream().anyMatch(expression -> containsExpectedExceptions(expression, expectedExceptions))) {
           excludeLines(arguments.get(0), filteredRule);
         }
       });
     } else if (ASSERT_EXCEPTION_METHODS.contains(methodName) ||
-      (ASSERT_OF_TYPE_METHODS.contains(methodName) && containsExpectedExceptions(tree.arguments().get(0), expectedExceptions))) {
-      subsequentMethodInvocation(tree, Set.of("isThrownBy")).ifPresent(mit -> excludeLines(mit.arguments().get(0), filteredRule));
+      (ASSERT_OF_TYPE_METHODS.contains(methodName) && !arguments.isEmpty() && containsExpectedExceptions(arguments.get(0), expectedExceptions))) {
+      subsequentMethodInvocation(tree, Set.of("isThrownBy")).ifPresent(mit -> {
+        Arguments mitArguments = mit.arguments();
+        if (!mitArguments.isEmpty()) {
+          excludeLines(mitArguments.get(0), filteredRule);
+        }
+      });
     }
   }
 
