@@ -168,10 +168,10 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     return "Month." + monthNames[month - 1];
   }
 
-  private static String getDayOfWeekEnumName(int month) {
+  private static String getDayOfWeekEnumName(int day) {
     String[] dayOfWeekNames = {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY",
       "SUNDAY"};
-    return "DayOfWeek." + dayOfWeekNames[month - 1];
+    return "DayOfWeek." + dayOfWeekNames[day - 1];
   }
 
   @Override
