@@ -18,9 +18,11 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -247,12 +249,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   private static int getIntLiteral(ExpressionTree arg) {
     if (arg.is(Tree.Kind.INT_LITERAL)) {
-      String literalValue = ((LiteralTree) arg).value();
-      try {
-        return Integer.parseInt(literalValue);
-      } catch (NumberFormatException e) {
-        return -1;
-      }
+      return Objects.requireNonNull(LiteralUtils.intLiteralValue(arg));
     }
     return -1;
   }
