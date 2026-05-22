@@ -151,6 +151,12 @@ class ExpectedExceptionFilter {
     } catch (DateTimeException | IllegalArgumentException e) {
       // expected
     }
+
+    try {
+      LocalDate.from(instant); // WithIssue
+    } catch (DateTimeException e) {
+      // expected
+    }
   }
 
   // When semantic information is missing, the filter should conservatively activate.
@@ -172,6 +178,21 @@ class ExpectedExceptionFilter {
     assertThatExceptionOfType(DateTimeException.class).isThrownBy(() -> ZonedDateTime.from(dateTime)); // NoIssue
     assertThatIllegalArgumentException().isThrownBy(() -> Instant.from(date)); // WithIssue
     thenRuntimeException().isThrownBy(() -> Instant.from(date)); // NoIssue
+  }
+
+  @Test(expected = DateTimeException)
+  void wrongExpectedType() {
+    Instant.from(date); // WithIssue
+  }
+
+  @Test(expect = DateTimeException.class)
+  void wrongAnnotationAttribute() {
+    Instant.from(date); // WithIssue
+  }
+
+  @Test
+  void wrongAssertThrowsMethodSignature() {
+    assertThrows(Instant.from(date)); // WithIssue
   }
 
 }
