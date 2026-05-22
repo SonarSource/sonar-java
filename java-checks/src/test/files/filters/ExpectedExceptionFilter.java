@@ -65,7 +65,7 @@ class ExpectedExceptionFilter {
     org.junit.jupiter.api.Assertions.assertThrows(() -> LocalDate.from(instant)); // NoIssue
     org.junit.jupiter.api.Assertions.assertThrowsExactly(DateTimeException.class, () -> LocalDateTime.from(instant)); // NoIssue
     org.junit.jupiter.api.Assertions.assertThrowsExactly(DateTimeParseException.class, () -> LocalDateTime.from(instant)); // NoIssue
-    org.junit.jupiter.api.Assertions.assertThrowsExactly(RuntimeException.class, () -> LocalDateTime.from(instant)); // WithIssue
+    org.junit.jupiter.api.Assertions.assertThrowsExactly(RuntimeException.class, () -> LocalDateTime.from(instant)); // NoIssue
   }
 
   @org.junit.jupiter.api.Test
@@ -93,9 +93,9 @@ class ExpectedExceptionFilter {
   void assertjAssertThatThrownBy() {
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isInstanceOf(DateTimeException.class); // NoIssue
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isInstanceOf(RuntimeException.class); // NoIssue
-    org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isInstanceOf(IllegalArgumentException.class); // WithIssue
-    org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isExactlyInstanceOf(RuntimeException.class); // WithIssue
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isExactlyInstanceOf(RuntimeException.class); // NoIssue
     org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isExactlyInstanceOf(DateTimeException.class); // NoIssue
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> Instant.from(date)).isInstanceOf(IllegalArgumentException.class); // WithIssue
   }
 
   @org.junit.jupiter.api.Test
@@ -151,6 +151,27 @@ class ExpectedExceptionFilter {
     } catch (DateTimeException | IllegalArgumentException e) {
       // expected
     }
+  }
+
+  // When semantic information is missing, the filter should conservatively activate.
+  @Test(expected = RuntimeException.class)
+  void methodAnnotationWithoutSemantics() {
+    Instant.from(date); // NoIssue
+  }
+
+  @Test(expectedExceptions = DateTimeException.class)
+  void methodAnnotationWithoutSemantics() {
+    Instant.from(date); // NoIssue
+  }
+
+  @Test
+  void methodInvocationsWithoutSemantics() {
+    // Here too, the filter should activate even though no semantic information is available.
+    assertThrows(DateTimeException.class, () -> LocalDate.from(instant)); // NoIssue
+    assertThatThrownBy(() -> Instant.from(date)).isInstanceOf(DateTimeException.class); // NoIssue
+    assertThatExceptionOfType(DateTimeException.class).isThrownBy(() -> ZonedDateTime.from(dateTime)); // NoIssue
+    assertThatIllegalArgumentException().isThrownBy(() -> Instant.from(date)); // WithIssue
+    thenRuntimeException().isThrownBy(() -> Instant.from(date)); // NoIssue
   }
 
 }
