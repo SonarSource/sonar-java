@@ -15,7 +15,7 @@
   "ruleSpecification": "RSPEC-8694",
   "sqKey": "S8694",
   "scope": "All",
-  "quickfix": "targeted",
+  "quickfix": "covered",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "LOW"

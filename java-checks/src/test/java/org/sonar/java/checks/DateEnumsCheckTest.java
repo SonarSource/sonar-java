@@ -29,4 +29,12 @@ class DateEnumsCheckTest {
       .withCheck(new DateEnumsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_quickfix_import() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DateEnumsCheckImportSample.java"))
+      .withCheck(new DateEnumsCheck())
+      .verifyIssues();
+  }
 }
