@@ -155,12 +155,12 @@ class ExpectedExceptionFilter {
 
   // When semantic information is missing, the filter should conservatively activate.
   @Test(expected = RuntimeException.class)
-  void methodAnnotationWithoutSemantics() {
+  void expectedMethodAnnotationWithoutSemantics() {
     Instant.from(date); // NoIssue
   }
 
   @Test(expectedExceptions = DateTimeException.class)
-  void methodAnnotationWithoutSemantics() {
+  void expectedExceptionsMethodAnnotationWithoutSemantics() {
     Instant.from(date); // NoIssue
   }
 
