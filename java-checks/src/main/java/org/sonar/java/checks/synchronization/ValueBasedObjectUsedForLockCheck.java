@@ -46,11 +46,15 @@ public class ValueBasedObjectUsedForLockCheck extends IssuableSubscriptionVisito
   public void visitNode(Tree tree) {
     ExpressionTree expression = ((SynchronizedStatementTree) tree).expression();
     Type expressionType = expression.symbolType();
-    if (isValueBasedType(expressionType)) {
+    if (isValueBasedTypeExcludingPrimitiveWrappers(expressionType)) {
       reportIssue(expression, String.format("Synchronize on a non-value-based object; synchronizing on a \"%s\" could lead to contention.%s",
         expressionType.name(),
         context.getJavaVersion().java8CompatibilityMessage()));
     }
+  }
+
+  private static boolean isValueBasedTypeExcludingPrimitiveWrappers(Type type) {
+    return !type.isPrimitiveWrapper() && isValueBasedType(type);
   }
 
 }
