@@ -34,6 +34,7 @@ import com.sonar.orchestrator.locator.MavenLocation;
 import org.junit.jupiter.api.io.TempDir;
 import org.sonarsource.sonarlint.core.rpc.protocol.backend.analysis.AnalyzeFilesAndTrackParams;
 import org.sonarsource.sonarlint.core.rpc.protocol.backend.analysis.AnalyzeFilesResponse;
+import org.sonarsource.sonarlint.core.rpc.protocol.backend.log.LogLevel;
 import org.sonarsource.sonarlint.core.rpc.protocol.client.issue.RaisedIssueDto;
 import org.sonarsource.sonarlint.core.rpc.protocol.common.ClientFileDto;
 import org.sonarsource.sonarlint.core.rpc.protocol.common.TextRangeDto;
@@ -196,6 +197,7 @@ public class SonarLintIntegrationTest {
       .build();
     backend = harness
       .newBackend()
+      .withLogLevel(LogLevel.OFF)
       .withStandaloneEmbeddedPluginAndEnabledLanguage(new Plugin(Set.of(JAVA), javaPluginPath, "", ""))
       .withUnboundConfigScope(CONFIG_SCOPE_ID)
       .start(client);
