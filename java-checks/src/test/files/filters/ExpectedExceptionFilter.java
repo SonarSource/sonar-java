@@ -112,6 +112,7 @@ class ExpectedExceptionFilter {
   @org.junit.jupiter.api.Test
   void assertjCatchThrowableOfType() {
     org.assertj.core.api.Assertions.catchThrowableOfType(() -> OffsetTime.from(instant), DateTimeException.class); // NoIssue
+    org.assertj.core.api.Assertions.catchThrowableOfType(() -> Instant.from(date), IllegalArgumentException.class); // WithIssue
   }
 
   @org.junit.jupiter.api.Test
@@ -176,6 +177,7 @@ class ExpectedExceptionFilter {
     assertThrows(DateTimeException.class, () -> LocalDate.from(instant)); // NoIssue
     assertThatThrownBy(() -> Instant.from(date)).isInstanceOf(DateTimeException.class); // NoIssue
     assertThatExceptionOfType(DateTimeException.class).isThrownBy(() -> ZonedDateTime.from(dateTime)); // NoIssue
+    assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> ZonedDateTime.from(dateTime)); // WithIssue
     assertThatIllegalArgumentException().isThrownBy(() -> Instant.from(date)); // WithIssue
     thenRuntimeException().isThrownBy(() -> Instant.from(date)); // NoIssue
   }
@@ -191,8 +193,9 @@ class ExpectedExceptionFilter {
   }
 
   @Test
-  void wrongAssertThrowsMethodSignature() {
+  void wrongAssertMethodSignature() {
     assertThrows(Instant.from(date)); // WithIssue
+    catchThrowableOfType(Instant.from(date)); // WithIssue
   }
 
 }
