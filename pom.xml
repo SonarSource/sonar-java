@@ -114,7 +114,7 @@
     <jacoco-agent-jar>org.jacoco.agent-${version.jacoco.plugin}-runtime.jar</jacoco-agent-jar>
     <mockito-agent-jar>mockito-core-${mockito-core.version}.jar</mockito-agent-jar>
 
-    <slf4j.version>1.7.30</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
   </properties>
 
   <distributionManagement>
