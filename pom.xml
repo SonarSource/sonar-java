@@ -94,7 +94,7 @@
       at SonarSource/sonarqube/gradle.properties
      -->
     <sonar.plugin.api.version>13.0.0.3026</sonar.plugin.api.version>
-    <sonarlint.plugin.api.version>10.13.0.79996</sonarlint.plugin.api.version>
+    <sonarlint.plugin.api.version>11.3.0.85510</sonarlint.plugin.api.version>
     <sonar.sca.exclusions>its/**,java-checks-test-sources/**</sonar.sca.exclusions>
     <analyzer.commons.version>2.22.0.4796</analyzer.commons.version>
     <orchestrator.version>6.1.0.3962</orchestrator.version>
@@ -114,7 +114,12 @@
     <jacoco-agent-jar>org.jacoco.agent-${version.jacoco.plugin}-runtime.jar</jacoco-agent-jar>
     <mockito-agent-jar>mockito-core-${mockito-core.version}.jar</mockito-agent-jar>
 
+    <!-- The product must work with the SLF4J provided in the Plugin API. -->
     <slf4j.version>1.7.30</slf4j.version>
+    <!-- SonarLint Core, used in plugin ITs, requires new SLF4J. -->
+    <slf4j.test.version>2.0.18</slf4j.test.version>
+
+    <junit-jupiter.version>5.14.3</junit-jupiter.version>
   </properties>
 
   <distributionManagement>
@@ -244,6 +249,24 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.13.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit-jupiter.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${junit-jupiter.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>${junit-jupiter.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

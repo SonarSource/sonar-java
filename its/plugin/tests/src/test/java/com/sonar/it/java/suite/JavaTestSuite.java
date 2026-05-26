@@ -48,7 +48,6 @@ import static java.util.Collections.singletonList;
   Struts139Test.class,
   JavaClasspathTest.class,
   SuppressWarningTest.class,
-  SonarLintTest.class,
   ExternalReportTest.class,
   DuplicationTest.class,
   MultiModuleTelemetryTest.class

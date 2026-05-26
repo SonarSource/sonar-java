@@ -24,6 +24,38 @@
     <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-suite</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.sonarlint.core</groupId>
+      <artifactId>sonarlint-core-test-utils</artifactId>
+      <version>${sonarlint.plugin.api.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- sonarlint-core requires slf4j 2.x at runtime; override the parent's 1.7 management for this module. -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.test.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <version>4.3.0</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <profiles>
     <profile>
       <id>it-plugin</id>

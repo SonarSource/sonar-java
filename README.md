@@ -99,8 +99,9 @@ The "Sanity Test" is a test that runs all checks against all the test source fil
 
 #### Plugin Test
 
-The "Plugin Test" is an integration test suite that verifies plugin features such as metric calculation, coverage, etc. To launch it:
+The "Plugin Test" is an integration test suite that verifies plugin features such as metric calculation, coverage, etc. To launch it, build the plugin first (`mvn clean install`), then run:
 
+    cd its/plugin
     mvn clean install -Pit-plugin -DcommunityEditionTestsOnly=true
 
 Note for internal contributors: in order to also execute the tests that depend on the SonarQube Server Enterprise Edition, use:
