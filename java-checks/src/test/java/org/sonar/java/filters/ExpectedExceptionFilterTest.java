@@ -26,4 +26,11 @@ class ExpectedExceptionFilterTest {
       .verify("src/test/files/filters/ExpectedExceptionFilter.java", new ExpectedExceptionFilter());
   }
 
+  @Test
+  void test_without_semantics() {
+    FilterVerifier.newInstance()
+      .withoutSemantic()
+      .verify("src/test/files/filters/ExpectedExceptionFilter.java", new ExpectedExceptionFilter());
+  }
+
 }

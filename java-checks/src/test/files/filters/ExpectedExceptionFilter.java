@@ -154,7 +154,7 @@ class ExpectedExceptionFilter {
     }
 
     try {
-      LocalDate.from(instant); // WithIssue
+      LocalDate.from(instant); // NoIssue
     } catch (DateTimeException e) {
       // expected
     }

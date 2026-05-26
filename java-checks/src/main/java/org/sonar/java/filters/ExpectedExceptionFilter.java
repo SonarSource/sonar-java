@@ -161,11 +161,9 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
    */
   private static boolean containsExpectedExceptions(List<AnnotationTree> annotations, Set<String> expectedExceptions) {
     return annotations.stream()
-      .anyMatch(annotation -> {
-        Type annotationType = annotation.annotationType().symbolType();
-        Arguments arguments = annotation.arguments();
-        return "Test".equals(annotationType.name()) && containsExpectedExceptions(arguments, expectedExceptions);
-      });
+      .anyMatch(annotation ->
+        "Test".equals(annotation.symbolType().name()) && containsExpectedExceptions(annotation.arguments(), expectedExceptions)
+      );
   }
 
   /**
@@ -220,8 +218,7 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
    * Check if a try statement catches a set of expected exception types.
    */
   private static boolean catchesExpectedException(TryStatementTree tryStatement, Set<String> expectedExceptions) {
-    return isTryCatchFail(tryStatement.block()) &&
-      tryStatement.catches().stream()
+    return tryStatement.catches().stream()
         .anyMatch(catchTree -> catchesExpectedExceptions(catchTree, expectedExceptions));
   }
 
