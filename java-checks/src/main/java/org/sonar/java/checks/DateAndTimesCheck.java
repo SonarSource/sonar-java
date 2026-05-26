@@ -34,28 +34,31 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2143")
 public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
-  private static final MethodMatchers CALENDAR_GET_INSTANCE =
-    MethodMatchers.create()
-      .ofSubTypes("java.util.Calendar")
-      .names("getInstance")
-      .withAnyParameters()
-      .build();
+  private static final MethodMatchers CALENDAR_GET_INSTANCE = MethodMatchers.create()
+    .ofSubTypes("java.util.Calendar")
+    .names("getInstance")
+    .withAnyParameters()
+    .build();
 
-  private static final MethodMatchers DATE_CONSTRUCTOR =
-    MethodMatchers.create()
-      .ofSubTypes("java.util.Date")
-      .constructor()
-      .withAnyParameters()
-      .build();
+  private static final MethodMatchers DATE_CONSTRUCTOR = MethodMatchers.create()
+    .ofSubTypes("java.util.Date")
+    .constructor()
+    .withAnyParameters()
+    .build();
 
   private static final Set<String> KNOWN_JAVA_UTIL_DATE_TIME_CLASSES = Set.of(
     "java.util.Date", "java.util.Calendar",
     "java.sql.Date", "java.sql.Time", "java.sql.Timestamp",
-    "java.util.GregorianCalendar"
-  );
+    "java.util.GregorianCalendar");
 
-  private void reportIssue(Tree tree) {
-    reportIssue(tree, "Use the Java 8 Date and Time API instead." + context.getJavaVersion().java8CompatibilityMessage());
+  private static final String ISSUE_MESSAGE = "Use the \"java.time\" API for date and time.";
+  private boolean issueAlreadyRaised = false;
+
+  private void addIssueOnFile() {
+    if (!issueAlreadyRaised) {
+      issueAlreadyRaised = true;
+      addIssueOnFile(ISSUE_MESSAGE);
+    }
   }
 
   @Override
@@ -76,8 +79,8 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
       String concatenatedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
       String qualifiedName = importTree.isStatic() ? concatenatedName.substring(0, concatenatedName.lastIndexOf('.')) : concatenatedName;
       if (qualifiedName.startsWith("org.joda.time.")
-        || KNOWN_JAVA_UTIL_DATE_TIME_CLASSES.stream().anyMatch(qualifiedName::startsWith)){
-        reportIssue(importTree);
+        || KNOWN_JAVA_UTIL_DATE_TIME_CLASSES.stream().anyMatch(qualifiedName::startsWith)) {
+        addIssueOnFile();
       }
     }
     super.visitNode(tree);
@@ -90,12 +93,11 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    reportIssue(newClassTree);
+    addIssueOnFile();
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(mit);
+    addIssueOnFile();
   }
-
 }
