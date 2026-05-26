@@ -131,7 +131,8 @@ class SpringBeansShouldBeAccessibleCheckTest {
   }
 
   @Test
-  void testSpringBootApplicationWithAnnotation() {
+  void testSpringBootApplicationWithScanBasePackages() {
+    //test case when using explicit package names
     final String testFolderThirdApp = BASE_PATH + "springBootApplication/thirdApp/";
     List<String> thirdAppTestFiles = Arrays.asList(
       mainCodeSourcesPath(testFolderThirdApp + "SpringBootApp3.java"),
@@ -143,6 +144,7 @@ class SpringBeansShouldBeAccessibleCheckTest {
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
       .verifyIssues();
 
+    //test case when using string constants for package names
     final String testFolderFourthApp = BASE_PATH + "springBootApplication/fourthApp/";
     List<String> fourthAppTestFiles = Arrays.asList(
       mainCodeSourcesPath(testFolderFourthApp + "SpringBootApp4.java"),
@@ -153,6 +155,22 @@ class SpringBeansShouldBeAccessibleCheckTest {
 
     CheckVerifier.newVerifier()
       .onFiles(fourthAppTestFiles)
+      .withCheck(new SpringBeansShouldBeAccessibleCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void testSpringBootApplicationWithMixedScanBasePackageAttributes() {
+    final String testFolder = BASE_PATH + "springBootApplication/fifthApp/";
+    List<String> files = List.of(
+      mainCodeSourcesPath(testFolder + "SpringBootApp5.java"),
+      mainCodeSourcesPath(testFolder + "service/ServiceMarker.java"),
+      mainCodeSourcesPath(testFolder + "service/MyService.java"),
+      mainCodeSourcesPath(testFolder + "extra/ExtraService.java"),
+      mainCodeSourcesPath(testFolder + "controller/MyController.java"));
+
+    CheckVerifier.newVerifier()
+      .onFiles(files)
       .withCheck(new SpringBeansShouldBeAccessibleCheck())
       .verifyIssues();
   }
