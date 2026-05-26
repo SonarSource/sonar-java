@@ -22,6 +22,7 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -52,13 +53,24 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
     "java.util.GregorianCalendar");
 
   private static final String ISSUE_MESSAGE = "Use the \"java.time\" API for date and time.";
-  private boolean issueAlreadyRaised = false;
+  private boolean issueAlreadyRaised;
 
   private void addIssueOnFile() {
     if (!issueAlreadyRaised) {
       issueAlreadyRaised = true;
       addIssueOnFile(ISSUE_MESSAGE);
     }
+  }
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    issueAlreadyRaised = false;
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    issueAlreadyRaised = false;
   }
 
   @Override
