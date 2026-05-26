@@ -1,0 +1,193 @@
+{
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/bo/AdminUserDetails.java": [
+25
+],
+"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/api/CommonPage.java": [
+86,
+90
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelp.java": [
+67,
+71
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsMemberReport.java": [
+55,
+59
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceArea.java": [
+63,
+67
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubject.java": [
+97,
+101
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectComment.java": [
+65,
+69
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopic.java": [
+64,
+68,
+72,
+76,
+80,
+84
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicComment.java": [
+65,
+69
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCartItem.java": [
+148,
+152,
+156,
+160
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrder.java": [
+174,
+178,
+454,
+458,
+462,
+466,
+470,
+474,
+478,
+482,
+486,
+490
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderOperateHistory.java": [
+52,
+56
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnApply.java": [
+132,
+136,
+180,
+184,
+292,
+296
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnReason.java": [
+56,
+60
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsComment.java": [
+94,
+98
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentReplay.java": [
+66,
+70
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProduct.java": [
+382,
+386,
+390,
+394
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductOperateLog.java": [
+126,
+130
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductVertifyRecord.java": [
+41,
+45
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCoupon.java": [
+126,
+130,
+134,
+138,
+182,
+186
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponHistory.java": [
+87,
+91,
+103,
+107
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotion.java": [
+44,
+48,
+52,
+56,
+68,
+72
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionLog.java": [
+66,
+70,
+74,
+78
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionSession.java": [
+45,
+49,
+53,
+57,
+69,
+73
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeAdvertise.java": [
+74,
+78,
+82,
+86
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdmin.java": [
+94,
+98,
+102,
+106
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminLoginLog.java": [
+40,
+44
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsGrowthChangeHistory.java": [
+48,
+52
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationChangeHistory.java": [
+48,
+52
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMember.java": [
+122,
+126,
+146,
+150
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLoginLog.java": [
+42,
+46
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberStatisticsInfo.java": [
+173,
+177
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMenu.java": [
+53,
+57
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsPermission.java": [
+104,
+108
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResource.java": [
+36,
+40
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceCategory.java": [
+30,
+34
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRole.java": [
+62,
+66
+]
+}

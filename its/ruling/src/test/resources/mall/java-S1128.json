@@ -1,0 +1,77 @@
+{
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/config/SpringDocConfig.java": [
+10
+],
+"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/config/SecurityConfig.java": [
+10,
+13
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelp.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaProductRelation.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectComment.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectProductRelation.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicComment.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbum.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumPic.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryAttributeRelation.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductFullReduction.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeBrand.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeNewProduct.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendProduct.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendSubject.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminPermissionRelation.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminRoleRelation.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberMemberTagRelation.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberProductCategoryRelation.java": [
+3
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelation.java": [
+3
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/component/OrderTimeOutCancelTask.java": [
+8
+],
+"com.macro.mall:mall:mall-search/src/test/java/com/macro/mall/search/MallSearchApplicationTests.java": [
+10
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/component/RestAuthenticationEntryPoint.java": [
+7,
+9
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/component/RestfulAccessDeniedHandler.java": [
+7,
+9
+]
+}

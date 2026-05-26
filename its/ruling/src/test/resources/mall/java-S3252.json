@@ -1,0 +1,139 @@
+{
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/CmsSubjectServiceImpl.java": [
+30,
+33
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderReturnApplyServiceImpl.java": [
+30
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderReturnReasonServiceImpl.java": [
+43
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderServiceImpl.java": [
+37
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsBrandServiceImpl.java": [
+40,
+52,
+78,
+82
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductAttributeCategoryServiceImpl.java": [
+53
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductAttributeServiceImpl.java": [
+34
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductCategoryServiceImpl.java": [
+97
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductServiceImpl.java": [
+101,
+208,
+218,
+221,
+296
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsSkuStockServiceImpl.java": [
+30
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsCouponHistoryServiceImpl.java": [
+24,
+33
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsCouponServiceImpl.java": [
+111,
+117
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsFlashPromotionProductRelationServiceImpl.java": [
+51
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsFlashPromotionServiceImpl.java": [
+56,
+58
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeAdvertiseServiceImpl.java": [
+61,
+64,
+70
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeBrandServiceImpl.java": [
+58,
+61
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeNewProductServiceImpl.java": [
+58,
+61
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeRecommendProductServiceImpl.java": [
+58,
+61
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeRecommendSubjectServiceImpl.java": [
+58,
+61
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminServiceImpl.java": [
+160,
+163,
+179,
+243,
+244,
+245
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsMenuServiceImpl.java": [
+69
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsResourceServiceImpl.java": [
+54,
+60,
+63
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsRoleServiceImpl.java": [
+64,
+66
+],
+"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/exception/GlobalExceptionHandler.java": [
+63
+],
+"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/log/WebLogAspect.java": [
+72,
+110
+],
+"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/service/impl/DemoServiceImpl.java": [
+51
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/AlipayServiceImpl.java": [
+43,
+47,
+104,
+107,
+135,
+139
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/HomeServiceImpl.java": [
+61,
+81
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java": [
+358
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalBrandServiceImpl.java": [
+43
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java": [
+46,
+51
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberServiceImpl.java": [
+189
+],
+"com.macro.mall:mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java": [
+112,
+218
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/util/JwtTokenUtil.java": [
+153,
+157
+]
+}

@@ -189,6 +189,16 @@ public class JavaRulingTest {
   }
 
   @Test
+  public void spring_mall() throws Exception {
+    String projectName = "mall";
+    MavenBuild build = test_project("com.macro.mall:mall", projectName);
+    build
+      .setProperty("docker.skip", "true")
+      .setProperty("java.version", "17");
+    executeBuildWithCommonProperties(build, projectName);
+  }
+
+  @Test
   public void guava() throws Exception {
     String projectName = "guava";
     MavenBuild build = test_project("com.google.guava:guava", projectName);

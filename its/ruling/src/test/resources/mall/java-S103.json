@@ -1,0 +1,510 @@
+{
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/config/MallSecurityConfig.java": [
+43
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/CmsSubjectController.java": [
+40,
+41,
+42
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/OmsOrderController.java": [
+31,
+32
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/OmsOrderReturnApplyController.java": [
+33,
+34
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/OmsOrderReturnReasonController.java": [
+62,
+63
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/PmsBrandController.java": [
+80,
+81,
+82
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeCategoryController.java": [
+74,
+75,
+83
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeController.java": [
+33,
+38,
+39
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductCategoryController.java": [
+59,
+60,
+88,
+100
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductController.java": [
+65,
+66
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/PmsSkuStockController.java": [
+28
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/SmsCouponHistoryController.java": [
+32,
+33,
+34,
+35,
+36
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/SmsFlashPromotionController.java": [
+81
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/SmsFlashPromotionProductRelationController.java": [
+71,
+72,
+73,
+74,
+75
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/SmsFlashPromotionSessionController.java": [
+90
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/SmsHomeAdvertiseController.java": [
+79,
+80,
+81
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/SmsHomeBrandController.java": [
+62,
+73,
+74,
+75,
+76
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/SmsHomeNewProductController.java": [
+62,
+73,
+74,
+75,
+76,
+77
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/SmsHomeRecommendProductController.java": [
+62,
+73,
+74,
+75,
+76,
+77
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/SmsHomeRecommendSubjectController.java": [
+62,
+73,
+74,
+75,
+76,
+77
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/UmsAdminController.java": [
+119,
+120
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/UmsMenuController.java": [
+77,
+78
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/UmsResourceController.java": [
+84,
+85
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/UmsRoleController.java": [
+71,
+72
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dao/SmsFlashPromotionProductRelationDao.java": [
+16
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/SmsFlashPromotionProductRelationService.java": [
+41
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/OssServiceImpl.java": [
+63,
+93
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductAttributeServiceImpl.java": [
+47,
+75
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductCategoryServiceImpl.java": [
+83,
+88
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductServiceImpl.java": [
+92,
+178,
+180,
+183
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsCouponHistoryServiceImpl.java": [
+23
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsCouponServiceImpl.java": [
+53,
+73,
+98
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsFlashPromotionProductRelationServiceImpl.java": [
+50
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeNewProductServiceImpl.java": [
+57
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeRecommendProductServiceImpl.java": [
+57
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeRecommendSubjectServiceImpl.java": [
+57
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminCacheServiceImpl.java": [
+65,
+77
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminServiceImpl.java": [
+110
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsResourceServiceImpl.java": [
+53
+],
+"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/config/BaseRedisConfig.java": [
+29,
+55
+],
+"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/log/WebLogAspect.java": [
+42
+],
+"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/controller/DemoController.java": [
+87,
+88
+],
+"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/controller/RestTemplateDemoController.java": [
+63,
+106
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/CommentGenerator.java": [
+70
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/CmsPrefrenceAreaProductRelationMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/CmsSubjectCategoryMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/CmsSubjectCommentMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/CmsSubjectProductRelationMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/OmsCompanyAddressMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/OmsOrderOperateHistoryMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/OmsOrderReturnApplyMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/OmsOrderReturnReasonMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/PmsFeightTemplateMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/PmsProductAttributeCategoryMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/PmsProductAttributeMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/PmsProductAttributeValueMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/PmsProductCategoryAttributeRelationMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/PmsProductCategoryMapper.java": [
+25,
+27
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/PmsProductFullReductionMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/PmsProductOperateLogMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/PmsProductVertifyRecordMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/SmsCouponProductCategoryRelationMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/SmsCouponProductRelationMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/SmsFlashPromotionLogMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/SmsFlashPromotionMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/SmsFlashPromotionProductRelationMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/SmsFlashPromotionSessionMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/SmsHomeNewProductMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/SmsHomeRecommendProductMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/SmsHomeRecommendSubjectMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsAdminPermissionRelationMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsAdminRoleRelationMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsGrowthChangeHistoryMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsIntegrationChangeHistoryMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsIntegrationConsumeSettingMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsMemberLoginLogMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsMemberMemberTagRelationMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsMemberProductCategoryRelationMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsMemberReceiveAddressMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsMemberRuleSettingMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsMemberStatisticsInfoMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsResourceCategoryMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsRoleMenuRelationMapper.java": [
+23
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsRolePermissionRelationMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/mapper/UmsRoleResourceRelationMapper.java": [
+23,
+25
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/component/CancelOrderSender.java": [
+25
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/config/AlipayClientConfig.java": [
+19
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/controller/HomeController.java": [
+39,
+40,
+57,
+58,
+66,
+67,
+75,
+76
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberAttentionController.java": [
+51,
+52
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberProductCollectionController.java": [
+52,
+53
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/controller/MemberReadHistoryController.java": [
+62,
+63
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/controller/OmsCartItemController.java": [
+53
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/controller/OmsPortalOrderController.java": [
+74,
+79
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/controller/PmsPortalBrandController.java": [
+31,
+32,
+49,
+50
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/controller/PmsPortalProductController.java": [
+34,
+40,
+41,
+42,
+43
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/controller/UmsMemberCouponController.java": [
+50,
+71
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/dao/HomeDao.java": [
+25
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/dao/PortalProductDao.java": [
+28
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/PmsPortalProductService.java": [
+17
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/AlipayServiceImpl.java": [
+77,
+128
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/HomeServiceImpl.java": [
+121
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/MemberAttentionServiceImpl.java": [
+45
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/MemberCollectionServiceImpl.java": [
+42
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsCartItemServiceImpl.java": [
+85
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java": [
+102,
+151,
+157,
+240,
+290,
+322,
+387,
+558,
+571,
+584,
+598,
+616,
+617,
+637,
+641,
+655,
+667,
+671,
+759,
+760
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPromotionServiceImpl.java": [
+84,
+94,
+159,
+175
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java": [
+45,
+100,
+104,
+123
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java": [
+141,
+180,
+187,
+189,
+222
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberServiceImpl.java": [
+173
+],
+"com.macro.mall:mall:mall-search/src/main/java/com/macro/mall/search/controller/EsProductController.java": [
+71,
+72,
+78,
+84,
+85,
+86,
+87,
+95,
+96
+],
+"com.macro.mall:mall:mall-search/src/main/java/com/macro/mall/search/service/EsProductService.java": [
+42
+],
+"com.macro.mall:mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java": [
+93,
+174,
+208,
+221,
+224,
+226,
+231,
+232,
+233,
+247,
+251,
+259,
+266,
+272,
+273
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/aspect/RedisCacheAspect.java": [
+27
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/component/DynamicAuthorizationManager.java": [
+39
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/component/JwtAuthenticationTokenFilter.java": [
+48
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/component/RestAuthenticationEntryPoint.java": [
+20
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/config/SecurityConfig.java": [
+53,
+60
+]
+}

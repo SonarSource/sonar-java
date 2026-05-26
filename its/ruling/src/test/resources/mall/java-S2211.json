@@ -1,0 +1,12 @@
+{
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderServiceImpl.java": [
+47,
+67
+],
+"com.macro.mall:mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java": [
+100
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/config/SecurityConfig.java": [
+41
+]
+}
