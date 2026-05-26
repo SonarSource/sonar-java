@@ -21,13 +21,13 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-class InstantConversionsCheckTest {
+class DateTimeConversionsCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/InstantConversionsCheckSample.java"))
-      .withCheck(new InstantConversionsCheck())
+      .onFile(mainCodeSourcesPath("checks/DateTimeConversionsCheckSample.java"))
+      .withCheck(new DateTimeConversionsCheck())
       .verifyIssues();
   }
 }

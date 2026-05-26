@@ -19,7 +19,7 @@ package org.sonar.java.filters;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.sonar.java.checks.InstantConversionsCheck;
+import org.sonar.java.checks.DateTimeConversionsCheck;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -88,13 +88,13 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
 
   @Override
   public Set<Class<? extends JavaCheck>> filteredRules() {
-    return Set.of(InstantConversionsCheck.class);
+    return Set.of(DateTimeConversionsCheck.class);
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
     if (containsExpectedExceptions(tree.modifiers().annotations(), DATE_TIME_EXCEPTION_TYPES)) {
-      excludeLines(tree, InstantConversionsCheck.class);
+      excludeLines(tree, DateTimeConversionsCheck.class);
     }
     super.visitMethod(tree);
   }
@@ -102,14 +102,14 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
   @Override
   public void visitTryStatement(TryStatementTree tree) {
     if (catchesExpectedException(tree, DATE_TIME_EXCEPTION_TYPES)) {
-      excludeLines(tree.block(), InstantConversionsCheck.class);
+      excludeLines(tree.block(), DateTimeConversionsCheck.class);
     }
     super.visitTryStatement(tree);
   }
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    excludeExpectedExceptions(tree, DATE_TIME_EXCEPTION_TYPES, InstantConversionsCheck.class);
+    excludeExpectedExceptions(tree, DATE_TIME_EXCEPTION_TYPES, DateTimeConversionsCheck.class);
     super.visitMethodInvocation(tree);
   }
 

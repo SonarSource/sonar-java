@@ -16,7 +16,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 
-public class InstantConversionsCheckSample {
+public class DateTimeConversionsCheckSample {
 
   private Instant instant;
   private TemporalAccessor temporalAccessor;
