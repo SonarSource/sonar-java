@@ -27,7 +27,7 @@ class DateAndTimesCheckTest {
       .onFile("src/test/files/checks/DateAndTimesCheck/MultipleImports.java")
       .withCheck(new DateAndTimesCheck())
       .withJavaVersion(8)
-      .verifyIssueOnFile("Use the Java 8 Date and Time API instead.");
+      .verifyIssueOnFile("Use the \"java.time\" API for date and time.");
   }
 
   @Test
@@ -36,7 +36,7 @@ class DateAndTimesCheckTest {
       .onFile("src/test/files/checks/DateAndTimesCheck/JodaTime.java")
       .withCheck(new DateAndTimesCheck())
       .withJavaVersion(8)
-      .verifyIssueOnFile("Use the Java 8 Date and Time API instead.");
+      .verifyIssueOnFile("Use the \"java.time\" API for date and time.");
   }
 
   @Test
@@ -45,7 +45,7 @@ class DateAndTimesCheckTest {
       .onFile("src/test/files/checks/DateAndTimesCheck/WildcardImport.java")
       .withCheck(new DateAndTimesCheck())
       .withJavaVersion(8)
-      .verifyIssueOnFile("Use the Java 8 Date and Time API instead.");
+      .verifyIssueOnFile("Use the \"java.time\" API for date and time.");
   }
 
   @Test
@@ -54,7 +54,7 @@ class DateAndTimesCheckTest {
       .onFile("src/test/files/checks/DateAndTimesCheck/StaticImport.java")
       .withCheck(new DateAndTimesCheck())
       .withJavaVersion(8)
-      .verifyIssueOnFile("Use the Java 8 Date and Time API instead.");
+      .verifyIssueOnFile("Use the \"java.time\" API for date and time.");
   }
 
   @Test
@@ -64,7 +64,7 @@ class DateAndTimesCheckTest {
       .withCheck(new DateAndTimesCheck())
       .withJavaVersion(8)
       .withoutSemantic()
-      .verifyIssueOnFile("Use the Java 8 Date and Time API instead.");
+      .verifyIssueOnFile("Use the \"java.time\" API for date and time.");
   }
 
 }
