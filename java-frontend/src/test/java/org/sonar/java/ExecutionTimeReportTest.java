@@ -246,7 +246,7 @@ class ExecutionTimeReportTest {
     private Instant instant;
 
     public UnitTestClock() {
-      this.instant = Instant.now(Clock.fixed(Instant.parse("2026-05-26T00:00:00Z"), ZoneId.of("UTC")));
+      this.instant = Instant.parse("2026-05-26T00:00:00Z");
     }
 
     public void addMilliseconds(long millisToAdd) {
