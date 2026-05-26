@@ -91,7 +91,7 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
       String concatenatedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
       String qualifiedName = importTree.isStatic() ? concatenatedName.substring(0, concatenatedName.lastIndexOf('.')) : concatenatedName;
       if (qualifiedName.startsWith("org.joda.time.")
-        || KNOWN_JAVA_UTIL_DATE_TIME_CLASSES.stream().anyMatch(qualifiedName::startsWith)) {
+        || KNOWN_JAVA_UTIL_DATE_TIME_CLASSES.stream().anyMatch(known -> qualifiedName.equals(known) || qualifiedName.startsWith(known + "."))) {
         addIssueOnFile();
       }
     }
