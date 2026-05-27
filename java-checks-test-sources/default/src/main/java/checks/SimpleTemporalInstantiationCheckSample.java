@@ -18,7 +18,10 @@ public class SimpleTemporalInstantiationCheckSample {
 
       LocalDate.now(), // Compliant
       LocalDate.from(Instant.now()),  // Noncompliant
-      LocalDate.from(LocalDate.now()),  // Noncompliant
+      LocalDate.from(LocalDate.now()),  // Noncompliant [[quickfixes=qf3]]
+      //        ^^^^
+      // fix@qf3 {{Replace with now()}}
+      // edit@qf3 [[sc=17;ec=38]] {{now()}}
       LocalDate.from(LocalTime.now()),  // Noncompliant
       LocalDate.from(YearMonth.now()),  // Noncompliant
       LocalDate.from(Year.now()),  // Noncompliant
@@ -33,7 +36,10 @@ public class SimpleTemporalInstantiationCheckSample {
       YearMonth.now(clock),  // Compliant
       Year.now(clock),  // Compliant
 
-      LocalDate.from(LocalDate.now(clock)),  // Noncompliant
+      LocalDate.from(LocalDate.now(clock)),  // Noncompliant [[quickfixes=qf0]]
+      //        ^^^^
+      // fix@qf0 {{Replace with now(clock)}}
+      // edit@qf0 [[sc=17;ec=43]] {{now(clock)}}
       LocalDate.from(LocalTime.now(clock)),  // Noncompliant
       LocalDate.from(YearMonth.now(clock)),  // Noncompliant
       LocalDate.from(Year.now(clock)),  // Noncompliant
