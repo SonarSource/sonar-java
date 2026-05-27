@@ -1,0 +1,40 @@
+<p>Using <code>.from()</code> to instantiate <code>LocalDate</code>, <code>LocalTime</code>, <code>YearMonth</code>, or <code>Year</code> from a
+<em>current time</em> expression is unnecessarily verbose when a direct <code>.now()</code> factory method is available.</p>
+<h2>Why is this an issue?</h2>
+<p>Some <code>.from( )</code> patterns are unnecessarily verbose and can be simplified using the <code>now( )</code> method.</p>
+<p>For example <code>LocalDate.from(Instant.now().atZone(zone))</code> can be replaced with <code>LocalDate.now(zone)</code></p>
+<p>Calling <code>.now()</code> directly on the target type is more concise, and makes the intent clearer.</p>
+<h2>How to fix it</h2>
+<p>Call <code>.now()</code>, <code>.now(ZoneId)</code>, or <code>.now(Clock)</code> directly on the target type instead of using <code>.from()</code>
+with a current time expression.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import java.time.*;
+
+  void execute(Instant instant, ZoneId zoneId, Clock clock) {
+    LocalDate date = LocalDate.from(Instant.now().atZone(ZoneId.of("UTC"))); // Noncompliant
+    LocalTime time = LocalTime.from(LocalTime.now(zoneId)); // Noncompliant
+    YearMonth yearMonth = YearMonth.from(ZonedDateTime.now(clock)); // Noncompliant
+    // ...
+  }
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import java.time.*;
+
+  void execute(Instant instant, ZoneId zoneId, Clock clock) {
+    LocalDate date = LocalDate.now(ZoneId.of("UTC"));
+    LocalTime time = LocalTime.now(zoneId);
+    YearMonth yearMonth = YearMonth.now(clock);
+    // ...
+  }
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java SE Documentation - <a href="https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html">java.time package</a></li>
+  <li>Java SE Documentation - <a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDate.html#now-java.time.ZoneId-">LocalDate.now(ZoneId)
+  factory method</a></li>
+</ul>
+
