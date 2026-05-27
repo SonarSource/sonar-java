@@ -33,15 +33,48 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
     .names("mock")
     .addParametersMatcher("java.lang.Class").addParametersMatcher("java.lang.Class", "java.lang.String")
     .build();
+
   private static final MethodMatchers ENUM_FINAL_METHODS = MethodMatchers.create()
     .ofSubTypes("java.lang.Enum")
     .names("name", "ordinal", "equals", "hashCode", "compareTo", "getDeclaringClass", "describeConstable")
     .withAnyParameters()
     .build();
+
+  private static final MethodMatchers COLLECTIONS_EMPTY = MethodMatchers.create()
+    .ofTypes("java.util.Collections")
+    .names("emptyList", "emptySet", "emptyMap")
+    .addWithoutParametersMatcher()
+    .build();
+
+  private static final MethodMatchers COLLECTION_OF = MethodMatchers.create()
+    .ofTypes("java.util.List", "java.util.Set", "java.util.Map")
+    .names("of")
+    .addWithoutParametersMatcher()
+    .build();
+
+  private static final MethodMatchers COLLECTION_CTOR = MethodMatchers.create()
+    .ofSubTypes("java.util.ArrayList", "java.util.LinkedList", "java.util.HashSet", "java.util.HashMap")
+    .constructor()
+    .addWithoutParametersMatcher()
+    .build();
+
+  private static final MethodMatchers EMPTY = MethodMatchers.create()
+    .ofTypes("java.util.Optional", "java.util.stream.Stream")
+    .names("empty")
+    .addWithoutParametersMatcher()
+    .build();
+
+  /**
+   * Frequently used methods known not to throw runtime exceptions.
+   */
   private static final MethodMatchers AUTHORIZED_METHODS = MethodMatchers.or(
     FAIL_METHOD_MATCHER,
     MOCKITO_MOCK_METHOD_MATCHERS,
-    ENUM_FINAL_METHODS
+    ENUM_FINAL_METHODS,
+    COLLECTIONS_EMPTY,
+    COLLECTION_OF,
+    COLLECTION_CTOR,
+    EMPTY
   );
 
   @Override
