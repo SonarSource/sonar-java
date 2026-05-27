@@ -54,7 +54,7 @@ public class SimpleTemporalInstantiationCheckSample {
       LocalDate.now(ZoneId.of("UTC")), // Compliant
       LocalDate.from(Instant.now().atZone(ZoneId.of("UTC"))), // Noncompliant {{Replace with "now(ZoneId.of("UTC"))".}} [[quickfixes=qf2]]
       //        ^^^^
-      // @fix@qf2 {{Replace with now(ZoneId.of("UTC"))}}
+      // fix@qf2 {{Replace with now(ZoneId.of("UTC"))}}
       // edit@qf2 [[sc=17;ec=61]] {{now(ZoneId.of("UTC"))}}
 
       LocalDate.now(ZoneId.of("UTC")), // Compliant
