@@ -5,9 +5,6 @@
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/batch/ProjectDataLoaderTest.java": [
 121
 ],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/ScmAccountToUserLoaderTest.java": [
-89
-],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MapBasedRawMeasureRepositoryTest.java": [
 187
 ],
