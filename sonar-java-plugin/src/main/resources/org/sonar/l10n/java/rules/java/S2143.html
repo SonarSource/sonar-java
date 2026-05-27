@@ -1,7 +1,11 @@
 <h2>Why is this an issue?</h2>
-<p>The old, much-derided <code>Date</code> and <code>Calendar</code> classes have always been confusing and difficult to use properly, particularly in
-a multi-threaded context. <code>JodaTime</code> has long been a popular alternative, but now an even better option is built-in. Java 8’s JSR 310
-implementation offers specific classes for:</p>
+<p>The old, much-derided <code>Date</code> and <code>Calendar</code> classes have always been confusing and error-prone, particularly in a
+multi-threaded context. The JodaTime library has long been a popular alternative, but it is also considered outdated. Starting from Java SE 8, the
+built-in <code>java.time</code> (JSR-310) API provides a modern, immutable, and thread-safe framework that addresses these long-standing design
+flaws.</p>
+<p><strong>Note</strong>: While Joda-Time remains the standard for handling date and time in java versions prior to 8, users of newer versions should
+migrate to the <code>java.time</code> API.</p>
+<p>The <code>java.time</code> package offers specific classes for:</p>
 <table>
   <colgroup>
     <col style="width: 50%;">
@@ -14,6 +18,14 @@ implementation offers specific classes for:</p>
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <td>
+        <p>Instant</p>
+      </td>
+      <td>
+        <p>a timestamp</p>
+      </td>
+    </tr>
     <tr>
       <td>
         <p>LocalDate</p>
@@ -36,14 +48,6 @@ implementation offers specific classes for:</p>
       </td>
       <td>
         <p>the date and time, without offset, or zone</p>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <p>OffsetDate</p>
-      </td>
-      <td>
-        <p>a date with an offset such as +02:00, without time of day, or zone</p>
       </td>
     </tr>
     <tr>
@@ -72,6 +76,14 @@ implementation offers specific classes for:</p>
     </tr>
     <tr>
       <td>
+        <p>Year</p>
+      </td>
+      <td>
+        <p>a year</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <p>YearMonth</p>
       </td>
       <td>
@@ -88,26 +100,10 @@ implementation offers specific classes for:</p>
     </tr>
     <tr>
       <td>
-        <p>Year/MonthOfDay/DayOfWeek/…​</p>
+        <p>Month/DayOfWeek</p>
       </td>
       <td>
-        <p>classes for the important fields</p>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <p>DateTimeFields</p>
-      </td>
-      <td>
-        <p>stores a map of field-value pairs which may be invalid</p>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <p>Calendrical</p>
-      </td>
-      <td>
-        <p>access to the low-level API</p>
+        <p>enum classes for date fields</p>
       </td>
     </tr>
     <tr>
@@ -115,22 +111,52 @@ implementation offers specific classes for:</p>
         <p>Period</p>
       </td>
       <td>
-        <p>a descriptive amount of time, such as "2 months and 3 days"</p>
+        <p>a date-based amount of time, such as "2 months and 3 days"</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>Duration</p>
+      </td>
+      <td>
+        <p>a time-based amount of time, such as "34.5 seconds"</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>Clock</p>
+      </td>
+      <td>
+        <p>a clock providing access to the current instant, date and time</p>
       </td>
     </tr>
   </tbody>
 </table>
+<h2>How to fix it</h2>
+<p>Use the <code>java.time</code> API instead of <code>java.util.Calendar</code>, <code>java.util.Date</code> or <code>JodaTime</code>.</p>
 <h3>Noncompliant code example</h3>
+<p>Use of <code>java.util.Date</code> or <code>java.util.Calendar</code></p>
 <pre>
 Date now = new Date();  // Noncompliant
 DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 Calendar christmas  = Calendar.getInstance();  // Noncompliant
 christmas.setTime(df.parse("25.12.2020"));
 </pre>
+<p>Use of Joda-Time</p>
+<pre>
+DateTime dateTime =  new DateTime(); // Noncompliant
+</pre>
 <h3>Compliant solution</h3>
 <pre>
-LocalDate now = LocalDate.now();  // gets calendar date. no time component
-LocalTime now2 = LocalTime.now(); // gets current time. no date component
-LocalDate christmas = LocalDate.of(2020,12,25);
+LocalDate nowUTC = LocalDate.now(ZoneOffset.UTC);  // gets current date in UTC
+LocalDate christmas = LocalDate.of(2020, Month.DECEMBER,25); // create date from year/month/day
+ZonedDateTime nowParis = ZonedDateTime.now(ZoneId.of("Europe/Paris")); // get current time in Paris with time-zone information
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java SE Documentation - java.time - <a
+  href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/package-summary.html">Official documentation for the java.time
+  package</a></li>
+</ul>
 
