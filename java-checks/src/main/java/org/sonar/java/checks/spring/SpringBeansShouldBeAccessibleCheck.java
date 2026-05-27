@@ -66,6 +66,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
 
   private static final String COMPONENT_SCAN_ANNOTATION = "org.springframework.context.annotation.ComponentScan";
   private static final Set<String> COMPONENT_SCAN_BASE_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "basePackageClasses", "value");
+  private static final Set<String> SCAN_BASE_ANNOTATIONS = SetUtils.immutableSetOf("scanBasePackages", "scanBasePackageClasses");
 
   private static final String CACHE_KEY_PREFIX = "java:S4605:targeted:";
 
@@ -187,25 +188,24 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
 
   private static List<String> targetedPackages(String classPackageName, SymbolMetadata classSymbolMetadata) {
     // annotation is necessarily there already
-    return Objects.requireNonNull(classSymbolMetadata.valuesForAnnotation(SpringUtils.SPRING_BOOT_APP_ANNOTATION))
-      .stream()
-      .filter(v -> "scanBasePackages".equals(v.name()))
-      .map(SymbolMetadata.AnnotationValue::value)
-      .findFirst()
-      // list of packages to scan
-      .filter(Object[].class::isInstance)
-      .map(Object[].class::cast)
-      .map(SpringBeansShouldBeAccessibleCheck::asStringList)
-      // Using this annotation without arguments tells Spring to scan the current package and all of its sub-packages.
-      .orElse(Collections.singletonList(classPackageName));
-  }
-
-  private static List<String> asStringList(Object[] array) {
-    return Arrays.asList(array)
-      .stream()
-      .filter(String.class::isInstance)
-      .map(String.class::cast)
+    var scanBaseValues = Objects.requireNonNull(classSymbolMetadata.valuesForAnnotation(SpringUtils.SPRING_BOOT_APP_ANNOTATION)).stream()
+      .filter(v -> SCAN_BASE_ANNOTATIONS.contains(v.name()) && v.value() instanceof Object[])
       .toList();
+
+    List<String> packages = new ArrayList<>();
+    for (SymbolMetadata.AnnotationValue value : scanBaseValues) {
+      boolean isClassBased = "scanBasePackageClasses".equals(value.name());
+      for (Object element : (Object[]) value.value()) {
+        if (!isClassBased && element instanceof String s) {
+          packages.add(s);
+        } else if (isClassBased && element instanceof Symbol s) {
+          packages.add(packageNameOf(s));
+        }
+      }
+    }
+
+    // Using this annotation without arguments tells Spring to scan the current package and all of its sub-packages.
+    return scanBaseValues.isEmpty() ? Collections.singletonList(classPackageName) : packages;
   }
 
   private void addMessageToMap(String classPackageName, IdentifierTree classNameTree) {
