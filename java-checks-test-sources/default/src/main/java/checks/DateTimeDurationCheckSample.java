@@ -3,29 +3,38 @@ package checks;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 class DateTimeDurationCheckSample {
 
+  private static final ZoneId UTC = ZoneId.of("UTC");
+
   void nonCompliantExamples(LocalDateTime localDateTime1, LocalDateTime localDateTime2) {
-    Duration duration = Duration.between(LocalDateTime.now(), LocalDateTime.now().plusDays(1)); // Noncompliant {{Convert the arguments of this method call to time zone-aware types before computing a duration between them.}}
+    Duration duration = Duration.between(LocalDateTime.now(), LocalDateTime.now().plusDays(1)); // Noncompliant {{Convert these arguments to time zone-aware types before computing a duration between them.}}
 //                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    long nanos = ChronoUnit.NANOS.between(LocalDateTime.now(), LocalDateTime.now().plusNanos(1)); // Noncompliant {{Convert the arguments of this method call to time zone-aware types before computing a duration between them.}}
+    Duration duration2 = Duration.between(LocalDateTime.now().atZone(UTC), LocalDateTime.now().plusDays(1)); // Noncompliant {{Convert this argument to a time zone-aware type before computing a duration on it.}}
+//                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    long nanos = ChronoUnit.NANOS.between(LocalDateTime.now(), LocalDateTime.now().plusNanos(1)); // Noncompliant {{Convert these arguments to time zone-aware types before computing a duration between them.}}
 //                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    long micros = ChronoUnit.MICROS.between(localDateTime1, localDateTime2); // Noncompliant {{Convert the arguments of this method call to time zone-aware types before computing a duration between them.}}
+    long nanos2 = ChronoUnit.NANOS.between(LocalDateTime.now(), LocalDateTime.now().plusNanos(1).atZone(UTC)); // Noncompliant {{Convert this argument to a time zone-aware type before computing a duration on it.}}
+//                                         ^^^^^^^^^^^^^^^^^^^
+    long micros = ChronoUnit.MICROS.between(localDateTime1, localDateTime2); // Noncompliant {{Convert these arguments to time zone-aware types before computing a duration between them.}}
 //                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    long millis = ChronoUnit.MILLIS.between(localDateTime1, localDateTime2); // Noncompliant {{Convert the arguments of this method call to time zone-aware types before computing a duration between them.}}
+    long millis = ChronoUnit.MILLIS.between(localDateTime1, localDateTime2); // Noncompliant {{Convert these arguments to time zone-aware types before computing a duration between them.}}
 //                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    long seconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), LocalDateTime.now().plusSeconds(5)); // Noncompliant {{Convert the arguments of this method call to time zone-aware types before computing a duration between them.}}
+    long seconds = ChronoUnit.SECONDS.between(LocalDateTime.now(), LocalDateTime.now().plusSeconds(5)); // Noncompliant {{Convert these arguments to time zone-aware types before computing a duration between them.}}
 //                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    long minutes = ChronoUnit.MINUTES.between(LocalDateTime.now(), LocalDateTime.now().plusMinutes(5)); // Noncompliant {{Convert the arguments of this method call to time zone-aware types before computing a duration between them.}}
+    long minutes = ChronoUnit.MINUTES.between(LocalDateTime.now(), LocalDateTime.now().plusMinutes(5)); // Noncompliant {{Convert these arguments to time zone-aware types before computing a duration between them.}}
 //                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    long hours = ChronoUnit.HOURS.between(localDateTime1, localDateTime2); // Noncompliant {{Convert the arguments of this method call to time zone-aware types before computing a duration between them.}}
+    long hours = ChronoUnit.HOURS.between(localDateTime1, localDateTime2); // Noncompliant {{Convert these arguments to time zone-aware types before computing a duration between them.}}
 //                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    long halfDays = ChronoUnit.HALF_DAYS.between(localDateTime1, localDateTime2); // Noncompliant {{Convert the arguments of this method call to time zone-aware types before computing a duration between them.}}
+    long halfDays = ChronoUnit.HALF_DAYS.between(localDateTime1, localDateTime2); // Noncompliant {{Convert these arguments to time zone-aware types before computing a duration between them.}}
 //                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    long days = ChronoUnit.DAYS.between(localDateTime1, localDateTime2); // Noncompliant {{Convert the arguments of this method call to time zone-aware types before computing a duration between them.}}
+    long days = ChronoUnit.DAYS.between(localDateTime1, localDateTime2); // Noncompliant {{Convert these arguments to time zone-aware types before computing a duration between them.}}
 //                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    long days2 = ChronoUnit.DAYS.between(localDateTime1, localDateTime2.atZone(UTC)); // Noncompliant {{Convert this argument to a time zone-aware type before computing a duration on it.}}
+//                                       ^^^^^^^^^^^^^^
   }
 
   void compliantExamples(LocalDateTime localDateTime1, LocalDateTime localDateTime2) {

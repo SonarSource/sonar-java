@@ -32,6 +32,9 @@ public class DateTimeDurationCheck extends AbstractMethodDetection implements Ja
   private static final String TEMPORAL_TYPE = "java.time.temporal.Temporal";
   private static final String LOCALDATETIME_TYPE = "java.time.LocalDateTime";
 
+  private static final String BOTH_ARGS_MESSAGE = "Convert these arguments to time zone-aware types before computing a duration between them.";
+  private static final String SINGLE_ARG_MESSAGE = "Convert this argument to a time zone-aware type before computing a duration on it.";
+
   private static final Set<String> TIMEZONE_SENSITIVE_CHRONOUNITS = Set.of(
     "NANOS",
     "MICROS",
@@ -72,15 +75,21 @@ public class DateTimeDurationCheck extends AbstractMethodDetection implements Ja
     }
     ExpressionTree firstArg = mit.arguments().get(0);
     ExpressionTree secondArg = mit.arguments().get(1);
-    if (firstArg.symbolType().is(LOCALDATETIME_TYPE) && secondArg.symbolType().is(LOCALDATETIME_TYPE)) {
-      reportIssue(firstArg, secondArg, "Convert the arguments of this method call to time zone-aware types before computing a duration between them.");
+    boolean firstArgIsLocalDateTime = firstArg.symbolType().is(LOCALDATETIME_TYPE);
+    boolean secondArgIsLocalDateTime = secondArg.symbolType().is(LOCALDATETIME_TYPE);
+    if (firstArgIsLocalDateTime && secondArgIsLocalDateTime) {
+      reportIssue(firstArg, secondArg, BOTH_ARGS_MESSAGE);
+    } else if (firstArgIsLocalDateTime) {
+      reportIssue(firstArg, SINGLE_ARG_MESSAGE);
+    } else if (secondArgIsLocalDateTime) {
+      reportIssue(secondArg, SINGLE_ARG_MESSAGE);
     }
   }
 
   private static boolean isMethodCalledOnChronoUnitTimeValue(MethodInvocationTree mit) {
     return (mit.methodSelect() instanceof MemberSelectExpressionTree methodSelect) &&
       (methodSelect.expression() instanceof MemberSelectExpressionTree enumValue) &&
-      TIMEZONE_SENSITIVE_CHRONOUNITS.stream().anyMatch(value -> enumValue.identifier().name().equals(value));
+      TIMEZONE_SENSITIVE_CHRONOUNITS.contains(enumValue.identifier().name());
   }
 
 }
