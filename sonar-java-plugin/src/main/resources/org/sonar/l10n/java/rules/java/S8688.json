@@ -12,15 +12,15 @@
     "timezone",
     "datetime"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Info",
   "ruleSpecification": "RSPEC-8688",
   "sqKey": "S8688",
   "scope": "Main",
   "quickfix": "unknown",
   "code": {
     "impacts": {
-      "MAINTAINABILITY": "HIGH",
-      "RELIABILITY": "MEDIUM"
+      "MAINTAINABILITY": "INFO",
+      "RELIABILITY": "INFO"
     },
     "attribute": "LOGICAL"
   }
