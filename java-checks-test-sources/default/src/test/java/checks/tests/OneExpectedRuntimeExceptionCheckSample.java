@@ -250,6 +250,15 @@ public class OneExpectedRuntimeExceptionCheckSample {
     assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.emptySet()));
     assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.emptyMap()));
 
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.singleton(2)));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.singleton(foo(2)))); // Noncompliant
+
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.singletonList(2)));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.singletonList(foo(2)))); // Noncompliant
+
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.singletonMap(2, 3)));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.singletonMap(foo(2), foo(3)))); // Noncompliant
+
     assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, List.of()));
     assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, List.of(foo(2)))); // Noncompliant
 

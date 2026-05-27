@@ -46,6 +46,12 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
     .addWithoutParametersMatcher()
     .build();
 
+  private static final MethodMatchers COLLECTIONS_SINGLETON = MethodMatchers.create()
+    .ofTypes("java.util.Collections")
+    .names("singleton", "singletonList", "singletonMap")
+    .withAnyParameters()
+    .build();
+
   private static final MethodMatchers COLLECTION_OF = MethodMatchers.create()
     .ofTypes("java.util.List", "java.util.Set", "java.util.Map")
     .names("of")
@@ -72,6 +78,7 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
     MOCKITO_MOCK_METHOD_MATCHERS,
     ENUM_FINAL_METHODS,
     COLLECTIONS_EMPTY,
+    COLLECTIONS_SINGLETON,
     COLLECTION_OF,
     COLLECTION_CTOR,
     EMPTY
