@@ -34,9 +34,11 @@ import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 public class SimpleTemporalInstantiationCheck extends AbstractMethodDetection {
 
   private static final MethodMatchers NOW_METHODS_WITH_ZONE_ID = MethodMatchers.create()
-    .ofTypes("java.time.ZonedDateTime", "java.time.OffsetDateTime", "java.time.LocalDate", "java.time.YearMonth")
+    .ofTypes("java.time.ZonedDateTime", "java.time.OffsetDateTime", "java.time.LocalDate", "java.time.YearMonth", "java.time.LocalTime", "java.time.Year")
     .names("now")
     .addParametersMatcher("java.time.ZoneId")
+    .addParametersMatcher("java.time.Clock")
+    .addWithoutParametersMatcher()
     .build();
 
   private static final MethodMatchers AT_ZONE_METHOD = MethodMatchers.create()
@@ -49,6 +51,7 @@ public class SimpleTemporalInstantiationCheck extends AbstractMethodDetection {
     .ofTypes("java.time.Instant")
     .names("now")
     .addWithoutParametersMatcher()
+    .addParametersMatcher("java.time.Clock")
     .build();
 
   @Override
@@ -70,7 +73,7 @@ public class SimpleTemporalInstantiationCheck extends AbstractMethodDetection {
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(methodName)
-        .withMessage("Replace \"from(TemporalAccessor)\" with \"now(ZoneId)\".")
+        .withMessage("Replace with \"%s\".", replacement)
         .withQuickFix(JavaQuickFix.newQuickFix("Replace with %s", replacement)
           .addTextEdit(JavaTextEdit.replaceTextSpan(textSpanBetween(methodName, true, mit.arguments(), true), replacement))::build)
         .report();
