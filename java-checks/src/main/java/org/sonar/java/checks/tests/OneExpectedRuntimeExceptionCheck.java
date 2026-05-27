@@ -73,6 +73,8 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
   /**
    * Frequently used methods known not to throw runtime exceptions.
    */
+  // If adding to this list, make sure that the methods do not call NullPointerExceptions
+  // (for example, `Arrays.asList(null)` throws).
   private static final MethodMatchers AUTHORIZED_METHODS = MethodMatchers.or(
     FAIL_METHOD_MATCHER,
     MOCKITO_MOCK_METHOD_MATCHERS,
