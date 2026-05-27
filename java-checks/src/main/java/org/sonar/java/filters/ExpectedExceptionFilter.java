@@ -38,7 +38,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 
 import static org.sonar.java.checks.helpers.MethodTreeUtils.consecutiveMethodInvocation;
-import static org.sonar.java.checks.helpers.UnitTestUtils.isTryCatchFail;
 
 /**
  * A filter to deactivate rules that catch expressions raising specific exceptions in contexts where these exceptions are expected.
@@ -205,11 +204,8 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
    * Extract the type name of a class literal expression.
    */
   private static Optional<Type> classLiteralType(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expression;
-      if ("class".equals(memberSelect.identifier().name())) {
-        return Optional.of(memberSelect.expression().symbolType());
-      }
+    if (expression instanceof MemberSelectExpressionTree memberSelect && "class".equals(memberSelect.identifier().name())) {
+      return Optional.of(memberSelect.expression().symbolType());
     }
     return Optional.empty();
   }
@@ -219,7 +215,7 @@ public class ExpectedExceptionFilter extends BaseTreeVisitorIssueFilter {
    */
   private static boolean catchesExpectedException(TryStatementTree tryStatement, Set<String> expectedExceptions) {
     return tryStatement.catches().stream()
-        .anyMatch(catchTree -> catchesExpectedExceptions(catchTree, expectedExceptions));
+      .anyMatch(catchTree -> catchesExpectedExceptions(catchTree, expectedExceptions));
   }
 
   private static boolean catchesExpectedExceptions(CatchTree catchTree, Set<String> expectedExceptions) {
