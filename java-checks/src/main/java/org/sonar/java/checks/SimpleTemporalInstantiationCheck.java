@@ -33,7 +33,7 @@ import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 @Rule(key = "S8695")
 public class SimpleTemporalInstantiationCheck extends AbstractMethodDetection {
 
-  private static final MethodMatchers NOW_METHODS_WITH_ZONE_ID = MethodMatchers.create()
+  private static final MethodMatchers NOW_METHODS = MethodMatchers.create()
     .ofTypes("java.time.ZonedDateTime", "java.time.OffsetDateTime", "java.time.LocalDate", "java.time.YearMonth", "java.time.LocalTime", "java.time.Year")
     .names("now")
     .addParametersMatcher("java.time.ZoneId")
@@ -82,7 +82,7 @@ public class SimpleTemporalInstantiationCheck extends AbstractMethodDetection {
 
   private static boolean isNonCompliantMethod(MethodInvocationTree method) {
     if (method.methodSymbol().isStatic()) {
-      return INSTANT_NOW.matches(method) || NOW_METHODS_WITH_ZONE_ID.matches(method);
+      return INSTANT_NOW.matches(method) || NOW_METHODS.matches(method);
     } else {
       return AT_ZONE_METHOD.matches(method) &&
         method.methodSelect() instanceof MemberSelectExpressionTree methodSelect &&
