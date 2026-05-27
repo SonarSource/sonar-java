@@ -1,0 +1,59 @@
+<h2>Why is this an issue?</h2>
+<p>JUnit does not guarantee that lifecycle methods of the same type defined within a single class are executed in any particular order. For example,
+if multiple methods are annotated with <code>@BeforeEach</code>, they can be executed in an unpredictable sequence. The same applies to
+<code>@BeforeAll</code>, <code>@AfterEach</code>, and <code>@AfterAll</code>.</p>
+<p>The same limitation exists in JUnit 4 with the corresponding annotations <code>@Before</code>, <code>@After</code>, <code>@BeforeClass</code>, and
+<code>@AfterClass</code>: when a class declares more than one method for the same annotation, their relative execution order is not guaranteed.</p>
+<p>While the execution order may happen to be deterministic on a specific machine or runtime, JUnit makes no formal guarantee about it (such as
+following file order or alphabetical order). Relying on such an incidental order makes tests fragile: they may pass locally and fail in CI, or break
+after a JUnit upgrade, with failures that are hard to reproduce and diagnose.</p>
+<p>Therefore, to ensure tests execute reliably across all environments, a class should contain at most one method for each lifecycle annotation
+type.</p>
+<table>
+  <tbody>
+    <tr>
+      <td>Note</td>
+      <td>
+        <p>This rule applies strictly within a single class. There <strong>is</strong> a guaranteed execution order across class inheritance: "before"
+        methods from a superclass are always executed first, and the order is reversed for "after" methods. Splitting lifecycle methods across a class
+        hierarchy is therefore not flagged.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<h2>How to fix it</h2>
+<p>Merge the bodies of the duplicated lifecycle methods into a single method annotated with that lifecycle annotation. When the original methods must
+run in a specific order, call them sequentially from the merged method so the order is explicit and guaranteed.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class BoardTest {
+
+  @BeforeEach
+  void initBoard() { // Noncompliant; execution order relative to the other @BeforeEach method is not guaranteed
+    board = new Board();
+  }
+
+  @BeforeEach
+  void initPlayers() { // Noncompliant
+    players = List.of(new Player(), new Player());
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class BoardTest {
+
+  @BeforeEach
+  void setUp() {
+    board = new Board();
+    players = List.of(new Player(), new Player());
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://docs.junit.org/5.5.2/api/org/junit/jupiter/api/BeforeEach.html">JUnit 5.5.2: @BeforeEach</a></li>
+</ul>
+

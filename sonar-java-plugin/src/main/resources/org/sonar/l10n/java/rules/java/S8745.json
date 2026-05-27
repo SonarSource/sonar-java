@@ -1,0 +1,25 @@
+{
+  "title": "Test classes should not contain multiple lifecycle methods of the same type",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "junit",
+    "tests"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-8745",
+  "sqKey": "S8745",
+  "scope": "Tests",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM",
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
