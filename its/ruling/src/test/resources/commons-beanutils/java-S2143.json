@@ -1,62 +1,44 @@
 {
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java": [
-    27,
-    28
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java": [
-    21,
-    25,
-    26
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java": [
-    24
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/CalendarConverter.java": [
-    19
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/DateConverter.java": [
-    19
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/DateTimeConverter.java": [
-    22,
-    23,
-    235,
-    376,
-    381,
-    386,
-    391,
-    398,
-    400,
-    402,
-    404,
-    406
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/NumberConverter.java": [
-    25,
-    26
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/SqlDateConverter.java": [
-    19
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/SqlTimeConverter.java": [
-    19
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/SqlTimestampConverter.java": [
-    19
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/SqlDateLocaleConverter.java": [
-    20,
-    219
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/SqlTimeLocaleConverter.java": [
-    20,
-    218
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/SqlTimestampLocaleConverter.java": [
-    20,
-    217
-  ],
-  "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/StringLocaleConverter.java": [
-    26
-  ]
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConvertUtilsBean.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/CalendarConverter.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/DateConverter.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/DateTimeConverter.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/NumberConverter.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/SqlDateConverter.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/SqlTimeConverter.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/SqlTimestampConverter.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/SqlDateLocaleConverter.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/SqlTimeLocaleConverter.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/SqlTimestampLocaleConverter.java": [
+0
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/StringLocaleConverter.java": [
+0
+]
 }
