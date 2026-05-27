@@ -29,7 +29,7 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 @Rule(key = "S8220")
-public class InstantConversionsCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
+public class DateTimeConversionsCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
   private static final String INSTANT = "java.time.Instant";
   private static final String TEMPORAL_ACCESSOR = "java.time.temporal.TemporalAccessor";
