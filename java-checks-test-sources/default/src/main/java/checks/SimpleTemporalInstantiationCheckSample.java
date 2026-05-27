@@ -18,10 +18,10 @@ public class SimpleTemporalInstantiationCheckSample {
 
       LocalDate.now(), // Compliant
       LocalDate.from(Instant.now()),  // Noncompliant
-      LocalDate.from(LocalDate.now()),  // Noncompliant [[quickfixes=qf3]]
+      LocalDate.from(LocalDate.now()),  // Noncompliant [[quickfixes=qf0]]
       //        ^^^^
-      // fix@qf3 {{Replace with now()}}
-      // edit@qf3 [[sc=17;ec=38]] {{now()}}
+      // fix@qf0 {{Replace with now()}}
+      // edit@qf0 [[sc=17;ec=38]] {{now()}}
       LocalDate.from(LocalTime.now()),  // Noncompliant
       LocalDate.from(YearMonth.now()),  // Noncompliant
       LocalDate.from(Year.now()),  // Noncompliant
@@ -36,10 +36,10 @@ public class SimpleTemporalInstantiationCheckSample {
       YearMonth.now(clock),  // Compliant
       Year.now(clock),  // Compliant
 
-      LocalDate.from(LocalDate.now(clock)),  // Noncompliant [[quickfixes=qf0]]
+      LocalDate.from(LocalDate.now(clock)),  // Noncompliant [[quickfixes=qf1]]
       //        ^^^^
-      // fix@qf0 {{Replace with now(clock)}}
-      // edit@qf0 [[sc=17;ec=43]] {{now(clock)}}
+      // fix@qf1 {{Replace with now(clock)}}
+      // edit@qf1 [[sc=17;ec=43]] {{now(clock)}}
       LocalDate.from(LocalTime.now(clock)),  // Noncompliant
       LocalDate.from(YearMonth.now(clock)),  // Noncompliant
       LocalDate.from(Year.now(clock)),  // Noncompliant
@@ -52,16 +52,16 @@ public class SimpleTemporalInstantiationCheckSample {
       LocalDate.from(LocalDate.now()), // Noncompliant {{Replace with "now()".}}
 
       LocalDate.now(ZoneId.of("UTC")), // Compliant
-      LocalDate.from(Instant.now().atZone(ZoneId.of("UTC"))), // Noncompliant {{Replace with "now(ZoneId.of("UTC"))".}} [[quickfixes=qf1]]
+      LocalDate.from(Instant.now().atZone(ZoneId.of("UTC"))), // Noncompliant {{Replace with "now(ZoneId.of("UTC"))".}} [[quickfixes=qf2]]
       //        ^^^^
-      // @fix@qf1 {{Replace with now(ZoneId.of("UTC"))}}
-      // edit@qf1 [[sc=17;ec=61]] {{now(ZoneId.of("UTC"))}}
+      // @fix@qf2 {{Replace with now(ZoneId.of("UTC"))}}
+      // edit@qf2 [[sc=17;ec=61]] {{now(ZoneId.of("UTC"))}}
 
       LocalDate.now(ZoneId.of("UTC")), // Compliant
-      LocalDate.from(ZonedDateTime.now(zoneId)), // Noncompliant {{Replace with "now(zoneId)".}} [[quickfixes=qf2]]
+      LocalDate.from(ZonedDateTime.now(zoneId)), // Noncompliant {{Replace with "now(zoneId)".}} [[quickfixes=qf3]]
       //        ^^^^
-      // fix@qf2 {{Replace with now(zoneId)}}
-      // edit@qf2 [[sc=17;ec=48]] {{now(zoneId)}}
+      // fix@qf3 {{Replace with now(zoneId)}}
+      // edit@qf3 [[sc=17;ec=48]] {{now(zoneId)}}
 
       LocalDate.now(ZoneId.of("UTC")), // Compliant
       LocalDate.from(OffsetDateTime.now(ZoneId.of("Asia/Tokyo"))), // Noncompliant

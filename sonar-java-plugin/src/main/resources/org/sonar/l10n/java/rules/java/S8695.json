@@ -1,5 +1,5 @@
 {
-  "title": "Verbose time instantiation patterns should be simplified",
+  "title": "Redundant time instantiation patterns should be simplified",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -10,14 +10,14 @@
     "datetime",
     "pitfall"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-8695",
   "sqKey": "S8695",
   "scope": "All",
   "quickfix": "covered",
   "code": {
     "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
+      "MAINTAINABILITY": "LOW"
     },
     "attribute": "CLEAR"
   }
