@@ -1,6 +1,18 @@
 package checks.tests;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -228,6 +240,48 @@ public class OneExpectedRuntimeExceptionCheckSample {
     org.assertj.core.api.Assertions.assertThat(thrown).isInstanceOf(IllegalStateException.class);
   }
 
+  @Test
+  void testAllowEmptyCollections() {
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, foo(2))); // Noncompliant
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.emptyList()));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, foo(2), Collections.emptyList())); // Noncompliant
+
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.emptySet()));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.emptyMap()));
+
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.singleton(2)));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.singleton(foo(2)))); // Noncompliant
+
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.singletonList(2)));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.singletonList(foo(2)))); // Noncompliant
+
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.singletonMap(2, 3)));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Collections.singletonMap(foo(2), foo(3)))); // Noncompliant
+
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, List.of()));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, List.of(foo(2)))); // Noncompliant
+
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Set.of()));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Set.of(foo(2)))); // Noncompliant
+
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Map.of()));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Map.of(foo(2), foo(3)))); // Noncompliant
+
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, new ArrayList<>()));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, new LinkedList<>()));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, new HashSet<>()));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, new HashMap<>()));
+
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, new ArrayList<>(getCollection()))); // Noncompliant
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, new LinkedList<>(getCollection()))); // Noncompliant
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, new HashSet<>(getCollection()))); // Noncompliant
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, new HashMap<>(foo(2), foo(3)))); // Noncompliant
+
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Stream.empty()));
+    assertThrows(IllegalArgumentException.class, () -> objVarargMethod(1, Optional.empty()));
+  }
+
 
   int foo(int x) {
     return x;
@@ -255,4 +309,11 @@ public class OneExpectedRuntimeExceptionCheckSample {
     }
   }
 
+  void objVarargMethod(Object... args) {
+    throw new IllegalArgumentException();
+  }
+
+  <T> Collection<T> getCollection() {
+    return new ArrayList<>();
+  }
 }
