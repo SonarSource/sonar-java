@@ -16,11 +16,18 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -28,28 +35,42 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S2143")
 public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
-  private static final MethodMatchers METHOD_MATCHERS = MethodMatchers.or(
-    MethodMatchers.create().ofTypes("java.util.Calendar").names("getInstance").withAnyParameters().build(),
-    MethodMatchers.create().ofTypes("java.util.Date").constructor().withAnyParameters().build());
+  private static final MethodMatchers CALENDAR_GET_INSTANCE = MethodMatchers.create()
+    .ofSubTypes("java.util.Calendar")
+    .names("getInstance")
+    .withAnyParameters()
+    .build();
 
-  @Override
-  protected MethodMatchers getMethodInvocationMatchers() {
-    return METHOD_MATCHERS;
+  private static final MethodMatchers DATE_CONSTRUCTOR = MethodMatchers.create()
+    .ofSubTypes("java.util.Date")
+    .constructor()
+    .withAnyParameters()
+    .build();
+
+  private static final Set<String> KNOWN_JAVA_UTIL_DATE_TIME_CLASSES = Set.of(
+    "java.util.Date", "java.util.Calendar",
+    "java.sql.Date", "java.sql.Time", "java.sql.Timestamp",
+    "java.util.GregorianCalendar");
+
+  private static final String ISSUE_MESSAGE = "Use the \"java.time\" API for date and time.";
+  private boolean issueAlreadyRaised;
+
+  private void addIssueOnFile() {
+    if (!issueAlreadyRaised) {
+      issueAlreadyRaised = true;
+      addIssueOnFile(ISSUE_MESSAGE);
+    }
   }
 
   @Override
-  protected void onConstructorFound(NewClassTree newClassTree) {
-    reportIssue(newClassTree);
+  public void setContext(JavaFileScannerContext context) {
+    issueAlreadyRaised = false;
+    super.setContext(context);
   }
 
   @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportIssue(mit);
-  }
-
-  private void reportIssue(Tree tree) {
-    reportIssue(tree, "Use the Java 8 Date and Time API instead." + context.getJavaVersion().java8CompatibilityMessage());
-
+  public void leaveFile(JavaFileScannerContext context) {
+    issueAlreadyRaised = false;
   }
 
   @Override
@@ -57,4 +78,38 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
     return version.isJava8Compatible();
   }
 
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    List<Tree.Kind> nodes = new ArrayList<>(super.nodesToVisit());
+    nodes.add(Tree.Kind.IMPORT);
+    return nodes;
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (tree instanceof ImportTree importTree) {
+      String concatenatedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
+      String qualifiedName = importTree.isStatic() ? concatenatedName.substring(0, concatenatedName.lastIndexOf('.')) : concatenatedName;
+      if (qualifiedName.startsWith("org.joda.time.")
+        || KNOWN_JAVA_UTIL_DATE_TIME_CLASSES.stream().anyMatch(known -> qualifiedName.equals(known) || qualifiedName.startsWith(known + "."))) {
+        addIssueOnFile();
+      }
+    }
+    super.visitNode(tree);
+  }
+
+  @Override
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return MethodMatchers.or(CALENDAR_GET_INSTANCE, DATE_CONSTRUCTOR);
+  }
+
+  @Override
+  protected void onConstructorFound(NewClassTree newClassTree) {
+    addIssueOnFile();
+  }
+
+  @Override
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    addIssueOnFile();
+  }
 }

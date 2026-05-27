@@ -22,12 +22,49 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 class DateAndTimesCheckTest {
 
   @Test
-  void test() {
+  void test_multiple_imports() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/DateAndTimesCheck.java")
+      .onFile("src/test/files/checks/DateAndTimesCheck/MultipleImports.java")
       .withCheck(new DateAndTimesCheck())
       .withJavaVersion(8)
-      .verifyIssues();
+      .verifyIssueOnFile("Use the \"java.time\" API for date and time.");
+  }
+
+  @Test
+  void test_joda_time() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DateAndTimesCheck/JodaTime.java")
+      .withCheck(new DateAndTimesCheck())
+      .withJavaVersion(8)
+      .verifyIssueOnFile("Use the \"java.time\" API for date and time.");
+  }
+
+  @Test
+  void test_wildcard_import() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DateAndTimesCheck/WildcardImport.java")
+      .withCheck(new DateAndTimesCheck())
+      .withJavaVersion(8)
+      .verifyIssueOnFile("Use the \"java.time\" API for date and time.");
+  }
+
+  @Test
+  void test_static_import() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DateAndTimesCheck/StaticImport.java")
+      .withCheck(new DateAndTimesCheck())
+      .withJavaVersion(8)
+      .verifyIssueOnFile("Use the \"java.time\" API for date and time.");
+  }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DateAndTimesCheck/MultipleImports.java")
+      .withCheck(new DateAndTimesCheck())
+      .withJavaVersion(8)
+      .withoutSemantic()
+      .verifyIssueOnFile("Use the \"java.time\" API for date and time.");
   }
 
 }
