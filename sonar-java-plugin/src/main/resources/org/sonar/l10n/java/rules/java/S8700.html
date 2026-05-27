@@ -1,0 +1,56 @@
+<p>The <code>java.time</code> API offers several types to represent moments in time, and choosing the wrong one to compute durations can produce
+incorrect answers, especially around time zone differences and Daylight Saving Time (DST) transitions.</p>
+<h2>Why is this an issue?</h2>
+<p>The <code>LocalDateTime</code> class in the <code>java.time</code> API represents calendar and clock-face information without any time zone or
+offset from the UTC timeline. Arithmetic on this type is therefore a pure calendar and clock-face delta, not a measure of physical elapsed time.</p>
+<p>When the two operands of <code>Duration.between(time1, time2)</code> or <code>ChronoUnit.X.between(time1, time2)</code> actually correspond to
+moments observed in different time zones, the result silently differs from the real elapsed duration by the offset between the two zones and by any
+Daylight Saving Time (DST) transition occurring within the window. To obtain the real physical elapsed time, both operands must first be anchored to
+their zone by being converted to <code>Instant</code> or <code>ZonedDateTime</code>.</p>
+<h3>What is the potential impact?</h3>
+<p>The computation does not throw any exception, so the wrong duration silently propagates into downstream logic, such as billing periods,
+service-level agreement (SLA) timers, scheduling windows, or travel itineraries. The defect is easy to miss in tests that run in a single time zone,
+and may only surface once the application is deployed across regions or runs through a DST transition.</p>
+<h2>How to fix it</h2>
+<p>When computing a duration between two <code>LocalDateTime</code> values observed in known time zones, convert each one with
+<code>.atZone(ZoneId)</code> first, then apply <code>Duration.between</code> or <code>ChronoUnit.X.between</code> to the resulting
+<code>ZonedDateTime</code> (or <code>Instant</code>) values.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<p>The duration below is computed between two <code>LocalDateTime</code> values observed in different zones. Because <code>LocalDateTime</code>
+carries no offset, the result is a purely arithmetic delta that ignores the 6-hour difference between New York and Paris.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+LocalDateTime departureNY = LocalDateTime.of(2026, 3, 28, 22, 0);  // America/New_York
+LocalDateTime arrivalParis = LocalDateTime.of(2026, 3, 29, 11, 0); // Europe/Paris
+long hours = ChronoUnit.HOURS.between(departureNY, arrivalParis);  // Noncompliant: returns 13
+</pre>
+<h4>Compliant solution</h4>
+<p>Anchoring each <code>LocalDateTime</code> to its zone yields the real physical elapsed time.</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+ZonedDateTime departure = LocalDateTime.of(2026, 3, 28, 22, 0)
+    .atZone(ZoneId.of("America/New_York"));
+ZonedDateTime arrival = LocalDateTime.of(2026, 3, 29, 11, 0)
+    .atZone(ZoneId.of("Europe/Paris"));
+long hours = ChronoUnit.HOURS.between(departure, arrival); // Compliant: returns 7 hours
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/package-summary.html">Official documentation for the
+  <code>java.time</code> package</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/LocalDateTime.html">Official documentation for the
+  <code>LocalDateTime</code> class</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Instant.html">Official documentation for the
+  <code>Instant</code> class</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/ZonedDateTime.html">Official documentation for the
+  <code>ZonedDateTime</code> class</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/temporal/ChronoUnit.html">Official documentation for the
+  <code>ChronoUnit</code> class</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S8220} - Conversions between local and timezone-aware types should use explicit timezone handling</li>
+  <li>{rule:java:S8688} - Time-based <code>.now()</code> methods should specify a <code>ZoneId</code> or a <code>Clock</code></li>
+  <li>{rule:java:S8696} - Value-based classes should be compared using their value</li>
+</ul>
+

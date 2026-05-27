@@ -1,0 +1,26 @@
+{
+  "title": "Time zone-aware types should be used to compute durations",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java8",
+    "datetime",
+    "suspicious",
+    "timezone"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-8700",
+  "sqKey": "S8700",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  }
+}
