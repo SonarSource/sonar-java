@@ -235,7 +235,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     String enumName = getMonthEnumName(literal);
     String replacement = isReversed ? (String.format("%s.equals(%s.getMonth())", enumName, receiverText))
       : (String.format("%s.getMonth().equals(%s)", receiverText, enumName));
-    return binaryExpressionTree.is(Tree.Kind.NOT_EQUAL_TO) ? "!" + replacement : replacement;
+    return binaryExpressionTree.is(Tree.Kind.NOT_EQUAL_TO) ? ("!" + replacement) : replacement;
   }
 
   private String getValueReplacement(MethodInvocationTree methodInvocationSide, BinaryExpressionTree binaryExpressionTree, String enumName, boolean isReversed) {
@@ -243,7 +243,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     String receiverText = QuickFixHelper.contentForTree(receiver, context);
     String replacement = isReversed ? (String.format("%s.equals(%s)", enumName, receiverText))
       : (String.format("%s.equals(%s)", receiverText, enumName));
-    return binaryExpressionTree.is(Tree.Kind.NOT_EQUAL_TO) ? "!" + replacement : replacement;
+    return binaryExpressionTree.is(Tree.Kind.NOT_EQUAL_TO) ? ("!" + replacement) : replacement;
   }
 
   private static int getIntLiteral(ExpressionTree arg) {
