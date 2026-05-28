@@ -37,12 +37,14 @@ import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -119,6 +121,14 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
       return unusedPrivateMethods.stream().filter(it -> !unresolvedMethodNames.contains(it.simpleName().name())).toList();
     }
 
+    /**
+     * JUnit's {@code @MethodSource} annotation is attached to a test and can be used in two ways:
+     * <ul>
+     *   <li>Without arguments, it indicates that the method with the same name as the test provides arguments.</li>
+     *   <li>If one or more arguments are provided, then they explicitly indicate which methods will be called.</li>
+     * </ul>
+     * Here we handle the first case. The second case is handled by the more general {@link MethodsUsedInAnnotationsFilter}.
+     */
     private static List<String> getMethodSourcesNames(ClassTree tree) {
       return tree.members().stream()
         .filter(it -> it instanceof MethodTree mt && isAnnotatedWithMethodSource(mt))
@@ -273,26 +283,44 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
       return name.toLowerCase(Locale.getDefault()).contains("method");
     }
 
-    private void removeMethodName(LiteralTree literal) {
-      filteredNames.remove(removeQuotes(literal.value()));
+    private void removeMethodName(String quotedName) {
+      filteredNames.remove(removeQuotes(quotedName));
     }
 
     private static String removeQuotes(String withQuotes) {
       return withQuotes.substring(1, withQuotes.length() - 1);
     }
 
+    private void removeMethodName(LiteralTree literal) {
+      removeMethodName(literal.value());
+    }
+
+    private void removeMethodNames(NewArrayTree newArrayTree) {
+      for (ExpressionTree initializer : newArrayTree.initializers()) {
+        if (initializer.is(Tree.Kind.STRING_LITERAL)) {
+          removeMethodName((LiteralTree) initializer);
+        }
+      }
+    }
+
+    private void removeMethodName(ExpressionTree arg) {
+      if (arg.is(Tree.Kind.STRING_LITERAL)) {
+        removeMethodName((LiteralTree) arg);
+      } else if(arg.is(Tree.Kind.NEW_ARRAY)) {
+        removeMethodNames((NewArrayTree) arg);
+      }
+    }
+
     @Override
     public void visitAnnotation(AnnotationTree annotationTree) {
       var isMethodAnnotation = isNameIndicatingMethod(annotationTree.annotationType().symbolType().name());
       for (var arg : annotationTree.arguments()) {
-        if (arg.is(Tree.Kind.STRING_LITERAL)) {
-          if (isMethodAnnotation) {
-            removeMethodName((LiteralTree) arg);
+        if (arg instanceof AssignmentExpressionTree asgn) {
+          if (isMethodAnnotation || isNameIndicatingMethod(((IdentifierTree) asgn.variable()).name())) {
+            removeMethodName(asgn.expression());
           }
-        } else if (arg instanceof AssignmentExpressionTree asgn && asgn.expression().is(Tree.Kind.STRING_LITERAL) && (
-          isMethodAnnotation || isNameIndicatingMethod(((IdentifierTree) asgn.variable()).name())
-        )) {
-          removeMethodName((LiteralTree) asgn.expression());
+        } else if (isMethodAnnotation) {
+          removeMethodName(arg);
         }
       }
     }

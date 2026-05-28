@@ -31,6 +31,14 @@ class UnusedPrivateMethodCheckTest {
   }
 
   @Test
+  void test_methodSource() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.testCodeSourcesPath("checks/tests/UnusedPrivateMethodSampleTest.java"))
+      .withCheck(new UnusedPrivateMethodCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.nonCompilingTestSourcesPath("checks/UnusedPrivateMethod.java"))
