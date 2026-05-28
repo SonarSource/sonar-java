@@ -36,7 +36,7 @@
   },
   {
     "key": "AT_NONATOMIC_64BIT_PRIMITIVE",
-    "name": "Multi-threading - This write of this 64-bit primitive variable may not atomic",
+    "name": "Multi-threading - This write of this 64-bit primitive variable may not be atomic",
     "type": "BUG",
     "severity": "MAJOR",
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#at-nonatomic-64bit-primitive"
@@ -366,6 +366,13 @@
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#ct-constructor-throw"
   },
   {
+    "key": "CWO_CLOSED_WITHOUT_OPENED",
+    "name": "Multi-threading - Method releases lock without opening it",
+    "type": "BUG",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#cwo-closed-without-opened"
+  },
+  {
     "key": "DB_DUPLICATE_BRANCHES",
     "name": "Style - Method uses the same code for two branches",
     "type": "CODE_SMELL",
@@ -625,8 +632,15 @@
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#dmi-long-bits-to-double-invoked-on-int"
   },
   {
+    "key": "DMI_MISLEADING_SUBSTRING",
+    "name": "Style - Invocation of substring(0), which returns the same as toString()",
+    "type": "CODE_SMELL",
+    "severity": "MAJOR",
+    "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#dmi-misleading-substring"
+  },
+  {
     "key": "DMI_NONSERIALIZABLE_OBJECT_WRITTEN",
-    "name": "Style - Non serializable object written to ObjectOutput",
+    "name": "Style - Non-serializable object written to ObjectOutput",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#dmi-nonserializable-object-written"
@@ -1585,7 +1599,7 @@
   },
   {
     "key": "J2EE_STORE_OF_NON_SERIALIZABLE_OBJECT_INTO_SESSION",
-    "name": "Bad practice - Store of non serializable object into HttpSession",
+    "name": "Bad practice - Store of non-serializable object into HttpSession",
     "type": "CODE_SMELL",
     "severity": "MAJOR",
     "url": "https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#j2ee-store-of-non-serializable-object-into-session"
