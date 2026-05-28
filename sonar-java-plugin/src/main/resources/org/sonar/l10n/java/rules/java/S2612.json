@@ -14,7 +14,8 @@
   },
   "tags": [
     "cwe",
-    "cert"
+    "cert",
+    "former-hotspot"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2612",

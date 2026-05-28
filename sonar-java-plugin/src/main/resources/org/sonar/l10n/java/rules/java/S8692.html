@@ -50,7 +50,7 @@ public class SecurityServiceTest {
 <pre data-diff-id="1" data-diff-type="compliant">
 @Test
 void testTimeDifference() {
-    Instant instant1 = Instant.now(Clock.fixed(Instant.parse("2026-05-07T10:00:00Z"), ZoneOffset.UTC)); // Compliant
+    Instant instant1 = Instant.parse("2026-05-07T10:00:00Z"); // Compliant
     Instant instant2 = instant1.plus(1, ChronoUnit.MINUTES);
     assertTrue(instant1.isBefore(instant2));
 }

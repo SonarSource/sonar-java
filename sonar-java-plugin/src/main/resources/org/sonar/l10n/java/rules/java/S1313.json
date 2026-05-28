@@ -13,7 +13,8 @@
     "constantCost": "30min"
   },
   "tags": [
-    "cert"
+    "cert",
+    "former-hotspot"
   ],
   "defaultSeverity": "Minor",
   "quickfix": "unknown",
