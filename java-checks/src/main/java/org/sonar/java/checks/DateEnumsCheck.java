@@ -98,8 +98,8 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   private static final String MONTH_ISSUE_MESSAGE = "Use a \"java.time.Month\" enum constant instead of this int literal.";
   private static final String DAY_ISSUE_MESSAGE = "Use a \"java.time.DayOfWeek\" enum constant instead of this int literal.";
-
   private QuickFixHelper.ImportSupplier importSupplier;
+
 
   @Override
   public void setContext(JavaFileScannerContext context) {
@@ -233,17 +233,17 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     ExpressionTree receiver = ((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression();
     String receiverText = QuickFixHelper.contentForTree(receiver, context);
     String enumName = getMonthEnumName(literal);
-    String comparisonOperator = binaryExpressionTree.operatorToken().text();
-    return isReversed ? (enumName + " " + comparisonOperator + " " + receiverText + ".getMonth()")
-      : (receiverText + ".getMonth() " + comparisonOperator + " " + enumName);
+    String replacement = isReversed ? String.format("%s.equals(%s.getMonth())", enumName, receiverText)
+      : String.format("%s.getMonth().equals(%s)", receiverText, enumName);
+    return binaryExpressionTree.is(Tree.Kind.NOT_EQUAL_TO) ? "!" + replacement : replacement;
   }
 
   private String getValueReplacement(MethodInvocationTree methodInvocationSide, BinaryExpressionTree binaryExpressionTree, String enumName, boolean isReversed) {
     ExpressionTree receiver = ((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression();
     String receiverText = QuickFixHelper.contentForTree(receiver, context);
-    String comparisonOperator = binaryExpressionTree.operatorToken().text();
-    return isReversed ? (enumName + " " + comparisonOperator + " " + receiverText)
-      : (receiverText + " " + comparisonOperator + " " + enumName);
+    String replacement = isReversed ? String.format("%s.equals(%s)", enumName, receiverText)
+      : String.format("%s.equals(%s)", receiverText, enumName);
+    return binaryExpressionTree.is(Tree.Kind.NOT_EQUAL_TO) ? "!" + replacement : replacement;
   }
 
   private static int getIntLiteral(ExpressionTree arg) {

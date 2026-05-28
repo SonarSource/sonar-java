@@ -93,20 +93,20 @@ public class DateEnumsCheckSample {
 
   void quickfixDateManipulation(LocalDate date, DayOfWeek day, Month month) {
     if (date.getMonthValue() == 9) { // Noncompliant [[quickfixes=qf6]]
-      // fix@qf6 {{Replace with date.getMonth() == Month.SEPTEMBER.}}
-      // edit@qf6 [[sc=9;ec=34]]{{date.getMonth() == Month.SEPTEMBER}}
+      // fix@qf6 {{Replace with date.getMonth().equals(Month.SEPTEMBER).}}
+      // edit@qf6 [[sc=9;ec=34]]{{date.getMonth().equals(Month.SEPTEMBER)}}
     }
     if (day.getValue() != 3) { // Noncompliant [[quickfixes=qf7]]
-      // fix@qf7 {{Replace with day != DayOfWeek.WEDNESDAY.}}
-      // edit@qf7 [[sc=9;ec=28]]{{day != DayOfWeek.WEDNESDAY}}
+      // fix@qf7 {{Replace with !day.equals(DayOfWeek.WEDNESDAY).}}
+      // edit@qf7 [[sc=9;ec=28]]{{!day.equals(DayOfWeek.WEDNESDAY)}}
     }
     if (3 == month.getValue()) { // Noncompliant [[quickfixes=qf8]]
-      // fix@qf8 {{Replace with Month.MARCH == month.}}
-      // edit@qf8 [[sc=9;ec=30]]{{Month.MARCH == month}}
+      // fix@qf8 {{Replace with Month.MARCH.equals(month).}}
+      // edit@qf8 [[sc=9;ec=30]]{{Month.MARCH.equals(month)}}
     }
-    boolean isSeptember = (LocalDate.now().getMonthValue() == 9); // Noncompliant [[quickfixes=qf9]]
-    // fix@qf9 {{Replace with LocalDate.now().getMonth() == Month.SEPTEMBER.}}
-    // edit@qf9 [[sc=28;ec=64]]{{LocalDate.now().getMonth() == Month.SEPTEMBER}}
+    boolean isSeptember = (LocalDate.now().getMonthValue() != 9); // Noncompliant [[quickfixes=qf9]]
+    // fix@qf9 {{Replace with !LocalDate.now().getMonth().equals(Month.SEPTEMBER).}}
+    // edit@qf9 [[sc=28;ec=64]]{{!LocalDate.now().getMonth().equals(Month.SEPTEMBER)}}
   }
 
 }
