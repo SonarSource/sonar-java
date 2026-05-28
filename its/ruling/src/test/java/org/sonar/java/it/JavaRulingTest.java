@@ -194,7 +194,7 @@ public class JavaRulingTest {
     MavenBuild build = test_project("com.macro.mall:mall", projectName);
     build
       .setProperty("docker.skip", "true")
-      .setProperty("java.version", "17")
+      .setProperty("java.version", "21")
       .setProperty("maven-bundle-plugin.version", "5.1.4")
       .setProperty("maven.javadoc.skip", "true");
     executeBuildWithCommonProperties(build, projectName);
