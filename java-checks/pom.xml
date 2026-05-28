@@ -94,6 +94,12 @@
       <artifactId>guava</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.sonarsource.scanner.integrationtester</groupId>
+      <artifactId>sonar-scanner-integration-tester</artifactId>
+      <version>${sonar.integration.tester.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
