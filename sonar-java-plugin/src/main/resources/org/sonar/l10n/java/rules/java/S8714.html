@@ -1,0 +1,102 @@
+<p>Using <code>try-catch</code> blocks combined with <code>fail()</code> to test for the presence or absence of exceptions is an anti-pattern.</p>
+<h2>Why is this an issue?</h2>
+<p>Modern assertion libraries have made the clunky <code>try-fail-catch</code> pattern obsolete by introducing cleaner alternatives. For example,
+starting with JUnit 5, JUnit Jupiter provides <code>assertThrows</code> and <code>assertDoesNotThrow</code>. AssertJ offers similar methods.</p>
+<p>Using <code>try-catch</code> with <code>fail()</code> for the same purpose adds boilerplate, makes the test intent less explicit, and is harder to
+maintain. Dedicated exception assertions also make it straightforward to keep asserting on the exception when one is expected.</p>
+<h2>How to fix it</h2>
+<p>Replace <code>try-catch</code> blocks that rely on <code>fail()</code> to verify exception behavior with dedicated exception assertions from your
+testing library:</p>
+<ul>
+  <li>Starting with JUnit 5, JUnit Jupiter provides <code>assertDoesNotThrow</code> and <code>assertThrows</code>.</li>
+  <li>AssertJ provides <code>assertThatCode</code>, <code>assertThatThrownBy</code>, and <code>assertThatExceptionOfType</code>.</li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Test
+void testNoExceptionThrown() {
+  try {
+    userService.registerUser(validUser);
+  } catch (ValidationException e) {
+    fail("Should not have thrown any exception");
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Test
+void testNoExceptionWithAssertion() {
+  assertDoesNotThrow(() -&gt; userService.registerUser(validUser));
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@Test
+void testExceptionIsThrown() {
+  try {
+    userService.registerUser(invalidUser);
+    fail("Expected ValidationException to be thrown");
+  } catch (ValidationException e) {
+    // Test passes, but code is verbose
+    assertEquals("Invalid email", e.getMessage());
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@Test
+void testExceptionWithAssertion() {
+  ValidationException exception = assertThrows(ValidationException.class, () -&gt; userService.registerUser(invalidUser));
+
+  assertEquals("Invalid email", exception.getMessage());
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+@Test
+void testNoExceptionThrown() {
+  try {
+    userService.registerUser(validUser);
+  } catch (ValidationException e) {
+    fail("Should not have thrown any exception");
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+@Test
+void testNoExceptionWithAssertion() {
+  assertThatCode(() -&gt; userService.registerUser(validUser)).doesNotThrowAnyException();
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="4" data-diff-type="noncompliant">
+@Test
+void testExceptionIsThrown() {
+  try {
+    userService.registerUser(invalidUser);
+    fail("Expected ValidationException to be thrown");
+  } catch (ValidationException e) {
+    assertThat(e).hasMessage("Invalid email");
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="4" data-diff-type="compliant">
+@Test
+void testExceptionWithAssertion() {
+  assertThatThrownBy(() -&gt; userService.registerUser(invalidUser))
+    .isInstanceOf(ValidationException.class)
+    .hasMessage("Invalid email");
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://docs.junit.org/current/user-guide/">JUnit User Guide</a></li>
+  <li><a href="https://docs.junit.org/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html">JUnit Jupiter API documentation -
+  Assertions</a></li>
+  <li><a href="https://assertj.github.io/doc/">AssertJ documentation</a></li>
+</ul>
+
