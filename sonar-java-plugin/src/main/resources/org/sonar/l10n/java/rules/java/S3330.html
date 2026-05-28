@@ -1,44 +1,40 @@
-<p>When a cookie is configured with the <code>HttpOnly</code> attribute set to <em>true</em>, the browser guaranties that no client-side script will
-be able to read it. In most cases, when a cookie is created, the default value of <code>HttpOnly</code> is <em>false</em> and it’s up to the developer
-to decide whether or not the content of the cookie can be read by the client-side script. As a majority of Cross-Site Scripting (XSS) attacks target
-the theft of session-cookies, the <code>HttpOnly</code> attribute can help to reduce their impact as it won’t be possible to exploit the XSS
-vulnerability to steal session-cookies.</p>
-<h2>Ask Yourself Whether</h2>
+<p>Setting the <code>HttpOnly</code> attribute on cookies prevents client-side scripts from reading their values, limiting the damage that cross-site
+scripting (XSS) attacks can cause.</p>
+<h2>Why is this an issue?</h2>
+<p>When a cookie is created without the <code>HttpOnly</code> attribute, or with it explicitly set to <code>false</code>, client-side scripts running
+in the browser can read the cookie’s value. By default, cookies are created with <code>HttpOnly</code> set to <code>false</code>, meaning they are
+accessible to browser scripts unless the developer explicitly enables this protection. Setting <code>HttpOnly</code> to <code>true</code> instructs
+the browser to block script access to the cookie, limiting the damage from XSS attacks that attempt to steal session credentials.</p>
+<h3>What is the potential impact?</h3>
+<h4>Session hijacking and account takeover</h4>
+<p>The most common target of cookie theft is the session cookie used to authenticate a user. If an attacker can exploit an XSS vulnerability on a page
+where a session cookie is accessible to scripts, they can steal it and use it to impersonate the authenticated user without needing their credentials.
+This can lead to unauthorized access to sensitive account data, account takeover, and potential privilege escalation within the application.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<p>The following code creates a cookie without enabling the <code>HttpOnly</code> attribute.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+Cookie cookie = new Cookie(COOKIENAME, sensitivedata);
+cookie.setHttpOnly(false);  // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+Cookie cookie = new Cookie(COOKIENAME, sensitivedata);
+cookie.setHttpOnly(true);
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li>the cookie is sensitive, used to authenticate the user, for instance a <em>session-cookie</em></li>
-  <li>the <code>HttpOnly</code> attribute offer an additional protection (not the case for an <em>XSRF-TOKEN cookie</em> / CSRF token for
-  example)</li>
+  <li><a href="https://owasp.org/www-community/HttpOnly">OWASP HttpOnly</a></li>
+  <li><a href="https://docs.oracle.com/javaee/6/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)">Cookie.setHttpOnly - Java EE 6</a></li>
 </ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<ul>
-  <li>By default the <code>HttpOnly</code> flag should be set to <em>true</em> for most of the cookies and it’s mandatory for session /
-  sensitive-security cookies.</li>
-</ul>
-<h2>Sensitive Code Example</h2>
-<p>If you create a security-sensitive cookie in your JAVA code:</p>
-<pre>
-Cookie c = new Cookie(COOKIENAME, sensitivedata);
-c.setHttpOnly(false);  // Sensitive: this sensitive cookie is created with the httponly flag set to false and so it can be stolen easily in case of XSS vulnerability
-</pre>
-<p>By default the <a href="https://docs.oracle.com/javaee/6/api/javax/servlet/http/Cookie.html#setHttpOnly(boolean)"><code>HttpOnly</code></a> flag is
-set to <em>false:</em></p>
-<pre>
-Cookie c = new Cookie(COOKIENAME, sensitivedata);  // Sensitive: this sensitive cookie is created with the httponly flag not defined (by default set to false) and so it can be stolen easily in case of XSS vulnerability
-</pre>
-<h2>Compliant Solution</h2>
-<pre>
-Cookie c = new Cookie(COOKIENAME, sensitivedata);
-c.setHttpOnly(true); // Compliant: this sensitive cookie is protected against theft (HttpOnly=true)
-</pre>
-<h2>See</h2>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/">Top 10 2021 Category A5 - Security Misconfiguration</a></li>
-  <li><a href="https://owasp.org/www-community/HttpOnly">OWASP HttpOnly</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)">Top 10 2017 Category A7 - Cross-Site Scripting
   (XSS)</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/1004">CWE-1004 - Sensitive Cookie Without 'HttpOnly' Flag</a></li>
-  <li>Derived from FindSecBugs rule <a href="https://find-sec-bugs.github.io/bugs.htm#HTTPONLY_COOKIE">HTTPONLY_COOKIE</a></li>
   <li>STIG Viewer - <a href="https://stigviewer.com/stigs/application_security_and_development/2024-12-06/finding/V-222575">Application Security and
   Development: V-222575</a> - The application must set the HTTPOnly flag on session cookies.</li>
 </ul>

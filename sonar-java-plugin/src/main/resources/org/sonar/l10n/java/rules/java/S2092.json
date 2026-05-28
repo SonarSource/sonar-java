@@ -16,7 +16,8 @@
   "tags": [
     "cwe",
     "spring",
-    "privacy"
+    "privacy",
+    "former-hotspot"
   ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-2092",

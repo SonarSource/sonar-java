@@ -1,32 +1,33 @@
-<p>WebViews can be used to display web content as part of a mobile application. A browser engine is used to render and display the content. Like a web
-application, a mobile application that uses WebViews can be vulnerable to Cross-Site Scripting if untrusted code is rendered. In the context of a
-WebView, JavaScript code can exfiltrate local files that might be sensitive or even worse, access exposed functions of the application that can result
-in more severe vulnerabilities such as code injection. Thus JavaScript support should not be enabled for WebViews unless it is absolutely necessary
-and the authenticity of the web resources can be guaranteed.</p>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>The WebWiew only renders static web content that does not require JavaScript code to be executed.</li>
-  <li>The WebView contains untrusted data that could cause harm when rendered.</li>
-</ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>It is recommended to disable JavaScript support for WebViews unless it is necessary to execute JavaScript code. Only trusted pages should be
-rendered.</p>
-<h2>Sensitive Code Example</h2>
-<pre>
+<p>WebViews can be used to display web content as part of a mobile application. When JavaScript support is enabled, the WebView acts like a browser
+and may expose the application to web-based attacks.</p>
+<h2>Why is this an issue?</h2>
+<p>Enabling JavaScript in a WebView allows arbitrary JavaScript to run inside the mobile application’s context. JavaScript running inside a WebView
+can access local files, device APIs, and any native functions exposed to the web layer, amplifying the impact of a Cross-Site Scripting (XSS) attack
+well beyond what is possible in a regular browser. This rule flags WebView configurations that enable JavaScript support.</p>
+<p>In Android, JavaScript support in <code>WebView</code> is controlled by calling <code>setJavaScriptEnabled(true)</code> on its
+<code>WebSettings</code>.</p>
+<h3>What is the potential impact?</h3>
+<p>If an attacker can inject or control the web content displayed in the WebView, they can execute arbitrary JavaScript in the context of the mobile
+application. This may allow them to exfiltrate sensitive files stored on the device, steal application credentials, or invoke exposed native
+functionality to escalate their privileges within the app.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 import android.webkit.WebView;
 
 WebView webView = (WebView) findViewById(R.id.webview);
-webView.getSettings().setJavaScriptEnabled(true); // Sensitive
+webView.getSettings().setJavaScriptEnabled(true); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 import android.webkit.WebView;
 
 WebView webView = (WebView) findViewById(R.id.webview);
 webView.getSettings().setJavaScriptEnabled(false);
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A03_2021-Injection/">Top 10 2021 Category A3 - Injection</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security

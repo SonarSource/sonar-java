@@ -1,22 +1,24 @@
 {
-  "title": "Enabling JavaScript support for WebViews is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "JavaScript support should not be enabled in WebViews unless strictly necessary",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
-      "SECURITY": "MEDIUM"
+      "SECURITY": "LOW"
     },
     "attribute": "CONVENTIONAL"
   },
-  "status": "ready",
+  "status": "deprecated",
+  "quickfix": "unknown",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
     "cwe",
-    "android"
+    "android",
+    "former-hotspot"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-6362",
   "sqKey": "S6362",
   "scope": "Main",
@@ -47,6 +49,5 @@
     "ASVS 4.0": [
       "5.3.3"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }

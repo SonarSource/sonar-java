@@ -11,15 +11,15 @@
     "datetime",
     "tests"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Info",
   "ruleSpecification": "RSPEC-8692",
   "sqKey": "S8692",
   "scope": "Tests",
   "quickfix": "infeasible",
   "code": {
     "impacts": {
-      "MAINTAINABILITY": "MEDIUM",
-      "RELIABILITY": "LOW"
+      "MAINTAINABILITY": "INFO",
+      "RELIABILITY": "INFO"
     },
     "attribute": "TRUSTWORTHY"
   }
