@@ -99,7 +99,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.METHOD, Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.IDENTIFIER);
+    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.RECORD, Tree.Kind.METHOD, Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.IDENTIFIER);
   }
 
   @Override
@@ -129,7 +129,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
       case METHOD:
         checkIfNativeMethod((MethodTree) tree);
         break;
-      case CLASS:
+      case CLASS, RECORD:
         classes.add((ClassTree) tree);
         break;
       case EXPRESSION_STATEMENT:

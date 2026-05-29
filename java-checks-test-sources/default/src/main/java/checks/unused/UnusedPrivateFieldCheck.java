@@ -194,3 +194,7 @@ class UnusedPrivateFieldCheckQuickfix {
   }
 }
 
+record MyRecord(int a) {
+  private static final int XYZ = 3; // Noncompliant
+//                         ^^^
+}
