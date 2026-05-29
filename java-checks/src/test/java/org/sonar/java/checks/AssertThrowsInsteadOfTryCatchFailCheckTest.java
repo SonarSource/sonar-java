@@ -27,9 +27,7 @@ class AssertThrowsInsteadOfTryCatchFailCheckTest {
   void detected() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/AssertThrowsInsteadOfTryCatchFailCheckSample.java"))
-      .withCheck(context -> {
-        // do nothing
-      })
+      .withCheck(new AssertThrowsInsteadOfTryCatchFailCheck())
       .verifyIssues();
   }
 

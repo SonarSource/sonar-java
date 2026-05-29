@@ -7,21 +7,21 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AssertThrowsInsteadOfTryCatchFailCheckSample {
   @Test
   void tests() {
-    // NON-COMPLIANT CODE EXAMPLES
-    try { // Noncompliant {{Use assertThrows() instead of try/catch/fail() to test that an exception is thrown.}}
+    try { // Noncompliant {{Use assertDoesNotThrow() instead of try/catch and fail() in the try block.}}
+//      ^[el=+4;ec=5]
       raise();
       fail();
     } catch (Exception _) {
       // test passed
     }
 
-    try { // Noncompliant {{Use assertDoesNotThrow() instead of try/catch/fail() to test that no exception is thrown.}}
+    try {
       dontRaise();
-    } catch (Exception _) {
+    } catch (Exception _) { // Noncompliant {{Use assertDoesNotThrow() instead of try/catch and fail() in the catch block.}}
+//                        ^[el=+3;ec=5]
       fail();
     }
 
-    // COMPLIANT CODE EXAMPLES
     assertThrows(IllegalStateException.class, AssertThrowsInsteadOfTryCatchFailCheckSample::raise);
     assertDoesNotThrow(AssertThrowsInsteadOfTryCatchFailCheckSample::dontRaise);
   }
