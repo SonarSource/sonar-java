@@ -25,6 +25,7 @@ void testNoExceptionThrown() {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
+// JUnit 5
 @Test
 void testNoExceptionWithAssertion() {
   assertDoesNotThrow(() -&gt; userService.registerUser(validUser));
@@ -45,6 +46,7 @@ void testExceptionIsThrown() {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="2" data-diff-type="compliant">
+// JUnit 5
 @Test
 void testExceptionWithAssertion() {
   ValidationException exception = assertThrows(ValidationException.class, () -&gt; userService.registerUser(invalidUser));
@@ -65,6 +67,7 @@ void testNoExceptionThrown() {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="3" data-diff-type="compliant">
+// AssertJ
 @Test
 void testNoExceptionWithAssertion() {
   assertThatCode(() -&gt; userService.registerUser(validUser)).doesNotThrowAnyException();
@@ -84,6 +87,7 @@ void testExceptionIsThrown() {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="4" data-diff-type="compliant">
+// AssertJ
 @Test
 void testExceptionWithAssertion() {
   assertThatThrownBy(() -&gt; userService.registerUser(invalidUser))
