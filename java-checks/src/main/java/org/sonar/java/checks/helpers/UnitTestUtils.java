@@ -254,7 +254,7 @@ public final class UnitTestUtils {
     return ASSERTION_METHODS_PATTERN.matcher(methodName).matches();
   }
 
-  public static boolean isTryCatchFail(BlockTree block) {
+  public static boolean doesBlockFail(BlockTree block) {
     List<StatementTree> statements = block.body();
     if (statements.isEmpty()) {
       return false;
