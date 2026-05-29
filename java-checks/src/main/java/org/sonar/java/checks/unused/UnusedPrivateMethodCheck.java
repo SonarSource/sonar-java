@@ -316,10 +316,12 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
       var isMethodAnnotation = isNameIndicatingMethod(annotationTree.annotationType().symbolType().name());
       for (var arg : annotationTree.arguments()) {
         if (arg instanceof AssignmentExpressionTree asgn) {
+          // Handle syntax with assignment, for example, @MethodSource(value = "methodName").
           if (isMethodAnnotation || isNameIndicatingMethod(((IdentifierTree) asgn.variable()).name())) {
             removeMethodName(asgn.expression());
           }
         } else if (isMethodAnnotation) {
+          // No assignment, for example: @MethodSource("methodName").
           removeMethodName(arg);
         }
       }
