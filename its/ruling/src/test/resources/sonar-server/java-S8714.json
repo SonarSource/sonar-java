@@ -43,9 +43,9 @@
 303
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluatorTest.java": [
-68,
-76,
-84
+64,
+72,
+80
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ComputeQProfileMeasureStepTest.java": [
 140
@@ -57,7 +57,7 @@
 134
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/debt/DebtModelPluginRepositoryTest.java": [
-93
+87
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/debt/DebtRulesXMLImporterTest.java": [
 228
@@ -221,7 +221,7 @@
 153
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/db/EmbeddedDatabaseTest.java": [
-165
+161
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/web/requestid/RequestIdFilterTest.java": [
 82
