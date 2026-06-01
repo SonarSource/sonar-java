@@ -29,7 +29,6 @@ import org.junit.jupiter.api.io.TempDir;
 class SpringBeansShouldBeAccessibleCrossModuleTest extends ScannerIntegrationAbstractTest {
 
   private static final String RULE_KEY = "S4605";
-  private static final Path[] CLASSPATH = defaultClasspath();
 
   @TempDir
   Path sourceDir;
@@ -69,7 +68,7 @@ class SpringBeansShouldBeAccessibleCrossModuleTest extends ScannerIntegrationAbs
 
     List<FileIssue> issues = analyze(
       List.of(RULE_KEY),
-      module("same-module").withInputFiles(appFile, componentFile, otherComponentFile).withLibraries(CLASSPATH));
+      module("same-module").withInputFiles(appFile, componentFile, otherComponentFile).withLibraries(defaultClasspath()));
 
     assertThat(issues).hasSize(1);
     assertThat(issues.get(0).ruleKey()).isEqualTo("java:S4605");
@@ -106,8 +105,8 @@ class SpringBeansShouldBeAccessibleCrossModuleTest extends ScannerIntegrationAbs
 
     List<FileIssue> issues = analyze(
       List.of(RULE_KEY),
-      module("app").withInputFiles(appFile).withLibraries(CLASSPATH),
-      module("services").withInputFiles(serviceFile).withLibraries(CLASSPATH));
+      module("app").withInputFiles(appFile).withLibraries(defaultClasspath()),
+      module("services").withInputFiles(serviceFile).withLibraries(defaultClasspath()));
 
     assertThat(issues).hasSize(1);
     assertThat(issues.get(0).ruleKey()).isEqualTo("java:S4605");
@@ -142,8 +141,8 @@ class SpringBeansShouldBeAccessibleCrossModuleTest extends ScannerIntegrationAbs
 
     List<FileIssue> issues = analyze(
       List.of(RULE_KEY),
-      module("app").withInputFiles(appFile).withLibraries(CLASSPATH),
-      module("external").withInputFiles(externalFile).withLibraries(CLASSPATH));
+      module("app").withInputFiles(appFile).withLibraries(defaultClasspath()),
+      module("external").withInputFiles(externalFile).withLibraries(defaultClasspath()));
 
     assertThat(issues).hasSize(1);
     assertThat(issues.get(0).ruleKey()).isEqualTo("java:S4605");
@@ -179,8 +178,8 @@ class SpringBeansShouldBeAccessibleCrossModuleTest extends ScannerIntegrationAbs
 
     List<FileIssue> issues = analyze(
       List.of(RULE_KEY),
-      module("app").withInputFiles(appFile).withLibraries(CLASSPATH),
-      module("extra").withInputFiles(extraFile).withLibraries(CLASSPATH));
+      module("app").withInputFiles(appFile).withLibraries(defaultClasspath()),
+      module("extra").withInputFiles(extraFile).withLibraries(defaultClasspath()));
 
     assertThat(issues).hasSize(1);
     assertThat(issues.get(0).ruleKey()).isEqualTo("java:S4605");
