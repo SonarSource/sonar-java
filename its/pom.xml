@@ -16,6 +16,7 @@
 
   <modules>
     <module>autoscan</module>
+    <module>cross-module</module>
     <module>plugin</module>
     <module>ruling</module>
   </modules>
