@@ -19,25 +19,36 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.*;
 
 import java.util.List;
+
+import static org.sonar.java.checks.helpers.UnitTestUtils.getJUnitVersion;
 
 @Rule(key = "S8714")
 public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.TRY_STATEMENT);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE,  Tree.Kind.IMPLICIT_CLASS, Tree.Kind.RECORD, Tree.Kind.ANNOTATION_TYPE);
+    // TODO refactor this
   }
 
   @Override
   public void visitNode(Tree tree) {
-    TryStatementTree tryStatementTree = (TryStatementTree) tree;
-    checkBlock(tryStatementTree.block(), "Use assertThrows() instead of try/catch and fail() in the try block.");
-    tryStatementTree.catches().forEach(c -> checkBlock(c.block(), "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block."));
+    ClassTree classTree = (ClassTree) tree;
+
+    List<MethodTree> methods = classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .toList();
+
+    int jUnitVersion = getJUnitVersion(methods);
+    if (jUnitVersion < 5) {
+      return;
+    }
+
+    methods.forEach(method -> method.accept(tryStatementsVisitor));
   }
 
   private void checkBlock(BlockTree block, String message) {
@@ -45,4 +56,12 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       reportIssue(fail, message)
     );
   }
+
+  private BaseTreeVisitor tryStatementsVisitor = new BaseTreeVisitor() {
+    @Override
+    public void visitTryStatement(TryStatementTree tree) {
+      checkBlock(tree.block(), "Use assertThrows() instead of try/catch and fail() in the try block.");
+      tree.catches().forEach(c -> checkBlock(c.block(), "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block."));
+    }
+  };
 }

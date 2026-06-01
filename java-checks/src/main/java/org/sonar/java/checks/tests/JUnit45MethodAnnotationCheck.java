@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
-import org.sonar.java.checks.helpers.UnitTestUtils;
+import static org.sonar.java.checks.helpers.UnitTestUtils.getJUnitVersion;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -69,20 +69,6 @@ public class JUnit45MethodAnnotationCheck extends IssuableSubscriptionVisitor {
     if (jUnitVersion > 0) {
       methods.forEach(methodTree -> checkJUnitMethod(methodTree, jUnitVersion));
     }
-  }
-
-  private static int getJUnitVersion(List<MethodTree> methods) {
-    boolean containsJUnit4Tests = false;
-    for (MethodTree methodTree : methods) {
-      SymbolMetadata metadata = methodTree.symbol().metadata();
-      containsJUnit4Tests |= metadata.isAnnotatedWith("org.junit.Test");
-      if (UnitTestUtils.hasJUnit5TestAnnotation(methodTree)) {
-        // While migrating from JUnit4 to JUnit5, classes might end up in mixed state of having tests using both versions.
-        // If it's the case, we consider the test classes as ultimately targeting 5
-        return 5;
-      }
-    }
-    return containsJUnit4Tests ? 4 : -1;
   }
 
   private void checkJUnitMethod(MethodTree methodTree, int jUnitVersion) {

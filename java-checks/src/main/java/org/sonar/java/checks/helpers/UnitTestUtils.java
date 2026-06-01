@@ -255,10 +255,11 @@ public final class UnitTestUtils {
     return ASSERTION_METHODS_PATTERN.matcher(methodName).matches();
   }
 
-  public static boolean doesBlockFail(BlockTree block) {
-    return findFail(block).isPresent();
-  }
-
+  /**
+   * Checks if the given block tree's last statement is a call to a fail method, and if so, returns the corresponding method invocation tree.
+   * @param block the block tree to check
+   * @return an optional containing the method invocation tree if the last statement is a call to a fail method, or an empty optional otherwise
+   */
   public static Optional<Tree> findFail(BlockTree block) {
     List<StatementTree> statements = block.body();
     if (statements.isEmpty()) {
@@ -274,4 +275,17 @@ public final class UnitTestUtils {
     return Optional.empty();
   }
 
+  public static int getJUnitVersion(List<MethodTree> methods) {
+    boolean containsJUnit4Tests = false;
+    for (MethodTree methodTree : methods) {
+      SymbolMetadata metadata = methodTree.symbol().metadata();
+      containsJUnit4Tests |= metadata.isAnnotatedWith("org.junit.Test");
+      if (hasJUnit5TestAnnotation(methodTree)) {
+        // While migrating from JUnit4 to JUnit5, classes might end up in mixed state of having tests using both versions.
+        // If it's the case, we consider the test classes as ultimately targeting 5
+        return 5;
+      }
+    }
+    return containsJUnit4Tests ? 4 : -1;
+  }
 }
