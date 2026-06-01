@@ -5,18 +5,38 @@
 370
 ],
 "com.google.guava:guava:src/com/google/common/cache/Striped64.java": [
+100,
+110,
+161,
+168,
+300,
+302,
 321
 ],
 "com.google.guava:guava:src/com/google/common/io/FileBackedOutputStream.java": [
 103
 ],
 "com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java": [
-364
+342,
+345,
+364,
+394,
+395
 ],
 "com.google.guava:guava:src/com/google/common/reflect/Types.java": [
 362
 ],
 "com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
-871
+871,
+891,
+892,
+893,
+894,
+895,
+903,
+907,
+912,
+917,
+922
 ]
 }
