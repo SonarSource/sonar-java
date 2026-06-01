@@ -20,7 +20,6 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
-import javax.swing.text.html.Option;
 
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ExpressionUtils;
