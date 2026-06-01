@@ -7,65 +7,65 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AssertThrowsInsteadOfTryCatchFailCheckSample {
   @Test
   void tests() {
-    try { // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
-//  ^[el=+6;ec=5]
+    try {
       raise();
-      fail();
+      fail(); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^
     } catch (Exception _) {
       // test passed
     }
 
-    try { // Noncompliant {{Use assertDoesNotThrow() instead of try/catch and fail() in the catch block.}}
-//  ^[el=+5;ec=5]
+    try {
       dontRaise();
     } catch (Exception _) {
-      fail();
+      fail(); // Noncompliant {{Use assertDoesNotThrow() instead of try/catch and fail() in the catch block.}}
+//    ^^^^^^
     }
 
-    try { // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
-//  ^[el=+6;ec=5]
+    try {
       raise();
-      org.junit.Assert.fail("expected exception");
+      org.junit.Assert.fail("expected exception"); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     } catch (Exception _) {
       // test passed
     }
 
-    try { // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
-//  ^[el=+6;ec=5]
+    try {
       raise();
-      junit.framework.Assert.fail("expected exception");
+      junit.framework.Assert.fail("expected exception"); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     } catch (Exception _) {
       // test passed
     }
 
-    try { // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
-//  ^[el=+6;ec=5]
+    try {
       raise();
-      org.fest.assertions.Fail.fail("expected exception");
+      org.fest.assertions.Fail.fail("expected exception"); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     } catch (Exception _) {
       // test passed
     }
 
-    try { // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
-//  ^[el=+6;ec=5]
+    try {
       raise();
-      org.assertj.core.api.Fail.fail("expected exception");
+      org.assertj.core.api.Fail.fail("expected exception"); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     } catch (Exception _) {
       // test passed
     }
 
-    try { // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
-//  ^[el=+6;ec=5]
+    try {
       raise();
-      org.assertj.core.api.Assertions.fail("expected exception");
+      org.assertj.core.api.Assertions.fail("expected exception"); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     } catch (Exception _) {
       // test passed
     }
 
-    try { // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
-//  ^[el=+6;ec=5]
+    try {
       raise();
-      org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown(IllegalStateException.class);
+      org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown(IllegalStateException.class); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     } catch (Exception _) {
       // test passed
     }

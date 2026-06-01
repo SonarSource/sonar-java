@@ -16,13 +16,11 @@
  */
 package org.sonar.java.checks.helpers;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+import javax.swing.text.html.Option;
 
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ExpressionUtils;
@@ -67,8 +65,8 @@ public final class UnitTestUtils {
         "io.restassured.response.ValidatableResponseOptions", // restassured 3.x and 4.x
         "io.restassured.module.mockmvc.response.ValidatableMockMvcResponse" // spring mock mvc extending the io.restassured library
       )
-      .name(name -> "body" .equals(name) ||
-        "time" .equals(name) ||
+      .name(name -> "body".equals(name) ||
+        "time".equals(name) ||
         name.startsWith("time") ||
         name.startsWith("content") ||
         name.startsWith("status") ||
@@ -247,7 +245,7 @@ public final class UnitTestUtils {
     if (TEST_METHODS_PATTERN.matcher(methodName).matches()) {
       return !REACTIVE_X_TEST_METHODS.matches(methodSymbol);
     }
-    if ("verify" .equals(methodName) || "failing" .equals(methodName)) {
+    if ("verify".equals(methodName) || "failing".equals(methodName)) {
       return !VERTX_TEST_CONTEXT_METHODS.matches(methodSymbol);
     }
 
@@ -255,16 +253,22 @@ public final class UnitTestUtils {
   }
 
   public static boolean doesBlockFail(BlockTree block) {
+    return findFail(block).isPresent();
+  }
+
+  public static Optional<Tree> findFail(BlockTree block) {
     List<StatementTree> statements = block.body();
     if (statements.isEmpty()) {
-      return false;
+      return Optional.empty();
     }
     StatementTree lastStatement = statements.get(statements.size() - 1);
     if (lastStatement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
       ExpressionTree expression = ((ExpressionStatementTree) lastStatement).expression();
-      return expression.is(Tree.Kind.METHOD_INVOCATION) && FAIL_METHOD_MATCHER.matches((MethodInvocationTree) expression);
+      return expression.is(Tree.Kind.METHOD_INVOCATION) && FAIL_METHOD_MATCHER.matches((MethodInvocationTree) expression)
+        ? Optional.of(expression)
+        : Optional.empty();
     }
-    return false;
+    return Optional.empty();
   }
 
 }

@@ -36,13 +36,13 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
   @Override
   public void visitNode(Tree tree) {
     TryStatementTree tryStatementTree = (TryStatementTree) tree;
-    checkBlock(tryStatementTree.block(), tryStatementTree, "Use assertThrows() instead of try/catch and fail() in the try block.");
-    tryStatementTree.catches().forEach(c -> checkBlock(c.block(), tryStatementTree, "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block."));
+    checkBlock(tryStatementTree.block(), "Use assertThrows() instead of try/catch and fail() in the try block.");
+    tryStatementTree.catches().forEach(c -> checkBlock(c.block(), "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block."));
   }
 
-  private void checkBlock(BlockTree block, TryStatementTree fullTree, String message) {
-    if (UnitTestUtils.doesBlockFail(block)) {
-      reportIssue(fullTree, message);
-    }
+  private void checkBlock(BlockTree block, String message) {
+    UnitTestUtils.findFail(block).ifPresent(fail ->
+      reportIssue(fail, message)
+    );
   }
 }
