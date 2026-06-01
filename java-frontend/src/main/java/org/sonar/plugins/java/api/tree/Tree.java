@@ -17,7 +17,9 @@
 package org.sonar.plugins.java.api.tree;
 
 import org.sonar.java.annotations.Beta;
+
 import javax.annotation.Nullable;
+
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.List;
@@ -31,6 +33,10 @@ import java.util.List;
 public interface Tree {
 
   boolean is(Kind... kinds);
+
+  default boolean isClass() {
+    return Kind.ALL_CLASSES.stream().anyMatch(this::is);
+  }
 
   void accept(TreeVisitor visitor);
 
@@ -153,6 +159,7 @@ public interface Tree {
 
     /**
      * {@link SwitchExpressionTree}
+     *
      * @since SonarJava 5.12: Support of Java 12
      */
     SWITCH_EXPRESSION(SwitchExpressionTree.class),

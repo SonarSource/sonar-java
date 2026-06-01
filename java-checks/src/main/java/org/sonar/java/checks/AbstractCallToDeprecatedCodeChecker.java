@@ -16,10 +16,8 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -41,7 +39,9 @@ public abstract class AbstractCallToDeprecatedCodeChecker extends IssuableSubscr
 
   @Override
   public final List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.IDENTIFIER, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+    var result = new ArrayList<>(Tree.Kind.ALL_CLASSES);
+    result.addAll(List.of(Tree.Kind.IDENTIFIER, Tree.Kind.CONSTRUCTOR));
+    return result;
   }
 
   @Override
@@ -120,7 +120,7 @@ public abstract class AbstractCallToDeprecatedCodeChecker extends IssuableSubscr
   }
 
   private static boolean isDeprecatedClassTree(Tree tree) {
-    return tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) && ((ClassTree) tree).symbol().isDeprecated();
+    return tree.isClass() && ((ClassTree) tree).symbol().isDeprecated();
   }
 
   boolean isFlaggedForRemoval(Symbol deprecatedSymbol) {

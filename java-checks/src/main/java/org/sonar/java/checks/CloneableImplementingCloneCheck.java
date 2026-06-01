@@ -16,8 +16,8 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
 import java.util.List;
+
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -38,7 +38,7 @@ public class CloneableImplementingCloneCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.CLASS);
+    return List.of(Kind.CLASS, Kind.ENUM, Kind.RECORD);
   }
 
   @Override

@@ -40,7 +40,7 @@ public class ChildClassShadowFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.CLASS);
+    return Kind.ALL_CLASSES;
   }
 
   @Override

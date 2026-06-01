@@ -40,7 +40,7 @@ public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisit
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.CLASS);
+    return Tree.Kind.ALL_CLASSES;
   }
 
   @Override

@@ -30,7 +30,7 @@ public class ConfigurationBeanNamesCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CLASS);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.RECORD);
   }
 
   @Override

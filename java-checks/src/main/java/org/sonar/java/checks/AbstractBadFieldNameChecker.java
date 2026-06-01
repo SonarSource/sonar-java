@@ -39,7 +39,7 @@ public abstract class AbstractBadFieldNameChecker extends IssuableSubscriptionVi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.ENUM);
+    return Tree.Kind.ALL_CLASSES;
   }
 
   @Override

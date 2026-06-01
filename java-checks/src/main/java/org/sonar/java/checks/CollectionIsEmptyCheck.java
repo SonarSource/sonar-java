@@ -63,18 +63,11 @@ public class CollectionIsEmptyCheck extends IssuableSubscriptionVisitor {
     Tree.Kind.GREATER_THAN,
     Tree.Kind.GREATER_THAN_OR_EQUAL_TO
   };
-  private static final Tree.Kind[] CLASS_TREES = {
-    Tree.Kind.CLASS,
-    Tree.Kind.ENUM,
-    Tree.Kind.INTERFACE,
-    Tree.Kind.RECORD,
-    Tree.Kind.ANNOTATION_TYPE
-  };
   private static final Deque<Boolean> IS_COLLECTION_ENCLOSING_TYPES_STACK = new LinkedList<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ListUtils.concat(Arrays.asList(CLASS_TREES), Arrays.asList(TARGETED_BINARY_OPERATOR_TREES));
+    return ListUtils.concat(Tree.Kind.ALL_CLASSES, Arrays.asList(TARGETED_BINARY_OPERATOR_TREES));
   }
 
   @Override
@@ -85,7 +78,7 @@ public class CollectionIsEmptyCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(CLASS_TREES)) {
+    if (tree.isClass()) {
       handleClassTree((ClassTree) tree);
     } else {
       // Necessarily a BinaryExpressionTree - the rule only raises issues on size() comparisons
@@ -127,7 +120,7 @@ public class CollectionIsEmptyCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(CLASS_TREES)) {
+    if (tree.isClass()) {
       IS_COLLECTION_ENCLOSING_TYPES_STACK.pop();
     }
   }
