@@ -20,6 +20,8 @@ import org.sonar.java.annotations.Beta;
 import javax.annotation.Nullable;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
+import java.util.List;
+
 /**
  * Common interface for all nodes in a syntax tree.
  *
@@ -785,6 +787,15 @@ public interface Tree {
     public Class<? extends Tree> getAssociatedInterface() {
       return associatedInterface;
     }
+
+    public static final List<Kind> ALL_CLASSES = List.of(
+      Tree.Kind.CLASS,
+      Tree.Kind.ENUM,
+      Tree.Kind.INTERFACE,
+      Tree.Kind.IMPLICIT_CLASS,
+      Tree.Kind.RECORD,
+      Tree.Kind.ANNOTATION_TYPE
+    );
   }
 
   Kind kind();
