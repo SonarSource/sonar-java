@@ -36,13 +36,13 @@ public class BeanDefinitionRegistry {
    * A list is used as the value to capture duplicate bean definitions under the same name,
    * which is an invalid state that should be reported during analysis.
    */
-  private final Map<String, List<BeanDefinitionHolder>> beanDefinitionRegistry = new HashMap<>();
+  private final Map<String, List<BeanDefinitionHolder>> beanDefinitions = new HashMap<>();
 
   public List<BeanDefinitionHolder> getByName(String beanName) {
-    return beanDefinitionRegistry.getOrDefault(beanName, List.of());
+    return beanDefinitions.getOrDefault(beanName, List.of());
   }
 
   public void addBeanDefinition(String beanName, BeanDefinitionHolder beanDefinition) {
-    beanDefinitionRegistry.computeIfAbsent(beanName, k -> new ArrayList<>()).add(beanDefinition);
+    beanDefinitions.computeIfAbsent(beanName, k -> new ArrayList<>()).add(beanDefinition);
   }
 }
