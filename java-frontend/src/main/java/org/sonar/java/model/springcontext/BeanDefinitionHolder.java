@@ -144,7 +144,7 @@ public class BeanDefinitionHolder {
 
     public BeanDefinitionHolder build() {
       BeanDefinitionHolder holder = new BeanDefinitionHolder(type, module, beanPackage, location);
-      holder.setDependingBeans(Collections.unmodifiableList(dependingBeans));
+      holder.setDependingBeans(List.copyOf(dependingBeans));
       holder.setProfiles(profiles);
       if (isPrimary) {
         holder.setPrimary();
