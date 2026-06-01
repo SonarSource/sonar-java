@@ -71,7 +71,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
     }
 
     assertThrows(IllegalStateException.class, AssertThrowsInsteadOfTryCatchFailCheckSample::raise); // compliant
-    assertDoesNotThrow(AssertThrowsInsteadOfTryCatchFailCheckSample::dontRaise); // non-compliant
+    assertDoesNotThrow(AssertThrowsInsteadOfTryCatchFailCheckSample::dontRaise); // compliant
   }
 
   private static void raise() {
