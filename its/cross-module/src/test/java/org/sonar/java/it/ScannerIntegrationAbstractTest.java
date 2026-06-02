@@ -18,6 +18,7 @@ package org.sonar.java.it;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sonar.orchestrator.locator.FileLocation;
 import com.sonarsource.scanner.integrationtester.dsl.ActiveRule;
 import com.sonarsource.scanner.integrationtester.dsl.EngineVersion;
 import com.sonarsource.scanner.integrationtester.dsl.Log;
@@ -30,6 +31,7 @@ import com.sonarsource.scanner.integrationtester.dsl.SonarServerContext;
 import com.sonarsource.scanner.integrationtester.dsl.issue.FileIssue;
 import com.sonarsource.scanner.integrationtester.runner.ScannerRunner;
 import com.sonarsource.scanner.integrationtester.runner.ScannerRunnerConfig;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -37,14 +39,15 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -53,7 +56,7 @@ import org.sonar.java.test.classpath.TestClasspathUtils;
 @Execution(ExecutionMode.CONCURRENT)
 public abstract class ScannerIntegrationAbstractTest {
 
-  private static final Path JAVA_PLUGIN_PATH = TestClasspathUtils.findModuleJarPath("../../sonar-java-plugin");
+  private static FileLocation javaPluginLocation;
   private static final String RULES_METADATA_DIR = "sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java";
   private static final Path METADATA_ROOT = resolveMetadataRoot();
 
@@ -64,23 +67,32 @@ public abstract class ScannerIntegrationAbstractTest {
   @TempDir
   protected Path projectBaseDir;
 
-  protected List<FileIssue> analyze(Path projectDir) {
-    Path resourceDir = resolveResourceDir(projectDir);
-    ProjectConfig config = loadProjectConfig(resourceDir);
-    Map<String, List<Path>> moduleFiles = discoverModules(resourceDir);
+  @BeforeAll
+  static void beforeAll() {
+    javaPluginLocation = FileLocation.of(TestClasspathUtils.findModuleJarPath("../../sonar-java-plugin").toFile());
+  }
 
-    var activeRules = config.ruleKeys.stream()
+  protected List<FileIssue> analyze(Path projectDir, String... ruleKeys) {
+    Path resourceDir = resolveResourceDir(projectDir);
+
+    copyProjectTree(resourceDir);
+
+    MavenBuildHelper mavenHelper = new MavenBuildHelper(projectBaseDir);
+    mavenHelper.build();
+
+    Map<String, List<Path>> moduleFiles = discoverModules(projectBaseDir);
+
+    var activeRules = Arrays.stream(ruleKeys)
       .map(ScannerIntegrationAbstractTest::buildActiveRule)
       .toList();
 
-    copySourceFiles(resourceDir, moduleFiles);
-    var scannerProperties = buildScannerProperties(config, moduleFiles);
+    var scannerProperties = buildScannerProperties(moduleFiles, mavenHelper);
 
     var serverContext = SonarServerContext.builder()
       .withProduct(SonarServerContext.Product.SERVER)
       .withEngineVersion(EngineVersion.latestRelease())
       .withLanguage("java", "Java", ".java")
-      .withPlugin(JAVA_PLUGIN_PATH)
+      .withPlugin(javaPluginLocation)
       .withProjectContext(SonarProjectContext.builder().withActiveRules(activeRules).build())
       .build();
 
@@ -109,53 +121,6 @@ public abstract class ScannerIntegrationAbstractTest {
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException("Invalid resource URI", e);
     }
-  }
-
-  private static ProjectConfig loadProjectConfig(Path projectDir) {
-    Path propsFile = projectDir.resolve("project.properties");
-    if (!Files.exists(propsFile)) {
-      throw new IllegalArgumentException("Missing project.properties in " + projectDir);
-    }
-    var props = new Properties();
-    try (var reader = Files.newBufferedReader(propsFile)) {
-      props.load(reader);
-    } catch (IOException e) {
-      throw new UncheckedIOException("Failed to read project.properties", e);
-    }
-
-    String ruleKeysStr = props.getProperty("ruleKeys");
-    if (ruleKeysStr == null || ruleKeysStr.isBlank()) {
-      throw new IllegalArgumentException("'ruleKeys' is required in project.properties");
-    }
-    List<String> ruleKeys = Arrays.stream(ruleKeysStr.split(","))
-      .map(String::trim)
-      .filter(s -> !s.isEmpty())
-      .toList();
-
-    String globalLibraries = props.getProperty("libraries", "default");
-    String javaVersion = props.getProperty("javaVersion");
-
-    Map<String, List<String>> moduleDependencies = new LinkedHashMap<>();
-    Map<String, String> moduleLibraries = new LinkedHashMap<>();
-    Map<String, String> moduleBinaries = new LinkedHashMap<>();
-
-    for (String key : props.stringPropertyNames()) {
-      if (key.endsWith(".dependencies")) {
-        String moduleName = key.substring(0, key.length() - ".dependencies".length());
-        moduleDependencies.put(moduleName,
-          Arrays.stream(props.getProperty(key).split(","))
-            .map(String::trim).filter(s -> !s.isEmpty()).toList());
-      } else if (key.endsWith(".libraries")) {
-        String moduleName = key.substring(0, key.length() - ".libraries".length());
-        moduleLibraries.put(moduleName, props.getProperty(key).trim());
-      } else if (key.endsWith(".binaries")) {
-        String moduleName = key.substring(0, key.length() - ".binaries".length());
-        moduleBinaries.put(moduleName, props.getProperty(key).trim());
-      }
-    }
-
-    return new ProjectConfig(ruleKeys, globalLibraries, javaVersion,
-      moduleDependencies, moduleLibraries, moduleBinaries);
   }
 
   private static Map<String, List<Path>> discoverModules(Path projectDir) {
@@ -187,42 +152,41 @@ public abstract class ScannerIntegrationAbstractTest {
     return modules;
   }
 
-  private void copySourceFiles(Path resourceDir, Map<String, List<Path>> moduleFiles) {
-    for (var entry : moduleFiles.entrySet()) {
-      String moduleName = entry.getKey();
-      Path sourceModuleDir = resourceDir.resolve(moduleName);
-      Path targetModuleDir = projectBaseDir.resolve(moduleName);
-      try {
-        for (Path javaFile : entry.getValue()) {
-          Path relativePath = sourceModuleDir.relativize(javaFile);
-          Path targetFile = targetModuleDir.resolve(relativePath);
-          Files.createDirectories(targetFile.getParent());
-          Files.copy(javaFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
+  private void copyProjectTree(Path resourceDir) {
+    try (Stream<Path> walk = Files.walk(resourceDir)) {
+      walk.forEach(source -> {
+        Path target = projectBaseDir.resolve(resourceDir.relativize(source));
+        try {
+          if (Files.isDirectory(source)) {
+            Files.createDirectories(target);
+          } else {
+            Files.createDirectories(target.getParent());
+            Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+          }
+        } catch (IOException e) {
+          throw new UncheckedIOException("Failed to copy: " + source, e);
         }
-      } catch (IOException e) {
-        throw new UncheckedIOException("Failed to set up module directory: " + moduleName, e);
-      }
+      });
+    } catch (IOException e) {
+      throw new UncheckedIOException("Failed to copy project tree", e);
     }
   }
 
-  private Map<String, String> buildScannerProperties(ProjectConfig config, Map<String, List<Path>> moduleFiles) {
+  private Map<String, String> buildScannerProperties(Map<String, List<Path>> moduleFiles,
+                                                     @javax.annotation.Nullable MavenBuildHelper mavenHelper) {
     var properties = new LinkedHashMap<String, String>();
     properties.put("sonar.modules", String.join(",", moduleFiles.keySet()));
-
-    if (config.javaVersion != null) {
-      properties.put("sonar.java.source", config.javaVersion);
-    }
 
     for (String moduleName : moduleFiles.keySet()) {
       String prefix = moduleName + ".";
 
-      properties.put(prefix + "sonar.sources", ".");
-
-      // Binaries
-      String binariesOverride = config.moduleBinaries.get(moduleName);
-      if (binariesOverride != null) {
-        properties.put(prefix + "sonar.java.binaries", binariesOverride);
+      if (mavenHelper != null) {
+        properties.put(prefix + "sonar.sources", MavenBuildHelper.SOURCES_DIR);
+        properties.put(prefix + "sonar.java.binaries", MavenBuildHelper.BINARIES_DIR);
+        properties.put(prefix + "sonar.java.libraries",
+          mavenHelper.resolveLibraries(moduleName, moduleFiles.keySet()));
       } else {
+        properties.put(prefix + "sonar.sources", ".");
         Path emptyBinDir = projectBaseDir.resolve(moduleName + "-binaries");
         try {
           Files.createDirectories(emptyBinDir);
@@ -230,32 +194,8 @@ public abstract class ScannerIntegrationAbstractTest {
           throw new UncheckedIOException("Failed to create empty binaries directory for module: " + moduleName, e);
         }
         properties.put(prefix + "sonar.java.binaries", emptyBinDir.toString());
-      }
-
-      // Libraries
-      List<String> allLibraries = new ArrayList<>();
-      String libSpec = config.moduleLibraries.getOrDefault(moduleName, config.globalLibraries);
-      if ("default".equals(libSpec)) {
-        for (Path p : defaultClasspath()) {
-          allLibraries.add(p.toString());
-        }
-      } else if (libSpec != null && !libSpec.isBlank()) {
-        Arrays.stream(libSpec.split(","))
-          .map(String::trim)
-          .filter(s -> !s.isEmpty())
-          .forEach(allLibraries::add);
-      }
-
-      // Dependencies: add dependent module's binaries to this module's libraries
-      for (String dep : config.moduleDependencies.getOrDefault(moduleName, List.of())) {
-        String depBinaries = properties.get(dep + ".sonar.java.binaries");
-        if (depBinaries != null) {
-          allLibraries.add(depBinaries);
-        }
-      }
-
-      if (!allLibraries.isEmpty()) {
-        properties.put(prefix + "sonar.java.libraries", String.join(",", allLibraries));
+        properties.put(prefix + "sonar.java.libraries",
+          Arrays.stream(defaultClasspath()).map(Path::toString).collect(Collectors.joining(",")));
       }
     }
 
@@ -325,12 +265,4 @@ public abstract class ScannerIntegrationAbstractTest {
       "Cannot find rule metadata directory '" + RULES_METADATA_DIR + "' from working directory");
   }
 
-  private record ProjectConfig(
-    List<String> ruleKeys,
-    String globalLibraries,
-    String javaVersion,
-    Map<String, List<String>> moduleDependencies,
-    Map<String, String> moduleLibraries,
-    Map<String, String> moduleBinaries
-  ) {}
 }

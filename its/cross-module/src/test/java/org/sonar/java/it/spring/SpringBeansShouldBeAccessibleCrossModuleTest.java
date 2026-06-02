@@ -16,9 +16,12 @@
  */
 package org.sonar.java.it.spring;
 
-import java.nio.file.Path;
+import com.sonarsource.scanner.integrationtester.dsl.issue.TextRange;
+import com.sonarsource.scanner.integrationtester.dsl.issue.TextRangeIssue;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.it.ScannerIntegrationAbstractTest;
+
+import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,13 +29,13 @@ class SpringBeansShouldBeAccessibleCrossModuleTest extends ScannerIntegrationAbs
 
   @Test
   void test() {
-    var issues = analyze(Path.of("spring-beans-should-be-accessible"));
-    assertThat(issues).hasSize(2);
-    assertThat(issues).anySatisfy(
-      issue -> {
-        assertThat(issue.ruleKey()).isEqualTo("java:S4605");
-        assertThat(issue.componentPath()).isEqualTo("moduleA/packageB/MyComponentB.java");
-      }
-    );
+    var issues = analyze(Path.of("spring-beans-should-be-accessible"), "S4605", "S1874");
+    assertThat(issues).hasSize(3);
+    assertThat(issues).contains(new TextRangeIssue(
+      "moduleA/src/main/java/packageB/MyComponentB.java",
+      "java:S4605",
+      "'MyComponentB' is not reachable by @ComponentScan or @SpringBootApplication. Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.",
+      new TextRange(6, 6, 13, 25)
+    ));
   }
 }
