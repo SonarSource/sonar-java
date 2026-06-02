@@ -17,7 +17,11 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnitTestUtils;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -25,7 +29,9 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 @Rule(key = "S8714")
 public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscriptionVisitor {
@@ -52,16 +58,45 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
 
     @Override
     public void visitTryStatement(TryStatementTree tree) {
-      checkBlock(tree.block(), "Use assertThrows() instead of try/catch and fail() in the try block.");
-      tree.catches().forEach(c -> checkBlock(c.block(), "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block."));
+      checkBlock(tree.block(), tree, true, "Use assertThrows() instead of try/catch and fail() in the try block.");
+      tree.catches().forEach(c ->
+        checkBlock(c.block(), tree, false, "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block.")
+      );
       super.visitTryStatement(tree);
     }
 
-    private void checkBlock(BlockTree block, String message) {
+    private void checkBlock(BlockTree block, TryStatementTree tryStatement, boolean isTryBlock, String message) {
       UnitTestUtils.findFail(block).ifPresent(failMethodInvocation -> {
-          if (isJunit56 || failMethodInvocation.methodSymbol().signature().contains("org.assertj")) {
-            reportIssue(failMethodInvocation, message);
+
+          @Nullable String replacement = "";
+          Optional<String> failArgument = failMethodInvocation.arguments().;
+
+          if (isJunit56) {
+            if (isTryBlock) {
+
+            } else {
+
+            }
+          } else if (failMethodInvocation.methodSymbol().signature().contains("org.assertj")) {
+            if (isTryBlock) {
+
+            } else {
+
+            }
           }
+
+          if (replacement == null) {
+            return;
+          }
+
+          var quickfix = JavaQuickFix.newQuickFix(message).addTextEdit(JavaTextEdit.replaceTree(tryStatement, replacement)).build();
+
+          QuickFixHelper
+            .newIssue(AssertThrowsInsteadOfTryCatchFailCheck.this.context)
+            .forRule(AssertThrowsInsteadOfTryCatchFailCheck.this)
+            .withMessage(message)
+            .withQuickFix(() -> quickfix)
+            .onTree(failMethodInvocation);
         }
       );
     }
