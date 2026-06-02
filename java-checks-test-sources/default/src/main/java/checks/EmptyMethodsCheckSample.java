@@ -4,6 +4,24 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.junit.jupiter.api.Test;
 
+class Records {
+  @java.lang.annotation.Target(java.lang.annotation.ElementType.CONSTRUCTOR)
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+  public @interface QueryProjection {}
+
+  public record MyRecord2(int a, int b) {
+    @QueryProjection
+    public MyRecord2 {
+    }
+  }
+
+  public record MyRecord3(int a, int b) {
+    // Noncompliant@+1
+    public MyRecord3 {
+    }
+  }
+}
+
 // missing @SpringBootTest annotation
 class NonSpringBootTests {
   // Noncompliant@+2

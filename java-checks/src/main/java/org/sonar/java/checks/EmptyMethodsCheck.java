@@ -95,7 +95,7 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
       .filter(member -> member.is(Tree.Kind.CONSTRUCTOR))
       .map(MethodTree.class::cast)
       .toList();
-    if (constructors.size() == 1 && isPublicNoArgConstructor(constructors.get(0))) {
+    if (constructors.size() == 1 && isPublicNoArgConstructor(constructors.get(0)) && !isAnnotatedCompactConstructor(constructors.get(0))) {
       // In case that there is only a single public default constructor with empty body, we raise an issue, as this is equivalent to not
       // defining a constructor at all and hence redundant.
       checkMethod(constructors.get(0));
@@ -110,6 +110,10 @@ public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isPublicNoArgConstructor(MethodTree constructor) {
     return ModifiersUtils.hasModifier(constructor.modifiers(), Modifier.PUBLIC) && constructor.parameters().isEmpty();
+  }
+
+  private static boolean isAnnotatedCompactConstructor(MethodTree constructor) {
+    return constructor.closeParenToken() == null && !constructor.modifiers().annotations().isEmpty();
   }
 
   private void checkMethod(MethodTree methodTree) {
