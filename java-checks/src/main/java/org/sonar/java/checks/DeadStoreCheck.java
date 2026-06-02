@@ -134,14 +134,11 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
         POSTFIX_DECREMENT:
         handlePostfixExpression(out, (UnaryExpressionTree) element);
         break;
-      case CLASS,
-        ENUM,
-        ANNOTATION_TYPE,
-        INTERFACE:
-        ClassTree classTree = (ClassTree) element;
-        out.addAll(getUsedLocalVarInSubTree(classTree, methodSymbol));
-        break;
       default:
+        if (element.isClass()) {
+          ClassTree classTree = (ClassTree) element;
+          out.addAll(getUsedLocalVarInSubTree(classTree, methodSymbol));
+        }
         // Ignore instructions that does not affect liveness of variables
     }
     return out;

@@ -24,7 +24,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +35,7 @@ public class EqualsOverriddenWithHashCodeCheck extends IssuableSubscriptionVisit
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.CLASS);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.RECORD);
   }
 
   @Override
