@@ -23,34 +23,29 @@ import org.sonar.plugins.java.api.tree.*;
 
 import java.util.List;
 
-import static org.sonar.java.checks.helpers.UnitTestUtils.getJUnitVersion;
-
 @Rule(key = "S8714")
 public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.IMPLICIT_CLASS, Tree.Kind.RECORD, Tree.Kind.ANNOTATION_TYPE);
+    return List.of(Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    ClassTree classTree = (ClassTree) tree;
-
-    List<MethodTree> methods = classTree.members().stream()
-      .filter(member -> member.is(Tree.Kind.METHOD))
-      .map(MethodTree.class::cast)
-      .toList();
-
-    int jUnitVersion = getJUnitVersion(methods);
-    if (jUnitVersion < 5) {
-      return;
-    }
-
-    methods.forEach(method -> method.accept(tryStatementsVisitor));
+    MethodTree methodTree = (MethodTree) tree;
+    tree.accept(
+      new TryStatementsVisitor(UnitTestUtils.hasJUnit56TestAnnotation(methodTree))
+    );
   }
 
-  private final BaseTreeVisitor tryStatementsVisitor = new BaseTreeVisitor() {
+  private final class TryStatementsVisitor extends BaseTreeVisitor {
+    private final boolean isJunit56;
+
+    public TryStatementsVisitor(boolean isJunit56) {
+      this.isJunit56 = isJunit56;
+    }
+
     @Override
     public void visitTryStatement(TryStatementTree tree) {
       checkBlock(tree.block(), "Use assertThrows() instead of try/catch and fail() in the try block.");
@@ -59,9 +54,12 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
     }
 
     private void checkBlock(BlockTree block, String message) {
-      UnitTestUtils.findFail(block).ifPresent(fail ->
-        reportIssue(fail, message)
+      UnitTestUtils.findFail(block).ifPresent(failMethodInvocation -> {
+          if (isJunit56 || failMethodInvocation.methodSymbol().signature().contains("org.assertj")) {
+            reportIssue(failMethodInvocation, message);
+          }
+        }
       );
     }
-  };
+  }
 }

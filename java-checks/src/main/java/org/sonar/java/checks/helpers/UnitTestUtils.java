@@ -43,7 +43,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static java.util.Arrays.asList;
 
 public final class UnitTestUtils {
-
+  private static final String ORG_ASSERTJ_CORE_API_ASSERTIONS = "org.assertj.core.api.Assertions";
   private static final String ORG_JUNIT_TEST = "org.junit.Test";
   public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile(
     "(assert|verify|fail|should|check|expect|validate|andExpect|approve).*" +
@@ -108,11 +108,11 @@ public final class UnitTestUtils {
         "org.fest.assertions.Fail",
         // AssertJ
         "org.assertj.core.api.Fail",
-        "org.assertj.core.api.Assertions")
+        ORG_ASSERTJ_CORE_API_ASSERTIONS)
       .names("fail").withAnyParameters().build(),
     MethodMatchers.create().ofTypes(
         // AssertJ
-        "org.assertj.core.api.Assertions")
+        ORG_ASSERTJ_CORE_API_ASSERTIONS)
       .names("failBecauseExceptionWasNotThrown").withAnyParameters().build());
 
   public static final MethodMatchers ASSERTIONS_METHOD_MATCHER = MethodMatchers.or(
@@ -124,7 +124,7 @@ public final class UnitTestUtils {
       .build(),
     // Fest assert and AssertJ
     MethodMatchers.create()
-      .ofTypes("org.assertj.core.api.Assertions", "org.fest.assertions.Assertions")
+      .ofTypes(ORG_ASSERTJ_CORE_API_ASSERTIONS, "org.fest.assertions.Assertions")
       .names("assertThat")
       .withAnyParameters()
       .build());
@@ -166,14 +166,14 @@ public final class UnitTestUtils {
 
   public static boolean hasTestAnnotation(MethodTree tree) {
     SymbolMetadata symbolMetadata = tree.symbol().metadata();
-    return TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith) || hasJUnit5TestAnnotation(symbolMetadata);
+    return TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith) || hasJUnit56TestAnnotation(symbolMetadata);
   }
 
-  public static boolean hasJUnit5TestAnnotation(MethodTree tree) {
-    return hasJUnit5TestAnnotation(tree.symbol().metadata());
+  public static boolean hasJUnit56TestAnnotation(MethodTree tree) {
+    return hasJUnit56TestAnnotation(tree.symbol().metadata());
   }
 
-  private static boolean hasJUnit5TestAnnotation(SymbolMetadata symbolMetadata) {
+  private static boolean hasJUnit56TestAnnotation(SymbolMetadata symbolMetadata) {
     return JUNIT5_TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith);
   }
 
@@ -201,7 +201,7 @@ public final class UnitTestUtils {
       return true;
     }
 
-    if (hasJUnit5TestAnnotation(methodTree)) {
+    if (hasJUnit56TestAnnotation(methodTree)) {
       // contrary to JUnit 4, JUnit 5 Test annotations are not inherited when method is overridden, so no need to check overridden symbols
       return true;
     }
@@ -257,35 +257,23 @@ public final class UnitTestUtils {
 
   /**
    * Checks if the given block tree's last statement is a call to a fail method, and if so, returns the corresponding method invocation tree.
+   *
    * @param block the block tree to check
    * @return an optional containing the method invocation tree if the last statement is a call to a fail method, or an empty optional otherwise
    */
-  public static Optional<Tree> findFail(BlockTree block) {
+  public static Optional<MethodInvocationTree> findFail(BlockTree block) {
     List<StatementTree> statements = block.body();
     if (statements.isEmpty()) {
       return Optional.empty();
     }
     StatementTree lastStatement = statements.get(statements.size() - 1);
-    if (lastStatement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      ExpressionTree expression = ((ExpressionStatementTree) lastStatement).expression();
-      return expression.is(Tree.Kind.METHOD_INVOCATION) && FAIL_METHOD_MATCHER.matches((MethodInvocationTree) expression)
-        ? Optional.of(expression)
-        : Optional.empty();
+    if (
+      lastStatement instanceof ExpressionStatementTree expressionStatement &&
+        expressionStatement.expression() instanceof MethodInvocationTree methodInvocation &&
+        FAIL_METHOD_MATCHER.matches(methodInvocation)
+    ) {
+      return Optional.of(methodInvocation);
     }
     return Optional.empty();
-  }
-
-  public static int getJUnitVersion(List<MethodTree> methods) {
-    boolean containsJUnit4Tests = false;
-    for (MethodTree methodTree : methods) {
-      SymbolMetadata metadata = methodTree.symbol().metadata();
-      containsJUnit4Tests |= metadata.isAnnotatedWith("org.junit.Test");
-      if (hasJUnit5TestAnnotation(methodTree)) {
-        // While migrating from JUnit4 to JUnit5, classes might end up in mixed state of having tests using both versions.
-        // If it's the case, we consider the test classes as ultimately targeting 5
-        return 5;
-      }
-    }
-    return containsJUnit4Tests ? 4 : -1;
   }
 }
