@@ -59,6 +59,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
       .put("serial", Collections.singleton("java:S2057"))
       .put("static", SetUtils.immutableSetOf("java:S2696", "java:S2209"))
       .put("rawtypes", Collections.singleton("java:S3740"))
+      .put("ParameterNumber", Collections.singleton("java:S107"))
       // Eclipse (IDE) warnings
       .put("boxing", SetUtils.immutableSetOf("java:S2153", "java:S5411"))
       .put("hiding", Collections.singleton("java:S4977"))
