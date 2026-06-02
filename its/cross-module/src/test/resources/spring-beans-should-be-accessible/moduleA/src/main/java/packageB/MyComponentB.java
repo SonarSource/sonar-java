@@ -1,7 +1,7 @@
-package com.other;
+package packageB;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class OtherComponent {
+public class MyComponentB {
 }

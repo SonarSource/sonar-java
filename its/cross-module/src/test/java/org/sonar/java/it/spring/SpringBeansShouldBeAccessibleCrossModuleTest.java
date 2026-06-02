@@ -14,10 +14,11 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.it;
+package org.sonar.java.it.spring;
 
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.it.ScannerIntegrationAbstractTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,7 +30,7 @@ class SpringBeansShouldBeAccessibleCrossModuleTest extends ScannerIntegrationAbs
     assertThat(issues).hasSize(2);
     assertThat(issues).anySatisfy(
       issue -> {
-        assertThat(issue.ruleKey()).isEqualTo("java:S4275");
+        assertThat(issue.ruleKey()).isEqualTo("java:S4605");
         assertThat(issue.componentPath()).isEqualTo("moduleA/packageB/MyComponentB.java");
       }
     );

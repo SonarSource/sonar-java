@@ -73,7 +73,7 @@ public abstract class ScannerIntegrationAbstractTest {
       .map(ScannerIntegrationAbstractTest::buildActiveRule)
       .toList();
 
-    copySourceFiles(moduleFiles);
+    copySourceFiles(resourceDir, moduleFiles);
     var scannerProperties = buildScannerProperties(config, moduleFiles);
 
     var serverContext = SonarServerContext.builder()
@@ -187,16 +187,20 @@ public abstract class ScannerIntegrationAbstractTest {
     return modules;
   }
 
-  private void copySourceFiles(Map<String, List<Path>> moduleFiles) {
+  private void copySourceFiles(Path resourceDir, Map<String, List<Path>> moduleFiles) {
     for (var entry : moduleFiles.entrySet()) {
-      Path srcDir = projectBaseDir.resolve(entry.getKey()).resolve("src");
+      String moduleName = entry.getKey();
+      Path sourceModuleDir = resourceDir.resolve(moduleName);
+      Path targetModuleDir = projectBaseDir.resolve(moduleName);
       try {
-        Files.createDirectories(srcDir);
         for (Path javaFile : entry.getValue()) {
-          Files.copy(javaFile, srcDir.resolve(javaFile.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+          Path relativePath = sourceModuleDir.relativize(javaFile);
+          Path targetFile = targetModuleDir.resolve(relativePath);
+          Files.createDirectories(targetFile.getParent());
+          Files.copy(javaFile, targetFile, StandardCopyOption.REPLACE_EXISTING);
         }
       } catch (IOException e) {
-        throw new UncheckedIOException("Failed to set up module directory: " + entry.getKey(), e);
+        throw new UncheckedIOException("Failed to set up module directory: " + moduleName, e);
       }
     }
   }
@@ -212,7 +216,7 @@ public abstract class ScannerIntegrationAbstractTest {
     for (String moduleName : moduleFiles.keySet()) {
       String prefix = moduleName + ".";
 
-      properties.put(prefix + "sonar.sources", "src");
+      properties.put(prefix + "sonar.sources", ".");
 
       // Binaries
       String binariesOverride = config.moduleBinaries.get(moduleName);
