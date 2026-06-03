@@ -194,3 +194,16 @@ class UnusedPrivateFieldCheckQuickfix {
   }
 }
 
+record MyRecord(int a) {
+  private static final int XXX = 3; // Noncompliant
+//                         ^^^
+
+  // Non-private fields should not be reported.
+  static final int YYY = 4;
+
+  private static final int USED = 5;
+
+  int sum() {
+    return a + USED;
+  }
+}

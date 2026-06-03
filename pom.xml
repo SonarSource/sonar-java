@@ -98,6 +98,7 @@
     <sonar.sca.exclusions>its/**,java-checks-test-sources/**</sonar.sca.exclusions>
     <analyzer.commons.version>2.22.0.4796</analyzer.commons.version>
     <orchestrator.version>6.1.0.3962</orchestrator.version>
+    <sonar.integration.tester.version>1.1.0.1340</sonar.integration.tester.version>
     <sslr.version>1.25.1.3886</sslr.version>
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
