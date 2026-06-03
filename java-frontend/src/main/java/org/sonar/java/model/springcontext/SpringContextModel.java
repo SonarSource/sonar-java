@@ -50,28 +50,15 @@ public class SpringContextModel {
     return beanDefinitionRegistry;
   }
 
-  public void setBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {
-    this.beanDefinitionRegistry = beanDefinitionRegistry;
-  }
-
   public ProjectPackageScan getProjectPackageScan() {
     return projectPackageScan;
-  }
-
-  public void setProjectPackageScan(ProjectPackageScan projectPackageScan) {
-    this.projectPackageScan = projectPackageScan;
   }
 
   public TypeToBeanNamesIndex getTypeToBeanNamesIndex() {
     return typeToBeanNamesIndex;
   }
 
-  public void setTypeToBeanNamesIndex(TypeToBeanNamesIndex typeToBeanNamesIndex) {
-    this.typeToBeanNamesIndex = typeToBeanNamesIndex;
-  }
-
   public EntityClassToPropertiesIndex getEntityClassToPropertiesIndex() {
     return entityClassToPropertiesIndex;
   }
-
 }
