@@ -1,3 +1,4 @@
+<p>This rule is deprecated, and will eventually be removed.</p>
 <h2>Why is this an issue?</h2>
 <p><code>getClass</code> should not be used for synchronization in non-<code>final</code> classes because child classes will synchronize on a
 different object than the parent or each other, allowing multiple threads into the code block at once, despite the <code>synchronized</code>
