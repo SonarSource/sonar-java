@@ -30,9 +30,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
-import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 
 import static org.sonar.java.checks.helpers.TryCatchUtils.getCaughtTypes;
 
@@ -61,6 +59,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
 
     @Override
     public void visitTryStatement(TryStatementTree tree) {
+      var firstCaught = getCaughtTypes(tree.catches().getFirst()).getFirst();
       checkBlock(tree.block(), tree, List.of(), "Use assertThrows() instead of try/catch and fail() in the try block.");
       tree.catches().forEach(c ->
         checkBlock(c.block(), tree, getCaughtTypes(c), "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block.")
@@ -68,11 +67,16 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       super.visitTryStatement(tree);
     }
 
-    private void checkBlock(BlockTree block, TryStatementTree tryStatement, List<Type> caughtTypes, String message) {
+    private void checkBlock(
+      BlockTree block,
+      TryStatementTree tryStatement,
+      List<Type> caughtTypesInBlock,
+      String message
+    ) {
       UnitTestUtils.findFail(block).ifPresent(failMethodInvocation -> {
 
           var context = AssertThrowsInsteadOfTryCatchFailCheck.this.context;
-          List<String> arguments = failMethodInvocation.arguments().stream()
+          List<String> failArguments = failMethodInvocation.arguments().stream()
             .map(argument -> QuickFixHelper.contentForTree(argument, context))
             .toList();
 
@@ -84,11 +88,21 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
 
           if (isJunit56) {
             result = result.withQuickFix(() ->
-              JavaQuickFix.newQuickFix(message).addTextEdit(JavaTextEdit.replaceTree(tryStatement, junitReplacement(arguments, caughtTypes, message))).build()
+              JavaQuickFix.newQuickFix(message).addTextEdit(
+                JavaTextEdit.replaceTree(
+                  tryStatement,
+                  junitReplacement(failArguments, tryStatement, caughtTypesInBlock)
+                )
+              ).build()
             );
           } else if (failMethodInvocation.methodSymbol().signature().contains("org.assertj")) {
             result = result.withQuickFix(() ->
-              JavaQuickFix.newQuickFix(message).addTextEdit(JavaTextEdit.replaceTree(tryStatement, assertJReplacement(arguments, caughtTypes, message))).build()
+              JavaQuickFix.newQuickFix(message).addTextEdit(
+                JavaTextEdit.replaceTree(
+                  tryStatement,
+                  assertJReplacement(failArguments, tryStatement, caughtTypesInBlock)
+                )
+              ).build()
             );
           }
 
@@ -97,24 +111,49 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       );
     }
 
-    private static String junitReplacement(List<String> arguments, List<Type> caughtTypes, String message) {
-      boolean isTryBlock = caughtTypes.isEmpty();
-      if (isTryBlock) {
-
+    private String junitReplacement(
+      List<String> failArguments,
+      TryStatementTree tryStatement,
+      List<Type> caughtTypesInBlock
+    ) {
+      String tryBlockString = QuickFixHelper.contentForTree(tryStatement.block(), AssertThrowsInsteadOfTryCatchFailCheck.this.context);
+      if (caughtTypesInBlock.isEmpty()) {
+        return "assertThrows(%s, () -> %s);".formatted(
+          typeClass(firstCaughtTypeInTry(tryStatement)),
+          tryBlockString
+        );
       } else {
-
+        return "assertDoesNotThrow(%s, %s);".formatted(
+          typeClass(caughtTypesInBlock.getFirst()),
+          tryBlockString
+        );
       }
-      return "";
     }
 
-    private static String assertJReplacement(List<String> arguments, List<Type> caughtTypes, String message) {
-      boolean isTryBlock = caughtTypes.isEmpty();
-      if (isTryBlock) {
-
+    private String assertJReplacement(
+      List<String> failArguments,
+      TryStatementTree tryStatement,
+      List<Type> caughtTypesInBlock
+    ) {
+      String tryBlockString = QuickFixHelper.contentForTree(tryStatement.block(), AssertThrowsInsteadOfTryCatchFailCheck.this.context);
+      if (caughtTypesInBlock.isEmpty()) {
+        return "assertThatThrownBy(() -> %s).isInstanceOf(%s);".formatted(
+          tryBlockString,
+          typeClass(firstCaughtTypeInTry(tryStatement))
+        );
       } else {
-
+        return "assertThatThrownBy(() -> %s).doesNotThrowAnyException();".formatted(
+          tryBlockString
+        );
       }
-      return "";
+    }
+
+    private static String typeClass(Type caughtType) {
+      return caughtType.name() + ".class";
+    }
+
+    private static Type firstCaughtTypeInTry(TryStatementTree tryStatement) {
+      return getCaughtTypes(tryStatement.catches().getFirst()).getFirst();
     }
   }
 }
