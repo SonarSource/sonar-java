@@ -25,11 +25,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 class MavenBuildHelper {
 
   static final String SOURCES_DIR = "src/main/java";
   static final String BINARIES_DIR = "target/classes";
+
+  private static final long BUILD_TIMEOUT_SECONDS = 45;
 
   private final Path projectBaseDir;
 
@@ -69,24 +72,51 @@ class MavenBuildHelper {
     return String.join(",", libraries);
   }
 
+  private static final String MAVEN_EXECUTABLE =
+    System.getProperty("os.name").toLowerCase().contains("win") ? "mvn.cmd" : "mvn";
+
   private void runMaven(String... goals) {
-    var command = new ArrayList<>(List.of("mvn", "-B", "-q"));
+    var command = new ArrayList<>(List.of(MAVEN_EXECUTABLE, "-B", "-q"));
     command.addAll(List.of(goals));
+    Process process = null;
     try {
-      var process = new ProcessBuilder(command)
+      process = new ProcessBuilder(command)
         .directory(projectBaseDir.toFile())
         .redirectErrorStream(true)
         .start();
-      String output = new String(process.getInputStream().readAllBytes());
-      int exitCode = process.waitFor();
+      // Drain the output stream in a separate thread so the process is not blocked
+      // by a full output buffer while we are waiting on the timeout.
+      var outputCapture = new StringBuilder();
+      Process finalProcess = process;
+      var reader = new Thread(() -> {
+        try {
+          outputCapture.append(new String(finalProcess.getInputStream().readAllBytes()));
+        } catch (IOException e) {
+          // process output is no longer readable (e.g. it was destroyed); ignore
+        }
+      });
+      reader.setDaemon(true);
+      reader.start();
+
+      if (!process.waitFor(BUILD_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+        process.destroyForcibly();
+        throw new AssertionError("Maven build timed out after " + BUILD_TIMEOUT_SECONDS + " seconds");
+      }
+      reader.join(TimeUnit.SECONDS.toMillis(5));
+
+      int exitCode = process.exitValue();
       if (exitCode != 0) {
-        throw new AssertionError("Maven build failed with exit code " + exitCode + ":\n" + output);
+        throw new AssertionError("Maven build failed with exit code " + exitCode + ":\n" + outputCapture);
       }
     } catch (IOException e) {
       throw new UncheckedIOException("Failed to run Maven build", e);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new IllegalStateException("Maven build was interrupted", e);
+    } finally {
+      if (process != null && process.isAlive()) {
+        process.destroyForcibly();
+      }
     }
   }
 }

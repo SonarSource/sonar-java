@@ -8,13 +8,14 @@
     <version>8.31.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>it-java-cross-module</artifactId>
+  <artifactId>it-java-scanner-integration-tests</artifactId>
 
-  <name>SonarQube Java :: ITs :: Cross Module</name>
-  <description>Cross-module scanner integration tests for the Java analyzer</description>
+  <name>SonarQube Java :: ITs :: Scanner Integration Tests</name>
+  <description>Scanner integration tests for the Java analyzer</description>
 
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
+    <skipTests>false</skipTests>
   </properties>
 
   <dependencies>
@@ -66,14 +67,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <profiles>
-    <profile>
-      <id>it-cross-module</id>
-      <properties>
-        <skipTests>false</skipTests>
-      </properties>
-    </profile>
-  </profiles>
 
 </project>

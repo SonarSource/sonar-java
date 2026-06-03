@@ -30,12 +30,12 @@ class SpringBeansShouldBeAccessibleCrossModuleTest extends ScannerIntegrationAbs
   @Test
   void test() {
     var issues = analyze(Path.of("spring-beans-should-be-accessible"), "S4605", "S1874");
-    assertThat(issues).hasSize(3);
-    assertThat(issues).contains(new TextRangeIssue(
-      "moduleA/src/main/java/packageB/MyComponentB.java",
-      "java:S4605",
-      "'MyComponentB' is not reachable by @ComponentScan or @SpringBootApplication. Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.",
-      new TextRange(6, 6, 13, 25)
-    ));
+    assertThat(issues)
+      .hasSize(3)
+      .contains(new TextRangeIssue(
+        "moduleA/src/main/java/packageB/MyComponentB.java",
+        "java:S4605",
+        "'MyComponentB' is not reachable by @ComponentScan or @SpringBootApplication. Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.",
+        new TextRange(6, 6, 13, 25)));
   }
 }
