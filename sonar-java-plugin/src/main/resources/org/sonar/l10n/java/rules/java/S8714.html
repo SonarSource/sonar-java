@@ -4,7 +4,7 @@
 starting with JUnit 5, JUnit Jupiter provides <code>assertThrows</code> and <code>assertDoesNotThrow</code>. AssertJ offers similar methods.</p>
 <p>Using <code>try-catch</code> with <code>fail()</code> for the same purpose adds boilerplate, makes the test intent less explicit, and is harder to
 maintain. Dedicated exception assertions also make it straightforward to keep asserting on the exception when one is expected.</p>
-<h2>How to fix it</h2>
+<h2>How to fix it in Junit 5 / Junit 6</h2>
 <p>Replace <code>try-catch</code> blocks that rely on <code>fail()</code> to verify exception behavior with dedicated exception assertions from your
 testing library:</p>
 <ul>
@@ -25,7 +25,6 @@ void testNoExceptionThrown() {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
-// JUnit 5
 @Test
 void testNoExceptionWithAssertion() {
   assertDoesNotThrow(() -&gt; userService.registerUser(validUser));
@@ -46,7 +45,6 @@ void testExceptionIsThrown() {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="2" data-diff-type="compliant">
-// JUnit 5
 @Test
 void testExceptionWithAssertion() {
   ValidationException exception = assertThrows(ValidationException.class, () -&gt; userService.registerUser(invalidUser));
@@ -54,6 +52,8 @@ void testExceptionWithAssertion() {
   assertEquals("Invalid email", exception.getMessage());
 }
 </pre>
+<h2>How to fix it in AssertJ</h2>
+<h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="3" data-diff-type="noncompliant">
 @Test
@@ -67,7 +67,6 @@ void testNoExceptionThrown() {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="3" data-diff-type="compliant">
-// AssertJ
 @Test
 void testNoExceptionWithAssertion() {
   assertThatCode(() -&gt; userService.registerUser(validUser)).doesNotThrowAnyException();
@@ -87,7 +86,6 @@ void testExceptionIsThrown() {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="4" data-diff-type="compliant">
-// AssertJ
 @Test
 void testExceptionWithAssertion() {
   assertThatThrownBy(() -&gt; userService.registerUser(invalidUser))
