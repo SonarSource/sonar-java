@@ -79,7 +79,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
             .onTree(failMethodInvocation);
 
           if (isJunit56) {
-            issueBuilder = issueBuilder.withQuickFix(() ->
+            issueBuilder.withQuickFix(() ->
               JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
                 JavaTextEdit.replaceTree(
                   tryStatement,
@@ -88,7 +88,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
               ).build()
             );
           } else if (failMethodInvocation.methodSymbol().signature().contains("org.assertj")) {
-            issueBuilder = issueBuilder.withQuickFix(() ->
+            issueBuilder.withQuickFix(() ->
               JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
                 JavaTextEdit.replaceTree(
                   tryStatement,
@@ -108,11 +108,11 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       TryStatementTree tryStatement,
       boolean isTryBlock
     ) {
-      String tryBlockString = QuickFixHelper.contentForTree(tryStatement.block(), AssertThrowsInsteadOfTryCatchFailCheck.this.context);
+      String tryBlockString = contentFor(tryStatement.block());
       String argumentsSuffix = failArguments.stream().findFirst().filter(argument ->
         argument.symbolType().is("") || argument.symbolType().is("")
       ).map(argument ->
-        ", %s".formatted(QuickFixHelper.contentForTree(argument, context))
+        ", %s".formatted(contentFor(argument))
       ).orElse("");
 
       if (isTryBlock) {
@@ -122,7 +122,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
           argumentsSuffix
         );
       } else {
-        return "assertDoesNotThrow(%s%s);".formatted(
+        return "assertDoesNotThrow(() -> %s%s);".formatted(
           tryBlockString,
           argumentsSuffix
         );
@@ -134,17 +134,26 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       TryStatementTree tryStatement,
       boolean isTryBlock
     ) {
-      String tryBlockString = QuickFixHelper.contentForTree(tryStatement.block(), AssertThrowsInsteadOfTryCatchFailCheck.this.context);
+      // in assertJ the failure message is mandatory
+      var failureMessage = contentFor(failArguments.getFirst());
+      String tryBlockString = contentFor(tryStatement.block());
+
       if (isTryBlock) {
-        return "assertThatThrownBy(() -> %s).isInstanceOf(%s);".formatted(
+        return "assertThatCode(() -> %s).withFailMessage(%s).isInstanceOf(%s);".formatted(
           tryBlockString,
+          failureMessage,
           typeClass(firstCaughtTypeInTry(tryStatement))
         );
       } else {
-        return "assertThatThrownBy(() -> %s).doesNotThrowAnyException();".formatted(
-          tryBlockString
+        return "assertThatCode(() -> %s).withFailMessage(%s).doesNotThrowAnyException();".formatted(
+          tryBlockString,
+          failureMessage
         );
       }
+    }
+
+    private String contentFor(Tree tree) {
+      return QuickFixHelper.contentForTree(tree, context);
     }
 
     private static String typeClass(Type caughtType) {
@@ -154,5 +163,6 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
     private static Type firstCaughtTypeInTry(TryStatementTree tryStatement) {
       return getCaughtTypes(tryStatement.catches().getFirst()).getFirst();
     }
+
   }
 }
