@@ -23,11 +23,7 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.*;
 
 import java.util.List;
 
@@ -73,19 +69,16 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
     ) {
       UnitTestUtils.findFail(block).ifPresent(failMethodInvocation -> {
 
-          var context = AssertThrowsInsteadOfTryCatchFailCheck.this.context;
-          List<String> failArguments = failMethodInvocation.arguments().stream()
-            .map(argument -> QuickFixHelper.contentForTree(argument, context))
-            .toList();
+          Arguments failArguments = failMethodInvocation.arguments();
 
-          InternalJavaIssueBuilder result = QuickFixHelper
+          InternalJavaIssueBuilder issueBuilder = QuickFixHelper
             .newIssue(AssertThrowsInsteadOfTryCatchFailCheck.this.context)
             .forRule(AssertThrowsInsteadOfTryCatchFailCheck.this)
             .withMessage(issueMessage)
             .onTree(failMethodInvocation);
 
           if (isJunit56) {
-            result = result.withQuickFix(() ->
+            issueBuilder = issueBuilder.withQuickFix(() ->
               JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
                 JavaTextEdit.replaceTree(
                   tryStatement,
@@ -94,7 +87,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
               ).build()
             );
           } else if (failMethodInvocation.methodSymbol().signature().contains("org.assertj")) {
-            result = result.withQuickFix(() ->
+            issueBuilder = issueBuilder.withQuickFix(() ->
               JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
                 JavaTextEdit.replaceTree(
                   tryStatement,
@@ -104,31 +97,39 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
             );
           }
 
-          result.report();
+          issueBuilder.report();
         }
       );
     }
 
     private String junitReplacement(
-      List<String> failArguments,
+      Arguments failArguments,
       TryStatementTree tryStatement,
       boolean isTryBlock
     ) {
       String tryBlockString = QuickFixHelper.contentForTree(tryStatement.block(), AssertThrowsInsteadOfTryCatchFailCheck.this.context);
+      String argumentsSuffix = failArguments.stream().findFirst().filter(argument ->
+        argument.symbolType().is("") || argument.symbolType().is("")
+      ).map(argument ->
+        ", %s".formatted(QuickFixHelper.contentForTree(argument, context))
+      ).orElse("");
+
       if (isTryBlock) {
-        return "assertThrows(%s, () -> %s);".formatted(
+        return "assertThrows(%s, () -> %s%s);".formatted(
           typeClass(firstCaughtTypeInTry(tryStatement)),
-          tryBlockString
+          tryBlockString,
+          argumentsSuffix
         );
       } else {
-        return "assertDoesNotThrow(%s, %s);".formatted(
-          tryBlockString
+        return "assertDoesNotThrow(%s%s);".formatted(
+          tryBlockString,
+          argumentsSuffix
         );
       }
     }
 
     private String assertJReplacement(
-      List<String> failArguments,
+      Arguments failArguments,
       TryStatementTree tryStatement,
       boolean isTryBlock
     ) {
