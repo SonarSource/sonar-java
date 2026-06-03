@@ -19,6 +19,7 @@ package org.sonar.java.checks.helpers;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -42,7 +43,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static java.util.Arrays.asList;
 
 public final class UnitTestUtils {
-
+  private static final String ORG_ASSERTJ_CORE_API_ASSERTIONS = "org.assertj.core.api.Assertions";
   private static final String ORG_JUNIT_TEST = "org.junit.Test";
   public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile(
     "(assert|verify|fail|should|check|expect|validate|andExpect|approve).*" +
@@ -67,8 +68,8 @@ public final class UnitTestUtils {
         "io.restassured.response.ValidatableResponseOptions", // restassured 3.x and 4.x
         "io.restassured.module.mockmvc.response.ValidatableMockMvcResponse" // spring mock mvc extending the io.restassured library
       )
-      .name(name -> "body" .equals(name) ||
-        "time" .equals(name) ||
+      .name(name -> "body".equals(name) ||
+        "time".equals(name) ||
         name.startsWith("time") ||
         name.startsWith("content") ||
         name.startsWith("status") ||
@@ -107,11 +108,11 @@ public final class UnitTestUtils {
         "org.fest.assertions.Fail",
         // AssertJ
         "org.assertj.core.api.Fail",
-        "org.assertj.core.api.Assertions")
+        ORG_ASSERTJ_CORE_API_ASSERTIONS)
       .names("fail").withAnyParameters().build(),
     MethodMatchers.create().ofTypes(
         // AssertJ
-        "org.assertj.core.api.Assertions")
+        ORG_ASSERTJ_CORE_API_ASSERTIONS)
       .names("failBecauseExceptionWasNotThrown").withAnyParameters().build());
 
   public static final MethodMatchers ASSERTIONS_METHOD_MATCHER = MethodMatchers.or(
@@ -123,7 +124,7 @@ public final class UnitTestUtils {
       .build(),
     // Fest assert and AssertJ
     MethodMatchers.create()
-      .ofTypes("org.assertj.core.api.Assertions", "org.fest.assertions.Assertions")
+      .ofTypes(ORG_ASSERTJ_CORE_API_ASSERTIONS, "org.fest.assertions.Assertions")
       .names("assertThat")
       .withAnyParameters()
       .build());
@@ -165,14 +166,14 @@ public final class UnitTestUtils {
 
   public static boolean hasTestAnnotation(MethodTree tree) {
     SymbolMetadata symbolMetadata = tree.symbol().metadata();
-    return TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith) || hasJUnit5TestAnnotation(symbolMetadata);
+    return TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith) || hasJUnit56TestAnnotation(symbolMetadata);
   }
 
-  public static boolean hasJUnit5TestAnnotation(MethodTree tree) {
-    return hasJUnit5TestAnnotation(tree.symbol().metadata());
+  public static boolean hasJUnit56TestAnnotation(MethodTree tree) {
+    return hasJUnit56TestAnnotation(tree.symbol().metadata());
   }
 
-  private static boolean hasJUnit5TestAnnotation(SymbolMetadata symbolMetadata) {
+  private static boolean hasJUnit56TestAnnotation(SymbolMetadata symbolMetadata) {
     return JUNIT5_TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith);
   }
 
@@ -200,7 +201,7 @@ public final class UnitTestUtils {
       return true;
     }
 
-    if (hasJUnit5TestAnnotation(methodTree)) {
+    if (hasJUnit56TestAnnotation(methodTree)) {
       // contrary to JUnit 4, JUnit 5 Test annotations are not inherited when method is overridden, so no need to check overridden symbols
       return true;
     }
@@ -247,24 +248,32 @@ public final class UnitTestUtils {
     if (TEST_METHODS_PATTERN.matcher(methodName).matches()) {
       return !REACTIVE_X_TEST_METHODS.matches(methodSymbol);
     }
-    if ("verify" .equals(methodName) || "failing" .equals(methodName)) {
+    if ("verify".equals(methodName) || "failing".equals(methodName)) {
       return !VERTX_TEST_CONTEXT_METHODS.matches(methodSymbol);
     }
 
     return ASSERTION_METHODS_PATTERN.matcher(methodName).matches();
   }
 
-  public static boolean isTryCatchFail(BlockTree block) {
+  /**
+   * Checks if the given block tree's last statement is a call to a fail method, and if so, returns the corresponding method invocation tree.
+   *
+   * @param block the block tree to check
+   * @return an optional containing the method invocation tree if the last statement is a call to a fail method, or an empty optional otherwise
+   */
+  public static Optional<MethodInvocationTree> findFail(BlockTree block) {
     List<StatementTree> statements = block.body();
     if (statements.isEmpty()) {
-      return false;
+      return Optional.empty();
     }
     StatementTree lastStatement = statements.get(statements.size() - 1);
-    if (lastStatement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      ExpressionTree expression = ((ExpressionStatementTree) lastStatement).expression();
-      return expression.is(Tree.Kind.METHOD_INVOCATION) && FAIL_METHOD_MATCHER.matches((MethodInvocationTree) expression);
+    if (
+      lastStatement instanceof ExpressionStatementTree expressionStatement &&
+        expressionStatement.expression() instanceof MethodInvocationTree methodInvocation &&
+        FAIL_METHOD_MATCHER.matches(methodInvocation)
+    ) {
+      return Optional.of(methodInvocation);
     }
-    return false;
+    return Optional.empty();
   }
-
 }
