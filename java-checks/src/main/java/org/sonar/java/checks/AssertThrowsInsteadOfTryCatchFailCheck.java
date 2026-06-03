@@ -68,7 +68,8 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       UnitTestUtils.findFail(block).ifPresent(failMethodInvocation -> {
 
           @Nullable String replacement = "";
-          Optional<String> failArgument = failMethodInvocation.arguments().;
+          // Optional<String> failArgument = failMethodInvocation.arguments();
+          // TODO : use QuickFixHelper.contentForTree(failMethodInvocation.arguments(), AssertThrowsInsteadOfTryCatchFailCheck.this.context)
 
           if (isJunit56) {
             if (isTryBlock) {
