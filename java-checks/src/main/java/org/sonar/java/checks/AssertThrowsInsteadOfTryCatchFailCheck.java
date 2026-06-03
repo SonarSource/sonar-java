@@ -19,6 +19,9 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnitTestUtils;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.statement.BlockTreeImpl;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -41,7 +44,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     tree.accept(
-      new TryStatementsVisitor(UnitTestUtils.hasJUnitJupiterAnnotation(methodTree))
+      new TryStatementsVisitor(UnitTestUtils.hasJUnit56TestAnnotation(methodTree))
     );
   }
 
@@ -77,12 +80,22 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
             .onTree(failMethodInvocation)
             .withMessage(issueMessage);
 
+          // Compute try block without tne fail method invocation
+          var filteredTryBlock = new BlockTreeImpl(
+            (InternalSyntaxToken) tryStatement.block().openBraceToken(),
+            tryStatement.block().body().stream()
+              .filter(statement ->
+                statement instanceof ExpressionStatementTree expression && expression != failMethodInvocation
+              ).toList(),
+            (InternalSyntaxToken) tryStatement.block().closeBraceToken());
+          var filteredTryBlockString = contentFor(filteredTryBlock);
+
           if (isJunit56) {
             issueBuilder.withQuickFix(() ->
               JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
                 JavaTextEdit.replaceTree(
                   tryStatement,
-                  junitReplacement(failArguments, tryStatement, isTryBlock)
+                  junitReplacement(failArguments, tryStatement, filteredTryBlockString, isTryBlock)
                 )
               ).build()
             );
@@ -91,7 +104,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
               JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
                 JavaTextEdit.replaceTree(
                   tryStatement,
-                  assertJReplacement(failArguments, tryStatement, isTryBlock)
+                  assertJReplacement(failArguments, tryStatement, filteredTryBlockString, isTryBlock)
                 )
               ).build()
             );
@@ -105,9 +118,9 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
     private String junitReplacement(
       Arguments failArguments,
       TryStatementTree tryStatement,
+      String filteredTryBlockString,
       boolean isTryBlock
     ) {
-      String tryBlockString = contentFor(tryStatement.block());
       String argumentsSuffix = failArguments.stream().findFirst().filter(argument ->
         argument.symbolType().is("java.lang.String") // || argument.symbolType().is("java.util.function.Supplier<java.lang.String>")
       ).map(argument ->
@@ -117,12 +130,12 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       if (isTryBlock) {
         return "assertThrows(%s, () -> %s%s);".formatted(
           typeClass(firstCaughtTypeInTry(tryStatement)),
-          tryBlockString,
+          filteredTryBlockString,
           argumentsSuffix
         );
       } else {
         return "assertDoesNotThrow(() -> %s%s);".formatted(
-          tryBlockString,
+          filteredTryBlockString,
           argumentsSuffix
         );
       }
@@ -131,21 +144,21 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
     private String assertJReplacement(
       Arguments failArguments,
       TryStatementTree tryStatement,
+      String filteredTryBlockString,
       boolean isTryBlock
     ) {
       // in assertJ the failure message is mandatory
       var failureMessage = contentFor(failArguments.get(0));
-      String tryBlockString = contentFor(tryStatement.block());
 
       if (isTryBlock) {
         return "assertThatCode(() -> %s).withFailMessage(%s).isInstanceOf(%s);".formatted(
-          tryBlockString,
+          filteredTryBlockString,
           failureMessage,
           typeClass(firstCaughtTypeInTry(tryStatement))
         );
       } else {
         return "assertThatCode(() -> %s).withFailMessage(%s).doesNotThrowAnyException();".formatted(
-          tryBlockString,
+          filteredTryBlockString,
           failureMessage
         );
       }

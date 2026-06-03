@@ -9,11 +9,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
   void tests() {
     try {
       raise();
-      fail(
-        "hello",
-        // this kind of exception
-        new RuntimeException("hello")
-      ); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+      fail(); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
 //    ^^^^^^
     } catch (Exception _) {
       // test passed
