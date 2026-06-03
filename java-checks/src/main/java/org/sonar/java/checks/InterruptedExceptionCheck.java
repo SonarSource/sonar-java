@@ -42,10 +42,9 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-import org.sonar.plugins.java.api.tree.TypeTree;
-import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.TryCatchUtils.getCaughtTypes;
 import static org.sonar.java.model.ExpressionUtils.extractIdentifierSymbol;
 
 @Rule(key = "S2142")
@@ -85,7 +84,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
 
     for (CatchTree catchTree : tryStatementTree.catches()) {
       VariableTree catchParameter = catchTree.parameter();
-      List<Type> caughtTypes = getCaughtTypes(catchParameter);
+      List<Type> caughtTypes = getCaughtTypes(catchTree);
 
       Optional<Type> interruptType = caughtTypes.stream().filter(INTERRUPTING_TYPE_PREDICATE).findFirst();
       if (interruptType.isPresent()) {
@@ -119,15 +118,6 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     BlockVisitor blockVisitor = new BlockVisitor(tree -> isRethrowingCaughtException(tree, caughtSymbol));
     catchTree.block().accept(blockVisitor);
     return !blockVisitor.threadInterrupted && !isWithinInterruptingFinally();
-  }
-
-  private static List<Type> getCaughtTypes(VariableTree parameter) {
-    if (parameter.type().is(Tree.Kind.UNION_TYPE)) {
-      return ((UnionTypeTree) parameter.type()).typeAlternatives().stream()
-        .map(TypeTree::symbolType)
-        .toList();
-    }
-    return Collections.singletonList(parameter.symbol().type());
   }
 
   private boolean isWithinInterruptingFinally() {
@@ -173,7 +163,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
       // interruptions thrown there must be handled within the scope of the outer try.
 
       boolean isCatchingAnyInterruptingTypes = tryStatementTree.catches().stream()
-        .anyMatch(catchTree -> getCaughtTypes(catchTree.parameter()).stream().anyMatch(INTERRUPTING_TYPE_PREDICATE));
+        .anyMatch(catchTree -> getCaughtTypes(catchTree).stream().anyMatch(INTERRUPTING_TYPE_PREDICATE));
 
       scan(tryStatementTree.resourceList());
       if (!isCatchingAnyInterruptingTypes) {
