@@ -4,7 +4,7 @@
 starting with JUnit 5, JUnit Jupiter provides <code>assertThrows</code> and <code>assertDoesNotThrow</code>. AssertJ offers similar methods.</p>
 <p>Using <code>try-catch</code> with <code>fail()</code> for the same purpose adds boilerplate, makes the test intent less explicit, and is harder to
 maintain. Dedicated exception assertions also make it straightforward to keep asserting on the exception when one is expected.</p>
-<h2>How to fix it in Junit</h2>
+<h2>How to fix it in JUnit</h2>
 <p>Replace <code>try-catch</code> blocks that rely on <code>fail()</code> to verify exception behavior with dedicated exception assertions from your
 testing library:</p>
 <ul>
