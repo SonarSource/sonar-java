@@ -16,6 +16,7 @@
 
   <modules>
     <module>autoscan</module>
+    <module>scanner-integration-tests</module>
     <module>plugin</module>
     <module>ruling</module>
   </modules>
