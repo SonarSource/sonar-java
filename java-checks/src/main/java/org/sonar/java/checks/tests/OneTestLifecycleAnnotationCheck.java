@@ -25,9 +25,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -79,8 +76,7 @@ public class OneTestLifecycleAnnotationCheck extends IssuableSubscriptionVisitor
   }
 
   /**
-   * Reports an issue for each lifecycle annotation that is used more than once.
-   * Reporting happens on the method name.
+   * Report issues on methods if lifecycle annotations that are used more than once.
    */
   private void reportIssues(Map<String, Set<IdentifierTree>> lifecycleMethods) {
     for (Map.Entry<String, Set<IdentifierTree>> ams: lifecycleMethods.entrySet()) {
@@ -88,6 +84,8 @@ public class OneTestLifecycleAnnotationCheck extends IssuableSubscriptionVisitor
         String shortAnnotation = ams.getKey().substring(ams.getKey().lastIndexOf('.') + 1);
         String message = "Only one method in a class should be annotated @" + shortAnnotation + ".";
 
+        // If a lifecycle annotation that is used more than once,
+        // the first method name is used as primary location, and the others are secondary locations.
         Set<IdentifierTree> methods = ams.getValue();
 
         var iterator = methods.iterator();
@@ -95,7 +93,7 @@ public class OneTestLifecycleAnnotationCheck extends IssuableSubscriptionVisitor
         iterator.remove();
 
         List<JavaFileScannerContext.Location> secondaryLocations = methods.stream()
-          .map(methodName -> new JavaFileScannerContext.Location("With the same annotation", methodName))
+          .map(methodName -> new JavaFileScannerContext.Location("same annotation", methodName))
           .toList();
 
         reportIssue(primaryLocation, message, secondaryLocations, null);

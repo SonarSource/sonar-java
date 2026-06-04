@@ -32,6 +32,7 @@ class OneTestLifecycleAnnotationCheckSample {
     // pass
   }
 
+  @Deprecated
   @AfterAll
   static void classTearDown2() {
 //            ^^^^^^^^^^^^^^ <
