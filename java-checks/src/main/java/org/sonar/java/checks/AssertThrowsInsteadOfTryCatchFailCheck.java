@@ -75,7 +75,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
           Arguments failArguments = failMethodInvocation.arguments();
 
           InternalJavaIssueBuilder issueBuilder = QuickFixHelper
-            .newIssue(AssertThrowsInsteadOfTryCatchFailCheck.this.context)
+            .newIssue(context)
             .forRule(AssertThrowsInsteadOfTryCatchFailCheck.this)
             .onTree(failMethodInvocation)
             .withMessage(issueMessage);
@@ -85,7 +85,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
             (InternalSyntaxToken) tryStatement.block().openBraceToken(),
             tryStatement.block().body().stream()
               .filter(statement ->
-                statement instanceof ExpressionStatementTree expression && expression != failMethodInvocation
+                statement instanceof ExpressionStatementTree expression && expression.expression() != failMethodInvocation
               ).toList(),
             (InternalSyntaxToken) tryStatement.block().closeBraceToken());
           var filteredTryBlockString = contentFor(filteredTryBlock);

@@ -9,10 +9,13 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
   void tests() {
     try {
       raise();
-      fail(); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+      fail();  // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}} [[quickfixes=qf1]]
 //    ^^^^^^
+      // fix@qf1 {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+      // edit@qf1 [[sl=10;sc=5;el=18;ec=6]]{{ assertThrows(Exception.class, () -> {\n      raise();\n      fail();  // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}} [[quickfixes=qf1]]\n//    ^^^^^^\n      // fix@qf1 {{Use assertThrows() instead of try/catch and fail() in the try block.}}\n      // edit@qf1 [[sl=10;sc=5;el=18;ec=6]]{{assertThrows(Exception.class, () -> {raise();});}}\n    }); }}
     } catch (Exception _) {
       // test passed
+
     }
 
     try {
