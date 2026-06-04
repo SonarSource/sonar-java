@@ -147,7 +147,7 @@ public final class UnitTestUtils {
     FAIL_METHOD_MATCHER, ASSERTIONS_METHOD_MATCHER);
 
   private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList(ORG_JUNIT_TEST, "org.testng.annotations.Test"));
-  private static final Set<String> JUNIT5_TEST_ANNOTATIONS = Set.of(
+  public static final Set<String> JUNIT5_TEST_ANNOTATIONS = Set.of(
     "org.junit.jupiter.api.Test",
     "org.junit.jupiter.api.RepeatedTest",
     "org.junit.jupiter.api.TestFactory",
