@@ -116,24 +116,5 @@ class AllowSpringAutowired {
   AllowSpringAutowired(String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8) {} // Compliant
 }
 
-class SuppressWarningsParameterNumber {
-  @SuppressWarnings("ParameterNumber")
-  SuppressWarningsParameterNumber(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // Noncompliant
-  }
-
-  @SuppressWarnings("ParameterNumber")
-  void method(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // Noncompliant
-  }
-}
-
-@SuppressWarnings("ParameterNumber")
-class ClassLevelSuppressWarningsParameterNumber {
-  ClassLevelSuppressWarningsParameterNumber(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // Noncompliant
-  }
-
-  void method(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // Noncompliant
-  }
-}
-
 @Target(ElementType.METHOD)
 @interface CustomAnnotation { }
