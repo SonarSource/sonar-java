@@ -27,3 +27,22 @@ class ParameterNumberArrayForm {
   void f(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // NoIssue
   }
 }
+
+@SuppressWarnings("parameternumber")
+class ParameterNumberClassLevelLowerCase {
+  ParameterNumberClassLevelLowerCase(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // NoIssue
+  }
+
+  void f(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // NoIssue
+  }
+}
+
+class ParameterNumberMethodLevelLowerCase {
+  @SuppressWarnings("parameternumber")
+  ParameterNumberMethodLevelLowerCase(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // NoIssue
+  }
+
+  @SuppressWarnings("parameternumber")
+  void f(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) { // NoIssue
+  }
+}
