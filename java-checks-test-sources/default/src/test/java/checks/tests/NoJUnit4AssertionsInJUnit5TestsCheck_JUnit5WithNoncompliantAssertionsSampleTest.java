@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-class JUnit4AssertionsCheckSampleJUnit5MixedTest {
+class NoJUnit4AssertionsInJUnit5TestsCheck_JUnit5WithNoncompliantAssertionsSampleTest {
   @Test
   void good() {
     org.junit.jupiter.api.Assertions.assertTrue(true);

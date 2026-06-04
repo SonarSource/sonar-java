@@ -25,7 +25,7 @@ class NoJUnit4AssertionsInJUnit5TestsCheckTest {
   @Test
   void test_junit4() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/JUnit4AssertionsCheckSampleJUnit4Test.java"))
+      .onFile(testCodeSourcesPath("checks/tests/NoJUnit4AssertionsInJUnit5TestsCheck_JUnit4SampleTest.java"))
       .withCheck(new NoJUnit4AssertionsInJUnit5TestsCheck())
       .verifyNoIssues();
   }
@@ -33,16 +33,25 @@ class NoJUnit4AssertionsInJUnit5TestsCheckTest {
   @Test
   void test_junit5() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/JUnit4AssertionsCheckSampleJUnit5Test.java"))
+      .onFile(testCodeSourcesPath("checks/tests/NoJUnit4AssertionsInJUnit5TestsCheck_JUnit5SampleTest.java"))
       .withCheck(new NoJUnit4AssertionsInJUnit5TestsCheck())
       .verifyNoIssues();
   }
 
   @Test
-  void test_junit5mixed() {
+  void test_junit5withJunit4assertions() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/JUnit4AssertionsCheckSampleJUnit5MixedTest.java"))
+      .onFile(testCodeSourcesPath("checks/tests/NoJUnit4AssertionsInJUnit5TestsCheck_JUnit5WithNoncompliantAssertionsSampleTest.java"))
       .withCheck(new NoJUnit4AssertionsInJUnit5TestsCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_junit5withJunit4assertions_withoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/NoJUnit4AssertionsInJUnit5TestsCheck_JUnit5WithNoncompliantAssertionsSampleTest.java"))
+      .withCheck(new NoJUnit4AssertionsInJUnit5TestsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
   }
 }

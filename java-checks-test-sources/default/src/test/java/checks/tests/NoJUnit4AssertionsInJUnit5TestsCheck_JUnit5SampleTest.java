@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class JUnit4AssertionsCheckSampleJUnit5Test {
+class NoJUnit4AssertionsInJUnit5TestsCheck_JUnit5SampleTest {
 
   // This JUnit 5 test uses new JUnit 5 assertions, so we do not raise.
 

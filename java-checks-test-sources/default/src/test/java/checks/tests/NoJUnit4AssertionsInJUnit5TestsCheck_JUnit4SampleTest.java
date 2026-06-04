@@ -8,7 +8,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-public class JUnit4AssertionsCheckSampleJUnit4Test {
+public class NoJUnit4AssertionsInJUnit5TestsCheck_JUnit4SampleTest {
 
   // We do not raise in old JUnit 4 tests.
 
