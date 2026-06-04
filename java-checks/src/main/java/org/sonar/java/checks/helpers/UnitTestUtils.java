@@ -104,7 +104,8 @@ public final class UnitTestUtils {
   public static final MethodMatchers FAIL_METHOD_MATCHER = MethodMatchers.or(
     MethodMatchers.create().ofTypes(
         Stream.concat(
-          Stream.of(// JUnit 5
+          Stream.of(
+            // JUnit 5
             "org.junit.jupiter.api.Assertions",
             // JUnit 4
             "org.junit.Assert",
