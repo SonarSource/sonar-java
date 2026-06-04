@@ -37,6 +37,7 @@ import org.sonar.java.checks.SuppressWarningsCheck;
 import org.sonar.java.checks.SwitchCaseWithoutBreakCheck;
 import org.sonar.java.checks.SynchronizedOverrideCheck;
 import org.sonar.java.checks.TodoTagPresenceCheck;
+import org.sonar.java.checks.TooManyParametersCheck;
 import org.sonar.java.checks.TryWithResourcesCheck;
 import org.sonar.java.checks.TypeParametersShadowingCheck;
 import org.sonar.java.checks.UndocumentedApiCheck;
@@ -112,6 +113,14 @@ class SuppressWarningFilterTest {
     FilterVerifier.newInstance().verify("src/test/files/filters/SuppressWarningFilter_javadoc.java", new SuppressWarningFilter(),
       // activated rules
       new UndocumentedApiCheck()
+    );
+  }
+
+  @Test
+  void verify_parameter_number() {
+    FilterVerifier.newInstance().verify("src/test/files/filters/SuppressWarningFilter_parameter_number.java", new SuppressWarningFilter(),
+      // activated rules
+      new TooManyParametersCheck()
     );
   }
 
