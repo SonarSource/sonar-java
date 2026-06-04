@@ -51,15 +51,14 @@ public class OneTestLifecycleAnnotationCheck extends IssuableSubscriptionVisitor
 
   @Override
   public void visitNode(Tree tree) {
-    Map<String, Set<IdentifierTree>> lifecycleMethods = new HashMap<>();
-    analyzeMethods((ClassTree) tree, lifecycleMethods);
-    reportIssues(lifecycleMethods);
+    reportIssues(analyzeMethods((ClassTree) tree));
   }
 
   /**
-   * Populates the lifecycleMethods map passed as the second parameter.
+   * Returns a map from lifecycle method annotations to a set of method names that are annotated with it.
    */
-  private static void analyzeMethods(ClassTree classTree, Map<String, Set<IdentifierTree>> lifecycleMethods) {
+  private static Map<String, Set<IdentifierTree>> analyzeMethods(ClassTree classTree) {
+    Map<String, Set<IdentifierTree>> lifecycleMethods = new HashMap<>();
     for (Tree member : classTree.members()) {
       if (member instanceof MethodTree methodTree) {
         for (SymbolMetadata.AnnotationInstance annotation: methodTree.symbol().metadata().annotations()) {
@@ -72,6 +71,7 @@ public class OneTestLifecycleAnnotationCheck extends IssuableSubscriptionVisitor
         }
       }
     }
+    return lifecycleMethods;
   }
 
   /**
