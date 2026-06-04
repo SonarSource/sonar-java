@@ -92,6 +92,12 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
 
           if (isJunit56) {
             issueBuilder.withQuickFix(() ->
+              /** Replace single text edit by 3 :
+               * 1 :  Try token -> assertThrows(
+               * 2 :  fail method invocation .-> ""
+               * 3 : catch -> );
+               */
+
               JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
                 JavaTextEdit.replaceTree(
                   tryStatement,

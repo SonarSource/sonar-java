@@ -5,19 +5,22 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AssertThrowsInsteadOfTryCatchFailCheckSample {
+
+  // fix@qf1 {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+  // edit@qf1 [[sl=15;sc=4;el=18;ec=5]]{{assertThrows(Exception.class, () -> {\n      raise();\n      fail();\n//    ^^^^^^\n    });}}
+
   @Test
   void tests() {
+    // Noncompliant@+3 {{Use assertThrows() instead of try/catch and fail() in the try block.}} [[quickfixes=qf1]]
     try {
       raise();
-      fail();  // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}} [[quickfixes=qf1]]
+      fail();
 //    ^^^^^^
-      // fix@qf1 {{Use assertThrows() instead of try/catch and fail() in the try block.}}
-      // edit@qf1 [[sl=10;sc=5;el=18;ec=6]]{{ assertThrows(Exception.class, () -> {\n      raise();\n      fail();  // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}} [[quickfixes=qf1]]\n//    ^^^^^^\n      // fix@qf1 {{Use assertThrows() instead of try/catch and fail() in the try block.}}\n      // edit@qf1 [[sl=10;sc=5;el=18;ec=6]]{{assertThrows(Exception.class, () -> {raise();});}}\n    }); }}
     } catch (Exception _) {
       // test passed
-
+      Runnable x  = () -> {
+        System.out.println("hgello"); };
     }
-
     try {
       dontRaise();
     } catch (Exception _) {
