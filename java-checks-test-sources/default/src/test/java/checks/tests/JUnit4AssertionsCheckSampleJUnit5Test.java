@@ -12,13 +12,11 @@ class JUnit4AssertionsCheckSampleJUnit5Test {
   @Test
   void one() {
     assertEquals(2, 1 + 1);
-    System.out.println();
     assertEquals(4, 2 + 2);
   }
 
   @Test
   void two() {
-    System.out.println();
     fail();
   }
 }
