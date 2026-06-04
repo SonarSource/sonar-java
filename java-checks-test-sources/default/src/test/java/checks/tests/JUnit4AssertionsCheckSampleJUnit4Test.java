@@ -3,6 +3,8 @@ package checks.tests;
 
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -12,8 +14,8 @@ public class JUnit4AssertionsCheckSampleJUnit4Test {
 
   @Test
   public void testOne() {
-    assertEquals(2, 1 + 1); // Compliant
-    System.out.println();
+    List<Integer> list = List.of(1, 2, 3);
+    assertEquals(3, list.size());
   }
 
   @Test

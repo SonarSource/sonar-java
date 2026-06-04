@@ -8,7 +8,7 @@ import static org.junit.Assert.fail;
 class JUnit4AssertionsCheckSampleJUnit5MixedTest {
   @Test
   void good() {
-    System.out.println("nothing to see here");
+    org.junit.jupiter.api.Assertions.assertTrue(true);
   }
 
   @Test
@@ -21,10 +21,12 @@ class JUnit4AssertionsCheckSampleJUnit5MixedTest {
   @Test
 //^^^^^ >
   void testTwo() {
-    System.out.println();
+    helper();
     fail("message"); // Noncompliant {{JUnit Jupiter tests should not use JUnit 4 assertions.}}
 //  ^^^^
-    System.out.println();
+  }
+
+  private static void helper() {
   }
 
   @Test
