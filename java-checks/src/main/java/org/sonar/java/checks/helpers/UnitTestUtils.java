@@ -16,13 +16,10 @@
  */
 package org.sonar.java.checks.helpers;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import org.sonar.java.annotations.VisibleForTesting;
@@ -43,7 +40,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static java.util.Arrays.asList;
 
 public final class UnitTestUtils {
-  private static final String ORG_ASSERTJ_CORE_API_ASSERTIONS = "org.assertj.core.api.Assertions";
+  private static final List<String> ORG_ASSERTJ_CORE_API_ASSERTIONS = List.of(
+    "org.assertj.core.api.Assertions",
+    "org.assertj.core.api.AssertionsForClassTypes",
+    "org.assertj.core.api.AssertionsForInterfaceTypes"
+  );
   private static final String ORG_JUNIT_TEST = "org.junit.Test";
   public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile(
     "(assert|verify|fail|should|check|expect|validate|andExpect|approve).*" +
@@ -98,21 +99,25 @@ public final class UnitTestUtils {
 
   public static final MethodMatchers FAIL_METHOD_MATCHER = MethodMatchers.or(
     MethodMatchers.create().ofTypes(
-        // JUnit 5
-        "org.junit.jupiter.api.Assertions",
-        // JUnit 4
-        "org.junit.Assert",
-        // JUnit 3
-        "junit.framework.Assert",
-        // Fest assert
-        "org.fest.assertions.Fail",
-        // AssertJ
-        "org.assertj.core.api.Fail",
-        ORG_ASSERTJ_CORE_API_ASSERTIONS)
+        Stream.concat(
+          Stream.of(// JUnit 5
+            "org.junit.jupiter.api.Assertions",
+            // JUnit 4
+            "org.junit.Assert",
+            // JUnit 3
+            "junit.framework.Assert",
+            // Fest assert
+            "org.fest.assertions.Fail",
+            // AssertJ
+            "org.assertj.core.api.Fail"
+          ),
+          ORG_ASSERTJ_CORE_API_ASSERTIONS.stream()
+        ).toArray(String[]::new))
       .names("fail").withAnyParameters().build(),
     MethodMatchers.create().ofTypes(
         // AssertJ
-        ORG_ASSERTJ_CORE_API_ASSERTIONS)
+        ORG_ASSERTJ_CORE_API_ASSERTIONS.toArray(String[]::new)
+      )
       .names("failBecauseExceptionWasNotThrown").withAnyParameters().build());
 
   public static final MethodMatchers ASSERTIONS_METHOD_MATCHER = MethodMatchers.or(
@@ -124,7 +129,7 @@ public final class UnitTestUtils {
       .build(),
     // Fest assert and AssertJ
     MethodMatchers.create()
-      .ofTypes(ORG_ASSERTJ_CORE_API_ASSERTIONS, "org.fest.assertions.Assertions")
+      .ofTypes(Stream.concat(ORG_ASSERTJ_CORE_API_ASSERTIONS.stream(), Stream.of("org.fest.assertions.Assertions")).toArray(String[]::new))
       .names("assertThat")
       .withAnyParameters()
       .build());

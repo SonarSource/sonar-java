@@ -70,6 +70,22 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
       // test passed
     }
 
+    try {
+      raise();
+      org.assertj.core.api.AssertionsForClassTypes.fail("expected exception"); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    } catch (Exception _) {
+      // test passed
+    }
+
+    try {
+      raise();
+      org.assertj.core.api.AssertionsForInterfaceTypes.fail("expected exception"); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    } catch (Exception _) {
+      // test passed
+    }
+
     assertThrows(IllegalStateException.class, AssertThrowsInsteadOfTryCatchFailCheckSample::raise); // compliant
     assertDoesNotThrow(AssertThrowsInsteadOfTryCatchFailCheckSample::dontRaise); // compliant
   }
