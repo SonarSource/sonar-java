@@ -19,14 +19,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AssertThrowsInsteadOfTryCatchFailCheckTest {
 
   @Test
   void detected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AssertThrowsInsteadOfTryCatchFailCheckSample.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertThrowsInsteadOfTryCatchFailCheckSample.java"))
       .withCheck(new AssertThrowsInsteadOfTryCatchFailCheck())
       .verifyIssues();
   }
@@ -34,7 +34,7 @@ class AssertThrowsInsteadOfTryCatchFailCheckTest {
   @Test
   void undetected() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AssertThrowsInsteadOfTryCatchFailCheckSample.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AssertThrowsInsteadOfTryCatchFailCheckSample.java"))
       .withCheck(new AssertThrowsInsteadOfTryCatchFailCheck())
       .withoutSemantic()
       .verifyNoIssues();
