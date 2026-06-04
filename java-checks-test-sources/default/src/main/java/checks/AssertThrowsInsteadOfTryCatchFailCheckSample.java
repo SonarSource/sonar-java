@@ -88,6 +88,20 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
 
     assertThrows(IllegalStateException.class, AssertThrowsInsteadOfTryCatchFailCheckSample::raise); // compliant
     assertDoesNotThrow(AssertThrowsInsteadOfTryCatchFailCheckSample::dontRaise); // compliant
+    nonAnnotatedFunctionFN();
+  }
+
+  private void nonAnnotatedFunctionFN() {
+    org.assertj.core.api.AssertionsForInterfaceTypes.fail("expected exception"); // FN
+  }
+
+  @org.junit.Test
+  public void junit4AnnotationDontRaise() {
+    try {
+      fail("expected exception"); // TN - junit5 assert in junit4 test
+    } catch (Exception _) {
+      // test passed
+    }
   }
 
   private static void raise() {
