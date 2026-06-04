@@ -166,14 +166,14 @@ public final class UnitTestUtils {
 
   public static boolean hasTestAnnotation(MethodTree tree) {
     SymbolMetadata symbolMetadata = tree.symbol().metadata();
-    return TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith) || hasJUnit56TestAnnotation(symbolMetadata);
+    return TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith) || hasJUnitJupiterAnnotation(symbolMetadata);
   }
 
-  public static boolean hasJUnit56TestAnnotation(MethodTree tree) {
-    return hasJUnit56TestAnnotation(tree.symbol().metadata());
+  public static boolean hasJUnitJupiterAnnotation(MethodTree tree) {
+    return hasJUnitJupiterAnnotation(tree.symbol().metadata());
   }
 
-  private static boolean hasJUnit56TestAnnotation(SymbolMetadata symbolMetadata) {
+  private static boolean hasJUnitJupiterAnnotation(SymbolMetadata symbolMetadata) {
     return JUNIT5_TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith);
   }
 
@@ -201,7 +201,7 @@ public final class UnitTestUtils {
       return true;
     }
 
-    if (hasJUnit56TestAnnotation(methodTree)) {
+    if (hasJUnitJupiterAnnotation(methodTree)) {
       // contrary to JUnit 4, JUnit 5 Test annotations are not inherited when method is overridden, so no need to check overridden symbols
       return true;
     }
