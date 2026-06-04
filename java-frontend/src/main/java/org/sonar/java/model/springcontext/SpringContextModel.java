@@ -16,6 +16,9 @@
  */
 package org.sonar.java.model.springcontext;
 
+import org.sonar.api.scanner.ScannerSide;
+import org.sonarsource.api.sonarlint.SonarLintSide;
+
 /**
  * Aggregates all Spring context information collected during project scanning.
  *
@@ -28,6 +31,8 @@ package org.sonar.java.model.springcontext;
  *   <li>{@link EntityClassToPropertiesIndex} — JPA {@code @Entity} class properties</li>
  * </ul>
  */
+@ScannerSide
+@SonarLintSide
 public class SpringContextModel {
   /** Registry of all bean definitions discovered during scanning. */
   private BeanDefinitionRegistry beanDefinitionRegistry;
@@ -40,6 +45,13 @@ public class SpringContextModel {
 
   /** Index of properties associated with Spring Data / Hibernate {@code @Entity} classes. */
   private EntityClassToPropertiesIndex entityClassToPropertiesIndex;
+
+  public SpringContextModel() {
+    this.beanDefinitionRegistry = new BeanDefinitionRegistry();
+    this.projectPackageScan = new ProjectPackageScan();
+    this.typeToBeanNamesIndex = new TypeToBeanNamesIndex();
+    this.entityClassToPropertiesIndex = new EntityClassToPropertiesIndex();
+  }
 
   public BeanDefinitionRegistry getBeanDefinitionRegistry() {
     return beanDefinitionRegistry;

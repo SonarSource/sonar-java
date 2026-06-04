@@ -37,6 +37,7 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.classpath.ClasspathProperties;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
+import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.telemetry.DefaultTelemetry;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -84,6 +85,7 @@ public class JavaPlugin implements Plugin {
         .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
         .build(),
       JavaRulesDefinition.class,
+      SpringContextModel.class,
       SonarComponents.class,
       DefaultJavaResourceLocator.class,
       PropertyDefinition.builder(JavaVersion.ENABLE_PREVIEW)
@@ -116,6 +118,7 @@ public class JavaPlugin implements Plugin {
         .defaultValue("False")
         .build(),
       JavaSensor.class,
+      SpringContextModelSensor.class,
       PostAnalysisIssueFilter.class));
 
     list.add(AnalysisWarningsWrapper.class);
