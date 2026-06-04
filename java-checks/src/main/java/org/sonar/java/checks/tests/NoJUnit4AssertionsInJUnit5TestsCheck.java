@@ -34,7 +34,7 @@ import static org.sonar.java.checks.helpers.UnitTestUtils.JUNIT5_TEST_ANNOTATION
  * Check that JUnit Jupiter (JUnit 5) tests do not use JUnit 4 assertions.
  */
 @Rule(key = "S8715")
-public class JUnit4AssertionsCheck extends IssuableSubscriptionVisitor {
+public class NoJUnit4AssertionsInJUnit5TestsCheck extends IssuableSubscriptionVisitor {
   private static final String MESSAGE = "JUnit Jupiter tests should not use JUnit 4 assertions.";
 
   private static final MethodMatchers JUNIT4_ASSERT = MethodMatchers.create()

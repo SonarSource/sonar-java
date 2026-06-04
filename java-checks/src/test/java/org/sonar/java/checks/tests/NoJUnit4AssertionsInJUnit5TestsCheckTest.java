@@ -21,12 +21,12 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
-class JUnit4AssertionsCheckTest {
+class NoJUnit4AssertionsInJUnit5TestsCheckTest {
   @Test
   void test_junit4() {
     CheckVerifier.newVerifier()
       .onFile(testCodeSourcesPath("checks/tests/JUnit4AssertionsCheckSampleJUnit4Test.java"))
-      .withCheck(new JUnit4AssertionsCheck())
+      .withCheck(new NoJUnit4AssertionsInJUnit5TestsCheck())
       .verifyNoIssues();
   }
 
@@ -34,7 +34,7 @@ class JUnit4AssertionsCheckTest {
   void test_junit5() {
     CheckVerifier.newVerifier()
       .onFile(testCodeSourcesPath("checks/tests/JUnit4AssertionsCheckSampleJUnit5Test.java"))
-      .withCheck(new JUnit4AssertionsCheck())
+      .withCheck(new NoJUnit4AssertionsInJUnit5TestsCheck())
       .verifyNoIssues();
   }
 
@@ -42,7 +42,7 @@ class JUnit4AssertionsCheckTest {
   void test_junit5mixed() {
     CheckVerifier.newVerifier()
       .onFile(testCodeSourcesPath("checks/tests/JUnit4AssertionsCheckSampleJUnit5MixedTest.java"))
-      .withCheck(new JUnit4AssertionsCheck())
+      .withCheck(new NoJUnit4AssertionsInJUnit5TestsCheck())
       .verifyIssues();
   }
 }
