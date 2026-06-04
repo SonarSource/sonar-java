@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import org.sonar.java.annotations.VisibleForTesting;
@@ -43,7 +44,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static java.util.Arrays.asList;
 
 public final class UnitTestUtils {
-  private static final String ORG_ASSERTJ_CORE_API_ASSERTIONS = "org.assertj.core.api.Assertions";
+  private static final List<String> ORG_ASSERTJ_CORE_API_ASSERTIONS = List.of(
+    "org.assertj.core.api.Assertions",
+    "org.assertj.core.api.AssertionsForClassTypes",
+    "org.assertj.core.api.AssertionsForInterfaceTypes"
+  );
   private static final String ORG_JUNIT_TEST = "org.junit.Test";
   public static final Pattern ASSERTION_METHODS_PATTERN = Pattern.compile(
     "(assert|verify|fail|should|check|expect|validate|andExpect|approve).*" +
@@ -98,21 +103,26 @@ public final class UnitTestUtils {
 
   public static final MethodMatchers FAIL_METHOD_MATCHER = MethodMatchers.or(
     MethodMatchers.create().ofTypes(
-        // JUnit 5
-        "org.junit.jupiter.api.Assertions",
-        // JUnit 4
-        "org.junit.Assert",
-        // JUnit 3
-        "junit.framework.Assert",
-        // Fest assert
-        "org.fest.assertions.Fail",
-        // AssertJ
-        "org.assertj.core.api.Fail",
-        ORG_ASSERTJ_CORE_API_ASSERTIONS)
+        Stream.concat(
+          Stream.of(
+            // JUnit 5
+            "org.junit.jupiter.api.Assertions",
+            // JUnit 4
+            "org.junit.Assert",
+            // JUnit 3
+            "junit.framework.Assert",
+            // Fest assert
+            "org.fest.assertions.Fail",
+            // AssertJ
+            "org.assertj.core.api.Fail"
+          ),
+          ORG_ASSERTJ_CORE_API_ASSERTIONS.stream()
+        ).toArray(String[]::new))
       .names("fail").withAnyParameters().build(),
     MethodMatchers.create().ofTypes(
         // AssertJ
-        ORG_ASSERTJ_CORE_API_ASSERTIONS)
+        ORG_ASSERTJ_CORE_API_ASSERTIONS.toArray(String[]::new)
+      )
       .names("failBecauseExceptionWasNotThrown").withAnyParameters().build());
 
   public static final MethodMatchers ASSERTIONS_METHOD_MATCHER = MethodMatchers.or(
@@ -124,7 +134,7 @@ public final class UnitTestUtils {
       .build(),
     // Fest assert and AssertJ
     MethodMatchers.create()
-      .ofTypes(ORG_ASSERTJ_CORE_API_ASSERTIONS, "org.fest.assertions.Assertions")
+      .ofTypes(Stream.concat(ORG_ASSERTJ_CORE_API_ASSERTIONS.stream(), Stream.of("org.fest.assertions.Assertions")).toArray(String[]::new))
       .names("assertThat")
       .withAnyParameters()
       .build());
@@ -166,14 +176,14 @@ public final class UnitTestUtils {
 
   public static boolean hasTestAnnotation(MethodTree tree) {
     SymbolMetadata symbolMetadata = tree.symbol().metadata();
-    return TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith) || hasJUnit56TestAnnotation(symbolMetadata);
+    return TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith) || hasJUnitJupiterAnnotation(symbolMetadata);
   }
 
-  public static boolean hasJUnit56TestAnnotation(MethodTree tree) {
-    return hasJUnit56TestAnnotation(tree.symbol().metadata());
+  public static boolean hasJUnitJupiterAnnotation(MethodTree tree) {
+    return hasJUnitJupiterAnnotation(tree.symbol().metadata());
   }
 
-  private static boolean hasJUnit56TestAnnotation(SymbolMetadata symbolMetadata) {
+  private static boolean hasJUnitJupiterAnnotation(SymbolMetadata symbolMetadata) {
     return JUNIT5_TEST_ANNOTATIONS.stream().anyMatch(symbolMetadata::isAnnotatedWith);
   }
 
@@ -201,7 +211,7 @@ public final class UnitTestUtils {
       return true;
     }
 
-    if (hasJUnit56TestAnnotation(methodTree)) {
+    if (hasJUnitJupiterAnnotation(methodTree)) {
       // contrary to JUnit 4, JUnit 5 Test annotations are not inherited when method is overridden, so no need to check overridden symbols
       return true;
     }

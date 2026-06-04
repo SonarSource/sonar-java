@@ -9,14 +9,14 @@
   "tags": [
     "tests"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-8714",
   "sqKey": "S8714",
   "scope": "Tests",
   "quickfix": "unknown",
   "code": {
     "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
+      "MAINTAINABILITY": "LOW"
     },
     "attribute": "CONVENTIONAL"
   }

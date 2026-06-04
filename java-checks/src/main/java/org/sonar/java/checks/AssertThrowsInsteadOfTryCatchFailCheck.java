@@ -39,15 +39,15 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     tree.accept(
-      new TryStatementsVisitor(UnitTestUtils.hasJUnit56TestAnnotation(methodTree))
+      new TryStatementsVisitor(UnitTestUtils.hasJUnitJupiterAnnotation(methodTree))
     );
   }
 
   private final class TryStatementsVisitor extends BaseTreeVisitor {
-    private final boolean isJunit56;
+    private final boolean isJunitJupiter;
 
-    public TryStatementsVisitor(boolean isJunit56) {
-      this.isJunit56 = isJunit56;
+    public TryStatementsVisitor(boolean isJunitJupiter) {
+      this.isJunitJupiter = isJunitJupiter;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
 
     private void checkBlock(BlockTree block, String message) {
       UnitTestUtils.findFail(block).ifPresent(failMethodInvocation -> {
-          if (isJunit56 || failMethodInvocation.methodSymbol().signature().contains("org.assertj")) {
+          if (isJunitJupiter || failMethodInvocation.methodSymbol().signature().contains("org.assertj")) {
             reportIssue(failMethodInvocation, message);
           }
         }

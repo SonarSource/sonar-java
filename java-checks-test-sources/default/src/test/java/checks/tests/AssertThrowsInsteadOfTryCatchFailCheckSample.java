@@ -1,4 +1,4 @@
-package checks;
+package checks.tests;
 
 import org.junit.jupiter.api.Test;
 
@@ -70,8 +70,38 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
       // test passed
     }
 
+    try {
+      raise();
+      org.assertj.core.api.AssertionsForClassTypes.fail("expected exception"); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    } catch (Exception _) {
+      // test passed
+    }
+
+    try {
+      raise();
+      org.assertj.core.api.AssertionsForInterfaceTypes.fail("expected exception"); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    } catch (Exception _) {
+      // test passed
+    }
+
     assertThrows(IllegalStateException.class, AssertThrowsInsteadOfTryCatchFailCheckSample::raise); // compliant
     assertDoesNotThrow(AssertThrowsInsteadOfTryCatchFailCheckSample::dontRaise); // compliant
+    nonAnnotatedFunctionFN();
+  }
+
+  private void nonAnnotatedFunctionFN() {
+    org.assertj.core.api.AssertionsForInterfaceTypes.fail("expected exception"); // FN
+  }
+
+  @org.junit.Test
+  public void junit4AnnotationDontRaise() {
+    try {
+      fail("expected exception"); // TN - junit5 assert in junit4 test
+    } catch (Exception _) {
+      // test passed
+    }
   }
 
   private static void raise() {
