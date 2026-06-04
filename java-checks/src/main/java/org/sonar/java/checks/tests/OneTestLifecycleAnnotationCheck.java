@@ -18,14 +18,18 @@ package org.sonar.java.checks.tests;
 
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,14 +62,14 @@ public class OneTestLifecycleAnnotationCheck extends IssuableSubscriptionVisitor
    * Returns a map from lifecycle method annotations to a set of method names that are annotated with it.
    */
   private static Map<String, Set<IdentifierTree>> analyzeMethods(ClassTree classTree) {
-    Map<String, Set<IdentifierTree>> lifecycleMethods = new HashMap<>();
+    Map<String, Set<IdentifierTree>> lifecycleMethods = new LinkedHashMap<>();
     for (Tree member : classTree.members()) {
       if (member instanceof MethodTree methodTree) {
         for (SymbolMetadata.AnnotationInstance annotation: methodTree.symbol().metadata().annotations()) {
           String fqn = annotation.symbol().type().fullyQualifiedName();
           if (LIFECYCLE_ANNOTATIONS.contains(fqn)) {
             lifecycleMethods
-              .computeIfAbsent(fqn, k -> new HashSet<>())
+              .computeIfAbsent(fqn, k -> new LinkedHashSet<>())
               .add(methodTree.simpleName());
           }
         }
@@ -82,9 +86,19 @@ public class OneTestLifecycleAnnotationCheck extends IssuableSubscriptionVisitor
     for (Map.Entry<String, Set<IdentifierTree>> ams: lifecycleMethods.entrySet()) {
       if (ams.getValue().size() > 1) {
         String shortAnnotation = ams.getKey().substring(ams.getKey().lastIndexOf('.') + 1);
-        for (IdentifierTree methodName : ams.getValue()) {
-          reportIssue(methodName, "Only one method in a class should be annotated @" + shortAnnotation + ".");
-        }
+        String message = "Only one method in a class should be annotated @" + shortAnnotation + ".";
+
+        Set<IdentifierTree> methods = ams.getValue();
+
+        var iterator = methods.iterator();
+        IdentifierTree primaryLocation = iterator.next();
+        iterator.remove();
+
+        List<JavaFileScannerContext.Location> secondaryLocations = methods.stream()
+          .map(methodName -> new JavaFileScannerContext.Location("With the same annotation", methodName))
+          .toList();
+
+        reportIssue(primaryLocation, message, secondaryLocations, null);
       }
     }
   }

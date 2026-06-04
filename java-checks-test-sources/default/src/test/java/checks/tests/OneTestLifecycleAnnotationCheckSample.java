@@ -16,12 +16,14 @@ class OneTestLifecycleAnnotationCheckSample {
   }
 
   @BeforeEach
-  void setUp2() { // Noncompliant {{Only one method in a class should be annotated @BeforeEach.}}
+  void setUp2() {
+//     ^^^^^^ <
     // pass
   }
 
   @AfterAll
   static void classTearDown1() { // Noncompliant {{Only one method in a class should be annotated @AfterAll.}}
+//            ^^^^^^^^^^^^^^
     // pass
   }
 
@@ -31,7 +33,8 @@ class OneTestLifecycleAnnotationCheckSample {
   }
 
   @AfterAll
-  static void classTearDown2() { // Noncompliant {{Only one method in a class should be annotated @AfterAll.}}
+  static void classTearDown2() {
+//            ^^^^^^^^^^^^^^ <
     // pass
   }
 
