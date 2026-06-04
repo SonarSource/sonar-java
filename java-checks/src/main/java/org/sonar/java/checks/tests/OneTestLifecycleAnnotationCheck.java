@@ -62,7 +62,7 @@ public class OneTestLifecycleAnnotationCheck extends IssuableSubscriptionVisitor
   private static void analyzeMethods(ClassTree classTree, Map<String, Set<IdentifierTree>> lifecycleMethods) {
     for (Tree member : classTree.members()) {
       if (member instanceof MethodTree methodTree) {
-        for(SymbolMetadata.AnnotationInstance annotation: methodTree.symbol().metadata().annotations()) {
+        for (SymbolMetadata.AnnotationInstance annotation: methodTree.symbol().metadata().annotations()) {
           String fqn = annotation.symbol().type().fullyQualifiedName();
           if (LIFECYCLE_ANNOTATIONS.contains(fqn)) {
             lifecycleMethods
