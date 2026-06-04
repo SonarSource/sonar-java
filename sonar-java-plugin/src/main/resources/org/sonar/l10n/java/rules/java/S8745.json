@@ -1,10 +1,11 @@
 {
   "title": "Test classes should not contain multiple lifecycle methods of the same type",
-  "type": "CODE_SMELL",
+  "type": "BUG",
   "status": "ready",
   "remediation": {
-    "func": "Constant\/Issue",
-    "constantCost": "5min"
+    "func": "Linear",
+    "linearDesc": "per lifecycle method of the same type",
+    "linearFactor": "5min"
   },
   "tags": [
     "junit",
@@ -17,7 +18,7 @@
   "quickfix": "targeted",
   "code": {
     "impacts": {
-      "MAINTAINABILITY": "MEDIUM",
+      "MAINTAINABILITY": "LOW",
       "RELIABILITY": "MEDIUM"
     },
     "attribute": "CONVENTIONAL"
