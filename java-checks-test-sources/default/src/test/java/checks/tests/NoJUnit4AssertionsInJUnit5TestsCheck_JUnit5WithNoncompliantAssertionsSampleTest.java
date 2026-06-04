@@ -1,11 +1,18 @@
 package checks.tests;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 class NoJUnit4AssertionsInJUnit5TestsCheck_JUnit5WithNoncompliantAssertionsSampleTest {
+  @BeforeEach
+  void setUp() {
+    // Compliant, because we check only tests.
+    fail();
+  }
+
   @Test
   void good() {
     org.junit.jupiter.api.Assertions.assertTrue(true);
