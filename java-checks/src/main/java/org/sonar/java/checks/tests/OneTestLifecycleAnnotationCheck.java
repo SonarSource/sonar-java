@@ -25,8 +25,8 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,15 +58,15 @@ public class OneTestLifecycleAnnotationCheck extends IssuableSubscriptionVisitor
   /**
    * Returns a map from lifecycle method annotations to a set of method names that are annotated with it.
    */
-  private static Map<String, Set<IdentifierTree>> analyzeMethods(ClassTree classTree) {
-    Map<String, Set<IdentifierTree>> lifecycleMethods = new LinkedHashMap<>();
+  private static Map<String, List<IdentifierTree>> analyzeMethods(ClassTree classTree) {
+    Map<String, List<IdentifierTree>> lifecycleMethods = new LinkedHashMap<>();
     for (Tree member : classTree.members()) {
       if (member instanceof MethodTree methodTree) {
         for (SymbolMetadata.AnnotationInstance annotation: methodTree.symbol().metadata().annotations()) {
           String fqn = annotation.symbol().type().fullyQualifiedName();
           if (LIFECYCLE_ANNOTATIONS.contains(fqn)) {
             lifecycleMethods
-              .computeIfAbsent(fqn, k -> new LinkedHashSet<>())
+              .computeIfAbsent(fqn, k -> new ArrayList<>())
               .add(methodTree.simpleName());
           }
         }
@@ -78,21 +78,20 @@ public class OneTestLifecycleAnnotationCheck extends IssuableSubscriptionVisitor
   /**
    * Report issues on methods if lifecycle annotations that are used more than once.
    */
-  private void reportIssues(Map<String, Set<IdentifierTree>> lifecycleMethods) {
-    for (Map.Entry<String, Set<IdentifierTree>> ams: lifecycleMethods.entrySet()) {
+  private void reportIssues(Map<String, List<IdentifierTree>> lifecycleMethods) {
+    for (Map.Entry<String, List<IdentifierTree>> ams: lifecycleMethods.entrySet()) {
       if (ams.getValue().size() > 1) {
         String shortAnnotation = ams.getKey().substring(ams.getKey().lastIndexOf('.') + 1);
         String message = "Only one method in a class should be annotated @" + shortAnnotation + ".";
 
         // If a lifecycle annotation that is used more than once,
         // the first method name is used as primary location, and the others are secondary locations.
-        Set<IdentifierTree> methods = ams.getValue();
+        List<IdentifierTree> methods = ams.getValue();
 
-        var iterator = methods.iterator();
-        IdentifierTree primaryLocation = iterator.next();
-        iterator.remove();
+        IdentifierTree primaryLocation = methods.get(0);
 
         List<JavaFileScannerContext.Location> secondaryLocations = methods.stream()
+          .skip(1)
           .map(methodName -> new JavaFileScannerContext.Location("same annotation", methodName))
           .toList();
 
