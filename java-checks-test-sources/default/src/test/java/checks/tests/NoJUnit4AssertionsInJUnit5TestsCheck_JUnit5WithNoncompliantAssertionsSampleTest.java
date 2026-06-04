@@ -38,4 +38,14 @@ class NoJUnit4AssertionsInJUnit5TestsCheck_JUnit5WithNoncompliantAssertionsSampl
     // FN, because we do not track usage across methods.
     fail("message");
   }
+
+  @Test
+  void testFour() {
+    // Compliant, because matching the assertion class is exact.
+    MyCustomAssert.myFail();
+  }
+}
+
+class MyCustomAssert extends org.junit.Assert {
+  public static void myFail() {}
 }
