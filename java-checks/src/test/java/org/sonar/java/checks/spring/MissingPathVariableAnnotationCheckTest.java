@@ -50,6 +50,11 @@ class MissingPathVariableAnnotationCheckTest {
   private static final Map<String, Type> testRecords = new HashMap<>();
 
   @BeforeAll
+  static void scanFiles() {
+    scanTestFile();
+    scanRecordTestFile();
+  }
+
   static void scanTestFile() {
     IssuableSubscriptionVisitor typeCollector = new IssuableSubscriptionVisitor() {
       @Override
@@ -71,7 +76,6 @@ class MissingPathVariableAnnotationCheckTest {
       .verifyNoIssues();
   }
 
-  @BeforeAll
   static void scanRecordTestFile() {
     IssuableSubscriptionVisitor recordCollector = new IssuableSubscriptionVisitor() {
       @Override
