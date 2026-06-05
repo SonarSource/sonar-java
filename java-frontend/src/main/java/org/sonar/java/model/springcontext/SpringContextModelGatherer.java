@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model.springcontext;
 
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import java.util.Optional;
 import java.util.function.Function;
 import org.sonar.java.model.DefaultModuleScannerContext;
