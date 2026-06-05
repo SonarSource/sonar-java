@@ -17,6 +17,10 @@
 package org.sonar.java.checks.helpers;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class StringUtils {
   private StringUtils() {}
@@ -40,5 +44,32 @@ public class StringUtils {
     }
 
     return count;
+  }
+
+  /**
+   * Build String[] by concatenating arguments of types:
+   * <ol>
+   *   <li>java.lang.String</li>
+   *   <li>java.lang.String[]</li>
+   *   <li>java.util.Collection<java.lang.strings></li>
+   * </ol> 
+   * Nested collections and arrays are not supported, and will throw an ArrayStoreException if encountered.
+   * @throws IllegalArgumentException If one of the argument is not of the supported types.
+   * @throws ArrayStoreException If a collection passed as argument contains an element that is not a String.
+   */
+  public static String[] flatten(Object ... args) {
+    List<String> result = new ArrayList<>();
+    for (Object arg : args) {
+      if (arg instanceof String s) {
+        result.add(s);
+      } else if (arg instanceof String[] arr) {
+        Collections.addAll(result, arr);
+      } else if (arg instanceof Collection<?> col) {
+        result.addAll((Collection<String>) col);
+      } else {
+        throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
+      }
+    }
+    return result.toArray(new String[0]);
   }
 }

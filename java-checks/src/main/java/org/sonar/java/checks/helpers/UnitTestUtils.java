@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import org.sonar.java.annotations.VisibleForTesting;
@@ -42,6 +41,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static java.util.Arrays.asList;
+import static org.sonar.java.checks.helpers.StringUtils.flatten;
 
 public final class UnitTestUtils {
   private static final List<String> ORG_ASSERTJ_CORE_API_ASSERTIONS = List.of(
@@ -103,8 +103,7 @@ public final class UnitTestUtils {
 
   public static final MethodMatchers FAIL_METHOD_MATCHER = MethodMatchers.or(
     MethodMatchers.create().ofTypes(
-        Stream.concat(
-          Stream.of(
+        flatten(
             // JUnit 5
             "org.junit.jupiter.api.Assertions",
             // JUnit 4
@@ -114,14 +113,13 @@ public final class UnitTestUtils {
             // Fest assert
             "org.fest.assertions.Fail",
             // AssertJ
-            "org.assertj.core.api.Fail"
-          ),
-          ORG_ASSERTJ_CORE_API_ASSERTIONS.stream()
-        ).toArray(String[]::new))
+            "org.assertj.core.api.Fail",
+            ORG_ASSERTJ_CORE_API_ASSERTIONS
+        ))
       .names("fail").withAnyParameters().build(),
     MethodMatchers.create().ofTypes(
         // AssertJ
-        ORG_ASSERTJ_CORE_API_ASSERTIONS.toArray(String[]::new)
+        flatten(ORG_ASSERTJ_CORE_API_ASSERTIONS)
       )
       .names("failBecauseExceptionWasNotThrown").withAnyParameters().build());
 
@@ -134,7 +132,7 @@ public final class UnitTestUtils {
       .build(),
     // Fest assert and AssertJ
     MethodMatchers.create()
-      .ofTypes(Stream.concat(ORG_ASSERTJ_CORE_API_ASSERTIONS.stream(), Stream.of("org.fest.assertions.Assertions")).toArray(String[]::new))
+      .ofTypes(flatten(ORG_ASSERTJ_CORE_API_ASSERTIONS, "org.fest.assertions.Assertions"))
       .names("assertThat")
       .withAnyParameters()
       .build());
