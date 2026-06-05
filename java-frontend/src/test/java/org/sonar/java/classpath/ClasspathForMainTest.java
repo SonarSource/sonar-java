@@ -38,6 +38,7 @@ import org.sonar.java.testing.ThreadLocalLogTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -46,7 +47,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 class ClasspathForMainTest {
 
-  public static final String EXCEPTION_SHOULD_HAVE_BEEN_RAISED = "Exception should have been raised";
   private MapSettings settings;
   private DefaultFileSystem fs;
   private AnalysisWarningsWrapper analysisWarnings;
@@ -342,8 +342,7 @@ class ClasspathForMainTest {
     settings.setProperty("sonar.binaries", "bin");
     settings.setProperty("sonar.libraries", "hello.jar");
     javaClasspath = createJavaClasspath();
-    assertThatCode(javaClasspath::getElements)
-      .withFailMessage(EXCEPTION_SHOULD_HAVE_BEEN_RAISED)
+    assertThatThrownBy(javaClasspath::getElements)
       .isInstanceOf(AnalysisException.class)
       .hasMessage(
         "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer, please use sonar.java.binaries and sonar.java.libraries instead"
@@ -382,8 +381,7 @@ class ClasspathForMainTest {
   void empty_binaries_on_project_with_more_than_one_source_should_fail() {
     createTwoFilesInFileSystem();
     javaClasspath = createJavaClasspath();
-    assertThatCode(javaClasspath::getElements)
-      .withFailMessage(EXCEPTION_SHOULD_HAVE_BEEN_RAISED)
+    assertThatThrownBy(javaClasspath::getElements)
       .isInstanceOf(AnalysisException.class)
       .hasMessage(
         "Your project contains .java files, please provide compiled classes with sonar.java.binaries property,"
@@ -396,8 +394,7 @@ class ClasspathForMainTest {
     createTwoFilesInFileSystem();
     javaClasspath = createJavaClasspath();
 
-    assertThatCode(javaClasspath::getElements)
-      .withFailMessage(EXCEPTION_SHOULD_HAVE_BEEN_RAISED)
+    assertThatThrownBy(javaClasspath::getElements)
       .isInstanceOf(AnalysisException.class)
       .hasMessage(
         "Your project contains .java files, please provide compiled classes with sonar.java.binaries property,"
@@ -538,8 +535,7 @@ class ClasspathForMainTest {
   private void checkIllegalStateException(String message) {
     javaClasspath = createJavaClasspath();
 
-    assertThatCode(javaClasspath::getElements)
-      .withFailMessage(EXCEPTION_SHOULD_HAVE_BEEN_RAISED)
+    assertThatThrownBy(javaClasspath::getElements)
       .isInstanceOf(IllegalStateException.class)
       .hasMessage(message);
   }

@@ -44,7 +44,6 @@ import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribut
 class ExpectationsTest {
 
   private static final int TEST_LINE = 42;
-  public static final String EXCEPTION_EXPECTED = "exception expected";
 
   @Test
   void issue_without_details() {
@@ -86,8 +85,7 @@ class ExpectationsTest {
   @Test
   void invalid_attribute_name() {
     Expectations.Parser parser = new Expectations().parser();
-    assertThatCode(() -> parser.parseIssue("// Noncompliant [[invalid]]", TEST_LINE))
-      .withFailMessage(EXCEPTION_EXPECTED)
+    assertThatThrownBy(() -> parser.parseIssue("// Noncompliant [[invalid]]", TEST_LINE))
       .isInstanceOf(AssertionError.class)
       .hasMessage("// Noncompliant attributes not valid: 'invalid'");
   }
@@ -113,8 +111,7 @@ class ExpectationsTest {
   void end_line_attribute() {
     Expectations.Parser parser = new Expectations().parser();
 
-    assertThatCode(() -> parser.parseIssue("// Noncompliant [[endLine=-1]] {{message}}", 0))
-      .withFailMessage(EXCEPTION_EXPECTED)
+    assertThatThrownBy(() -> parser.parseIssue("// Noncompliant [[endLine=-1]] {{message}}", 0))
       .isInstanceOf(AssertionError.class)
       .hasMessage("endLine attribute should be relative to the line and must be +N with N integer");
   }

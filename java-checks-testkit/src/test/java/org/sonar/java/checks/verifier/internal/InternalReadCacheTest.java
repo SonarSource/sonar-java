@@ -38,8 +38,7 @@ class InternalReadCacheTest {
       try (InputStream read = cache.read(key)) {
         assertThat(read).hasBinaryContent(data);
       }
-    }).withFailMessage("This is not expected")
-      .doesNotThrowAnyException();
+    }).doesNotThrowAnyException();
   }
 
   @Test

@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CheckVerifierTest {
@@ -50,7 +50,6 @@ class CheckVerifierTest {
       return Collections.emptyList();
     }
   };
-  public static final String SHOULD_HAVE_FAILED = "Should have failed";
 
   @Test
   void verify_line_issues() {
@@ -75,8 +74,7 @@ class CheckVerifierTest {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withIssue(4, "extra message");
     CheckVerifier verifier = CheckVerifier.newInternalVerifier().onFile(FILENAME_ISSUES).withCheck(visitor);
 
-    assertThatCode(verifier::verifyIssues)
-      .withFailMessage(SHOULD_HAVE_FAILED)
+    assertThatThrownBy(verifier::verifyIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessage("Unexpected at [4]");
   }
@@ -86,8 +84,7 @@ class CheckVerifierTest {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssuesForJavaCheckVerifier().withIssue(4, "extra message");
     CheckVerifier verifier = CheckVerifier.newVerifier().onFile(FILENAME_ISSUES_JAVA_CHECK_VERIFIER).withCheck(visitor);
 
-    assertThatCode(verifier::verifyIssues)
-      .withFailMessage("Should have failed")
+    assertThatThrownBy(verifier::verifyIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessageContaining("ERROR: Expect 9 issues instead of 10. In file (CommonsJavaCheckVerifier.java:7)");
   }
@@ -97,8 +94,7 @@ class CheckVerifierTest {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withIssue(4, "extra message").withoutIssue(1);
     CheckVerifier verifier = CheckVerifier.newInternalVerifier().onFile(FILENAME_ISSUES).withCheck(visitor);
 
-    assertThatCode(verifier::verifyIssues)
-      .withFailMessage(SHOULD_HAVE_FAILED)
+    assertThatThrownBy(verifier::verifyIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessage("Expected at [1], Unexpected at [4]");
   }
@@ -108,8 +104,7 @@ class CheckVerifierTest {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withoutIssue(1);
     CheckVerifier verifier = CheckVerifier.newInternalVerifier().onFile(FILENAME_ISSUES).withCheck(visitor);
 
-    assertThatCode(verifier::verifyIssues)
-      .withFailMessage(SHOULD_HAVE_FAILED)
+    assertThatThrownBy(verifier::verifyIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessage("Expected at [1]");
   }
@@ -194,8 +189,7 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierIncorrectShift.java")
       .withCheck(NO_EFFECT_VISITOR);
 
-    assertThatCode(verifier::verifyNoIssues)
-      .withFailMessage(SHOULD_HAVE_FAILED)
+    assertThatThrownBy(verifier::verifyNoIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessage("Use only '@+N' or '@-N' to shifts messages.");
   }
@@ -207,8 +201,7 @@ class CheckVerifierTest {
       .withCheck(NO_EFFECT_VISITOR);
 
 
-    assertThatCode(verifier::verifyNoIssues)
-      .withFailMessage(SHOULD_HAVE_FAILED)
+    assertThatThrownBy(verifier::verifyNoIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessage("// Noncompliant attributes not valid: 'invalid=1'");
   }
@@ -219,8 +212,7 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierIncorrectAttribute2.java")
       .withCheck(NO_EFFECT_VISITOR);
 
-    assertThatCode(verifier::verifyNoIssues)
-      .withFailMessage(SHOULD_HAVE_FAILED)
+    assertThatThrownBy(verifier::verifyNoIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessage("// Noncompliant attributes not valid: 'invalid=1=2'");
   }
@@ -231,8 +223,7 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierIncorrectEndLine.java")
       .withCheck(NO_EFFECT_VISITOR);
 
-    assertThatCode(verifier::verifyNoIssues)
-      .withFailMessage(SHOULD_HAVE_FAILED)
+    assertThatThrownBy(verifier::verifyNoIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessage("endLine attribute should be relative to the line and must be +N with N integer");
   }
@@ -244,8 +235,7 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java")
       .withCheck(visitor);
 
-    assertThatCode(verifier::verifyIssues)
-      .withFailMessage(SHOULD_HAVE_FAILED)
+    assertThatThrownBy(verifier::verifyIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessage("Secondary locations: expected: [] unexpected: [3]. In JavaCheckVerifierIncorrectSecondaryLocation.java:10");
   }
@@ -257,8 +247,7 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java")
       .withCheck(visitor);
 
-    assertThatCode(verifier::verifyIssues)
-      .withFailMessage(SHOULD_HAVE_FAILED)
+    assertThatThrownBy(verifier::verifyIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessage("Secondary locations: expected: [5] unexpected: []. In JavaCheckVerifierIncorrectSecondaryLocation2.java:10");
   }
@@ -310,8 +299,7 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierFlows.java")
       .withCheck(fakeVisitor);
 
-    assertThatCode(verifier::verifyIssues)
-      .withFailMessage(SHOULD_HAVE_FAILED)
+    assertThatThrownBy(verifier::verifyIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessage("Flow npe1 has line differences. Expected: [9, 3] but was: [6, 5]");
   }
@@ -330,8 +318,7 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierFlows.java")
       .withCheck(fakeVisitor);
 
-    assertThatCode(verifier::verifyIssues)
-      .withFailMessage(SHOULD_HAVE_FAILED)
+    assertThatThrownBy(verifier::verifyIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessage("Missing flows: npe1 [9,3].");
   }
@@ -386,8 +373,7 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierFlowsSuperfluous.java")
       .withCheck(fakeVisitor);
 
-    assertThatCode(verifier::verifyIssues)
-      .withFailMessage(SHOULD_HAVE_FAILED)
+    assertThatThrownBy(verifier::verifyIssues)
       .isInstanceOf(AssertionError.class)
       .hasMessage("Following flow comments were observed, but not referenced by any issue: {superfluous=8,6,4, npe2=7}");
   }

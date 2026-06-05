@@ -35,7 +35,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 class AnalyzerMessageTest {
@@ -192,8 +192,7 @@ class AnalyzerMessageTest {
   void shouldFailOnEmptySpans() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {\n}\n");
     SyntaxToken eofToken = cut.eofToken();
-    assertThatCode(() ->  AnalyzerMessage.textSpanFor(eofToken))
-      .withFailMessage("Should have failed on empty issue location")
+    assertThatThrownBy(() ->  AnalyzerMessage.textSpanFor(eofToken))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Invalid issue location: Text span is empty when trying reporting on (l:3, c:1).");
   }
@@ -201,8 +200,7 @@ class AnalyzerMessageTest {
   @Test
   void shouldFailOnTreeWithoutParents() {
     InferedTypeTree itt = new InferedTypeTree();
-    assertThatCode(() -> AnalyzerMessage.textSpanFor(itt))
-      .withFailMessage("Should have failed on empty issue location")
+    assertThatThrownBy(() -> AnalyzerMessage.textSpanFor(itt))
       .isInstanceOf(IllegalStateException.class)
       .hasMessage("Trying to report on an empty tree with no parent");
   }

@@ -91,9 +91,8 @@ class VisitorsBridgeTest {
   void rethrow_exception_when_hidden_property_set_to_true_with_JavaFileScanner() {
     VisitorsBridge visitorsBridge = visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), true);
 
-    assertThatCode(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+    assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
       .isInstanceOf(AnalysisException.class)
-      .withFailMessage("scanning of file should have raise an AnalysisException")
       .hasMessageContaining("Failing check")
       .hasCauseInstanceOf(CheckFailureException.class)
       .hasRootCause(NPE);
@@ -121,9 +120,8 @@ class VisitorsBridgeTest {
   void rethrow_exception_when_hidden_property_set_to_true_with_SubscriptionVisitor() {
     VisitorsBridge visitorsBridge = visitorsBridge(new SV1_ThrowingNPEVisitingClass(), true);
 
-    assertThatCode(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+    assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
       .isInstanceOf(AnalysisException.class)
-      .withFailMessage("scanning of file should have raise an AnalysisException")
       .hasMessageContaining("Failing check")
       .hasCauseInstanceOf(CheckFailureException.class)
       .hasRootCause(NPE);

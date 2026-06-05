@@ -39,40 +39,32 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MethodMatcherFactoryTest {
 
-  public static final String ARGUMENT_SHOULD_NOT_BE_ACCEPTED = "Argument should not be accepted.";
 
   @Test
   void fail_arg() {
-    assertThatCode(() -> MethodMatcherFactory.methodMatchers("org.sonar.test.Test$match"))
-      .withFailMessage("Argument should not be accepted.")
+    assertThatThrownBy(() -> MethodMatcherFactory.methodMatchers("org.sonar.test.Test$match"))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("method");
 
-
-
-    assertThatCode(() ->  MethodMatcherFactory.constructorMatcher("   %"))
-      .withFailMessage(ARGUMENT_SHOULD_NOT_BE_ACCEPTED)
+    assertThatThrownBy(() ->  MethodMatcherFactory.constructorMatcher("   %"))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("constructor");
 
-    assertThatCode(() -> MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String;int)"))
-      .withFailMessage(ARGUMENT_SHOULD_NOT_BE_ACCEPTED)
+    assertThatThrownBy(() -> MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String;int)"))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("constructor")
       .hasMessageContaining("method");
 
-    assertThatCode(() -> MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String,int)followed by anything"))
-      .withFailMessage(ARGUMENT_SHOULD_NOT_BE_ACCEPTED)
+    assertThatThrownBy(() -> MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String,int)followed by anything"))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("constructor")
       .hasMessageContaining("method");
 
-    assertThatCode(() ->  MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match this is an error"))
-      .withFailMessage(ARGUMENT_SHOULD_NOT_BE_ACCEPTED)
+    assertThatThrownBy(() ->  MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match this is an error"))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessageContaining("constructor")
       .hasMessageContaining("method");

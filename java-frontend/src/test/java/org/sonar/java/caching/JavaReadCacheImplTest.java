@@ -48,8 +48,7 @@ class JavaReadCacheImplTest {
       try (InputStream read = cache.read(key)) {
         assertThat(read).hasBinaryContent(data);
       }
-    }).withFailMessage("This is not expected")
-      .doesNotThrowAnyException();
+    }).doesNotThrowAnyException();
 
     doReturn(new ByteArrayInputStream(data)).when(readCache).read(key);
     assertThat(cache.readBytes(key)).isEqualTo(data);

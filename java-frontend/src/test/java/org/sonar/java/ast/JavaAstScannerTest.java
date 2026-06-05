@@ -87,7 +87,6 @@ class JavaAstScannerTest {
   public static final JavaFileScanner PROBLEMATIC_VISITOR = ctx -> {
     throw new StackOverflowError();
   };
-  public static final String SHOULD_NOT_HAVE_FAILED = "Should not have failed";
 
   @RegisterExtension
   public ThreadLocalLogTester logTester = new ThreadLocalLogTester().setLevel(Level.DEBUG);
@@ -136,7 +135,6 @@ class JavaAstScannerTest {
     InputFile inputFile = TestUtils.emptyInputFile("!!dummy");
     VisitorsBridge visitorsBridge = new VisitorsBridge(null);
     assertThatCode(() -> JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge))
-      .withFailMessage(SHOULD_NOT_HAVE_FAILED)
       .doesNotThrowAnyException();
   }
 
@@ -144,7 +142,6 @@ class JavaAstScannerTest {
   void scan_single_file_with_dumb_file_should_not_fail_when_not_fail_fast() {
     InputFile inputFile = TestUtils.emptyInputFile("!!dummy");
     assertThatCode(() -> scanSingleFile(inputFile, false))
-      .withFailMessage(SHOULD_NOT_HAVE_FAILED)
       .doesNotThrowAnyException();
   }
 

@@ -700,13 +700,12 @@ class SonarComponentsTest {
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
     sonarComponents.setSensorContext(specificContext);
 
-    assertThatCode(() -> sonarComponents.inputFileContents(unknownInputFile))
-      .withFailMessage("reading file content should have failed")
+    assertThatThrownBy(() -> sonarComponents.inputFileContents(unknownInputFile))
       .isInstanceOf(AnalysisException.class)
       .hasMessage("Unable to read file 'unknown_file.java'")
       .hasCauseInstanceOf(NoSuchFileException.class);
 
-    assertThatCode(() -> sonarComponents.fileLines(unknownInputFile))
+    assertThatThrownBy(() -> sonarComponents.fileLines(unknownInputFile))
       .withFailMessage("reading file lines should have failed")
       .isInstanceOf(AnalysisException.class)
       .hasMessage("Unable to read file 'unknown_file.java'")
