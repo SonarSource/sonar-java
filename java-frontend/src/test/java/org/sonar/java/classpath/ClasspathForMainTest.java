@@ -413,7 +413,7 @@ class ClasspathForMainTest {
       javaClasspath = new ClasspathForMainForSonarLint(settings.asConfig(), fs);
       javaClasspath.getElements();
     })
-      .withFailMessage(EXCEPTION_SHOULD_HAVE_BEEN_RAISED)
+      .withFailMessage("Analysis exception was raised but analysis should not fail")
       .doesNotThrowAnyException();
 
     assertThat(logTester.logs(Level.WARN))
