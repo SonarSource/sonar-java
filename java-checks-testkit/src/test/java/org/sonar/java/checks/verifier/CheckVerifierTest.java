@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.check.Rule;
@@ -35,8 +34,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CheckVerifierTest {
@@ -50,6 +48,7 @@ class CheckVerifierTest {
       return Collections.emptyList();
     }
   };
+  public static final String SHOULD_HAVE_FAILED = "Should have failed";
 
   @Test
   void verify_line_issues() {
@@ -74,24 +73,21 @@ class CheckVerifierTest {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withIssue(4, "extra message");
     CheckVerifier verifier = CheckVerifier.newInternalVerifier().onFile(FILENAME_ISSUES).withCheck(visitor);
 
-    try {
-      verifier.verifyIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("Unexpected at [4]");
-    }
+    assertThatCode(verifier::verifyIssues)
+      .withFailMessage(SHOULD_HAVE_FAILED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Unexpected at [4]");
   }
 
   @Test
   void verify_unexpected_issue_java_verifier() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssuesForJavaCheckVerifier().withIssue(4, "extra message");
     CheckVerifier verifier = CheckVerifier.newVerifier().onFile(FILENAME_ISSUES_JAVA_CHECK_VERIFIER).withCheck(visitor);
-    try {
-      verifier.verifyIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessageContaining("ERROR: Expect 9 issues instead of 10. In file (CommonsJavaCheckVerifier.java:7)");
-    }
+
+    assertThatCode(verifier::verifyIssues)
+      .withFailMessage("Should have failed")
+      .isInstanceOf(AssertionError.class)
+      .hasMessageContaining("ERROR: Expect 9 issues instead of 10. In file (CommonsJavaCheckVerifier.java:7)");
   }
 
   @Test
@@ -99,12 +95,10 @@ class CheckVerifierTest {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withIssue(4, "extra message").withoutIssue(1);
     CheckVerifier verifier = CheckVerifier.newInternalVerifier().onFile(FILENAME_ISSUES).withCheck(visitor);
 
-    try {
-      verifier.verifyIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("Expected at [1], Unexpected at [4]");
-    }
+    assertThatCode(verifier::verifyIssues)
+      .withFailMessage(SHOULD_HAVE_FAILED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Expected at [1], Unexpected at [4]");
   }
 
   @Test
@@ -112,12 +106,10 @@ class CheckVerifierTest {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withoutIssue(1);
     CheckVerifier verifier = CheckVerifier.newInternalVerifier().onFile(FILENAME_ISSUES).withCheck(visitor);
 
-    try {
-      verifier.verifyIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("Expected at [1]");
-    }
+    assertThatCode(verifier::verifyIssues)
+      .withFailMessage(SHOULD_HAVE_FAILED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Expected at [1]");
   }
 
   @Test
@@ -200,12 +192,10 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierIncorrectShift.java")
       .withCheck(NO_EFFECT_VISITOR);
 
-    try {
-      verifier.verifyNoIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("Use only '@+N' or '@-N' to shifts messages.");
-    }
+    assertThatCode(verifier::verifyNoIssues)
+      .withFailMessage(SHOULD_HAVE_FAILED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Use only '@+N' or '@-N' to shifts messages.");
   }
 
   @Test
@@ -214,12 +204,11 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierIncorrectAttribute.java")
       .withCheck(NO_EFFECT_VISITOR);
 
-    try {
-      verifier.verifyNoIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("// Noncompliant attributes not valid: 'invalid=1'");
-    }
+
+    assertThatCode(verifier::verifyNoIssues)
+      .withFailMessage(SHOULD_HAVE_FAILED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("// Noncompliant attributes not valid: 'invalid=1'");
   }
 
   @Test
@@ -228,12 +217,10 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierIncorrectAttribute2.java")
       .withCheck(NO_EFFECT_VISITOR);
 
-    try {
-      verifier.verifyNoIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("// Noncompliant attributes not valid: 'invalid=1=2'");
-    }
+    assertThatCode(verifier::verifyNoIssues)
+      .withFailMessage(SHOULD_HAVE_FAILED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("// Noncompliant attributes not valid: 'invalid=1=2'");
   }
 
   @Test
@@ -242,12 +229,10 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierIncorrectEndLine.java")
       .withCheck(NO_EFFECT_VISITOR);
 
-    try {
-      verifier.verifyNoIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("endLine attribute should be relative to the line and must be +N with N integer");
-    }
+    assertThatCode(verifier::verifyNoIssues)
+      .withFailMessage(SHOULD_HAVE_FAILED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("endLine attribute should be relative to the line and must be +N with N integer");
   }
 
   @Test
@@ -257,12 +242,10 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java")
       .withCheck(visitor);
 
-    try {
-      verifier.verifyIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("Secondary locations: expected: [] unexpected: [3]. In JavaCheckVerifierIncorrectSecondaryLocation.java:10");
-    }
+    assertThatCode(verifier::verifyIssues)
+      .withFailMessage(SHOULD_HAVE_FAILED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Secondary locations: expected: [] unexpected: [3]. In JavaCheckVerifierIncorrectSecondaryLocation.java:10");
   }
 
   @Test
@@ -272,12 +255,10 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java")
       .withCheck(visitor);
 
-    try {
-      verifier.verifyIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("Secondary locations: expected: [5] unexpected: []. In JavaCheckVerifierIncorrectSecondaryLocation2.java:10");
-    }
+    assertThatCode(verifier::verifyIssues)
+      .withFailMessage(SHOULD_HAVE_FAILED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Secondary locations: expected: [5] unexpected: []. In JavaCheckVerifierIncorrectSecondaryLocation2.java:10");
   }
 
   @Test
@@ -327,12 +308,10 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierFlows.java")
       .withCheck(fakeVisitor);
 
-    try {
-      verifier.verifyIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("Flow npe1 has line differences. Expected: [9, 3] but was: [6, 5]");
-    }
+    assertThatCode(verifier::verifyIssues)
+      .withFailMessage(SHOULD_HAVE_FAILED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Flow npe1 has line differences. Expected: [9, 3] but was: [6, 5]");
   }
 
   @Test
@@ -349,12 +328,10 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierFlows.java")
       .withCheck(fakeVisitor);
 
-    try {
-      verifier.verifyIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("Missing flows: npe1 [9,3].");
-    }
+    assertThatCode(verifier::verifyIssues)
+      .withFailMessage(SHOULD_HAVE_FAILED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Missing flows: npe1 [9,3].");
   }
 
   @Test
@@ -407,12 +384,10 @@ class CheckVerifierTest {
       .onFile("src/test/files/JavaCheckVerifierFlowsSuperfluous.java")
       .withCheck(fakeVisitor);
 
-    try {
-      verifier.verifyIssues();
-      Fail.fail("Should have failed");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("Following flow comments were observed, but not referenced by any issue: {superfluous=8,6,4, npe2=7}");
-    }
+    assertThatCode(verifier::verifyIssues)
+      .withFailMessage(SHOULD_HAVE_FAILED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Following flow comments were observed, but not referenced by any issue: {superfluous=8,6,4, npe2=7}");
   }
 
   @Test
