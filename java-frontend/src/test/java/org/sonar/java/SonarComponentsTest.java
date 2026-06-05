@@ -17,6 +17,7 @@
 package org.sonar.java;
 
 import com.sonar.sslr.api.RecognitionException;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +34,7 @@ import java.util.Optional;
 import java.util.function.LongSupplier;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -90,9 +92,7 @@ import org.sonar.plugins.java.api.JspCodeVisitor;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonarsource.sonarlint.core.plugin.commons.sonarapi.SonarLintRuntimeImpl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -698,22 +698,17 @@ class SonarComponentsTest {
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
     sonarComponents.setSensorContext(specificContext);
 
-    try {
-      sonarComponents.inputFileContents(unknownInputFile);
-      fail("reading file content should have failed");
-    } catch (AnalysisException e) {
-      assertThat(e).hasMessage("Unable to read file 'unknown_file.java'").hasCauseInstanceOf(NoSuchFileException.class);
-    } catch (Exception e) {
-      fail("reading file content should have failed", e);
-    }
-    try {
-      sonarComponents.fileLines(unknownInputFile);
-      fail("reading file lines should have failed");
-    } catch (AnalysisException e) {
-      assertThat(e).hasMessage("Unable to read file 'unknown_file.java'").hasCauseInstanceOf(NoSuchFileException.class);
-    } catch (Exception e) {
-      fail("reading file content should have failed");
-    }
+    assertThatCode(() -> sonarComponents.inputFileContents(unknownInputFile))
+      .withFailMessage("reading file content should have failed")
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage("Unable to read file 'unknown_file.java'")
+      .hasCauseInstanceOf(NoSuchFileException.class);
+
+    assertThatCode(() -> sonarComponents.fileLines(unknownInputFile))
+      .withFailMessage("reading file lines should have failed")
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage("Unable to read file 'unknown_file.java'")
+      .hasCauseInstanceOf(NoSuchFileException.class);
   }
 
   @Test

@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,8 +29,7 @@ import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_LINE;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.FLOWS;
@@ -44,6 +42,7 @@ import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribut
 class ExpectationsTest {
 
   private static final int TEST_LINE = 42;
+  public static final String EXCEPTION_EXPECTED = "exception expected";
 
   @Test
   void issue_without_details() {
@@ -85,12 +84,10 @@ class ExpectationsTest {
   @Test
   void invalid_attribute_name() {
     Expectations.Parser parser = new Expectations().parser();
-    try {
-      parser.parseIssue("// Noncompliant [[invalid]]", TEST_LINE);
-      Fail.fail("exception expected");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("// Noncompliant attributes not valid: 'invalid'");
-    }
+    assertThatCode(() -> parser.parseIssue("// Noncompliant [[invalid]]", TEST_LINE))
+      .withFailMessage(EXCEPTION_EXPECTED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("// Noncompliant attributes not valid: 'invalid'");
   }
 
   @Test
@@ -113,12 +110,11 @@ class ExpectationsTest {
   @Test
   void end_line_attribute() {
     Expectations.Parser parser = new Expectations().parser();
-    try {
-      parser.parseIssue("// Noncompliant [[endLine=-1]] {{message}}", 0);
-      Fail.fail("exception expected");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("endLine attribute should be relative to the line and must be +N with N integer");
-    }
+
+    assertThatCode(() -> parser.parseIssue("// Noncompliant [[endLine=-1]] {{message}}", 0))
+      .withFailMessage(EXCEPTION_EXPECTED)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("endLine attribute should be relative to the line and must be +N with N integer");
   }
 
   @Test

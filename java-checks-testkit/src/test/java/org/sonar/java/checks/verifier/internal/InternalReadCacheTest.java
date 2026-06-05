@@ -16,14 +16,12 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 
 class InternalReadCacheTest {
 
@@ -33,11 +31,13 @@ class InternalReadCacheTest {
     String key = "a convenient key";
     byte[] data = "Some data".getBytes(StandardCharsets.UTF_8);
     cache.put(key, data);
-    try (InputStream read = cache.read(key)) {
-      assertThat(read).hasBinaryContent(data);
-    } catch (IOException e) {
-      fail("This is not expected");
-    }
+
+    assertThatCode(() -> {
+      try (InputStream read = cache.read(key)) {
+        assertThat(read).hasBinaryContent(data);
+      }
+    }).withFailMessage("This is not expected")
+      .doesNotThrowAnyException();
   }
 
   @Test
