@@ -60,6 +60,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.fail;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModule;
@@ -105,7 +106,7 @@ class SanityTest {
 
   /**
    * Verifies that playing all the checks on all the test files does not trigger any exceptions.
-   *
+   * <p>
    * This relies on the fact that a lot of tricky cases are covered in unit tests, on a rule by rule and case by case basis.
    * It does not prevent other rules to fail if similar construct of the language, but not yet encountered.
    */
@@ -134,11 +135,11 @@ class SanityTest {
       .allMatch(SanityTest::isParseError)
       .map(LogAndArguments::getFormattedMsg)
       .allMatch(log ->
-      // ECJ error message
-      log.startsWith("Parse error at line ")
-        // analyzer error message mentioning the file
-        || log.contains("RestrictedIdentifiersUsageCheckSample")
-        || log.contains("EmptyStatementsInImportsBug"));
+        // ECJ error message
+        log.startsWith("Parse error at line ")
+          // analyzer error message mentioning the file
+          || log.contains("RestrictedIdentifiersUsageCheckSample")
+          || log.contains("EmptyStatementsInImportsBug"));
   }
 
   @Test
@@ -203,11 +204,9 @@ class SanityTest {
       if (TEMPLATE_RULES_KEYS.contains(ruleKey) || EXCLUDED_RULES.contains(ruleKey)) {
         // FIXME initialize a new template rule with some default parameter ?!
       } else {
-        try {
-          javaChecks.add(checkClass.getConstructor().newInstance());
-        } catch (Exception e) {
-          fail(String.format("Unable to initialize rule %s", ruleKey), e);
-        }
+        assertThatCode(() -> javaChecks.add(checkClass.getConstructor().newInstance()))
+          .withFailMessage(String.format("Unable to initialize rule %s", ruleKey))
+          .doesNotThrowAnyException();
       }
     }
     assertThat(javaChecks).hasSizeGreaterThan(400);
@@ -245,7 +244,8 @@ class SanityTest {
       .create(javaVersion, classpath, true)
       .parse(inputFiles, () -> false, analysisProgress, (input, result) -> {
         try {
-          scanner.simpleScan(input, result, ast -> {});
+          scanner.simpleScan(input, result, ast -> {
+          });
         } catch (Throwable e) {
           exceptions.add(new SanityCheckException(input, e));
         }

@@ -38,7 +38,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Fail.fail;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 class GeneratedCheckListTest {
 
@@ -93,13 +93,12 @@ class GeneratedCheckListTest {
       new RulesDefinitionAnnotationLoader().load(repository, checks.toArray(new Class[checks.size()]));
 
       for (NewRule rule : repository.rules()) {
-        try {
+        assertThatCode(() -> {
           rule.setName("Artificial Name (set via JSON files, no need to test it)");
           rule.setMarkdownDescription(ARTIFICIAL_DESCRIPTION);
-        } catch (IllegalStateException e) {
-          // it means that the html description was already set in Rule annotation
-          fail("Description of " + rule.key() + " should be in separate file");
-        }
+        })
+          .withFailMessage("Description of " + rule.key() + " should be in separate file")
+          .doesNotThrowAnyException();
       }
       repository.done();
     }
