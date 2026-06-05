@@ -18,7 +18,10 @@ package org.sonar.java.checks.helpers;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 class StringUtilsTest {
   @Test
@@ -41,5 +44,33 @@ class StringUtilsTest {
 
     assertThat(StringUtils.countMatches("abaTaba", "aba")).isEqualTo(2);
     assertThat(StringUtils.countMatches("abababa", "aba")).isEqualTo(2);
+  }
+
+  @Test
+  void testStringArgs() {
+    assertThat(StringUtils.stringArgs()).isEmpty();
+    assertThat(StringUtils.stringArgs("a", "b", "c")).containsExactly("a", "b", "c");
+
+    assertThat(StringUtils.stringArgs(new String[] {"a", "b"}, "c")).containsExactly("a", "b", "c");
+    assertThat(StringUtils.stringArgs("a", new String[] {"b", "c"})).containsExactly("a", "b", "c");
+
+    assertThat(StringUtils.stringArgs(List.of("A", "B"), "a", new String[] {"b", "c"}))
+      .containsExactly("A", "B", "a", "b", "c");
+  }
+
+  @Test
+  void testStringArgs_exceptions() {
+    assertThatIllegalArgumentException()
+      .isThrownBy(() -> StringUtils.stringArgs("a", 2))
+      .withMessageContaining("Unsupported argument type:");
+
+    assertThatIllegalArgumentException()
+      .isThrownBy(() -> StringUtils.stringArgs(new int[]{4, 5}))
+      .withMessageContaining("Unsupported argument type:");
+
+    var list = List.of("b", List.of("c", "d"));
+    assertThatIllegalArgumentException()
+      .isThrownBy(() -> StringUtils.stringArgs("a", list))
+      .withMessageContaining("Unsupported collection element type:");
   }
 }

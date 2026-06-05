@@ -17,6 +17,10 @@
 package org.sonar.java.checks.helpers;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class StringUtils {
   private StringUtils() {}
@@ -40,5 +44,31 @@ public class StringUtils {
     }
 
     return count;
+  }
+
+  /**
+   * Build String[] by concatenating Strings, arrays of Strings, and Collections of Strings.
+   * Nested collections and arrays are not supported, and will throw an IllegalArgumentException if encountered.
+   */
+  public static String[] stringArgs(Object ... args) {
+    List<String> result = new ArrayList<>();
+    for (Object arg : args) {
+      if (arg instanceof String s) {
+        result.add(s);
+      } else if (arg instanceof String[] arr) {
+        Collections.addAll(result, arr);
+      } else if (arg instanceof Collection<?> col) {
+        for (Object o : col) {
+          if (o instanceof String s) {
+            result.add(s);
+          } else {
+            throw new IllegalArgumentException("Unsupported collection element type: " + o.getClass());
+          }
+        }
+      } else {
+        throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
+      }
+    }
+    return result.toArray(new String[0]);
   }
 }
