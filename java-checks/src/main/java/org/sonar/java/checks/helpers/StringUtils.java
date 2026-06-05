@@ -47,8 +47,14 @@ public class StringUtils {
   }
 
   /**
-   * Build String[] by concatenating Strings, arrays of Strings, and Collections of Strings.
+   * Build String[] by concatenating arguments of types:
+   * <ol>
+   *   <li>java.lang.String</li>
+   *   <li>java.lang.String[]</li>
+   *   <li>java.util.Collection<java.lang.strings></li>
+   * </ol> 
    * Nested collections and arrays are not supported, and will throw an IllegalArgumentException if encountered.
+   * @throws  IllegalArgumentException If one of the argument is not of the supported types
    */
   public static String[] stringArgs(Object ... args) {
     List<String> result = new ArrayList<>();
