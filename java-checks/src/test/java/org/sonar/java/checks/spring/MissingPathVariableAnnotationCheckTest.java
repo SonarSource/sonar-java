@@ -55,7 +55,13 @@ class MissingPathVariableAnnotationCheckTest {
     scanRecordTestFile();
   }
 
-  static void scanTestFile() {
+  @BeforeAll
+  static void scanTestFiles() {
+    scanTestFile();
+    scanRecordTestFile();
+  }
+
+  static void scanClassTestFile() {
     IssuableSubscriptionVisitor typeCollector = new IssuableSubscriptionVisitor() {
       @Override
       public java.util.List<Tree.Kind> nodesToVisit() {
