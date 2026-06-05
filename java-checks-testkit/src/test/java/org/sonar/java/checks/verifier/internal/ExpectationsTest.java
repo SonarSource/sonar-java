@@ -29,7 +29,9 @@ import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_COLUMN;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.END_LINE;
 import static org.sonar.java.checks.verifier.internal.Expectations.IssueAttribute.FLOWS;
