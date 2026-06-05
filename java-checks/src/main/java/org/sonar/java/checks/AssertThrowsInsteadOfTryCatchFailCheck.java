@@ -98,7 +98,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
             issueBuilder.withQuickFix(() ->
               JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
                 JavaTextEdit.replaceTree(tryStatement.tryKeyword(), replacements.replaceTryWith),
-                JavaTextEdit.replaceTree(failMethodInvocation, ""),
+                JavaTextEdit.replaceTree(failMethodInvocation.parent(), ""),
                 JavaTextEdit.replaceBetweenTree(
                   tryStatement.catches().get(0).catchKeyword(),
                   tryStatement.catches().get(tryStatement.catches().size() - 1).block().closeBraceToken(),
