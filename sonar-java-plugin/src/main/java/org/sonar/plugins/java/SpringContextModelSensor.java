@@ -39,6 +39,6 @@ public class SpringContextModelSensor implements ProjectSensor {
 
   @Override
   public void execute(SensorContext context) {
-    System.out.println(springContextModel);
+    // Nothing to do for now
   }
 }
