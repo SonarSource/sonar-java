@@ -41,7 +41,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static java.util.Arrays.asList;
-import static org.sonar.java.checks.helpers.StringUtils.stringArgs;
+import static org.sonar.java.checks.helpers.StringUtils.flatten;
 
 public final class UnitTestUtils {
   private static final List<String> ORG_ASSERTJ_CORE_API_ASSERTIONS = List.of(
@@ -103,7 +103,7 @@ public final class UnitTestUtils {
 
   public static final MethodMatchers FAIL_METHOD_MATCHER = MethodMatchers.or(
     MethodMatchers.create().ofTypes(
-        stringArgs(
+        flatten(
             // JUnit 5
             "org.junit.jupiter.api.Assertions",
             // JUnit 4
@@ -119,7 +119,7 @@ public final class UnitTestUtils {
       .names("fail").withAnyParameters().build(),
     MethodMatchers.create().ofTypes(
         // AssertJ
-        stringArgs(ORG_ASSERTJ_CORE_API_ASSERTIONS)
+        flatten(ORG_ASSERTJ_CORE_API_ASSERTIONS)
       )
       .names("failBecauseExceptionWasNotThrown").withAnyParameters().build());
 
@@ -132,7 +132,7 @@ public final class UnitTestUtils {
       .build(),
     // Fest assert and AssertJ
     MethodMatchers.create()
-      .ofTypes(stringArgs(ORG_ASSERTJ_CORE_API_ASSERTIONS, "org.fest.assertions.Assertions"))
+      .ofTypes(flatten(ORG_ASSERTJ_CORE_API_ASSERTIONS, "org.fest.assertions.Assertions"))
       .names("assertThat")
       .withAnyParameters()
       .build());

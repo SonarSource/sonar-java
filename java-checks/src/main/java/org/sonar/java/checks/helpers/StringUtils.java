@@ -56,16 +56,15 @@ public class StringUtils {
    * Nested collections and arrays are not supported, and will throw an IllegalArgumentException if encountered.
    * @throws  IllegalArgumentException If one of the argument is not of the supported types
    */
-  public static String[] stringArgs(Object ... args) {
+  public static String[] flatten(Object ... args) {
     List<String> result = new ArrayList<>();
     for (Object arg : args) {
       if (arg instanceof String s) {
         result.add(s);
       } else if (arg instanceof String[] arr) {
         Collections.addAll(result, arr);
-      } else if (arg instanceof Collection<String> col) {
-          result.addAll(col);
-        }
+      } else if (arg instanceof Collection<?> col) {
+        result.addAll((Collection<String>) col);
       } else {
         throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
       }
