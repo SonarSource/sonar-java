@@ -42,6 +42,7 @@ import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.model.springcontext.SpringContextModelGatherers;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -82,6 +83,9 @@ public class JavaFrontend {
     List<JavaCheck> commonVisitors = new ArrayList<>();
     commonVisitors.add(javaResourceLocator);
     commonVisitors.add(new Java25FeaturesTelemetryVisitor(telemetry));
+    if (sonarComponents.getSpringContextModel() != null) {
+      commonVisitors.addAll(SpringContextModelGatherers.getAllGatherers());
+    }
     if (postAnalysisIssueFilter != null) {
       commonVisitors.add(postAnalysisIssueFilter);
     }

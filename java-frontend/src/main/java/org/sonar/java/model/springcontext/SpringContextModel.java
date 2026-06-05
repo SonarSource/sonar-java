@@ -16,6 +16,9 @@
  */
 package org.sonar.java.model.springcontext;
 
+import org.sonar.api.scanner.ScannerSide;
+import org.sonarsource.api.sonarlint.SonarLintSide;
+
 /**
  * Aggregates all Spring context information collected during project scanning.
  *
@@ -28,48 +31,35 @@ package org.sonar.java.model.springcontext;
  *   <li>{@link EntityClassToPropertiesIndex} — JPA {@code @Entity} class properties</li>
  * </ul>
  */
+@ScannerSide
+@SonarLintSide
 public class SpringContextModel {
   /** Registry of all bean definitions discovered during scanning. */
-  private BeanDefinitionRegistry beanDefinitionRegistry;
+  private final BeanDefinitionRegistry beanDefinitionRegistry = new BeanDefinitionRegistry();
 
   /** Packages registered for Spring component scanning, grouped by module. */
-  private ProjectPackageScan projectPackageScan;
+  private final ProjectPackageScan projectPackageScan = new ProjectPackageScan();
 
   /** Index for resolving bean names by their fully-qualified type. */
-  private TypeToBeanNamesIndex typeToBeanNamesIndex;
+  private final TypeToBeanNamesIndex typeToBeanNamesIndex = new TypeToBeanNamesIndex();
 
   /** Index of properties associated with Spring Data / Hibernate {@code @Entity} classes. */
-  private EntityClassToPropertiesIndex entityClassToPropertiesIndex;
+  private final EntityClassToPropertiesIndex entityClassToPropertiesIndex = new EntityClassToPropertiesIndex();
 
   public BeanDefinitionRegistry getBeanDefinitionRegistry() {
     return beanDefinitionRegistry;
-  }
-
-  public void setBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {
-    this.beanDefinitionRegistry = beanDefinitionRegistry;
   }
 
   public ProjectPackageScan getProjectPackageScan() {
     return projectPackageScan;
   }
 
-  public void setProjectPackageScan(ProjectPackageScan projectPackageScan) {
-    this.projectPackageScan = projectPackageScan;
-  }
-
   public TypeToBeanNamesIndex getTypeToBeanNamesIndex() {
     return typeToBeanNamesIndex;
-  }
-
-  public void setTypeToBeanNamesIndex(TypeToBeanNamesIndex typeToBeanNamesIndex) {
-    this.typeToBeanNamesIndex = typeToBeanNamesIndex;
   }
 
   public EntityClassToPropertiesIndex getEntityClassToPropertiesIndex() {
     return entityClassToPropertiesIndex;
   }
 
-  public void setEntityClassToPropertiesIndex(EntityClassToPropertiesIndex entityClassToPropertiesIndex) {
-    this.entityClassToPropertiesIndex = entityClassToPropertiesIndex;
-  }
 }
