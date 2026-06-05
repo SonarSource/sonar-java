@@ -53,8 +53,9 @@ public class StringUtils {
    *   <li>java.lang.String[]</li>
    *   <li>java.util.Collection<java.lang.strings></li>
    * </ol> 
-   * Nested collections and arrays are not supported, and will throw an IllegalArgumentException if encountered.
-   * @throws  IllegalArgumentException If one of the argument is not of the supported types
+   * Nested collections and arrays are not supported, and will throw an ArrayStoreException if encountered.
+   * @throws IllegalArgumentException If one of the argument is not of the supported types.
+   * @throws ArrayStoreException If a collection passed as argument contains an element that is not a String.
    */
   public static String[] flatten(Object ... args) {
     List<String> result = new ArrayList<>();
