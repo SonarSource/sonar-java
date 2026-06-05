@@ -63,13 +63,8 @@ public class StringUtils {
         result.add(s);
       } else if (arg instanceof String[] arr) {
         Collections.addAll(result, arr);
-      } else if (arg instanceof Collection<?> col) {
-        for (Object o : col) {
-          if (o instanceof String s) {
-            result.add(s);
-          } else {
-            throw new IllegalArgumentException("Unsupported collection element type: " + o.getClass());
-          }
+      } else if (arg instanceof Collection<String> col) {
+          result.addAll(col);
         }
       } else {
         throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
