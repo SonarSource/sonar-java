@@ -25,7 +25,7 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -44,11 +44,12 @@ class JavaReadCacheImplTest {
     doReturn(true).when(readCache).contains(key);
 
     JavaReadCacheImpl cache = new JavaReadCacheImpl(readCache);
-    try (InputStream read = cache.read(key)) {
-      assertThat(read).hasBinaryContent(data);
-    } catch (IOException e) {
-      fail("This is not expected");
-    }
+    assertThatCode(() -> {
+      try (InputStream read = cache.read(key)) {
+        assertThat(read).hasBinaryContent(data);
+      }
+    }).withFailMessage("This is not expected")
+      .doesNotThrowAnyException();
 
     doReturn(new ByteArrayInputStream(data)).when(readCache).read(key);
     assertThat(cache.readBytes(key)).isEqualTo(data);
