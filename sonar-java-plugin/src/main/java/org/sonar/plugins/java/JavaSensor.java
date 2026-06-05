@@ -43,6 +43,7 @@ import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -74,13 +75,14 @@ public class JavaSensor implements Sensor {
   private final Telemetry telemetry;
 
   public JavaSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
-    Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter, Telemetry telemetry) {
-    this(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter, null, telemetry);
+                    Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
+                    Telemetry telemetry, SpringContextModel springContextModel) {
+    this(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter, null, telemetry, springContextModel);
   }
 
   public JavaSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
-    Configuration settings, NoSonarFilter noSonarFilter,
-    PostAnalysisIssueFilter postAnalysisIssueFilter, @Nullable Jasper jasper, Telemetry telemetry) {
+                    Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
+                    @Nullable Jasper jasper, Telemetry telemetry, SpringContextModel springContextModel) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
     this.fs = fs;
@@ -91,6 +93,7 @@ public class JavaSensor implements Sensor {
     this.telemetry = telemetry;
     this.sonarComponents.registerMainChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaChecks());
     this.sonarComponents.registerTestChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaTestChecks());
+    this.sonarComponents.setSpringContextModel(springContextModel);
   }
 
   @Override
