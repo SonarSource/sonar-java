@@ -34,26 +34,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SpringContextModelGathererTest {
 
+  private final SpringContextModel model = new SpringContextModel();
+
   @Test
   void testGatherSpringContextData() {
-    var model = getSpringModelAfterVisitingFile("src/test/files/model/SimpleClass.java", new SampleGatherer());
+    getSpringModelAfterVisitingFile("src/test/files/model/SimpleClass.java", new SampleGatherer());
     assertThat(model.getTypeToBeanNamesIndex().getNamesForType("com.example.MyService")).containsExactly("myServiceBean");
   }
 
-  private SpringContextModel getSpringModelAfterVisitingFile(String filePath, JavaCheck check) {
+  private void getSpringModelAfterVisitingFile(String filePath, JavaCheck check) {
     File file = new File(filePath);
     InputFile inputFile = TestUtils.inputFile(file);
     var compilationUnit = JParserTestUtils.parse(file);
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     var sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
-    sonarComponents.setSpringContextModel(new SpringContextModel());
+    sonarComponents.setSpringContextModel(model);
 
     VisitorsBridge visitorsBridge = new VisitorsBridge(List.of(check), new ArrayList<>(), sonarComponents);
     visitorsBridge.setCurrentFile(inputFile);
     visitorsBridge.visitFile(compilationUnit, false);
     visitorsBridge.endOfAnalysis();
-    return sonarComponents.getSpringContextModel();
   }
 
   class SampleGatherer extends SpringContextModelGatherer {
