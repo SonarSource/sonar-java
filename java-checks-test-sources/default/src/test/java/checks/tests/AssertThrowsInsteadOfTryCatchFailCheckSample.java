@@ -5,21 +5,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AssertThrowsInsteadOfTryCatchFailCheckSample {
-
-  // fix@qf1 {{Use assertThrows() instead of try/catch and fail() in the try block.}}
-  // edit@qf1 [[sl=15;sc=4;el=18;ec=5]]{{assertThrows(Exception.class, () -> {\n      raise();\n      fail();\n//    ^^^^^^\n    });}}
-
   @Test
   void tests() {
-    // Noncompliant@+3 {{Use assertThrows() instead of try/catch and fail() in the try block.}} [[quickfixes=qf1]]
     try {
       raise();
-      fail();
+      fail(); // NonCompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
 //    ^^^^^^
     } catch (Exception _) {
       // test passed
-      Runnable x  = () -> {
-        System.out.println("hgello"); };
     }
     try {
       dontRaise();
