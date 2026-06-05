@@ -306,7 +306,7 @@ class JavaAstScannerTest {
       .hasMessage("boom");
 
     assertThat(logTester.logs(Level.ERROR))
-      .hasSize(12)
+      .hasSize(1)
       .first().asString()
       .startsWith("A stack overflow error occurred while analyzing file");
   }
