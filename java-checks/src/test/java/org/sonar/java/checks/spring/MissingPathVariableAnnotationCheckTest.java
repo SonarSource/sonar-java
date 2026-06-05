@@ -50,14 +50,8 @@ class MissingPathVariableAnnotationCheckTest {
   private static final Map<String, Type> testRecords = new HashMap<>();
 
   @BeforeAll
-  static void scanFiles() {
-    scanTestFile();
-    scanRecordTestFile();
-  }
-
-  @BeforeAll
   static void scanTestFiles() {
-    scanTestFile();
+    scanClassTestFile();
     scanRecordTestFile();
   }
 
