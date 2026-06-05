@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import org.assertj.core.api.Fail;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -61,8 +61,10 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -88,16 +90,13 @@ class VisitorsBridgeTest {
   @Test
   void rethrow_exception_when_hidden_property_set_to_true_with_JavaFileScanner() {
     VisitorsBridge visitorsBridge = visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), true);
-    try {
-      visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false);
-      Fail.fail("scanning of file should have raise an exception");
-    } catch (AnalysisException e) {
-      assertThat(e.getMessage()).contains("Failing check");
-      assertThat(e.getCause()).isInstanceOf(CheckFailureException.class);
-      assertThat(e.getCause().getCause()).isSameAs(NPE);
-    } catch (Exception e) {
-      Fail.fail("Should have been an AnalysisException");
-    }
+
+    assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+      .isInstanceOf(AnalysisException.class)
+      .hasMessageContaining("Failing check")
+      .hasCauseInstanceOf(CheckFailureException.class)
+      .hasRootCause(NPE);
+
     assertThat(logTester.logs(Level.ERROR)).hasSize(1);
     assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder("JFS_ThrowingNPEJavaFileScanner - JFS");
@@ -105,13 +104,13 @@ class VisitorsBridgeTest {
 
   @Test
   void swallow_exception_when_hidden_property_set_to_false_with_JavaFileScanner() {
-    try {
+    assertThatCode(() ->
       visitorsBridge(new JFS_ThrowingNPEJavaFileScanner(), false)
-        .visitFile(COMPILATION_UNIT_TREE, false);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Fail.fail("Exception should be swallowed when property is not set");
-    }
+        .visitFile(COMPILATION_UNIT_TREE, false)
+    )
+      .withFailMessage("Exception should be swallowed when property is not set")
+      .doesNotThrowAnyException();
+
     assertThat(logTester.logs(Level.ERROR)).hasSize(1);
     assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder("JFS_ThrowingNPEJavaFileScanner - JFS");
@@ -120,16 +119,13 @@ class VisitorsBridgeTest {
   @Test
   void rethrow_exception_when_hidden_property_set_to_true_with_SubscriptionVisitor() {
     VisitorsBridge visitorsBridge = visitorsBridge(new SV1_ThrowingNPEVisitingClass(), true);
-    try {
-      visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false);
-      Fail.fail("scanning of file should have raise an exception");
-    } catch (AnalysisException e) {
-      assertThat(e.getMessage()).contains("Failing check");
-      assertThat(e.getCause()).isInstanceOf(CheckFailureException.class);
-      assertThat(e.getCause().getCause()).isSameAs(NPE);
-    } catch (Exception e) {
-      Fail.fail("Should have been an AnalysisException");
-    }
+
+    assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+      .isInstanceOf(AnalysisException.class)
+      .hasMessageContaining("Failing check")
+      .hasCauseInstanceOf(CheckFailureException.class)
+      .hasRootCause(NPE);
+
     assertThat(logTester.logs(Level.ERROR)).hasSize(1);
     assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder("SV1_ThrowingNPEVisitingClass - SV1");
@@ -137,18 +133,18 @@ class VisitorsBridgeTest {
 
   @Test
   void swallow_exception_when_hidden_property_set_to_false_with_SubscriptionVisitor() {
-    try {
+    assertThatCode(() -> {
       visitorsBridge(Arrays.asList(
-        new SV1_ThrowingNPEVisitingClass(),
-        new SV2_ThrowingNPELeavingClass(),
-        new SV3_ThrowingNPEVisitingToken(),
-        new SV4_ThrowingNPEVisitingTrivia()),
+          new SV1_ThrowingNPEVisitingClass(),
+          new SV2_ThrowingNPELeavingClass(),
+          new SV3_ThrowingNPEVisitingToken(),
+          new SV4_ThrowingNPEVisitingTrivia()),
         false)
         .visitFile(COMPILATION_UNIT_TREE, false);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Fail.fail("Exceptions should be swallowed when property is not set");
-    }
+    })
+      .withFailMessage("Exceptions should be swallowed when property is not set")
+      .doesNotThrowAnyException();
+
     assertThat(logTester.logs(Level.ERROR)).hasSize(4);
     assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder(
@@ -160,16 +156,16 @@ class VisitorsBridgeTest {
 
   @Test
   void swallow_exception_when_hidden_property_set_to_false_with_IssuableSubscriptionVisitor() {
-    try {
+    assertThatCode(() -> {
       visitorsBridge(Arrays.asList(
-        new IV1_ThrowingNPEVisitingClass(),
-        new IV2_ThrowingNPELeavingClass()),
+          new IV1_ThrowingNPEVisitingClass(),
+          new IV2_ThrowingNPELeavingClass()),
         false)
         .visitFile(COMPILATION_UNIT_TREE, false);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Fail.fail("Exceptions should be swallowed when property is not set");
-    }
+    })
+      .withFailMessage("Exceptions should be swallowed when property is not set")
+      .doesNotThrowAnyException();
+
     assertThat(logTester.logs(Level.ERROR)).hasSize(1);
     assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsOnly("IV1_ThrowingNPEVisitingClass - IV1");
@@ -177,16 +173,16 @@ class VisitorsBridgeTest {
 
   @Test
   void swallow_exception_when_hidden_property_set_to_false_with_all_kinds_of_visisitors() {
-    try {
+    assertThatCode(() -> {
       visitorsBridge(Arrays.asList(
-        new SV1_ThrowingNPEVisitingClass(),
-        new IV1_ThrowingNPEVisitingClass()),
+          new SV1_ThrowingNPEVisitingClass(),
+          new IV1_ThrowingNPEVisitingClass()),
         false)
         .visitFile(COMPILATION_UNIT_TREE, false);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Fail.fail("Exceptions should be swallowed when property is not set");
-    }
+    })
+      .withFailMessage("Exceptions should be swallowed when property is not set")
+      .doesNotThrowAnyException();
+
     assertThat(logTester.logs(Level.ERROR)).hasSize(2);
     assertThat(logTester.logs(Level.ERROR).stream().map(VisitorsBridgeTest::ruleKeyFromErrorLog))
       .containsExactlyInAnyOrder(
@@ -197,13 +193,8 @@ class VisitorsBridgeTest {
   @Test
   void no_log_when_filter_execute_fine() {
     VisitorsBridge visitorsBridge = visitorsBridge(Arrays.asList(), true);
-    try {
-      visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Fail.fail("No exception should be raised");
-    }
-    assertThat(logTester.logs(Level.ERROR)).isEmpty();
+    assertThatCode(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+      .doesNotThrowAnyException();
   }
 
   @Test

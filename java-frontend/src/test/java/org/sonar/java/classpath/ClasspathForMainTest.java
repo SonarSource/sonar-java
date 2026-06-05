@@ -37,7 +37,8 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.testing.ThreadLocalLogTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -341,14 +342,11 @@ class ClasspathForMainTest {
     settings.setProperty("sonar.binaries", "bin");
     settings.setProperty("sonar.libraries", "hello.jar");
     javaClasspath = createJavaClasspath();
-    try {
-      javaClasspath.getElements();
-      fail("Exception should have been raised");
-    } catch (AnalysisException ise) {
-      assertThat(ise.getMessage())
-        .isEqualTo(
-          "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer, please use sonar.java.binaries and sonar.java.libraries instead");
-    }
+    assertThatThrownBy(javaClasspath::getElements)
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage(
+        "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer, please use sonar.java.binaries and sonar.java.libraries instead"
+      );
   }
 
   @Test
@@ -383,41 +381,40 @@ class ClasspathForMainTest {
   void empty_binaries_on_project_with_more_than_one_source_should_fail() {
     createTwoFilesInFileSystem();
     javaClasspath = createJavaClasspath();
-    try {
-      javaClasspath.getElements();
-      fail("Exception should have been raised");
-    } catch (AnalysisException ise) {
-      assertThat(ise.getMessage())
-        .isEqualTo("Your project contains .java files, please provide compiled classes with sonar.java.binaries property,"
-          + " or exclude them from the analysis with sonar.exclusions property.");
-    }
+    assertThatThrownBy(javaClasspath::getElements)
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage(
+        "Your project contains .java files, please provide compiled classes with sonar.java.binaries property,"
+        + " or exclude them from the analysis with sonar.exclusions property."
+      );
   }
 
   @Test
   void empty_binaries_on_project_with_more_than_one_source_should_fail_on_sonarqube() {
     createTwoFilesInFileSystem();
     javaClasspath = createJavaClasspath();
-    try {
-      javaClasspath.getElements();
-      fail("Exception should have been raised");
-    } catch (AnalysisException ise) {
-      assertThat(ise.getMessage())
-        .isEqualTo("Your project contains .java files, please provide compiled classes with sonar.java.binaries property,"
-          + " or exclude them from the analysis with sonar.exclusions property.");
-    }
+
+    assertThatThrownBy(javaClasspath::getElements)
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage(
+        "Your project contains .java files, please provide compiled classes with sonar.java.binaries property,"
+          + " or exclude them from the analysis with sonar.exclusions property."
+      );
   }
 
   @Test
   void empty_binaries_on_project_with_more_than_one_source_should_not_fail_on_sonarlint() {
     createTwoFilesInFileSystem();
-    try {
+
+    assertThatCode(() -> {
       javaClasspath = new ClasspathForMainForSonarLint(settings.asConfig(), fs);
       javaClasspath.getElements();
+    })
+      .withFailMessage("Analysis exception was raised but analysis should not fail")
+      .doesNotThrowAnyException();
 
-      logTester.logs(Level.WARN).contains("sonar.java.binaries is empty, please double check your configuration");
-    } catch (AnalysisException ise) {
-      fail("Analysis exception was raised but analysis should not fail");
-    }
+    assertThat(logTester.logs(Level.WARN))
+      .contains("sonar.java.binaries is empty, please double check your configuration");
   }
 
   private void createTwoFilesInFileSystem() {
@@ -537,12 +534,10 @@ class ClasspathForMainTest {
 
   private void checkIllegalStateException(String message) {
     javaClasspath = createJavaClasspath();
-    try {
-      javaClasspath.getElements();
-      fail("Exception should have been raised");
-    } catch (IllegalStateException ise) {
-      assertThat(ise.getMessage()).isEqualTo(message);
-    }
+
+    assertThatThrownBy(javaClasspath::getElements)
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage(message);
   }
 
   private ClasspathForMain createJavaClasspath() {

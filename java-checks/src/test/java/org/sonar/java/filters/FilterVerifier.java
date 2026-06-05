@@ -17,6 +17,7 @@
 package org.sonar.java.filters;
 
 import com.sonar.sslr.api.RecognitionException;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.assertj.core.api.Fail;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -49,6 +51,7 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.sonar.java.test.classpath.TestClasspathUtils.DEFAULT_MODULE;
@@ -139,11 +142,9 @@ public class FilterVerifier {
   private static Set<JavaCheck> instantiateRules(Set<Class<? extends JavaCheck>> filteredRules) {
     Set<JavaCheck> rules = new HashSet<>();
     for (Class<? extends JavaCheck> rule : filteredRules) {
-      try {
-        rules.add(rule.newInstance());
-      } catch (InstantiationException | IllegalAccessException e) {
-        Fail.fail("Unable to instantiate rule " + rule.getCanonicalName());
-      }
+      assertThatCode(() -> rules.add(rule.newInstance()))
+        .withFailMessage("Unable to instantiate rule " + rule.getCanonicalName())
+        .doesNotThrowAnyException();
     }
     return rules;
   }
