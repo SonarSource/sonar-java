@@ -16,10 +16,8 @@
  */
 package org.sonar.java.model.springcontext;
 
-import org.sonar.java.model.springcontext.gatherers.SampleSpringContextModelGatherer;
-import org.sonar.plugins.java.api.JavaCheck;
-
 import java.util.List;
+import org.sonar.plugins.java.api.JavaCheck;
 
 public class SpringContextModelGatherers {
 
@@ -29,7 +27,7 @@ public class SpringContextModelGatherers {
 
   public static List<JavaCheck> getAllGatherers() {
     return List.of(
-      new SampleSpringContextModelGatherer()
+      // example: new SampleSpringContextModelGatherer()
     );
   }
 

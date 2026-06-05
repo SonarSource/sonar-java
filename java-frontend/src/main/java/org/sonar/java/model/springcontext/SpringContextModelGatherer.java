@@ -31,12 +31,12 @@ public abstract class SpringContextModelGatherer extends SubscriptionVisitor imp
   @Override
   public final void endOfAnalysis(ModuleScannerContext context) {
     var defaultModuleContext = (DefaultModuleScannerContext) context;
-    gatherSpringContextData(defaultModuleContext.getSpringContextModel());
+    gatherSpringContextData(context, defaultModuleContext.getSpringContextModel());
   }
 
   /**
    * Method called at the end of the analysis of a module, allowing to store gathered data in the SpringContextModel.
    */
-  public abstract void gatherSpringContextData(SpringContextModel springContextModel);
+  public abstract void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel);
 
 }
