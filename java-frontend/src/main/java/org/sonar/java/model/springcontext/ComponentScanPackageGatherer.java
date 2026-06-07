@@ -141,14 +141,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
     for (SymbolMetadata.AnnotationValue value : scanBaseValues) {
       boolean isClassBased = "scanBasePackageClasses".equals(value.name());
       for (Object element : (Object[]) value.value()) {
-        if (!isClassBased && element instanceof String s && !s.isBlank()) {
-          packages.add(s);
-        } else if (isClassBased && element instanceof Symbol s) {
-          var pkg = packageNameOf(s);
-          if (!pkg.isBlank()) {
-            packages.add(pkg);
-          }
-        }
+        resolvePackage(element, isClassBased).ifPresent(packages::add);
       }
     }
     if (scanBaseValues.isEmpty()) {
@@ -174,6 +167,16 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
         }
       }
     }
+  }
+
+  private static Optional<String> resolvePackage(Object element, boolean isClassBased) {
+    if (!isClassBased && element instanceof String s && !s.isBlank()) {
+      return Optional.of(s);
+    } else if (isClassBased && element instanceof Symbol s) {
+      var pkg = packageNameOf(s);
+      return pkg.isBlank() ? Optional.empty() : Optional.of(pkg);
+    }
+    return Optional.empty();
   }
 
   private static String packageNameOf(Symbol symbol) {
