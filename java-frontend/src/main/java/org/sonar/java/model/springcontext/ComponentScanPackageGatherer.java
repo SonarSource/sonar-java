@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks.spring.context;
+package org.sonar.java.model.springcontext;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -28,13 +28,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.checks.helpers.SpringUtils;
-import org.sonar.java.model.springcontext.SpringContextModel;
+import org.sonar.java.model.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
-import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -56,9 +53,9 @@ import org.sonarsource.analyzer.commons.collections.SetUtils;
  * <p>Packages are grouped by module and written to {@link org.sonar.java.model.springcontext.ProjectPackageScan}
  * at the end of each module's analysis. Per-file results are cached to speed up incremental analyses.
  */
-public class ComponentScanPackageCollector extends SubscriptionVisitor implements EndOfAnalysis {
+public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ComponentScanPackageCollector.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ComponentScanPackageGatherer.class);
 
   private static final String CACHE_KEY_PREFIX = "java:spring:component-scan-packages:";
 
@@ -66,17 +63,11 @@ public class ComponentScanPackageCollector extends SubscriptionVisitor implement
   private static final Set<String> COMPONENT_SCAN_BASE_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "basePackageClasses", "value");
   private static final Set<String> SCAN_BASE_ANNOTATIONS = SetUtils.immutableSetOf("scanBasePackages", "scanBasePackageClasses");
 
-  private final SpringContextModel springContextModel;
-
   /** Packages accumulated across all files in the current module. */
   private final Set<String> collectedPackages = new HashSet<>();
 
   /** Packages found in the file currently being scanned, used for per-file cache writes. */
   private final Set<String> packagesCollectedAtFileLevel = new HashSet<>();
-
-  public ComponentScanPackageCollector(SpringContextModel springContextModel) {
-    this.springContextModel = springContextModel;
-  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -118,7 +109,7 @@ public class ComponentScanPackageCollector extends SubscriptionVisitor implement
   }
 
   @Override
-  public void endOfAnalysis(ModuleScannerContext context) {
+  public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {
     springContextModel.getProjectPackageScan().addPackages(context.getModuleKey(), collectedPackages);
   }
 

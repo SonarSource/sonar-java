@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.model.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.java.checks.helpers.SpringUtils.isScopeSingleton;
+import static org.sonar.java.model.SpringUtils.isScopeSingleton;
 
 @Rule(key = "S3749")
 public class SpringComponentWithNonAutowiredMembersCheck extends IssuableSubscriptionVisitor {

@@ -32,4 +32,10 @@
  *   <li>{@link org.sonar.java.model.springcontext.EntityClassToPropertiesIndex} — JPA {@code @Entity} properties</li>
  * </ul>
  */
+@ParametersAreNonnullByDefault
+@MethodsAreNonnullByDefault
 package org.sonar.java.model.springcontext;
+
+import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
+
+import javax.annotation.ParametersAreNonnullByDefault;

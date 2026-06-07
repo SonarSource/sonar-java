@@ -25,6 +25,7 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.java.checks.verifier.internal.JavaCheckVerifier;
+import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
@@ -304,4 +305,6 @@ public interface CheckVerifier {
    * Verifies that no issues are raised by the rule(s) on the given file(s).
    */
   void verifyNoIssues();
+
+  SpringContextModel getSpringContextModel();
 }

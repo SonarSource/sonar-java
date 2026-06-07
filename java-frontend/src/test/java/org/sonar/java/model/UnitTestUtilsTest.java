@@ -14,13 +14,13 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks.helpers;
+package org.sonar.java.model;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTJ_ASSERTION_METHODS_PREDICATE;
+import static org.sonar.java.model.UnitTestUtils.ASSERTJ_ASSERTION_METHODS_PREDICATE;
 
 
 class UnitTestUtilsTest {
