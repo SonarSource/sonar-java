@@ -183,6 +183,31 @@ class ComponentScanPackageGathererTest {
   }
 
   @Test
+  void scanWithoutParsing_with_no_scan_annotations_restores_empty_packages_from_cache() throws NoSuchAlgorithmException, IOException {
+    String filePath = mainCodeSourcesPath(BASE_PATH + "NoScanAnnotations.java");
+
+    // First pass: scan and write empty package data to cache
+    ReadCache firstReadCache = HashCacheTestHelper.internalReadCacheFromFile(filePath);
+    InternalWriteCache firstWriteCache = new InternalWriteCache().bind(firstReadCache);
+    CheckVerifier.newVerifier()
+      .withCache(firstReadCache, firstWriteCache)
+      .onFiles(filePath)
+      .withCheck(gatherer)
+      .verifyNoIssues();
+
+    // Second pass: file is SAME — scanWithoutParsing must restore an empty package set, not [""]
+    var populatedReadCache = new InternalReadCache().putAll(firstWriteCache);
+    var secondGatherer = new ComponentScanPackageGatherer();
+    CheckVerifier secondCheckVerifier = CheckVerifier.newVerifier()
+      .withCache(populatedReadCache, new InternalWriteCache().bind(populatedReadCache))
+      .addFiles(InputFile.Status.SAME, filePath)
+      .withCheck(secondGatherer);
+    secondCheckVerifier.verifyNoIssues();
+
+    assertThat(secondCheckVerifier.getSpringContextModel().getProjectPackageScan().getPackagesForModule(MODULE_KEY)).isEmpty();
+  }
+
+  @Test
   void duplicate_cache_write_IllegalArgumentException_is_caught() {
     String filePath = mainCodeSourcesPath(BASE_PATH + "SpringBootAppWithScanBasePackages.java");
 
