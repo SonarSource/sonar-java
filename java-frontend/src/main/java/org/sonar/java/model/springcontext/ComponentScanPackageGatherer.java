@@ -198,7 +198,11 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
     var bytes = context.getCacheContext().getReadCache().readBytes(cacheKey);
     if (bytes != null) {
       context.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
-      return Optional.of(Arrays.asList(new String(bytes, StandardCharsets.UTF_8).split(";")));
+      String content = new String(bytes, StandardCharsets.UTF_8);
+      if (content.isEmpty()) {
+        return Optional.of(List.of());
+      }
+      return Optional.of(Arrays.asList(content.split(";")));
     }
     return Optional.empty();
   }
