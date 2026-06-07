@@ -27,7 +27,7 @@ public class SpringContextModelGatherers {
 
   public static List<JavaCheck> getAllGatherers() {
     return List.of(
-      // example: new SampleSpringContextModelGatherer()
+      new ComponentScanPackageGatherer()
     );
   }
 
