@@ -17,7 +17,6 @@
 package org.sonar.java.model.springcontext;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
@@ -26,6 +25,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -38,26 +38,38 @@ class SpringContextModelGathererTest {
 
   @Test
   void testGatherSpringContextData() {
-    getSpringModelAfterVisitingFile("src/test/files/model/SimpleClass.java", new SampleGatherer());
+    scanFile("src/test/files/model/SimpleClass.java", new SampleGatherer(), TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     assertThat(model.getTypeToBeanNamesIndex().getNamesForType("com.example.MyService")).containsExactly("myServiceBean");
   }
 
-  private void getSpringModelAfterVisitingFile(String filePath, JavaCheck check) {
+  // ---- ComponentScanPackageGatherer -----------------------------------------
+
+  @Test
+  void componentScanPackageGatherer_collects_package_from_springBootApplication() {
+    var gatherer = new ComponentScanPackageGatherer();
+    scanFile("src/test/files/springcontext/SpringBootApp.java", gatherer, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule("")).containsExactly("springcontext");
+  }
+
+  // ---- Helpers --------------------------------------------------------------
+
+  private void scanFile(String filePath, JavaCheck check, List<File> classpath) {
     File file = new File(filePath);
     InputFile inputFile = TestUtils.inputFile(file);
-    var compilationUnit = JParserTestUtils.parse(file);
+    var compilationUnit = JParserTestUtils.parse(file, classpath);
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     var sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
     sonarComponents.setSpringContextModel(model);
 
-    VisitorsBridge visitorsBridge = new VisitorsBridge(List.of(check), new ArrayList<>(), sonarComponents);
+    VisitorsBridge visitorsBridge = new VisitorsBridge(List.of(check), classpath, sonarComponents);
     visitorsBridge.setCurrentFile(inputFile);
     visitorsBridge.visitFile(compilationUnit, false);
     visitorsBridge.endOfAnalysis();
   }
 
-  class SampleGatherer extends SpringContextModelGatherer {
+  static class SampleGatherer extends SpringContextModelGatherer {
 
     @Override
     public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {
