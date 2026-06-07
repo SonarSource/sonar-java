@@ -22,13 +22,13 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.java.checks.helpers.HashCacheTestHelper;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
 import org.sonar.java.model.springcontext.ComponentScanPackageGatherer;
 import org.sonar.java.model.springcontext.SpringContextModel;
-import org.sonar.api.batch.sensor.cache.ReadCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -101,6 +101,19 @@ class ComponentScanPackageGathererTest {
 
     assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
       .containsExactlyInAnyOrder("com.example.service", "com.example.web");
+  }
+
+  // ---- DependencyVersionAware -----------------------------------------------
+
+  @Test
+  void gatherer_is_skipped_when_spring_context_is_not_in_classpath() {
+    CheckVerifier checkVerifier = CheckVerifier.newVerifier()
+      .removeJarsFromClasspath("spring-context")
+      .onFiles(mainCodeSourcesPath(BASE_PATH + "SpringBootAppNoScanAttributes.java"))
+      .withCheck(gatherer);
+    checkVerifier.verifyNoIssues();
+
+    assertThat(checkVerifier.getSpringContextModel().getProjectPackageScan().getModules()).isEmpty();
   }
 
   // ---- No annotations -------------------------------------------------------

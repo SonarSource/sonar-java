@@ -16,17 +16,28 @@
  */
 package org.sonar.java.model.springcontext;
 
+import java.util.Optional;
+import java.util.function.Function;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.DefaultModuleScannerContext;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 
 /**
  * Base class for visitors that need to gather data in the SpringContextModel at the end of the analysis.
  * Extending classes will have to implement the AST visitor pattern, gather relevant spring-related data, and store it
  * in the SpringContextModel at the of a module analysis.
+ *
+ * <p>All gatherers are skipped when {@code spring-context} is not present in the module classpath.
  */
-public abstract class SpringContextModelGatherer extends SubscriptionVisitor implements EndOfAnalysis {
+public abstract class SpringContextModelGatherer extends SubscriptionVisitor implements EndOfAnalysis, DependencyVersionAware {
+
+  @Override
+  public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
+    return dependencyFinder.apply("spring-context").isPresent();
+  }
 
   @Override
   public final void endOfAnalysis(ModuleScannerContext context) {
