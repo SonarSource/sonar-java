@@ -1,0 +1,19 @@
+{
+"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/SyntaxTest.java": [
+72,
+126
+],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/ByteArrayEndPointTest.java": [
+90,
+206,
+297
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/NotAcceptingTest.java": [
+134,
+251
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java": [
+102,
+692
+]
+}

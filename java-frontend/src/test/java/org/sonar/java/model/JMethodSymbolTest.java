@@ -45,10 +45,10 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -161,7 +161,7 @@ class JMethodSymbolTest {
       .parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), (inputFile, result) -> {
         processed.add(inputFile.filename());
         if (inputFile.filename().equals("Main.java")) {
-          try {
+          assertThatCode(() -> {
             ClassTreeImpl classA = (ClassTreeImpl) result.get().types().get(0);
             MethodTreeImpl methodM = (MethodTreeImpl) classA.members().get(0);
             List<StatementTree> body = methodM.block().body();
@@ -180,9 +180,7 @@ class JMethodSymbolTest {
             Symbol genericDependencyParamDeclaration = genericDependencyInvocation.methodSymbol().declarationParameters().get(0);
             assertThat(genericDependencyParamDeclaration.owner().owner().name()).isEqualTo("GenericDependency");
             assertThat(genericDependencyParamDeclaration.metadata().isAnnotatedWith("semantic.Nullable")).isTrue();
-          } catch (Exception e) {
-            fail(e);
-          }
+          }).doesNotThrowAnyException();
         }
       });
     assertThat(processed).containsExactly("Main.java", "Dependency.java", "GenericDependency.java", "Nullable.java");

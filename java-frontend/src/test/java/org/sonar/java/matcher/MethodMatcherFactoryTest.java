@@ -39,45 +39,35 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MethodMatcherFactoryTest {
 
+
   @Test
   void fail_arg() {
-    try {
-      MethodMatcherFactory.methodMatchers("org.sonar.test.Test$match");
-      fail("Argument should not be accepted.");
-    } catch (IllegalArgumentException iae) {
-      assertThat(iae.getMessage()).contains("method");
-    }
+    assertThatThrownBy(() -> MethodMatcherFactory.methodMatchers("org.sonar.test.Test$match"))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessageContaining("method");
 
-    try {
-      MethodMatcherFactory.constructorMatcher("   %");
-      fail("Argument should not be accepted.");
-    } catch (IllegalArgumentException iae) {
-      assertThat(iae.getMessage()).contains("constructor");
-    }
+    assertThatThrownBy(() ->  MethodMatcherFactory.constructorMatcher("   %"))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessageContaining("constructor");
 
-    try {
-      MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String;int)");
-      fail("Argument should not be accepted.");
-    } catch (IllegalArgumentException iae) {
-      assertThat(iae.getMessage()).contains("constructor").contains("method");
-    }
+    assertThatThrownBy(() -> MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String;int)"))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessageContaining("constructor")
+      .hasMessageContaining("method");
 
-    try {
-      MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String,int)followed by anything");
-      fail("Argument should not be accepted.");
-    } catch (IllegalArgumentException iae) {
-      assertThat(iae.getMessage()).contains("constructor").contains("method");
-    }
-    try {
-      MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match this is an error");
-      fail("Argument should not be accepted.");
-    } catch (IllegalArgumentException iae) {
-      assertThat(iae.getMessage()).contains("method");
-    }
+    assertThatThrownBy(() -> MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match(java.lang.String,int)followed by anything"))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessageContaining("constructor")
+      .hasMessageContaining("method");
+
+    assertThatThrownBy(() ->  MethodMatcherFactory.methodMatchers("org.sonar.test.Test#match this is an error"))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessageContaining("constructor")
+      .hasMessageContaining("method");
   }
 
   @Test

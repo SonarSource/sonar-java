@@ -66,6 +66,7 @@ import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.LineUtils;
+import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaIssue;
 import org.sonar.java.utils.ModuleMetadataUtils;
@@ -136,12 +137,13 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   private SensorContext context;
   private UnaryOperator<List<JavaCheck>> checkFilter = UnaryOperator.identity();
   private final Set<RuleKey> additionalAutoScanCompatibleRuleKeys;
+  private SpringContextModel springContextModel;
 
   private boolean alreadyLoggedSkipStatus = false;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
-    CheckFactory checkFactory, ActiveRules activeRules) {
+                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath,
+                         CheckFactory checkFactory, ActiveRules activeRules) {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, null, null, null);
   }
 
@@ -149,8 +151,8 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
    * Can be called in SonarLint context when custom rules are present.
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
-    ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars) {
+                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+                         ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars) {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, checkRegistrars, null, null);
   }
 
@@ -164,8 +166,8 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
    * Thus, for this constructor, we can also assume the presence of {@code CheckRegistrar} instances.
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
-    ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars, SonarLintCache sonarLintCache) {
+                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+                         ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars, SonarLintCache sonarLintCache) {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, checkRegistrars, null, sonarLintCache);
   }
 
@@ -174,8 +176,8 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
    * May be called in some SonarLint contexts, but not others, since ProjectDefinition might not be available.
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
-    ActiveRules activeRules, @Nullable ProjectDefinition projectDefinition) {
+                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+                         ActiveRules activeRules, @Nullable ProjectDefinition projectDefinition) {
     this(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath, checkFactory, activeRules, null, projectDefinition, null);
   }
 
@@ -183,9 +185,9 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
    * May be called in some SonarLint contexts, but not others, since ProjectDefinition might not be available.
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
-    ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars,
-    @Nullable ProjectDefinition projectDefinition) {
+                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+                         ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars,
+                         @Nullable ProjectDefinition projectDefinition) {
     this(
       fileLinesContextFactory,
       fs,
@@ -208,9 +210,9 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
    * (because ProjectDefinition can be available in recent SonarLint versions, and DBD provides a CheckRegistrar.)
    */
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, FileSystem fs,
-    ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
-    ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars,
-    @Nullable ProjectDefinition projectDefinition, @Nullable SonarLintCache sonarLintCache) {
+                         ClasspathForMain javaClasspath, ClasspathForTest javaTestClasspath, CheckFactory checkFactory,
+                         ActiveRules activeRules, @Nullable CheckRegistrar[] checkRegistrars,
+                         @Nullable ProjectDefinition projectDefinition, @Nullable SonarLintCache sonarLintCache) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
@@ -293,7 +295,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   }
 
   @Override
-  public void registerMainChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
+  public void registerMainChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances) {
     registerCheckClasses(mainChecks, checks, javaCheckClassesAndInstances);
   }
 
@@ -339,7 +341,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     return ruleKeys.stream().anyMatch(ruleKey -> activeRules.find(ruleKey) != null);
   }
 
-  private Checks<JavaCheck> getCreatedCheckFromFactory(String repositoryKey, Collection<?> javaCheckClassesAndInstances){
+  private Checks<JavaCheck> getCreatedCheckFromFactory(String repositoryKey, Collection<?> javaCheckClassesAndInstances) {
     return checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(javaCheckClassesAndInstances);
   }
 
@@ -646,7 +648,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   }
 
   private static void logParserMessages(Stream<Map.Entry<JProblem, List<String>>> messages, int maxProblems, String warningMessage,
-    String debugMessage) {
+                                        String debugMessage) {
     String problemDelimiter = System.lineSeparator() + "- ";
     List<List<String>> messagesList = messages
       .sorted(Comparator.comparing(entry -> entry.getKey().toString()))
@@ -690,6 +692,14 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   public Configuration getConfiguration() {
     return context.config();
+  }
+
+  public void setSpringContextModel(SpringContextModel springContextModel) {
+    this.springContextModel = springContextModel;
+  }
+
+  public SpringContextModel getSpringContextModel() {
+    return springContextModel;
   }
 
 }

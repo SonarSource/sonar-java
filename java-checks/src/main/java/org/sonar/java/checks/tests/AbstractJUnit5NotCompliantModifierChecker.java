@@ -82,7 +82,7 @@ public abstract class AbstractJUnit5NotCompliantModifierChecker extends Issuable
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
       .forEach(method -> {
-        if (UnitTestUtils.hasJUnit5TestAnnotation(method) || UnitTestUtils.hasJUnit5InstanceLifecycleAnnotation(method)) {
+        if (UnitTestUtils.hasJUnitJupiterAnnotation(method) || UnitTestUtils.hasJUnit5InstanceLifecycleAnnotation(method)) {
           if (isNotOverriding(method)) {
             junit5InstanceMethods.add(method);
           }

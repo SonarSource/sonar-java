@@ -16,7 +16,6 @@
  */
 package org.sonar.java.reporting;
 
-import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
@@ -33,8 +32,10 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 class AnalyzerMessageTest {
@@ -190,28 +191,18 @@ class AnalyzerMessageTest {
   @Test
   void shouldFailOnEmptySpans() {
     CompilationUnitTree cut = JParserTestUtils.parse("class A {\n}\n");
-
-    try {
-      AnalyzerMessage.textSpanFor(cut.eofToken());
-      Fail.fail("Should have failed on empty issue location");
-    } catch (Exception e) {
-      assertThat(e)
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessage("Invalid issue location: Text span is empty when trying reporting on (l:3, c:1).");
-    }
+    SyntaxToken eofToken = cut.eofToken();
+    assertThatThrownBy(() ->  AnalyzerMessage.textSpanFor(eofToken))
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Invalid issue location: Text span is empty when trying reporting on (l:3, c:1).");
   }
 
   @Test
   void shouldFailOnTreeWithoutParents() {
     InferedTypeTree itt = new InferedTypeTree();
-    try {
-      AnalyzerMessage.textSpanFor(itt);
-      Fail.fail("Should have failed on empty issue location");
-    } catch (Exception e) {
-      assertThat(e)
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessage("Trying to report on an empty tree with no parent");
-    }
+    assertThatThrownBy(() -> AnalyzerMessage.textSpanFor(itt))
+      .isInstanceOf(IllegalStateException.class)
+      .hasMessage("Trying to report on an empty tree with no parent");
   }
 
   @Test

@@ -58,7 +58,7 @@ public class JunitNestedAnnotationCheck extends IssuableSubscriptionVisitor {
     return classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
-      .anyMatch(UnitTestUtils::hasJUnit5TestAnnotation);
+      .anyMatch(UnitTestUtils::hasJUnitJupiterAnnotation);
   }
 
   private static boolean isNestedClass(Symbol.TypeSymbol classSymbol) {

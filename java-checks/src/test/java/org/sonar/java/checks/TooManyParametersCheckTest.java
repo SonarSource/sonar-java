@@ -18,6 +18,8 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.filters.FilterVerifier;
+import org.sonar.java.filters.SuppressWarningFilter;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
@@ -49,6 +51,15 @@ class TooManyParametersCheckTest {
       .onFile(mainCodeSourcesPath("checks/TooManyParametersCustom.java"))
       .withCheck(check)
       .verifyIssues();
+  }
+
+  @Test
+  void suppressWarningsParameterNumber() {
+    FilterVerifier.newInstance().verify(
+      "src/test/files/filters/SuppressWarningFilter_parameter_number.java",
+      new SuppressWarningFilter(),
+      new TooManyParametersCheck()
+    );
   }
 
 }

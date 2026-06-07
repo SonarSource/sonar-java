@@ -1,0 +1,26 @@
+{
+  "title": "Test classes should not contain multiple lifecycle methods of the same type",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Linear",
+    "linearDesc": "per lifecycle method of the same type",
+    "linearFactor": "5min"
+  },
+  "tags": [
+    "junit",
+    "tests"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-8745",
+  "sqKey": "S8745",
+  "scope": "Tests",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW",
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}

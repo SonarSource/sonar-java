@@ -1,0 +1,24 @@
+{
+  "title": "JUnit Jupiter tests should not use JUnit 4 assertions",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "junit",
+    "tests"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-8715",
+  "sqKey": "S8715",
+  "scope": "Tests",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}

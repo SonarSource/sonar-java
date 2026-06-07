@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,6 +60,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
       .put("serial", Collections.singleton("java:S2057"))
       .put("static", SetUtils.immutableSetOf("java:S2696", "java:S2209"))
       .put("rawtypes", Collections.singleton("java:S3740"))
+      .put("parameternumber", Collections.singleton("java:S107"))
       // Eclipse (IDE) warnings
       .put("boxing", SetUtils.immutableSetOf("java:S2153", "java:S5411"))
       .put("hiding", Collections.singleton("java:S4977"))
@@ -239,8 +241,9 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
       }
     } else {
       expression.asConstant(String.class).ifPresent(rule -> {
-        if (JAVAC_WARNING_SUPPRESSING_RULES.containsKey(rule)) {
-          args.addAll(JAVAC_WARNING_SUPPRESSING_RULES.get(rule));
+        String lowerCaseRule = rule.toLowerCase(Locale.ROOT);
+        if (JAVAC_WARNING_SUPPRESSING_RULES.containsKey(lowerCaseRule)) {
+          args.addAll(JAVAC_WARNING_SUPPRESSING_RULES.get(lowerCaseRule));
         } else {
           args.add(rule);
         }

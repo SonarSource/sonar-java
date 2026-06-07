@@ -67,7 +67,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -134,21 +134,15 @@ class JavaAstScannerTest {
   void scan_single_file_with_dumb_file_should_not_fail() {
     InputFile inputFile = TestUtils.emptyInputFile("!!dummy");
     VisitorsBridge visitorsBridge = new VisitorsBridge(null);
-    try {
-      JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge);
-    } catch (Exception e) {
-      fail("Should not have failed", e);
-    }
+    assertThatCode(() -> JavaAstScanner.scanSingleFileForTests(inputFile, visitorsBridge))
+      .doesNotThrowAnyException();
   }
 
   @Test
   void scan_single_file_with_dumb_file_should_not_fail_when_not_fail_fast() {
     InputFile inputFile = TestUtils.emptyInputFile("!!dummy");
-    try {
-      scanSingleFile(inputFile, false);
-    } catch (Exception e) {
-      fail("Should not have failed", e);
-    }
+    assertThatCode(() -> scanSingleFile(inputFile, false))
+      .doesNotThrowAnyException();
   }
 
   @Test
@@ -302,17 +296,16 @@ class JavaAstScannerTest {
     JavaAstScanner scanner = new JavaAstScanner(null, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
     scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingSOError()));
     List<InputFile> files = Collections.singletonList(TestUtils.inputFile("src/test/resources/AstScannerNoParseError.txt"));
-    try {
-      scanner.scan(files);
-      fail("Should have triggered a StackOverflowError and not reach this point.");
-    } catch (Error e) {
-      assertThat(e)
-        .isInstanceOf(StackOverflowError.class)
-        .hasMessage("boom");
-      List<String> errorLogs = logTester.logs(Level.ERROR);
-      assertThat(errorLogs).hasSize(1);
-      assertThat(errorLogs.get(0)).startsWith("A stack overflow error occurred while analyzing file");
-    }
+
+    assertThatCode(() -> scanner.scan(files))
+      .withFailMessage("Should have triggered a StackOverflowError and not reach this point.")
+      .isInstanceOf(StackOverflowError.class)
+      .hasMessage("boom");
+
+    assertThat(logTester.logs(Level.ERROR))
+      .hasSize(1)
+      .first().asString()
+      .startsWith("A stack overflow error occurred while analyzing file");
   }
 
   @Test
@@ -592,6 +585,7 @@ class JavaAstScannerTest {
       throw new StackOverflowError("boom");
     }
   }
+
   private static class CheckThrowingException implements JavaFileScanner {
 
     private final RuntimeException exception;

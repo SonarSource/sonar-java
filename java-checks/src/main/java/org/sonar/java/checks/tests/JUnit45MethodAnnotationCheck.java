@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.checks.helpers.UnitTestUtils;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -76,7 +76,7 @@ public class JUnit45MethodAnnotationCheck extends IssuableSubscriptionVisitor {
     for (MethodTree methodTree : methods) {
       SymbolMetadata metadata = methodTree.symbol().metadata();
       containsJUnit4Tests |= metadata.isAnnotatedWith("org.junit.Test");
-      if (UnitTestUtils.hasJUnit5TestAnnotation(methodTree)) {
+      if (UnitTestUtils.hasJUnitJupiterAnnotation(methodTree)) {
         // While migrating from JUnit4 to JUnit5, classes might end up in mixed state of having tests using both versions.
         // If it's the case, we consider the test classes as ultimately targeting 5
         return 5;

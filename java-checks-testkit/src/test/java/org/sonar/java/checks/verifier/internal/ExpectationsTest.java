@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -85,12 +84,9 @@ class ExpectationsTest {
   @Test
   void invalid_attribute_name() {
     Expectations.Parser parser = new Expectations().parser();
-    try {
-      parser.parseIssue("// Noncompliant [[invalid]]", TEST_LINE);
-      Fail.fail("exception expected");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("// Noncompliant attributes not valid: 'invalid'");
-    }
+    assertThatThrownBy(() -> parser.parseIssue("// Noncompliant [[invalid]]", TEST_LINE))
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("// Noncompliant attributes not valid: 'invalid'");
   }
 
   @Test
@@ -113,12 +109,10 @@ class ExpectationsTest {
   @Test
   void end_line_attribute() {
     Expectations.Parser parser = new Expectations().parser();
-    try {
-      parser.parseIssue("// Noncompliant [[endLine=-1]] {{message}}", 0);
-      Fail.fail("exception expected");
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("endLine attribute should be relative to the line and must be +N with N integer");
-    }
+
+    assertThatThrownBy(() -> parser.parseIssue("// Noncompliant [[endLine=-1]] {{message}}", 0))
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("endLine attribute should be relative to the line and must be +N with N integer");
   }
 
   @Test

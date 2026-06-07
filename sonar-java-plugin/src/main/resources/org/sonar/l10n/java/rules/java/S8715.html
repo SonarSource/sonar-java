@@ -1,0 +1,52 @@
+<h2>Why is this an issue?</h2>
+<p>This rule targets tests written with the JUnit Jupiter API (JUnit 5 and later), i.e. annotated with <code>org.junit.jupiter.api.Test</code>. While
+JUnit 4 assertions defined in <code>org.junit.Assert</code> continue to work in such tests, using them should be avoided.</p>
+<p>JUnit 5 ships with its own assertion library, <code>org.junit.jupiter.api.Assertions</code>, which is richer and consistent with the rest of the
+JUnit 5 API. Using JUnit 4 assertions in a JUnit 5 test is inconsistent. Because the two APIs differ in subtle ways, it can also lead to confusion and
+errors:</p>
+<ul>
+  <li>The position of the optional failure message argument is reversed. <code>org.junit.Assert</code> takes the message as the <strong>first</strong>
+  argument, <code>org.junit.jupiter.api.Assertions</code> as the <strong>last</strong>.</li>
+  <li>JUnit 5 overloads accept a <code>Supplier&lt;String&gt;</code>, so the failure message can be built lazily, which is not possible with JUnit
+  4.</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Replace each call to a method of <code>org.junit.Assert</code> with the equivalent method of <code>org.junit.jupiter.api.Assertions</code>. If a
+failure message is provided, move it from the first to the last argument position.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import org.junit.jupiter.api.Test;
+
+import static org.junit.Assert.assertEquals;
+
+class MyTest {
+  @Test
+  void shouldComputeAnswer() {
+    assertEquals("values should match", 42, compute()); // Noncompliant
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class MyTest {
+  @Test
+  void shouldComputeAnswer() {
+    assertEquals(42, compute(), "values should match");
+  }
+}
+</pre>
+<h3>Going the extra mile</h3>
+<p>If you find the JUnit 5 assertion library limited, consider using a dedicated assertion library such as <a
+href="https://assertj.github.io/doc/">AssertJ</a> or <a href="https://hamcrest.org/JavaHamcrest/">Hamcrest</a>.</p>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>JUnit 5 - <a href="https://docs.junit.org/6.1.0/writing-tests/assertions.html">Assertions</a></li>
+  <li>JUnit 5 - <a href="https://docs.junit.org/6.1.0/migrating-from-junit4.html#tips">Migration Tips</a></li>
+</ul>
+

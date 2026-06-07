@@ -34,8 +34,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-
-import static org.sonar.java.checks.helpers.UnitTestUtils.isTryCatchFail;
+import static org.sonar.java.checks.helpers.UnitTestUtils.findFail;
 
 public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscriptionVisitor {
 
@@ -120,7 +119,7 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
   }
 
   private void visitTryStatement(TryStatementTree tryStatementTree) {
-    if (isTryCatchFail(tryStatementTree.block())) {
+    if (findFail(tryStatementTree.block()).isPresent()) {
       List<Type> expectedTypes = tryStatementTree.catches().stream().map(c -> c.parameter().type().symbolType()).toList();
       reportMultipleCallInTree(expectedTypes, tryStatementTree.block(), tryStatementTree.tryKeyword(), "body of this try/catch");
     }
