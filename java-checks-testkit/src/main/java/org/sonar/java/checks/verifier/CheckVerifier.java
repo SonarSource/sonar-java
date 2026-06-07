@@ -306,5 +306,14 @@ public interface CheckVerifier {
    */
   void verifyNoIssues();
 
+  /**
+   * Returns the {@link SpringContextModel} that was populated during the last verification run.
+   *
+   * <p>Useful in tests that need to assert on Spring context data (e.g. component-scan packages,
+   * bean definitions) collected by {@link org.sonar.java.model.springcontext.SpringContextModelGatherer}
+   * visitors alongside the check under test.
+   *
+   * @return the {@link SpringContextModel} instance used during verification
+   */
   SpringContextModel getSpringContextModel();
 }

@@ -23,6 +23,16 @@ import org.sonar.api.scanner.sensor.ProjectSensor;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.springcontext.SpringContextModel;
 
+/**
+ * A post-phase {@link ProjectSensor} that holds the shared {@link SpringContextModel} built during analysis.
+ *
+ * <p>This sensor runs after the main Java analysis phase, ensuring that all
+ * {@link org.sonar.java.model.springcontext.SpringContextModelGatherer} visitors have finished populating
+ * the model before it can be consumed by downstream components.
+ *
+ * <p>The {@link SpringContextModel} instance is injected via the IoC container and shared across all
+ * components that need access to Spring context information (bean definitions, component-scan packages, etc.).
+ */
 @Phase(name = Phase.Name.POST)
 public class SpringContextModelSensor implements ProjectSensor {
 
