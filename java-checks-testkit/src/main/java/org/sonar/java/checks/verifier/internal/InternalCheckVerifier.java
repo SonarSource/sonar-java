@@ -48,7 +48,6 @@ import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -329,11 +328,6 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
 
     checkIssues(issues, quickFixes);
-  }
-
-  @Override
-  public SpringContextModel getSpringContextModel() {
-    throw new UnsupportedOperationException("Not implemented!");
   }
 
   private void checkIssues(Set<AnalyzerMessage> issues, Map<TextSpan, List<JavaQuickFix>> quickFixes) {

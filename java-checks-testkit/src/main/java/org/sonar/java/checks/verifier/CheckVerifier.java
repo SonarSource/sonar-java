@@ -25,7 +25,6 @@ import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.checks.verifier.internal.InternalCheckVerifier;
 import org.sonar.java.checks.verifier.internal.JavaCheckVerifier;
-import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
@@ -305,15 +304,4 @@ public interface CheckVerifier {
    * Verifies that no issues are raised by the rule(s) on the given file(s).
    */
   void verifyNoIssues();
-
-  /**
-   * Returns the {@link SpringContextModel} that was populated during the last verification run.
-   *
-   * <p>Useful in tests that need to assert on Spring context data (e.g. component-scan packages,
-   * bean definitions) collected by {@link org.sonar.java.model.springcontext.SpringContextModelGatherer}
-   * visitors alongside the check under test.
-   *
-   * @return the {@link SpringContextModel} instance used during verification
-   */
-  SpringContextModel getSpringContextModel();
 }

@@ -36,7 +36,6 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.IssueWithQuickFix;
 import org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.NoEffectEndOfAnalysisCheck;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.ModifiersTreeImpl;
@@ -457,14 +456,4 @@ class JavaCheckVerifierTest {
     assertThat(dummyVerifier.actualClasspath.stream().map(File::getName)).noneMatch(n -> n.equals("testng-7.12.0.jar"));
   }
 
-  @Test
-  void getSpringContextModel_returns_model_populated_after_analysis() {
-    JavaCheckVerifier dummyVerifier = JavaCheckVerifier.newInstance();
-    dummyVerifier.withCheck(NO_EFFECT_CHECK)
-      .onFile(TEST_FILE)
-      .verifyNoIssues();
-
-    SpringContextModel model = dummyVerifier.getSpringContextModel();
-    assertThat(model).isNotNull().isInstanceOf(SpringContextModel.class);
-  }
 }

@@ -1095,16 +1095,5 @@ class InternalCheckVerifierTest {
       .hasMessage("Not implemented!");
   }
 
-  @Test
-  void getSpringContextModel_not_supported() {
-    InternalCheckVerifier checkVerifier = InternalCheckVerifier.newInstance()
-      .onFile(TEST_FILE);
-
-    Throwable e = catchThrowable(checkVerifier::getSpringContextModel);
-
-    assertThat(e)
-      .isInstanceOf(UnsupportedOperationException.class)
-      .hasMessage("Not implemented!");
-  }
 
 }

@@ -18,9 +18,9 @@ package org.sonar.java.model.springcontext;
 
 import java.util.Optional;
 import java.util.function.Function;
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.DefaultModuleScannerContext;
 import org.sonar.plugins.java.api.DependencyVersionAware;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
@@ -31,8 +31,13 @@ import org.sonar.plugins.java.api.internal.EndOfAnalysis;
  * in the SpringContextModel at the of a module analysis.
  *
  * <p>All gatherers are skipped when {@code spring-context} is not present in the module classpath.
+ *
+ * <p>Extends {@link IssuableSubscriptionVisitor} so that {@link #leaveFile} is invoked by
+ * {@code IssuableSubscriptionVisitorsRunner} after each file. This is required for per-file cache
+ * writes: without it, cache entries are never stored and {@link #scanWithoutParsing} always misses,
+ * preventing unchanged files from being skipped in incremental analyses.
  */
-public abstract class SpringContextModelGatherer extends SubscriptionVisitor implements EndOfAnalysis, DependencyVersionAware {
+public abstract class SpringContextModelGatherer extends IssuableSubscriptionVisitor implements EndOfAnalysis, DependencyVersionAware {
 
   @Override
   public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
