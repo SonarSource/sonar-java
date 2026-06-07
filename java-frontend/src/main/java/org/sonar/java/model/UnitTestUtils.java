@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks.helpers;
+package org.sonar.java.model;
 
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;

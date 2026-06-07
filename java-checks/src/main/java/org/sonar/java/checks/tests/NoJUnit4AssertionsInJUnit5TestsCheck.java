@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.UnitTestUtils.JUNIT5_TEST_ANNOTATIONS;
+import static org.sonar.java.model.UnitTestUtils.JUNIT5_TEST_ANNOTATIONS;
 
 /**
  * Check that JUnit Jupiter (JUnit 5) tests do not use JUnit 4 assertions.

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.checks.helpers.UnitTestUtils;
+import org.sonar.java.model.UnitTestUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;

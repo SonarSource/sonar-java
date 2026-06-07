@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.model.SpringUtils;
 import org.sonar.java.model.expression.AssignmentExpressionTreeImpl;
 import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.java.reporting.JavaQuickFix;

@@ -23,7 +23,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.UnitTestUtils.isTestClass;
+import static org.sonar.java.model.UnitTestUtils.isTestClass;
 
 @Rule(key = "S3414")
 public class TestsInSeparateFolderCheck extends IssuableSubscriptionVisitor {

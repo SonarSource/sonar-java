@@ -40,6 +40,7 @@ import org.sonar.java.caching.JavaReadCacheImpl;
 import org.sonar.java.caching.JavaWriteCacheImpl;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.telemetry.NoOpTelemetry;
@@ -95,6 +96,8 @@ public class JavaCheckVerifier implements CheckVerifier {
   private ReadCache readCache;
   private WriteCache writeCache;
   private File rootDirectory;
+  @VisibleForTesting
+  private SpringContextModel springContextModel;
 
   private MultiFileVerifier createVerifier() {
     MultiFileVerifier verifier = MultiFileVerifier.create(Paths.get(files.get(0).uri()), UTF_8);
@@ -104,7 +107,10 @@ public class JavaCheckVerifier implements CheckVerifier {
     List<JavaFileScanner> visitors = new ArrayList<>(checks);
     CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
     visitors.add(commentLinesVisitor);
+
+    springContextModel = new SpringContextModel();
     SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, rootDirectory);
+    sonarComponents.setSpringContextModel(springContextModel);
     VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
       .withJavaVersion(actualVersion)
       .withSonarComponents(sonarComponents)
@@ -385,6 +391,11 @@ public class JavaCheckVerifier implements CheckVerifier {
     requiresNonNull(checks, CHECK_OR_CHECKS);
     requiresNonNull(files, FILE_OR_FILES);
     createVerifier().assertNoIssuesRaised();
+  }
+
+  @Override
+  public SpringContextModel getSpringContextModel() {
+    return springContextModel;
   }
 
 }
