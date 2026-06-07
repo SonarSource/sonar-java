@@ -141,10 +141,13 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
     for (SymbolMetadata.AnnotationValue value : scanBaseValues) {
       boolean isClassBased = "scanBasePackageClasses".equals(value.name());
       for (Object element : (Object[]) value.value()) {
-        if (!isClassBased && element instanceof String s) {
+        if (!isClassBased && element instanceof String s && !s.isBlank()) {
           packages.add(s);
         } else if (isClassBased && element instanceof Symbol s) {
-          packages.add(packageNameOf(s));
+          var pkg = packageNameOf(s);
+          if (!pkg.isBlank()) {
+            packages.add(pkg);
+          }
         }
       }
     }
@@ -159,13 +162,15 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
   private void addAnnotationValueToCollectedPackages(SymbolMetadata.AnnotationValue annotationValue) {
     if (annotationValue.value() instanceof Object[] objects) {
       for (Object o : objects) {
-        if (o instanceof String oString) {
+        if (o instanceof String oString && !oString.isBlank()) {
           collectedPackages.add(oString);
           packagesCollectedAtFileLevel.add(oString);
         } else if (o instanceof Symbol oSymbol) {
           var pkg = packageNameOf(oSymbol);
-          collectedPackages.add(pkg);
-          packagesCollectedAtFileLevel.add(pkg);
+          if (!pkg.isBlank()) {
+            collectedPackages.add(pkg);
+            packagesCollectedAtFileLevel.add(pkg);
+          }
         }
       }
     }

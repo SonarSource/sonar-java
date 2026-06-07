@@ -96,7 +96,6 @@ public class JavaCheckVerifier implements CheckVerifier {
   private ReadCache readCache;
   private WriteCache writeCache;
   private File rootDirectory;
-  @VisibleForTesting
   private SpringContextModel springContextModel;
 
   private MultiFileVerifier createVerifier() {
