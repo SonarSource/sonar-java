@@ -26,7 +26,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.model.UnitTestUtils.hasTestAnnotation;
+import static org.sonar.java.utils.UnitTestUtils.hasTestAnnotation;
 
 @Rule(key = "S3578")
 public class BadTestMethodNameCheck extends IssuableSubscriptionVisitor {

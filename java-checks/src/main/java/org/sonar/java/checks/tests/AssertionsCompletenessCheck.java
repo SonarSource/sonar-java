@@ -44,7 +44,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static java.util.Collections.emptyList;
-import static org.sonar.java.model.UnitTestUtils.hasTestAnnotation;
+import static org.sonar.java.utils.UnitTestUtils.hasTestAnnotation;
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S2970")

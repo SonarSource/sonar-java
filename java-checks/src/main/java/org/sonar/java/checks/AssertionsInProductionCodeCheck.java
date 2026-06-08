@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.model.UnitTestUtils;
+import org.sonar.java.utils.UnitTestUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext.Location;

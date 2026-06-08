@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.model.SpringUtils;
+import org.sonar.java.utils.SpringUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;

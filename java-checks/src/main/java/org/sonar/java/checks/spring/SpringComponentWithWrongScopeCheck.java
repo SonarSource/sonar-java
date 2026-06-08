@@ -19,14 +19,14 @@ package org.sonar.java.checks.spring;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.SpringUtils;
+import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.model.SpringUtils.SCOPE_ANNOTATION;
-import static org.sonar.java.model.SpringUtils.isScopeSingleton;
+import static org.sonar.java.utils.SpringUtils.SCOPE_ANNOTATION;
+import static org.sonar.java.utils.SpringUtils.isScopeSingleton;
 
 @Rule(key = "S3750")
 public class SpringComponentWithWrongScopeCheck extends IssuableSubscriptionVisitor {

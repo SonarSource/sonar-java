@@ -30,7 +30,8 @@ import org.sonar.plugins.java.api.internal.EndOfAnalysis;
  * Extending classes will have to implement the AST visitor pattern, gather relevant spring-related data, and store it
  * in the SpringContextModel at the of a module analysis.
  *
- * <p>All gatherers are skipped when {@code spring-context} is not present in the module classpath.
+ * <p>All gatherers are skipped when none of {@code spring-context}, {@code spring-beans},
+ * {@code spring-boot-starter}, or {@code spring-boot-starter-web} is present in the module classpath.
  *
  * <p>Extends {@link IssuableSubscriptionVisitor} so that {@link #leaveFile} is invoked by
  * {@code IssuableSubscriptionVisitorsRunner} after each file. This is required for per-file cache
@@ -41,7 +42,11 @@ public abstract class SpringContextModelGatherer extends IssuableSubscriptionVis
 
   @Override
   public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
-    return dependencyFinder.apply("spring-context").isPresent();
+    return dependencyFinder.apply("spring-context")
+      .or(() -> dependencyFinder.apply("spring-beans"))
+      .or(() -> dependencyFinder.apply("spring-boot-starter"))
+      .or(() -> dependencyFinder.apply("spring-boot-starter-web"))
+      .isPresent();
   }
 
   @Override

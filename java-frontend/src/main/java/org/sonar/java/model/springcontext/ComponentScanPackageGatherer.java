@@ -28,7 +28,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.model.SpringUtils;
+import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
@@ -147,7 +147,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
     if (scanBaseValues.isEmpty()) {
       // Without explicit scan attributes, @SpringBootApplication scans its own package — but only if
       // no packages were already collected via @ComponentScan on the same class.
-      return useOwnPackageAsFallback ? Collections.singletonList(classPackageName) : List.of();
+      return (useOwnPackageAsFallback && !classPackageName.isBlank()) ? Collections.singletonList(classPackageName) : List.of();
     }
     return packages;
   }

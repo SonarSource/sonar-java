@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.java.model.UnitTestUtils.COMMON_ASSERTION_MATCHER;
+import static org.sonar.java.utils.UnitTestUtils.COMMON_ASSERTION_MATCHER;
 
 @Rule(key = "S5779")
 public class AssertionInTryCatchCheck extends IssuableSubscriptionVisitor {

@@ -19,7 +19,7 @@ package org.sonar.java.checks.spring;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.InjectionHelper;
-import org.sonar.java.model.SpringUtils;
+import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;

@@ -27,7 +27,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.model.UnitTestUtils.COMMON_ASSERTION_MATCHER;
+import static org.sonar.java.utils.UnitTestUtils.COMMON_ASSERTION_MATCHER;
 
 @Rule(key = "S2186")
 public class AssertionInThreadRunCheck extends IssuableSubscriptionVisitor {
