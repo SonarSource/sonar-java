@@ -79,6 +79,22 @@ class ComponentScanPackageGathererTest {
   // ---- @SpringBootApplication -----------------------------------------------
 
   @Test
+  void anonymous_class_inside_springBootApplication_class_is_skipped() {
+    scan("src/test/files/springcontext/SpringBootAppWithAnonymousClass.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactly("checks.spring.context");
+  }
+
+  @Test
+  void springBootApplication_blank_scanBasePackage_is_ignored() {
+    scan("src/test/files/springcontext/SpringBootAppWithBlankScanBasePackage.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactly("com.example.service");
+  }
+
+  @Test
   void springBootApplication_without_scan_attributes_collects_own_package() {
     scan("src/test/files/springcontext/SpringBootAppNoScanAttributes.java");
 

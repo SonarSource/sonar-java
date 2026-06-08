@@ -455,5 +455,4 @@ class JavaCheckVerifierTest {
     assertThat(dummyVerifier.actualClasspath).hasSize(initialSize - 1);
     assertThat(dummyVerifier.actualClasspath.stream().map(File::getName)).noneMatch(n -> n.equals("testng-7.12.0.jar"));
   }
-
 }
