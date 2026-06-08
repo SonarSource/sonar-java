@@ -18,7 +18,6 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.checks.helpers.TryCatchUtils;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -34,7 +33,6 @@ import org.sonar.plugins.java.api.tree.Arguments;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Optional;
 
 import static org.sonar.java.checks.helpers.TryCatchUtils.getCaughtTypes;
 
@@ -63,9 +61,9 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
 
     @Override
     public void visitTryStatement(TryStatementTree tree) {
-      checkBlock(tree.block(), tree, true, "Use assertThrows() instead of try/catch and fail() in the try block.");
+      checkBlock(tree.block(), tree, true);
       tree.catches().forEach(c ->
-        checkBlock(c.block(), tree, false, "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block.")
+        checkBlock(c.block(), tree, false)
       );
       super.visitTryStatement(tree);
     }
@@ -73,10 +71,12 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
     private void checkBlock(
       BlockTree block,
       TryStatementTree tryStatement,
-      boolean isTryBlock,
-      String issueMessage
+      boolean isTryBlock
     ) {
       UnitTestUtils.findFail(block).ifPresent(failMethodInvocation -> {
+          String issueMessage = isTryBlock ?
+            "Use assertThrows() instead of try/catch and fail() in the try block." :
+            "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block.";
 
           Arguments failArguments = failMethodInvocation.arguments();
 
