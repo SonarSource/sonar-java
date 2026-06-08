@@ -36,7 +36,6 @@ class TryCatchUtilsTest {
 
   private TryStatementTree parseTry(String code) {
     CompilationUnitTree compilationUnitTree = JParserTestUtils.parse("void main() { %s }".formatted(code));
-    System.out.println(compilationUnitTree);
     ClassTree classTree = (ClassTree) compilationUnitTree.types().get(0);
     MethodTree methodTree = (MethodTree) classTree.members().get(0);
     return (TryStatementTree) methodTree.block().body().get(0);
