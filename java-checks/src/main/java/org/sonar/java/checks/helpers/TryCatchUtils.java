@@ -17,7 +17,11 @@
 package org.sonar.java.checks.helpers;
 
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.*;
+import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnionTypeTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.*;
 
