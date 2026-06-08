@@ -85,6 +85,15 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
       // test passed
     }
 
+
+    try {
+      raise();
+      fail(() -> "expected exception");  // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    } catch (Exception _) {
+      // test passed
+    }
+
     assertThrows(IllegalStateException.class, AssertThrowsInsteadOfTryCatchFailCheckSample::raise); // compliant
     assertDoesNotThrow(AssertThrowsInsteadOfTryCatchFailCheckSample::dontRaise); // compliant
     nonAnnotatedFunctionFN();

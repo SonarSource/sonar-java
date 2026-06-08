@@ -110,8 +110,12 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       TryStatementTree tryStatement,
       boolean isTryBlock
     ) {
+
       String argumentsSuffix = failArguments.stream().findFirst().filter(argument ->
-        argument.symbolType().is("java.lang.String") // || argument.symbolType().is("java.util.function.Supplier<java.lang.String>")
+        {
+          Type symbolType = argument.symbolType();
+          return !symbolType.isUnknown() && (symbolType.is("java.lang.String") || symbolType.isSubtypeOf("java.util.function.Supplier<java.lang.String>"));
+        }
       ).map(argument ->
         ", %s".formatted(contentFor(argument))
       ).orElse("");
