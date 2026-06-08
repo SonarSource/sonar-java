@@ -22,8 +22,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.util.*;
+import java.util.List;
+import java.util.Collections;
 
 public final class TryCatchUtils {
   private TryCatchUtils() {
