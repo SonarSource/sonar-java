@@ -19,8 +19,6 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnitTestUtils;
-import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.statement.BlockTreeImpl;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -85,16 +83,6 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
             Replacements replacements = isAssertJ ?
               assertJReplacement(failArguments, tryStatement, isTryBlock) :
               junitReplacement(failArguments, tryStatement, isTryBlock);
-            /** Replace single text edit by 3 :
-             * JUNIT :
-             * 1 : Try token -> 'assertThrows({exception type}, () ->' or 'assertDoesntThrow(() ->'
-             * 2 : fail method invocation -> ""
-             * 3 : catches -> );
-             * ASSERTJ :
-             * 1 : Try token -> assertThatCode(() ->
-             * 2 : fail method invocation -> ""
-             * 3 : catches -> ').isInstanceOf({exception type});' or ').doesNotThrowAnyException();'
-             */
             issueBuilder.withQuickFix(() ->
               JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
                 JavaTextEdit.replaceTree(tryStatement.tryKeyword(), replacements.replaceTryWith),
@@ -106,8 +94,8 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
                 )
               ).build()
             );
+            issueBuilder.report();
           }
-          issueBuilder.report();
         }
       );
     }
