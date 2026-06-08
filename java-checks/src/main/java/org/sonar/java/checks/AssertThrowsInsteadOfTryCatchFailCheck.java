@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.checks.helpers.TryCatchUtils;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -31,7 +32,9 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 import static org.sonar.java.checks.helpers.TryCatchUtils.getCaughtTypes;
 
@@ -88,13 +91,19 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
             Replacements replacements = isAssertJ ?
               assertJReplacement(failArguments, tryStatement, isTryBlock) :
               junitReplacement(failArguments, tryStatement, isTryBlock);
+            var firstCatchFinallyToken = tryStatement.catches().isEmpty() ?
+              tryStatement.finallyKeyword().firstToken() :
+              tryStatement.catches().get(0).firstToken();
+            var lastCatchFinallyToken = tryStatement.finallyBlock() != null ?
+              tryStatement.finallyBlock().lastToken() :
+              tryStatement.catches().get(tryStatement.catches().size() - 1).block().lastToken();
             issueBuilder.withQuickFix(() ->
               JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
                 JavaTextEdit.replaceTree(tryStatement.tryKeyword(), replacements.replaceTryWith),
                 JavaTextEdit.replaceTree(failMethodInvocation.parent(), ""),
                 JavaTextEdit.replaceBetweenTree(
-                  tryStatement.catches().get(0).catchKeyword(),
-                  tryStatement.catches().get(tryStatement.catches().size() - 1).block().closeBraceToken(),
+                  firstCatchFinallyToken,
+                  lastCatchFinallyToken,
                   replacements.replaceCatchesWith
                 )
               ).build()
@@ -158,12 +167,17 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
   }
 
 
-  private static String typeClass(Type caughtType) {
+  private static String typeClass(@Nullable Type caughtType) {
+    if (caughtType == null) return "Throwable";
     return caughtType.name() + ".class";
   }
 
+  @Nullable
   private static Type firstCaughtTypeInTry(TryStatementTree tryStatement) {
-    return getCaughtTypes(tryStatement.catches().get(0)).get(0);
+    if (tryStatement.catches().size() > 0) {
+      return getCaughtTypes(tryStatement.catches().get(0)).get(0);
+    }
+    return null;
   }
 
 }
