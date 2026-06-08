@@ -174,7 +174,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
 
   @Nullable
   private static Type firstCaughtTypeInTry(TryStatementTree tryStatement) {
-    if (tryStatement.catches().size() > 0) {
+    if (!tryStatement.catches().isEmpty()) {
       return getCaughtTypes(tryStatement.catches().get(0)).get(0);
     }
     return null;
