@@ -2,61 +2,10 @@
 "com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/bo/AdminUserDetails.java": [
 17
 ],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/OmsOrderDetail.java": [
-16
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/OmsOrderReturnApplyResult.java": [
-13
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/PmsProductAttributeCategoryItem.java": [
-15
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/PmsProductCategoryWithChildrenItem.java": [
-14
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/PmsProductParam.java": [
-16
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/PmsProductResult.java": [
-11
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/SmsCouponParam.java": [
-16
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/SmsFlashPromotionProduct.java": [
-13
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/SmsFlashPromotionSessionDetail.java": [
-12
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/UmsMenuNode.java": [
-16
-],
 "com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/bo/AdminUserDetails.java": [
 15
 ],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/CartProduct.java": [
-18
-],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/CartPromotionItem.java": [
-16
-],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/FlashPromotionProduct.java": [
-16
-],
 "com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/MemberDetails.java": [
 15
-],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/OmsOrderDetail.java": [
-17
-],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/PmsProductCategoryNode.java": [
-16
-],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/PromotionProduct.java": [
-18
-],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/SmsCouponHistoryDetail.java": [
-19
 ]
 }

@@ -15,48 +15,6 @@
 "com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/OssController.java": [
 41
 ],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/UmsAdminController.java": [
-50,
-94,
-177
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/UmsMenuController.java": [
-57
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/UmsResourceController.java": [
-61
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/UmsRoleController.java": [
-81
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/CmsSubjectServiceImpl.java": [
-31,
-32
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderReturnApplyServiceImpl.java": [
-36,
-44
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderReturnReasonServiceImpl.java": [
-36,
-44,
-54,
-56
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderServiceImpl.java": [
-48,
-62,
-64,
-68,
-82,
-84,
-96,
-108,
-120,
-127,
-139,
-144
-],
 "com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/OssServiceImpl.java": [
 51,
 53,
@@ -67,186 +25,26 @@
 75,
 91
 ],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsBrandServiceImpl.java": [
-37,
-48,
-56,
-58,
-71,
-79,
-81,
-98,
-100,
-107,
-109
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductAttributeCategoryServiceImpl.java": [
-28,
-35
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductAttributeServiceImpl.java": [
-35,
-43,
-47,
-59,
-73,
-75,
-76
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductCategoryServiceImpl.java": [
-39,
-61,
-71,
-76,
-78,
-83,
-88,
-98,
-116,
-118,
-125,
-127
-],
 "com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductServiceImpl.java": [
 99,
 102,
 103,
-128,
-133,
-138,
-145,
-150,
-155,
-168,
-174,
-193,
-209,
-210,
-235,
-237,
-243,
-257,
-259,
-266,
-268,
-275,
-277,
-284,
-286,
-293,
-294,
 314,
 316,
 319
 ],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsSkuStockServiceImpl.java": [
-28,
-29
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsCouponHistoryServiceImpl.java": [
-25,
-26
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsCouponServiceImpl.java": [
-73,
-79,
-109,
-110
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsFlashPromotionProductRelationServiceImpl.java": [
-57
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsFlashPromotionServiceImpl.java": [
-43,
-57
-],
 "com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsFlashPromotionSessionServiceImpl.java": [
-42,
-60,
-67,
 71
 ],
 "com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeAdvertiseServiceImpl.java": [
-35,
-42,
-62,
-63,
 73
 ],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeBrandServiceImpl.java": [
-34,
-42,
-49,
-51,
-59,
-60
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeNewProductServiceImpl.java": [
-34,
-42,
-49,
-51,
-59,
-60
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeRecommendProductServiceImpl.java": [
-34,
-42,
-49,
-51,
-59,
-60
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/SmsHomeRecommendSubjectServiceImpl.java": [
-34,
-42,
-49,
-51,
-59,
-60
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminCacheServiceImpl.java": [
-60,
-72
-],
 "com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminServiceImpl.java": [
-66,
-80,
-85,
 103,
-110,
-128,
-141,
-143,
-161,
-162,
-202,
-209,
-248,
-254
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsMemberLevelServiceImpl.java": [
-22
+110
 ],
 "com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsMenuServiceImpl.java": [
-70,
-88,
 98
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsResourceCategoryServiceImpl.java": [
-24
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsResourceServiceImpl.java": [
-55,
-56
-],
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsRoleServiceImpl.java": [
-50,
-65,
-90,
-95,
-106,
-111
 ],
 "com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/validator/FlagValidatorClass.java": [
 19,
@@ -271,16 +69,9 @@
 71,
 99
 ],
-"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/config/SecurityConfig.java": [
-50
-],
 "com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/controller/RestTemplateDemoController.java": [
 62,
 100
-],
-"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/service/impl/DemoServiceImpl.java": [
-31,
-38
 ],
 "com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/validator/FlagValidatorClass.java": [
 18,
@@ -929,18 +720,10 @@
 ],
 "com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/HomeServiceImpl.java": [
 42,
-62,
-71,
-82,
-83,
 104,
 106,
-130,
-142,
 150,
-151,
-165,
-166
+165
 ],
 "com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/MemberAttentionServiceImpl.java": [
 36
@@ -951,41 +734,14 @@
 "com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/MemberReadHistoryServiceImpl.java": [
 65
 ],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsCartItemServiceImpl.java": [
-61,
-62,
-76,
-96,
-98,
-106,
-108,
-121,
-133,
-135
-],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderReturnApplyServiceImpl.java": [
-23
-],
 "com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/OmsPortalOrderServiceImpl.java": [
 71,
 88,
-105,
-167,
-255,
-299,
-310,
-359,
-360,
-380,
 385,
-397,
-398,
 401,
-424,
 440,
 447,
 482,
-499,
 526,
 531,
 555,
@@ -1006,67 +762,30 @@
 161,
 195,
 229,
-240,
-243
-],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalBrandServiceImpl.java": [
-44
+240
 ],
 "com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/PmsPortalProductServiceImpl.java": [
-47,
-48,
-75,
 86,
-94,
-101,
-108,
-114,
-121,
 136
-],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCacheServiceImpl.java": [
-35
 ],
 "com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberCouponServiceImpl.java": [
 53,
-58,
-65,
 86,
 88,
 90,
 93,
-105,
-106,
 117,
-176,
-185,
-193,
 214,
 223,
 234
 ],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberReceiveAddressServiceImpl.java": [
-35,
-44,
-51,
-53,
-65,
-73
-],
 "com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/UmsMemberServiceImpl.java": [
-61,
-84,
-92,
-99,
 111,
 112,
 113,
-122,
-132,
 140,
 141,
 142,
-148,
 169,
 173
 ],

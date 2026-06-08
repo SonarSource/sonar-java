@@ -2,10 +2,6 @@
 "com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/config/SpringDocConfig.java": [
 10
 ],
-"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/config/SecurityConfig.java": [
-10,
-13
-],
 "com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelp.java": [
 3
 ],
@@ -65,13 +61,5 @@
 ],
 "com.macro.mall:mall:mall-search/src/test/java/com/macro/mall/search/MallSearchApplicationTests.java": [
 10
-],
-"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/component/RestAuthenticationEntryPoint.java": [
-7,
-9
-],
-"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/component/RestfulAccessDeniedHandler.java": [
-7,
-9
 ]
 }
