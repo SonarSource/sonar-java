@@ -112,8 +112,12 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
   @org.junit.Test
   public void junit4AnnotationDontRaise() {
     try {
-      fail("expected exception"); // TN - junit fail in junit4 test
-      org.junit.Assert.fail("expected exception"); // TN - junit fail in junit4 test
+      fail("expected exception"); // TN - junit5 fail in junit4 test
+    } catch (Exception _) {
+      // test passed
+    }
+    try {
+      org.junit.Assert.fail("expected exception"); // TN - junit4 fail in junit4 test
     } catch (Exception _) {
       // test passed
     }
