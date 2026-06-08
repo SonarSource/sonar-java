@@ -18,12 +18,11 @@ package org.sonar.java.checks.helpers;
 
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CatchTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
 import java.util.List;
-import java.util.Collections;
 
 public final class TryCatchUtils {
   private TryCatchUtils() {
@@ -32,11 +31,11 @@ public final class TryCatchUtils {
 
   public static List<Type> getCaughtTypes(CatchTree tree) {
     VariableTree parameter = tree.parameter();
-    if (parameter.type().is(Tree.Kind.UNION_TYPE)) {
-      return ((UnionTypeTree) parameter.type()).typeAlternatives().stream()
+    if (parameter.type() instanceof UnionTypeTree unionTypeTree) {
+      return unionTypeTree.typeAlternatives().stream()
         .map(TypeTree::symbolType)
         .toList();
     }
-    return Collections.singletonList(parameter.symbol().type());
+    return List.of(parameter.symbol().type());
   }
 }
