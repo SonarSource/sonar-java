@@ -113,7 +113,7 @@ public class RawExceptionCheckSample {
   }
 
   public void throwsCustom() throws MyOtherException { // Compliant
-    throw new MyException(); // OK
+    throw new MyException(); // Compliant
   }
 
   class MyException extends RuntimeException { // Compliant
@@ -123,11 +123,11 @@ public class RawExceptionCheckSample {
   }
 
   public void throwsValue() {
-    throw create(); // OK
+    throw create(); // Compliant
   }
 
   public RuntimeException create() {
-    return new RuntimeException(); // OK
+    return new RuntimeException(); // Compliant
   }
 
   public void exception() {
@@ -135,7 +135,7 @@ public class RawExceptionCheckSample {
       throwsException();
     } catch (Exception e) {
       if (e instanceof RuntimeException) {
-        throw (RuntimeException) e; // OK
+        throw (RuntimeException) e; // Compliant
       }
     }
   }
