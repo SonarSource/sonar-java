@@ -61,5 +61,4 @@ public class SpringContextModel {
   public EntityClassToPropertiesIndex getEntityClassToPropertiesIndex() {
     return entityClassToPropertiesIndex;
   }
-
 }

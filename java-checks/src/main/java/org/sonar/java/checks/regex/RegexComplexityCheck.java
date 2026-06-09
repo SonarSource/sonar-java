@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.helpers.StringUtils;
+import org.sonar.java.utils.StringUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;

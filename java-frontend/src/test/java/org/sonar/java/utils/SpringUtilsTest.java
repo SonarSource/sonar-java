@@ -14,9 +14,10 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks.helpers;
+package org.sonar.java.utils;
 
 import org.junit.jupiter.api.Test;
+import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 

@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.UnitTestUtils.isTestClass;
+import static org.sonar.java.utils.UnitTestUtils.isTestClass;
 
 @Rule(key = "S3577")
 public class BadTestClassNameCheck extends IssuableSubscriptionVisitor {

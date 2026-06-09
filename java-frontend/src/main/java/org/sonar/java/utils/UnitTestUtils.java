@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks.helpers;
+package org.sonar.java.utils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -41,7 +41,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static java.util.Arrays.asList;
-import static org.sonar.java.checks.helpers.StringUtils.flatten;
+import static org.sonar.java.utils.StringUtils.flatten;
 
 public final class UnitTestUtils {
   private static final List<String> ORG_ASSERTJ_CORE_API_ASSERTIONS = List.of(
