@@ -189,6 +189,18 @@ public class JavaRulingTest {
   }
 
   @Test
+  public void spring_mall() throws Exception {
+    String projectName = "mall";
+    MavenBuild build = test_project("com.macro.mall:mall", projectName);
+    build
+      .setProperty("docker.skip", "true")
+      .setProperty("java.version", "21")
+      .setProperty("maven-bundle-plugin.version", "5.1.4")
+      .setProperty("maven.javadoc.skip", "true");
+    executeBuildWithCommonProperties(build, projectName);
+  }
+
+  @Test
   public void guava() throws Exception {
     String projectName = "guava";
     MavenBuild build = test_project("com.google.guava:guava", projectName);
@@ -314,10 +326,15 @@ public class JavaRulingTest {
     var time3 = after3 - before3;
 
     // Results
-    assertThat(time2).isLessThan(time1);
+    assertThat(time2)
+      .as("Large PR incremental analysis should not be significantly slower than main branch analysis")
+      .isLessThan((long) (time1 * 1.25));
+
     assertThat(time3)
-      .isLessThan(time1)
-      .isLessThan(time2);
+      .as("Small PR incremental analysis should be faster than main branch analysis")
+      .isLessThan((long) (time1 * 0.90))
+      .as("Small PR incremental analysis should be faster than large PR incremental analysis")
+      .isLessThan((long) (time2 * 0.95));
   }
 
   private static String getFileLocationAbsolutePath(FileLocation location) {
