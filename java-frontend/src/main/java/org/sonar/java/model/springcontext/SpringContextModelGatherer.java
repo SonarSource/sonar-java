@@ -16,17 +16,38 @@
  */
 package org.sonar.java.model.springcontext;
 
-import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import java.util.Optional;
+import java.util.function.Function;
 import org.sonar.java.model.DefaultModuleScannerContext;
+import org.sonar.plugins.java.api.DependencyVersionAware;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 
 /**
  * Base class for visitors that need to gather data in the SpringContextModel at the end of the analysis.
  * Extending classes will have to implement the AST visitor pattern, gather relevant spring-related data, and store it
  * in the SpringContextModel at the of a module analysis.
+ *
+ * <p>All gatherers are skipped when none of {@code spring-context}, {@code spring-beans},
+ * {@code spring-boot-starter}, or {@code spring-boot-starter-web} is present in the module classpath.
+ *
+ * <p>Extends {@link IssuableSubscriptionVisitor} so that {@link #leaveFile} is invoked by
+ * {@code IssuableSubscriptionVisitorsRunner} after each file. This is required for per-file cache
+ * writes: without it, cache entries are never stored and {@link #scanWithoutParsing} always misses,
+ * preventing unchanged files from being skipped in incremental analyses.
  */
-public abstract class SpringContextModelGatherer extends SubscriptionVisitor implements EndOfAnalysis {
+public abstract class SpringContextModelGatherer extends IssuableSubscriptionVisitor implements EndOfAnalysis, DependencyVersionAware {
+
+  @Override
+  public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
+    return dependencyFinder.apply("spring-context")
+      .or(() -> dependencyFinder.apply("spring-beans"))
+      .or(() -> dependencyFinder.apply("spring-boot-starter"))
+      .or(() -> dependencyFinder.apply("spring-boot-starter-web"))
+      .isPresent();
+  }
 
   @Override
   public final void endOfAnalysis(ModuleScannerContext context) {

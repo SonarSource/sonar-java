@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks.helpers;
+package org.sonar.java.utils;
 
 import org.junit.jupiter.api.Test;
 
@@ -66,7 +66,7 @@ class StringUtilsTest {
       .withMessageContaining("Unsupported argument type:");
 
     assertThatIllegalArgumentException()
-      .isThrownBy(() -> StringUtils.flatten(new int[]{4, 5}))
+      .isThrownBy(() -> StringUtils.flatten((Object) new int[]{4, 5}))
       .withMessageContaining("Unsupported argument type:");
 
     var list = List.of("b", List.of("c", "d"));

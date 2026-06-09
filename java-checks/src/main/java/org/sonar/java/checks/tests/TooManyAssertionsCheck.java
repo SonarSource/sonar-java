@@ -39,9 +39,9 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTION_INVOCATION_MATCHERS;
-import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
-import static org.sonar.java.checks.helpers.UnitTestUtils.methodNameMatchesAssertionMethodPattern;
+import static org.sonar.java.utils.UnitTestUtils.ASSERTION_INVOCATION_MATCHERS;
+import static org.sonar.java.utils.UnitTestUtils.isUnitTest;
+import static org.sonar.java.utils.UnitTestUtils.methodNameMatchesAssertionMethodPattern;
 import static org.sonar.java.model.ExpressionUtils.methodName;
 
 @Rule(key = "S5961")
