@@ -25,6 +25,7 @@ import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -74,44 +75,61 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       boolean isTryBlock
     ) {
       UnitTestUtils.findFail(block).ifPresent(failMethodInvocation -> {
-          String issueMessage = isTryBlock ?
-            "Use assertThrows() instead of try/catch and fail() in the try block." :
-            "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block.";
-
-          Arguments failArguments = failMethodInvocation.arguments();
-
-          InternalJavaIssueBuilder issueBuilder = QuickFixHelper
-            .newIssue(context)
-            .forRule(AssertThrowsInsteadOfTryCatchFailCheck.this)
-            .onTree(failMethodInvocation)
-            .withMessage(issueMessage);
 
           var isAssertJ = failMethodInvocation.methodSymbol().signature().contains("org.assertj");
           if (hasJunitJupiterTestAnnotation || isAssertJ) {
-            Replacements replacements = isAssertJ ?
-              assertJReplacement(failArguments, tryStatement, isTryBlock) :
-              junitReplacement(failArguments, tryStatement, isTryBlock);
-            var firstCatchFinallyToken = tryStatement.catches().isEmpty() ?
-              tryStatement.finallyKeyword().firstToken() :
-              tryStatement.catches().get(0).firstToken();
-            var lastCatchFinallyToken = tryStatement.finallyBlock() != null ?
-              tryStatement.finallyBlock().lastToken() :
-              tryStatement.catches().get(tryStatement.catches().size() - 1).block().lastToken();
-            issueBuilder.withQuickFix(() ->
-              JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
-                JavaTextEdit.replaceTree(tryStatement.tryKeyword(), replacements.replaceTryWith),
-                JavaTextEdit.replaceTree(failMethodInvocation.parent(), ""),
-                JavaTextEdit.replaceBetweenTree(
-                  firstCatchFinallyToken,
-                  lastCatchFinallyToken,
-                  replacements.replaceCatchesWith
+            String issueMessage = isTryBlock ?
+              "Use assertThrows() instead of try/catch and fail() in the try block." :
+              "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block.";
+            InternalJavaIssueBuilder issueBuilder = QuickFixHelper
+              .newIssue(context)
+              .forRule(AssertThrowsInsteadOfTryCatchFailCheck.this)
+              .onTree(failMethodInvocation)
+              .withMessage(issueMessage)
+              .withQuickFix(() ->
+                provideQuickFix(
+                  tryStatement,
+                  failMethodInvocation,
+                  issueMessage,
+                  isAssertJ,
+                  isTryBlock
                 )
-              ).build()
-            );
+              );
             issueBuilder.report();
           }
         }
       );
+    }
+
+    private JavaQuickFix provideQuickFix(
+      TryStatementTree tryStatement,
+      MethodInvocationTree failMethodInvocation,
+      String issueMessage,
+      boolean isAssertJ,
+      boolean isTryBlock
+    ) {
+      Arguments failArguments = failMethodInvocation.arguments();
+
+      Replacements replacements = isAssertJ ?
+        assertJReplacement(failArguments, tryStatement, isTryBlock) :
+        junitReplacement(failArguments, tryStatement, isTryBlock);
+
+      var firstCatchFinallyToken = tryStatement.catches().isEmpty() ?
+        tryStatement.finallyKeyword().firstToken() :
+        tryStatement.catches().get(0).firstToken();
+      var lastCatchFinallyToken = tryStatement.finallyBlock() != null ?
+        tryStatement.finallyBlock().lastToken() :
+        tryStatement.catches().get(tryStatement.catches().size() - 1).block().lastToken();
+
+      return JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
+        JavaTextEdit.replaceTree(tryStatement.tryKeyword(), replacements.replaceTryWith),
+        JavaTextEdit.replaceTree(failMethodInvocation.parent(), ""),
+        JavaTextEdit.replaceBetweenTree(
+          firstCatchFinallyToken,
+          lastCatchFinallyToken,
+          replacements.replaceCatchesWith
+        )
+      ).build();
     }
 
     private Replacements junitReplacement(
