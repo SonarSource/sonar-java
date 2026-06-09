@@ -9,11 +9,16 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
   void tests() {
     try {
       raise();
-      fail(); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+      fail(); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}} [[quickfixes=qf1]]
 //    ^^^^^^
     } catch (Exception _) {
       // test passed
     }
+    // fix@qf1 {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+    // edit@qf1 [[sl=10;sc=5;el=10;ec=8]] {{assertThrows(Exception.class, () -> }}
+    // edit@qf1 [[sl=12;sc=7;el=12;ec=14]] {{}}
+    // edit@qf1 [[sl=14;sc=7;el=16;ec=6]] {{);}}
+
     try {
       dontRaise();
     } catch (Exception _) {
@@ -47,11 +52,15 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
 
     try {
       raise();
-      org.assertj.core.api.Fail.fail("expected exception"); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+      org.assertj.core.api.Fail.fail("expected exception"); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}  [[quickfixes=qf2]]
 //    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     } catch (Exception _) {
       // test passed
     }
+    // fix@qf2 {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+    // edit@qf2 [[sl=53;sc=5;el=53;ec=8]] {{assertThatCode(() -> }}
+    // edit@qf2 [[sl=55;sc=7;el=55;ec=60]] {{}}
+    // edit@qf2 [[sl=57;sc=7;el=59;ec=6]] {{).withFailMessage("expected exception").isInstanceOf(Exception.class);}}
 
     try {
       raise();
