@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-import static org.sonar.java.checks.helpers.UnitTestUtils.findFail;
+import static org.sonar.java.utils.UnitTestUtils.findFail;
 
 public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscriptionVisitor {
 

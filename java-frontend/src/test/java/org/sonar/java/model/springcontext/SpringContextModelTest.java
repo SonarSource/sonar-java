@@ -16,9 +16,21 @@
  */
 package org.sonar.java.model.springcontext;
 
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
+import org.sonar.java.JavaFrontend;
+import org.sonar.java.Measurer;
+import org.sonar.java.SonarComponents;
+import org.sonar.java.TestUtils;
+import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.telemetry.NoOpTelemetry;
+import org.sonar.java.test.classpath.TestClasspathUtils;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class SpringContextModelTest {
 
@@ -30,6 +42,26 @@ class SpringContextModelTest {
     assertNotNull(model.getProjectPackageScan(), "ProjectPackageScan should be initialized");
     assertNotNull(model.getTypeToBeanNamesIndex(), "TypeToBeanNamesIndex should be initialized");
     assertNotNull(model.getEntityClassToPropertiesIndex(), "EntityClassToPropertiesIndex should be initialized");
+  }
+
+  @Test
+  void scan_fills_project_package_scan_in_spring_context_model() {
+    SpringContextModel springContextModel = new SpringContextModel();
+    SonarComponents sonarComponents = TestUtils.mockSonarComponents();
+    when(sonarComponents.getSpringContextModel()).thenReturn(springContextModel);
+    when(sonarComponents.getJavaClasspath()).thenReturn(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    when(sonarComponents.getModuleKey()).thenReturn("a");
+
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, mock(Measurer.class), new NoOpTelemetry(), mock(JavaResourceLocator.class), null);
+    frontend.scan(
+      Collections.singletonList(TestUtils.inputFile("src/test/files/springcontext/SpringBootApp.java")),
+      Collections.emptyList(),
+      Collections.emptyList()
+    );
+
+    assertThat(springContextModel.getProjectPackageScan().getModules()).isNotEmpty();
+    assertThat(springContextModel.getProjectPackageScan().getPackagesForModule("a"))
+      .containsExactly("springcontext");
   }
 
 }

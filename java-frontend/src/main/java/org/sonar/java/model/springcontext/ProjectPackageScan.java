@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model.springcontext;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -39,6 +40,16 @@ public class ProjectPackageScan {
    */
   public void addPackage(String module, String packageName) {
     packagesScannedBySpringPerModule.computeIfAbsent(module, k -> new HashSet<>()).add(packageName);
+  }
+
+  /**
+   * Registers all packages in the given collection as scanned by Spring for the given module.
+   *
+   * @param module       the module in which the component scan is configured
+   * @param packageNames the package names to register
+   */
+  public void addPackages(String module, Collection<String> packageNames) {
+    packagesScannedBySpringPerModule.computeIfAbsent(module, k -> new HashSet<>()).addAll(packageNames);
   }
 
   /**

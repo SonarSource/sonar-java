@@ -40,7 +40,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.UnitTestUtils.hasTestAnnotation;
+import static org.sonar.java.utils.UnitTestUtils.hasTestAnnotation;
 
 @Rule(key = "S5853")
 public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisitor {
