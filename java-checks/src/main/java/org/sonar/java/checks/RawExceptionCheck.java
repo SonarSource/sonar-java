@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.reporting.FluentReporting;
@@ -40,12 +41,20 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @DeprecatedRuleKey(ruleKey = "S00112", repositoryKey = "squid")
 @Rule(key = "S112")
 public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanner {
-
+  private static final String THROWABLE = "java.lang.Throwable";
+  private static final String RUNTIME_EXCEPTION = "java.lang.RuntimeException";
+  private static final String ERROR = "java.lang.Error";
+  private static final String EXCEPTION = "java.lang.Exception";
   private static final List<String> RAW_EXCEPTIONS = Arrays.asList(
-    "java.lang.Throwable",
-    "java.lang.Error",
-    "java.lang.Exception",
-    "java.lang.RuntimeException");
+    THROWABLE,
+    ERROR,
+    EXCEPTION,
+    RUNTIME_EXCEPTION
+  );
+  private static final List<String> WRAPPING_EXCEPTIONS = List.of(
+    RUNTIME_EXCEPTION,
+    ERROR
+  );
 
   private FluentReporting context;
   private JavaVersion javaVersion;
@@ -80,8 +89,8 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
 
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
-    if (tree.expression().is(Tree.Kind.NEW_CLASS)) {
-      TypeTree exception = ((NewClassTree) tree.expression()).identifier();
+    if (tree.expression() instanceof NewClassTree newClassTree && !isSimpleWrapping(newClassTree)) {
+      TypeTree exception = newClassTree.identifier();
       if (isRawException(exception.symbolType())) {
         reportIssue(exception);
       }
@@ -117,6 +126,13 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
 
   private static boolean isRawException(Type type) {
     return RAW_EXCEPTIONS.stream().anyMatch(type::is);
+  }
+
+  private static boolean isSimpleWrapping(NewClassTree tree) {
+    return WRAPPING_EXCEPTIONS.stream().anyMatch(tree.identifier().symbolType()::is) &&
+      tree.arguments().stream().anyMatch(argument ->
+        argument.symbolType().isSubtypeOf(THROWABLE )
+      );
   }
 
   private static boolean isNotOverridden(MethodTree tree) {

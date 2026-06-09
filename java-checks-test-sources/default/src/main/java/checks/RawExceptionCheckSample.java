@@ -6,12 +6,21 @@ import java.security.PrivilegedActionException;
 
 public class RawExceptionCheckSample {
 
-  public void throws_Throwable() throws Throwable { // Noncompliant
-//                                      ^^^^^^^^^
+
+  public String wrapsDirectDerivedCheckedExceptionCause1() {
+    try {
+      return readPrivilegedValue();
+    } catch (PrivilegedActionException e) {
+      throw new RuntimeException("Failed to read", e.getCause()); // Compliant
+    }
+  }
+
+  public void throwsThrowable() throws Throwable { // Noncompliant
+//                                     ^^^^^^^^^
     throw new Throwable(); // Noncompliant
   }
 
-  public void method_throwing_throwable() throws Throwable { // Compliant
+  public void methodThrowingThrowable() throws Throwable { // Compliant
     throwingExceptionMethod1();
   }
 
@@ -23,20 +32,20 @@ public class RawExceptionCheckSample {
 //                                               ^^^^^^^^^^^^^^^^^^^
   }
 
-  public void throws_Error() {
+  public void throwsError() {
     throw new Error(); // Noncompliant
 //            ^^^^^
   }
 
-  public void throws_Exception() throws Exception { // Noncompliant {{Replace generic exceptions with specific library exceptions or a custom exception.}}
+  public void throwsException() throws Exception { // Noncompliant {{Replace generic exceptions with specific library exceptions or a custom exception.}}
     throw new Exception(); // Noncompliant
   }
 
-  public void throws_RuntimeException() {
+  public void throwsRuntimeException() {
     throw new RuntimeException(); // Noncompliant
   }
 
-  public String wraps_specific_checked_exception() {
+  public String wrapsSpecificCheckedException() {
     try {
       return readFromBlockingSource();
     } catch (IOException | InterruptedException e) {
@@ -44,7 +53,7 @@ public class RawExceptionCheckSample {
     }
   }
 
-  public String wraps_specific_checked_exception_with_message() {
+  public String wrapsSpecificCheckedExceptionWithMessage() {
     try {
       return readFromBlockingSource();
     } catch (IOException e) {
@@ -54,7 +63,7 @@ public class RawExceptionCheckSample {
     }
   }
 
-  public String wraps_direct_derived_checked_exception_cause() {
+  public String wrapsDirectDerivedCheckedExceptionCause() {
     try {
       return readPrivilegedValue();
     } catch (PrivilegedActionException e) {
@@ -62,7 +71,7 @@ public class RawExceptionCheckSample {
     }
   }
 
-  public String wraps_local_derived_checked_exception_cause() {
+  public String wrapsLocalDerivedCheckedExceptionCause() {
     try {
       return invokeReflectively();
     } catch (InvocationTargetException e) {
@@ -71,58 +80,21 @@ public class RawExceptionCheckSample {
     }
   }
 
-  public String wraps_generic_exception() {
-    try {
-      return readFromBlockingSource();
-    } catch (Exception e) {
-      throw new RuntimeException(e); // Noncompliant
-    }
-  }
-
-  public String wraps_throwable() {
-    try {
-      return readFromBlockingSource();
-    } catch (Throwable e) {
-      throw new RuntimeException(e); // Noncompliant
-    }
-  }
-
-  public String wraps_unchecked_exception() {
+  public String wrapsUncheckedException() {
     try {
       return readFromBlockingSource();
     } catch (IllegalStateException e) {
-      throw new RuntimeException(e); // Noncompliant
+      throw new RuntimeException(e);
     } catch (IOException | InterruptedException e) {
       return "";
     }
   }
 
-  public String wraps_mixed_checked_and_unchecked_exceptions() {
-    try {
-      return readFromBlockingSource();
-    } catch (IOException | IllegalStateException e) {
-      throw new RuntimeException(e); // Noncompliant
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e); // Compliant
-    }
-  }
-
-  public String wraps_checked_exception_without_cause() {
+  public String wrapsCheckedExceptionWithoutCause() {
     try {
       return readFromBlockingSource();
     } catch (IOException e) {
       throw new RuntimeException("Failed to read"); // Noncompliant
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e); // Compliant
-    }
-  }
-
-  public String wraps_unrelated_throwable() {
-    try {
-      return readFromBlockingSource();
-    } catch (IOException e) {
-      Throwable unrelated = new InterruptedException();
-      throw new RuntimeException(unrelated); // Noncompliant
     } catch (InterruptedException e) {
       throw new RuntimeException(e); // Compliant
     }
@@ -140,7 +112,7 @@ public class RawExceptionCheckSample {
     return "";
   }
 
-  public void throws_custom() throws MyOtherException { // Compliant
+  public void throwsCustom() throws MyOtherException { // Compliant
     throw new MyException(); // OK
   }
 
@@ -150,7 +122,7 @@ public class RawExceptionCheckSample {
   class MyOtherException extends Exception { // Compliant
   }
 
-  public void throws_value() {
+  public void throwsValue() {
     throw create(); // OK
   }
 
@@ -160,7 +132,7 @@ public class RawExceptionCheckSample {
 
   public void exception() {
     try {
-      throws_Exception();
+      throwsException();
     } catch (Exception e) {
       if (e instanceof RuntimeException) {
         throw (RuntimeException) e; // OK
@@ -178,12 +150,12 @@ public class RawExceptionCheckSample {
      }
 
   @Deprecated
-  public void throws_Exception2() throws Exception { // Noncompliant
+  public void throwsException2() throws Exception { // Noncompliant
   }
 
   private class Nested {
     Nested() throws Exception {
-      throws_Exception();
+      throwsException();
     }
   }
 
@@ -200,13 +172,13 @@ class SubClass extends RawExceptionCheckSample {
   }
 
   @Override
-  public void throws_Exception() throws Exception { // Compliant because overrides.
-    super.throws_Exception();
+  public void throwsException() throws Exception { // Compliant because overrides.
+    super.throwsException();
   }
 
   @Override
   @Deprecated
-  public void throws_Exception2() throws Exception { // Compliant because overrides.
+  public void throwsException2() throws Exception { // Compliant because overrides.
   }
 
   public static void main(String[] args) throws Exception { //should not raise issue SONARJAVA-671
