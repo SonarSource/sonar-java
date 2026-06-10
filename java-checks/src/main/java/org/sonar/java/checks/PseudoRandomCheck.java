@@ -18,8 +18,10 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
@@ -31,6 +33,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -96,6 +99,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
   );
 
   private boolean cryptoImportPresent = false;
+  private final Map<Tree, Boolean> scopeSecurityContextCache = new IdentityHashMap<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -106,6 +110,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
       cryptoImportPresent = hasCryptoImport((CompilationUnitTree) tree);
+      scopeSecurityContextCache.clear();
       return;
     }
     if (tree instanceof MethodInvocationTree mit) {
@@ -129,19 +134,20 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean hasCryptoImport(CompilationUnitTree cut) {
-    for (Tree importClause : cut.imports()) {
-      if (!importClause.is(Tree.Kind.IMPORT)) {
-        continue;
+    for (ImportClauseTree importClause : cut.imports()) {
+      if (importClause.is(Tree.Kind.IMPORT)
+        && ((ImportTree) importClause).qualifiedIdentifier() instanceof ExpressionTree exprTree
+        && matchesCryptoPrefix(ExpressionsHelper.concatenate(exprTree))) {
+        return true;
       }
-      Tree qualifiedIdentifier = ((ImportTree) importClause).qualifiedIdentifier();
-      if (!(qualifiedIdentifier instanceof ExpressionTree exprTree)) {
-        continue;
-      }
-      String importName = ExpressionsHelper.concatenate(exprTree);
-      for (String prefix : CRYPTO_IMPORT_PREFIXES) {
-        if (importName.startsWith(prefix)) {
-          return true;
-        }
+    }
+    return false;
+  }
+
+  private static boolean matchesCryptoPrefix(String importName) {
+    for (String prefix : CRYPTO_IMPORT_PREFIXES) {
+      if (importName.startsWith(prefix)) {
+        return true;
       }
     }
     return false;
@@ -155,6 +161,10 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     if (scope == null) {
       return false;
     }
+    return scopeSecurityContextCache.computeIfAbsent(scope, PseudoRandomCheck::scopeHasSecurityKeyword);
+  }
+
+  private static boolean scopeHasSecurityKeyword(Tree scope) {
     IdentifierCollector collector = new IdentifierCollector();
     scope.accept(collector);
     for (String identifier : collector.identifiers) {
