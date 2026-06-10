@@ -16,7 +16,7 @@
  */
 package org.sonar.java.model.springcontext;
 
-import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
@@ -54,14 +54,21 @@ class SpringContextModelTest {
 
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, mock(Measurer.class), new NoOpTelemetry(), mock(JavaResourceLocator.class), null);
     frontend.scan(
-      Collections.singletonList(TestUtils.inputFile("src/test/files/springcontext/SpringBootApp.java")),
-      Collections.emptyList(),
-      Collections.emptyList()
+      List.of(
+        TestUtils.inputFile("src/test/files/springcontext/SpringBootApp.java"),
+        TestUtils.inputFile("src/test/files/springcontext/SpringContextComponent.java")
+      ),
+      List.of(),
+      List.of()
     );
 
     assertThat(springContextModel.getProjectPackageScan().getModules()).isNotEmpty();
     assertThat(springContextModel.getProjectPackageScan().getPackagesForModule("a"))
       .containsExactly("springcontext");
+    assertThat(springContextModel.getBeanDefinitionRegistry().getByName("springContextComponent"))
+      .hasSize(1)
+      .first()
+      .satisfies(bean -> assertThat(bean.getType()).isEqualTo("springcontext.SpringContextComponent"));
   }
 
 }

@@ -43,6 +43,15 @@ public final class SpringUtils {
   public static final String REST_CONTROLLER_ANNOTATION = "org.springframework.web.bind.annotation.RestController";
   public static final String SPRING_BOOT_TEST_ANNOTATION = "org.springframework.boot.test.context.SpringBootTest";
 
+  public static final List<String> STEREOTYPE_ANNOTATIONS = List.of(
+    COMPONENT_ANNOTATION,
+    SERVICE_ANNOTATION,
+    REPOSITORY_ANNOTATION,
+    CONTROLLER_ANNOTATION,
+    REST_CONTROLLER_ANNOTATION,
+    CONFIGURATION_ANNOTATION
+  );
+
   private SpringUtils() {
     // Utils class
   }
