@@ -29,4 +29,36 @@ class PseudoRandomCheckTest {
       .withCheck(new PseudoRandomCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_no_security_context() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PseudoRandomCheckNoContextSample.java"))
+      .withCheck(new PseudoRandomCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_security_keywords() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PseudoRandomCheckSecurityKeywordsSample.java"))
+      .withCheck(new PseudoRandomCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_crypto_import() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PseudoRandomCheckCryptoImportSample.java"))
+      .withCheck(new PseudoRandomCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_field_scope() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PseudoRandomCheckFieldScopeSample.java"))
+      .withCheck(new PseudoRandomCheck())
+      .verifyIssues();
+  }
 }
