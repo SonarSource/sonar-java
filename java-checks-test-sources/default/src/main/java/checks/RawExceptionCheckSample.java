@@ -1,13 +1,26 @@
 package checks;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.security.PrivilegedActionException;
+
 public class RawExceptionCheckSample {
 
-  public void throws_Throwable() throws Throwable { // Noncompliant
-//                                      ^^^^^^^^^
+
+  public String wrapsDirectDerivedCheckedExceptionCause1() {
+    try {
+      return readPrivilegedValue();
+    } catch (PrivilegedActionException e) {
+      throw new RuntimeException("Failed to read", e.getCause()); // Compliant
+    }
+  }
+
+  public void throwsThrowable() throws Throwable { // Noncompliant
+//                                     ^^^^^^^^^
     throw new Throwable(); // Noncompliant
   }
 
-  public void method_throwing_throwable() throws Throwable { // Compliant
+  public void methodThrowingThrowable() throws Throwable { // Compliant
     throwingExceptionMethod1();
   }
 
@@ -19,21 +32,88 @@ public class RawExceptionCheckSample {
 //                                               ^^^^^^^^^^^^^^^^^^^
   }
 
-  public void throws_Error() {
+  public void throwsError() {
     throw new Error(); // Noncompliant
 //            ^^^^^
   }
 
-  public void throws_Exception() throws Exception { // Noncompliant {{Replace generic exceptions with specific library exceptions or a custom exception.}}
+  public void throwsException() throws Exception { // Noncompliant {{Replace generic exceptions with specific library exceptions or a custom exception.}}
     throw new Exception(); // Noncompliant
   }
 
-  public void throws_RuntimeException() {
+  public void throwsRuntimeException() {
     throw new RuntimeException(); // Noncompliant
   }
 
-  public void throws_custom() throws MyOtherException { // Compliant
-    throw new MyException(); // OK
+  public String wrapsSpecificCheckedException() {
+    try {
+      return readFromBlockingSource();
+    } catch (IOException | InterruptedException e) {
+      throw new RuntimeException(e); // Compliant
+    }
+  }
+
+  public String wrapsSpecificCheckedExceptionWithMessage() {
+    try {
+      return readFromBlockingSource();
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to read", e); // Compliant
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e); // Compliant
+    }
+  }
+
+  public String wrapsDirectDerivedCheckedExceptionCause() {
+    try {
+      return readPrivilegedValue();
+    } catch (PrivilegedActionException e) {
+      throw new RuntimeException("Failed to read", e.getCause()); // Compliant
+    }
+  }
+
+  public String wrapsLocalDerivedCheckedExceptionCause() {
+    try {
+      return invokeReflectively();
+    } catch (InvocationTargetException e) {
+      Throwable target = e.getTargetException();
+      throw new Error("Failed to invoke", target); // Compliant
+    }
+  }
+
+  public String wrapsUncheckedException() {
+    try {
+      return readFromBlockingSource();
+    } catch (IllegalStateException e) {
+      throw new RuntimeException(e);
+    } catch (IOException | InterruptedException e) {
+      return "";
+    }
+  }
+
+  public String wrapsCheckedExceptionWithoutCause() {
+    try {
+      return readFromBlockingSource();
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to read"); // Noncompliant
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e); // Compliant
+    }
+  }
+
+  private String readFromBlockingSource() throws IOException, InterruptedException {
+    return "";
+  }
+
+  private String readPrivilegedValue() throws PrivilegedActionException {
+    return "";
+  }
+
+  private String invokeReflectively() throws InvocationTargetException {
+    return "";
+  }
+
+  public void throwsCustom() throws MyOtherException { // Compliant
+    throw new MyException(); // Compliant
   }
 
   class MyException extends RuntimeException { // Compliant
@@ -42,20 +122,20 @@ public class RawExceptionCheckSample {
   class MyOtherException extends Exception { // Compliant
   }
 
-  public void throws_value() {
-    throw create(); // OK
+  public void throwsValue() {
+    throw create(); // Compliant
   }
 
   public RuntimeException create() {
-    return new RuntimeException(); // OK
+    return new RuntimeException(); // Compliant
   }
 
   public void exception() {
     try {
-      throws_Exception();
+      throwsException();
     } catch (Exception e) {
       if (e instanceof RuntimeException) {
-        throw (RuntimeException) e; // OK
+        throw (RuntimeException) e; // Compliant
       }
     }
   }
@@ -70,12 +150,12 @@ public class RawExceptionCheckSample {
      }
 
   @Deprecated
-  public void throws_Exception2() throws Exception { // Noncompliant
+  public void throwsException2() throws Exception { // Noncompliant
   }
 
   private class Nested {
     Nested() throws Exception {
-      throws_Exception();
+      throwsException();
     }
   }
 
@@ -92,13 +172,13 @@ class SubClass extends RawExceptionCheckSample {
   }
 
   @Override
-  public void throws_Exception() throws Exception { // Compliant because overrides.
-    super.throws_Exception();
+  public void throwsException() throws Exception { // Compliant because overrides.
+    super.throwsException();
   }
 
   @Override
   @Deprecated
-  public void throws_Exception2() throws Exception { // Compliant because overrides.
+  public void throwsException2() throws Exception { // Compliant because overrides.
   }
 
   public static void main(String[] args) throws Exception { //should not raise issue SONARJAVA-671
