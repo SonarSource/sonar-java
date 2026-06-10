@@ -17,15 +17,25 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnitTestUtils;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.Arguments;
 
+import javax.annotation.Nullable;
 import java.util.List;
+
+import static org.sonar.java.checks.helpers.TryCatchUtils.getCaughtTypes;
 
 @Rule(key = "S8714")
 public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscriptionVisitor {
@@ -44,26 +54,148 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
   }
 
   private final class TryStatementsVisitor extends BaseTreeVisitor {
-    private final boolean isJunitJupiter;
+    private final boolean hasJunitJupiterTestAnnotation;
 
-    public TryStatementsVisitor(boolean isJunitJupiter) {
-      this.isJunitJupiter = isJunitJupiter;
+    public TryStatementsVisitor(boolean hasJunitJupiterTestAnnotation) {
+      this.hasJunitJupiterTestAnnotation = hasJunitJupiterTestAnnotation;
     }
 
     @Override
     public void visitTryStatement(TryStatementTree tree) {
-      checkBlock(tree.block(), "Use assertThrows() instead of try/catch and fail() in the try block.");
-      tree.catches().forEach(c -> checkBlock(c.block(), "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block."));
+      checkBlock(tree.block(), tree, true);
+      tree.catches().forEach(c ->
+        checkBlock(c.block(), tree, false)
+      );
       super.visitTryStatement(tree);
     }
 
-    private void checkBlock(BlockTree block, String message) {
+    private void checkBlock(
+      BlockTree block,
+      TryStatementTree tryStatement,
+      boolean isTryBlock
+    ) {
       UnitTestUtils.findFail(block).ifPresent(failMethodInvocation -> {
-          if (isJunitJupiter || failMethodInvocation.methodSymbol().signature().contains("org.assertj")) {
-            reportIssue(failMethodInvocation, message);
+
+          var isAssertJ = failMethodInvocation.methodSymbol().signature().contains("org.assertj");
+          if (hasJunitJupiterTestAnnotation || isAssertJ) {
+            String issueMessage = isTryBlock ?
+              "Use assertThrows() instead of try/catch and fail() in the try block." :
+              "Use assertDoesNotThrow() instead of try/catch and fail() in the catch block.";
+            InternalJavaIssueBuilder issueBuilder = QuickFixHelper
+              .newIssue(context)
+              .forRule(AssertThrowsInsteadOfTryCatchFailCheck.this)
+              .onTree(failMethodInvocation)
+              .withMessage(issueMessage)
+              .withQuickFix(() ->
+                provideQuickFix(
+                  tryStatement,
+                  failMethodInvocation,
+                  issueMessage,
+                  isAssertJ,
+                  isTryBlock
+                )
+              );
+            issueBuilder.report();
           }
         }
       );
     }
+
+    private JavaQuickFix provideQuickFix(
+      TryStatementTree tryStatement,
+      MethodInvocationTree failMethodInvocation,
+      String issueMessage,
+      boolean isAssertJ,
+      boolean isTryBlock
+    ) {
+      Arguments failArguments = failMethodInvocation.arguments();
+
+      Replacements replacements = isAssertJ ?
+        assertJReplacement(failArguments, tryStatement, isTryBlock) :
+        junitReplacement(failArguments, tryStatement, isTryBlock);
+
+      var firstCatchFinallyToken = tryStatement.catches().isEmpty() ?
+        tryStatement.finallyKeyword().firstToken() :
+        tryStatement.catches().get(0).firstToken();
+      var lastCatchFinallyToken = tryStatement.finallyBlock() != null ?
+        tryStatement.finallyBlock().lastToken() :
+        tryStatement.catches().get(tryStatement.catches().size() - 1).block().lastToken();
+
+      return JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
+        JavaTextEdit.replaceTree(tryStatement.tryKeyword(), replacements.replaceTryWith),
+        JavaTextEdit.replaceTree(failMethodInvocation.parent(), ""),
+        JavaTextEdit.replaceBetweenTree(
+          firstCatchFinallyToken,
+          lastCatchFinallyToken,
+          replacements.replaceCatchesWith
+        )
+      ).build();
+    }
+
+    private Replacements junitReplacement(
+      Arguments failArguments,
+      TryStatementTree tryStatement,
+      boolean isTryBlock
+    ) {
+
+      String argumentsSuffix = failArguments.stream().findFirst().filter(argument ->
+        {
+          Type symbolType = argument.symbolType();
+          return !symbolType.isUnknown() && (symbolType.is("java.lang.String") || symbolType.isSubtypeOf("java.util.function.Supplier<java.lang.String>"));
+        }
+      ).map(argument ->
+        ", %s".formatted(contentFor(argument))
+      ).orElse("");
+
+      return isTryBlock ?
+        new Replacements(
+          "assertThrows(%s, () -> ".formatted(typeClass(firstCaughtTypeInTry(tryStatement))),
+          "%s);".formatted(argumentsSuffix)
+        ) :
+        new Replacements(
+          "assertDoesNotThrow(() -> ",
+          "%s);".formatted(argumentsSuffix)
+        );
+    }
+
+    private Replacements assertJReplacement(
+      Arguments failArguments,
+      TryStatementTree tryStatement,
+      boolean isTryBlock
+    ) {
+      // in assertJ the failure message is mandatory
+      var failureMessage = contentFor(failArguments.get(0));
+      return isTryBlock ?
+        new Replacements(
+          "assertThatCode(() -> ",
+          ").withFailMessage(%s).isInstanceOf(%s);".formatted(failureMessage, typeClass(firstCaughtTypeInTry(tryStatement)))
+        ) :
+        new Replacements(
+          "assertThatCode(() -> ",
+          ").withFailMessage(%s).doesNotThrowAnyException();".formatted(failureMessage)
+        );
+    }
+
+    private String contentFor(Tree tree) {
+      return QuickFixHelper.contentForTree(tree, context);
+    }
+
+    private record Replacements(String replaceTryWith, String replaceCatchesWith) {
+    }
   }
+
+
+  private static String typeClass(@Nullable Type caughtType) {
+    if (caughtType == null) return "Throwable";
+    return caughtType.name() + ".class";
+  }
+
+  @Nullable
+  private static Type firstCaughtTypeInTry(TryStatementTree tryStatement) {
+    if (!tryStatement.catches().isEmpty()) {
+      return getCaughtTypes(tryStatement.catches().get(0)).get(0);
+    }
+    return null;
+  }
+
 }
