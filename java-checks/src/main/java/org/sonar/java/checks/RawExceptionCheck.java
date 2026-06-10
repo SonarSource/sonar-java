@@ -131,7 +131,7 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
   private static boolean isSimpleWrapping(NewClassTree tree) {
     return WRAPPING_EXCEPTIONS.stream().anyMatch(tree.identifier().symbolType()::is) &&
       tree.arguments().stream().anyMatch(argument ->
-        argument.symbolType().isSubtypeOf(THROWABLE )
+        argument.symbolType().isSubtypeOf(THROWABLE)
       );
   }
 
