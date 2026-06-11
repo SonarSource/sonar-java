@@ -26,7 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.checks.helpers.Javadoc;
-import org.sonar.java.model.PackageUtils;
+import org.sonar.java.utils.PackageUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;

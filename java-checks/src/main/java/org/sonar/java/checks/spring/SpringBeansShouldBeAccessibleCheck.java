@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.check.Rule;
+import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.DefaultModuleScannerContext;
@@ -115,7 +116,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
       return;
     }
 
-    String classPackageName = packageNameOf(classTree.symbol());
+    String classPackageName = PackageUtils.packageNameOf(classTree.symbol());
     SymbolMetadata classSymbolMetadata = classTree.symbol().metadata();
 
     // try to apply "direct" annotation first
@@ -199,7 +200,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
         if (!isClassBased && element instanceof String s) {
           packages.add(s);
         } else if (isClassBased && element instanceof Symbol s) {
-          packages.add(packageNameOf(s));
+          packages.add(PackageUtils.packageNameOf(s));
         }
       }
     }
@@ -221,18 +222,10 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
           packagesScannedBySpringAtProjectLevel.add(oString);
         }
         if (o instanceof Symbol oSymbol) {
-          packagesScannedBySpringAtProjectLevel.add(packageNameOf(oSymbol));
+          packagesScannedBySpringAtProjectLevel.add(PackageUtils.packageNameOf(oSymbol));
         }
       }
     }
-  }
-
-  private static String packageNameOf(Symbol symbol) {
-    Symbol owner = symbol.owner();
-    while (!owner.isPackageSymbol()) {
-      owner = owner.owner();
-    }
-    return owner.name();
   }
 
   private static boolean hasAnnotation(SymbolMetadata classSymbolMetadata, String... annotationName) {

@@ -62,16 +62,6 @@ class SpringContextModelGathererTest {
     assertThat(new SampleGatherer().isCompatibleWithDependencies(finderFor())).isFalse();
   }
 
-  // ---- ComponentScanPackageGatherer -----------------------------------------
-
-  @Test
-  void componentScanPackageGatherer_collects_package_from_springBootApplication() {
-    var gatherer = new ComponentScanPackageGatherer();
-    scanFile("src/test/files/springcontext/SpringBootApp.java", gatherer, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
-
-    assertThat(model.getProjectPackageScan().getPackagesForModule("")).containsExactly("springcontext");
-  }
-
   // ---- Helpers --------------------------------------------------------------
 
   private void scanFile(String filePath, JavaCheck check, List<File> classpath) {

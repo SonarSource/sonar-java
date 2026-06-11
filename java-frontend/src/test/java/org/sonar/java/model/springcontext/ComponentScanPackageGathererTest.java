@@ -25,13 +25,8 @@ import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
-import org.sonar.java.model.JParserTestUtils;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
-import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
@@ -46,12 +41,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ComponentScanPackageGathererTest {
+class ComponentScanPackageGathererTest extends SpringContextGathererTest {
 
   private static final String MODULE_KEY = "";
-
-  private SpringContextModel model;
-  private ComponentScanPackageGatherer gatherer;
 
   @BeforeEach
   void setUp() {
@@ -250,33 +242,6 @@ class ComponentScanPackageGathererTest {
   }
 
   // ---- Helpers --------------------------------------------------------------
-
-  private void scan(String... filePaths) {
-    scan(SensorContextTester.create(new File("")), filePaths);
-  }
-
-  private void scan(List<File> classpath, String... filePaths) {
-    scan(classpath, SensorContextTester.create(new File("")), filePaths);
-  }
-
-  private void scan(SensorContextTester ctx, String... filePaths) {
-    scan(TestClasspathUtils.DEFAULT_MODULE.getClassPath(), ctx, filePaths);
-  }
-
-  private void scan(List<File> classpath, SensorContextTester ctx, String... filePaths) {
-    var sonarComponents = new SonarComponents(null, null, null, null, null, null);
-    sonarComponents.setSensorContext(ctx);
-    sonarComponents.setSpringContextModel(model);
-
-    VisitorsBridge visitorsBridge = new VisitorsBridge(List.of((JavaCheck) gatherer), classpath, sonarComponents);
-    for (String filePath : filePaths) {
-      File file = new File(filePath);
-      var compilationUnit = JParserTestUtils.parse(file, classpath);
-      visitorsBridge.setCurrentFile(TestUtils.inputFile(file));
-      visitorsBridge.visitFile(compilationUnit, false);
-    }
-    visitorsBridge.endOfAnalysis();
-  }
 
   private static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
     CacheContext cacheContext = mock(CacheContext.class);
