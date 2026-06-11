@@ -1,20 +1,18 @@
-<p>Formatted SQL queries can be difficult to maintain, debug and can increase the risk of SQL injection when concatenating untrusted values into the
-query. However, this rule doesn’t detect SQL injections (unlike rule {rule:javasecurity:S3649}), the goal is only to highlight complex/formatted queries.</p>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>Some parts of the query come from untrusted values (like user inputs).</li>
-  <li>The query is repeated/duplicated in other parts of the code.</li>
-  <li>The application must support different types of relational databases.</li>
-</ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<ul>
-  <li>Use <a href="https://cheatsheetseries.owasp.org/cheatsheets/Query_Parameterization_Cheat_Sheet.html">parameterized queries, prepared statements,
-  or stored procedures</a> and bind variables to SQL query parameters.</li>
-  <li>Consider using ORM frameworks if there is a need to have an abstract layer to access data.</li>
-</ul>
-<h2>Sensitive Code Example</h2>
-<pre>
+<p>Dynamically building SQL query strings can result in broken SQL syntax and open SQL injection attacks.</p>
+<h2>Why is this an issue?</h2>
+<p>When SQL queries are constructed by concatenating or formatting user-supplied values directly into the query string, the structure of the query
+itself can be altered by a malicious input. This rule flags calls to SQL execution functions where the query string is built using string
+concatenation or format operators rather than parameterized queries or prepared statements. Unlike rule {rule:javasecurity:S3649}, this rule does not perform
+taint analysis — it flags all dynamically formatted SQL queries as a potential risk regardless of the data source.</p>
+<h3>What is the potential impact?</h3>
+<h4>SQL injection</h4>
+<p>If any part of a dynamically formatted query string originates from untrusted input, an attacker can manipulate the query to read, modify, or
+delete data they should not have access to, bypass authentication checks, or in some configurations execute operating system commands.</p>
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<p>The following code builds a SQL query by concatenating a value directly into the query string.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public User getUser(Connection con, String user) throws SQLException {
 
   Statement stmt1 = null;
@@ -26,10 +24,10 @@ public User getUser(Connection con, String user) throws SQLException {
 
     stmt2 = con.createStatement();
     ResultSet rs2 = stmt2.executeQuery("select FNAME, LNAME, SSN " +
-                 "from USERS where UNAME=" + user);  // Sensitive
+                 "from USERS where UNAME=" + user);  // Noncompliant
 
     pstmt = con.prepareStatement("select FNAME, LNAME, SSN " +
-                 "from USERS where UNAME=" + user);  // Sensitive
+                 "from USERS where UNAME=" + user);  // Noncompliant
     ResultSet rs3 = pstmt.executeQuery();
 
     //...
@@ -38,12 +36,12 @@ public User getUser(Connection con, String user) throws SQLException {
 public User getUserHibernate(org.hibernate.Session session, String data) {
 
   org.hibernate.Query query = session.createQuery(
-            "FROM students where fname = " + data);  // Sensitive
+            "FROM students where fname = " + data);  // Noncompliant
   // ...
 }
 </pre>
-<h2>Compliant Solution</h2>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public User getUser(Connection con, String user) throws SQLException {
 
   Statement stmt1 = null;
@@ -55,7 +53,7 @@ public User getUser(Connection con, String user) throws SQLException {
     ResultSet rs1 = stmt1.executeQuery("GETDATE()");
 
     pstmt = con.prepareStatement(query);
-    pstmt.setString(1, user);  // Good; PreparedStatements escape their inputs.
+    pstmt.setString(1, user);
     ResultSet rs2 = pstmt.executeQuery();
 
     //...
@@ -66,22 +64,21 @@ public User getUserHibernate(org.hibernate.Session session, String data) {
 
   org.hibernate.Query query =  session.createQuery("FROM students where fname = ?");
   query = query.setParameter(0,data);  // Good; Parameter binding escapes all input
-
-  org.hibernate.Query query2 =  session.createQuery("FROM students where fname = " + data); // Sensitive
-  // ...
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li>Derived from FindSecBugs rules <a href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_JPA">Potential SQL/JPQL Injection
+  (JPA)</a>, <a href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_JDO">Potential SQL/JDOQL Injection (JDO)</a>, <a
+  href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_HIBERNATE">Potential SQL/HQL Injection (Hibernate)</a></li>
+</ul>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A03_2021-Injection/">Top 10 2021 Category A3 - Injection</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A1_2017-Injection">Top 10 2017 Category A1 - Injection</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/89">CWE-89 - Improper Neutralization of Special Elements used in an SQL Command</a></li>
-  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/564">CWE-564 - SQL Injection: Hibernate</a></li>
-  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/20">CWE-20 - Improper Input Validation</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/943">CWE-943 - Improper Neutralization of Special Elements in Data Query Logic</a></li>
   <li><a
   href="https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/input-validation-and-data-sanitization-ids/ids00-j">CERT, IDS00-J.</a> - Prevent SQL injection</li>
-  <li>Derived from FindSecBugs rules <a href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_JPA">Potential SQL/JPQL Injection
-  (JPA)</a>, <a href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_JDO">Potential SQL/JDOQL Injection (JDO)</a>, <a
-  href="https://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_HIBERNATE">Potential SQL/HQL Injection (Hibernate)</a></li>
 </ul>
 
