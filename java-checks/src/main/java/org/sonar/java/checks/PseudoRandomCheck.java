@@ -28,6 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -125,11 +126,9 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      cryptoImportPresent = false;
-      scopeSecurityContextCache.clear();
-    }
+  public void leaveFile(JavaFileScannerContext context) {
+    cryptoImportPresent = false;
+    scopeSecurityContextCache.clear();
   }
 
   private static boolean isStaticCallToInsecureRandomMethod(MethodInvocationTree mit) {
