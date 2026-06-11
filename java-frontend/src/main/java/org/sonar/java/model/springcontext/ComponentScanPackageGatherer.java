@@ -28,6 +28,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -127,7 +128,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
     if (!metadata.isAnnotatedWith(SpringUtils.SPRING_BOOT_APP_ANNOTATION)) {
       return;
     }
-    var packages = targetedPackages(packageNameOf(classSymbol), metadata, packagesCollectedAtFileLevel.isEmpty());
+    var packages = targetedPackages(PackageUtils.packageNameOf(classSymbol), metadata, packagesCollectedAtFileLevel.isEmpty());
     collectedPackages.addAll(packages);
     packagesCollectedAtFileLevel.addAll(packages);
   }
@@ -159,7 +160,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
           collectedPackages.add(oString);
           packagesCollectedAtFileLevel.add(oString);
         } else if (o instanceof Symbol oSymbol) {
-          var pkg = packageNameOf(oSymbol);
+          var pkg = PackageUtils.packageNameOf(oSymbol);
           if (!pkg.isBlank()) {
             collectedPackages.add(pkg);
             packagesCollectedAtFileLevel.add(pkg);
@@ -173,18 +174,10 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
     if (!isClassBased && element instanceof String s && !s.isBlank()) {
       return Optional.of(s);
     } else if (isClassBased && element instanceof Symbol s) {
-      var pkg = packageNameOf(s);
+      var pkg = PackageUtils.packageNameOf(s);
       return pkg.isBlank() ? Optional.empty() : Optional.of(pkg);
     }
     return Optional.empty();
-  }
-
-  private static String packageNameOf(Symbol symbol) {
-    Symbol owner = symbol.owner();
-    while (!owner.isPackageSymbol()) {
-      owner = owner.owner();
-    }
-    return owner.name();
   }
 
   private static String cacheKey(InputFile inputFile) {
