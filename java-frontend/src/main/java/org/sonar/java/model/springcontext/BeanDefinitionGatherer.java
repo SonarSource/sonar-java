@@ -82,7 +82,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     String fqn = classTree.symbol().type().fullyQualifiedName();
     String pkg = PackageUtils.packageNameOf(classTree.symbol());
 
-    if (isSpringBeanDefinitionsClass(meta)) {
+    if (SpringUtils.STEREOTYPE_ANNOTATIONS.stream().anyMatch(meta::isAnnotatedWith)) {
       String beanName = extractBeanName(meta)
         .orElseGet(() -> defaultBeanName(classTree.simpleName().name()));
       List<String> deps = collectAutowiredDependencies(classTree);
@@ -95,10 +95,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         deps));
 
       // @Bean methods — only if class is a configuration/component class
-      for (MethodTree method : methodsOf(classTree)) {
-        if (method.symbol().metadata().isAnnotatedWith(SpringUtils.BEAN_ANNOTATION)) {
-          collectBeanMethod(method, pkg);
-        }
+      for (MethodTree method : SpringUtils.getBeanMethods(classTree)) {
+        collectBeanMethod(method, pkg);
       }
     }
   }
@@ -123,10 +121,6 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     // Bean data is not cached yet; force parsing so beans are
     // always collected even for unchanged files in incremental runs.
     return false;
-  }
-
-  private static boolean isSpringBeanDefinitionsClass(SymbolMetadata meta) {
-    return SpringUtils.STEREOTYPE_ANNOTATIONS.stream().anyMatch(meta::isAnnotatedWith);
   }
 
   private static Optional<String> extractBeanName(SymbolMetadata meta) {
@@ -201,13 +195,6 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       }
     }
     return deps;
-  }
-
-  private static List<MethodTree> methodsOf(ClassTree classTree) {
-    return classTree.members().stream()
-      .filter(m -> m.is(Tree.Kind.METHOD))
-      .map(MethodTree.class::cast)
-      .toList();
   }
 
 }

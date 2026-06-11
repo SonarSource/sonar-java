@@ -90,4 +90,12 @@ public final class SpringUtils {
     return UnitTestUtils.isUnitTest(methodTree) && SpringUtils.isSpringBootTestClass(parentClass.symbol());
   }
 
+  public static List<MethodTree> getBeanMethods(ClassTree classTree) {
+    return classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .filter(method -> method.symbol().metadata().isAnnotatedWith(BEAN_ANNOTATION))
+      .toList();
+  }
+
 }
