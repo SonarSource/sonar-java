@@ -43,6 +43,15 @@ public final class SpringUtils {
   public static final String REST_CONTROLLER_ANNOTATION = "org.springframework.web.bind.annotation.RestController";
   public static final String SPRING_BOOT_TEST_ANNOTATION = "org.springframework.boot.test.context.SpringBootTest";
 
+  public static final List<String> STEREOTYPE_ANNOTATIONS = List.of(
+    COMPONENT_ANNOTATION,
+    SERVICE_ANNOTATION,
+    REPOSITORY_ANNOTATION,
+    CONTROLLER_ANNOTATION,
+    REST_CONTROLLER_ANNOTATION,
+    CONFIGURATION_ANNOTATION
+  );
+
   private SpringUtils() {
     // Utils class
   }
@@ -79,6 +88,14 @@ public final class SpringUtils {
     }
     ClassTree parentClass = (ClassTree) parentOfType;
     return UnitTestUtils.isUnitTest(methodTree) && SpringUtils.isSpringBootTestClass(parentClass.symbol());
+  }
+
+  public static List<MethodTree> getBeanMethods(ClassTree classTree) {
+    return classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .filter(method -> method.symbol().metadata().isAnnotatedWith(BEAN_ANNOTATION))
+      .toList();
   }
 
 }
