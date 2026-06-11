@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -78,8 +79,8 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     "org.apache.commons.lang.math.JVMRandom"
   );
 
-  // SONARJAVA-6440: ported from DART-276 security-context heuristic.
-  // When any of these prefixes appear in the file's imports, all PRNG usages in the file are reported.
+  // A crypto/auth library import signals the whole file is security-relevant;
+  // report all PRNG calls without needing per-scope keyword analysis.
   private static final List<String> CRYPTO_IMPORT_PREFIXES = List.of(
     "java.security.",
     "javax.crypto.",
@@ -110,7 +111,6 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
       cryptoImportPresent = hasCryptoImport((CompilationUnitTree) tree);
-      scopeSecurityContextCache.clear();
       return;
     }
     if (tree instanceof MethodInvocationTree mit) {
@@ -123,6 +123,14 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
         && isInSecurityContext(newClass)) {
         reportIssue(newClass.identifier(), MESSAGE);
       }
+    }
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      cryptoImportPresent = false;
+      scopeSecurityContextCache.clear();
     }
   }
 
@@ -159,7 +167,9 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     }
     Tree scope = findDeclarationScope(tree);
     if (scope == null) {
-      return false;
+      // Defensive: shouldn't happen in valid Java (every PRNG call has an enclosing
+      // method or class). Fail open and flag to avoid silent false negatives.
+      return true;
     }
     return scopeSecurityContextCache.computeIfAbsent(scope, PseudoRandomCheck::scopeHasSecurityKeyword);
   }
@@ -196,7 +206,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
   // Mirrors Dart's `_splitIntoWords`: split on underscores first; for each part either keep it as
   // a single lowercase word when all-uppercase, or split further on capital-letter boundaries.
   static List<String> tokenizeIdentifier(String identifier) {
-    List<String> words = new java.util.ArrayList<>();
+    List<String> words = new ArrayList<>();
     for (String part : identifier.split("_")) {
       if (part.isEmpty()) {
         continue;

@@ -58,4 +58,26 @@ class PseudoRandomCheckSecurityKeywordsSample {
     Random r = new Random(); // Compliant
     r.nextBytes(randomBytes);
   }
+
+  // --- Digit-suffixed all-uppercase identifier (Dart-faithful behaviour). ---
+  // `AES256` has no lowercase letter, so isAllUppercaseWithLetter returns true and the
+  // whole identifier is lowercased to a single token `aes256`. The keyword set holds
+  // `aes`, not `aes256`, so this does NOT trigger the heuristic. Same Dart behaviour.
+  // Intentional: documenting that digit-suffixed crypto acronyms do not match.
+  void digitSuffixedAcronym() {
+    final int AES256 = 32;
+    Random r = new Random(); // Compliant
+    r.nextInt(AES256);
+  }
 }
+
+// --- Inner-class scope isolation. ---
+// The outer class name `TokenAware` contains the security keyword `token`, but the
+// PRNG call lives in an inner class with neutral identifiers. findDeclarationScope
+// returns the inner ClassTree first, so the outer's keyword is NOT in scope.
+class TokenAware {
+  static class NeutralInner {
+    static final Random R = new Random(); // Compliant
+  }
+}
+

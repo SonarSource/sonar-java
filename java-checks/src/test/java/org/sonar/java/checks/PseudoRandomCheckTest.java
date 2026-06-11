@@ -61,4 +61,20 @@ class PseudoRandomCheckTest {
       .withCheck(new PseudoRandomCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_wildcard_crypto_import() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PseudoRandomCheckWildcardImportSample.java"))
+      .withCheck(new PseudoRandomCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_static_crypto_import() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PseudoRandomCheckStaticImportSample.java"))
+      .withCheck(new PseudoRandomCheck())
+      .verifyIssues();
+  }
 }

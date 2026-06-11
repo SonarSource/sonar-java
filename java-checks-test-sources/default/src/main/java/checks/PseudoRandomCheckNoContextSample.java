@@ -20,10 +20,7 @@ class PseudoRandomCheckNoContextSample {
     double d2 = Math.random(); // Compliant
     int v2 = ThreadLocalRandom.current().nextInt(); // Compliant
 
-    RandomUtils ru = new RandomUtils();
     float f1 = RandomUtils.nextFloat(); // Compliant
-
-    RandomStringUtils rsu = new RandomStringUtils();
     String s1 = RandomStringUtils.random(1); // Compliant
   }
 
