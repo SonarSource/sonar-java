@@ -1,117 +1,61 @@
-<p>Most of the regular expression engines use <code>backtracking</code> to try all possible execution paths of the regular expression when evaluating
-an input, in some cases it can cause performance issues, called <code>catastrophic backtracking</code> situations. In the worst case, the complexity
-of the regular expression is exponential in the size of the input, this means that a small carefully-crafted input (like 20 chars) can trigger
-<code>catastrophic backtracking</code> and cause a denial of service of the application. Super-linear regex complexity can lead to the same impact too
-with, in this case, a large carefully-crafted input (thousands chars).</p>
-<p>This rule determines the runtime complexity of a regular expression and informs you of the complexity if it is not linear.</p>
+<p>Regular expression engines rely on backtracking to evaluate patterns against input. Certain regex patterns lead to catastrophic backtracking, where
+the evaluation time grows exponentially with the input size.</p>
+<h2>Why is this an issue?</h2>
+<p>Regular expression engines use backtracking to try all possible execution paths when evaluating a pattern against an input. In some cases, this
+leads to catastrophic backtracking situations where the worst-case evaluation time grows exponentially with the input size. A small, carefully crafted
+input (around 20 characters) can trigger exponential backtracking and cause a denial of service of the application.</p>
+<p>This rule reports regular expressions that create exponential backtracking.</p>
 <p>Note that, due to improvements to the matching algorithm, some cases of exponential runtime complexity have become impossible when run using JDK 9
 or later. In such cases, an issue will only be reported if the project’s target Java version is 8 or earlier.</p>
-<h2>Ask Yourself Whether</h2>
+<h3>What is the potential impact?</h3>
+<h4>Denial of service</h4>
+<p>An attacker who can control the input matched against a vulnerable regular expression can craft a payload that causes the regex engine to explore
+an exponential number of execution paths. This causes the matching thread to consume excessive CPU time, preventing the application from serving
+legitimate users.</p>
+<h2>How to fix it</h2>
+<p>To fix a vulnerable regular expression, consider the following strategies:</p>
 <ul>
-  <li>The input is user-controlled.</li>
-  <li>The input size is not restricted to a small number of characters.</li>
-  <li>There is no timeout in place to limit the regex evaluation time.</li>
+  <li>Use possessive quantifiers (<code>+`, `*</code>, <code>?+</code>) or atomic grouping to prevent the regex engine from keeping backtracking
+  positions.</li>
+  <li>Replace <code>.</code> with negated character classes to exclude separators where applicable (e.g., <code><strong></strong></code><strong>
+  instead of <code>.</code></strong> before <code></code>).</li>
+  <li>Use bounded quantifiers such as <code>{1,5}</code> to limit repetitions.</li>
+  <li>Restructure nested quantifiers so the inner group can match in only one way.</li>
+  <li>Use a non-backtracking implementation such as <a href="https://github.com/google/re2j">RE2/J</a>.</li>
 </ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>To avoid <code>catastrophic backtracking</code> situations, make sure that none of the following conditions apply to your regular expression.</p>
-<p>In all of the following cases, catastrophic backtracking can only happen if the problematic part of the regex is followed by a pattern that can
-fail, causing the backtracking to actually happen. Note that when performing a full match (e.g. using <code>String.matches</code>), the end of the
-regex counts as a pattern that can fail because it will only succeed when the end of the string is reached.</p>
-<ul>
-  <li>If you have a non-possessive repetition <code>r*</code> or <code>r*?</code>, such that the regex <code>r</code> could produce different possible
-  matches (of possibly different lengths) on the same input, the worst case matching time can be exponential. This can be the case if <code>r</code>
-  contains optional parts, alternations or additional repetitions (but not if the repetition is written in such a way that there’s only one way to
-  match it).
-    <ul>
-      <li>When using JDK 9 or later an optimization applies when the repetition is greedy and the entire regex does not contain any back references.
-      In that case the runtime will only be polynomial (in case of nested repetitions) or even linear (in case of alternations or optional
-      parts).</li>
-    </ul></li>
-  <li>If you have multiple non-possessive repetitions that can match the same contents and are consecutive or are only separated by an optional
-  separator or a separator that can be matched by both of the repetitions, the worst case matching time can be polynomial (O(n^c) where c is the
-  number of problematic repetitions). For example <code>a*b*</code> is not a problem because <code>a*</code> and <code>b*</code> match different
-  things and <code>a*_a*</code> is not a problem because the repetitions are separated by a <code>'_'</code> and can’t match that <code>'_'</code>.
-  However, <code>a*a*</code> and <code>.*_.*</code> have quadratic runtime.</li>
-  <li>If you’re performing a partial match (such as by using <code>Matcher.find</code>, <code>String.split</code>, <code>String.replaceAll</code>
-  etc.) and the regex is not anchored to the beginning of the string, quadratic runtime is especially hard to avoid because whenever a match fails,
-  the regex engine will try again starting at the next index. This means that any unbounded repetition (even a possessive one), if it’s followed by a
-  pattern that can fail, can cause quadratic runtime on some inputs. For example <code>str.split("\\s*,")</code> will run in quadratic time on strings
-  that consist entirely of spaces (or at least contain large sequences of spaces, not followed by a comma).</li>
-</ul>
-<p>In order to rewrite your regular expression without these patterns, consider the following strategies:</p>
-<ul>
-  <li>If applicable, define a maximum number of expected repetitions using the bounded quantifiers, like <code>{1,5}</code> instead of <code>+</code>
-  for instance.</li>
-  <li>Refactor <code>nested quantifiers</code> to limit the number of way the inner group can be matched by the outer quantifier, for instance this
-  nested quantifier situation <code>(ba+)+</code> doesn’t cause performance issues, indeed, the inner group can be matched only if there exists
-  exactly one <code>b</code> char per repetition of the group.</li>
-  <li>Optimize regular expressions with <code>possessive quantifiers</code> and <code>atomic grouping</code>.</li>
-  <li>Use negated character classes instead of <code>.</code> to exclude separators where applicable. For example the quadratic regex
-  <code>.*_.*</code> can be made linear by changing it to <code>[^_]*_.*</code></li>
-</ul>
-<p>Sometimes it’s not possible to rewrite the regex to be linear while still matching what you want it to match. Especially when using partial
-matches, for which it is quite hard to avoid quadratic runtimes. In those cases consider the following approaches:</p>
-<ul>
-  <li>Solve the problem without regular expressions</li>
-  <li>Use an alternative non-backtracking regex implementations such as Google’s <a href="https://github.com/google/re2">RE2</a> or <a
-  href="https://github.com/google/re2j">RE2/J</a>.</li>
-  <li>Use multiple passes. This could mean pre- and/or post-processing the string manually before/after applying the regular expression to it or using
-  multiple regular expressions. One example of this would be to replace <code>str.split("\\s*,\\s*")</code> with <code>str.split(",")</code> and then
-  trimming the spaces from the strings as a second step.</li>
-  <li>When using <code>Matcher.find()</code>, it is often possible to make the regex infallible by making all the parts that could fail optional,
-  which will prevent backtracking. Of course this means that you’ll accept more strings than intended, but this can be handled by using capturing
-  groups to check whether the optional parts were matched or not and then ignoring the match if they weren’t. For example the regex <code>x*y</code>
-  could be replaced with <code>x*(y)?</code> and then the call to <code>matcher.find()</code> could be replaced with <code>matcher.find() &amp;&amp;
-  matcher.group(1) != null</code>.</li>
-</ul>
-<h2>Sensitive Code Example</h2>
-<p>The first regex evaluation will never end in <code>JDK</code> &lt;= 9 and the second regex evaluation will never end in any versions of the
-<code>JDK</code>:</p>
-<pre>
-java.util.regex.Pattern.compile("(a+)+").matcher(
+<h3>Code examples</h3>
+<p>The following regular expression is vulnerable to exponential backtracking and will take an exponentially long time to evaluate against the given
+input.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+java.util.regex.Pattern.compile("(a+)+$").matcher(
 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
-"aaaaaaaaaaaaaaa!").matches(); // Sensitive
-
-java.util.regex.Pattern.compile("(h|h|ih(((i|a|c|c|a|i|i|j|b|a|i|b|a|a|j))+h)ahbfhba|c|i)*").matcher(
-"hchcchicihcchciiicichhcichcihcchiihichiciiiihhcchi"+
-"cchhcihchcihiihciichhccciccichcichiihcchcihhicchcciicchcccihiiihhihihihi"+
-"chicihhcciccchihhhcchichchciihiicihciihcccciciccicciiiiiiiiicihhhiiiihchccch"+
-"chhhhiiihchihcccchhhiiiiiiiicicichicihcciciihichhhhchihciiihhiccccccciciihh"+
-"ichiccchhicchicihihccichicciihcichccihhiciccccccccichhhhihihhcchchihih"+
-"iihhihihihicichihiiiihhhhihhhchhichiicihhiiiiihchccccchichci").matches(); // Sensitive
+"aaaaaaaaaaaaaaa!").matches(); // Noncompliant
 </pre>
-<h2>Compliant Solution</h2>
-<p>Possessive quantifiers do not keep backtracking positions, thus can be used, if possible, to avoid performance issues:</p>
-<pre>
-java.util.regex.Pattern.compile("(a+)++").matcher(
+<h4>Compliant solution</h4>
+<p>Possessive quantifiers do not keep backtracking positions and can be used, where applicable, to avoid performance issues:</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+java.util.regex.Pattern.compile("(a++)++$").matcher(
 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
 "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+
-"aaaaaaaaaaaaaaa!").matches(); // Compliant
-
-java.util.regex.Pattern.compile("(h|h|ih(((i|a|c|c|a|i|i|j|b|a|i|b|a|a|j))+h)ahbfhba|c|i)*+").matcher(
-"hchcchicihcchciiicichhcichcihcchiihichiciiiihhcchi"+
-"cchhcihchcihiihciichhccciccichcichiihcchcihhicchcciicchcccihiiihhihihihi"+
-"chicihhcciccchihhhcchichchciihiicihciihcccciciccicciiiiiiiiicihhhiiiihchccch"+
-"chhhhiiihchihcccchhhiiiiiiiicicichicihcciciihichhhhchihciiihhiccccccciciihh"+
-"ichiccchhicchicihihccichicciihcichccihhiciccccccccichhhhihihhcchchihih"+
-"iihhihihihicichihiiiihhhhihhhchhichiicihhiiiiihchccccchichci").matches(); // Compliant
+"aaaaaaaaaaaaaaa!").matches();
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
 <ul>
-  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A1_2017-Injection">Top 10 2017 Category A1 - Injection</a></li>
-  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/400">CWE-400 - Uncontrolled Resource Consumption</a></li>
-  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/1333">CWE-1333 - Inefficient Regular Expression Complexity</a></li>
-  <li><a href="https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS">owasp.org</a> - OWASP Regular expression Denial
-  of Service - ReDoS</li>
+  <li><a href="https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS">owasp.org</a> - Regular expression Denial of
+  Service - ReDoS</li>
   <li><a
   href="https://web.archive.org/web/20220506215733/https://stackstatus.net/post/147710624694/outage-postmortem-july-20-2016">stackstatus.net(archived)</a> - Outage Postmortem - July 20, 2016</li>
   <li><a href="https://www.regular-expressions.info/catastrophic.html">regular-expressions.info</a> - Runaway Regular Expressions: Catastrophic
   Backtracking</li>
-  <li><a
-  href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/backtracking-in-regular-expressions#backtracking-with-nested-optional-quantifiers">docs.microsoft.com</a> - Backtracking with Nested Optional Quantifiers</li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/1333">CWE-1333 - Inefficient Regular Expression Complexity</a></li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a></li>
 </ul>
 

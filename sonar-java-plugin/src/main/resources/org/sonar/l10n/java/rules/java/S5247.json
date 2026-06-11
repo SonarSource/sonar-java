@@ -1,6 +1,6 @@
 {
-  "title": "Disabling auto-escaping in template engines is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Auto-escaping in HTML template engines should not be disabled",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "MEDIUM"
@@ -8,12 +8,14 @@
     "attribute": "COMPLETE"
   },
   "status": "ready",
+  "quickfix": "unknown",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "cwe"
+    "cwe",
+    "former-hotspot"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-5247",
@@ -38,6 +40,5 @@
     "ASVS 4.0": [
       "5.3.3"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }

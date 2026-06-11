@@ -1,84 +1,31 @@
-<p>Clear-text protocols such as <code>ftp</code>, <code>telnet</code>, or <code>http</code> lack encryption of transported data, as well as the
-capability to build an authenticated connection. It means that an attacker able to sniff traffic from the network can read, modify, or corrupt the
-transported content. These protocols are not secure as they expose applications to an extensive range of risks:</p>
-<ul>
-  <li>sensitive data exposure</li>
-  <li>traffic redirected to a malicious endpoint</li>
-  <li>malware-infected software update or installer</li>
-  <li>execution of client-side code</li>
-  <li>corruption of critical information</li>
-</ul>
-<p>Even in the context of isolated networks like offline environments or segmented cloud environments, the insider threat exists. Thus, attacks
-involving communications being sniffed or tampered with can still happen.</p>
-<p>For example, attackers could successfully compromise prior security layers by:</p>
-<ul>
-  <li>bypassing isolation mechanisms</li>
-  <li>compromising a component of the network</li>
-  <li>getting the credentials of an internal IAM account (either from a service account or an actual person)</li>
-</ul>
-<p>In such cases, encrypting communications would decrease the chances of attackers to successfully leak data or steal credentials from other network
-components. By layering various security practices (segmentation and encryption, for example), the application will follow the
-<em>defense-in-depth</em> principle.</p>
-<p>Note that using the <code>http</code> protocol is being deprecated by <a
-href="https://blog.mozilla.org/security/2015/04/30/deprecating-non-secure-http">major web browsers</a>.</p>
-<p>In the past, it has led to the following vulnerabilities:</p>
-<ul>
-  <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2019-6169">CVE-2019-6169</a></li>
-  <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2019-12327">CVE-2019-12327</a></li>
-  <li><a href="https://nvd.nist.gov/vuln/detail/CVE-2019-11065">CVE-2019-11065</a></li>
-</ul>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>Application data needs to be protected against falsifications or leaks when transiting over the network.</li>
-  <li>Application data transits over an untrusted network.</li>
-  <li>Compliance rules require the service to encrypt data in transit.</li>
-  <li>Your application renders web pages with a relaxed mixed content policy.</li>
-  <li>OS-level protections against clear-text traffic are deactivated.</li>
-</ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<ul>
-  <li>Make application data transit over a secure, authenticated and encrypted protocol like TLS or SSH. Here are a few alternatives to the most
-  common clear-text protocols:
-    <ul>
-      <li>Use <code>ssh</code> as an alternative to <code>telnet</code>.</li>
-      <li>Use <code>sftp</code>, <code>scp</code>, or <code>ftps</code> instead of <code>ftp</code>.</li>
-      <li>Use <code>https</code> instead of <code>http</code>.</li>
-      <li>Use <code>SMTP</code> over <code>SSL/TLS</code> or <code>SMTP</code> with <code>STARTTLS</code> instead of clear-text SMTP.</li>
-    </ul></li>
-  <li>Enable encryption of cloud components communications whenever it is possible.</li>
-  <li>Configure your application to block mixed content when rendering web pages.</li>
-  <li>If available, enforce OS-level deactivation of all clear-text traffic.</li>
-</ul>
-<p>It is recommended to secure all transport channels, even on local networks, as it can take a single non-secure connection to compromise an entire
-application or system.</p>
-<h2>Sensitive Code Example</h2>
-<p>These clients from <a href="https://commons.apache.org/proper/commons-net/">Apache commons net</a> libraries are based on unencrypted protocols and
-are not recommended:</p>
-<pre>
-TelnetClient telnet = new TelnetClient(); // Sensitive
+<p>Using clear-text protocols exposes data in transit to eavesdropping and man-in-the-middle attacks.</p>
+<h2>Why is this an issue?</h2>
+<p>An attacker who can observe network traffic — for example through a compromised network device, a position on the same network segment, or a cloud
+environment breach — can read, modify, or inject data sent over <code>ftp</code>, <code>telnet</code>, <code>http</code>, or unencrypted SMTP without
+detection. This is true even on internal or isolated networks, where insider threats or lateral movement after an initial compromise can expose
+unencrypted traffic. This rule raises an issue when a clear-text protocol scheme is used or when encryption is explicitly disabled for a network
+connection.</p>
+<h3>What is the potential impact?</h3>
+<h4>Sensitive data exposure</h4>
+<p>An attacker who can intercept network traffic can read all data transmitted over clear-text connections, including credentials, session tokens, API
+keys, or personal data.</p>
+<h4>Data tampering</h4>
+<p>Because clear-text protocols provide no integrity protection, an attacker in a man-in-the-middle position can silently modify data in transit —
+redirecting users to malicious endpoints, injecting malicious content into responses, or altering commands sent to remote services.</p>
+<h2>How to fix it in Apache Commons Net</h2>
+<h3>Code examples</h3>
+<p>The following code uses a clear-text protocol or disables encryption for a network connection, leaving transmitted data exposed to
+interception.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+TelnetClient telnet = new TelnetClient(); // Noncompliant
 
-FTPClient ftpClient = new FTPClient(); // Sensitive
+FTPClient ftpClient = new FTPClient(); // Noncompliant
 
-SMTPClient smtpClient = new SMTPClient(); // Sensitive
+SMTPClient smtpClient = new SMTPClient(); // Noncompliant
 </pre>
-<p>Unencrypted HTTP connections, when using <a href="https://square.github.io/okhttp/https/">okhttp</a> library for instance, should be avoided:</p>
-<pre>
-ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.CLEARTEXT) // Sensitive
-  .build();
-</pre>
-<p>Android WebView can be configured to allow a secure origin to load content from any other origin, even if that origin is insecure (mixed
-content):</p>
-<pre>
-import android.webkit.WebView
-
-WebView webView = findViewById(R.id.webview)
-webView.getSettings().setMixedContentMode(MIXED_CONTENT_ALWAYS_ALLOW); // Sensitive
-</pre>
-<h2>Compliant Solution</h2>
-<p>Use instead these clients from <a href="https://commons.apache.org/proper/commons-net/">Apache commons net</a> and <a
-href="https://github.com/mwiede/jsch">JSch</a> library:</p>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 JSch jsch = new JSch();
 
 if(implicit) {
@@ -101,24 +48,49 @@ else {
   }
 }
 </pre>
-<p>Perform HTTP encrypted connections, with <a href="https://square.github.io/okhttp/https/">okhttp</a> library for instance:</p>
-<pre>
+<h2>How to fix it in OkHttp</h2>
+<h3>Code examples</h3>
+<p>The following code uses a clear-text protocol or disables encryption for a network connection, leaving transmitted data exposed to
+interception.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.CLEARTEXT) // Noncompliant
+  .build();
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
 ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
   .build();
 </pre>
-<p>The most secure mode for Android WebView is <code>MIXED_CONTENT_NEVER_ALLOW</code>:</p>
-<pre>
+<h2>How to fix it in Android WebView</h2>
+<h3>Code examples</h3>
+<p>The following code uses a clear-text protocol or disables encryption for a network connection, leaving transmitted data exposed to
+interception.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+import android.webkit.WebView
+
+WebView webView = findViewById(R.id.webview)
+webView.getSettings().setMixedContentMode(MIXED_CONTENT_ALWAYS_ALLOW); // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
 import android.webkit.WebView
 
 WebView webView = findViewById(R.id.webview)
 webView.getSettings().setMixedContentMode(MIXED_CONTENT_NEVER_ALLOW);
 </pre>
 <h2>Exceptions</h2>
-<p>No issue is reported for the following cases because they are not considered sensitive:</p>
+<p>No issue is reported for the following cases:</p>
 <ul>
-  <li>Insecure protocol scheme followed by loopback addresses like 127.0.0.1 or <code>localhost</code>.</li>
+  <li>URLs whose host resolves only within a private runtime environment and is not reachable from the public internet (including loopback and cloud
+  metadata hosts)</li>
+  <li>Well-known namespace URI authorities used in in XML, JSON-LD, RDF, or similar formats (for example, <code>www.w3.org</code>,
+  <code>schemas.android.com</code>, <code>schema.org</code>).</li>
+  <li>IANA-reserved documentation and test domains like <code>example.com</code>, <code>example.net</code>, <code>example.org</code> (RFC 6761). These
+  are almost always placeholders in source code, not real connection targets.</li>
 </ul>
-<h2>See</h2>
+<h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
   <li>AWS Documentation - <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html">Listeners for

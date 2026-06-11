@@ -1,21 +1,23 @@
 {
-  "title": "Using pseudorandom number generators (PRNGs) is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Pseudorandom number generators (PRNGs) should not be used in security contexts",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
-      "SECURITY": "HIGH"
+      "SECURITY": "MEDIUM"
     },
     "attribute": "TRUSTWORTHY"
   },
   "status": "ready",
+  "quickfix": "unknown",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
   "tags": [
-    "cwe"
+    "cwe",
+    "former-hotspot"
   ],
-  "defaultSeverity": "Critical",
+  "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-2245",
   "sqKey": "S2245",
   "scope": "Main",
@@ -49,6 +51,5 @@
     "ASVS 4.0": [
       "6.2.4"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }

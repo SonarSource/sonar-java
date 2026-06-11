@@ -1,42 +1,47 @@
-<p>Cryptographic hash algorithms such as <code>MD2</code>, <code>MD4</code>, <code>MD5</code>, <code>MD6</code>, <code>HAVAL-128</code>,
-<code>DSA</code> (which uses <code>SHA-1</code>), <code>RIPEMD</code>, <code>RIPEMD-128</code>, <code>RIPEMD-160</code>and <code>SHA-1</code> are no
-longer considered secure, because it is possible to have <code>collisions</code> (little computational effort is enough to find two or more different
-inputs that produce the same hash).</p>
-<p>Message authentication code (MAC) algorithms such as <code>HMAC-MD5</code> or <code>HMAC-SHA1</code> use weak hash functions as building blocks.
-Although they are not all proven to be weak, they are considered legacy algorithms and should be avoided.</p>
-<h2>Ask Yourself Whether</h2>
-<p>The hashed value is used in a security context like:</p>
+<p>Using a weak hashing algorithm to protect sensitive data can compromise the security guarantees the hash is meant to provide.</p>
+<h2>Why is this an issue?</h2>
+<p>Cryptographic hash algorithms such as MD2, MD4, MD5, MD6, HAVAL-128, DSA (which uses SHA-1), RIPEMD, RIPEMD-128, RIPEMD-160, and SHA-1 are no
+longer considered secure, because it is computationally feasible to find two different inputs that produce the same hash output — a collision. Message
+authentication code (MAC) algorithms such as HMAC-MD5 or HMAC-SHA1 use these weak hash functions as building blocks and are likewise considered legacy
+algorithms. When a weak hashing algorithm is used to protect sensitive data — such as storing passwords, generating security tokens, or verifying data
+integrity — its weakness can be exploited to defeat that protection.</p>
+<h3>What is the potential impact?</h3>
+<h4>Breach of confidentiality</h4>
+<p>When weak hashing is used for password storage or security tokens, an attacker who obtains the hashed values can recover the original data more
+easily through brute force or precomputed (rainbow table) attacks.</p>
+<h4>Data integrity compromise</h4>
+<p>When weak hashing is used to verify the integrity of data or downloaded files, an attacker can craft a different input that produces the same hash,
+allowing them to substitute malicious content without detection.</p>
+<h2>How to fix it</h2>
+<p>To hash passwords or other sensitive data, use a slow, memory-hard algorithm specifically designed for that purpose. In order of preference:
+<code>Argon2</code>, <code>scrypt</code>, <code>bcrypt</code>, or <code>PBKDF2</code>. These algorithms make brute-force and rainbow-table attacks
+computationally expensive.</p>
+<p>For non-sensitive use cases such as data integrity or fingerprinting, use a modern cryptographic hash function such as <code>SHA-256</code>,
+<code>SHA-512</code>, or <code>SHA-3</code>.</p>
+<h3>Code examples</h3>
+<p>The following noncompliant example uses a weak hashing algorithm that is vulnerable to collision and preimage attacks.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+MessageDigest md1 = MessageDigest.getInstance("SHA");  // Noncompliant: SHA is not a standard name, for most security providers it's an alias of SHA-1
+MessageDigest md2 = MessageDigest.getInstance("SHA1");  // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+MessageDigest md1 = MessageDigest.getInstance("SHA-512");
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li>User-password storage.</li>
-  <li>Security token generation (used to confirm e-mail when registering on a website, reset password, etc …​).</li>
-  <li>To compute some message integrity.</li>
+  <li>OWASP CheatSheet - <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html">Password Storage Cheat
+  Sheet</a></li>
 </ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>Safer alternatives, such as <code>SHA-256</code>, <code>SHA-512</code>, <code>SHA-3</code> are recommended, and for password hashing, it’s even
-better to use algorithms that do not compute too "quickly", like <code>bcrypt</code>, <code>scrypt</code>, <code>argon2</code> or <code>pbkdf2</code>
-because it slows down <code>brute force attacks</code>.</p>
-<h2>Sensitive Code Example</h2>
-<pre>
-MessageDigest md1 = MessageDigest.getInstance("SHA");  // Sensitive:  SHA is not a standard name, for most security providers it's an alias of SHA-1
-MessageDigest md2 = MessageDigest.getInstance("SHA1");  // Sensitive
-</pre>
-<h2>Compliant Solution</h2>
-<pre>
-MessageDigest md1 = MessageDigest.getInstance("SHA-512"); // Compliant
-</pre>
-<h2>See</h2>
+<h3>Standards</h3>
 <ul>
   <li>OWASP - <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Top 10 2021 Category A2 - Cryptographic Failures</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure">Top 10 2017 Category A3 - Sensitive Data
   Exposure</a></li>
   <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration">Top 10 2017 Category A6 - Security
   Misconfiguration</a></li>
-  <li>OWASP - <a href="https://mas.owasp.org/checklists/MASVS-CRYPTO/">Mobile AppSec Verification Standard - Cryptography Requirements</a></li>
-  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2016-risks/m5-insufficient-cryptography">Mobile Top 10 2016 Category M5 -
-  Insufficient Cryptography</a></li>
-  <li>OWASP - <a href="https://owasp.org/www-project-mobile-top-10/2023-risks/m10-insufficient-cryptography">Mobile Top 10 2024 Category M10 -
-  Insufficient Cryptography</a></li>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/1240">CWE-1240 - Use of a Risky Cryptographic Primitive</a></li>
 </ul>
 
