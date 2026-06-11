@@ -40,7 +40,7 @@ public class ConfigurationBeanNamesCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    var beanMethods = getBeanMethods(classTree);
+    var beanMethods = SpringUtils.getBeanMethods(classTree);
     var foundNames = new HashSet<String>();
     for (MethodTree beanMethod : beanMethods) {
       if (!foundNames.add(beanMethod.simpleName().name())) {
@@ -51,14 +51,6 @@ public class ConfigurationBeanNamesCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isConfigurationClass(ClassTree classTree) {
     return classTree.symbol().metadata().isAnnotatedWith(SpringUtils.CONFIGURATION_ANNOTATION);
-  }
-
-  private static List<MethodTree> getBeanMethods(ClassTree classTree) {
-    return classTree.members().stream()
-      .filter(member -> member.is(Tree.Kind.METHOD))
-      .map(MethodTree.class::cast)
-      .filter(method -> method.symbol().metadata().isAnnotatedWith(SpringUtils.BEAN_ANNOTATION))
-      .toList();
   }
 
 }

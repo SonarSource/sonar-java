@@ -20,7 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.model.PackageUtils;
+import org.sonar.java.utils.PackageUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
