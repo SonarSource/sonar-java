@@ -79,8 +79,6 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     "org.apache.commons.lang.math.JVMRandom"
   );
 
-  // A crypto/auth library import signals the whole file is security-relevant;
-  // report all PRNG calls without needing per-scope keyword analysis.
   private static final List<String> CRYPTO_IMPORT_PREFIXES = List.of(
     "java.security.",
     "javax.crypto.",
