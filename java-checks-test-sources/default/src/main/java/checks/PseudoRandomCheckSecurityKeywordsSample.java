@@ -59,17 +59,12 @@ class PseudoRandomCheckSecurityKeywordsSample {
     r.nextBytes(randomBytes);
   }
 
-  // --- Digit-suffixed all-uppercase crypto acronym (Dart-faithful behaviour). ---
-  // `AES256_KEY` splits on `_` to ["AES256", "KEY"]. The "AES256" part has no lowercase
-  // letter, so isAllUppercaseWithLetter returns true and it is kept as the single token
-  // `aes256` (NOT split into `aes` + `256`). The keyword set holds `aes`, not `aes256`,
-  // so no token matches. `KEY` -> `[key]`, but `key` is not in the Java keyword set
-  // (it is in the Kotlin set; SONARKT-770 catches this case in Kotlin only).
-  // This is intentional: the tokenizer mirrors DART-276's _splitIntoWords exactly to
-  // keep cross-language behaviour aligned. Improving the tokenizer to split letters
-  // from trailing digits would help here AND in cases like `ChaCha20` (where the keyword
-  // `chacha20` is also unreachable today) but is out of scope for this faithful port.
-  // Tracked separately under APPSEC-3004.
+// --- Digit-suffixed all-uppercase crypto acronym: documents a known tokenizer gap. ---
+// `AES256_KEY` splits on `_` to ["AES256", "KEY"]. `AES256` has no lowercase letter so
+// isAllUppercaseWithLetter returns true and it lowercases to `aes256` as a single token
+// (NOT `aes` + `256`). The keyword set holds `aes`, not `aes256`, so no match fires.
+// `KEY` -> `[key]`, which is not in the Java security-keyword set.
+// Intentional: splitting letters from trailing digits is out of scope here; tracked under APPSEC-3004.
   void digitSuffixedAcronym() {
     final int AES256_KEY = 32;
     Random r = new Random(); // Compliant

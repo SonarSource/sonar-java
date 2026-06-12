@@ -103,15 +103,17 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
+    return Arrays.asList(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
+  }
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    cryptoImportPresent = hasCryptoImport(context.getTree());
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      cryptoImportPresent = hasCryptoImport((CompilationUnitTree) tree);
-      return;
-    }
     if (tree instanceof MethodInvocationTree mit) {
       if (isStaticCallToInsecureRandomMethod(mit) && isInSecurityContext(mit)) {
         reportIssue(ExpressionUtils.methodName(mit), MESSAGE);
@@ -184,8 +186,8 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  // Mirrors Dart's `declarationScope`: the closest enclosing MethodTree (method/constructor) for
-  // local code; falls back to the enclosing ClassTree for field/initializer-block code.
+ // Scope for the keyword scan: use the enclosing method/constructor for local code;
+// fall back to the enclosing class for field and static-initializer code.
   private static Tree findDeclarationScope(Tree tree) {
     Tree current = tree.parent();
     while (current != null) {
@@ -200,8 +202,8 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     return null;
   }
 
-  // Mirrors Dart's `_splitIntoWords`: split on underscores first; for each part either keep it as
-  // a single lowercase word when all-uppercase, or split further on capital-letter boundaries.
+// Split on underscores first; for each part either keep it as a single lowercase word
+// when all-uppercase, or split further on capital-letter boundaries.
   static List<String> tokenizeIdentifier(String identifier) {
     List<String> words = new ArrayList<>();
     for (String part : identifier.split("_")) {
