@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Stream;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.assertj.core.description.Description;
 import org.fest.assertions.BooleanAssert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -123,8 +124,8 @@ public class AssertionsCompletenessCheckSample {
     // BDD
     org.assertj.core.api.BDDAssertions.thenRuntimeException(); // Noncompliant
     org.assertj.core.api.BDDAssertions.thenRuntimeException().isThrownBy(() -> System.out.println("b"));
-    org.assertj.core.api.BDDAssertions.thenRuntimeException().describedAs(null); // Noncompliant
-    org.assertj.core.api.BDDAssertions.thenRuntimeException().describedAs(null).isThrownBy(() -> System.out.println("b"));
+    org.assertj.core.api.BDDAssertions.thenRuntimeException().describedAs((Description) null); // Noncompliant
+    org.assertj.core.api.BDDAssertions.thenRuntimeException().describedAs((Description) null).isThrownBy(() -> System.out.println("b"));
 
 
     Comparator customComparator = null;

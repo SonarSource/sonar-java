@@ -76,7 +76,14 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
     ) {
       UnitTestUtils.findFail(block).ifPresent(failMethodInvocation -> {
 
-          var isAssertJ = failMethodInvocation.methodSymbol().signature().contains("org.assertj");
+          var failOwner = failMethodInvocation.methodSymbol().owner();
+          if (failOwner == null) {
+            return;
+          }
+          var isAssertJ = failOwner
+            .type()
+            .fullyQualifiedName()
+            .startsWith("org.assertj");
           if (hasJunitJupiterTestAnnotation || isAssertJ) {
             String issueMessage = isTryBlock ?
               "Use assertThrows() instead of try/catch and fail() in the try block." :
@@ -114,22 +121,37 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
         assertJReplacement(failArguments, tryStatement, isTryBlock) :
         junitReplacement(failArguments, tryStatement, isTryBlock);
 
-      var firstCatchFinallyToken = tryStatement.catches().isEmpty() ?
-        tryStatement.finallyKeyword().firstToken() :
-        tryStatement.catches().get(0).firstToken();
-      var lastCatchFinallyToken = tryStatement.finallyBlock() != null ?
-        tryStatement.finallyBlock().lastToken() :
-        tryStatement.catches().get(tryStatement.catches().size() - 1).block().lastToken();
+      JavaTextEdit lastEdit;
+      @Nullable var finallyBlock = tryStatement.finallyBlock();
+      if (!tryStatement.catches().isEmpty()) {
+        var start = tryStatement.catches().get(0).firstToken();
+        var end = finallyBlock != null ?
+          finallyBlock.lastToken() :
+          tryStatement.catches().get(tryStatement.catches().size() - 1).block().lastToken();
+        lastEdit = JavaTextEdit.replaceBetweenTree(start, end, replacements.replaceCatchesWith);
+      } else if (finallyBlock != null) {
+        var start = finallyBlock.firstToken();
+        var end = finallyBlock.lastToken();
+        lastEdit = JavaTextEdit.replaceBetweenTree(start, end, replacements.replaceCatchesWith);
+      } else {
+        lastEdit = JavaTextEdit.insertAfterTree(tryStatement.block(), replacements.replaceCatchesWith);
+      }
 
-      return JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
+      var result = JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
         JavaTextEdit.replaceTree(tryStatement.tryKeyword(), replacements.replaceTryWith),
         JavaTextEdit.replaceTree(failMethodInvocation.parent(), ""),
-        JavaTextEdit.replaceBetweenTree(
-          firstCatchFinallyToken,
-          lastCatchFinallyToken,
-          replacements.replaceCatchesWith
-        )
-      ).build();
+        lastEdit
+      );
+
+      if (!tryStatement.resourceList().isEmpty()) {
+        result.addTextEdit(
+          JavaTextEdit.replaceTree(tryStatement.openParenToken(), "{"),
+          JavaTextEdit.replaceTree(tryStatement.closeParenToken(), ""),
+          JavaTextEdit.replaceTree(tryStatement.block().openBraceToken(), ";")
+        );
+      }
+
+      return result.build();
     }
 
     private Replacements junitReplacement(
@@ -163,16 +185,17 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       TryStatementTree tryStatement,
       boolean isTryBlock
     ) {
-      // in assertJ the failure message is mandatory
-      var failureMessage = contentFor(failArguments.get(0));
+      var failureMessagePart = failArguments.isEmpty() ?
+        "" :
+        ".withFailMessage(%s)".formatted(contentFor(failArguments.get(0)));
       return isTryBlock ?
         new Replacements(
           "assertThatCode(() -> ",
-          ").withFailMessage(%s).isInstanceOf(%s);".formatted(failureMessage, typeClass(firstCaughtTypeInTry(tryStatement)))
+          ")%s.isInstanceOf(%s);".formatted(failureMessagePart, typeClass(firstCaughtTypeInTry(tryStatement)))
         ) :
         new Replacements(
           "assertThatCode(() -> ",
-          ").withFailMessage(%s).doesNotThrowAnyException();".formatted(failureMessage)
+          ")%s.doesNotThrowAnyException();".formatted(failureMessagePart)
         );
     }
 
@@ -186,7 +209,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
 
 
   private static String typeClass(@Nullable Type caughtType) {
-    if (caughtType == null) return "Throwable";
+    if (caughtType == null) return "Throwable.class";
     return caughtType.name() + ".class";
   }
 
