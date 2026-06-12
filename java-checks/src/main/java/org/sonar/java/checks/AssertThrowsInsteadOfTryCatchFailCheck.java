@@ -76,9 +76,11 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
     ) {
       UnitTestUtils.findFail(block).ifPresent(failMethodInvocation -> {
 
-          var isAssertJ = failMethodInvocation
-            .methodSymbol()
-            .owner()
+          var failOwner = failMethodInvocation.methodSymbol().owner();
+          if (failOwner == null) {
+            return;
+          }
+          var isAssertJ = failOwner
             .type()
             .fullyQualifiedName()
             .startsWith("org.assertj");
