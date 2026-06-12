@@ -1,10 +1,6 @@
 {
   "ruleKey": "S1874",
   "hasTruePositives": true,
-<<<<<<< SONARJAVA-6440-s2245-security-context-heuristic
-  "falseNegatives": 248,
-=======
-  "falseNegatives": 257,
->>>>>>> master
+  "falseNegatives": 259,
   "falsePositives": 0
 }
