@@ -121,13 +121,11 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
           tryStatement.finallyBlock().lastToken() :
           tryStatement.catches().get(tryStatement.catches().size() - 1).block().lastToken();
         lastEdit = JavaTextEdit.replaceBetweenTree(start, end, replacements.replaceCatchesWith);
-      }
-      else if (tryStatement.finallyBlock() != null) {
+      } else if (tryStatement.finallyBlock() != null) {
         var start = tryStatement.finallyBlock().firstToken();
         var end = tryStatement.finallyBlock().lastToken();
         lastEdit = JavaTextEdit.replaceBetweenTree(start, end, replacements.replaceCatchesWith);
-      }
-      else {
+      } else {
         lastEdit = JavaTextEdit.insertAfterTree(tryStatement.block(), replacements.replaceCatchesWith);
       }
 
