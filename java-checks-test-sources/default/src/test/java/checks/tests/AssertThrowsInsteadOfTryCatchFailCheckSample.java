@@ -130,6 +130,14 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
       // test pass
     }
 
+    // assertJ fail without argument, available since assertJ 3.26.0
+    try {
+      // test pass
+    } catch (Exception e) {
+      org.assertj.core.api.Fail.fail("failed"); // Noncompliant {{Use assertDoesNotThrow() instead of try/catch and fail() in the catch block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    }
+
     assertThrows(IllegalStateException.class, AssertThrowsInsteadOfTryCatchFailCheckSample::raise); // compliant
     assertDoesNotThrow(AssertThrowsInsteadOfTryCatchFailCheckSample::dontRaise); // compliant
     nonAnnotatedFunctionFN();
