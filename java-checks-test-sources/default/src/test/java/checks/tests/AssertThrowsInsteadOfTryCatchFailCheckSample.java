@@ -130,7 +130,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
       // test pass
     }
 
-    // assertJ fail without argument, available since assertJ 3.26.0
+    // assertJ fail in the catch block
     try {
       // test pass
     } catch (Exception e) {
