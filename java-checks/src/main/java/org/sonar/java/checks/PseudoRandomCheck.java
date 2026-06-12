@@ -32,10 +32,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -103,17 +101,17 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
-  }
-
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    super.setContext(context);
-    cryptoImportPresent = hasCryptoImport(context.getTree());
+    return Arrays.asList(Tree.Kind.IMPORT, Tree.Kind.NEW_CLASS, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
+    if (tree instanceof ImportTree importTree) {
+      if (matchesCryptoPrefix(ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier()))) {
+        cryptoImportPresent = true;
+      }
+      return;
+    }
     if (tree instanceof MethodInvocationTree mit) {
       if (isStaticCallToInsecureRandomMethod(mit) && isInSecurityContext(mit)) {
         reportIssue(ExpressionUtils.methodName(mit), MESSAGE);
@@ -138,17 +136,6 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
       && !RANDOM_STRING_UTILS_RANDOM_WITH_RANDOM_SOURCE.matches(mit)
       && !RANDOM_STRING_UTILS_SECURE_INSTANCES.matches(mit)
       && mit.methodSymbol().isStatic();
-  }
-
-  private static boolean hasCryptoImport(CompilationUnitTree cut) {
-    for (ImportClauseTree importClause : cut.imports()) {
-      if (importClause.is(Tree.Kind.IMPORT)
-        && ((ImportTree) importClause).qualifiedIdentifier() instanceof ExpressionTree exprTree
-        && matchesCryptoPrefix(ExpressionsHelper.concatenate(exprTree))) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private static boolean matchesCryptoPrefix(String importName) {
@@ -200,8 +187,8 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     return null;
   }
 
-// Split on underscores first; for each part either keep it as a single lowercase word
-// when all-uppercase, or split further on capital-letter boundaries.
+  // Split on underscores first; for each part either keep it as a single lowercase word
+  // when all-uppercase, or split further on capital-letter boundaries.
   static List<String> tokenizeIdentifier(String identifier) {
     List<String> words = new ArrayList<>();
     for (String part : identifier.split("_")) {
