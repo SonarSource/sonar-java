@@ -24,16 +24,11 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
-import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.*;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 import static org.sonar.java.checks.helpers.TryCatchUtils.getCaughtTypes;
 
@@ -114,21 +109,27 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
         assertJReplacement(failArguments, tryStatement, isTryBlock) :
         junitReplacement(failArguments, tryStatement, isTryBlock);
 
-      var firstCatchFinallyToken = tryStatement.catches().isEmpty() ?
-        tryStatement.finallyKeyword().firstToken() :
-        tryStatement.catches().get(0).firstToken();
-      var lastCatchFinallyToken = tryStatement.finallyBlock() != null ?
-        tryStatement.finallyBlock().lastToken() :
-        tryStatement.catches().get(tryStatement.catches().size() - 1).block().lastToken();
+      JavaTextEdit lastEdit;
+      if (!tryStatement.catches().isEmpty()){
+        var start = tryStatement.catches().get(0).firstToken();
+        var end = tryStatement.finallyBlock() != null ?
+          tryStatement.finallyBlock().lastToken() :
+          tryStatement.catches().get(tryStatement.catches().size() - 1).block().lastToken();
+        lastEdit = JavaTextEdit.replaceBetweenTree(start, end, replacements.replaceCatchesWith);
+      }
+      else if (tryStatement.finallyBlock() != null) {
+        var start = tryStatement.finallyBlock().firstToken();
+        var end = tryStatement.finallyBlock().lastToken();
+        lastEdit = JavaTextEdit.replaceBetweenTree(start, end, replacements.replaceCatchesWith);
+      }
+      else {
+        lastEdit = JavaTextEdit.insertAfterTree(tryStatement.block(), replacements.replaceCatchesWith);
+      }
 
       return JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
         JavaTextEdit.replaceTree(tryStatement.tryKeyword(), replacements.replaceTryWith),
         JavaTextEdit.replaceTree(failMethodInvocation.parent(), ""),
-        JavaTextEdit.replaceBetweenTree(
-          firstCatchFinallyToken,
-          lastCatchFinallyToken,
-          replacements.replaceCatchesWith
-        )
+        lastEdit
       ).build();
     }
 
