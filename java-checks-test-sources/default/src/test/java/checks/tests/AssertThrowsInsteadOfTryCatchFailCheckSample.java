@@ -120,7 +120,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
     // edit@qf3 [[sl=116;sc=6;el=116;ec=6]] {{, "failed");}}
     // edit@qf3 [[sl=113;sc=9;el=113;ec=10]] {{{}}
     // edit@qf3 [[sl=113;sc=67;el=113;ec=68]] {{}}
-    // edit@qf3 [[sl=113;sc=69;el=113;ec=70]] {{}}
+    // edit@qf3 [[sl=113;sc=69;el=113;ec=70]] {{;}}
 
     // assertJ fail without argument, available since assertJ 3.26.0
     try {

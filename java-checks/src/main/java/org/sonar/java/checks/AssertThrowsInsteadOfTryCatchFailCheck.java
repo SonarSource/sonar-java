@@ -139,7 +139,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
         result.addTextEdit(
           JavaTextEdit.replaceTree(tryStatement.openParenToken(), "{"),
           JavaTextEdit.replaceTree(tryStatement.closeParenToken(), ""),
-          JavaTextEdit.replaceTree(tryStatement.block().openBraceToken(), "")
+          JavaTextEdit.replaceTree(tryStatement.block().openBraceToken(), ";")
         );
       }
 
