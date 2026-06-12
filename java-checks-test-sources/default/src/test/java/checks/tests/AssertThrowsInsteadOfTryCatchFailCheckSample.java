@@ -115,7 +115,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
 //    ^^^^^^^^^^^^^^
     }
     // fix@qf3 {{Use assertThrows() instead of try/catch and fail() in the try block.}}
-    // edit@qf3 [[sl=113;sc=5;el=113;ec=8]] {{assertThrows(Throwable, () -> }}
+    // edit@qf3 [[sl=113;sc=5;el=113;ec=8]] {{assertThrows(Throwable.class, () -> }}
     // edit@qf3 [[sl=114;sc=7;el=114;ec=22]] {{}}
     // edit@qf3 [[sl=116;sc=6;el=116;ec=6]] {{, "failed");}}
 

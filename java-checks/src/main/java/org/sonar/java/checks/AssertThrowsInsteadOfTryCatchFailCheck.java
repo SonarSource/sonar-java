@@ -189,7 +189,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
 
 
   private static String typeClass(@Nullable Type caughtType) {
-    if (caughtType == null) return "Throwable";
+    if (caughtType == null) return "Throwable.class";
     return caughtType.name() + ".class";
   }
 
