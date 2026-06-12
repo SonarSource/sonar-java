@@ -186,8 +186,6 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     return false;
   }
 
- // Scope for the keyword scan: use the enclosing method/constructor for local code;
-// fall back to the enclosing class for field and static-initializer code.
   private static Tree findDeclarationScope(Tree tree) {
     Tree current = tree.parent();
     while (current != null) {
