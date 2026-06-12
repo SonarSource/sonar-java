@@ -163,16 +163,15 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       TryStatementTree tryStatement,
       boolean isTryBlock
     ) {
-      // in assertJ the failure message is mandatory
-      var failureMessage = contentFor(failArguments.get(0));
+      var failureMessagePart = failArguments.stream().findFirst().map(this::contentFor).map(".withFailMessage(%s)"::formatted).orElse("");
       return isTryBlock ?
         new Replacements(
           "assertThatCode(() -> ",
-          ").withFailMessage(%s).isInstanceOf(%s);".formatted(failureMessage, typeClass(firstCaughtTypeInTry(tryStatement)))
+          ")%s.isInstanceOf(%s);".formatted(failureMessagePart, typeClass(firstCaughtTypeInTry(tryStatement)))
         ) :
         new Replacements(
           "assertThatCode(() -> ",
-          ").withFailMessage(%s).doesNotThrowAnyException();".formatted(failureMessage)
+          ")%s.doesNotThrowAnyException();".formatted(failureMessagePart)
         );
     }
 
