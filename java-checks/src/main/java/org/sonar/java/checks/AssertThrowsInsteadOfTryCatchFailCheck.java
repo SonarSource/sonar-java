@@ -115,7 +115,7 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
         junitReplacement(failArguments, tryStatement, isTryBlock);
 
       JavaTextEdit lastEdit;
-      if (!tryStatement.catches().isEmpty()){
+      if (!tryStatement.catches().isEmpty()) {
         var start = tryStatement.catches().get(0).firstToken();
         var end = tryStatement.finallyBlock() != null ?
           tryStatement.finallyBlock().lastToken() :
@@ -129,11 +129,21 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
         lastEdit = JavaTextEdit.insertAfterTree(tryStatement.block(), replacements.replaceCatchesWith);
       }
 
-      return JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
+      var result = JavaQuickFix.newQuickFix(issueMessage).addTextEdit(
         JavaTextEdit.replaceTree(tryStatement.tryKeyword(), replacements.replaceTryWith),
         JavaTextEdit.replaceTree(failMethodInvocation.parent(), ""),
         lastEdit
-      ).build();
+      );
+
+      if (!tryStatement.resourceList().isEmpty()) {
+        result.addTextEdit(
+          JavaTextEdit.replaceTree(tryStatement.openParenToken(), "{"),
+          JavaTextEdit.replaceTree(tryStatement.closeParenToken(), ""),
+          JavaTextEdit.replaceTree(tryStatement.block().openBraceToken(), "")
+        );
+      }
+
+      return result.build();
     }
 
     private Replacements junitReplacement(
