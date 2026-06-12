@@ -76,7 +76,12 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
     ) {
       UnitTestUtils.findFail(block).ifPresent(failMethodInvocation -> {
 
-          var isAssertJ = failMethodInvocation.methodSymbol().signature().contains("org.assertj");
+          var isAssertJ = failMethodInvocation
+            .methodSymbol()
+            .owner()
+            .type()
+            .fullyQualifiedName()
+            .startsWith("org.assertj");
           if (hasJunitJupiterTestAnnotation || isAssertJ) {
             String issueMessage = isTryBlock ?
               "Use assertThrows() instead of try/catch and fail() in the try block." :
@@ -115,15 +120,16 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
         junitReplacement(failArguments, tryStatement, isTryBlock);
 
       JavaTextEdit lastEdit;
+      @Nullable var finallyBlock = tryStatement.finallyBlock();
       if (!tryStatement.catches().isEmpty()) {
         var start = tryStatement.catches().get(0).firstToken();
-        var end = tryStatement.finallyBlock() != null ?
-          tryStatement.finallyBlock().lastToken() :
+        var end = finallyBlock != null ?
+          finallyBlock.lastToken() :
           tryStatement.catches().get(tryStatement.catches().size() - 1).block().lastToken();
         lastEdit = JavaTextEdit.replaceBetweenTree(start, end, replacements.replaceCatchesWith);
-      } else if (tryStatement.finallyBlock() != null) {
-        var start = tryStatement.finallyBlock().firstToken();
-        var end = tryStatement.finallyBlock().lastToken();
+      } else if (finallyBlock != null) {
+        var start = finallyBlock.firstToken();
+        var end = finallyBlock.lastToken();
         lastEdit = JavaTextEdit.replaceBetweenTree(start, end, replacements.replaceCatchesWith);
       } else {
         lastEdit = JavaTextEdit.insertAfterTree(tryStatement.block(), replacements.replaceCatchesWith);
@@ -177,7 +183,9 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       TryStatementTree tryStatement,
       boolean isTryBlock
     ) {
-      var failureMessagePart = failArguments.stream().findFirst().map(this::contentFor).map(".withFailMessage(%s)"::formatted).orElse("");
+      var failureMessagePart = failArguments.isEmpty() ?
+        "" :
+        ".withFailMessage(%s)".formatted(contentFor(failArguments.get(0)));
       return isTryBlock ?
         new Replacements(
           "assertThatCode(() -> ",
