@@ -1,6 +1,6 @@
 {
-  "title": "Using slow regular expressions is security-sensitive",
-  "type": "SECURITY_HOTSPOT",
+  "title": "Regular expressions should not cause catastrophic backtracking",
+  "type": "VULNERABILITY",
   "code": {
     "impacts": {
       "SECURITY": "HIGH"
@@ -8,13 +8,15 @@
     "attribute": "EFFICIENT"
   },
   "status": "ready",
+  "quickfix": "unknown",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
   "tags": [
     "cwe",
-    "regex"
+    "regex",
+    "former-hotspot"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-5852",
@@ -22,15 +24,13 @@
   "scope": "Main",
   "securityStandards": {
     "CWE": [
-      400,
       1333
     ],
-    "OWASP": [
-      "A1"
+    "OWASP Top 10 2021": [
+      "A4"
     ],
     "ASVS 4.0": [
       "12.1.1"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }

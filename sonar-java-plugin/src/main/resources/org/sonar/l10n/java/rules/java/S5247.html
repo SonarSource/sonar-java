@@ -1,59 +1,54 @@
-<p>To reduce the risk of cross-site scripting attacks, templating systems, such as <code>Twig</code>, <code>Django</code>, <code>Smarty</code>,
-<code>Groovy's template engine</code>, allow configuration of automatic variable escaping before rendering templates. When escape occurs, characters
-that make sense to the browser (eg: &lt;a&gt;) will be transformed/replaced with escaped/sanitized values (eg: &amp; lt;a&amp; gt; ).</p>
-<p>Auto-escaping is not a magic feature to annihilate all cross-site scripting attacks, it depends on <a
-href="https://twig.symfony.com/doc/3.x/filters/escape.html">the strategy applied</a> and the context, for example a "html auto-escaping" strategy
-(which only transforms html characters into <a href="https://developer.mozilla.org/en-US/docs/Glossary/Entity">html entities</a>) will not be relevant
-when variables are used in a <a href="https://en.wikipedia.org/wiki/HTML_attribute">html attribute</a> because '<code>:</code>' character is not
-escaped and thus an attack as below is possible:</p>
-<pre>
-&lt;a href="{{ myLink }}"&gt;link&lt;/a&gt; // myLink = javascript:alert(document.cookie)
-&lt;a href="javascript:alert(document.cookie)"&gt;link&lt;/a&gt; // JS injection (XSS attack)
+<p>Template engines, such as Thymeleaf or Freemarker, provide automatic escaping of template variables to prevent cross-site scripting (XSS) attacks,
+but this protection can be explicitly disabled.</p>
+<h2>Why is this an issue?</h2>
+<p>Template engines provide auto-escaping as a safety mechanism that transforms HTML special characters in variable output before rendering,
+preventing user-controlled input from being interpreted as HTML or JavaScript by the browser. Disabling this protection — through settings like
+<code>autoescape: false</code>, escape-bypass filters like <code>|safe</code>, or equivalent configuration — allows untrusted input to pass through
+unmodified and be executed by the browser as markup or script.</p>
+<h3>What is the potential impact?</h3>
+<p>When auto-escaping is disabled, an attacker who can control the content of template variables can inject malicious HTML or JavaScript into pages
+served to other users. An attacker could steal session tokens, redirect users to phishing pages, or perform unauthorized actions on behalf of the
+victim.</p>
+<h2>How to fix it in JMustache</h2>
+<h3>Code examples</h3>
+<p>The following examples configure the template engine to disable its auto-escaping feature, allowing template variables to be rendered without HTML
+encoding.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+Mustache.compiler().escapeHTML(false).compile(template).execute(context); // Noncompliant
+Mustache.compiler().withEscaper(Escapers.NONE).compile(template).execute(context); // Noncompliant
 </pre>
-<h2>Ask Yourself Whether</h2>
-<ul>
-  <li>Templates are used to render web content and
-    <ul>
-      <li>dynamic variables in templates come from untrusted locations or are user-controlled inputs</li>
-      <li>there is no local mechanism in place to sanitize or validate the inputs.</li>
-    </ul></li>
-</ul>
-<p>There is a risk if you answered yes to any of those questions.</p>
-<h2>Recommended Secure Coding Practices</h2>
-<p>Enable auto-escaping by default and continue to review the use of inputs in order to be sure that the chosen auto-escaping strategy is the right
-one.</p>
-<h2>Sensitive Code Example</h2>
-<p>With <a href="https://github.com/samskivert/jmustache">JMustache by samskivert</a>:</p>
-<pre>
-Mustache.compiler().escapeHTML(false).compile(template).execute(context); // Sensitive
-Mustache.compiler().withEscaper(Escapers.NONE).compile(template).execute(context); // Sensitive
-</pre>
-<p>With <a href="https://freemarker.apache.org/">Freemarker</a>:</p>
-<pre>
-freemarker.template.Configuration configuration = new freemarker.template.Configuration();
-configuration.setAutoEscapingPolicy(DISABLE_AUTO_ESCAPING_POLICY); // Sensitive
-</pre>
-<h2>Compliant Solution</h2>
-<p>With <a href="https://github.com/samskivert/jmustache">JMustache by samskivert</a>:</p>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 Mustache.compiler().compile(template).execute(context); // Compliant, auto-escaping is enabled by default
 Mustache.compiler().escapeHTML(true).compile(template).execute(context); // Compliant
 </pre>
-<p>With <a href="https://freemarker.apache.org/">Freemarker</a>. See <a
-href="https://freemarker.apache.org/docs/api/freemarker/template/Configuration.html#setAutoEscapingPolicy-int-">"setAutoEscapingPolicy"
-documentation</a> for more details.</p>
-<pre>
+<h2>How to fix it in FreeMarker</h2>
+<h3>Code examples</h3>
+<p>The following examples configure the template engine to disable its auto-escaping feature, allowing template variables to be rendered without HTML
+encoding.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+freemarker.template.Configuration configuration = new freemarker.template.Configuration();
+configuration.setAutoEscapingPolicy(DISABLE_AUTO_ESCAPING_POLICY); // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
 freemarker.template.Configuration configuration = new freemarker.template.Configuration();
 configuration.setAutoEscapingPolicy(ENABLE_IF_DEFAULT_AUTO_ESCAPING_POLICY); // Compliant
 </pre>
-<h2>See</h2>
+<h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li>OWASP - <a href="https://owasp.org/Top10/A03_2021-Injection/">Top 10 2021 Category A3 - Injection</a></li>
   <li><a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.md">OWASP Cheat Sheet</a>
   - XSS Prevention Cheat Sheet</li>
-  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)">Top 10 2017 Category A7 - Cross-Site Scripting
-  (XSS)</a></li>
+</ul>
+<h3>Standards</h3>
+<ul>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/79">CWE-79 - Improper Neutralization of Input During Web Page Generation ('Cross-site
   Scripting')</a></li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A03_2021-Injection/">Top 10 2021 Category A3 - Injection</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-project-top-ten/2017/A7_2017-Cross-Site_Scripting_(XSS)">Top 10 2017 Category A7 - Cross-Site Scripting
+  (XSS)</a></li>
 </ul>
 
