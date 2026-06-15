@@ -43,12 +43,12 @@ public class RedosCheckJava8 {
   }
 
   void fixedInJava9(String str) {
-    str.matches("(.?,)*X"); // Compliant - LINEAR_WHEN_OPTIMIZED on Java 8, reported by S8786
+    str.matches("(.?,)*X"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}
   }
 
   void notFixedInJava9(String str) {
     // The back reference prevents the Java 9+ optimization from being applied
-    str.matches("(.?,)*\\1"); // Compliant - LINEAR_WHEN_OPTIMIZED + backref on Java 8, reported by S8786
+    str.matches("(.?,)*\\1"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}
   }
 
   void compliant(String str) {

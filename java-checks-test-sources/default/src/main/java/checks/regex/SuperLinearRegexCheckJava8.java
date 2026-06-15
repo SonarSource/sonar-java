@@ -40,12 +40,12 @@ public class SuperLinearRegexCheckJava8 {
   }
 
   void fixedInJava9(String str) {
-    str.matches("(.?,)*X"); // Noncompliant {{Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.}}
+    str.matches("(.?,)*X"); // Compliant - LINEAR_WHEN_OPTIMIZED on Java 8, reported by S5852
   }
 
   void notFixedInJava9(String str) {
     // The back reference prevents the Java 9+ optimization from being applied
-    str.matches("(.?,)*\\1"); // Noncompliant {{Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.}}
+    str.matches("(.?,)*\\1"); // Compliant - LINEAR_WHEN_OPTIMIZED + backref on Java 8, reported by S5852
   }
 
   void compliant(String str) {

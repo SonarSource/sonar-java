@@ -31,8 +31,8 @@ public class RedosCheckSample {
 //      ^^^^^^^
     str.matches("(.?,)*?"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}
     str.matches("(a|.a)*?"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}
-    str.matches("(?:.*,)*(X)\\1"); // Compliant - QUADRATIC_WHEN_OPTIMIZED + backref on Java 9+, reported by S8786
-    str.matches("(.*,)*\\1"); // Compliant - QUADRATIC_WHEN_OPTIMIZED + backref on Java 9+, reported by S8786
+    str.matches("(?:.*,)*(X)\\1"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches("(.*,)*\\1"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}
   }
 
   void polynomialInJava9(String str) {
@@ -107,7 +107,7 @@ public class RedosCheckSample {
 
   void notFixedInJava9(String str) {
     // The back reference prevents the Java 9+ optimization from being applied
-    str.matches("(.?,)*\\1"); // Compliant - LINEAR_WHEN_OPTIMIZED + backref on Java 9+, reported by S8786
+    str.matches("(.?,)*\\1"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}
     str.matches("(?:(.?)\\1,)*"); // FN because RegexTreeHelpers.intersects can't currently handle backreferences inside the repetition
   }
 

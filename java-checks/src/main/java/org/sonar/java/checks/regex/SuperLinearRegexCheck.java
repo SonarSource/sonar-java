@@ -30,9 +30,9 @@ public class SuperLinearRegexCheck extends AbstractRedosCheck {
     boolean optimized = isJava9OrHigher() && !regexContainsBackReference;
     return switch (foundBacktrackingType) {
       case ALWAYS_EXPONENTIAL -> Optional.empty();
-      case QUADRATIC_WHEN_OPTIMIZED -> isJava9OrHigher() ? Optional.of(MESSAGE) : Optional.empty();
+      case QUADRATIC_WHEN_OPTIMIZED -> optimized ? Optional.of(MESSAGE) : Optional.empty();
       case ALWAYS_QUADRATIC -> Optional.of(MESSAGE);
-      case LINEAR_WHEN_OPTIMIZED -> optimized ? Optional.empty() : Optional.of(MESSAGE);
+      case LINEAR_WHEN_OPTIMIZED -> Optional.empty();
       case NO_ISSUE -> Optional.empty();
     };
   }

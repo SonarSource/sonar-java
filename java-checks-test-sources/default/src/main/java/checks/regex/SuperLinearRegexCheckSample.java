@@ -32,8 +32,8 @@ public class SuperLinearRegexCheckSample {
     str.matches("(.*,)*?"); // Compliant - always exponential, reported by S5852
     str.matches("(.?,)*?"); // Compliant - always exponential, reported by S5852
     str.matches("(a|.a)*?"); // Compliant - always exponential, reported by S5852
-    str.matches("(?:.*,)*(X)\\1"); // Noncompliant {{Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.}}
-    str.matches("(.*,)*\\1"); // Noncompliant {{Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.}}
+    str.matches("(?:.*,)*(X)\\1"); // Compliant - QUADRATIC_WHEN_OPTIMIZED + backref on Java 9+, reported by S5852
+    str.matches("(.*,)*\\1"); // Compliant - QUADRATIC_WHEN_OPTIMIZED + backref on Java 9+, reported by S5852
   }
 
   void polynomialInJava9(String str) {
@@ -108,7 +108,7 @@ public class SuperLinearRegexCheckSample {
 
   void notFixedInJava9(String str) {
     // The back reference prevents the Java 9+ optimization from being applied
-    str.matches("(.?,)*\\1"); // Noncompliant {{Simplify this regular expression to reduce its runtime, as it has super-linear performance due to backtracking.}}
+    str.matches("(.?,)*\\1"); // Compliant - LINEAR_WHEN_OPTIMIZED + backref on Java 9+, reported by S5852
     str.matches("(?:(.?)\\1,)*"); // FN because RegexTreeHelpers.intersects can't currently handle backreferences inside the repetition
   }
 

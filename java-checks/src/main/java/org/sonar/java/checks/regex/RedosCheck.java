@@ -27,9 +27,10 @@ public class RedosCheck extends AbstractRedosCheck {
 
   @Override
   Optional<String> buildMessage() {
+    boolean optimized = isJava9OrHigher() && !regexContainsBackReference;
     return switch (foundBacktrackingType) {
       case ALWAYS_EXPONENTIAL -> Optional.of(MESSAGE);
-      case QUADRATIC_WHEN_OPTIMIZED -> isJava9OrHigher() ? Optional.empty() : Optional.of(MESSAGE);
+      case QUADRATIC_WHEN_OPTIMIZED, LINEAR_WHEN_OPTIMIZED -> optimized ? Optional.empty() : Optional.of(MESSAGE);
       default -> Optional.empty();
     };
   }
