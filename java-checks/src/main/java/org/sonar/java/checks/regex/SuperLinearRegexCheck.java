@@ -19,18 +19,21 @@ package org.sonar.java.checks.regex;
 import java.util.Optional;
 import org.sonar.check.Rule;
 
-@Rule(key = "S5852")
-public class RedosCheck extends AbstractRedosCheck {
+@Rule(key = "S8786")
+public class SuperLinearRegexCheck extends AbstractRedosCheck {
 
-  private static final String MESSAGE = "Make sure the regex used here, which is vulnerable to " +
-    "exponential runtime due to backtracking, cannot lead to denial of service.";
+  private static final String MESSAGE = "Simplify this regular expression to reduce its runtime, " +
+    "as it has super-linear performance due to backtracking.";
 
   @Override
   Optional<String> buildMessage() {
+    boolean optimized = isJava9OrHigher() && !regexContainsBackReference;
     return switch (foundBacktrackingType) {
-      case ALWAYS_EXPONENTIAL -> Optional.of(MESSAGE);
-      case QUADRATIC_WHEN_OPTIMIZED -> isJava9OrHigher() ? Optional.empty() : Optional.of(MESSAGE);
-      default -> Optional.empty();
+      case ALWAYS_EXPONENTIAL -> Optional.empty();
+      case QUADRATIC_WHEN_OPTIMIZED -> isJava9OrHigher() ? Optional.of(MESSAGE) : Optional.empty();
+      case ALWAYS_QUADRATIC -> Optional.of(MESSAGE);
+      case LINEAR_WHEN_OPTIMIZED -> optimized ? Optional.empty() : Optional.of(MESSAGE);
+      case NO_ISSUE -> Optional.empty();
     };
   }
 

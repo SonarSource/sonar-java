@@ -38,17 +38,17 @@ public class RedosCheckJava8 {
   }
 
   void alwaysQuadratic(String str) {
-    str.matches("x*\\w*"); // Noncompliant {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
-    str.matches(".*.*X"); // Noncompliant {{Make sure the regex used here, which is vulnerable to polynomial runtime due to backtracking, cannot lead to denial of service.}}
+    str.matches("x*\\w*"); // Compliant - always quadratic, reported by S8786
+    str.matches(".*.*X"); // Compliant - always quadratic, reported by S8786
   }
 
   void fixedInJava9(String str) {
-    str.matches("(.?,)*X"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service or make sure the code is only run using Java 9 or later.}}
+    str.matches("(.?,)*X"); // Compliant - LINEAR_WHEN_OPTIMIZED on Java 8, reported by S8786
   }
 
   void notFixedInJava9(String str) {
-    // The back reference prevents the Java 9+ optimization from being applied, so we shouldn't mention it
-    str.matches("(.?,)*\\1"); // Noncompliant {{Make sure the regex used here, which is vulnerable to exponential runtime due to backtracking, cannot lead to denial of service.}}
+    // The back reference prevents the Java 9+ optimization from being applied
+    str.matches("(.?,)*\\1"); // Compliant - LINEAR_WHEN_OPTIMIZED + backref on Java 8, reported by S8786
   }
 
   void compliant(String str) {
