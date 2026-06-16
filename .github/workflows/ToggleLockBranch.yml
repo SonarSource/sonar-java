@@ -2,6 +2,10 @@ name: Toggle lock branch
 
 on:
   workflow_dispatch:    # Triggered manually from the GitHub UI / Actions
+    inputs:
+      additional-message:
+        description: 'Additional Slack message text'
+        required: false
 
 jobs:
   ToggleLockBranch_job:
@@ -20,4 +24,5 @@ jobs:
         with:
           github-token: ${{ fromJSON(steps.secrets.outputs.vault).lock_token }}
           slack-token: ${{ fromJSON(steps.secrets.outputs.vault).slack_api_token }}
+          additional-message: ${{ github.event.inputs.additional-message }}
           slack-channel: squad-jvm-notifs
