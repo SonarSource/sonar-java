@@ -128,7 +128,7 @@ class JavaRulesDefinitionTest {
     RulesDefinition.Repository repository = context.repository(REPOSITORY_KEY);
 
     RulesDefinition.Rule rule = repository.rule("S1104");
-    assertThat(rule.activatedByDefault()).isTrue();
+    assertThat(rule.activatedByDefault()).isFalse();
     assertThat(rule.deprecatedRuleKeys()).containsExactly(RuleKey.of("squid", "ClassVariableVisibilityCheck"));
 
     // FIXME SONAR-17167: S4830 should have references to java:S4244 and squid:S4244
