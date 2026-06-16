@@ -49,6 +49,7 @@ class GeneratedCheckListTest {
   private static final Set<String> BLACK_LIST = SetUtils.immutableSetOf(
     "AbstractXPathBasedCheck.java",
     "AbstractWebXmlXPathBasedCheck.java",
+    "AbstractRedosCheck.java",
     "AbstractRegexCheck.java");
 
   /**

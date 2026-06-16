@@ -8,12 +8,12 @@ severe as catastrophic backtracking, such patterns can significantly degrade app
 <h2>How to fix it</h2>
 <p>To fix a regular expression with non-linear backtracking, consider the following strategies:</p>
 <ul>
-  <li>Replace <code>.</code> with negated character classes to exclude separators where applicable (e.g., <code><strong></strong></code><strong>
-  instead of <code>.</code></strong> before <code>,</code>).</li>
+  <li>Replace <code>.</code> with negated character classes to exclude separators where applicable (e.g., <code>[^,]*</code> instead of
+  <code>.*</code> before <code>,</code>).</li>
   <li>Use bounded quantifiers such as <code>{1,5}</code> to limit repetitions.</li>
   <li>Restructure alternations and quantifiers to eliminate ambiguity — avoid patterns where multiple alternatives can match the same character.</li>
-  <li>Use possessive quantifiers (<code>+`, `*</code>, <code>?+</code>) or atomic grouping to prevent the regex engine from keeping backtracking
-  positions.</li>
+  <li>Use possessive quantifiers (<code>++</code>, <code>*+</code>, <code>?+</code>) or atomic grouping to prevent the regex engine from keeping
+  backtracking positions.</li>
 </ul>
 <h3>Code examples</h3>
 <p>The following regular expression has polynomial backtracking: without a start anchor, the engine retries the pattern at every position, leading to
