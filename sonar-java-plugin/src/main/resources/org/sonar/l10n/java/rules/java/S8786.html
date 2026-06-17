@@ -16,16 +16,25 @@ severe as catastrophic backtracking, such patterns can significantly degrade app
   backtracking positions.</li>
 </ul>
 <h3>Code examples</h3>
-<p>The following regular expression has polynomial backtracking: without a start anchor, the engine retries the pattern at every position, leading to
-quadratic evaluation time when there is no match.</p>
+<p>The following examples illustrate two distinct causes of non-linear backtracking. The first shows a pattern that is polynomial when unanchored:
+without a start anchor, the engine retries the pattern at every position, leading to quadratic evaluation time when there is no match. The second
+shows ambiguous alternation, which causes quadratic backtracking regardless of anchoring because multiple alternatives can match the same input in
+different ways.</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 java.util.regex.Pattern.compile("a+b").matcher(input).find(); // Noncompliant - polynomial backtracking when the pattern does not match
+</pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+java.util.regex.Pattern.compile("(a|aa)+").matcher(input).find(); // Noncompliant - ambiguous alternation causes quadratic backtracking
 </pre>
 <h4>Compliant solution</h4>
 <p>Adding a start anchor prevents the engine from retrying at every position:</p>
 <pre data-diff-id="1" data-diff-type="compliant">
 java.util.regex.Pattern.compile("^a+b").matcher(input).find(); // Compliant - anchor eliminates redundant backtracking positions
+</pre>
+<p>Restructuring the alternation to eliminate the overlap removes the quadratic behavior:</p>
+<pre data-diff-id="2" data-diff-type="compliant">
+java.util.regex.Pattern.compile("a+").matcher(input).find(); // Compliant - unambiguous
 </pre>
 <h2>Resources</h2>
 <h3>Articles &amp; blog posts</h3>
