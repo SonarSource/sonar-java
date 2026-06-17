@@ -109,6 +109,35 @@ public class AssertThrowsInsteadOfTryCatchFailCheckSample {
 //    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     } finally {}
 
+    // Try with resources : no catch no finally
+    try (java.io.StringReader _ = new java.io.StringReader("data")) {
+      fail("failed");// Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}} [[quickfixes=qf3]]
+//    ^^^^^^^^^^^^^^
+    }
+    // fix@qf3 {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+    // edit@qf3 [[sl=113;sc=5;el=113;ec=8]] {{assertThrows(Throwable.class, () -> }}
+    // edit@qf3 [[sl=114;sc=7;el=114;ec=22]] {{}}
+    // edit@qf3 [[sl=116;sc=6;el=116;ec=6]] {{, "failed");}}
+    // edit@qf3 [[sl=113;sc=9;el=113;ec=10]] {{{}}
+    // edit@qf3 [[sl=113;sc=67;el=113;ec=68]] {{}}
+    // edit@qf3 [[sl=113;sc=69;el=113;ec=70]] {{;}}
+
+    // assertJ fail without argument, available since assertJ 3.26.0
+    try {
+      org.assertj.core.api.Fail.fail(); // Noncompliant {{Use assertThrows() instead of try/catch and fail() in the try block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    } catch (Exception e) {
+      // test pass
+    }
+
+    // assertJ fail in the catch block
+    try {
+      // test pass
+    } catch (Exception e) {
+      org.assertj.core.api.Fail.fail("failed"); // Noncompliant {{Use assertDoesNotThrow() instead of try/catch and fail() in the catch block.}}
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    }
+
     assertThrows(IllegalStateException.class, AssertThrowsInsteadOfTryCatchFailCheckSample::raise); // compliant
     assertDoesNotThrow(AssertThrowsInsteadOfTryCatchFailCheckSample::dontRaise); // compliant
     nonAnnotatedFunctionFN();
