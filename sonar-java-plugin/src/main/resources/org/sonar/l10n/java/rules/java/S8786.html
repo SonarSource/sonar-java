@@ -1,0 +1,51 @@
+<p>Regular expression engines rely on backtracking to evaluate patterns against input. Certain regex patterns lead to non-linear backtracking, where
+the evaluation time grows polynomially with input size.</p>
+<h2>Why is this an issue?</h2>
+<p>Regular expression engines use backtracking to try all possible execution paths when evaluating a pattern against an input. In some cases, this
+leads to non-linear backtracking where the worst-case evaluation time grows polynomially (e.g., O(n²) or O(n³)) with the input size. While not as
+severe as catastrophic backtracking, such patterns can significantly degrade application performance when processing large or untrusted inputs.</p>
+<p>This rule reports regular expressions that exhibit non-linear backtracking behavior.</p>
+<h2>How to fix it</h2>
+<p>To fix a regular expression with non-linear backtracking, consider the following strategies:</p>
+<ul>
+  <li>Replace <code>.</code> with negated character classes to exclude separators where applicable (e.g., <code>[^,]*</code> instead of
+  <code>.*</code> before <code>,</code>).</li>
+  <li>Use bounded quantifiers such as <code>{1,5}</code> to limit repetitions.</li>
+  <li>Restructure alternations and quantifiers to eliminate ambiguity — avoid patterns where multiple alternatives can match the same character.</li>
+  <li>Use possessive quantifiers (<code>++</code>, <code>*+</code>, <code>?+</code>) or atomic grouping to prevent the regex engine from keeping
+  backtracking positions.</li>
+</ul>
+<h3>Code examples</h3>
+<p>The following examples illustrate two distinct causes of non-linear backtracking. The first shows a pattern that is polynomial when unanchored:
+without a start anchor, the engine retries the pattern at every position, leading to quadratic evaluation time when there is no match. The second
+shows ambiguous alternation, which causes quadratic backtracking regardless of anchoring because multiple alternatives can match the same input in
+different ways.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+java.util.regex.Pattern.compile("a+b").matcher(input).find(); // Noncompliant - polynomial backtracking when the pattern does not match
+</pre>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+java.util.regex.Pattern.compile("(a|aa)+").matcher(input).find(); // Noncompliant - ambiguous alternation causes quadratic backtracking
+</pre>
+<h4>Compliant solution</h4>
+<p>Adding a start anchor prevents the engine from retrying at every position:</p>
+<pre data-diff-id="1" data-diff-type="compliant">
+java.util.regex.Pattern.compile("^a+b").matcher(input).find(); // Compliant - anchor eliminates redundant backtracking positions
+</pre>
+<p>Restructuring the alternation to eliminate the overlap removes the quadratic behavior:</p>
+<pre data-diff-id="2" data-diff-type="compliant">
+java.util.regex.Pattern.compile("a+").matcher(input).find(); // Compliant - unambiguous
+</pre>
+<h2>Resources</h2>
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li><a href="https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS">owasp.org</a> - Regular expression Denial of
+  Service - ReDoS</li>
+  <li><a href="https://www.regular-expressions.info/catastrophic.html">regular-expressions.info</a> - Runaway Regular Expressions: Catastrophic
+  Backtracking</li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S5852} - Regular expressions should not cause catastrophic backtracking</li>
+</ul>
+
