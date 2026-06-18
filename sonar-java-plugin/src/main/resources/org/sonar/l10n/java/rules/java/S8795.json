@@ -1,0 +1,14 @@
+{
+  "title": "TODO: Title for S8795",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-8795",
+  "sqKey": "S8795",
+  "scope": "Main"
+}
