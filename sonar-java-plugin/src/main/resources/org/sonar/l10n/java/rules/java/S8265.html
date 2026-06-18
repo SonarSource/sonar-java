@@ -1,0 +1,62 @@
+<p>This rule raises an issue when a string literal that is not a valid time zone identifier is passed to methods that accept time zone identifier
+arguments.</p>
+<p>In Java, this specifically applies to the <code>ZoneId.of()</code> method.</p>
+<h2>Why is this an issue?</h2>
+<p>Standard time zone libraries provide methods that create time zone objects from string identifiers. When using these methods, the provided string
+must be a valid time zone identifier recognized by the library.</p>
+<p>Valid time zone identifiers typically include:</p>
+<ul>
+  <li>IANA Time Zone Database names (e.g., <code>"America/New_York"</code>, <code>"Europe/Paris"</code>)</li>
+  <li>Fixed offsets in the format <code>"+HH:MM"</code> or <code>"-HH:MM"</code> (e.g., <code>"+05:30"</code>, <code>"-08:00"</code>)</li>
+  <li>Special identifiers like <code>"UTC"</code>, <code>"GMT"</code>, or <code>"Z"</code> (which is short for UTC)</li>
+  <li>Zone offset IDs like <code>"UTC+1"</code> or <code>"GMT-5"</code></li>
+</ul>
+<p>If you pass an invalid string to a time zone creation method, the library throws a runtime exception. This can happen due to:</p>
+<ul>
+  <li>Typos in zone identifier strings</li>
+  <li>Using three-letter abbreviations that are not valid zone IDs (like <code>"PST"</code>, <code>"EST"</code>)</li>
+  <li>Using deprecated or obsolete zone identifiers (like <code>"US/Pacific"</code>)</li>
+  <li>Completely invalid strings</li>
+</ul>
+<p>Three-letter time zone abbreviations are particularly problematic because they are ambiguous. For example, "CST" could mean Central Standard Time
+(North America), China Standard Time, or Cuba Standard Time. Modern time zone APIs require full IANA zone names to avoid this ambiguity.</p>
+<p>Deprecated zone IDs like <code>"US/Pacific"</code> or <code>"US/Eastern"</code> should also be avoided. While they may still work in some library
+versions, they are not part of the standard IANA Time Zone Database and may be removed in future versions.</p>
+<p>In Java, this refers to the <code>java.time.ZoneId</code> class and its static method <code>ZoneId.of(String zoneId)</code>, which throws a
+<code>ZoneRulesException</code> when given an invalid zone identifier.</p>
+<h3>What is the potential impact?</h3>
+<p>When an invalid string identifier is used to look up a system resource or configuration value, the application will throw a runtime exception
+indicating the resource cannot be found. This exception occurs when the code path is executed, which could be:</p>
+<ul>
+  <li>During application startup, causing the application to fail to launch</li>
+  <li>During request handling, resulting in failed user requests and poor user experience</li>
+  <li>In scheduled tasks, causing background jobs to fail silently</li>
+</ul>
+<p>Because this error occurs at runtime rather than compile time, it may not be discovered during development and could surface in production
+environments, leading to application downtime or data processing failures.</p>
+<h2>How to fix it</h2>
+<p>Replace invalid zone ID strings with valid IANA Time Zone Database identifiers. If you were using a three-letter abbreviation, replace it with the
+full zone name from the IANA database. If you were using a deprecated zone ID, update it to the current standard identifier.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+ZoneId zone1 = ZoneId.of("InvalidZone");  // Noncompliant
+ZoneId zone2 = ZoneId.of("PST");          // Noncompliant
+ZoneId zone3 = ZoneId.of("US/Pacific");   // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+ZoneId zone1 = ZoneId.of("Europe/Paris");         // Compliant: valid IANA zone ID
+ZoneId zone2 = ZoneId.of("America/Los_Angeles"); // Compliant: full name instead of PST
+ZoneId zone3 = ZoneId.of("America/Los_Angeles"); // Compliant: current standard ID
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java SE 8 - ZoneId - <a href="https://docs.oracle.com/javase/8/docs/api/java/time/ZoneId.html">Official Java documentation for the ZoneId
+  class</a></li>
+  <li>IANA Time Zone Database - <a href="https://www.iana.org/time-zones">The authoritative source for time zone identifiers</a></li>
+  <li>List of tz database time zones - <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">A comprehensive list of valid IANA time
+  zone identifiers</a></li>
+</ul>
+

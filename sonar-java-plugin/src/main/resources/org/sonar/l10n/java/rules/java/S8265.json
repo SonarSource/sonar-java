@@ -1,0 +1,24 @@
+{
+  "title": "Zone IDs passed to \"ZoneId.of()\" should be valid",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "datetime",
+    "pitfall"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-8265",
+  "sqKey": "S8265",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "CONVENTIONAL"
+  }
+}
