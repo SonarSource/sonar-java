@@ -15,10 +15,10 @@ legitimate users.</p>
 <h2>How to fix it</h2>
 <p>To fix a vulnerable regular expression, consider the following strategies:</p>
 <ul>
-  <li>Use possessive quantifiers (<code>+`, `*</code>, <code>?+</code>) or atomic grouping to prevent the regex engine from keeping backtracking
-  positions.</li>
-  <li>Replace <code>.</code> with negated character classes to exclude separators where applicable (e.g., <code><strong></strong></code><strong>
-  instead of <code>.</code></strong> before <code></code>).</li>
+  <li>Use possessive quantifiers (<code>++</code>, <code>*+</code>, <code>?+</code>) or atomic grouping to prevent the regex engine from keeping
+  backtracking positions.</li>
+  <li>Replace <code>.</code> with negated character classes to exclude separators where applicable (e.g., <code>[^_]*</code> instead of
+  <code>.*</code> before <code>_</code>).</li>
   <li>Use bounded quantifiers such as <code>{1,5}</code> to limit repetitions.</li>
   <li>Restructure nested quantifiers so the inner group can match in only one way.</li>
   <li>Use a non-backtracking implementation such as <a href="https://github.com/google/re2j">RE2/J</a>.</li>
@@ -57,5 +57,9 @@ java.util.regex.Pattern.compile("(a++)++$").matcher(
 <ul>
   <li>CWE - <a href="https://cwe.mitre.org/data/definitions/1333">CWE-1333 - Inefficient Regular Expression Complexity</a></li>
   <li>OWASP - <a href="https://owasp.org/Top10/A04_2021-Insecure_Design/">Top 10 2021 Category A4 - Insecure Design</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S8786} - Regular expressions should not cause non-linear backtracking</li>
 </ul>
 
