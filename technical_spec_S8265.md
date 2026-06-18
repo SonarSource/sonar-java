@@ -2,14 +2,14 @@
 
 ## 1. Implementation Approach
 
-### Base Pattern
-Use **`AbstractMethodDetection`** pattern as this check focuses on detecting specific method invocations with invalid arguments.
+### Base Class Selection
+Use **`AbstractMethodDetection`** pattern as this check focuses on validating arguments to a specific method (`ZoneId.of()`).
 
 ### AST Node Types
-- **Primary Target**: `METHOD_INVOCATION` nodes
-- **Focus**: Static method calls to `ZoneId.of(String)`
+- **Primary**: `MethodInvocationTree` - to detect calls to `ZoneId.of()`
+- **Secondary**: `ExpressionTree` - to analyze method arguments
 
-### MethodMatchers API Usage
+### MethodMatchers Configuration
 ```java
 private static final MethodMatchers ZONE_ID_OF = MethodMatchers.create()
   .ofTypes("java.time.ZoneId")
@@ -30,68 +30,91 @@ public class InvalidZoneIdCheck extends AbstractMethodDetection {
   
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    // Implementation here
+    // Implementation
   }
 }
 ```
 
----
-
 ## 2. Valid Zone IDs
 
 ### Validation Approach
+Use a **static set** of valid zone IDs initialized at class loading time using Java's own `ZoneId` API.
 
-#### 2.1 IANA Time Zone Database
-- Use `ZoneId.getAvailableZoneIds()` to retrieve the canonical set of valid zone IDs
-- Cache this set during check initialization for performance
-- This provides all valid IANA identifiers (e.g., "America/New_York", "Europe/Paris")
+### Valid Zone ID Categories
 
-#### 2.2 Fixed Offset Patterns
-Accept strings matching these regex patterns:
-- **Signed offsets**: `^[+-]\d{2}:\d{2}(:\d{2})?$` (e.g., "+05:30", "-08:00", "+01:00:00")
-- **Compact format**: `^[+-]\d{4}$` (e.g., "+0530", "-0800")
-- **Single digit hours**: `^[+-]\d{1}$` (e.g., "+5", "-8")
-
-#### 2.3 Special Identifiers
-Hardcode these valid special cases:
-- "UTC"
-- "GMT"
-- "Z" (equivalent to UTC)
-- "UT" (Universal Time, less common)
-
-#### 2.4 Zone Offset IDs
-Accept patterns:
-- `^UTC[+-]\d{1,2}(:\d{2})?$` (e.g., "UTC+1", "UTC-05:30")
-- `^GMT[+-]\d{1,2}(:\d{2})?$` (e.g., "GMT+5", "GMT-8")
-
-### Implementation Code
+#### A. IANA Time Zone Database Names
 ```java
-private static final Set<String> VALID_ZONE_IDS;
-private static final Set<String> SPECIAL_ZONE_IDS = Set.of("UTC", "GMT", "Z", "UT");
-private static final Pattern FIXED_OFFSET_PATTERN = Pattern.compile(
-  "^[+-]\\d{1,2}(:\\d{2}(:\\d{2})?)?$|^[+-]\\d{4}$"
-);
-private static final Pattern ZONE_OFFSET_PATTERN = Pattern.compile(
-  "^(UTC|GMT)[+-]\\d{1,2}(:\\d{2})?$"
-);
+private static final Set<String> VALID_ZONE_IDS = ZoneId.getAvailableZoneIds();
+```
 
-static {
-  VALID_ZONE_IDS = ZoneId.getAvailableZoneIds();
-}
+Examples:
+- `"America/New_York"`
+- `"Europe/Paris"`
+- `"Asia/Tokyo"`
+- `"Africa/Cairo"`
 
+#### B. Fixed Offset Patterns
+Regular expressions to validate:
+- **Format**: `[+/-]HH:MM` or `[+/-]HH:MM:SS` or `[+/-]HH`
+- **Examples**: `"+05:30"`, `"-08:00"`, `"+01:00:00"`
+
+```java
+private static final Pattern FIXED_OFFSET_PATTERN = 
+  Pattern.compile("^[+-]\\d{2}(?::?\\d{2}(?::?\\d{2})?)?$");
+```
+
+#### C. Special Zone Identifiers
+Additional valid IDs not always in `getAvailableZoneIds()`:
+- `"Z"` (UTC)
+- `"UTC"` (if not in set)
+- `"GMT"` (if not in set)
+- `"UT"` (if not in set)
+
+#### D. Zone Offset Prefix Patterns
+Pattern for zone offsets with prefix:
+- **Format**: `UTC[+/-]offset` or `GMT[+/-]offset`
+- **Examples**: `"UTC+1"`, `"GMT-5"`, `"UTC+05:30"`
+
+```java
+private static final Pattern ZONE_OFFSET_PREFIX_PATTERN = 
+  Pattern.compile("^(?:UTC|GMT|UT)([+-]\\d{1,2}(?::?\\d{2}(?::?\\d{2})?)?)?$");
+```
+
+### Complete Validation Method
+```java
 private static boolean isValidZoneId(String zoneId) {
-  return VALID_ZONE_IDS.contains(zoneId)
-    || SPECIAL_ZONE_IDS.contains(zoneId)
-    || FIXED_OFFSET_PATTERN.matcher(zoneId).matches()
-    || ZONE_OFFSET_PATTERN.matcher(zoneId).matches();
+  if (zoneId == null || zoneId.isEmpty()) {
+    return false;
+  }
+  
+  // Check IANA zone IDs
+  if (VALID_ZONE_IDS.contains(zoneId)) {
+    return true;
+  }
+  
+  // Check special IDs
+  if ("Z".equals(zoneId)) {
+    return true;
+  }
+  
+  // Check fixed offset pattern (+HH:MM, -HH:MM, etc.)
+  if (FIXED_OFFSET_PATTERN.matcher(zoneId).matches()) {
+    return true;
+  }
+  
+  // Check zone offset with prefix (UTC+1, GMT-5, etc.)
+  if (ZONE_OFFSET_PREFIX_PATTERN.matcher(zoneId).matches()) {
+    return true;
+  }
+  
+  return false;
 }
 ```
 
----
-
 ## 3. Detection Logic
 
-### 3.1 Method Matching
+### Primary Detection Flow
+
 ```java
 @Override
 protected void onMethodInvocationFound(MethodInvocationTree mit) {
@@ -104,316 +127,325 @@ protected void onMethodInvocationFound(MethodInvocationTree mit) {
   
   ExpressionTree argument = arguments.get(0);
   
-  // Extract constant value from argument
-  Optional<String> zoneIdValue = extractZoneIdLiteral(argument);
+  // Extract string literal value
+  Optional<String> constantValue = extractStringLiteral(argument);
   
-  if (zoneIdValue.isEmpty()) {
-    // Not a string literal, skip (avoid false positives)
+  // Only check string literals (skip dynamic values)
+  if (!constantValue.isPresent()) {
     return;
   }
   
-  String zoneId = zoneIdValue.get();
+  String zoneId = constantValue.get();
   
-  // Validate the zone ID
+  // Skip null values (handled by other checks)
+  if (zoneId == null) {
+    return;
+  }
+  
+  // Validate zone ID
   if (!isValidZoneId(zoneId)) {
-    reportIssue(argument, createIssueMessage(zoneId));
+    reportIssue(argument, buildIssueMessage(zoneId));
   }
 }
-```
 
-### 3.2 String Literal Extraction
-```java
-private Optional<String> extractZoneIdLiteral(ExpressionTree argument) {
-  // Use the constant evaluator to get string literal values
-  Optional<Object> constant = argument.asConstant();
+private Optional<String> extractStringLiteral(ExpressionTree expression) {
+  ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
   
-  if (constant.isPresent() && constant.get() instanceof String) {
-    return Optional.of((String) constant.get());
+  // Use constant resolution
+  ConstantUtils.Constant constant = expr.asConstant();
+  if (constant != null && constant.value() instanceof String) {
+    return Optional.of((String) constant.value());
   }
   
   return Optional.empty();
 }
 ```
 
-### 3.3 Edge Cases
+### Edge Cases Handling
 
-| Case | Handling | Rationale |
-|------|----------|-----------|
-| Non-literal arguments | Skip (no issue) | Cannot validate dynamic strings statically |
-| Null arguments | Skip (no issue) | Will cause NPE, but different rule's responsibility |
-| Empty string | Report issue | Invalid zone ID |
-| Concatenated strings | Check if resolvable to constant | `asConstant()` handles compile-time constants |
-| Variables | Skip (no issue) | Cannot determine value statically |
+#### Non-Literal Arguments
+```java
+// Skip - cannot validate at compile time
+String userInput = getUserInput();
+ZoneId.of(userInput);
 
----
+String config = System.getProperty("timezone");
+ZoneId.of(config);
+```
+
+#### Concatenated Strings
+```java
+// Skip if not resolvable to constant
+String prefix = "America/";
+ZoneId.of(prefix + "New_York"); // Skip if not constant-folded
+```
+
+#### Null Arguments
+```java
+// Skip - NullPointerException will be caught by other rules
+ZoneId.of(null);
+```
+
+#### Method References and Variables
+```java
+// Skip - not string literals
+String zone = "InvalidZone";
+ZoneId.of(zone);
+```
 
 ## 4. False Positive Considerations
 
-### 4.1 String Literal Validation
-**Only check string literals** to avoid false positives:
+### Only Check String Literals
+- **Rationale**: Dynamic strings cannot be validated at compile time
+- **Implementation**: Use `asConstant()` method to ensure compile-time constant
+- **Benefit**: Eliminates false positives from runtime-determined values
+
+### Case Sensitivity
+Zone IDs are **case-sensitive**. The check must preserve exact case:
 ```java
-// CHECK: String literal
-ZoneId.of("InvalidZone");  // ✓ Should report
-
-// SKIP: Variable
-String zone = config.getZone();
-ZoneId.of(zone);  // ✗ Should NOT report
-
-// SKIP: Method call
-ZoneId.of(getZoneFromConfig());  // ✗ Should NOT report
-
-// CHECK: Compile-time constant
-static final String ZONE = "InvalidZone";
-ZoneId.of(ZONE);  // ✓ Should report (if asConstant() resolves it)
+// These are different
+ZoneId.of("UTC");        // Valid
+ZoneId.of("utc");        // Invalid
+ZoneId.of("europe/paris"); // Invalid
+ZoneId.of("Europe/Paris"); // Valid
 ```
 
-### 4.2 Case Sensitivity
-- Zone IDs are **case-sensitive**
-- "UTC" is valid, but "utc" is **invalid**
-- Do not normalize case before validation
+### Validation Consistency
+Ensure validation logic matches `ZoneId.of()` behavior exactly:
 ```java
-// Correct behavior
-isValidZoneId("UTC");     // true
-isValidZoneId("utc");     // false (should report issue)
-isValidZoneId("America/New_York");  // true
-isValidZoneId("america/new_york");  // false (should report issue)
+private static final Set<String> VALID_ZONE_IDS;
+
+static {
+  // Initialize once at class loading
+  VALID_ZONE_IDS = ZoneId.getAvailableZoneIds();
+}
 ```
 
-### 4.3 Validation Determinism
-- Use `ZoneId.getAvailableZoneIds()` from the JDK running the analyzer
-- This ensures consistency across analysis runs
-- Document that the check validates against the analyzer's JDK version
+### Known Valid But Uncommon IDs
+Handle special cases that `ZoneId.of()` accepts:
+- Offset-based IDs: `"UTC+0"`, `"GMT+0"`
+- Variations: `"+00:00"`, `"+0000"`, `"+00"`
+- All must be validated as correct
 
-### 4.4 Short Zone IDs
-Three-letter abbreviations are **never valid** for `ZoneId.of()`:
+## 5. Issue Reporting
+
+### Issue Message
 ```java
-ZoneId.of("PST");  // Always invalid - report issue
-ZoneId.of("EST");  // Always invalid - report issue
-ZoneId.of("CST");  // Always invalid - report issue
+private String buildIssueMessage(String invalidZoneId) {
+  return String.format("\"%s\" is not a valid time zone identifier.", invalidZoneId);
+}
 ```
 
----
-
-## 5. Quick Fix Potential
-
-### 5.1 Suggest Valid Alternatives
-Use Levenshtein distance or similar algorithm to suggest corrections:
+### Detailed Message with Context
+For better developer experience, detect common mistakes:
 
 ```java
-private String suggestAlternative(String invalidZoneId) {
-  // Common typos and their corrections
-  Map<String, String> commonCorrections = Map.of(
-    "PST", "America/Los_Angeles",
-    "EST", "America/New_York",
-    "CST", "America/Chicago",
-    "MST", "America/Denver",
-    "US/Pacific", "America/Los_Angeles",
-    "US/Eastern", "America/New_York"
-  );
+private String buildIssueMessage(String invalidZoneId) {
+  String baseMessage = String.format("\"%s\" is not a valid time zone identifier.", invalidZoneId);
   
-  if (commonCorrections.containsKey(invalidZoneId)) {
-    return commonCorrections.get(invalidZoneId);
+  // Check if it's a common three-letter abbreviation
+  if (isCommonAbbreviation(invalidZoneId)) {
+    return baseMessage + " Use full IANA time zone names instead of abbreviations.";
   }
   
-  // Find closest match by string distance
+  // Check if it's a deprecated zone ID
+  if (isDeprecatedZoneId(invalidZoneId)) {
+    return baseMessage + " This is a deprecated time zone identifier.";
+  }
+  
+  return baseMessage;
+}
+
+private static final Set<String> COMMON_ABBREVIATIONS = Set.of(
+  "PST", "PDT", "MST", "MDT", "CST", "CDT", "EST", "EDT",
+  "BST", "CET", "IST", "JST", "AEST", "AEDT"
+);
+
+private static final Set<String> DEPRECATED_ZONE_IDS = Set.of(
+  "US/Pacific", "US/Mountain", "US/Central", "US/Eastern",
+  "US/Alaska", "US/Hawaii"
+);
+
+private boolean isCommonAbbreviation(String zoneId) {
+  return COMMON_ABBREVIATIONS.contains(zoneId);
+}
+
+private boolean isDeprecatedZoneId(String zoneId) {
+  return DEPRECATED_ZONE_IDS.contains(zoneId);
+}
+```
+
+## 6. Quick Fix Potential
+
+While quick fixes are implemented separately, design the check to support them:
+
+### Suggestion Strategies
+
+#### A. String Similarity for Typos
+Use Levenshtein distance to suggest similar valid zone IDs:
+
+```java
+private List<String> findSimilarZoneIds(String invalidZoneId, int maxSuggestions) {
   return VALID_ZONE_IDS.stream()
-    .min(Comparator.comparingInt(valid -> 
-      levenshteinDistance(invalidZoneId, valid)))
-    .filter(closest -> 
-      levenshteinDistance(invalidZoneId, closest) <= 3)
-    .orElse(null);
+    .filter(validId -> levenshteinDistance(invalidZoneId, validId) <= 2)
+    .sorted(Comparator.comparingInt(validId -> 
+      levenshteinDistance(invalidZoneId, validId)))
+    .limit(maxSuggestions)
+    .collect(Collectors.toList());
 }
 ```
 
-### 5.2 Issue Message with Suggestions
+#### B. Mapping Common Abbreviations
 ```java
-private String createIssueMessage(String invalidZoneId) {
-  String suggestion = suggestAlternative(invalidZoneId);
-  
-  if (suggestion != null) {
-    return String.format(
-      "\"%s\" is not a valid time zone identifier. Did you mean \"%s\"?",
-      invalidZoneId, suggestion
-    );
-  }
-  
-  return String.format(
-    "\"%s\" is not a valid time zone identifier.",
-    invalidZoneId
-  );
-}
+private static final Map<String, String> ABBREVIATION_TO_ZONE = Map.ofEntries(
+  Map.entry("PST", "America/Los_Angeles"),
+  Map.entry("PDT", "America/Los_Angeles"),
+  Map.entry("MST", "America/Denver"),
+  Map.entry("MDT", "America/Denver"),
+  Map.entry("CST", "America/Chicago"),
+  Map.entry("CDT", "America/Chicago"),
+  Map.entry("EST", "America/New_York"),
+  Map.entry("EDT", "America/New_York"),
+  Map.entry("BST", "Europe/London"),
+  Map.entry("CET", "Europe/Paris"),
+  Map.entry("JST", "Asia/Tokyo")
+);
 ```
 
-### 5.3 Quick Fix Implementation
-While SonarJava doesn't support automatic quick fixes in the traditional IDE sense, provide helpful secondary locations:
-
+#### C. Mapping Deprecated IDs
 ```java
-private void reportIssue(ExpressionTree argument, String message) {
-  context().reportIssue(this, argument, message);
-}
+private static final Map<String, String> DEPRECATED_TO_CURRENT = Map.of(
+  "US/Pacific", "America/Los_Angeles",
+  "US/Mountain", "America/Denver",
+  "US/Central", "America/Chicago",
+  "US/Eastern", "America/New_York",
+  "US/Alaska", "America/Anchorage",
+  "US/Hawaii", "Pacific/Honolulu"
+);
 ```
 
----
+#### D. System Default Suggestion
+For completely invalid zones, suggest using system default:
+```java
+// When no good alternative exists
+// Quick fix: ZoneId.systemDefault()
+```
 
-## 6. Implementation Pattern Examples
+## 7. Implementation Pattern Examples
 
-### 6.1 Reference Similar Checks
+### Reference Similar Checks
 
 #### DateFormatWeekYearCheck
-Similar pattern validation check that validates date format strings:
-- Uses `AbstractMethodDetection`
-- Extracts string literals with `asConstant()`
-- Validates against known patterns
-- Reports issues on invalid patterns
-
+Similar pattern validation check:
 ```java
-// Pattern from DateFormatWeekYearCheck
-@Override
-protected void onMethodInvocationFound(MethodInvocationTree mit) {
-  ExpressionTree firstArg = mit.arguments().get(0);
-  Optional<Object> constant = firstArg.asConstant();
-  if (constant.isPresent() && constant.get() instanceof String) {
-    String pattern = (String) constant.get();
-    if (containsWeekYear(pattern)) {
-      reportIssue(firstArg, "Use 'y' for year instead of 'Y'.");
+// Reference implementation pattern
+public class DateFormatWeekYearCheck extends AbstractMethodDetection {
+  @Override
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    ExpressionTree firstArgument = mit.arguments().get(0);
+    Optional<String> stringConstant = firstArgument.asConstant(String.class);
+    if (stringConstant.isPresent()) {
+      String pattern = stringConstant.get();
+      // Validate pattern
     }
   }
 }
 ```
 
-### 6.2 Complete Implementation Template
+### Complete Check Implementation
 
 ```java
 package org.sonar.java.checks;
 
 import java.time.ZoneId;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.ExpressionUtils;
 
 @Rule(key = "S6885")
 public class InvalidZoneIdCheck extends AbstractMethodDetection {
 
-  private static final Set<String> VALID_ZONE_IDS;
-  private static final Set<String> SPECIAL_ZONE_IDS = 
-    Set.of("UTC", "GMT", "Z", "UT");
+  private static final MethodMatchers ZONE_ID_OF = MethodMatchers.create()
+    .ofTypes("java.time.ZoneId")
+    .names("of")
+    .addParametersMatcher("java.lang.String")
+    .build();
+
+  private static final Set<String> VALID_ZONE_IDS = ZoneId.getAvailableZoneIds();
   
-  private static final Pattern FIXED_OFFSET_PATTERN = Pattern.compile(
-    "^[+-]\\d{1,2}(:\\d{2}(:\\d{2})?)?$|^[+-]\\d{4}$"
-  );
+  private static final Pattern FIXED_OFFSET_PATTERN = 
+    Pattern.compile("^[+-]\\d{2}(?::?\\d{2}(?::?\\d{2})?)?$");
   
-  private static final Pattern ZONE_OFFSET_PATTERN = Pattern.compile(
-    "^(UTC|GMT)[+-]\\d{1,2}(:\\d{2})?$"
-  );
-  
-  private static final Map<String, String> COMMON_CORRECTIONS = Map.of(
-    "PST", "America/Los_Angeles",
-    "PDT", "America/Los_Angeles",
-    "EST", "America/New_York",
-    "EDT", "America/New_York",
-    "CST", "America/Chicago",
-    "CDT", "America/Chicago",
-    "MST", "America/Denver",
-    "MDT", "America/Denver",
-    "US/Pacific", "America/Los_Angeles",
-    "US/Eastern", "America/New_York",
-    "US/Central", "America/Chicago",
-    "US/Mountain", "America/Denver"
+  private static final Pattern ZONE_OFFSET_PREFIX_PATTERN = 
+    Pattern.compile("^(?:UTC|GMT|UT)([+-]\\d{1,2}(?::?\\d{2}(?::?\\d{2})?)?)?$");
+
+  private static final Set<String> COMMON_ABBREVIATIONS = Set.of(
+    "PST", "PDT", "MST", "MDT", "CST", "CDT", "EST", "EDT",
+    "BST", "CET", "IST", "JST", "AEST", "AEDT"
   );
 
-  static {
-    VALID_ZONE_IDS = ZoneId.getAvailableZoneIds();
-  }
+  private static final Set<String> DEPRECATED_ZONE_IDS = Set.of(
+    "US/Pacific", "US/Mountain", "US/Central", "US/Eastern",
+    "US/Alaska", "US/Hawaii"
+  );
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
-    return MethodMatchers.create()
-      .ofTypes("java.time.ZoneId")
-      .names("of")
-      .addParametersMatcher("java.lang.String")
-      .build();
+    return ZONE_ID_OF;
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    Arguments arguments = mit.arguments();
-    
-    if (arguments.size() != 1) {
+    if (mit.arguments().size() != 1) {
       return;
     }
+
+    ExpressionTree argument = mit.arguments().get(0);
+    ExpressionTree expr = ExpressionUtils.skipParentheses(argument);
     
-    ExpressionTree argument = arguments.get(0);
-    Optional<Object> constant = argument.asConstant();
+    // Extract string literal using constant resolution
+    Optional<String> constantValue = expr.asConstant(String.class);
     
-    if (constant.isEmpty() || !(constant.get() instanceof String)) {
-      // Not a string literal, skip to avoid false positives
+    if (!constantValue.isPresent()) {
+      // Not a string literal, skip
       return;
     }
+
+    String zoneId = constantValue.get();
     
-    String zoneId = (String) constant.get();
-    
+    if (zoneId == null) {
+      // Null value, skip (handled by other rules)
+      return;
+    }
+
     if (!isValidZoneId(zoneId)) {
-      String message = createIssueMessage(zoneId);
-      reportIssue(argument, message);
+      reportIssue(argument, buildIssueMessage(zoneId));
     }
   }
 
   private static boolean isValidZoneId(String zoneId) {
-    return VALID_ZONE_IDS.contains(zoneId)
-      || SPECIAL_ZONE_IDS.contains(zoneId)
-      || FIXED_OFFSET_PATTERN.matcher(zoneId).matches()
-      || ZONE_OFFSET_PATTERN.matcher(zoneId).matches();
-  }
+    if (zoneId.isEmpty()) {
+      return false;
+    }
 
-  private String createIssueMessage(String invalidZoneId) {
-    String suggestion = suggestAlternative(invalidZoneId);
-    
-    if (suggestion != null) {
-      return String.format(
-        "\"%s\" is not a valid time zone identifier. Did you mean \"%s\"?",
-        invalidZoneId, suggestion
-      );
+    // Check IANA zone IDs from ZoneId.getAvailableZoneIds()
+    if (VALID_ZONE_IDS.contains(zoneId)) {
+      return true;
     }
-    
-    return String.format(
-      "\"%s\" is not a valid time zone identifier.",
-      invalidZoneId
-    );
-  }
 
-  private String suggestAlternative(String invalidZoneId) {
-    // Check common corrections first
-    if (COMMON_CORRECTIONS.containsKey(invalidZoneId)) {
-      return COMMON_CORRECTIONS.get(invalidZoneId);
+    // Check special ID: "Z" (UTC)
+    if ("Z".equals(zoneId)) {
+      return true;
     }
-    
-    // Find closest match by Levenshtein distance
-    return VALID_ZONE_IDS.stream()
-      .min(Comparator.comparingInt(valid -> 
-        levenshteinDistance(invalidZoneId, valid)))
-      .filter(closest -> 
-        levenshteinDistance(invalidZoneId, closest) <= 3)
-      .orElse(null);
-  }
 
-  private static int levenshteinDistance(String s1, String s2) {
-    int[][] dp = new int[s1.length() + 1][s2.length() + 1];
-    
-    for (int i = 0; i <= s1.length(); i++) {
-      dp[i][0] = i;
-    }
-    for (int j = 0; j <= s2.length(); j++) {
-      dp[0][j] = j;
-    }
-    
-    for (int i = 1; i <= s1.length(); i++) {
-      for (int j = 1; j <= s2.length(); j++) {
-        int cost = s1.charAt(i - 1) == s2
+    // Check fixed offset pattern: +HH:MM, -HH:MM

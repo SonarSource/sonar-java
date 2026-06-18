@@ -165,10 +165,21 @@ def main():
     print("\nGenerating test cases...")
     test_cases = generate_test_cases(client, html_content, metadata, tech_spec)
 
+    # Clean up markdown code fences if present
+    test_cases = test_cases.strip()
+    if test_cases.startswith('```java'):
+        test_cases = test_cases[7:]  # Remove ```java
+    if test_cases.startswith('```'):
+        test_cases = test_cases[3:]  # Remove ```
+    if test_cases.endswith('```'):
+        test_cases = test_cases[:-3]  # Remove closing ```
+    test_cases = test_cases.strip()
+
     # Save test cases
     test_path = Path("java-checks-test-sources/default/src/main/java/checks/ValidZoneIdCheckSample.java")
     with open(test_path, 'w') as f:
         f.write(test_cases)
+        f.write('\n')  # Ensure newline at end
     print(f"Test cases saved to {test_path}")
 
     print("\nPlan-rule complete!")
