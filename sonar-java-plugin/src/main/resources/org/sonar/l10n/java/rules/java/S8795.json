@@ -1,0 +1,24 @@
+{
+  "title": "Code after unconditional control flow statements should be removed",
+  "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "confusing",
+    "unused"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-8795",
+  "sqKey": "S8795",
+  "scope": "All",
+  "quickfix": "unknown"
+}

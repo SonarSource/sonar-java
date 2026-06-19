@@ -1,0 +1,41 @@
+<h2>Why is this an issue?</h2>
+<p>Unreachable code is a sign of a logical error in your program's control flow. When a statement appears after an unconditional jump (like return statements or exception throws), it can never be executed because the jump statement always transfers control away from that point.</p>
+<p>This creates several problems:</p>
+<ul>
+  <li><strong>Misleading intent</strong>: Developers reading the code may think the unreachable statements have some effect, leading to incorrect assumptions about program behavior.</li>
+  <li><strong>Wasted effort</strong>: Time spent understanding, debugging, or modifying unreachable code is entirely wasted.</li>
+  <li><strong>Hidden bugs</strong>: The unreachable code might have been intended to execute, indicating a logic error where the jump statement was placed incorrectly or should have been conditional.</li>
+  <li><strong>Code bloat</strong>: Unreachable code increases the codebase size without providing any value.</li>
+</ul>
+<p>While compilers often warn about unreachable code, such warnings may be overlooked or disabled. Static analysis helps catch these issues early in the development process.</p>
+<p>Common scenarios where unreachable code appears:</p>
+<ul>
+  <li>Statements after a return that were meant to execute before returning</li>
+  <li>Code after an exception throw that was intended for cleanup (which should instead go in a cleanup or finalization block)</li>
+  <li>Statements after loop control transfers that were meant to be outside the conditional block</li>
+  <li>Dead code left over from refactoring that was never removed</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Remove the unreachable code if it serves no purpose. If the statements were intended to execute, restructure the control flow to ensure they run before the jump statement.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public int calculateValue(int a) {
+    int i = 10;
+    return i + a;
+    i++;  // Noncompliant
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public int calculateValue(int a) {
+    int i = 10;
+    i++;
+    return i + a;
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/flow.html">Oracle Java Documentation - Control Flow Statements</a></li>
+</ul>
