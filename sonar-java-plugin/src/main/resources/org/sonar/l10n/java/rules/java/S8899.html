@@ -1,0 +1,33 @@
+<p>HTTP request paths used in security checks without normalization can allow attackers to bypass authentication and authorization by inserting extra slashes in URLs.</p>
+<h2>Why is this an issue?</h2>
+<p>Web applications often implement security policies based on URL paths. A critical vulnerability exists when these security checks compare request paths directly without normalization. URL paths can contain multiple consecutive forward slashes (e.g., <code>//admin</code>, <code>/admin//</code>), which many frameworks preserve in the raw request path.</p>
+<p>When security logic performs string comparisons on non-normalized paths, it may fail to match intended patterns, allowing attackers to bypass security controls through URL manipulation.</p>
+<h2>How to fix it</h2>
+<p>Normalize the request path by collapsing consecutive slashes before performing security checks. Use a regular expression to replace multiple slashes with a single slash.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+String path = requestContext.getUriInfo().getPath();
+if (path.startsWith("/admin")) { // Noncompliant
+    checkAdminPermission();
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+String path = requestContext.getUriInfo().getPath();
+String normalizedPath = path.replaceAll("/+", "/");
+if (normalizedPath.startsWith("/admin")) {
+    checkAdminPermission();
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>OWASP - <a href="https://owasp.org/www-community/attacks/Path_Traversal">Path Traversal</a></li>
+  <li>Quarkus - <a href="https://quarkus.io/guides/security">Security Guide</a></li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li>OWASP - <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Top 10 2021 Category A1 - Broken Access Control</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/863.html">CWE-863 - Incorrect Authorization</a></li>
+</ul>

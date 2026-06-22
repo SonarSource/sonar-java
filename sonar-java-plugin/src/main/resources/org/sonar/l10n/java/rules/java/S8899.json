@@ -1,0 +1,33 @@
+{
+  "title": "Request paths should be normalized before security checks",
+  "type": "VULNERABILITY",
+  "code": {
+    "impacts": {
+      "SECURITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "quickfix": "unknown",
+  "tags": [
+    "cwe",
+    "security",
+    "owasp"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-8899",
+  "sqKey": "S8899",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      863
+    ],
+    "OWASP Top 10 2021": [
+      "A1"
+    ]
+  }
+}
