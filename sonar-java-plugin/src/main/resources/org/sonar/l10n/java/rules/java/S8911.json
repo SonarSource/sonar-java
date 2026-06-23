@@ -1,0 +1,26 @@
+{
+  "title": "Methods annotated with \"@Startup\" should be non-static, non-producer, and parameter-free",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "quarkus",
+    "cdi"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-8911",
+  "sqKey": "S8911",
+  "scope": "Main",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW",
+      "RELIABILITY": "HIGH",
+      "SECURITY": "LOW"
+    },
+    "attribute": "LOGICAL"
+  }
+}
