@@ -41,5 +41,5 @@ jobs:
       env:
         SLACK_BOT_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SLACK_BOT_TOKEN }}
       with:
-        channel-id: squad-jvm-notifs
+        channel-id: squad-core-notifs
         slack-message: "Dogfood build for `${{ steps.dogfood.outputs.sha1 }}`: *failed*, see the logs at https://github.com/SonarSource/sonar-java/actions/workflows/dogfood.yml"

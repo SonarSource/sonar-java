@@ -68,7 +68,7 @@ jobs:
       create-slvscode-ticket: ${{ github.event.inputs.ide-integration == 'true' }}
       branch: ${{ github.event.inputs.branch }}
       pm-email: "jean.jimbo@sonarsource.com"
-      slack-channel: "squad-jvm-releases"
+      slack-channel: "core-languages-releases"
       verbose: ${{ github.event.inputs.verbose == 'true' }}
       use-jira-sandbox: ${{ github.event.inputs.dry-run == 'true' }}
       is-draft-release: ${{ github.event.inputs.dry-run == 'true' }}
