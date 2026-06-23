@@ -29,35 +29,43 @@ class MockitoStaticImportCheckSample {
   @Test
   void noncompliant_mock() {
     MyService service = Mockito.mock(MyService.class); // Noncompliant {{Use a static import for "mock".}}
+    //                  ^^^^^^^^^^^^
+    verify(service).getValue();
   }
 
   @Test
   void noncompliant_when() {
     MyService service = mock(MyService.class);
     Mockito.when(service.getValue()).thenReturn(42); // Noncompliant {{Use a static import for "when".}}
+  //^^^^^^^^^^^^
+    verify(service).getValue();
   }
 
   @Test
   void noncompliant_spy_on_instance() {
     MyService service = mock(MyService.class);
     MyService spied = Mockito.spy(service); // Noncompliant {{Use a static import for "spy".}}
+    verify(service).getValue();
   }
 
   @Test
   void noncompliant_spy_on_class() {
     MyService spied = Mockito.spy(MyService.class); // Noncompliant {{Use a static import for "spy".}}
+    verify(spied).getValue();
   }
 
   @Test
   void noncompliant_doReturn() {
     MyService spied = spy(MyService.class);
     Mockito.doReturn(42).when(spied).getValue(); // Noncompliant {{Use a static import for "doReturn".}}
+    verify(spied).getValue();
   }
 
   @Test
   void noncompliant_doThrow() {
     MyService spied = spy(MyService.class);
     Mockito.doThrow(new RuntimeException()).when(spied).getValue(); // Noncompliant {{Use a static import for "doThrow".}}
+    verify(spied).getValue();
   }
 
   @Test
@@ -85,12 +93,14 @@ class MockitoStaticImportCheckSample {
   void noncompliant_any() {
     MyService service = mock(MyService.class);
     when(service.process(Mockito.any())).thenReturn("result"); // Noncompliant {{Use a static import for "any".}}
+    verify(service).getValue();
   }
 
   @Test
   void noncompliant_eq() {
     MyService service = mock(MyService.class);
     when(service.process(Mockito.eq("input"))).thenReturn("result"); // Noncompliant {{Use a static import for "eq".}}
+    verify(service).getValue();
   }
 
   @Test
@@ -117,6 +127,7 @@ class MockitoStaticImportCheckSample {
     Mockito.when( // Noncompliant {{Use a static import for "when".}}
       service.process(Mockito.any())) // Noncompliant {{Use a static import for "any".}}
       .thenReturn("result");
+    verify(service).getValue();
   }
 
   @Test
@@ -124,6 +135,7 @@ class MockitoStaticImportCheckSample {
     Mockito.when( // Noncompliant {{Use a static import for "when".}}
       Mockito.mock(MyService.class).getValue()) // Noncompliant {{Use a static import for "mock".}}
       .thenReturn(42);
+    verify(Mockito.mock(MyService.class)).getValue(); // Noncompliant {{Use a static import for "mock".}}
   }
 
   @Test
@@ -148,30 +160,35 @@ class MockitoStaticImportCheckSample {
   void noncompliant_inOrder() {
     MyService service = mock(MyService.class);
     Mockito.inOrder(service); // Noncompliant {{Use a static import for "inOrder".}}
+    verify(service).getValue();
   }
 
   @Test
   void noncompliant_reset() {
     MyService service = mock(MyService.class);
     Mockito.reset(service); // Noncompliant {{Use a static import for "reset".}}
+    verify(service).getValue();
   }
 
   @Test
   void noncompliant_doCallRealMethod() {
     MyService spied = spy(MyService.class);
     Mockito.doCallRealMethod().when(spied).getValue(); // Noncompliant {{Use a static import for "doCallRealMethod".}}
+    verify(spied).getValue();
   }
 
   @Test
   void noncompliant_doNothing() {
     MyService spied = spy(MyService.class);
     Mockito.doNothing().when(spied).getValue(); // Noncompliant {{Use a static import for "doNothing".}}
+    verify(spied).getValue();
   }
 
   @Test
   void noncompliant_doAnswer() {
     MyService spied = spy(MyService.class);
     Mockito.doAnswer(invocation -> 42).when(spied).getValue(); // Noncompliant {{Use a static import for "doAnswer".}}
+    verify(spied).getValue();
   }
 
   @Test
@@ -184,6 +201,7 @@ class MockitoStaticImportCheckSample {
     doCallRealMethod().when(spied).getValue();
     doNothing().when(spied).getValue();
     doAnswer(invocation -> 42).when(spied).getValue();
+    verify(service).getValue();
   }
 
   @Test
@@ -192,6 +210,7 @@ class MockitoStaticImportCheckSample {
     // Using ArgumentMatchers. prefix rather than Mockito. is not flagged by this rule
     when(service.process(org.mockito.ArgumentMatchers.any())).thenReturn("result");
     when(service.process(org.mockito.ArgumentMatchers.eq("input"))).thenReturn("result");
+    verify(service).getValue();
   }
 }
 
