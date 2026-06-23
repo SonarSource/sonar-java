@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
@@ -71,14 +72,16 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
     SpringUtils.BOOT_CONTEXT_PROPERTIES_PACKAGE,
     SpringUtils.DATA_PACKAGE + "annotation.");
 
-  private static final Map<String, Set<String>> FRAMEWORK_ANNOTATION_PREFIXES = Map.of(
-    "Jackson", JACKSON_ANNOTATION_PACKAGES,
-    "Gson", GSON_ANNOTATION_PACKAGES,
-    "Micronaut", MICRONAUT_ANNOTATION_PACKAGES,
-    "Jakarta EE", JAKARTA_EE_ANNOTATION_PACKAGES,
-    "Java EE", JAVA_EE_ANNOTATION_PACKAGES,
-    "Lombok", LOMBOK_ANNOTATION_PACKAGES,
-    "Spring", SPRING_ANNOTATION_PACKAGES);
+  private static final Set<String> FRAMEWORK_ANNOTATION_PREFIXES = Stream.of(
+    JACKSON_ANNOTATION_PACKAGES,
+    GSON_ANNOTATION_PACKAGES,
+    MICRONAUT_ANNOTATION_PACKAGES,
+    JAKARTA_EE_ANNOTATION_PACKAGES,
+    JAVA_EE_ANNOTATION_PACKAGES,
+    LOMBOK_ANNOTATION_PACKAGES,
+    SPRING_ANNOTATION_PACKAGES)
+    .flatMap(Set::stream)
+    .collect(Collectors.toUnmodifiableSet());
 
   private static final MethodMatchers SERIALIZATION_CONTRACT_METHODS = MethodMatchers.or(
     methodMatcher("readObject", "java.io.ObjectInputStream"),
@@ -204,9 +207,7 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
   private static boolean isFrameworkAnnotation(SymbolMetadata.AnnotationInstance annotation) {
     Type annotationType = annotation.symbol().type();
     return !annotationType.isUnknown()
-      && FRAMEWORK_ANNOTATION_PREFIXES.values().stream()
-        .flatMap(Set::stream)
-        .anyMatch(annotationType.fullyQualifiedName()::startsWith);
+      && FRAMEWORK_ANNOTATION_PREFIXES.stream().anyMatch(annotationType.fullyQualifiedName()::startsWith);
   }
 
   private static boolean constructorHasSmallerVisibility(Symbol.MethodSymbol constructor, Symbol.TypeSymbol classSymbol) {
