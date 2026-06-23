@@ -36,7 +36,7 @@ class RecordInsteadOfClassCheckTest {
   }
 
   @Test
-  void test_broad_framework_annotations_are_not_skipped() {
+  void test_framework_annotation_prefix_scope() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/RecordInsteadOfClassCheckPackagePrefixSample.java")
       .withCheck(new RecordInsteadOfClassCheck())
