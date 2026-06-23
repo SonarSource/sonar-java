@@ -1,0 +1,27 @@
+{
+  "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/ce/log/CeLoggingTest.java": [
+    64
+  ],
+  "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ws/TreeActionTest.java": [
+    88
+  ],
+  "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/es/IndexerStartupTaskTest.java": [
+    56
+  ],
+  "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/language/ws/LanguageWsTest.java": [
+    51
+  ],
+  "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/ws/RestartActionTest.java": [
+    55,
+    67
+  ],
+  "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualitygate/QualityGatesTest.java": [
+    314
+  ],
+  "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/ws/ShowActionTest.java": [
+    150
+  ],
+  "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/util/AbstractStoppableExecutorServiceTest.java": [
+    56
+  ]
+}
