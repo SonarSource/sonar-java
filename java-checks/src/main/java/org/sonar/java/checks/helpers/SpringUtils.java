@@ -30,6 +30,8 @@ public final class SpringUtils {
   public static final String BOOT_CONTEXT_PROPERTIES_PACKAGE = "org.springframework.boot.context.properties.";
   public static final String CONTEXT_ANNOTATION_PACKAGE = "org.springframework.context.annotation.";
   public static final String DATA_PACKAGE = "org.springframework.data.";
+  public static final String DATA_ELASTICSEARCH_ANNOTATIONS_PACKAGE = DATA_PACKAGE + "elasticsearch.annotations.";
+  public static final String DATA_MONGODB_CORE_MAPPING_PACKAGE = DATA_PACKAGE + "mongodb.core.mapping.";
 
   public static final String SPRING_BOOT_APP_ANNOTATION = "org.springframework.boot.autoconfigure.SpringBootApplication";
   public static final String CONTROLLER_ANNOTATION = "org.springframework.stereotype.Controller";

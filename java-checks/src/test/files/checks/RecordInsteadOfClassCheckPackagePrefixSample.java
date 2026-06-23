@@ -61,7 +61,7 @@ class RecordInsteadOfClassCheckPackagePrefixSample {
   }
 
   @org.springframework.data.mongodb.core.mapping.Document
-  final class ClassWithSpringDataMongoDocumentAnnotation { // Noncompliant {{Refactor this class declaration to use 'record ClassWithSpringDataMongoDocumentAnnotation(int sum)'.}}
+  final class ClassWithSpringDataMongoDocumentAnnotation { // Compliant, MongoDB document annotations are in scope
     private final int sum;
 
     ClassWithSpringDataMongoDocumentAnnotation(int sum) { this.sum = sum; }
@@ -69,7 +69,7 @@ class RecordInsteadOfClassCheckPackagePrefixSample {
   }
 
   @Document
-  final class ClassWithSpringDataElasticsearchDocumentAnnotation { // Noncompliant {{Refactor this class declaration to use 'record ClassWithSpringDataElasticsearchDocumentAnnotation(int sum)'.}}
+  final class ClassWithSpringDataElasticsearchDocumentAnnotation { // Compliant, Elasticsearch document annotations are in scope
     private final int sum;
 
     ClassWithSpringDataElasticsearchDocumentAnnotation(int sum) { this.sum = sum; }

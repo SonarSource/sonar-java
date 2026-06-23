@@ -70,7 +70,9 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
   private static final Set<String> SPRING_ANNOTATION_PACKAGES = Set.of(
     SpringUtils.BEANS_FACTORY_ANNOTATION_PACKAGE,
     SpringUtils.BOOT_CONTEXT_PROPERTIES_PACKAGE,
-    SpringUtils.DATA_PACKAGE + "annotation.");
+    SpringUtils.DATA_PACKAGE + "annotation.",
+    SpringUtils.DATA_ELASTICSEARCH_ANNOTATIONS_PACKAGE,
+    SpringUtils.DATA_MONGODB_CORE_MAPPING_PACKAGE);
 
   private static final Set<String> FRAMEWORK_ANNOTATION_PREFIXES = Stream.of(
     JACKSON_ANNOTATION_PACKAGES,
