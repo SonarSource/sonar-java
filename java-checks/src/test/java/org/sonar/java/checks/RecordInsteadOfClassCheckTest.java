@@ -40,7 +40,10 @@ class RecordInsteadOfClassCheckTest {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/RecordInsteadOfClassCheckPackagePrefixSample.java")
       .withCheck(new RecordInsteadOfClassCheck())
-      .withClassPath(List.of(new File("target/test-classes")))
+      .withClassPath(List.of(
+        new File("target/test-classes"),
+        new File(System.getProperty("user.home") + "/.m2/repository/org/springframework/data/spring-data-mongodb/3.3.5/spring-data-mongodb-3.3.5.jar"),
+        new File(System.getProperty("user.home") + "/.m2/repository/org/springframework/data/spring-data-elasticsearch/3.0.8.RELEASE/spring-data-elasticsearch-3.0.8.RELEASE.jar")))
       .withJavaVersion(16)
       .verifyIssues();
   }
