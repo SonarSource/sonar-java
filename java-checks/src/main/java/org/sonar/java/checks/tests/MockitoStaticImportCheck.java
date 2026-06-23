@@ -32,8 +32,7 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
   private static final String MOCKITO_CLASS = "org.mockito.Mockito";
 
   private static final Set<String> MOCKITO_METHODS = Set.of(
-    "any", "doAnswer", "doCallRealMethod", "doNothing", "doReturn", "doThrow",
-    "eq", "inOrder", "mock", "never", "reset", "spy", "times", "verify", "when"
+    "doReturn", "doThrow", "mock", "never", "spy", "times", "verify", "when"
   );
 
   @Override
