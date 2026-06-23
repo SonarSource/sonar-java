@@ -263,6 +263,13 @@ public class RecordInsteadOfClassCheckSample {
     int getSum() { return sum; }
   }
 
+  final class ClassWithJsonAnnotatedConstructorParameter {
+    private final int sum;
+
+    ClassWithJsonAnnotatedConstructorParameter(@JsonProperty("total") int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+  }
+
   final class ClassWithJsonAnnotatedField {
     @JsonProperty("total")
     private final int sum;

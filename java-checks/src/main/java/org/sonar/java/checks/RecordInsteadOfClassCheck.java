@@ -194,10 +194,16 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
 
     return hasFrameworkAnnotation(classSymbol.metadata())
       || hasFrameworkAnnotation(constructor.metadata())
+      || hasFrameworkAnnotationOnConstructorParameters(constructor)
       || fields.stream().anyMatch(field -> hasFrameworkAnnotation(field.metadata()))
       || methods.stream()
         .filter(method -> isGetter(method, fieldsNameToType))
         .anyMatch(method -> hasFrameworkAnnotation(method.metadata()));
+  }
+
+  private static boolean hasFrameworkAnnotationOnConstructorParameters(Symbol.MethodSymbol constructor) {
+    return constructor.declaration().parameters().stream()
+      .anyMatch(parameter -> hasFrameworkAnnotation(parameter.symbol().metadata()));
   }
 
   private static boolean hasFrameworkAnnotation(SymbolMetadata metadata) {
