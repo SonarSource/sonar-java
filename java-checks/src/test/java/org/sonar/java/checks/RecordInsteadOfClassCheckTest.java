@@ -16,6 +16,8 @@
  */
 package org.sonar.java.checks;
 
+import java.io.File;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
@@ -38,7 +40,10 @@ class RecordInsteadOfClassCheckTest {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/RecordInsteadOfClassCheckPackagePrefixSample.java")
       .withCheck(new RecordInsteadOfClassCheck())
-      .withClassPath(java.util.List.of(new java.io.File("target/test-classes")))
+      .withClassPath(List.of(
+        new File("target/test-classes"),
+        new File(System.getProperty("user.home") + "/.m2/repository/org/springframework/data/spring-data-mongodb/3.3.5/spring-data-mongodb-3.3.5.jar"),
+        new File(System.getProperty("user.home") + "/.m2/repository/org/springframework/data/spring-data-elasticsearch/3.0.8.RELEASE/spring-data-elasticsearch-3.0.8.RELEASE.jar")))
       .withJavaVersion(16)
       .verifyIssues();
   }
