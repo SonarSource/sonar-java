@@ -31,6 +31,22 @@ public class ClassPatternsUtils {
   private ClassPatternsUtils() {
   }
 
+  /**
+   * Returns true if the class has any public static method or public static field that requires
+   * the class itself to be public (e.g. constants or factory methods used from outside).
+   */
+  public static boolean shouldBePublicClass(ClassTree classTree, List<MethodTree> methods) {
+    boolean hasPublicStaticMethods = methods.stream()
+      .map(MethodTree::modifiers)
+      .anyMatch(mods -> ModifiersUtils.hasAll(mods, Modifier.PUBLIC, Modifier.STATIC));
+    boolean hasPublicStaticFields = classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.VARIABLE))
+      .map(VariableTree.class::cast)
+      .map(VariableTree::modifiers)
+      .anyMatch(mods -> ModifiersUtils.hasAll(mods, Modifier.PUBLIC, Modifier.STATIC));
+    return hasPublicStaticMethods || hasPublicStaticFields;
+  }
+
   public static boolean isPrivateInnerClass(ClassTree classTree) {
     return !classTree.symbol().owner().isPackageSymbol() &&
       ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.PRIVATE);

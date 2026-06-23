@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -164,7 +165,46 @@ public final class UnitTestUtils {
 
   private static final Pattern UNIT_TEST_NAME_RELATED_TO_OBJECT_METHODS_REGEX = Pattern.compile("equal|hash_?code|object_?method|to_?string", Pattern.CASE_INSENSITIVE);
 
+  public record JUnit5MethodGroups(
+    List<MethodTree> classMethods,
+    List<MethodTree> instanceMethods,
+    List<MethodTree> otherMethods
+  ) {}
+
   private UnitTestUtils() {
+  }
+
+  /**
+   * Categorizes the methods of a JUnit 5 test class into three groups:
+   * class lifecycle methods (@BeforeAll/@AfterAll), instance methods (@Test/@BeforeEach/etc.),
+   * and other (non-JUnit 5) methods. Overriding methods are excluded from the JUnit 5 groups.
+   */
+  public static JUnit5MethodGroups groupJUnit5Methods(ClassTree classTree) {
+    List<MethodTree> classMethods = new ArrayList<>();
+    List<MethodTree> instanceMethods = new ArrayList<>();
+    List<MethodTree> otherMethods = new ArrayList<>();
+    classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .forEach(method -> {
+        if (hasJUnitJupiterAnnotation(method) || hasJUnit5InstanceLifecycleAnnotation(method)) {
+          if (isNotOverriding(method)) {
+            instanceMethods.add(method);
+          }
+        } else if (hasJUnit5ClassLifecycleAnnotation(method)) {
+          if (isNotOverriding(method)) {
+            classMethods.add(method);
+          }
+        } else {
+          otherMethods.add(method);
+        }
+      });
+    return new JUnit5MethodGroups(classMethods, instanceMethods, otherMethods);
+  }
+
+  private static boolean isNotOverriding(MethodTree tree) {
+    // When it cannot be decided, isOverriding will return null, we consider it as an override to avoid FP.
+    return Boolean.FALSE.equals(tree.isOverriding());
   }
 
   public static boolean hasNestedAnnotation(ClassTree tree) {
