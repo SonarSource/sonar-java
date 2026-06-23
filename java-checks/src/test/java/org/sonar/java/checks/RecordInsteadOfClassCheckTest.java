@@ -16,6 +16,8 @@
  */
 package org.sonar.java.checks;
 
+import java.io.File;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
@@ -29,6 +31,16 @@ class RecordInsteadOfClassCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/RecordInsteadOfClassCheckSample.java"))
       .withCheck(new RecordInsteadOfClassCheck())
+      .withJavaVersion(16)
+      .verifyIssues();
+  }
+
+  @Test
+  void test_broad_framework_annotations_are_not_skipped() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RecordInsteadOfClassCheckPackagePrefixSample.java")
+      .withCheck(new RecordInsteadOfClassCheck())
+      .withClassPath(List.of(new File("target/test-classes")))
       .withJavaVersion(16)
       .verifyIssues();
   }

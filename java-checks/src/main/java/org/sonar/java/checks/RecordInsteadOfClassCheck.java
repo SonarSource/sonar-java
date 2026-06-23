@@ -22,23 +22,74 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import static org.sonar.java.checks.helpers.AnnotationsHelper.hasUnknownAnnotation;
+
 @Rule(key = "S6206")
 public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+
+  private static final String JAVA_IO_EXTERNALIZABLE = "java.io.Externalizable";
+  private static final String JAVA_IO_SERIALIZABLE = "java.io.Serializable";
+
+  private static final Set<String> JACKSON_ANNOTATION_PACKAGES = Set.of(
+    "com.fasterxml.jackson.annotation.",
+    "com.fasterxml.jackson.databind.annotation.");
+  private static final Set<String> GSON_ANNOTATION_PACKAGES = Set.of("com.google.gson.annotations.");
+  private static final Set<String> MICRONAUT_ANNOTATION_PACKAGES = Set.of(
+    "io.micronaut.core.annotation.",
+    "io.micronaut.data.annotation.",
+    "io.micronaut.serde.annotation.");
+  private static final Set<String> JAKARTA_EE_ANNOTATION_PACKAGES = Set.of(
+    "jakarta.inject.",
+    "jakarta.persistence.",
+    "jakarta.xml.bind.annotation.");
+  private static final Set<String> JAVA_EE_ANNOTATION_PACKAGES = Set.of(
+    "javax.inject.",
+    "javax.persistence.",
+    "javax.xml.bind.annotation.");
+  private static final Set<String> LOMBOK_ANNOTATION_PACKAGES = Set.of("lombok.");
+  private static final Set<String> SPRING_ANNOTATION_PACKAGES = Set.of(
+    SpringUtils.BEANS_FACTORY_ANNOTATION_PACKAGE,
+    SpringUtils.BOOT_CONTEXT_PROPERTIES_PACKAGE,
+    SpringUtils.DATA_PACKAGE + "annotation.");
+
+  private static final Map<String, Set<String>> FRAMEWORK_ANNOTATION_PREFIXES = Map.of(
+    "Jackson", JACKSON_ANNOTATION_PACKAGES,
+    "Gson", GSON_ANNOTATION_PACKAGES,
+    "Micronaut", MICRONAUT_ANNOTATION_PACKAGES,
+    "Jakarta EE", JAKARTA_EE_ANNOTATION_PACKAGES,
+    "Java EE", JAVA_EE_ANNOTATION_PACKAGES,
+    "Lombok", LOMBOK_ANNOTATION_PACKAGES,
+    "Spring", SPRING_ANNOTATION_PACKAGES);
+
+  private static final MethodMatchers SERIALIZATION_CONTRACT_METHODS = MethodMatchers.or(
+    methodMatcher("readObject", "java.io.ObjectInputStream"),
+    methodMatcher("writeObject", "java.io.ObjectOutputStream"),
+    methodMatcher("readExternal", "java.io.ObjectInput"),
+    methodMatcher("writeExternal", "java.io.ObjectOutput"),
+    MethodMatchers.create()
+      .ofAnyType()
+      .names("readObjectNoData", "writeReplace", "readResolve")
+      .addWithoutParametersMatcher()
+      .build());
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -53,6 +104,10 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
+    if (classTree.simpleName() == null) {
+      // Anonymous classes can not be converted to records.
+      return;
+    }
     if (classTree.superClass() != null) {
       // records can not extends other classes
       return;
@@ -66,25 +121,92 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       // records can not be extended
       return;
     }
+    if (hasSerializationContract(classTree)) {
+      // records have special serialization behavior, so this refactoring is not behavior-preserving.
+      return;
+    }
 
     List<Symbol.VariableSymbol> fields = classFields(classSymbol);
     if (fields.isEmpty() || !hasOnlyPrivateFinalFields(fields)) {
       return;
     }
     List<Symbol.MethodSymbol> methods = classMethods(classSymbol);
-    Map<String, Type> fieldsNameToType = fields.stream().collect(Collectors.toMap(Symbol::name, Symbol::type));
-
-    if (!hasGetterForEveryField(methods, fieldsNameToType)) {
-      return;
-    }
     List<Symbol.MethodSymbol> constructors = classConstructors(methods);
     if (constructors.size() != 1) {
       return;
     }
     Symbol.MethodSymbol constructor = constructors.get(0);
+    Map<String, Type> fieldsNameToType = fields.stream().collect(Collectors.toMap(Symbol::name, Symbol::type));
+    if (hasFrameworkContract(classSymbol, fields, methods, fieldsNameToType, constructor)) {
+      return;
+    }
+
+    if (!hasGetterForEveryField(methods, fieldsNameToType)) {
+      return;
+    }
     if (hasParameterForEveryField(constructor, fieldsNameToType.keySet()) && !constructorHasSmallerVisibility(constructor, classSymbol)) {
       reportIssue(classTree.simpleName(), String.format("Refactor this class declaration to use 'record %s'.", recordName(classTree, constructor)));
     }
+  }
+
+  private static boolean hasSerializationContract(ClassTree classTree) {
+    Type type = classTree.symbol().type();
+    return type.isSubtypeOf(JAVA_IO_SERIALIZABLE)
+      || type.isSubtypeOf(JAVA_IO_EXTERNALIZABLE)
+      || classTree.members().stream().anyMatch(RecordInsteadOfClassCheck::isSerializationContractMember);
+  }
+
+  private static boolean isSerializationContractMember(Tree member) {
+    if (member.is(Tree.Kind.METHOD)) {
+      return SERIALIZATION_CONTRACT_METHODS.matches((MethodTree) member);
+    }
+    if (member.is(Tree.Kind.VARIABLE)) {
+      return isSerialPersistentFields(((VariableTree) member).symbol());
+    }
+    return false;
+  }
+
+  private static boolean isSerialPersistentFields(Symbol field) {
+    return "serialPersistentFields".equals(field.name())
+      && field.isPrivate()
+      && field.isStatic()
+      && field.isFinal()
+      && field.type().is("java.io.ObjectStreamField[]");
+  }
+
+  private static MethodMatchers methodMatcher(String methodName, String parameterType) {
+    return MethodMatchers.create()
+      .ofAnyType()
+      .names(methodName)
+      .addParametersMatcher(parameterType)
+      .build();
+  }
+
+  private static boolean hasFrameworkContract(
+    Symbol.TypeSymbol classSymbol,
+    List<Symbol.VariableSymbol> fields,
+    List<Symbol.MethodSymbol> methods,
+    Map<String, Type> fieldsNameToType,
+    Symbol.MethodSymbol constructor) {
+
+    return hasFrameworkAnnotation(classSymbol.metadata())
+      || hasFrameworkAnnotation(constructor.metadata())
+      || fields.stream().anyMatch(field -> hasFrameworkAnnotation(field.metadata()))
+      || methods.stream()
+        .filter(method -> isGetter(method, fieldsNameToType))
+        .anyMatch(method -> hasFrameworkAnnotation(method.metadata()));
+  }
+
+  private static boolean hasFrameworkAnnotation(SymbolMetadata metadata) {
+    return hasUnknownAnnotation(metadata) || metadata.annotations().stream().anyMatch(RecordInsteadOfClassCheck::isFrameworkAnnotation);
+  }
+
+  private static boolean isFrameworkAnnotation(SymbolMetadata.AnnotationInstance annotation) {
+    Type annotationType = annotation.symbol().type();
+    return !annotationType.isUnknown()
+      && FRAMEWORK_ANNOTATION_PREFIXES.values().stream()
+        .flatMap(Set::stream)
+        .anyMatch(annotationType.fullyQualifiedName()::startsWith);
   }
 
   private static boolean constructorHasSmallerVisibility(Symbol.MethodSymbol constructor, Symbol.TypeSymbol classSymbol) {
