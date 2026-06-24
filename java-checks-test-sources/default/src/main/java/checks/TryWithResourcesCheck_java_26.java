@@ -6,6 +6,7 @@ import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Connection;
+import java.sql.NClob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
@@ -94,6 +95,66 @@ class TryWithResourcesCheck_java_26 {
     } finally {
       if (blob != null) {
         blob.close();
+      }
+    }
+  }
+
+  void clobFromConnectionFactory(Connection connection) throws SQLException {
+    Clob clob = null;
+    try { // Noncompliant
+      clob = connection.createClob();
+      clob.length();
+    } finally {
+      if (clob != null) {
+        clob.close();
+      }
+    }
+  }
+
+  void nclobFromConnectionFactory(Connection connection) throws SQLException {
+    NClob nclob = null;
+    try { // Noncompliant
+      nclob = connection.createNClob();
+      nclob.length();
+    } finally {
+      if (nclob != null) {
+        nclob.close();
+      }
+    }
+  }
+
+  void arrayFromConnectionFactory(Connection connection) throws SQLException {
+    Array array = null;
+    try { // Noncompliant
+      array = connection.createArrayOf("VARCHAR", new String[] {"a", "b"});
+      array.getBaseType();
+    } finally {
+      if (array != null) {
+        array.close();
+      }
+    }
+  }
+
+  void nclobFromResultSetGetter(ResultSet rs) throws SQLException {
+    NClob nclob = null;
+    try { // Noncompliant
+      nclob = rs.getNClob("payload");
+      nclob.length();
+    } finally {
+      if (nclob != null) {
+        nclob.close();
+      }
+    }
+  }
+
+  void sqlxmlFromResultSetGetter(ResultSet rs) throws SQLException {
+    SQLXML xml = null;
+    try { // Noncompliant
+      xml = rs.getSQLXML("payload");
+      xml.getString();
+    } finally {
+      if (xml != null) {
+        xml.close();
       }
     }
   }
