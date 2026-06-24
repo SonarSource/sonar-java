@@ -18,9 +18,9 @@ package org.sonar.java.checks.tests;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -31,9 +31,11 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
 
   private static final String MOCKITO_CLASS = "org.mockito.Mockito";
 
-  private static final Set<String> MOCKITO_METHODS = Set.of(
-    "doReturn", "doThrow", "mock", "never", "spy", "times", "verify", "when"
-  );
+  private static final MethodMatchers MOCKITO_METHODS = MethodMatchers.create()
+    .ofTypes(MOCKITO_CLASS)
+    .names("doReturn", "doThrow", "mock", "never", "spy", "times", "verify", "when")
+    .withAnyParameters()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -49,8 +51,8 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
     }
     MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
     String methodName = mset.identifier().name();
-    if (MOCKITO_METHODS.contains(methodName) && mset.expression().symbolType().is(MOCKITO_CLASS)) {
-      reportIssue(methodSelect, "Use a static import for \"" + methodName + "\".");
+    if (MOCKITO_METHODS.matches(mit.methodSymbol()) && mset.expression().symbolType().is(MOCKITO_CLASS)) {
+      reportIssue(methodSelect, "Use a static import for \"%s\".".formatted(methodName));
     }
   }
 }
