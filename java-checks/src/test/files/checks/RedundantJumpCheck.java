@@ -297,4 +297,12 @@ abstract class A {
       }
     }
   }
+
+  void continueInTryFinallyOutsideLoop() {
+    try {
+      continue; // this should be a compiler error, but we want to test that the check does not crash
+    } finally {
+      foo();
+    }
+  }
 }

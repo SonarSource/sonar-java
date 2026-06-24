@@ -64,7 +64,8 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
       && successorWithoutJump != null
       && terminator.is(Tree.Kind.CONTINUE_STATEMENT, Tree.Kind.RETURN_STATEMENT)
       && !isReturnWithExpression(terminator)
-      && !isSwitchCaseChild(terminator)) {
+      && !isSwitchCaseChild(terminator)
+      && hasValidContinueTarget(terminator)) {
 
       successorWithoutJump = nonEmptySuccessor(successorWithoutJump);
       Iterator<Block> successors = block.successors().iterator();
@@ -87,6 +88,25 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isSwitchCaseChild(Tree tree) {
     return tree.parent().is(Tree.Kind.CASE_GROUP);
+  }
+
+  private static boolean hasValidContinueTarget(Tree tree) {
+    return !tree.is(Tree.Kind.CONTINUE_STATEMENT) || hasEnclosingLoop(tree);
+  }
+
+  private static boolean hasEnclosingLoop(Tree tree) {
+    Tree current = tree.parent();
+    while (current != null) {
+      if (isLoop(current)) {
+        return true;
+      }
+      current = current.parent();
+    }
+    return false;
+  }
+
+  private static boolean isLoop(Tree tree) {
+    return tree.is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT);
   }
 
   private static Block nonEmptySuccessor(Block initialBlock) {
@@ -118,20 +138,23 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
 
   private static TryStatementTree enclosingTryFinally(Tree tree) {
     Tree current = tree.parent();
-    while (!current.is(Tree.Kind.TRY_STATEMENT) || ((TryStatementTree) current).finallyBlock() == null) {
+    while (current != null
+      && (!current.is(Tree.Kind.TRY_STATEMENT) || ((TryStatementTree) current).finallyBlock() == null)) {
       current = current.parent();
     }
     return (TryStatementTree) current;
   }
 
   private static boolean hasFollowingStatementAfterEnclosingTryFinallyBeforeLoopContinuation(Tree tree) {
-    return hasFollowingStatementBeforeLoopContinuation(enclosingTryFinally(tree));
+    TryStatementTree tryStatement = enclosingTryFinally(tree);
+    return tryStatement == null || hasFollowingStatementBeforeLoopContinuation(tryStatement);
   }
 
   private static boolean hasFollowingStatementBeforeLoopContinuation(Tree tree) {
     Tree current = tree;
     Tree parent = current.parent();
-    while (!parent.is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT)) {
+    while (parent != null
+      && !isLoop(parent)) {
       if (parent.is(Tree.Kind.BLOCK) && hasFollowingStatement((BlockTree) parent, current)) {
         return true;
       }
