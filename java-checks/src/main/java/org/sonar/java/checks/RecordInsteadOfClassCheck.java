@@ -47,7 +47,6 @@ import static org.sonar.java.checks.helpers.AnnotationsHelper.hasUnknownAnnotati
 @Rule(key = "S6206")
 public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
-  private static final String JAVA_IO_EXTERNALIZABLE = "java.io.Externalizable";
   private static final String JAVA_IO_SERIALIZABLE = "java.io.Serializable";
 
   private static final Set<String> JACKSON_ANNOTATION_PACKAGES = Set.of(
@@ -155,7 +154,6 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
   private static boolean hasSerializationContract(ClassTree classTree) {
     Type type = classTree.symbol().type();
     return type.isSubtypeOf(JAVA_IO_SERIALIZABLE)
-      || type.isSubtypeOf(JAVA_IO_EXTERNALIZABLE)
       || classTree.members().stream().anyMatch(RecordInsteadOfClassCheck::isSerializationContractMember);
   }
 
