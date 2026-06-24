@@ -96,6 +96,127 @@ abstract class A {
     foo();
   }
 
+  public void early_return_in_loop_try_finally() {
+    while (condition1) {
+      try {
+        if (condition2) {
+          return;
+        }
+        foo();
+      } finally {
+        bar();
+      }
+      foo();
+    }
+  }
+
+  public void return_at_end_of_loop_try_finally() {
+    while (condition1) {
+      try {
+        if (condition2) {
+          return;
+        }
+      } finally {
+        bar();
+      }
+      foo();
+    }
+  }
+
+  public void early_return_in_for_loop_try_finally() {
+    for (int i = 0; i < 10; i++) {
+      try {
+        if (condition2) {
+          return;
+        }
+        foo();
+      } finally {
+        bar();
+      }
+      foo();
+    }
+  }
+
+  public void return_at_end_of_for_loop_try_finally() {
+    for (int i = 0; i < 10; i++) {
+      try {
+        if (condition2) {
+          return;
+        }
+      } finally {
+        bar();
+      }
+      foo();
+    }
+  }
+
+  public void early_return_in_dowhile_loop_try_finally() {
+    do {
+      try {
+        if (condition2) {
+          return;
+        }
+        foo();
+      } finally {
+        bar();
+      }
+      foo();
+    } while (condition1);
+  }
+
+  public void return_in_try_finally_at_end_of_method() {
+    try {
+      foo();
+      return; // Noncompliant
+    } finally {
+      bar();
+    }
+  }
+
+  public void return_in_dowhile_false_try_finally() {
+    do {
+      try {
+        foo();
+        return; // Noncompliant
+      } finally {
+        bar();
+      }
+    } while (false);
+  }
+
+  public void return_in_while_false_try_finally() {
+    while (false) {
+      try {
+        foo();
+        return; // Noncompliant
+      } finally {
+        bar();
+      }
+    }
+  }
+
+  public void return_in_dowhile_boolean_false_try_finally() {
+    do {
+      try {
+        foo();
+        return; // Noncompliant
+      } finally {
+        bar();
+      }
+    } while (Boolean.FALSE);
+  }
+
+  public void return_in_dowhile_not_true_try_finally() {
+    do {
+      try {
+        foo();
+        return; // Noncompliant
+      } finally {
+        bar();
+      }
+    } while (!true);
+  }
+
   public void switch_statements(int param) {
     switch (param) {
       case 0:

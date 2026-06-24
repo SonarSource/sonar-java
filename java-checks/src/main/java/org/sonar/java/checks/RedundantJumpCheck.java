@@ -24,8 +24,12 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -60,8 +64,12 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
 
       successorWithoutJump = nonEmptySuccessor(successorWithoutJump);
       Iterator<Block> successors = block.successors().iterator();
-      if (successors.hasNext() && nonEmptySuccessor(successors.next()).equals(successorWithoutJump)) {
-        reportIssue(terminator, "Remove this redundant jump.");
+      if (successors.hasNext()) {
+        Block successor = nonEmptySuccessor(successors.next());
+        if (successor.equals(successorWithoutJump)
+          && !(terminator.is(Tree.Kind.RETURN_STATEMENT) && isFinallyBlockWithDistinctContinuation(successor))) {
+          reportIssue(terminator, "Remove this redundant jump.");
+        }
       }
     }
   }
@@ -84,5 +92,27 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
       result = result.successors().iterator().next();
     }
     return result;
+  }
+
+  private static boolean isFinallyBlockWithDistinctContinuation(Block block) {
+    Block exitBlock = block.exitBlock();
+    return block.isFinallyBlock()
+      && exitBlock != null
+      && block.successors().stream()
+        .anyMatch(s -> !s.equals(exitBlock) && !isDeadLoopExitingTo(s, exitBlock));
+  }
+
+  private static boolean isDeadLoopExitingTo(Block successor, Block exitBlock) {
+    Tree terminator = successor.terminator();
+    if (terminator == null || !exitBlock.equals(successor.falseBlock())) {
+      return false;
+    }
+    ExpressionTree condition = null;
+    if (terminator.is(Tree.Kind.DO_STATEMENT)) {
+      condition = ((DoWhileStatementTree) terminator).condition();
+    } else if (terminator.is(Tree.Kind.WHILE_STATEMENT)) {
+      condition = ((WhileStatementTree) terminator).condition();
+    }
+    return condition != null && Boolean.FALSE.equals(ExpressionUtils.resolveAsConstant(condition));
   }
 }
