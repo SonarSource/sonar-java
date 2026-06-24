@@ -19,8 +19,9 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.test.classpath.TestClasspathUtils.DEFAULT_MODULE;
 
 class RecordInsteadOfClassCheckTest {
 
@@ -38,7 +39,7 @@ class RecordInsteadOfClassCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/RecordInsteadOfClassCheckPackagePrefixSample.java"))
       .withCheck(new RecordInsteadOfClassCheck())
-      .withClassPath(java.util.List.of(new java.io.File("target/test-classes")))
+      .withClassPath(DEFAULT_MODULE.getClassPath())
       .withJavaVersion(16)
       .verifyIssues();
   }

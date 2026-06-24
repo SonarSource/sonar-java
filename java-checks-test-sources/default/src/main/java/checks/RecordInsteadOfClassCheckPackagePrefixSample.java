@@ -1,7 +1,7 @@
 package checks;
 
 import io.micronaut.http.annotation.Get;
-import io.micronaut.serde.annotation.Serdeable;
+import io.micronaut.core.annotation.Introspected;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -9,8 +9,8 @@ import org.springframework.data.annotation.Id;
 
 class RecordInsteadOfClassCheckPackagePrefixSample {
 
-  @Value("${record.sum}")
   final class ClassWithSpringValueAnnotation { // Compliant, beans factory annotations are in scope
+    @Value("${record.sum}")
     private final int sum;
 
     ClassWithSpringValueAnnotation(int sum) { this.sum = sum; }
@@ -33,11 +33,11 @@ class RecordInsteadOfClassCheckPackagePrefixSample {
     int getSum() { return sum; }
   }
 
-  @Serdeable
-  final class ClassWithMicronautSerdeAnnotation { // Compliant, Micronaut serde annotations are in scope
+  @Introspected
+  final class ClassWithMicronautCoreAnnotation { // Compliant, Micronaut core annotations are in scope
     private final int sum;
 
-    ClassWithMicronautSerdeAnnotation(int sum) { this.sum = sum; }
+    ClassWithMicronautCoreAnnotation(int sum) { this.sum = sum; }
     int getSum() { return sum; }
   }
 
