@@ -21,9 +21,13 @@ This skill provides sonar-java-specific guidelines for implementing new rules.
   - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/Sonar_way_profile.json` (updated)
 
 ### 2. Tests
-- Update ruling tests located in `its/ruling/` after implementing the rule. These tests verify the rule against real-world Java projects
-- Run JavaAgenticWayProfileTest
-- Update AutoScanTest assertions if needed
+- Run JavaAgenticWayProfileTest before creating a PR
+- Update ruling tests in `its/ruling/` and autoscan tests in `its/autoscan` after implementing the rule. 
+  - These tests verify the rule against real-world Java projects. 
+  - Note that running this tests locally is difficult, so they are usually updated by looking at the logs of the failing CI actions
+  - The files to update are in:
+    - `its/ruling/src/test/resources` for ruling tests
+    - `its/autoscan/src/test/resources/autoscan/diffs/` for autoscan tests
 
 ### 3. External Dependencies in Tests
 - **DO NOT** add external library dependencies for test samples
