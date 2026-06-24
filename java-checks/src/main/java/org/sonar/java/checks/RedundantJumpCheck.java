@@ -113,35 +113,30 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
     if (terminator.is(Tree.Kind.RETURN_STATEMENT)) {
       return true;
     }
-    if (terminator.is(Tree.Kind.CONTINUE_STATEMENT)) {
-      TryStatementTree tryStatement = enclosingTryFinally(terminator);
-      return tryStatement != null && hasFollowingStatementBeforeLoopContinuation(tryStatement);
-    }
-    return false;
+    return hasFollowingStatementAfterEnclosingTryFinallyBeforeLoopContinuation(terminator);
   }
 
   private static TryStatementTree enclosingTryFinally(Tree tree) {
     Tree current = tree.parent();
-    while (current != null) {
-      if (current.is(Tree.Kind.TRY_STATEMENT) && ((TryStatementTree) current).finallyBlock() != null) {
-        return (TryStatementTree) current;
-      }
+    while (!current.is(Tree.Kind.TRY_STATEMENT) || ((TryStatementTree) current).finallyBlock() == null) {
       current = current.parent();
     }
-    return null;
+    return (TryStatementTree) current;
+  }
+
+  private static boolean hasFollowingStatementAfterEnclosingTryFinallyBeforeLoopContinuation(Tree tree) {
+    return hasFollowingStatementBeforeLoopContinuation(enclosingTryFinally(tree));
   }
 
   private static boolean hasFollowingStatementBeforeLoopContinuation(Tree tree) {
     Tree current = tree;
-    while (current.parent() != null) {
-      Tree parent = current.parent();
+    Tree parent = current.parent();
+    while (!parent.is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT)) {
       if (parent.is(Tree.Kind.BLOCK) && hasFollowingStatement((BlockTree) parent, current)) {
         return true;
       }
-      if (parent.is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT)) {
-        return false;
-      }
       current = parent;
+      parent = current.parent();
     }
     return false;
   }
