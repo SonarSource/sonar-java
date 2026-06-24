@@ -26,12 +26,16 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 @Rule(key = "S3626")
 public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
@@ -67,7 +71,7 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
       if (successors.hasNext()) {
         Block successor = nonEmptySuccessor(successors.next());
         if (successor.equals(successorWithoutJump)
-          && !(terminator.is(Tree.Kind.RETURN_STATEMENT) && isFinallyBlockWithDistinctContinuation(successor))) {
+          && !isJumpThroughFinallyWithDistinctContinuation(terminator, successor)) {
           reportIssue(terminator, "Remove this redundant jump.");
         }
       }
@@ -102,6 +106,52 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
         .anyMatch(s -> !s.equals(exitBlock) && !isDeadLoopExitingTo(s, exitBlock));
   }
 
+  private static boolean isJumpThroughFinallyWithDistinctContinuation(Tree terminator, Block successor) {
+    if (!isFinallyBlockWithDistinctContinuation(successor)) {
+      return false;
+    }
+    if (terminator.is(Tree.Kind.RETURN_STATEMENT)) {
+      return true;
+    }
+    if (terminator.is(Tree.Kind.CONTINUE_STATEMENT)) {
+      TryStatementTree tryStatement = enclosingTryFinally(terminator);
+      return tryStatement != null && hasFollowingStatementBeforeLoopContinuation(tryStatement);
+    }
+    return false;
+  }
+
+  private static TryStatementTree enclosingTryFinally(Tree tree) {
+    Tree current = tree.parent();
+    while (current != null) {
+      if (current.is(Tree.Kind.TRY_STATEMENT) && ((TryStatementTree) current).finallyBlock() != null) {
+        return (TryStatementTree) current;
+      }
+      current = current.parent();
+    }
+    return null;
+  }
+
+  private static boolean hasFollowingStatementBeforeLoopContinuation(Tree tree) {
+    Tree current = tree;
+    while (current.parent() != null) {
+      Tree parent = current.parent();
+      if (parent.is(Tree.Kind.BLOCK) && hasFollowingStatement((BlockTree) parent, current)) {
+        return true;
+      }
+      if (parent.is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT)) {
+        return false;
+      }
+      current = parent;
+    }
+    return false;
+  }
+
+  private static boolean hasFollowingStatement(BlockTree block, Tree statement) {
+    List<StatementTree> statements = block.body();
+    int statementIndex = statements.indexOf(statement);
+    return statementIndex >= 0 && statementIndex < statements.size() - 1;
+  }
+
   private static boolean isDeadLoopExitingTo(Block successor, Block exitBlock) {
     Tree terminator = successor.terminator();
     if (terminator == null || !exitBlock.equals(successor.falseBlock())) {
@@ -110,6 +160,8 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
     ExpressionTree condition = null;
     if (terminator.is(Tree.Kind.DO_STATEMENT)) {
       condition = ((DoWhileStatementTree) terminator).condition();
+    } else if (terminator.is(Tree.Kind.FOR_STATEMENT)) {
+      condition = ((ForStatementTree) terminator).condition();
     } else if (terminator.is(Tree.Kind.WHILE_STATEMENT)) {
       condition = ((WhileStatementTree) terminator).condition();
     }

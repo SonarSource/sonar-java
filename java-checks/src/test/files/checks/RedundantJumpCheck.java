@@ -164,6 +164,44 @@ abstract class A {
     } while (condition1);
   }
 
+  public void continue_in_loop_try_finally() {
+    while (condition1) {
+      try {
+        if (condition2) {
+          continue;
+        }
+        foo();
+      } finally {
+        bar();
+      }
+      foo();
+    }
+  }
+
+  public void continue_at_end_of_loop_try_finally() {
+    while (condition1) {
+      try {
+        if (condition2) {
+          continue;
+        }
+      } finally {
+        bar();
+      }
+      foo();
+    }
+  }
+
+  public void redundant_continue_in_loop_try_finally() {
+    while (condition1) {
+      try {
+        foo();
+        continue; // Noncompliant
+      } finally {
+        bar();
+      }
+    }
+  }
+
   public void return_in_try_finally_at_end_of_method() {
     try {
       foo();
@@ -186,6 +224,17 @@ abstract class A {
 
   public void return_in_while_false_try_finally() {
     while (false) {
+      try {
+        foo();
+        return; // Noncompliant
+      } finally {
+        bar();
+      }
+    }
+  }
+
+  public void return_in_for_false_try_finally() {
+    for (; false;) {
       try {
         foo();
         return; // Noncompliant
