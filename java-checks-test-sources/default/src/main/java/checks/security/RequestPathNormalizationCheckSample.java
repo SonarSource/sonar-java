@@ -280,6 +280,71 @@ class RequestPathNormalizationCheckSample {
     }
   }
 
+  // Test assignment expressions
+  void assignmentExpression(HttpServletRequest request) {
+    String path;
+    path = request.getRequestURI();
+    if (path.startsWith("/admin")) { // Noncompliant
+      checkAdminPermission();
+    }
+  }
+
+  void assignmentWithNormalization(HttpServletRequest request) {
+    String path;
+    path = request.getRequestURI();
+    path = path.replaceAll("/+", "/");
+    if (path.startsWith("/admin")) {
+      checkAdminPermission();
+    }
+  }
+
+  void getServletPath(HttpServletRequest request) {
+    String path = request.getServletPath();
+    if (path.startsWith("/admin")) { // Noncompliant
+      checkAdminPermission();
+    }
+  }
+
+  void jakartaUriInfo(jakarta.ws.rs.core.UriInfo uriInfo) {
+    String path = uriInfo.getPath();
+    if (path.startsWith("/admin")) { // Noncompliant
+      checkAdminPermission();
+    }
+  }
+
+  void memberSelectExpression(HttpServletRequest request) {
+    this.pathField = request.getRequestURI();
+    if (this.pathField.startsWith("/admin")) { // Noncompliant
+      checkAdminPermission();
+    }
+  }
+
+  void memberSelectNormalized(HttpServletRequest request) {
+    this.pathField = request.getRequestURI();
+    this.pathField = this.pathField.replaceAll("/+", "/");
+    if (this.pathField.startsWith("/admin")) {
+      checkAdminPermission();
+    }
+  }
+
+  void uriNormalize(HttpServletRequest request) {
+    String path = request.getRequestURI();
+    java.net.URI uri = java.net.URI.create(path);
+    String normalized = uri.normalize().toString();
+    if (normalized.startsWith("/admin")) {
+      checkAdminPermission();
+    }
+  }
+
+  void conditionalOr(HttpServletRequest request) {
+    String path = request.getRequestURI();
+    if (path.startsWith("/admin") || path.startsWith("/root")) { // Noncompliant 2
+      checkAdminPermission();
+    }
+  }
+
+  String pathField;
+
   private void checkAdminPermission() {}
   private void checkPermission() {}
   private void log(String msg) {}
