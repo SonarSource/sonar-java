@@ -52,4 +52,17 @@ class TryWithResourcesCheckTest {
       .withJavaVersion(21)
       .verifyIssues();
   }
+
+  @Test
+  void test_java_26() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/TryWithResourcesCheck_java_26.java"))
+      .withCheck(new TryWithResourcesCheck())
+      .verifyNoIssues();
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/TryWithResourcesCheck_java_26.java"))
+      .withCheck(new TryWithResourcesCheck())
+      .withJavaVersion(26)
+      .verifyIssues();
+  }
 }
