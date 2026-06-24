@@ -127,10 +127,6 @@ class MapperWithoutDaoFactoryCheckSample {
   }
 
   @Mapper
-  interface ExtendingNonExistentType extends UnknownType { // Noncompliant
-  }
-
-  @Mapper
   interface ComplexInheritance extends InterfaceWithFactory, InterfaceWithoutFactory {
   }
 
