@@ -37,7 +37,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 @Rule(key = "S2093")
 public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
-  private static final MethodMatchers AUTOCLOSEABLE_BUILDER_MATCHER = MethodMatchers.or(
+  private static final MethodMatchers AUTOCLOSEABLE_JAVA21_MATCHER = MethodMatchers.or(
     MethodMatchers.create().ofTypes("java.net.http.HttpClient$Builder").names("build").addWithoutParametersMatcher().build(),
     MethodMatchers.create().ofTypes("java.net.http.HttpClient").names("newHttpClient").addWithoutParametersMatcher().build()
   );
@@ -97,10 +97,15 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
   }
 
   private static boolean isNewAutocloseableOrBuilder(Tree tree, JavaFileScannerContext context) {
-    return (tree instanceof NewClassTree newClass && newClass.symbolType().isSubtypeOf("java.lang.AutoCloseable")) ||
-      (context.getJavaVersion().isJava21Compatible() && tree instanceof MethodInvocationTree mit && AUTOCLOSEABLE_BUILDER_MATCHER.matches(mit)) ||
-      (context.getJavaVersion().isJava26Compatible() && tree instanceof MethodInvocationTree mit3 && AUTOCLOSEABLE_JAVA26_MATCHER.matches(mit3)) ||
-      (tree instanceof MethodInvocationTree mit2 && AUTOCLOSEABLE_FACTORY_MATCHER.matches(mit2));
+    if (tree instanceof NewClassTree newClass) {
+      return newClass.symbolType().isSubtypeOf("java.lang.AutoCloseable");
+    } else if (tree instanceof MethodInvocationTree mit) {
+      return AUTOCLOSEABLE_FACTORY_MATCHER.matches(mit) ||
+        (context.getJavaVersion().isJava21Compatible() && AUTOCLOSEABLE_JAVA21_MATCHER.matches(mit)) ||
+        (context.getJavaVersion().isJava26Compatible() && AUTOCLOSEABLE_JAVA26_MATCHER.matches(mit));
+    } else {
+      return false;
+    }
   }
 
   private static boolean isFollowedByTryWithFinally(Tree tree) {
