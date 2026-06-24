@@ -177,7 +177,7 @@ public interface JavaVersion {
    * Test if java version of the project is greater than or equal to 26.
    * Remark - Contrary to other isJava*Compatible methods, this one will NOT return true if version is not set
    * @return true if java version used is >= 26
-   * @since SonarJava 8.32: Support of Java 26
+   * @since SonarJava 8.34: Support of Java 26
    */
   boolean isJava26Compatible();
 
