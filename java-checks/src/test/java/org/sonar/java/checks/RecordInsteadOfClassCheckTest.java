@@ -36,7 +36,7 @@ class RecordInsteadOfClassCheckTest {
   @Test
   void test_framework_annotation_prefix_scope() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/RecordInsteadOfClassCheckPackagePrefixSample.java")
+      .onFile(mainCodeSourcesPath("checks/RecordInsteadOfClassCheckPackagePrefixSample.java"))
       .withCheck(new RecordInsteadOfClassCheck())
       .withClassPath(java.util.List.of(new java.io.File("target/test-classes")))
       .withJavaVersion(16)
