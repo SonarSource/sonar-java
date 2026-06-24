@@ -153,8 +153,9 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
 
   private static boolean hasSerializationContract(ClassTree classTree) {
     Type type = classTree.symbol().type();
-    return type.isSubtypeOf(JAVA_IO_SERIALIZABLE)
-      || classTree.members().stream().anyMatch(RecordInsteadOfClassCheck::isSerializationContractMember);
+    return type.isSubtypeOf(JAVA_IO_SERIALIZABLE) || classTree.members()
+      .stream()
+      .anyMatch(RecordInsteadOfClassCheck::isSerializationContractMember);
   }
 
   private static boolean isSerializationContractMember(Tree member) {
