@@ -100,7 +100,7 @@ class CompliantRequestScoped implements CacheKeyGenerator {
 }
 
 class NoncompliantPackagePrivateImplicitConstructor implements CacheKeyGenerator { // Noncompliant
-//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   @Override
   public Object generate(Method method, Object... methodParams) {
     return methodParams[0];
