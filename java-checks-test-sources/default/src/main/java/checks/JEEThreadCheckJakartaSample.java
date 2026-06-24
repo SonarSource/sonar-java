@@ -57,10 +57,12 @@ class StatelessEJBJakarta {
 @Stateful
 class StatefulEJBJakarta {
   public void method() {
-    Runnable r = new Runnable() { // Noncompliant
+    Runnable r = new Runnable() { // Noncompliant {{Remove this use of "Runnable".}}
+      //             ^^^^^^^^
       public void run() {}
     };
-    synchronized (this) { // Noncompliant
+    synchronized (this) { // Noncompliant {{Remove this use of the "synchronized" keyword.}}
+  //^^^^^^^^^^^^
     }
   }
 }

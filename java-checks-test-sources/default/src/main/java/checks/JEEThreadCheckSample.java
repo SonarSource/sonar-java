@@ -28,14 +28,16 @@ class JEEServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    Runnable r = new Runnable() { // Noncompliant
+    Runnable r = new Runnable() { // Noncompliant {{Remove this use of "Runnable".}}
+      //             ^^^^^^^^
       public void run() {}
     };
     new Thread(r).start();
 
     Runnable lambda = () -> {}; // Noncompliant
 
-    synchronized (this) { // Noncompliant
+    synchronized (this) { // Noncompliant {{Remove this use of the "synchronized" keyword.}}
+  //^^^^^^^^^^^^
     }
   }
 
