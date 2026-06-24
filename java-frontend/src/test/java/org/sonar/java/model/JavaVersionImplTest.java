@@ -54,11 +54,12 @@ class JavaVersionImplTest {
     assertThat(version.isJava23Compatible()).isFalse();
     assertThat(version.isJava24Compatible()).isFalse();
     assertThat(version.isJava25Compatible()).isFalse();
+    assertThat(version.isJava26Compatible()).isFalse();
     assertThat(version.asInt()).isEqualTo(-1);
   }
 
   @ParameterizedTest(name = "JavaVersion: \"{0}\"")
-  @ValueSource(ints = {5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 42})
+  @ValueSource(ints = {5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 42})
   void java_versions(int javaVersionAsInt) {
     JavaVersion version = new JavaVersionImpl(javaVersionAsInt);
     assertThat(version.isSet()).isTrue();
@@ -81,6 +82,7 @@ class JavaVersionImplTest {
     assertThat(version.isJava23Compatible()).isEqualTo(javaVersionAsInt >= 23);
     assertThat(version.isJava24Compatible()).isEqualTo(javaVersionAsInt >= 24);
     assertThat(version.isJava25Compatible()).isEqualTo(javaVersionAsInt >= 25);
+    assertThat(version.isJava26Compatible()).isEqualTo(javaVersionAsInt >= 26);
 
     assertThat(version.asInt()).isEqualTo(javaVersionAsInt);
   }
@@ -101,9 +103,9 @@ class JavaVersionImplTest {
 
   @Test
   void test_effective_java_version() {
-    assertThat(new JavaVersionImpl().effectiveJavaVersionAsString()).isEqualTo("25");
+    assertThat(new JavaVersionImpl().effectiveJavaVersionAsString()).isEqualTo("26");
     assertThat(new JavaVersionImpl(10).effectiveJavaVersionAsString()).isEqualTo("10");
-    assertThat(new JavaVersionImpl(-1).effectiveJavaVersionAsString()).isEqualTo("25");
+    assertThat(new JavaVersionImpl(-1).effectiveJavaVersionAsString()).isEqualTo("26");
   }
 
   @Test
