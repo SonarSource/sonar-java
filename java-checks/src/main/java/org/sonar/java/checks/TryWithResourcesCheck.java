@@ -47,6 +47,21 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
       .names("of")
       .addParametersMatcher("java.lang.CharSequence").build();
 
+  private static final MethodMatchers AUTOCLOSEABLE_JAVA26_MATCHER = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofTypes("java.lang.ProcessBuilder").names("start").addWithoutParametersMatcher().build(),
+    MethodMatchers.create()
+      .ofTypes("java.lang.Runtime").names("exec").withAnyParameters().build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.sql.Connection")
+      .names("createBlob", "createClob", "createNClob", "createSQLXML", "createArrayOf")
+      .withAnyParameters().build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.sql.ResultSet", "java.sql.CallableStatement")
+      .names("getBlob", "getClob", "getNClob", "getSQLXML", "getArray")
+      .withAnyParameters().build()
+  );
+
   private final Deque<TryStatementTree> withinTry = new LinkedList<>();
   private final Deque<List<Tree>> toReport = new LinkedList<>();
 
@@ -83,7 +98,8 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
 
   private static boolean isNewAutocloseableOrBuilder(Tree tree, JavaFileScannerContext context) {
     return (tree instanceof NewClassTree newClass && newClass.symbolType().isSubtypeOf("java.lang.AutoCloseable")) ||
-      (context.getJavaVersion().isJava21Compatible() && tree instanceof MethodInvocationTree mit && AUTOCLOSEABLE_BUILDER_MATCHER.matches(mit))||
+      (context.getJavaVersion().isJava21Compatible() && tree instanceof MethodInvocationTree mit && AUTOCLOSEABLE_BUILDER_MATCHER.matches(mit)) ||
+      (context.getJavaVersion().isJava26Compatible() && tree instanceof MethodInvocationTree mit3 && AUTOCLOSEABLE_JAVA26_MATCHER.matches(mit3)) ||
       (tree instanceof MethodInvocationTree mit2 && AUTOCLOSEABLE_FACTORY_MATCHER.matches(mit2));
   }
 
