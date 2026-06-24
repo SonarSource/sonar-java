@@ -93,8 +93,11 @@ public class CacheKeyGeneratorInstantiableCheck extends IssuableSubscriptionVisi
       return false;
     }
 
-    // Constructor is public, or it's implicit (no explicit declaration)
-    return noArgConstructor.get().isPublic() || noArgConstructor.get().declaration() == null;
+    Symbol constructor = noArgConstructor.get();
+    if (constructor.declaration() == null) {
+      return classTree.symbol().isPublic();
+    }
+    return constructor.isPublic();
   }
 
   private static boolean isNoArgConstructor(Symbol constructor) {
