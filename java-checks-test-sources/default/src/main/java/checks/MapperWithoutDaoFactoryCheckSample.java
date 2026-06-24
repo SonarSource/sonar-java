@@ -95,4 +95,55 @@ class MapperWithoutDaoFactoryCheckSample {
   record MapperRecord() {
   }
 
+  @Mapper
+  interface MultiLevelInheritance extends IntermediateInterface {
+  }
+
+  interface IntermediateInterface extends BaseFactoryInterface {
+  }
+
+  interface BaseFactoryInterface {
+    @DaoFactory
+    MultiLevelDao dao();
+  }
+
+  interface MultiLevelDao {
+  }
+
+  @Mapper
+  interface MultipleInheritance extends Interface1, Interface2 {
+  }
+
+  interface Interface1 {
+    String method1();
+  }
+
+  interface Interface2 {
+    @DaoFactory
+    MultiInheritDao dao();
+  }
+
+  interface MultiInheritDao {
+  }
+
+  @Mapper
+  interface ExtendingNonExistentType extends UnknownType { // Noncompliant
+  }
+
+  @Mapper
+  interface ComplexInheritance extends InterfaceWithFactory, InterfaceWithoutFactory {
+  }
+
+  interface InterfaceWithFactory {
+    @DaoFactory
+    ComplexDao dao();
+  }
+
+  interface InterfaceWithoutFactory {
+    String getName();
+  }
+
+  interface ComplexDao {
+  }
+
 }
