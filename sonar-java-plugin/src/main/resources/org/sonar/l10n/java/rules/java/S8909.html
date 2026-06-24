@@ -1,0 +1,82 @@
+<p>This rule raises an issue when a class implements the cache key generator interface but does not provide a mechanism for the caching framework to
+instantiate it, either through a default constructor or through registration with the dependency injection container.</p>
+<p>In Java, this specifically refers to the <code>CacheKeyGenerator</code> interface and CDI (Contexts and Dependency Injection) bean annotations.</p>
+<h2>Why is this an issue?</h2>
+<p>When implementing a custom cache key generator interface in the framework, the caching subsystem must be able to create instances of your
+implementation class. The framework supports two instantiation mechanisms:</p>
+<ul>
+  <li><strong>Managed component injection</strong>: If your class is registered as a managed component in the dependency injection container
+  (annotated with scope management annotations that mark it as application-scoped, request-scoped, dependent-scoped, etc.), the framework will use the
+  container to create and manage instances.</li>
+  <li><strong>Public no-args constructor</strong>: If your class is not a managed component, the framework will create new instances using reflection
+  by calling a public no-args constructor.</li>
+</ul>
+<p>When a cache key generator implementation lacks both of these, the framework cannot instantiate it. This prevents the cache from generating keys
+properly.</p>
+<p>The problem typically manifests when developers try to pass configuration or dependencies through constructor parameters without providing an
+alternative instantiation path. While the intention may be to configure the key generator, this approach breaks the framework’s ability to create
+instances.</p>
+<h2>What happens at runtime</h2>
+<p>When the cache attempts to use your key generator, the framework will try to instantiate it. Without a valid instantiation mechanism:</p>
+<ul>
+  <li>The framework cannot create an instance of your generator</li>
+  <li>A runtime exception will be thrown when cache operations occur</li>
+  <li>Cache annotations that reference your generator will fail</li>
+</ul>
+<p>This failure occurs during actual cache operations, not at application startup, making it harder to detect during development.</p>
+<h3>What is the potential impact?</h3>
+<p>When custom cache key generator implementations cannot be instantiated, the application will fail at runtime when cache operations attempt to use
+the key generator. This breaks caching functionality for any methods that reference the problematic generator.</p>
+<p>Users will experience:</p>
+<ul>
+  <li>Failed cache lookups and invalidations</li>
+  <li>Broken cache-related functionality, potentially affecting application performance if caching is critical</li>
+  <li>Possible application crashes if exceptions are not properly handled</li>
+  <li>Degraded performance if the caching layer becomes unavailable</li>
+  <li>Errors that only appear during actual usage, making them harder to detect during development</li>
+</ul>
+<p>Since the failure happens at runtime rather than build time, it may not be caught during development and could reach production environments.</p>
+<h2>How to fix it in Quarkus</h2>
+<p>Convert your <code>CacheKeyGenerator</code> implementation into a CDI bean by adding a scope annotation like <code>@ApplicationScoped</code> or
+<code>@Dependent</code>. This allows you to inject dependencies normally while letting Quarkus manage the instance lifecycle.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class CustomKeyGen implements CacheKeyGenerator {
+    private final ConfigService configService;
+
+    public CustomKeyGen(ConfigService configService) { // Noncompliant
+        this.configService = configService;
+    }
+
+    @Override
+    public Object generate(Method method, Object... methodParams) {
+        String prefix = configService.getPrefix();
+        return new CompositeCacheKey(prefix, methodParams[0]);
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@ApplicationScoped
+public class CustomKeyGen implements CacheKeyGenerator {
+    @Inject
+    ConfigService configService;
+
+    @Override
+    public Object generate(Method method, Object... methodParams) {
+        String prefix = configService.getPrefix();
+        return new CompositeCacheKey(prefix, methodParams[0]);
+    }
+}
+</pre>
+<h2>Resources</h2>
+<ul>
+  <li>Quarkus CDI Reference - <a href="https://quarkus.io/guides/cdi-reference">Guide to using CDI (Contexts and Dependency Injection) in Quarkus
+  applications</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S2060} - Classes should not be coupled to their subclasses through constructors or static methods</li>
+</ul>
+
