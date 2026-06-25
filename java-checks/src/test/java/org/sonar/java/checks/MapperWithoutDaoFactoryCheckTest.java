@@ -39,4 +39,12 @@ class MapperWithoutDaoFactoryCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/MapperWithoutDaoFactoryCheckSample.java"))
+      .withCheck(new MapperWithoutDaoFactoryCheck())
+      .verifyNoIssues();
+  }
+
 }

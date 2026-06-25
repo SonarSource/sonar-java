@@ -142,4 +142,34 @@ class MapperWithoutDaoFactoryCheckSample {
   interface ComplexDao {
   }
 
+  @Mapper
+  interface CircularReference extends SelfReferencingBase {
+  }
+
+  interface SelfReferencingBase {
+    @DaoFactory
+    CircularDao dao();
+  }
+
+  interface CircularDao {
+  }
+
+  @Mapper
+  interface DeepInheritanceChain extends Level1 {
+  }
+
+  interface Level1 extends Level2 {
+  }
+
+  interface Level2 extends Level3 {
+  }
+
+  interface Level3 {
+    @DaoFactory
+    DeepDao dao();
+  }
+
+  interface DeepDao {
+  }
+
 }
