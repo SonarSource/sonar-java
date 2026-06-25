@@ -17,13 +17,17 @@
 package org.sonar.java.cfg;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 public final class CFGUtils {
@@ -59,8 +63,61 @@ public final class CFGUtils {
       .anyMatch(successor -> !successor.equals(successorAfterJump));
   }
 
+  /**
+   * Returns whether a jump reaching the provided successor through a finally block has a continuation that differs
+   * from the fall-through path after the finally block.
+   */
+  public static boolean isJumpThroughFinallyWithDistinctContinuation(Tree terminator, Block successor) {
+    if (!isFinallyBlockWithDistinctContinuation(successor)) {
+      return false;
+    }
+    if (terminator.is(Tree.Kind.RETURN_STATEMENT)) {
+      return true;
+    }
+    return hasFollowingStatementAfterEnclosingTryFinallyBeforeLoopContinuation(terminator);
+  }
+
   private static boolean isEffectivelyEmpty(Block block) {
     return block.elements().stream().allMatch(element -> element.is(Tree.Kind.EMPTY_STATEMENT));
+  }
+
+  private static boolean hasFollowingStatementAfterEnclosingTryFinallyBeforeLoopContinuation(Tree tree) {
+    TryStatementTree tryStatement = enclosingTryFinally(tree);
+    return tryStatement == null || hasFollowingStatementBeforeLoopContinuation(tryStatement);
+  }
+
+  private static TryStatementTree enclosingTryFinally(Tree tree) {
+    Tree current = tree.parent();
+    while (current != null
+      && (!current.is(Tree.Kind.TRY_STATEMENT) || ((TryStatementTree) current).finallyBlock() == null)) {
+      current = current.parent();
+    }
+    return (TryStatementTree) current;
+  }
+
+  private static boolean hasFollowingStatementBeforeLoopContinuation(Tree tree) {
+    Tree current = tree;
+    Tree parent = current.parent();
+    while (parent != null && !isLoop(parent)) {
+      if (parent.is(Tree.Kind.BLOCK) && hasNonEmptyFollowingStatement((BlockTree) parent, current)) {
+        return true;
+      }
+      current = parent;
+      parent = current.parent();
+    }
+    return false;
+  }
+
+  private static boolean hasNonEmptyFollowingStatement(BlockTree block, Tree statement) {
+    List<StatementTree> statements = block.body();
+    int statementIndex = statements.indexOf(statement);
+    return statementIndex >= 0
+      && statements.subList(statementIndex + 1, statements.size()).stream()
+        .anyMatch(s -> !s.is(Tree.Kind.EMPTY_STATEMENT));
+  }
+
+  private static boolean isLoop(Tree tree) {
+    return tree.is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT);
   }
 
   private static boolean isDeadLoopExitingTo(Block successor, Block exitBlock) {

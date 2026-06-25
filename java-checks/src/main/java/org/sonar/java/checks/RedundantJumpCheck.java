@@ -24,12 +24,9 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
 import org.sonar.java.cfg.CFGUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 @Rule(key = "S3626")
 public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
@@ -66,7 +63,7 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
       if (successors.hasNext()) {
         Block successor = CFGUtils.nonEmptySuccessor(successors.next());
         if (successor.equals(successorWithoutJump)
-          && !isJumpThroughFinallyWithDistinctContinuation(terminator, successor)) {
+          && !CFGUtils.isJumpThroughFinallyWithDistinctContinuation(terminator, successor)) {
           reportIssue(terminator, "Remove this redundant jump.");
         }
       }
@@ -101,52 +98,6 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isLoop(Tree tree) {
     return tree.is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT);
-  }
-
-  private static boolean isJumpThroughFinallyWithDistinctContinuation(Tree terminator, Block successor) {
-    if (!CFGUtils.isFinallyBlockWithDistinctContinuation(successor)) {
-      return false;
-    }
-    if (terminator.is(Tree.Kind.RETURN_STATEMENT)) {
-      return true;
-    }
-    return hasFollowingStatementAfterEnclosingTryFinallyBeforeLoopContinuation(terminator);
-  }
-
-  private static TryStatementTree enclosingTryFinally(Tree tree) {
-    Tree current = tree.parent();
-    while (current != null
-      && (!current.is(Tree.Kind.TRY_STATEMENT) || ((TryStatementTree) current).finallyBlock() == null)) {
-      current = current.parent();
-    }
-    return (TryStatementTree) current;
-  }
-
-  private static boolean hasFollowingStatementAfterEnclosingTryFinallyBeforeLoopContinuation(Tree tree) {
-    TryStatementTree tryStatement = enclosingTryFinally(tree);
-    return tryStatement == null || hasFollowingStatementBeforeLoopContinuation(tryStatement);
-  }
-
-  private static boolean hasFollowingStatementBeforeLoopContinuation(Tree tree) {
-    Tree current = tree;
-    Tree parent = current.parent();
-    while (parent != null
-      && !isLoop(parent)) {
-      if (parent.is(Tree.Kind.BLOCK) && hasNonEmptyFollowingStatement((BlockTree) parent, current)) {
-        return true;
-      }
-      current = parent;
-      parent = current.parent();
-    }
-    return false;
-  }
-
-  private static boolean hasNonEmptyFollowingStatement(BlockTree block, Tree statement) {
-    List<StatementTree> statements = block.body();
-    int statementIndex = statements.indexOf(statement);
-    return statementIndex >= 0
-      && statements.subList(statementIndex + 1, statements.size()).stream()
-        .anyMatch(s -> !s.is(Tree.Kind.EMPTY_STATEMENT));
   }
 
 }
