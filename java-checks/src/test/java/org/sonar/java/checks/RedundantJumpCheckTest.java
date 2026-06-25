@@ -18,13 +18,14 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.sonar.java.checks.verifier.TestUtils;
 
 class RedundantJumpCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/RedundantJumpCheck.java")
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/RedundantJumpCheck.java"))
       .withCheck(new RedundantJumpCheck())
       .verifyIssues();
   }
