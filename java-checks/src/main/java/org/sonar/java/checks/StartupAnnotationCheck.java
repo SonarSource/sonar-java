@@ -55,7 +55,8 @@ public class StartupAnnotationCheck extends IssuableSubscriptionVisitor {
         methodTree.simpleName(),
         "\"@Startup\" annotation should not be applied to static methods",
         secondaryLocations,
-        null);
+        null
+      );
       return;
     }
 
@@ -65,7 +66,8 @@ public class StartupAnnotationCheck extends IssuableSubscriptionVisitor {
         methodTree.simpleName(),
         "\"@Startup\" annotation should not be applied to producer methods",
         secondaryLocations,
-        null);
+        null
+      );
       return;
     }
 
@@ -74,7 +76,8 @@ public class StartupAnnotationCheck extends IssuableSubscriptionVisitor {
         methodTree.simpleName(),
         "\"@Startup\" annotation should only be applied to no-arg methods",
         secondaryLocations,
-        null);
+        null
+      );
     }
   }
 
