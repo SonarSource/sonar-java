@@ -172,4 +172,23 @@ class MapperWithoutDaoFactoryCheckSample {
   interface DeepDao {
   }
 
+  // Diamond inheritance pattern - tests visiting same interface multiple times
+  @Mapper
+  interface DiamondMapper extends DiamondLeft, DiamondRight {
+  }
+
+  interface DiamondLeft extends DiamondBase {
+  }
+
+  interface DiamondRight extends DiamondBase {
+  }
+
+  interface DiamondBase {
+    @DaoFactory
+    DiamondDao dao();
+  }
+
+  interface DiamondDao {
+  }
+
 }
