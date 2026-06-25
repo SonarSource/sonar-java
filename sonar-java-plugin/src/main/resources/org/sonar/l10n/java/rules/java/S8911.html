@@ -1,0 +1,61 @@
+<p>This is an issue when a method designated for automatic invocation at application startup is declared as a class-level method rather than an
+instance method, is configured to produce managed objects, or requires input arguments. Such methods will not be properly invoked during application
+startup.</p>
+<p>In Java, this specifically refers to methods annotated with <code>@Startup</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>Annotations or attributes that mark methods for execution during application startup in dependency injection frameworks have specific requirements
+for how these initialization methods must be declared.</p>
+<p>When you mark a method for startup execution, the dependency injection framework generates initialization hooks that trigger the method when the
+application starts. For this mechanism to work correctly, the method must meet three requirements:</p>
+<ul>
+  <li> <strong>Non-static</strong>: The method must be an instance method. Dependency injection frameworks work by creating managed component
+  instances and invoking methods on those instances. A static method belongs to the class itself, not to an instance, so the framework cannot properly
+  manage its lifecycle or invoke it as part of component initialization. </li>
+  <li> <strong>Non-producer</strong>: The method cannot be a producer method (one that creates and provides instances for other components to
+  consume). Producer methods are designed to create and provide component instances, not to perform initialization logic. Combining startup execution
+  markers with producer functionality creates a conflict in the intended purpose of the method. </li>
+  <li> <strong>No arguments</strong>: The method must not accept any parameters. The framework invokes these methods automatically at startup and has
+  no mechanism to provide argument values. If a method requires parameters, the framework cannot call it. </li>
+</ul>
+<h3>What is the potential impact?</h3>
+<p>When methods designated for startup execution don’t follow the required signature, the initialization logic will not execute at application
+startup. This can lead to:</p>
+<ul>
+  <li> Missing configuration or setup steps that are essential for the application to function correctly </li>
+  <li> Uninitialized resources or connections that other parts of the application depend on </li>
+  <li> Runtime errors when the application tries to use components that were supposed to be initialized at startup </li>
+  <li> Silent failures where the method is simply not called, making the problem difficult to diagnose </li>
+</ul>
+<h2>How to fix it</h2>
+<p>Remove the <code>static</code> modifier from the method to make it an instance method. Ensure the method has no parameters and is not annotated
+with <code>@Produces</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@ApplicationScoped
+public class EagerAppBean {
+    @Startup
+    static void init() {  // Noncompliant: static method
+        doSomeCoolInit();
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@ApplicationScoped
+public class EagerAppBean {
+    @Startup
+    void init() {  // Compliant: non-static, no arguments
+        doSomeCoolInit();
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li> Quarkus - Application Initialization and Termination - <a href="https://quarkus.io/guides/lifecycle">Official Quarkus guide on using @Startup
+  and other lifecycle annotations</a> </li>
+  <li> Jakarta CDI Specification - <a href="https://jakarta.ee/specifications/cdi/">The specification for Contexts and Dependency Injection in Jakarta
+  EE</a> </li>
+</ul>
+
