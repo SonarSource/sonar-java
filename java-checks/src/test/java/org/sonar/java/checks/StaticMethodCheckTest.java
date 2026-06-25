@@ -45,7 +45,7 @@ class StaticMethodCheckTest {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/StaticMethodCheckSample.java"))
       .withCheck(new StaticMethodCheck())
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
 }
