@@ -42,15 +42,14 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
     .build();
 
   private static final MethodMatchers DATE_CONSTRUCTOR = MethodMatchers.create()
-    .ofSubTypes("java.util.Date")
+    .ofTypes("java.util.Date", "java.sql.Date", "java.sql.Time")
     .constructor()
     .withAnyParameters()
     .build();
 
-  private static final Set<String> KNOWN_JAVA_UTIL_DATE_TIME_CLASSES = Set.of(
-    "java.util.Date", "java.util.Calendar",
-    "java.sql.Date", "java.sql.Time", "java.sql.Timestamp",
-    "java.util.GregorianCalendar");
+  private static final Set<String> RAISED_JAVA_DATE_TIME_CLASSES = Set.of(
+    "java.util.Date", "java.util.Calendar", "java.util.GregorianCalendar",
+    "java.sql.Date", "java.sql.Time");
 
   private static final String ISSUE_MESSAGE = "Use the \"java.time\" API for date and time.";
   private boolean issueAlreadyRaised;
@@ -90,8 +89,7 @@ public class DateAndTimesCheck extends AbstractMethodDetection implements JavaVe
     if (tree instanceof ImportTree importTree) {
       String concatenatedName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
       String qualifiedName = importTree.isStatic() ? concatenatedName.substring(0, concatenatedName.lastIndexOf('.')) : concatenatedName;
-      if (qualifiedName.startsWith("org.joda.time.")
-        || KNOWN_JAVA_UTIL_DATE_TIME_CLASSES.stream().anyMatch(known -> qualifiedName.equals(known) || qualifiedName.startsWith(known + "."))) {
+      if (RAISED_JAVA_DATE_TIME_CLASSES.stream().anyMatch(known -> qualifiedName.equals(known) || qualifiedName.startsWith(known + "."))) {
         addIssueOnFile();
       }
     }

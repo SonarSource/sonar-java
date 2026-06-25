@@ -1,10 +1,12 @@
 <h2>Why is this an issue?</h2>
 <p>The old, much-derided <code>Date</code> and <code>Calendar</code> classes have always been confusing and error-prone, particularly in a
-multi-threaded context. The JodaTime library has long been a popular alternative, but it is also considered outdated. Starting from Java SE 8, the
-built-in <code>java.time</code> (JSR-310) API provides a modern, immutable, and thread-safe framework that addresses these long-standing design
-flaws.</p>
+multi-threaded context. Starting from Java SE 8, the built-in <code>java.time</code> (JSR-310) API provides a modern, immutable, and thread-safe
+framework that addresses these long-standing design flaws.</p>
+<p>This applies not only to <code>java.util.Date</code> and <code>java.util.Calendar</code>, but also to their JDBC counterparts
+<code>java.sql.Date</code> and <code>java.sql.Time</code>, which inherit the same design problems and should be replaced with <code>java.time</code>
+types when interacting with modern JDBC drivers (JDBC 4.2+).</p>
 <p><strong>Note</strong>: While Joda-Time remains the standard for handling date and time in java versions prior to 8, users of newer versions should
-migrate to the <code>java.time</code> API.</p>
+consider migration to the <code>java.time</code> API.</p>
 <p>The <code>java.time</code> package offers specific classes for:</p>
 <table>
   <colgroup>
@@ -133,24 +135,32 @@ migrate to the <code>java.time</code> API.</p>
   </tbody>
 </table>
 <h2>How to fix it</h2>
-<p>Use the <code>java.time</code> API instead of <code>java.util.Calendar</code>, <code>java.util.Date</code> or <code>JodaTime</code>.</p>
+<p>Use the <code>java.time</code> API instead of <code>java.util.Calendar</code>, <code>java.util.Date</code>, <code>java.sql.Date</code>, or
+<code>java.sql.Time</code>.</p>
+<h3>Exceptions</h3>
+<p><code>java.sql.Timestamp</code> is excluded from this rule because it may still be required for compatibility with older JDBC drivers that do not
+support the <code>java.time</code> types introduced in JDBC 4.2.</p>
 <h3>Noncompliant code example</h3>
-<p>Use of <code>java.util.Date</code> or <code>java.util.Calendar</code></p>
+<p>Use of <code>java.util.Date</code>, <code>java.util.Calendar</code>, <code>java.sql.Date</code>, or <code>java.sql.Time</code></p>
 <pre>
 Date now = new Date();  // Noncompliant
 DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 Calendar christmas  = Calendar.getInstance();  // Noncompliant
 christmas.setTime(df.parse("25.12.2020"));
-</pre>
-<p>Use of Joda-Time</p>
-<pre>
-DateTime dateTime =  new DateTime(); // Noncompliant
+
+java.sql.Date sqlDate = new java.sql.Date(System.currentTimeMillis());  // Noncompliant
+java.sql.Time sqlTime = new java.sql.Time(System.currentTimeMillis());  // Noncompliant
 </pre>
 <h3>Compliant solution</h3>
 <pre>
 LocalDate nowUTC = LocalDate.now(ZoneOffset.UTC);  // gets current date in UTC
-LocalDate christmas = LocalDate.of(2020, Month.DECEMBER,25); // create date from year/month/day
+LocalDate christmas = LocalDate.of(2020, Month.DECEMBER, 25); // create date from year/month/day
 ZonedDateTime nowParis = ZonedDateTime.now(ZoneId.of("Europe/Paris")); // get current time in Paris with time-zone information
+
+LocalDate sqlDate = LocalDate.now();  // use LocalDate instead of java.sql.Date
+LocalTime sqlTime = LocalTime.now();  // use LocalTime instead of java.sql.Time
+
+java.sql.Timestamp timestamp = new java.sql.Timestamp(System.currentTimeMillis());  // Compliant - exception for legacy JDBC compatibility
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
