@@ -45,7 +45,8 @@ public class StartupAnnotationCheck extends IssuableSubscriptionVisitor {
 
     var secondaryLocations = startupAnnotations.stream()
       .map(annotation ->
-        new JavaFileScannerContext.Location("Triggered by this annotation", annotation.annotationType()))
+        new JavaFileScannerContext.Location("Triggered by this annotation", annotation.annotationType())
+      )
       .toList();
 
     // Only report one issue per method, prioritizing: static > producer > parameters
