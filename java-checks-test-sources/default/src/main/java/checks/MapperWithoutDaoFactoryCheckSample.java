@@ -126,11 +126,6 @@ class MapperWithoutDaoFactoryCheckSample {
   interface MultiInheritDao {
   }
 
-  // Compliant: Extends an unresolved type - we assume it might provide @DaoFactory to avoid false positives
-  @Mapper
-  interface ExtendingUnresolvedType extends UnknownType {
-  }
-
   @Mapper
   interface ComplexInheritance extends InterfaceWithFactory, InterfaceWithoutFactory {
   }

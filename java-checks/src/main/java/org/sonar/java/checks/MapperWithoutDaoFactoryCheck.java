@@ -49,12 +49,13 @@ public class MapperWithoutDaoFactoryCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    if (!hasDaoFactoryMethod(classTree.symbol(), new HashSet<>())) {
+    boolean hasExplicitSuperInterfaces = !classTree.superInterfaces().isEmpty();
+    if (!hasDaoFactoryMethod(classTree.symbol(), new HashSet<>(), hasExplicitSuperInterfaces)) {
       reportIssue(classTree.simpleName(), MESSAGE);
     }
   }
 
-  private static boolean hasDaoFactoryMethod(Symbol.TypeSymbol typeSymbol, Set<Symbol.TypeSymbol> visited) {
+  private static boolean hasDaoFactoryMethod(Symbol.TypeSymbol typeSymbol, Set<Symbol.TypeSymbol> visited, boolean hasExplicitSuperInterfaces) {
     if (!visited.add(typeSymbol)) {
       return false;
     }
@@ -68,12 +69,13 @@ public class MapperWithoutDaoFactoryCheck extends IssuableSubscriptionVisitor {
 
     for (Type superType : typeSymbol.superTypes()) {
       Symbol.TypeSymbol superTypeSymbol = superType.symbol();
-      if (superTypeSymbol.isUnknown()) {
-        // If we encounter an unresolved supertype, assume it might provide the required @DaoFactory method
-        // to avoid false positives in projects with incomplete classpaths
+      if (superTypeSymbol.isUnknown() && hasExplicitSuperInterfaces) {
+        // If the interface explicitly extends other types and we encounter an unresolved supertype,
+        // assume it might provide the required @DaoFactory method to avoid false positives
+        // in projects with incomplete classpaths
         return true;
       }
-      if (hasDaoFactoryMethod(superTypeSymbol, visited)) {
+      if (!superTypeSymbol.isUnknown() && hasDaoFactoryMethod(superTypeSymbol, visited, false)) {
         return true;
       }
     }
