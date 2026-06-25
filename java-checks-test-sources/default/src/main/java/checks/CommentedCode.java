@@ -110,6 +110,24 @@ public class CommentedCode {
      * }
      */
     int a;
+
+    // This is a legal comment that ends with semi-colon;
+
+// Noncompliant@+2
+    // uses System/.out/.println
+    // System.out.println("testit");
+
+// Noncompliant@+2
+    // uses System/.err/.println
+    // System.err.println("err");
+
+// Noncompliant@+2
+    // ends by ';' and uses CamelCase
+    // assertEquals(a, "smth");
+
+// Noncompliant@+2
+    // ends by ';' and uses int keyword
+    // int i = 1;
   }
 
   // TODo

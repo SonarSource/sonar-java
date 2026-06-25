@@ -28,4 +28,17 @@ public class RecordInsteadOfClassCheckSample {
       return i;
     }
   }
+
+  @UnknownFrameworkAnnotation
+  public final class UnknownAnnotatedClass { // Compliant, unknown annotations may represent framework contracts
+    private final int i;
+
+    public UnknownAnnotatedClass(final int i) {
+      this.i = i;
+    }
+
+    public int getI() {
+      return i;
+    }
+  }
 }
