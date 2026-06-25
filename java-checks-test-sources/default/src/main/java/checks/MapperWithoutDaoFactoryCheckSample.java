@@ -191,4 +191,19 @@ class MapperWithoutDaoFactoryCheckSample {
   interface DiamondDao {
   }
 
+  // Diamond without DaoFactory - tests visited set when no factory found
+  @Mapper
+  interface DiamondWithoutFactory extends DiamondLeftNoFactory, DiamondRightNoFactory { // Noncompliant
+  }
+
+  interface DiamondLeftNoFactory extends DiamondBaseNoFactory {
+  }
+
+  interface DiamondRightNoFactory extends DiamondBaseNoFactory {
+  }
+
+  interface DiamondBaseNoFactory {
+    String getData();
+  }
+
 }
