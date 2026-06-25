@@ -55,8 +55,7 @@ public class StartupAnnotationCheck extends IssuableSubscriptionVisitor {
         methodTree.simpleName(),
         "\"@Startup\" annotation should not be applied to static methods",
         secondaryLocations,
-        null
-      );
+        null);
       return;
     }
 
