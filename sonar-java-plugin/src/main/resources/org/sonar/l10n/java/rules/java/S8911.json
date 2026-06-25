@@ -3,12 +3,13 @@
   "type": "BUG",
   "status": "ready",
   "remediation": {
-    "func": "Constant/Issue",
+    "func": "Constant\/Issue",
     "constantCost": "5min"
   },
   "tags": [
-    "quarkus",
-    "cdi"
+    "injection",
+    "lifecycle",
+    "quarkus"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-8911",
@@ -17,9 +18,7 @@
   "quickfix": "unknown",
   "code": {
     "impacts": {
-      "MAINTAINABILITY": "LOW",
-      "RELIABILITY": "HIGH",
-      "SECURITY": "LOW"
+      "RELIABILITY": "HIGH"
     },
     "attribute": "LOGICAL"
   }
