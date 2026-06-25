@@ -1,0 +1,75 @@
+<p>This rule raises an issue when Mockito core methods are called with the <code>Mockito.</code> prefix instead of being statically imported.</p>
+<p>This applies to commonly used Mockito methods such as:</p>
+<ul>
+  <li><code>mock()</code></li>
+  <li><code>when()</code></li>
+  <li><code>verify()</code></li>
+  <li><code>spy()</code></li>
+  <li><code>doReturn()</code></li>
+  <li><code>doThrow()</code></li>
+  <li><code>times()</code></li>
+  <li><code>never()</code></li>
+  <li><code>any()</code></li>
+  <li><code>eq()</code></li>
+</ul>
+<h2>Why is this an issue?</h2>
+<p>Mockito was designed with static imports in mind to create a more readable, fluent testing DSL (Domain-Specific Language). When you use the
+<code>Mockito.</code> prefix for method calls, the test code becomes more verbose and harder to read.</p>
+<p>Compare these two examples:</p>
+<pre>
+Mockito.when(Mockito.mock(MyService.class).getValue()).thenReturn(42);
+</pre>
+<p>versus:</p>
+<pre>
+when(mock(MyService.class).getValue()).thenReturn(42);
+</pre>
+<p>The second version reads more naturally, almost like plain English, which is the intent of Mockito’s API design. This readability improvement
+becomes even more significant in larger test files with many mock interactions.</p>
+<h3>What is the potential impact?</h3>
+<p>Using the <code>Mockito.</code> prefix reduces code readability and makes test files unnecessarily verbose.</p>
+<h2>How to fix it</h2>
+<p>Add a static import for Mockito methods at the top of your test class and remove the <code>Mockito.</code> prefix from method calls. You can import
+specific methods or use a wildcard import for commonly used Mockito methods.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import org.mockito.Mockito;
+
+public class MyServiceTest {
+    private MyService myService = Mockito.mock(MyService.class);
+
+    @Test
+    public void testBehavior() {
+        Mockito.when(myService.getValue()).thenReturn(42); // Noncompliant
+
+        int result = myService.getValue();
+
+        Mockito.verify(myService).getValue(); // Noncompliant
+        assertEquals(42, result);
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import static org.mockito.Mockito.*;
+
+public class MyServiceTest {
+    private MyService myService = mock(MyService.class);
+
+    @Test
+    public void testBehavior() {
+        when(myService.getValue()).thenReturn(42);
+
+        int result = myService.getValue();
+
+        verify(myService).getValue();
+        assertEquals(42, result);
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Mockito Documentation - How do I import Mockito? - <a
+  href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html">Official Mockito documentation</a></li>
+</ul>

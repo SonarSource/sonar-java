@@ -26,19 +26,24 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public final class SpringUtils {
 
+  public static final String BEANS_FACTORY_ANNOTATION_PACKAGE = "org.springframework.beans.factory.annotation.";
+  public static final String BOOT_CONTEXT_PROPERTIES_PACKAGE = "org.springframework.boot.context.properties.";
+  public static final String CONTEXT_ANNOTATION_PACKAGE = "org.springframework.context.annotation.";
+  public static final String DATA_PACKAGE = "org.springframework.data.";
+
   public static final String SPRING_BOOT_APP_ANNOTATION = "org.springframework.boot.autoconfigure.SpringBootApplication";
   public static final String CONTROLLER_ANNOTATION = "org.springframework.stereotype.Controller";
   public static final String COMPONENT_ANNOTATION = "org.springframework.stereotype.Component";
   public static final String REPOSITORY_ANNOTATION = "org.springframework.stereotype.Repository";
   public static final String SERVICE_ANNOTATION = "org.springframework.stereotype.Service";
-  public static final String AUTOWIRED_ANNOTATION = "org.springframework.beans.factory.annotation.Autowired";
-  public static final String VALUE_ANNOTATION = "org.springframework.beans.factory.annotation.Value";
+  public static final String AUTOWIRED_ANNOTATION = BEANS_FACTORY_ANNOTATION_PACKAGE + "Autowired";
+  public static final String VALUE_ANNOTATION = BEANS_FACTORY_ANNOTATION_PACKAGE + "Value";
   public static final String TRANSACTIONAL_ANNOTATION = "org.springframework.transaction.annotation.Transactional";
-  public static final String BEAN_ANNOTATION = "org.springframework.context.annotation.Bean";
-  public static final String SCOPE_ANNOTATION = "org.springframework.context.annotation.Scope";
-  public static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
+  public static final String BEAN_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "Bean";
+  public static final String SCOPE_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "Scope";
+  public static final String CONFIGURATION_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "Configuration";
   public static final String ASYNC_ANNOTATION = "org.springframework.scheduling.annotation.Async";
-  public static final String DATA_REPOSITORY_ANNOTATION = "org.springframework.data.repository.Repository";
+  public static final String DATA_REPOSITORY_ANNOTATION = DATA_PACKAGE + "repository.Repository";
   public static final String REST_CONTROLLER_ANNOTATION = "org.springframework.web.bind.annotation.RestController";
   public static final String SPRING_BOOT_TEST_ANNOTATION = "org.springframework.boot.test.context.SpringBootTest";
 

@@ -1,21 +1,14 @@
 {
 "com.macro.mall:mall:mall-demo/src/test/java/com/macro/mall/demo/MallDemoApplicationTests.java": [
-11,
-14,
-18
+11
 ],
 "com.macro.mall:mall:mall-portal/src/test/java/com/macro/mall/portal/MallPortalApplicationTests.java": [
-7,
-10
+7
 ],
 "com.macro.mall:mall:mall-portal/src/test/java/com/macro/mall/portal/PortalProductDaoTests.java": [
-19,
-23
+19
 ],
 "com.macro.mall:mall:mall-search/src/test/java/com/macro/mall/search/MallSearchApplicationTests.java": [
-16,
-22,
-25,
-30
+16
 ]
 }
