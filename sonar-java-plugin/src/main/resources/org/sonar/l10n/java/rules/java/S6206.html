@@ -38,8 +38,45 @@ final class Person { // Noncompliant
 <pre>
 record Person(String name, int age) { }
 </pre>
+<h3>Exceptions</h3>
+<p>No issue is raised when changing the class to a record could change its contract. This includes classes involved in Java serialization, such as
+classes implementing <code>Serializable</code> or <code>Externalizable</code>, classes declaring serialization methods like <code>writeObject</code>,
+<code>readObject</code>, <code>readObjectNoData</code>, <code>writeReplace</code>, or <code>readResolve</code>, and classes declaring
+<code>serialPersistentFields</code>.</p>
+<pre>
+final class Person implements java.io.Serializable { // Compliant
+  private final String name;
+
+  Person(String name) {
+    this.name = name;
+  }
+
+  String getName() {
+    return name;
+  }
+}
+</pre>
+<p>No issue is raised when the class, constructor, constructor parameters, fields, or getters are annotated with framework metadata that defines the
+class shape or binding contract. This includes metadata used by serialization, persistence, dependency-injection, or data-binding frameworks such as
+Jackson, Gson, Jakarta EE, Java EE, Lombok, Micronaut, and Spring.</p>
+<pre>
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+final class PersonDto { // Compliant
+  private final String name;
+
+  @JsonCreator
+  PersonDto(@JsonProperty("full_name") String name) {
+    this.name = name;
+  }
+
+  String getName() {
+    return name;
+  }
+}
+</pre>
 <h2>Resources</h2>
 <ul>
   <li><a href="https://docs.oracle.com/javase/specs/jls/se16/html/jls-8.html#jls-8.10">Records specification</a></li>
 </ul>
-

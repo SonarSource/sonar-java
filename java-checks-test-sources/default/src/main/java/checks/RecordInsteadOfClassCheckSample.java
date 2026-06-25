@@ -1,5 +1,17 @@
 package checks;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+import java.io.ObjectStreamField;
+import java.io.Serializable;
 import java.util.Optional;
 
 public class RecordInsteadOfClassCheckSample {
@@ -146,6 +158,10 @@ public class RecordInsteadOfClassCheckSample {
   final class ClassWithPublicFinalField { public final int base = 0; }
   final class ClassWithoutFields { }
   final class ClassWithoutFinalFields { private int sum; }
+  Object anonymousClass = new Object() {
+    private final int sum = 0;
+    int getSum() { return sum; }
+  };
   abstract class AbstractClass { abstract void foo(); }
   interface NotAClass { void foo(); }
 
@@ -165,6 +181,110 @@ public class RecordInsteadOfClassCheckSample {
     public Optional<String> bar() { // Not the same type as the field bar.
       return Optional.of(bar);
     }
+  }
+
+  final class SerializableClass implements Serializable { // Compliant, records have different serialization behavior
+    private final int sum;
+
+    SerializableClass(int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+  }
+
+  final class ExternalizableClass implements Externalizable { // Compliant, records have different serialization behavior
+    private final int sum;
+
+    ExternalizableClass(int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException { }
+    public void writeExternal(ObjectOutput out) throws IOException { }
+  }
+
+  final class ClassWithWriteObject {
+    private final int sum;
+
+    ClassWithWriteObject(int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+    private void writeObject(ObjectOutputStream out) throws IOException { }
+  }
+
+  final class ClassWithReadObject {
+    private final int sum;
+
+    ClassWithReadObject(int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException { }
+  }
+
+  final class ClassWithReadObjectNoData {
+    private final int sum;
+
+    ClassWithReadObjectNoData(int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+    private void readObjectNoData() throws ObjectStreamException { }
+  }
+
+  final class ClassWithWriteReplace {
+    private final int sum;
+
+    ClassWithWriteReplace(int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+    private Object writeReplace() throws ObjectStreamException { return this; }
+  }
+
+  final class ClassWithReadResolve {
+    private final int sum;
+
+    ClassWithReadResolve(int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+    private Object readResolve() throws ObjectStreamException { return this; }
+  }
+
+  final class ClassWithSerialPersistentFields {
+    private static final ObjectStreamField[] serialPersistentFields = new ObjectStreamField[0];
+    private final int sum;
+
+    ClassWithSerialPersistentFields(int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  final class ClassWithJsonAnnotation { // Compliant, framework metadata owns the class shape
+    private final int sum;
+
+    ClassWithJsonAnnotation(int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+  }
+
+  final class ClassWithJsonCreatorConstructor {
+    private final int sum;
+
+    @JsonCreator
+    ClassWithJsonCreatorConstructor(int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+  }
+
+  final class ClassWithJsonAnnotatedConstructorParameter {
+    private final int sum;
+
+    ClassWithJsonAnnotatedConstructorParameter(@JsonProperty("total") int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+  }
+
+  final class ClassWithJsonAnnotatedField {
+    @JsonProperty("total")
+    private final int sum;
+
+    ClassWithJsonAnnotatedField(int sum) { this.sum = sum; }
+    int getSum() { return sum; }
+  }
+
+  final class ClassWithJsonAnnotatedGetter {
+    private final int sum;
+
+    ClassWithJsonAnnotatedGetter(int sum) { this.sum = sum; }
+
+    @JsonProperty("total")
+    int getSum() { return sum; }
   }
 
   // When the constructor has smaller visibility, it is not possible to create a record with the same behavior.

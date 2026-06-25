@@ -10,49 +10,44 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class JUnit5DefaultPackageClassAndMethodCheckSample {
+class JUnit5DefaultPackageClassAndMethodCheckSample { // Noncompliant {{Remove redundant visibility modifiers from this test class and its methods.}} [[quickfixes=qf1]]
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  // fix@qf1 {{Remove all redundant visibility modifiers}}
+  // edit@qf1 [[sl=+12;sc=3;el=+12;ec=10]] {{}}
+  // edit@qf1 [[sl=+16;sc=3;el=+16;ec=13]] {{}}
+  // edit@qf1 [[sl=+20;sc=3;el=+20;ec=10]] {{}}
+  // edit@qf1 [[sl=+24;sc=3;el=+24;ec=10]] {{}}
+  // edit@qf1 [[sl=+28;sc=3;el=+28;ec=10]] {{}}
+  // edit@qf1 [[sl=+32;sc=3;el=+32;ec=10]] {{}}
+  // edit@qf1 [[sl=+36;sc=3;el=+36;ec=13]] {{}}
 
   @BeforeAll
-  public static void beforeAll() {} // Noncompliant {{Remove this 'public' modifier.}} [[quickfixes=qf5]]
-//^^^^^^
-  // fix@qf5 {{Remove "public" modifier}}
-  // edit@qf5 [[sc=3;ec=10]] {{}}
+  public static void beforeAll() {}
+//^^^^^^<
 
   @AfterAll
-  protected static void afterAll() {} // Noncompliant {{Remove this 'protected' modifier.}} [[quickfixes=qf6]]
-//^^^^^^^^^
-  // fix@qf6 {{Remove "protected" modifier}}
-  // edit@qf6 [[sc=3;ec=13]] {{}}
+  protected static void afterAll() {}
+//^^^^^^^^^<
 
   @BeforeEach
-  public void beforeEach() {} // Noncompliant {{Remove this 'public' modifier.}} [[quickfixes=qf7]]
-//^^^^^^
-  // fix@qf7 {{Remove "public" modifier}}
-  // edit@qf7 [[sc=3;ec=10]] {{}}
+  public void beforeEach() {}
+//^^^^^^<
 
   @AfterEach
-  public void afterEach() {} // Noncompliant {{Remove this 'public' modifier.}} [[quickfixes=qf8]]
-//^^^^^^
-  // fix@qf8 {{Remove "public" modifier}}
-  // edit@qf8 [[sc=3;ec=10]] {{}}
+  public void afterEach() {}
+//^^^^^^<
 
   @Test
-  public void testPublic() {} // Noncompliant {{Remove this 'public' modifier.}} [[quickfixes=qf1]]
-//^^^^^^
-  // fix@qf1 {{Remove "public" modifier}}
-  // edit@qf1 [[sc=3;ec=10]] {{}}
+  public void testPublic() {}
+//^^^^^^<
 
   @Test
-  public static void testPublicStatic() {} // Noncompliant {{Remove this 'public' modifier.}} [[quickfixes=qf2]]
-//^^^^^^
-  // fix@qf2 {{Remove "public" modifier}}
-  // edit@qf2 [[sc=3;ec=10]] {{}}
+  public static void testPublicStatic() {}
+//^^^^^^<
 
   @Test
-  protected void testProtected() {} // Noncompliant [[quickfixes=qf3]]
-//^^^^^^^^^
-  // fix@qf3 {{Remove "protected" modifier}}
-  // edit@qf3 [[sc=3;ec=13]] {{}}
+  protected void testProtected() {}
+//^^^^^^^^^<
 
   @Test
   private void testPrivate() {} // Compliant, bug raises by S5810
@@ -80,12 +75,21 @@ class JUnit5DefaultPackageClassAndMethodCheckSample {
 
   }
 
-  protected static class PublicWithOneTest { // Noncompliant {{Remove this 'protected' modifier.}} [[quickfixes=qf4]]
+  protected static class PublicWithOneTest { // Noncompliant {{Remove this 'protected' modifier.}} [[quickfixes=qf2]]
 //^^^^^^^^^
-  // fix@qf4 {{Remove "protected" modifier}}
-  // edit@qf4 [[sc=3;ec=13]] {{}}
+  // fix@qf2 {{Remove this 'protected' modifier.}}
+  // edit@qf2 [[sc=3;ec=13]] {{}}
     @Test
     void test() {}
+  }
+
+  public static class WithClassAndMethodModifiers { // Noncompliant {{Remove redundant visibility modifiers from this test class and its methods.}} [[quickfixes=qf3]]
+  //                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    // fix@qf3 {{Remove all redundant visibility modifiers}}
+    // edit@qf3 [[sl=+6;sc=5;el=+6;ec=12]] {{}}
+    // edit@qf3 [[sc=3;ec=10]] {{}}
+    @Test
+    public void test() {}
   }
 
   private static class PrivateWithOneTest { // Compliant, bug handled by S5810
@@ -175,4 +179,9 @@ class JUnit5DefaultPackageClassAndMethodCheckSample {
       assertEquals(23, 12 + 11);
     }
   }
+
+  Object anonymousClassWithTest = new Object() {
+    @Test
+    public void test() {} // Compliant, anonymous classes are ignored
+  };
 }
