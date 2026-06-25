@@ -68,7 +68,12 @@ public class MapperWithoutDaoFactoryCheck extends IssuableSubscriptionVisitor {
 
     for (Type superType : typeSymbol.superTypes()) {
       Symbol.TypeSymbol superTypeSymbol = superType.symbol();
-      if (!superTypeSymbol.isUnknown() && hasDaoFactoryMethod(superTypeSymbol, visited)) {
+      if (superTypeSymbol.isUnknown()) {
+        // If we encounter an unresolved supertype, assume it might provide the required @DaoFactory method
+        // to avoid false positives in projects with incomplete classpaths
+        return true;
+      }
+      if (hasDaoFactoryMethod(superTypeSymbol, visited)) {
         return true;
       }
     }
