@@ -96,6 +96,30 @@ abstract class A {
     foo();
   }
 
+  public void return_in_try_finally_followed_by_empty_statement() {
+    try {
+      if (condition2) {
+        return; // Noncompliant
+      }
+    } finally {
+      bar();
+    }
+    ;
+  }
+
+  public void continue_in_try_finally_followed_by_empty_statement() {
+    while (condition1) {
+      try {
+        if (condition2) {
+          continue; // Noncompliant
+        }
+      } finally {
+        bar();
+      }
+      ;
+    }
+  }
+
   public void early_return_in_loop_try_finally() {
     while (condition1) {
       try {

@@ -112,18 +112,26 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
   private static Block nonEmptySuccessor(Block initialBlock) {
     Block result = initialBlock;
     Set<Integer> visited = new HashSet<>();
-    while (result.elements().isEmpty() && result.successors().size() == 1 && visited.add(result.id())) {
+    while (isEffectivelyEmpty(result) && result.successors().size() == 1 && visited.add(result.id())) {
       result = result.successors().iterator().next();
     }
     return result;
   }
 
+  private static boolean isEffectivelyEmpty(Block block) {
+    return block.elements().stream().allMatch(element -> element.is(Tree.Kind.EMPTY_STATEMENT));
+  }
+
   private static boolean isFinallyBlockWithDistinctContinuation(Block block) {
     Block exitBlock = block.exitBlock();
-    return block.isFinallyBlock()
-      && exitBlock != null
-      && block.successors().stream()
-        .anyMatch(s -> !s.equals(exitBlock) && !isDeadLoopExitingTo(s, exitBlock));
+    if (!block.isFinallyBlock() || exitBlock == null) {
+      return false;
+    }
+    Block successorAfterJump = nonEmptySuccessor(exitBlock);
+    return block.successors().stream()
+      .filter(successor -> !isDeadLoopExitingTo(successor, exitBlock))
+      .map(RedundantJumpCheck::nonEmptySuccessor)
+      .anyMatch(successor -> !successor.equals(successorAfterJump));
   }
 
   private static boolean isJumpThroughFinallyWithDistinctContinuation(Tree terminator, Block successor) {
@@ -155,7 +163,7 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
     Tree parent = current.parent();
     while (parent != null
       && !isLoop(parent)) {
-      if (parent.is(Tree.Kind.BLOCK) && hasFollowingStatement((BlockTree) parent, current)) {
+      if (parent.is(Tree.Kind.BLOCK) && hasNonEmptyFollowingStatement((BlockTree) parent, current)) {
         return true;
       }
       current = parent;
@@ -164,10 +172,12 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  private static boolean hasFollowingStatement(BlockTree block, Tree statement) {
+  private static boolean hasNonEmptyFollowingStatement(BlockTree block, Tree statement) {
     List<StatementTree> statements = block.body();
     int statementIndex = statements.indexOf(statement);
-    return statementIndex >= 0 && statementIndex < statements.size() - 1;
+    return statementIndex >= 0
+      && statements.subList(statementIndex + 1, statements.size()).stream()
+        .anyMatch(s -> !s.is(Tree.Kind.EMPTY_STATEMENT));
   }
 
   private static boolean isDeadLoopExitingTo(Block successor, Block exitBlock) {
