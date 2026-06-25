@@ -45,7 +45,8 @@ public class JavaVersionImpl implements JavaVersion {
   private static final int JAVA_23 = 23;
   private static final int JAVA_24 = 24;
   private static final int JAVA_25 = 25;
-  public static final int MAX_SUPPORTED = JAVA_25;
+  private static final int JAVA_26 = 26;
+  public static final int MAX_SUPPORTED = JAVA_26;
 
   private final int javaVersion;
   private final boolean previewFeaturesEnabled;
@@ -171,6 +172,11 @@ public class JavaVersionImpl implements JavaVersion {
   @Override
   public boolean isJava25Compatible() {
     return JAVA_25 <= javaVersion;
+  }
+
+  @Override
+  public boolean isJava26Compatible() {
+    return JAVA_26 <= javaVersion;
   }
 
   private boolean notSetOrAtLeast(int requiredJavaVersion) {
