@@ -1,0 +1,23 @@
+{
+  "title": "Either fields or getters should be annotated for persistence but not both",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "code": {
+    "impacts": {
+      "RELIABILITY": "BLOCKER"
+    },
+    "attribute": "LOGICAL"
+  },
+  "tags": [
+    "jakarta"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-2206",
+  "sqKey": "S2206",
+  "scope": "Main",
+  "quickfix": "unknown"
+}

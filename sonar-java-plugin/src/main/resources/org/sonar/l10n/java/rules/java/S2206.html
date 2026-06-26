@@ -1,0 +1,30 @@
+<h2>Why is this an issue?</h2>
+<p>Persistence annotations should be marked either on fields or on getters but not on both. Mix the two and the annotated fields will be ignored. The
+potential results are that your database tables are not created or not populated (and read) correctly.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+@Entity
+public class Person {  // Noncompliant; both fields and getters annotated
+  @Id
+  private Long id;
+  private String fname;
+
+  public Long getId() { ... }
+
+  @Column(name="name")
+  public String getFname() { ... }
+</pre>
+<h3>Compliant solution</h3>
+<pre>
+@Entity
+public class Person {
+  @Id
+  private Long id;
+  @Column(name="name")
+  private String fname;
+
+  public Long getId() { ... }
+
+  public String getFname() { ... }
+</pre>
+
