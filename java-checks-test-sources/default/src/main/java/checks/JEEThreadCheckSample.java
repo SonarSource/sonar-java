@@ -88,3 +88,21 @@ class MessageDrivenEJB {
     }
   }
 }
+
+@Stateless
+class StatelessRunnable implements Runnable { // Noncompliant
+  public void run() {}
+}
+
+@Stateless
+class StatelessWithInner {
+  class InnerHelper {
+    void method() {
+      Runnable r = new Runnable() { // Noncompliant
+        public void run() {}
+      };
+      synchronized (this) { // Noncompliant
+      }
+    }
+  }
+}

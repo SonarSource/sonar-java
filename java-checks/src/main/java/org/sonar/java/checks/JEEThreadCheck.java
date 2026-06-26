@@ -68,7 +68,10 @@ public class JEEThreadCheck extends IssuableSubscriptionVisitor {
   }
 
   private void handleClass(ClassTree classTree) {
-    if (!classTree.symbol().type().isSubtypeOf("java.lang.Runnable") || !isInJeeClass(classTree)) {
+    if (!classTree.symbol().type().isSubtypeOf("java.lang.Runnable")) {
+      return;
+    }
+    if (!isJeeClass(classTree) && !isInJeeClass(classTree)) {
       return;
     }
     if (classTree.parent() instanceof NewClassTree newClassTree) {
@@ -105,8 +108,8 @@ public class JEEThreadCheck extends IssuableSubscriptionVisitor {
   private static boolean isInJeeClass(Tree tree) {
     Tree current = tree.is(Tree.Kind.CLASS) ? tree.parent() : tree;
     while (current != null) {
-      if (current.is(Tree.Kind.CLASS)) {
-        return isJeeClass((ClassTree) current);
+      if (current.is(Tree.Kind.CLASS) && isJeeClass((ClassTree) current)) {
+        return true;
       }
       current = current.parent();
     }
