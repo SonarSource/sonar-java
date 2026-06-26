@@ -188,13 +188,8 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   }
 
   private static boolean hasLifecycleAnnotation(MethodTree tree) {
-    Symbol.MethodSymbol symbol = tree.symbol();
-    for (String annotation : LIFECYCLE_ANNOTATIONS) {
-      if (symbol.metadata().isAnnotatedWith(annotation)) {
-        return true;
-      }
-    }
-    return false;
+    var metadata = tree.symbol().metadata();
+    return Arrays.stream(LIFECYCLE_ANNOTATIONS).anyMatch(metadata::isAnnotatedWith);
   }
 
   private static boolean hasEmptyBody(MethodTree tree) {
