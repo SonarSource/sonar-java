@@ -57,26 +57,27 @@ public class PersistenceAnnotationsMixedCheck extends IssuableSubscriptionVisito
       return;
     }
 
-    if (hasMemberWithAccessAnnotation(classTree)) {
-      return;
-    }
+    // Members with @Access explicitly opt into a different access mode and are excluded from the check.
+    // Only non-overridden members (no @Access) determine whether field/getter annotations are mixed.
+    boolean hasAnnotatedFields = classTree.members().stream()
+      .filter(m -> m.is(Tree.Kind.VARIABLE))
+      .map(VariableTree.class::cast)
+      .filter(v -> !hasAccessAnnotation(v.symbol().metadata()))
+      .anyMatch(v -> hasPersistenceAnnotation(v.symbol().metadata()));
 
-    boolean hasAnnotatedFields =
-      classTree.members().stream().filter(m -> m.is(Tree.Kind.VARIABLE)).map(VariableTree.class::cast).anyMatch(v -> hasPersistenceAnnotation(v.symbol().metadata()));
-
-    boolean hasAnnotatedMethods =
-      classTree.members().stream().filter(m -> m.is(Tree.Kind.METHOD)).map(MethodTree.class::cast).anyMatch(method -> hasPersistenceAnnotation(method.symbol().metadata()));
+    boolean hasAnnotatedMethods = classTree.members().stream()
+      .filter(m -> m.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .filter(method -> !hasAccessAnnotation(method.symbol().metadata()))
+      .anyMatch(method -> hasPersistenceAnnotation(method.symbol().metadata()));
 
     if (hasAnnotatedFields && hasAnnotatedMethods) {
       reportIssue(classTree.simpleName(), "Annotate either fields or getters for persistence, but not both.");
     }
   }
 
-  private static boolean hasMemberWithAccessAnnotation(ClassTree classTree) {
-    return classTree.members().stream()
-      .filter(m -> m.is(Tree.Kind.VARIABLE) || m.is(Tree.Kind.METHOD))
-      .map(m -> m.is(Tree.Kind.VARIABLE) ? ((VariableTree) m).symbol().metadata() : ((MethodTree) m).symbol().metadata())
-      .anyMatch(metadata -> ACCESS_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith));
+  private static boolean hasAccessAnnotation(SymbolMetadata metadata) {
+    return ACCESS_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 
   private static boolean hasPersistenceAnnotation(SymbolMetadata metadata) {

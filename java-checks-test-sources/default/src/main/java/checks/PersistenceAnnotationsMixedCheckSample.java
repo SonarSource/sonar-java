@@ -151,9 +151,9 @@ class CompliantJavaxEntity { // Compliant - all annotations on fields
   }
 }
 
-// @Access on a member explicitly enables mixed access - compliant
+// @Access on the only mixed member: the overriding member is excluded, no remaining mix - compliant
 @Entity
-class MixedWithExplicitFieldAccess { // Compliant - @Access on getter overrides default
+class AllMixedMembersHaveAccess { // Compliant - only the @Access-annotated getter is mixed
   @Id
   private Long id;
 
@@ -165,13 +165,31 @@ class MixedWithExplicitFieldAccess { // Compliant - @Access on getter overrides 
 }
 
 @Entity
-class MixedWithExplicitPropertyAccess { // Compliant - @Access on field overrides default
+class FieldOverrideWithAccess { // Compliant - only the @Access-annotated field is mixed
   @Access(AccessType.FIELD)
   @Id
   private Long id;
 
   @Column(name = "name")
   public String getName() {
+    return null;
+  }
+}
+
+// @Access only covers one member but another non-overridden member still mixes - noncompliant
+@Entity
+class PartialAccessOverride { // Noncompliant
+  @Id
+  private Long id;
+
+  @Access(AccessType.PROPERTY)
+  @Column(name = "name")
+  public String getName() {
+    return null;
+  }
+
+  @Column(name = "email")
+  public String getEmail() { // wrong: no @Access, should be a field annotation
     return null;
   }
 }
