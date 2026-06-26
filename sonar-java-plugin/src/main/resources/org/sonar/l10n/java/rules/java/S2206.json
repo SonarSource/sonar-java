@@ -6,7 +6,15 @@
     "func": "Constant\/Issue",
     "constantCost": "20min"
   },
-  "tags": [],
+  "code": {
+    "impacts": {
+      "RELIABILITY": "BLOCKER"
+    },
+    "attribute": "LOGICAL"
+  },
+  "tags": [
+    "jakarta"
+  ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-2206",
   "sqKey": "S2206",
