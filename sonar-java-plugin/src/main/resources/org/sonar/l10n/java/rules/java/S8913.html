@@ -1,0 +1,31 @@
+<p>=== Documentation
+
+* Quarkus - Generating Jakarta REST resources with Panache - https://quarkus.io/guides/rest-data-panache[Official Quarkus documentation on REST Data with Panache, including how to properly use resource interfaces and add custom methods]
+
+* Quarkus - Adding additional methods to the generated resource - https://quarkus.io/guides/rest-data-panache#adding-additional-methods-to-the-generated-resource[Specific section on how to correctly add custom methods using default interface methods]
+
+
+=== What is the potential impact?
+
+This issue leads to wasted development effort and potential confusion when debugging. Developers may spend time writing and maintaining implementation code that has no effect on the application's behavior. The silent nature of this problem makes it particularly problematic, as there are no build-time errors or runtime warnings to indicate that the custom implementation is being ignored.
+
+While this is not a security or data integrity issue, it can delay development and lead to frustration when custom business logic doesn't execute as expected.
+
+This rule raises an issue when a class implements an interface that extends one of the framework's provided base resource interfaces for REST endpoints with built-in database entity operations.
+
+== Why is this an issue?
+
+Certain frameworks use code generation mechanisms to automatically create complete implementations from interface definitions or contract specifications. When you define an interface that extends framework-specific base interfaces designed for resource management, the framework generates the complete implementation at build time.
+
+The framework processes these interfaces during the build phase and creates resource handlers with standard operations (create, read, update, delete, list). This generation happens automatically without requiring any manual implementation.
+
+If you create a class that implements such an interface, the framework will ignore your implementation entirely. The code generator doesn't check for existing implementations -- it simply creates its own implementation class. This means:
+
+* Your custom implementation code will never be executed
+* Any method overrides you write will have no effect
+* The application will use the auto-generated implementation instead
+* You'll waste development time writing code that serves no purpose
+
+This silent failure can be particularly confusing because the application will compile and run without errors, but your custom logic won't execute. Developers may spend significant time debugging why their code changes aren't taking effect.
+
+The only supported way to add custom functionality is through extension mechanisms that are explicitly recognized by the code generation process, such as inline method implementations within the interface definition itself. These inline implementations are respected by the code generation mechanism and will be included in the final generated resource alongside the standard operations.</p>
