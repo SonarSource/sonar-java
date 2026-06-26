@@ -16,9 +16,11 @@
  */
 package org.sonar.java.checks;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -59,20 +61,26 @@ public class PersistenceAnnotationsMixedCheck extends IssuableSubscriptionVisito
 
     // Members with @Access explicitly opt into a different access mode and are excluded from the check.
     // Only non-overridden members (no @Access) determine whether field/getter annotations are mixed.
-    boolean hasAnnotatedFields = classTree.members().stream()
+    List<JavaFileScannerContext.Location> fieldLocations = classTree.members().stream()
       .filter(m -> m.is(Tree.Kind.VARIABLE))
       .map(VariableTree.class::cast)
       .filter(v -> !hasAccessAnnotation(v.symbol().metadata()))
-      .anyMatch(v -> hasPersistenceAnnotation(v.symbol().metadata()));
+      .filter(v -> hasPersistenceAnnotation(v.symbol().metadata()))
+      .map(v -> new JavaFileScannerContext.Location("Annotated field", v.simpleName()))
+      .toList();
 
-    boolean hasAnnotatedMethods = classTree.members().stream()
+    List<JavaFileScannerContext.Location> methodLocations = classTree.members().stream()
       .filter(m -> m.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
       .filter(method -> !hasAccessAnnotation(method.symbol().metadata()))
-      .anyMatch(method -> hasPersistenceAnnotation(method.symbol().metadata()));
+      .filter(method -> hasPersistenceAnnotation(method.symbol().metadata()))
+      .map(method -> new JavaFileScannerContext.Location("Annotated getter", method.simpleName()))
+      .toList();
 
-    if (hasAnnotatedFields && hasAnnotatedMethods) {
-      reportIssue(classTree.simpleName(), "Annotate either fields or getters for persistence, but not both.");
+    if (!fieldLocations.isEmpty() && !methodLocations.isEmpty()) {
+      List<JavaFileScannerContext.Location> secondaryLocations = new ArrayList<>(fieldLocations);
+      secondaryLocations.addAll(methodLocations);
+      reportIssue(classTree.simpleName(), "Annotate either fields or getters for persistence, but not both.", secondaryLocations, null);
     }
   }
 

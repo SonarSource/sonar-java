@@ -10,8 +10,10 @@ import jakarta.persistence.MappedSuperclass;
 
 @Entity
 class PersistenceAnnotationsMixedCheckSample { // Noncompliant {{Annotate either fields or getters for persistence, but not both.}}
+  //  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   @Id
   private Long id;
+  //           ^^< {{Annotated field}}
   private String name;
 
   public Long getId() {
@@ -20,6 +22,7 @@ class PersistenceAnnotationsMixedCheckSample { // Noncompliant {{Annotate either
 
   @Column(name = "name")
   public String getName() {
+  //            ^^^^^^^< {{Annotated getter}}
     return name;
   }
 }
