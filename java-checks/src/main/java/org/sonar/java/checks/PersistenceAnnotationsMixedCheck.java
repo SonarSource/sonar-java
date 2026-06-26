@@ -31,6 +31,11 @@ public class PersistenceAnnotationsMixedCheck extends IssuableSubscriptionVisito
   private static final List<String> ENTITY_ANNOTATIONS = List.of("javax.persistence.Entity", "jakarta.persistence.Entity", "javax.persistence.Embeddable", "jakarta.persistence" +
     ".Embeddable", "javax.persistence.MappedSuperclass", "jakarta.persistence.MappedSuperclass");
 
+  private static final List<String> ACCESS_ANNOTATIONS = List.of(
+    "javax.persistence.Access",
+    "jakarta.persistence.Access"
+  );
+
   private static final List<String> PERSISTENCE_MAPPING_ANNOTATIONS = List.of("javax.persistence.Id", "jakarta.persistence.Id", "javax.persistence.EmbeddedId", "jakarta" +
     ".persistence.EmbeddedId", "javax.persistence.Column", "jakarta.persistence.Column", "javax.persistence.Basic", "jakarta.persistence.Basic", "javax.persistence.OneToOne",
     "jakarta.persistence.OneToOne", "javax.persistence.OneToMany", "jakarta.persistence.OneToMany", "javax.persistence.ManyToOne", "jakarta.persistence.ManyToOne", "javax" +
@@ -52,6 +57,10 @@ public class PersistenceAnnotationsMixedCheck extends IssuableSubscriptionVisito
       return;
     }
 
+    if (hasMemberWithAccessAnnotation(classTree)) {
+      return;
+    }
+
     boolean hasAnnotatedFields =
       classTree.members().stream().filter(m -> m.is(Tree.Kind.VARIABLE)).map(VariableTree.class::cast).anyMatch(v -> hasPersistenceAnnotation(v.symbol().metadata()));
 
@@ -61,6 +70,13 @@ public class PersistenceAnnotationsMixedCheck extends IssuableSubscriptionVisito
     if (hasAnnotatedFields && hasAnnotatedMethods) {
       reportIssue(classTree.simpleName(), "Annotate either fields or getters for persistence, but not both.");
     }
+  }
+
+  private static boolean hasMemberWithAccessAnnotation(ClassTree classTree) {
+    return classTree.members().stream()
+      .filter(m -> m.is(Tree.Kind.VARIABLE) || m.is(Tree.Kind.METHOD))
+      .map(m -> m.is(Tree.Kind.VARIABLE) ? ((VariableTree) m).symbol().metadata() : ((MethodTree) m).symbol().metadata())
+      .anyMatch(metadata -> ACCESS_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith));
   }
 
   private static boolean hasPersistenceAnnotation(SymbolMetadata metadata) {

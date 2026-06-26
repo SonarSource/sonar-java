@@ -1,5 +1,7 @@
 package checks;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
@@ -146,5 +148,30 @@ class CompliantJavaxEntity { // Compliant - all annotations on fields
 
   public String getName() {
     return name;
+  }
+}
+
+// @Access on a member explicitly enables mixed access - compliant
+@Entity
+class MixedWithExplicitFieldAccess { // Compliant - @Access on getter overrides default
+  @Id
+  private Long id;
+
+  @Access(AccessType.PROPERTY)
+  @Column(name = "name")
+  public String getName() {
+    return null;
+  }
+}
+
+@Entity
+class MixedWithExplicitPropertyAccess { // Compliant - @Access on field overrides default
+  @Access(AccessType.FIELD)
+  @Id
+  private Long id;
+
+  @Column(name = "name")
+  public String getName() {
+    return null;
   }
 }
