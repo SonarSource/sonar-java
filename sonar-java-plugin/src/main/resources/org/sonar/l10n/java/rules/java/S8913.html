@@ -1,31 +1,72 @@
-<p>=== Documentation
+<p>This rule raises an issue when a class implements an interface that extends one of the framework’s provided base resource interfaces for REST
+endpoints with built-in database entity operations.</p>
+<p>In Java with Quarkus, these interfaces are specifically: <code>PanacheEntityResource</code>, <code>PanacheRepositoryResource</code>,
+<code>PanacheMongoEntityResource</code>, and <code>PanacheMongoRepositoryResource</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>Certain frameworks use code generation mechanisms to automatically create complete implementations from interface definitions or contract
+specifications. When you define an interface that extends framework-specific base interfaces designed for resource management, the framework generates
+the complete implementation at build time.</p>
+<p>The framework processes these interfaces during the build phase and creates resource handlers with standard operations (create, read, update,
+delete, list). This generation happens automatically without requiring any manual implementation.</p>
+<p>If you create a class that implements such an interface, the framework will ignore your implementation entirely. The code generator doesn’t check
+for existing implementations — it simply creates its own implementation class. This means:</p>
+<ul>
+  <li>Your custom implementation code will never be executed</li>
+  <li>Any method overrides you write will have no effect</li>
+  <li>The application will use the auto-generated implementation instead</li>
+  <li>You’ll waste development time writing code that serves no purpose</li>
+</ul>
+<p>This silent failure can be particularly confusing because the application will compile and run without errors, but your custom logic won’t execute.
+Developers may spend significant time debugging why their code changes aren’t taking effect.</p>
+<p>The only supported way to add custom functionality is through extension mechanisms that are explicitly recognized by the code generation process,
+such as inline method implementations within the interface definition itself. These inline implementations are respected by the code generation
+mechanism and will be included in the final generated resource alongside the standard operations.</p>
+<p>In Quarkus REST Data with Panache, this applies to interfaces extending <code>PanacheEntityResource</code> or
+<code>PanacheRepositoryResource</code>. The framework generates Jakarta REST resources at build time. The supported extension mechanism is
+<strong>default methods</strong> defined directly in the resource interface.</p>
+<h3>What is the potential impact?</h3>
+<p>This issue leads to wasted development effort and potential confusion when debugging. Developers may spend time writing and maintaining
+implementation code that has no effect on the application’s behavior. The silent nature of this problem makes it particularly problematic, as there
+are no build-time errors or runtime warnings to indicate that the custom implementation is being ignored.</p>
+<p>While this is not a security or data integrity issue, it can delay development and lead to frustration when custom business logic doesn’t execute
+as expected.</p>
+<h2>How to fix it</h2>
+<p>Remove the implementation class entirely. If you need custom methods, add them as default methods directly in the resource interface. Default
+methods will be included in the generated resource alongside the standard CRUD operations.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public interface PeopleResource extends PanacheEntityResource&lt;Person, Long&gt; {
+}
 
-* Quarkus - Generating Jakarta REST resources with Panache - https://quarkus.io/guides/rest-data-panache[Official Quarkus documentation on REST Data with Panache, including how to properly use resource interfaces and add custom methods]
+// Noncompliant: this implementation will be completely ignored
+public class PeopleResourceImpl implements PeopleResource {
+    @Override
+    public Person get(Long id) {
+        return Person.findById(id);
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+// Compliant: only the interface is needed, with custom methods as defaults
+public interface PeopleResource extends PanacheEntityResource&lt;Person, Long&gt; {
 
-* Quarkus - Adding additional methods to the generated resource - https://quarkus.io/guides/rest-data-panache#adding-additional-methods-to-the-generated-resource[Specific section on how to correctly add custom methods using default interface methods]
+    @GET
+    @Path("/name/{name}")
+    @Produces("application/json")
+    default List&lt;Person&gt; findByName(@PathParam("name") String name) {
+        return Person.find("name = :name", Collections.singletonMap("name", name)).list();
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Quarkus - Generating Jakarta REST resources with Panache - <a href="https://quarkus.io/guides/rest-data-panache">Official Quarkus documentation
+  on REST Data with Panache, including how to properly use resource interfaces and add custom methods</a></li>
+  <li>Quarkus - Adding additional methods to the generated resource - <a
+  href="https://quarkus.io/guides/rest-data-panache#adding-additional-methods-to-the-generated-resource">Specific section on how to correctly add
+  custom methods using default interface methods</a></li>
+</ul>
 
-
-=== What is the potential impact?
-
-This issue leads to wasted development effort and potential confusion when debugging. Developers may spend time writing and maintaining implementation code that has no effect on the application's behavior. The silent nature of this problem makes it particularly problematic, as there are no build-time errors or runtime warnings to indicate that the custom implementation is being ignored.
-
-While this is not a security or data integrity issue, it can delay development and lead to frustration when custom business logic doesn't execute as expected.
-
-This rule raises an issue when a class implements an interface that extends one of the framework's provided base resource interfaces for REST endpoints with built-in database entity operations.
-
-== Why is this an issue?
-
-Certain frameworks use code generation mechanisms to automatically create complete implementations from interface definitions or contract specifications. When you define an interface that extends framework-specific base interfaces designed for resource management, the framework generates the complete implementation at build time.
-
-The framework processes these interfaces during the build phase and creates resource handlers with standard operations (create, read, update, delete, list). This generation happens automatically without requiring any manual implementation.
-
-If you create a class that implements such an interface, the framework will ignore your implementation entirely. The code generator doesn't check for existing implementations -- it simply creates its own implementation class. This means:
-
-* Your custom implementation code will never be executed
-* Any method overrides you write will have no effect
-* The application will use the auto-generated implementation instead
-* You'll waste development time writing code that serves no purpose
-
-This silent failure can be particularly confusing because the application will compile and run without errors, but your custom logic won't execute. Developers may spend significant time debugging why their code changes aren't taking effect.
-
-The only supported way to add custom functionality is through extension mechanisms that are explicitly recognized by the code generation process, such as inline method implementations within the interface definition itself. These inline implementations are respected by the code generation mechanism and will be included in the final generated resource alongside the standard operations.</p>

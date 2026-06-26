@@ -3,7 +3,7 @@
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
-    "func": "Constant/Issue",
+    "func": "Constant\/Issue",
     "constantCost": "10min"
   },
   "tags": [
@@ -15,9 +15,6 @@
   "ruleSpecification": "RSPEC-8913",
   "sqKey": "S8913",
   "scope": "All",
-  "defaultQualityProfiles": [
-    "Sonar way"
-  ],
   "quickfix": "unknown",
   "code": {
     "impacts": {
