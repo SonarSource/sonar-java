@@ -1,0 +1,82 @@
+<p>This is an issue when a class implements a credential provider interface and is annotated with a dependency injection scope annotation (such as
+application-scoped) but is missing the annotation that prevents removal during framework optimization.</p>
+<p>In Java with CDI and Quarkus, this specifically refers to classes implementing the <code>CredentialsProvider</code> interface, annotated with
+<code>@ApplicationScoped</code> (or other CDI scope annotations), and missing the <code>@Unremovable</code> annotation.</p>
+<h2>Why is this an issue?</h2>
+<p>In applications using frameworks with build-time optimization, the dependency injection container performs compile-time analysis to reduce the
+runtime footprint. During this optimization phase, the container analyzes which components are actually used and may remove components that appear to
+have no injection points or explicit references.</p>
+<p>Custom implementations of service provider interfaces are discovered and used at runtime through the framework’s plugin or extension mechanism.
+However, because these providers are typically not injected directly into other components, the dependency injection container cannot detect their
+usage during build-time analysis.</p>
+<p>Without explicit preservation annotations or configuration, the dependency injection container may incorrectly conclude that the custom service
+provider component is unused and eliminate it during optimization. This leads to a situation where:</p>
+<ul>
+  <li>The application builds successfully without warnings</li>
+  <li>The service provider component is not available at runtime</li>
+  <li>Authentication attempts fail when the application tries to retrieve credentials</li>
+  <li>The root cause is difficult to diagnose because the failure occurs at runtime rather than build time</li>
+</ul>
+<p>Preservation annotations or configuration directives explicitly instruct the dependency injection container to retain the component during
+optimization, ensuring it remains available for runtime discovery through the service provider interface mechanism.</p>
+<h3>What is the potential impact?</h3>
+<p>When a custom credentials provider implementation lacks annotations that prevent removal during build-time optimization, the dependency injection
+framework may eliminate the implementation as apparently unused. This results in runtime authentication failures when the application attempts to
+retrieve credentials from the provider.</p>
+<p>The application will build successfully, making the issue particularly difficult to detect during development. The failure only manifests when the
+credentials provider is actually invoked, which could be:</p>
+<ul>
+  <li>During application startup when establishing database connections</li>
+  <li>When connecting to message brokers like RabbitMQ</li>
+  <li>When authenticating with OIDC or OAuth2 providers</li>
+  <li>At any point when the configured datasource or service attempts to authenticate</li>
+</ul>
+<p>These runtime failures can cause:</p>
+<ul>
+  <li>Service outages if the issue reaches production</li>
+  <li>Failed database connections preventing application functionality</li>
+  <li>Authentication errors that may be misattributed to credential validity rather than provider availability</li>
+  <li>Debugging complexity due to the indirect nature of the failure</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Add the <code>@Unremovable</code> annotation to your custom <code>CredentialsProvider</code> implementation. This annotation must be imported from
+<code>io.quarkus.arc.Unremovable</code> and placed alongside your CDI scope annotation (typically <code>@ApplicationScoped</code>).</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@ApplicationScoped
+public class MyCredentialsProvider implements CredentialsProvider { // Noncompliant
+
+    @Override
+    public Map&lt;String, String&gt; getCredentials(String credentialsProviderName) {
+        Map&lt;String, String&gt; properties = new HashMap&lt;&gt;();
+        properties.put(USER_PROPERTY_NAME, "user");
+        properties.put(PASSWORD_PROPERTY_NAME, "password");
+        return properties;
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@ApplicationScoped
+@Unremovable
+public class MyCredentialsProvider implements CredentialsProvider {
+
+    @Override
+    public Map&lt;String, String&gt; getCredentials(String credentialsProviderName) {
+        Map&lt;String, String&gt; properties = new HashMap&lt;&gt;();
+        properties.put(USER_PROPERTY_NAME, "user");
+        properties.put(PASSWORD_PROPERTY_NAME, "password");
+        return properties;
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Quarkus - Using a Credentials Provider - <a href="https://quarkus.io/guides/credentials-provider">Official Quarkus guide on implementing and
+  using credentials providers</a></li>
+  <li>Quarkus ArC - Unremovable Beans - <a href="https://quarkus.io/guides/cdi-reference#remove_unused_beans">Documentation on CDI bean removal and
+  the @Unremovable annotation</a></li>
+</ul>
+
