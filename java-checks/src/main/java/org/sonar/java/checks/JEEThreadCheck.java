@@ -63,8 +63,7 @@ public class JEEThreadCheck extends IssuableSubscriptionVisitor {
       case LAMBDA_EXPRESSION -> handleLambda((LambdaExpressionTree) tree);
       case SYNCHRONIZED_STATEMENT -> handleSynchronizedStatement((SynchronizedStatementTree) tree);
       case METHOD -> handleMethod((MethodTree) tree);
-      default -> {
-        /* ignored */ }
+      default -> {/* ignored */ }
     }
   }
 

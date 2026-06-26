@@ -76,6 +76,10 @@ class SingletonEJBJakarta {
     synchronized (this) { // Noncompliant
     }
   }
+
+  public synchronized void synchronizedMethod() { // Noncompliant
+//       ^^^^^^^^^^^^
+  }
 }
 
 @MessageDriven
