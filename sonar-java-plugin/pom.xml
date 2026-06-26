@@ -145,6 +145,14 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${project.build.directory}/generated-resources/profiles</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
@@ -330,6 +338,22 @@
           <version>3.6.3</version>
           <executions>
             <execution>
+              <id>generate-built-in-profiles</id>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>exec</goal>
+              </goals>
+              <configuration>
+                <executable>java</executable>
+                <arguments>
+                  <argument>${project.basedir}/src/main/build/ProfileJsonGenerator.java</argument>
+                  <argument>${project.basedir}</argument>
+                  <argument>${project.build.directory}/generated-resources/profiles</argument>
+                </arguments>
+                <useMavenLogger>true</useMavenLogger>
+              </configuration>
+            </execution>
+            <execution>
               <id>validate-license-files</id>
               <phase>verify</phase>
               <goals>
@@ -368,6 +392,21 @@
                   </resource>
                 </resources>
                 <outputDirectory>${project.build.directory}/temp-licenses</outputDirectory>
+              </configuration>
+            </execution>
+            <execution>
+              <id>copy-generated-profiles</id>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>copy-resources</goal>
+              </goals>
+              <configuration>
+                <resources>
+                  <resource>
+                    <directory>${project.build.directory}/generated-resources/profiles</directory>
+                  </resource>
+                </resources>
+                <outputDirectory>${project.build.outputDirectory}</outputDirectory>
               </configuration>
             </execution>
           </executions>
