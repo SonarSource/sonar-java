@@ -16,7 +16,9 @@
  */
 package org.sonar.java.checks;
 
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,6 +73,18 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
       .addParametersMatcher(params ->
         params.isEmpty() || (params.size() == 1 && params.get(0).isSubtypeOf("java.lang.String[]")))
       .build();
+
+  private static final String[] LIFECYCLE_ANNOTATIONS = {
+    "javax.annotation.PostConstruct",
+    "javax.annotation.PreDestroy",
+    "jakarta.annotation.PostConstruct",
+    "jakarta.annotation.PreDestroy",
+    "javax.ejb.PostActivate",
+    "javax.ejb.PrePassivate",
+    "jakarta.ejb.PostActivate",
+    "jakarta.ejb.PrePassivate",
+    "io.quarkus.runtime.Startup"
+  };
 
   private JavaFileScannerContext context;
   private Deque<MethodReference> methodReferences = new LinkedList<>();
@@ -168,7 +182,16 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   }
 
   private static boolean isExcluded(MethodTree tree) {
-    return tree.is(Tree.Kind.CONSTRUCTOR) || EXCLUDED_SERIALIZABLE_METHODS.matches(tree) || hasEmptyBody(tree) || MAIN_METHOD.matches(tree);
+    return tree.is(Tree.Kind.CONSTRUCTOR)
+      || EXCLUDED_SERIALIZABLE_METHODS.matches(tree)
+      || hasEmptyBody(tree)
+      || MAIN_METHOD.matches(tree)
+      || hasLifecycleAnnotation(tree);
+  }
+
+  private static boolean hasLifecycleAnnotation(MethodTree tree) {
+    var metadata = tree.symbol().metadata();
+    return Arrays.stream(LIFECYCLE_ANNOTATIONS).anyMatch(metadata::isAnnotatedWith);
   }
 
   private static boolean hasEmptyBody(MethodTree tree) {

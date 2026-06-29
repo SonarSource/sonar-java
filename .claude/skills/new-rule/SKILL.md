@@ -22,11 +22,11 @@ This skill provides sonar-java-specific guidelines for implementing new rules.
 
 ### 2. Tests
 - Run JavaAgenticWayProfileTest before creating a PR
-- Update ruling tests in `its/ruling/` and autoscan tests in `its/autoscan` after implementing the rule. 
-  - These tests verify the rule against real-world Java projects. 
+- Update ruling tests in `its/ruling/` and autoscan tests in `its/autoscan` after implementing the rule.
+  - These tests verify the rule against real-world Java projects.
   - Note that running this tests locally is difficult, so they are usually after the corresponding CI actions failed, either by:
     - downloading the actual_ruling, diff_ruling, actual_autoscan, diff_autoscan artifacts
-    - or looking through the logs of the failing action 
+    - or looking through the logs of the failing action
   - The files to update are in:
     - `its/ruling/src/test/resources` for ruling tests
     - `its/autoscan/src/test/resources/autoscan/diffs/` for autoscan tests

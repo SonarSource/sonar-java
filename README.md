@@ -58,6 +58,8 @@ To run tests locally follow these instructions.
 You need `Java 26` to compile and run the Unit Tests of the project and `Java 21` run most Integration Tests (ITs).
 Ruling test on Guava project require `Java 17`.
 Note that `Java 21` can be used to build and test all modules except under `java-checks-test-sources` (as they require `Java 26`).
+If you are adding or moving rule test samples, see [java-checks-test-sources/README.md](java-checks-test-sources/README.md)
+for guidance on when samples belong in the dedicated test-source modules instead of `java-checks/src/test/files`.
 
 ### Build the Project and Run Unit Tests
 

@@ -26,16 +26,10 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/SqlTimeConverter.java": [
 0
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/SqlTimestampConverter.java": [
-0
-],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/SqlDateLocaleConverter.java": [
 0
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/SqlTimeLocaleConverter.java": [
-0
-],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/SqlTimestampLocaleConverter.java": [
 0
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/StringLocaleConverter.java": [
