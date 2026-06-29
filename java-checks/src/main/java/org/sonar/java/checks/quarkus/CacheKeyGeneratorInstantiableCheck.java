@@ -16,7 +16,6 @@
  */
 package org.sonar.java.checks.quarkus;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +31,7 @@ public class CacheKeyGeneratorInstantiableCheck extends IssuableSubscriptionVisi
 
   private static final String CACHE_KEY_GENERATOR = "io.quarkus.cache.CacheKeyGenerator";
 
-  private static final List<String> CDI_SCOPE_ANNOTATIONS = Arrays.asList(
+  private static final List<String> CDI_SCOPE_ANNOTATIONS = List.of(
     "jakarta.enterprise.context.ApplicationScoped",
     "jakarta.enterprise.context.Dependent",
     "jakarta.enterprise.context.RequestScoped",
