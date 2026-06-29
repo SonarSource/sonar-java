@@ -91,10 +91,26 @@ public class BadLocalVariableNameCheck  extends BaseTreeVisitor implements JavaF
   @Override
   public void visitVariable(VariableTree tree) {
     IdentifierTree simpleName = tree.simpleName();
-    if (!simpleName.isUnnamedVariable() && !pattern.matcher(simpleName.name()).matches() && !isLocalConstant(tree)) {
+    String name = simpleName.name();
+    Tree parent = tree.parent();
+    boolean isMethodParameter = parent != null && parent.is(Tree.Kind.METHOD);
+    String nameToCheck = isMethodParameter ? name : stripLeadingTrailingUnderscores(name);
+    if (!simpleName.isUnnamedVariable() && !pattern.matcher(nameToCheck).matches() && !isLocalConstant(tree)) {
       context.reportIssue(this, simpleName, "Rename this local variable to match the regular expression '" + format + "'.");
     }
     super.visitVariable(tree);
+  }
+
+  private static String stripLeadingTrailingUnderscores(String name) {
+    int start = 0;
+    int end = name.length();
+    while (start < end && name.charAt(start) == '_') {
+      start++;
+    }
+    while (end > start && name.charAt(end - 1) == '_') {
+      end--;
+    }
+    return name.substring(start, end);
   }
 
   private boolean isLocalConstant(VariableTree tree) {
