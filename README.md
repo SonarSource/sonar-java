@@ -175,13 +175,26 @@ mvn clean compile
 
 ##### Executing the autoscan test
 
+Before running the test, make sure the credentials expected by Orchestrator are available:
+
+* `ARTIFACTORY_ACCESS_TOKEN` must be set so Orchestrator can download `sonarqube-enterprise-lw` from Repox. Orchestrator does not reuse the username/password from Maven's `settings.xml` for this step.
+* `GITHUB_TOKEN` must be set because the test uses `activateLicense()`, which downloads the development license through GitHub. When running Maven locally, pass `-Dgithub.token="$GITHUB_TOKEN"` to make sure Orchestrator uses the expected token.
+* `ORCHESTRATOR_HOME` can be set to a writable cache directory (for example `$(pwd)/../../orchestrator`) to reuse downloaded SonarQube distributions across runs.
+
 To run the tests, move to the [`its/autoscan`](its/autoscan) folder and run:
 ```shell
 # cd its/autoscan
 # use Java 21!
+export ORCHESTRATOR_HOME=/path/to/sonar-java/orchestrator
+export ARTIFACTORY_ACCESS_TOKEN=<repox-private-reader-token>
+export GITHUB_TOKEN=<github-token>
 mvn clean package --batch-mode --errors --show-version \
    --activate-profiles it-autoscan \
-  -Dsonar.runtimeVersion=LATEST_RELEASE
+  -Dsonar.runtimeVersion=LATEST_RELEASE \
+  -Dgithub.token="$GITHUB_TOKEN" \
+  -Dmaven.test.redirectTestOutputToFile=false \
+  -Dparallel=methods \
+  -DuseUnlimitedThreads=true
 ```
 
 The artifacts produced during the test execution will be found in [`its/autoscan/target/actual`](its/autoscan/target/actual).
