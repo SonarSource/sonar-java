@@ -33,9 +33,6 @@ class MapperWithoutDaoFactoryCheckSample {
   interface BaseDao {
   }
 
-  interface RegularInterface {
-  }
-
   @Mapper
   public interface CompliantFruitMapper {
     @DaoFactory
