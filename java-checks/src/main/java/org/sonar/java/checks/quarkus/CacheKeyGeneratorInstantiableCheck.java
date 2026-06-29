@@ -51,10 +51,7 @@ public class CacheKeyGeneratorInstantiableCheck extends IssuableSubscriptionVisi
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (!isApplicableClass(classTree)) {
-      return;
-    }
-    if (hasCdiScopeAnnotation(classTree) || hasPublicNoArgsConstructor(classTree)) {
+    if (!isApplicableClass(classTree) || hasCdiScopeAnnotation(classTree) || hasPublicNoArgsConstructor(classTree)) {
       return;
     }
     reportIssue(Objects.requireNonNull(classTree.simpleName()),
