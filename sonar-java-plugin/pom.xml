@@ -394,21 +394,6 @@
                 <outputDirectory>${project.build.directory}/temp-licenses</outputDirectory>
               </configuration>
             </execution>
-            <execution>
-              <id>copy-generated-profiles</id>
-              <phase>generate-resources</phase>
-              <goals>
-                <goal>copy-resources</goal>
-              </goals>
-              <configuration>
-                <resources>
-                  <resource>
-                    <directory>${project.build.directory}/generated-resources/profiles</directory>
-                  </resource>
-                </resources>
-                <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-              </configuration>
-            </execution>
           </executions>
         </plugin>
     </plugins>

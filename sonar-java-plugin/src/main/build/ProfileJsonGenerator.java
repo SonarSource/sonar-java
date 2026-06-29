@@ -64,6 +64,11 @@ public class ProfileJsonGenerator {
         .filter(Files::isRegularFile)
         .map(Path::getFileName)
         .map(Path::toString)
+        .peek(name -> {
+          if (!isValidRuleKey(name)) {
+            System.err.println("Ignoring non-rule-key file in profile directory: " + name);
+          }
+        })
         .filter(ProfileJsonGenerator::isValidRuleKey)
         .sorted(Comparator.comparingInt(ProfileJsonGenerator::numericKey))
         .collect(Collectors.toList());
