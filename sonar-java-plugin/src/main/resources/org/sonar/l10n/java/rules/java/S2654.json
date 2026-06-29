@@ -1,0 +1,25 @@
+{
+  "title": "JEE applications should not use threads or synchronization",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "45min"
+  },
+  "tags": [
+    "cwe",
+    "multi-threading",
+    "jee"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2654",
+  "sqKey": "S2654",
+  "scope": "Main",
+  "securityStandards": {
+    "CWE": [
+      383,
+      574
+    ]
+  },
+  "quickfix": "unknown"
+}

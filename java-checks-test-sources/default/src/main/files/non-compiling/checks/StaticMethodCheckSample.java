@@ -35,3 +35,36 @@ class UtilitiesExtension extends Utilities {
 class SerializableExclusions implements Serializable {
   private Object writeReplace() throws ObjectStreamException { }
 }
+
+class LifecycleAnnotations {
+  private static int counter = 0;
+
+  @javax.annotation.PostConstruct
+  private void initPostConstruct() { // Compliant - lifecycle method
+    System.out.println("PostConstruct");
+  }
+
+  @jakarta.annotation.PreDestroy
+  private void cleanupPreDestroy() { // Compliant - lifecycle method
+    System.out.println("PreDestroy");
+  }
+
+  @javax.ejb.PostActivate
+  private void activatePostActivate() { // Compliant - lifecycle method
+    System.out.println("PostActivate");
+  }
+
+  @jakarta.ejb.PrePassivate
+  private void passivatePrePassivate() { // Compliant - lifecycle method
+    System.out.println("PrePassivate");
+  }
+
+  @io.quarkus.runtime.Startup
+  private void startupMethod() { // Compliant - Quarkus startup method
+    System.out.println("Startup");
+  }
+
+  private void regularMethod() { // Noncompliant {{Make "regularMethod" a "static" method.}}
+    counter++;
+  }
+}

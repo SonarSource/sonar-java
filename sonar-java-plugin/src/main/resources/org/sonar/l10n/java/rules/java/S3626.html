@@ -24,4 +24,22 @@ public void foo() {
   }
 }
 </pre>
+<h3>Exceptions</h3>
+<p>No issue is raised when a <code>return</code> statement inside a <code>try</code> block exits a loop early and a <code>finally</code> block is
+executed before leaving the method. Removing the <code>return</code> would let the loop continue after the <code>finally</code> block and change the
+behavior.</p>
+<pre>
+public void processItems() {
+  while (item != null) {
+    try {
+      if (shouldStop(item)) {
+        return;
+      }
+    } finally {
+      release(item);
+    }
+    item = nextItem();
+  }
+}
+</pre>
 

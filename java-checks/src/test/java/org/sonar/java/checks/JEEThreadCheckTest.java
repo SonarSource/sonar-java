@@ -18,16 +18,36 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.TestUtils;
 
-class RedundantJumpCheckTest {
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
+class JEEThreadCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/RedundantJumpCheck.java"))
-      .withCheck(new RedundantJumpCheck())
+      .onFile(mainCodeSourcesPath("checks/JEEThreadCheckSample.java"))
+      .withCheck(new JEEThreadCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_jakarta() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/JEEThreadCheckJakartaSample.java"))
+      .withCheck(new JEEThreadCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/JEEThreadCheckSample.java"))
+      .withCheck(new JEEThreadCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
+
 
 }

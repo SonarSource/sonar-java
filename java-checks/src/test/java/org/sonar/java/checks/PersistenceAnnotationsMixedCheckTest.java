@@ -18,16 +18,16 @@ package org.sonar.java.checks;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.checks.verifier.TestUtils;
 
-class RedundantJumpCheckTest {
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
+class PersistenceAnnotationsMixedCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/RedundantJumpCheck.java"))
-      .withCheck(new RedundantJumpCheck())
+      .onFile(mainCodeSourcesPath("checks/PersistenceAnnotationsMixedCheckSample.java"))
+      .withCheck(new PersistenceAnnotationsMixedCheck())
       .verifyIssues();
   }
-
 }

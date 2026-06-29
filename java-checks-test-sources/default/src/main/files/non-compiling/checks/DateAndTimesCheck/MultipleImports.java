@@ -6,15 +6,11 @@ import java.util.GregorianCalendar;
 
 import java.util.Locale;
 
-import org.joda.time.DateTime;
-import org.joda.time.*;
-
 import java.time.LocalDateTime;
 import java.time.Instant;
 
 import static java.util.Date.from;
 import static java.sql.Date.from;
-import static org.joda.time.Minutes.minutesBetween;
 
 class A {
   void javaUtil() {

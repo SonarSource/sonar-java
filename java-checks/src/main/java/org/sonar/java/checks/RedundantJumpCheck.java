@@ -17,13 +17,12 @@
 package org.sonar.java.checks;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.CFG.Block;
+import org.sonar.java.cfg.CFGUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -56,12 +55,17 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
       && successorWithoutJump != null
       && terminator.is(Tree.Kind.CONTINUE_STATEMENT, Tree.Kind.RETURN_STATEMENT)
       && !isReturnWithExpression(terminator)
-      && !isSwitchCaseChild(terminator)) {
+      && !isSwitchCaseChild(terminator)
+      && hasValidContinueTarget(terminator)) {
 
-      successorWithoutJump = nonEmptySuccessor(successorWithoutJump);
+      successorWithoutJump = CFGUtils.nonEmptySuccessor(successorWithoutJump);
       Iterator<Block> successors = block.successors().iterator();
-      if (successors.hasNext() && nonEmptySuccessor(successors.next()).equals(successorWithoutJump)) {
-        reportIssue(terminator, "Remove this redundant jump.");
+      if (successors.hasNext()) {
+        Block successor = CFGUtils.nonEmptySuccessor(successors.next());
+        if (successor.equals(successorWithoutJump)
+          && !CFGUtils.isJumpThroughFinallyWithDistinctContinuation(terminator, successor)) {
+          reportIssue(terminator, "Remove this redundant jump.");
+        }
       }
     }
   }
@@ -77,12 +81,23 @@ public class RedundantJumpCheck extends IssuableSubscriptionVisitor {
     return tree.parent().is(Tree.Kind.CASE_GROUP);
   }
 
-  private static Block nonEmptySuccessor(Block initialBlock) {
-    Block result = initialBlock;
-    Set<Integer> visited = new HashSet<>();
-    while (result.elements().isEmpty() && result.successors().size() == 1 && visited.add(result.id())) {
-      result = result.successors().iterator().next();
-    }
-    return result;
+  private static boolean hasValidContinueTarget(Tree tree) {
+    return !tree.is(Tree.Kind.CONTINUE_STATEMENT) || hasEnclosingLoop(tree);
   }
+
+  private static boolean hasEnclosingLoop(Tree tree) {
+    Tree current = tree.parent();
+    while (current != null) {
+      if (isLoop(current)) {
+        return true;
+      }
+      current = current.parent();
+    }
+    return false;
+  }
+
+  private static boolean isLoop(Tree tree) {
+    return tree.is(Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT, Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT);
+  }
+
 }
