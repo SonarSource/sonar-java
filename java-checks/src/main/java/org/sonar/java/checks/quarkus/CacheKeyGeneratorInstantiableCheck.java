@@ -22,7 +22,10 @@ import java.util.Objects;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S8909")
@@ -74,8 +77,22 @@ public class CacheKeyGeneratorInstantiableCheck extends IssuableSubscriptionVisi
   }
 
   private static boolean hasCdiScopeAnnotation(ClassTree classTree) {
-    return CDI_SCOPE_ANNOTATIONS.stream()
-      .anyMatch(annotation -> classTree.symbol().metadata().isAnnotatedWith(annotation));
+    return CDI_SCOPE_ANNOTATIONS.stream().anyMatch(annotation ->
+      classTree.symbol().metadata().isAnnotatedWith(annotation)
+        || classTree.modifiers().annotations().stream().anyMatch(tree -> matchesAnnotation(tree, annotation)));
+  }
+
+  private static boolean matchesAnnotation(AnnotationTree annotationTree, String fullyQualifiedName) {
+    String simpleName = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf('.') + 1);
+    Tree annotationType = annotationTree.annotationType();
+    return switch (annotationType.kind()) {
+      case IDENTIFIER -> ((IdentifierTree) annotationType).name().equals(simpleName);
+      case MEMBER_SELECT -> {
+        MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) annotationType;
+        yield memberSelect.identifier().name().equals(simpleName) || memberSelect.expression().symbolType().is(fullyQualifiedName);
+      }
+      default -> false;
+    };
   }
 
   private static boolean hasPublicNoArgsConstructor(ClassTree classTree) {
