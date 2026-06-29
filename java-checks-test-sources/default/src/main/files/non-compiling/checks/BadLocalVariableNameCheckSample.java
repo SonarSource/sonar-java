@@ -6,6 +6,14 @@ class BadLocalVariableName {
   int _instanceField;
   static int _staticField;
 
+  BadLocalVariableName(
+    int godParam,
+    int BAD_CONSTRUCTOR_PARAM, // Noncompliant {{Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
+//      ^^^^^^^^^^^^^^^^^^^^^
+    int _goodConstructorParam // Noncompliant {{Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
+//      ^^^^^^^^^^^^^^^^^^^^^
+  ) {}
+
   void method(
     int goodParam,
     int BAD_FORMAL_PARAMETER, // Noncompliant {{Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
