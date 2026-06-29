@@ -53,7 +53,7 @@ class JavaAgenticWayProfileTest {
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile actualProfile = profilesPerLanguages.get("java").get("Sonar agentic AI");
     assertThat(actualProfile.isDefault()).isFalse();
     assertThat(actualProfile.rules())
-      .hasSize(467)
+      .hasSize(466)
       .extracting(BuiltInQualityProfilesDefinition.BuiltInActiveRule::ruleKey)
       .doesNotContainAnyElementsOf(List.of(
         "S101",
@@ -113,6 +113,7 @@ class JavaAgenticWayProfileTest {
         "S6242",
         "S6244",
         "S6246",
+        "S6548",
         "S6804",
         "S6813",
         "S6829",
