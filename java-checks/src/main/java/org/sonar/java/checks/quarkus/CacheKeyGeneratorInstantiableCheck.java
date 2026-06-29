@@ -80,22 +80,15 @@ public class CacheKeyGeneratorInstantiableCheck extends IssuableSubscriptionVisi
 
   private static boolean hasPublicNoArgsConstructor(ClassTree classTree) {
     Collection<Symbol> constructors = classTree.symbol().lookupSymbols("<init>");
-    var noArgConstructor = constructors.stream()
+    return constructors.stream()
+      .map(Symbol.MethodSymbol.class::cast)
       .filter(CacheKeyGeneratorInstantiableCheck::isNoArgConstructor)
-      .findFirst();
-
-    if (noArgConstructor.isEmpty()) {
-      return false;
-    }
-
-    Symbol constructor = noArgConstructor.get();
-    if (constructor.declaration() == null) {
-      return classTree.symbol().isPublic();
-    }
-    return constructor.isPublic();
+      .findFirst()
+      .map(Symbol::isPublic)
+      .orElse(classTree.symbol().isPublic());
   }
 
-  private static boolean isNoArgConstructor(Symbol constructor) {
-    return ((Symbol.MethodSymbol) constructor).parameterTypes().isEmpty();
+  private static boolean isNoArgConstructor(Symbol.MethodSymbol constructor) {
+    return constructor.parameterTypes().isEmpty();
   }
 }
