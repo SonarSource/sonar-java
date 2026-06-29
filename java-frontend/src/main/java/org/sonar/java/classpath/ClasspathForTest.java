@@ -16,51 +16,22 @@
  */
 package org.sonar.java.classpath;
 
-import java.io.File;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
+import org.sonar.java.AnalysisWarningsWrapper;
+
+import static org.sonar.java.classpath.ClasspathProperties.SONAR_JAVA_TEST_BINARIES;
+import static org.sonar.java.classpath.ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES;
 
 public class ClasspathForTest extends AbstractClasspath {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ClasspathForTest.class);
-
-  private boolean hasSuspiciousEmptyLibraries = false;
-  private boolean alreadyReported = false;
+  public ClasspathForTest(Configuration settings, FileSystem fs, AnalysisWarningsWrapper analysisWarnings) {
+    super(settings, fs, InputFile.Type.TEST, SONAR_JAVA_TEST_BINARIES, SONAR_JAVA_TEST_LIBRARIES, analysisWarnings);
+  }
 
   public ClasspathForTest(Configuration settings, FileSystem fs) {
-    super(settings, fs, InputFile.Type.TEST);
-  }
-
-  @Override
-  protected void init() {
-    if (!initialized) {
-      validateLibraries = fs.hasFiles(fs.predicates().all());
-      initialized = true;
-      binaries.addAll(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_BINARIES));
-
-      Set<File> libraries = new LinkedHashSet<>(getJdkJars());
-      Set<File> extraLibraries = getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
-      logResolvedFiles(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, extraLibraries);
-      libraries.addAll(extraLibraries);
-      hasSuspiciousEmptyLibraries = libraries.isEmpty() && hasJavaSources();
-
-      elements.addAll(binaries);
-      elements.addAll(libraries);
-    }
-  }
-
-  @Override
-  public void logSuspiciousEmptyLibraries() {
-    if (hasSuspiciousEmptyLibraries && !alreadyReported) {
-      String warning = String.format(ClasspathProperties.EMPTY_LIBRARIES_WARNING_TEMPLATE, "TEST", ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
-      LOG.warn(warning);
-      alreadyReported = true;
-    }
+    this(settings, fs, AnalysisWarningsWrapper.NOOP_ANALYSIS_WARNINGS);
   }
 
 }

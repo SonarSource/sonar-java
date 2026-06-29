@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -42,10 +43,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.ScannerSide;
+import org.sonar.api.batch.fs.FilePredicate;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
-import org.sonar.java.collections.CollectionUtils;
+import org.sonar.java.AnalysisWarningsWrapper;
+import org.sonar.java.SonarComponents;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 @ScannerSide
@@ -58,26 +61,67 @@ public abstract class AbstractClasspath {
   protected final Configuration settings;
   protected final FileSystem fs;
   private final InputFile.Type fileType;
+  protected final String binariesProperty;
+  protected final String librariesProperty;
   private static final Path[] STANDARD_CLASSES_DIRS = {Paths.get("target", "classes"), Paths.get("target", "test-classes")};
 
   protected final List<File> binaries;
-  protected final List<File> elements;
+  protected List<File> elements;
   protected boolean validateLibraries;
   protected boolean initialized;
   private boolean inAndroidContext = false;
+  private final Set<String> classpathWarnings;
+  protected final AnalysisWarningsWrapper analysisWarnings;
 
-  protected AbstractClasspath(Configuration settings, FileSystem fs, InputFile.Type fileType) {
+  protected AbstractClasspath(Configuration settings, FileSystem fs, InputFile.Type fileType, String binariesProperty, String librariesProperty,
+    AnalysisWarningsWrapper analysisWarnings) {
     this.settings = settings;
     this.fs = fs;
     this.fileType = fileType;
+    this.binariesProperty = binariesProperty;
+    this.librariesProperty = librariesProperty;
     this.binaries = new ArrayList<>();
-    this.elements = new ArrayList<>();
+    this.elements = List.of();
+    this.analysisWarnings = analysisWarnings;
+    classpathWarnings = new LinkedHashSet<>();
     initialized = false;
+  }
+
+  protected void init() {
+    if (!initialized) {
+      initialized = true;
+      validateLibraries = hasJavaFiles();
+      validatePropertiesPresence(binariesProperty, librariesProperty);
+      binaries.addAll(getFilesFromProperty(binariesProperty));
+      Set<File> libraries = new LinkedHashSet<>(getJdkJars());
+      Set<File> extraLibraries = getFilesFromProperty(librariesProperty);
+      libraries.addAll(extraLibraries);
+      logResolvedFiles(binariesProperty, binaries);
+      logResolvedFiles(librariesProperty, libraries);
+      Set<File> all = new LinkedHashSet<>(binaries);
+      all.addAll(libraries);
+      elements = List.copyOf(all);
+    }
+  }
+
+  protected void validatePropertiesPresence(String binariesProperty, String librariesProperty) {
+    if (settings.getBoolean(SonarComponents.SONAR_AUTOSCAN).orElse(false)) {
+      return;
+    }
+    boolean missingBinary = !settings.hasKey(binariesProperty) && hasMoreThanOneJavaFile();
+    boolean missingLibraries = !settings.hasKey(librariesProperty) && hasJavaFiles();
+    if (missingBinary && missingLibraries) {
+      classpathWarnings.add(String.format("Missing '%s' and '%s' properties. You might end up with less precise analysis results.", binariesProperty, librariesProperty));
+    } else if (missingBinary) {
+      classpathWarnings.add(String.format("Missing '%s' property. You might end up with less precise analysis results.", binariesProperty));
+    } else if (missingLibraries) {
+      classpathWarnings.add(String.format("Missing '%s' property. You might end up with less precise analysis results.", librariesProperty));
+    }
   }
 
   protected List<File> getJdkJars() {
     List<File> jdkClassesRoots = settings.get(ClasspathProperties.SONAR_JAVA_JDK_HOME)
-      .flatMap(AbstractClasspath::existingDirectoryOrLog)
+      .flatMap(this::existingDirectoryOrLog)
       .map(File::toPath)
       .map(JavaSdkUtil::getJdkClassesRoots)
       .orElse(Collections.emptyList());
@@ -87,26 +131,29 @@ public abstract class AbstractClasspath {
 
   static void logResolvedFiles(String property, Collection<File> files) {
     if (LOG.isDebugEnabled()) {
-      LOG.debug(String.format("Property '%s' resolved with:%n%s", property, files.stream()
+      LOG.debug(String.format("Property '%s' resolved with: %s", property, files.stream()
         .map(File::getAbsolutePath)
-        .collect(Collectors.joining("," + System.lineSeparator(), "[", "]"))));
+        .collect(Collectors.joining(",", "[", "]"))));
     }
   }
 
-  private static Optional<File> existingDirectoryOrLog(String path) {
+  private Optional<File> existingDirectoryOrLog(String path) {
     LOG.debug("Property '{}' set with: {}", ClasspathProperties.SONAR_JAVA_JDK_HOME, path);
     File file = new File(path);
     if (!file.exists() || !file.isDirectory()) {
-      LOG.warn("Invalid value for '{}' property, defaulting to runtime JDK.{}Configured location does not exists: '{}'",
-        ClasspathProperties.SONAR_JAVA_JDK_HOME, System.lineSeparator(), file.getAbsolutePath());
+      classpathWarnings.add(String.format("Invalid value '%s' for '%s' property, defaulting to runtime JDK.", file.getAbsolutePath(), ClasspathProperties.SONAR_JAVA_JDK_HOME));
       return Optional.empty();
     }
     return Optional.of(file);
   }
 
-  protected abstract void init();
-
-  public abstract void logSuspiciousEmptyLibraries();
+  public void logClasspathWarnings() {
+    for (String warning : classpathWarnings) {
+      LOG.warn(warning);
+      analysisWarnings.addUnique(warning);
+    }
+    classpathWarnings.clear();
+  }
 
   protected Set<File> getFilesFromProperty(String property) {
     Set<File> result = new LinkedHashSet<>();
@@ -120,9 +167,7 @@ public abstract class AbstractClasspath {
       for (String pathPattern : fileNames) {
         Set<File> libraryFilesForPattern = getFilesForPattern(baseDir.toPath(), pathPattern, isLibraryProperty);
         if (validateLibraries && libraryFilesForPattern.isEmpty() && hasJavaSources) {
-          LOG.error("Invalid value for '{}' property.", property);
-          String message = "No files nor directories matching '" + pathPattern + "'";
-          throw new IllegalStateException(message);
+          classpathWarnings.add(String.format("Invalid value for '%s', no files nor directories matching '%s'.", property, pathPattern));
         }
         validateLibraries = validateLibs;
         result.addAll(libraryFilesForPattern);
@@ -135,11 +180,25 @@ public abstract class AbstractClasspath {
   }
 
   protected boolean hasJavaSources() {
-    return fs.hasFiles(fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType)));
+    return fs.hasFiles(sourcePredicate());
   }
 
   protected boolean hasMoreThanOneJavaFile() {
-    return CollectionUtils.size(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType)))) > 1;
+    // No need to iterate over the entire collection, checking that there are two elements is enough
+    Iterator<InputFile> iterator = fs.inputFiles(sourcePredicate()).iterator();
+    if (iterator.hasNext()) {
+      iterator.next();
+      return iterator.hasNext();
+    }
+    return false;
+  }
+
+  protected boolean hasJavaFiles() {
+    return fs.hasFiles(sourcePredicate());
+  }
+
+  private FilePredicate sourcePredicate() {
+    return fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType));
   }
 
   private Set<File> getFilesForPattern(Path baseDir, String pathPattern, boolean libraryProperty) {

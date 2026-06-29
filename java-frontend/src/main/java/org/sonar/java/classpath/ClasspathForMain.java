@@ -16,86 +16,22 @@
  */
 package org.sonar.java.classpath;
 
-import java.io.File;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import javax.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
-import org.sonar.java.AnalysisException;
 import org.sonar.java.AnalysisWarningsWrapper;
+
+import static org.sonar.java.classpath.ClasspathProperties.SONAR_JAVA_BINARIES;
+import static org.sonar.java.classpath.ClasspathProperties.SONAR_JAVA_LIBRARIES;
 
 public class ClasspathForMain extends AbstractClasspath {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ClasspathForMain.class);
-
-  private final AnalysisWarningsWrapper analysisWarnings;
-  private boolean hasSuspiciousEmptyLibraries = false;
-  private boolean alreadyReported = false;
-
   public ClasspathForMain(Configuration settings, FileSystem fs, AnalysisWarningsWrapper analysisWarnings) {
-    super(settings, fs, InputFile.Type.MAIN);
-    this.analysisWarnings = analysisWarnings;
+    super(settings, fs, InputFile.Type.MAIN, SONAR_JAVA_BINARIES, SONAR_JAVA_LIBRARIES, analysisWarnings);
   }
 
   public ClasspathForMain(Configuration settings, FileSystem fs) {
     this(settings, fs, AnalysisWarningsWrapper.NOOP_ANALYSIS_WARNINGS);
   }
 
-  @Override
-  protected void init() {
-    if (!initialized) {
-      validateLibraries = fs.hasFiles(fs.predicates().all());
-      initialized = true;
-      binaries.addAll(getFilesFromProperty(ClasspathProperties.SONAR_JAVA_BINARIES));
-
-      Set<File> libraries = new LinkedHashSet<>(getJdkJars());
-      Set<File> extraLibraries = getFilesFromProperty(ClasspathProperties.SONAR_JAVA_LIBRARIES);
-      logResolvedFiles(ClasspathProperties.SONAR_JAVA_LIBRARIES, extraLibraries);
-      libraries.addAll(extraLibraries);
-      if (binaries.isEmpty() && libraries.isEmpty() && useDeprecatedProperties()) {
-        throw new AnalysisException(
-          "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer,"
-            + " please use sonar.java.binaries and sonar.java.libraries instead");
-      }
-      hasSuspiciousEmptyLibraries = libraries.isEmpty() && hasJavaSources();
-
-      if (binaries.isEmpty() && hasMoreThanOneJavaFile()) {
-        if(isSonarLint()) {
-          LOG.warn("sonar.java.binaries is empty, please double check your configuration");
-        } else {
-          throw new AnalysisException("Your project contains .java files, please provide compiled classes with sonar.java.binaries property,"
-            + " or exclude them from the analysis with sonar.exclusions property.");
-        }
-      }
-
-      elements.addAll(binaries);
-      elements.addAll(libraries);
-    }
-  }
-
-  protected boolean isSonarLint() {
-    return false;
-  }
-
-  private boolean useDeprecatedProperties() {
-    return isNotNullOrEmpty(settings.get("sonar.binaries").orElse(null)) && isNotNullOrEmpty(settings.get("sonar.libraries").orElse(null));
-  }
-
-  private static boolean isNotNullOrEmpty(@Nullable String string) {
-    return string != null && !string.isEmpty();
-  }
-
-  @Override
-  public void logSuspiciousEmptyLibraries() {
-    if (hasSuspiciousEmptyLibraries && !alreadyReported) {
-      String warning = String.format(ClasspathProperties.EMPTY_LIBRARIES_WARNING_TEMPLATE, "SOURCE", ClasspathProperties.SONAR_JAVA_LIBRARIES);
-      LOG.warn(warning);
-      analysisWarnings.addUnique(warning);
-      alreadyReported = true;
-    }
-  }
 }

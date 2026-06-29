@@ -28,7 +28,6 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.testing.ThreadLocalLogTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -67,10 +66,9 @@ class ClasspathForTestTest {
     assertThat(javaTestClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES)).isEmpty();
     assertThat(javaTestClasspath.hasJavaSources()).isTrue();
 
-    javaTestClasspath.logSuspiciousEmptyLibraries();
+    javaTestClasspath.logClasspathWarnings();
 
-    String warning = "Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. "
-      + "Verify your configuration, as you might end up with less precise results.";
+    String warning = "Missing 'sonar.java.test.libraries' property. You might end up with less precise analysis results.";
     assertThat(logTester.logs(Level.WARN)).containsExactly(warning);
   }
 
@@ -81,13 +79,12 @@ class ClasspathForTestTest {
     assertThat(javaTestClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES)).isEmpty();
     assertThat(javaTestClasspath.hasJavaSources()).isTrue();
 
-    javaTestClasspath.logSuspiciousEmptyLibraries();
+    javaTestClasspath.logClasspathWarnings();
 
     //re-trigger logs
-    javaTestClasspath.logSuspiciousEmptyLibraries();
+    javaTestClasspath.logClasspathWarnings();
 
-    String warning = "Dependencies/libraries were not provided for analysis of TEST files. The 'sonar.java.test.libraries' property is empty. "
-      + "Verify your configuration, as you might end up with less precise results.";
+    String warning = "Missing 'sonar.java.test.libraries' property. You might end up with less precise analysis results.";
     assertThat(logTester.logs(Level.WARN)).containsExactly(warning);
   }
 
@@ -98,7 +95,7 @@ class ClasspathForTestTest {
     assertThat(javaTestClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES)).isEmpty();
     assertThat(javaTestClasspath.hasJavaSources()).isFalse();
 
-    javaTestClasspath.logSuspiciousEmptyLibraries();
+    javaTestClasspath.logClasspathWarnings();
 
     assertThat(logTester.logs(Level.WARN)).isEmpty();
   }
@@ -133,19 +130,12 @@ class ClasspathForTestTest {
   void libraries_without_dir() {
     settings.setProperty(ClasspathProperties.SONAR_JAVA_TEST_BINARIES, "bin");
     settings.setProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "hello.jar");
-    checkIllegalStateException("No files nor directories matching 'hello.jar'");
-  }
-
-  private void checkIllegalStateException(String message) {
     javaTestClasspath = createJavaClasspath();
-    try {
-      javaTestClasspath.getElements();
-      fail("Exception should have been raised");
-    }catch (IllegalStateException ise) {
-      assertThat(ise.getMessage()).isEqualTo(message);
-    }
+    javaTestClasspath.getElements();
+    javaTestClasspath.logClasspathWarnings();
+    String warning = "Invalid value for 'sonar.java.test.libraries', no files nor directories matching 'hello.jar'.";
+    assertThat(logTester.logs(Level.WARN)).containsExactly(warning);
   }
-
 
   private ClasspathForTest createJavaClasspath() {
     return new ClasspathForTest(settings.asConfig(), fs);
