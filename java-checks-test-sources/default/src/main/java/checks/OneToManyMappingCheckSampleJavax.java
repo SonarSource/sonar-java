@@ -11,6 +11,7 @@ public class OneToManyMappingCheckSampleJavax {
   @Entity
   class Author {
     @OneToMany // Noncompliant {{Add "mappedBy" or "@JoinColumn" to this "@OneToMany" relationship.}}
+//  ^^^^^^^^^^
     private List<Book> books;
   }
 
