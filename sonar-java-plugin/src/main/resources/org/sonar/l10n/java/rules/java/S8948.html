@@ -1,0 +1,107 @@
+<p>This is an issue when a one-to-many relationship in object-relational mapping is declared without either specifying which side owns the
+bidirectional relationship or providing explicit foreign key column configuration, causing the ORM framework to create an unnecessary join table.</p>
+<p>In JPA, this specifically refers to the <code>@OneToMany</code> annotation without a <code>mappedBy</code> attribute or <code>@JoinColumn</code>
+annotation.</p>
+<h2>Why is this an issue?</h2>
+<p>When you define a one-to-many relationship in an object-relational mapping framework without specifying how the relationship should be mapped, the
+persistence provider follows its specification default: it creates a separate join table to represent the association.</p>
+<p>For example, if you have an <code>Author</code> entity with a collection of <code>Book</code> entities:</p>
+<pre>
+Entity: Author
+  one-to-many relationship -&gt; books: collection of Book
+</pre>
+<p>The ORM will create three tables: <code>Author</code>, <code>Book</code>, and <code>Author_Book</code> (the join table). The join table contains
+two foreign key columns: one referencing <code>Author</code> and one referencing <code>Book</code>.</p>
+<p>This default behavior is rarely what you want for true one-to-many relationships</p>
+<p>In JPA, this occurs when you use the <code>@OneToMany</code> annotation without additional mapping configuration. For example:</p>
+<pre>
+@Entity
+public class Author {
+    @OneToMany
+    private List&lt;Book&gt; books;
+}
+</pre>
+<h3>What is the potential impact?</h3>
+<p>Using the default join table mapping for one-to-many relationships in object-relational mapping frameworks degrades application performance through
+additional database tables, extra SQL statements, and more complex query plans. It also makes the database schema less intuitive and harder to
+maintain, as the foreign key is not stored where developers would naturally expect it.</p>
+<p>In Java, this specifically refers to the <code>@OneToMany</code> annotation in JPA (Java Persistence API) and Hibernate.</p>
+<h2>How to fix it in Jakarta EE</h2>
+<p>For bidirectional relationships (where the child entity has a reference back to the parent), use the <code>mappedBy</code> attribute on the
+<code>@OneToMany</code> side to indicate that the relationship is owned by the child entity. This tells JPA to use the foreign key column on the child
+table.</p>
+<p>The <code>mappedBy</code> value must match the field name in the child entity that references the parent.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Entity
+public class Author {
+    @OneToMany // Noncompliant
+    private List&lt;Book&gt; books;
+}
+
+@Entity
+public class Book {
+    @ManyToOne
+    private Author author;
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Entity
+public class Author {
+    @OneToMany(mappedBy = "author")
+    private List&lt;Book&gt; books;
+}
+
+@Entity
+public class Book {
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private Author author;
+}
+</pre>
+<p>For unidirectional relationships (where only the parent knows about the children), use <code>@JoinColumn</code> to specify that the foreign key
+should be stored in the child table.</p>
+<p>The <code>@JoinColumn</code> annotation tells JPA to create or use a foreign key column in the child table instead of creating a join table.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@Entity
+public class Author {
+    @OneToMany // Noncompliant
+    private List&lt;Book&gt; books;
+}
+
+@Entity
+public class Book {
+    // No reference back to Author
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@Entity
+public class Author {
+    @OneToMany
+    @JoinColumn(name = "author_id")
+    private List&lt;Book&gt; books;
+}
+
+@Entity
+public class Book {
+    // No reference back to Author
+    // JPA will add author_id column to Book table
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Jakarta Persistence Specification - OneToMany - <a
+  href="https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html#a11914">Official specification for @OneToMany annotation
+  and its default behavior</a></li>
+  <li>Hibernate ORM User Guide - Associations - <a
+  href="https://docs.jboss.org/hibernate/orm/6.2/userguide/html_single/Hibernate_User_Guide.html#associations">Comprehensive guide to Hibernate
+  associations including one-to-many mappings</a></li>
+  <li>Baeldung - JPA @OneToMany Annotation - <a href="https://www.baeldung.com/jpa-one-to-many">Practical tutorial on using @OneToMany with mappedBy
+  and @JoinColumn</a></li>
+</ul>
+
