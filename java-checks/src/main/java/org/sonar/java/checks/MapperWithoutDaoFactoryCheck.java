@@ -17,9 +17,7 @@
 package org.sonar.java.checks;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -50,16 +48,13 @@ public class MapperWithoutDaoFactoryCheck extends IssuableSubscriptionVisitor {
     }
 
     boolean hasExplicitSuperInterfaces = !classTree.superInterfaces().isEmpty();
-    if (!hasDaoFactoryMethod(classTree.symbol(), new HashSet<>(), hasExplicitSuperInterfaces)) {
+    if (!hasDaoFactoryMethod(classTree.symbol(), hasExplicitSuperInterfaces)) {
       reportIssue(classTree.simpleName(), MESSAGE);
     }
   }
 
-  private static boolean hasDaoFactoryMethod(Symbol.TypeSymbol typeSymbol, Set<Symbol.TypeSymbol> visited, boolean hasExplicitSuperInterfaces) {
-    if (!visited.add(typeSymbol)) {
-      return false;
-    }
-
+  private static boolean hasDaoFactoryMethod(Symbol.TypeSymbol typeSymbol, boolean hasExplicitSuperInterfaces) {
+    // Check the mapper's own members
     if (typeSymbol.memberSymbols().stream()
       .filter(Symbol::isMethodSymbol)
       .map(Symbol.MethodSymbol.class::cast)
@@ -67,6 +62,7 @@ public class MapperWithoutDaoFactoryCheck extends IssuableSubscriptionVisitor {
       return true;
     }
 
+    // Check all supertypes (superTypes() already returns the full transitive closure)
     for (Type superType : typeSymbol.superTypes()) {
       Symbol.TypeSymbol superTypeSymbol = superType.symbol();
       if (superTypeSymbol.isUnknown() && hasExplicitSuperInterfaces) {
@@ -75,7 +71,10 @@ public class MapperWithoutDaoFactoryCheck extends IssuableSubscriptionVisitor {
         // in projects with incomplete classpaths
         return true;
       }
-      if (!superTypeSymbol.isUnknown() && hasDaoFactoryMethod(superTypeSymbol, visited, false)) {
+      if (!superTypeSymbol.isUnknown() && superTypeSymbol.memberSymbols().stream()
+        .filter(Symbol::isMethodSymbol)
+        .map(Symbol.MethodSymbol.class::cast)
+        .anyMatch(MapperWithoutDaoFactoryCheck::hasDaoFactoryAnnotation)) {
         return true;
       }
     }
