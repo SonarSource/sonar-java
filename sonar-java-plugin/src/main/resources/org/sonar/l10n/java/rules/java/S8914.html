@@ -1,0 +1,72 @@
+<p>=== Documentation
+
+* Quarkus WebSockets Next - Security - https://quarkus.io/guides/websockets-next-reference#websocket-next-security[Official Quarkus documentation on securing WebSocket endpoints, explaining HTTP upgrade security]
+
+* Quarkus WebSockets Next - Secure HTTP Upgrade - https://quarkus.io/guides/websockets-next-reference#secure-http-upgrade[Detailed guidance on securing the HTTP upgrade handshake with security annotations]
+
+
+=== What is the potential impact?
+
+==== Unauthorized Access
+
+Unauthorized clients can establish WebSocket connections to endpoints that lack proper authentication during the HTTP upgrade handshake. While individual message-handling callback methods may implement their own authorization checks, the connection remains open, potentially allowing:
+
+* Access to sensitive real-time data streams
+* Information disclosure through connection metadata
+* Sending messages to the endpoint
+* Exploitation of any unsecured callback methods
+* Bypass of intended access controls
+
+This is particularly severe in applications handling sensitive data or operations through WebSocket communication.
+
+==== Resource Exhaustion
+
+Without proper security controls during the HTTP upgrade process:
+
+* Attackers can open multiple unauthorized connections
+* Server resources (memory, CPU, network bandwidth) are consumed maintaining these connections
+* Legitimate users may experience degraded service
+* Connection pools may be exhausted
+
+==== False Sense of Security
+
+Developers may incorrectly believe their WebSocket endpoints are secured when they are not:
+
+* Security reviews may miss the misconfiguration at the connection level
+* Penetration testing might not catch connection-level vulnerabilities if it only tests message-level authorization
+* Compliance requirements may not be met despite perceived security measures
+
+=== Standards
+
+* OWASP Top 10 2021 - https://owasp.org/Top10/A01_2021-Broken_Access_Control/[OWASP Top 10 2021-A1: Broken Access Control - Improperly secured endpoints allow unauthorized access]
+
+* OWASP Top 10 2021 - https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/[OWASP Top 10 2021-A7: Identification and Authentication Failures - Authentication not enforced at connection establishment]
+
+
+This is an issue when security annotations that control access based on authentication status or user roles are placed on individual lifecycle or message handling callback methods within a WebSocket endpoint class instead of on the endpoint class itself.
+
+== Why is this an issue?
+
+WebSocket connections begin with an HTTP upgrade handshake. When security annotations are placed only on callback methods, they secure those specific methods but *not* the initial HTTP upgrade itself.
+
+This creates a critical security gap:
+
+* *Authorization happens too late*: The HTTP upgrade authorization is performed early and only once. Method-level annotations only check authorization when those specific callbacks are invoked, after the connection is already established.
+
+* *Unauthorized connections succeed*: An attacker can establish a WebSocket connection without proper credentials because the HTTP upgrade is not protected. Even though individual methods might reject unauthorized actions, the connection itself remains open.
+
+* *False sense of security*: Developers may believe their WebSocket is secured when only methods are annotated, not realizing the handshake is vulnerable.
+
+When securing WebSocket endpoints, the placement of security annotations determines what gets protected:
+
+* **Annotations on callback methods**: These only secure the specific callback method execution. The HTTP upgrade handshake remains unsecured, allowing unauthorized clients to establish connections.
+* **Annotations on the endpoint class**: These secure the HTTP upgrade handshake itself, preventing unauthorized connections from being established in the first place.
+
+If not properly secured at the upgrade stage, unauthorized clients can:
+
+* Establish WebSocket connections
+* Consume server resources
+* Potentially access data through unsecured callbacks
+* Create a false sense of security where developers believe the endpoint is protected
+
+To properly secure a WebSocket endpoint, security annotations must be placed on the class level, adjacent to the WebSocket endpoint annotation. This ensures authorization is enforced during the HTTP upgrade, preventing unauthorized connections from being established in the first place. This approach is more efficient than checking authorization on every message and prevents bypasses through unsecured callback methods.</p>

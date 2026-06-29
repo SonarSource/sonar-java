@@ -1,0 +1,34 @@
+{
+  "title": "Security annotations should be placed on WebSocket endpoint classes, not methods",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "owasp",
+    "quarkus",
+    "authorization"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-8914",
+  "sqKey": "S8914",
+  "scope": "All",
+  "defaultQualityProfiles": [
+    "Sonar way"
+  ],
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "SECURITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  },
+  "securityStandards": {
+    "OWASP Top 10 2021": [
+      "A1",
+      "A7"
+    ]
+  }
+}
