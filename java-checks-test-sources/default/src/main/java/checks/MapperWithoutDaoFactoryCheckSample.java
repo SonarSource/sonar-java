@@ -6,7 +6,7 @@ import com.datastax.oss.quarkus.runtime.api.mapper.DaoFactory;
 class MapperWithoutDaoFactoryCheckSample {
 
   @Mapper
-  interface EmptyMapper { // Noncompliant {{Add at least one "@DaoFactory" method to this "@Mapper" interface.}}
+  interface EmptyMapper { // Noncompliant[[sc=13;ec=24]] {{Add at least one "@DaoFactory" method to this "@Mapper" interface.}}
   }
 
   @Mapper
