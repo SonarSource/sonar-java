@@ -17,7 +17,6 @@
 package org.sonar.java.checks.quarkus;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import org.sonar.check.Rule;
@@ -46,7 +45,7 @@ public class CacheKeyGeneratorInstantiableCheck extends IssuableSubscriptionVisi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.CLASS);
+    return List.of(Tree.Kind.CLASS);
   }
 
   @Override
