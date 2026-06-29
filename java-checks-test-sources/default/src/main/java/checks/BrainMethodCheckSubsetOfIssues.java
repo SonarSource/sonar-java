@@ -1,11 +1,11 @@
 package checks;
 
-//The test unit is set to report the first brain method issue + the 10% of the total brain method issues found,
+//The test unit is set to report the first brain method issue + the total brain method issues found divided by 15,
 //ordered by general complexity.
-//In this file there are 10 issues found, so a total of 1 + (10% of 10 = 1) = 2 issues will be raised
+//In this file there are 10 issues found, so a total of 1 + (10 / 15 = 0) = 1 issue will be raised
 class BrainMethodCheckSubsetOfIssues {
 
-  void method1(String a, String b) { // Noncompliant
+  void method1(String a, String b) { // Compliant: this will be skipped since the following method is more complex
     if (a != null) {
       System.out.println(a + b);
     }
