@@ -9,7 +9,8 @@
   "tags": [
     "jpa",
     "hibernate",
-    "performance"
+    "performance",
+    "jakarta"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-8948",

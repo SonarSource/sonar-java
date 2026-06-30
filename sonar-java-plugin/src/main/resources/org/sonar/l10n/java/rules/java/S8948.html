@@ -29,8 +29,10 @@ maintain, as the foreign key is not stored where developers would naturally expe
 <h2>How to fix it in Jakarta EE</h2>
 <p>For bidirectional relationships (where the child entity has a reference back to the parent), use the <code>mappedBy</code> attribute on the
 <code>@OneToMany</code> side to indicate that the relationship is owned by the child entity. This tells JPA to use the foreign key column on the child
-table.</p>
-<p>The <code>mappedBy</code> value must match the field name in the child entity that references the parent.</p>
+table. The <code>mappedBy</code> value must match the field name in the child entity that references the parent.</p>
+<p>For unidirectional relationships (where only the parent knows about the children), use <code>@JoinColumn</code> to specify that the foreign key
+should be stored in the child table. The <code>@JoinColumn</code> annotation tells JPA to create or use a foreign key column in the child table
+instead of creating a join table.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -61,9 +63,6 @@ public class Book {
     private Author author;
 }
 </pre>
-<p>For unidirectional relationships (where only the parent knows about the children), use <code>@JoinColumn</code> to specify that the foreign key
-should be stored in the child table.</p>
-<p>The <code>@JoinColumn</code> annotation tells JPA to create or use a foreign key column in the child table instead of creating a join table.</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="2" data-diff-type="noncompliant">
 @Entity
