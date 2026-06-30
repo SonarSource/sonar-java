@@ -53,7 +53,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.AnalysisProgress;
@@ -93,6 +92,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -189,8 +189,7 @@ class JParserTest {
     InputFile inputFile = mock(InputFile.class);
     doReturn("/tmp/Example.java")
       .when(inputFile).absolutePath();
-    Mockito
-      .doThrow(IOException.class)
+    doThrow(IOException.class)
       .when(inputFile).contents();
 
     FILE_BY_FILE
