@@ -3193,8 +3193,8 @@
   },
   {
     "ruleKey": "S8914",
-    "hasTruePositives": false,
-    "falseNegatives": 8,
+    "hasTruePositives": true,
+    "falseNegatives": 0,
     "falsePositives": 0
   }
 ]
