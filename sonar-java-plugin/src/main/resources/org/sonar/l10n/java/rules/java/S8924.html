@@ -1,5 +1,5 @@
 <p>This rule raises an issue when Mockito core methods are called with the <code>Mockito.</code> prefix instead of being statically imported.</p>
-<p>This applies to commonly used Mockito methods such as:</p>
+<p>This applies to the following Mockito methods:</p>
 <ul>
   <li><code>mock()</code></li>
   <li><code>when()</code></li>
@@ -9,19 +9,19 @@
   <li><code>doThrow()</code></li>
   <li><code>times()</code></li>
   <li><code>never()</code></li>
-  <li><code>any()</code></li>
-  <li><code>eq()</code></li>
 </ul>
 <h2>Why is this an issue?</h2>
 <p>Mockito was designed with static imports in mind to create a more readable, fluent testing DSL (Domain-Specific Language). When you use the
 <code>Mockito.</code> prefix for method calls, the test code becomes more verbose and harder to read.</p>
 <p>Compare these two examples:</p>
 <pre>
-Mockito.when(Mockito.mock(MyService.class).getValue()).thenReturn(42);
+var myMock = Mockito.mock(MyService.class);
+Mockito.when(myMock.getValue()).thenReturn(42);
 </pre>
 <p>versus:</p>
 <pre>
-when(mock(MyService.class).getValue()).thenReturn(42);
+var myMock = mock(MyService.class);
+when(myMock.getValue()).thenReturn(42);
 </pre>
 <p>The second version reads more naturally, almost like plain English, which is the intent of Mockito’s API design. This readability improvement
 becomes even more significant in larger test files with many mock interactions.</p>
@@ -51,7 +51,8 @@ public class MyServiceTest {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 public class MyServiceTest {
     private MyService myService = mock(MyService.class);
@@ -73,3 +74,13 @@ public class MyServiceTest {
   <li>Mockito Documentation - How do I import Mockito? - <a
   href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html">Official Mockito documentation</a></li>
 </ul>
+<hr>
+<h2>Implementation Specification</h2>
+<p>(visible only on this page)</p>
+<h3>Message</h3>
+<p>Use a static import for "{method name}".</p>
+<h3>Highlighting</h3>
+<ul>
+  <li>Primary: Mockito prefix and method name</li>
+</ul>
+

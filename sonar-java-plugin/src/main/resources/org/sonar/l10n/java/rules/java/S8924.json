@@ -11,14 +11,14 @@
     "tests",
     "convention"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-8924",
   "sqKey": "S8924",
   "scope": "Tests",
   "quickfix": "targeted",
   "code": {
     "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
+      "MAINTAINABILITY": "LOW"
     },
     "attribute": "CLEAR"
   }

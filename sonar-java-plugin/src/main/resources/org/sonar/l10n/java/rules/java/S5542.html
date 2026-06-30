@@ -16,8 +16,6 @@ for several important reasons:</p>
 secure by the cryptography community.</p>
 <p>For AES, the weakest mode is ECB (Electronic Codebook). Repeated blocks of data are encrypted to the same value, making them easy to identify and
 reducing the difficulty of recovering the original cleartext.</p>
-<p>Unauthenticated modes such as CBC (Cipher Block Chaining) may be used but are prone to attacks that manipulate the ciphertext. They must be used
-with caution.</p>
 <p>For RSA, the weakest algorithms are either using it without padding or using the PKCS1v1.5 padding scheme.</p>
 <h3>What is the potential impact?</h3>
 <p>The cleartext of an encrypted message might be recoverable. Additionally, it might be possible to modify the cleartext of an encrypted message.</p>
@@ -103,16 +101,12 @@ authenticity of data.</p>
   <li>IAPM: <code>Integer Authenticated Parallelizable Mode</code></li>
   <li>OCB: <code>Offset Codebook Mode</code></li>
 </ul>
-<p>It is also possible to use AES-CBC with HMAC for integrity checks. However, it is considered more straightforward to use AES-GCM directly
-instead.</p>
 <h4>For RSA: use the OAEP scheme</h4>
 <p>The Optimal Asymmetric Encryption Padding scheme (OAEP) adds randomness and a secure hash function that strengthens the regular inner workings of
 RSA.</p>
 <h2>Resources</h2>
 <h3>Articles &amp; blog posts</h3>
 <ul>
-  <li><a href="https://learn.microsoft.com/en-us/dotnet/standard/security/vulnerabilities-cbc-mode">Microsoft, Timing vulnerabilities with CBC-mode
-  symmetric decryption using padding</a></li>
   <li><a href="https://en.wikipedia.org/wiki/Padding_oracle_attack">Wikipedia, Padding Oracle Attack</a></li>
   <li><a href="https://en.wikipedia.org/wiki/Chosen-ciphertext_attack">Wikipedia, Chosen-Ciphertext Attack</a></li>
   <li><a href="https://en.wikipedia.org/wiki/Chosen-plaintext_attack">Wikipedia, Chosen-Plaintext Attack</a></li>

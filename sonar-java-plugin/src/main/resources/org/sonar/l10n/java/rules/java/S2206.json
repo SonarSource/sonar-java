@@ -1,5 +1,5 @@
 {
-  "title": "Either fields or getters should be annotated for persistence but not both",
+  "title": "Do not mix field and getter persistence annotations",
   "type": "BUG",
   "status": "ready",
   "remediation": {

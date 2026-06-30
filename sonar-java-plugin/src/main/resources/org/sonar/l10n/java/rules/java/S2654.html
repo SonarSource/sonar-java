@@ -1,18 +1,106 @@
 <h2>Why is this an issue?</h2>
-<p>Proper synchronization and thread management can be tricky under the best of circumstances, but it’s particularly difficult in JEE application, and
-is even forbidden under some circumstances by the JEE standard.</p>
-<p>This rule raises an issue for each <code>Runnable</code>, and use of the <code>synchronized</code> keyword.</p>
-<h3>Noncompliant code example</h3>
-<pre>
-public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-  // ...
+<p>Proper synchronization and thread management can be tricky under the best of circumstances, but it’s particularly difficult in Jakarta EE
+application, and is even forbidden under some circumstances by the Jakarta EE standard.</p>
+<p>This rule raises an issue for each <code>Runnable</code>, and use of the <code>synchronized</code> keyword in Jakarta EE applications.</p>
+<h2>How to fix it</h2>
+<p>Instead of creating unmanaged threads, use the Concurrency Utilities for Jakarta EE. Injecting a <code>ManagedExecutorService</code> lets the
+container manage the thread pool and preserves the container context (CDI, security, transactions). If you are using EJBs, annotate a method with
+<code>@Asynchronous</code> to run it in a container-managed background thread, with no need to manage threads or submit tasks explicitly.</p>
+<p>For shared mutable state that would otherwise require <code>synchronized</code>, use container-managed concurrency instead. In EJBs, the container
+serializes access to <code>@Singleton</code> beans by default (via <code>@Lock(WRITE)</code>), eliminating the need for explicit synchronization.
+Outside EJBs, use the concurrency utilities from <code>java.util.concurrent</code> such as <code>AtomicInteger</code> or
+<code>ConcurrentHashMap</code>, which are safe to use in Jakarta EE.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@RequestScoped
+public class DataProcessor {
 
-  Runnable r = new Runnable() {  // Noncompliant
-    public void run() {
+  public void processData() {
+    Runnable task = () -&gt; { // Noncompliant
       // ...
-    }
-  };
-  new Thread(r).start();
+    };
+    new Thread(task).start();
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<p>Using <code>ManagedExecutorService</code></p>
+<pre data-diff-id="1" data-diff-type="compliant">
+@RequestScoped
+public class DataProcessor {
+
+  @Resource
+  private ManagedExecutorService executor;
+
+  public void processData() {
+    executor.submit(() -&gt; { // Compliant
+      // ...
+    });
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@Stateless
+public class OrderService {
+
+  public void dispatchOrder(Long orderId) {
+    Runnable r = new Runnable() { // Noncompliant
+      public void run() {
+        // ...
+      }
+    };
+    new Thread(r).start();
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<p>Using <code>@Asynchronous</code></p>
+<pre data-diff-id="2" data-diff-type="compliant">
+@Stateless
+public class OrderService {
+
+  @Asynchronous // Compliant
+  public void dispatchOrder(Long orderId) {
+    // ...
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+@Singleton
+public class CounterService {
+
+  private int count = 0;
+
+  public synchronized void increment() { // Noncompliant
+    count++;
+  }
+
+  public synchronized int getCount() { // Noncompliant
+    return count;
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<p>Using <code>@Singleton</code> with <code>@Lock(…​)</code></p>
+<pre data-diff-id="3" data-diff-type="compliant">
+@Singleton
+public class CounterService {
+
+  private int count = 0;
+
+  @Lock(LockType.WRITE) // Compliant - container manages concurrency
+  public void increment() {
+    count++;
+  }
+
+  @Lock(LockType.READ) // Compliant
+  public int getCount() {
+    return count;
+  }
+}
 </pre>
 <h2>Resources</h2>
 <ul>
