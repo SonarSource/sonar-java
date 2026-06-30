@@ -50,6 +50,10 @@ public class CredentialsProviderUnremovableCheck extends IssuableSubscriptionVis
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
 
+    if (classTree.simpleName() == null) {
+      return;
+    }
+
     if (!implementsCredentialsProvider(classTree)) {
       return;
     }
