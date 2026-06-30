@@ -15,7 +15,7 @@
   "ruleSpecification": "RSPEC-8912",
   "sqKey": "S8912",
   "scope": "All",
-  "quickfix": "unknown",
+  "quickfix": "targeted",
   "code": {
     "impacts": {
       "SECURITY": "MEDIUM",
