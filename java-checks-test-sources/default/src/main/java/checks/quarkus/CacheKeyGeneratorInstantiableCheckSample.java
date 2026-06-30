@@ -133,6 +133,22 @@ class CompliantMultipleConstructorsWithNoArgs implements CacheKeyGenerator {
   }
 }
 
+@jakarta.enterprise.context.ApplicationScoped
+class CompliantFullyQualifiedJakartaAnnotation implements CacheKeyGenerator {
+  @Override
+  public Object generate(Method method, Object... methodParams) {
+    return methodParams[0];
+  }
+}
+
+@javax.enterprise.context.ApplicationScoped
+class CompliantFullyQualifiedJavaxAnnotation implements CacheKeyGenerator {
+  @Override
+  public Object generate(Method method, Object... methodParams) {
+    return methodParams[0];
+  }
+}
+
 abstract class CompliantAbstractClass implements CacheKeyGenerator {
 }
 

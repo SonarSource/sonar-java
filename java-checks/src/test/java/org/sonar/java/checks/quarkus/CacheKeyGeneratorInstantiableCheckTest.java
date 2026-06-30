@@ -30,4 +30,13 @@ class CacheKeyGeneratorInstantiableCheckTest {
       .withCheck(new CacheKeyGeneratorInstantiableCheck())
       .verifyIssues();
   }
+
+  @Test
+  void testWithoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/quarkus/CacheKeyGeneratorInstantiableCheckSample.java"))
+      .withCheck(new CacheKeyGeneratorInstantiableCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }
