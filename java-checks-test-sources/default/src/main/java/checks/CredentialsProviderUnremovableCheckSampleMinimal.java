@@ -1,6 +1,5 @@
 package checks;
 
-import io.quarkus.arc.Unremovable;
 import io.quarkus.credentials.CredentialsProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.Map;
