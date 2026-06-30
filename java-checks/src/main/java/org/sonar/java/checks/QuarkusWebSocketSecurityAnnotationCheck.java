@@ -76,7 +76,7 @@ public class QuarkusWebSocketSecurityAnnotationCheck extends IssuableSubscriptio
     classTree.members().stream()
       .filter(member -> member.is(Tree.Kind.METHOD))
       .map(MethodTree.class::cast)
-      .forEach(method -> checkMethod(method));
+      .forEach(this::checkMethod);
   }
 
   private void checkMethod(MethodTree methodTree) {
