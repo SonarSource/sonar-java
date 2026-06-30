@@ -33,7 +33,12 @@ public class CredentialsProviderUnremovableCheck extends IssuableSubscriptionVis
     "jakarta.enterprise.context.RequestScoped",
     "jakarta.enterprise.context.SessionScoped",
     "jakarta.enterprise.context.Dependent",
-    "jakarta.inject.Singleton"
+    "jakarta.inject.Singleton",
+    "javax.enterprise.context.ApplicationScoped",
+    "javax.enterprise.context.RequestScoped",
+    "javax.enterprise.context.SessionScoped",
+    "javax.enterprise.context.Dependent",
+    "javax.inject.Singleton"
   );
 
   @Override
