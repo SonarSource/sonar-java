@@ -6,9 +6,16 @@
     "func": "Constant\/Issue",
     "constantCost": "45min"
   },
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "TRUSTWORTHY"
+  },
   "tags": [
     "cwe",
     "multi-threading",
+    "jakarta",
     "jee"
   ],
   "defaultSeverity": "Critical",
@@ -21,5 +28,5 @@
       574
     ]
   },
-  "quickfix": "unknown"
+  "quickfix": "infeasible"
 }
