@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 class MetadataTest {
   @Test
   void ensure_sane_Sonar_way_profile() throws FileNotFoundException {
-    var profilePath = Path.of("src/main/resources/" + JavaSonarWayProfile.SONAR_WAY_PATH);
+    var profilePath = Path.of("target/classes/" + JavaSonarWayProfile.SONAR_WAY_PATH);
     var reader = Files.newReader(profilePath.toFile(), StandardCharsets.UTF_8);
 
     Gson gson = new Gson();
