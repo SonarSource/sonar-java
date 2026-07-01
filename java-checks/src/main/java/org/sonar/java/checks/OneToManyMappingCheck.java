@@ -37,6 +37,10 @@ public class OneToManyMappingCheck extends IssuableSubscriptionVisitor {
     "jakarta.persistence.JoinColumn",
     "javax.persistence.JoinColumn");
 
+  private static final Set<String> JOIN_TABLE_ANNOTATIONS = Set.of(
+    "jakarta.persistence.JoinTable",
+    "javax.persistence.JoinTable");
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.VARIABLE);
@@ -51,6 +55,7 @@ public class OneToManyMappingCheck extends IssuableSubscriptionVisitor {
       .filter(OneToManyMappingCheck::isOneToManyAnnotation)
       .filter(annotation -> !hasMappedBy(annotation))
       .filter(annotation -> annotations.stream().noneMatch(OneToManyMappingCheck::isJoinColumnAnnotation))
+      .filter(annotation -> annotations.stream().noneMatch(OneToManyMappingCheck::isJoinTableAnnotation))
       .forEach(annotation -> reportIssue(annotation, "Add \"mappedBy\" or \"@JoinColumn\" to this \"@OneToMany\" relationship."));
   }
 
@@ -60,6 +65,10 @@ public class OneToManyMappingCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isJoinColumnAnnotation(AnnotationTree annotation) {
     return JOIN_COLUMN_ANNOTATIONS.stream().anyMatch(annotation.annotationType().symbolType()::is);
+  }
+
+  private static boolean isJoinTableAnnotation(AnnotationTree annotation) {
+    return JOIN_TABLE_ANNOTATIONS.stream().anyMatch(annotation.annotationType().symbolType()::is);
   }
 
   private static boolean hasMappedBy(AnnotationTree annotation) {

@@ -2,6 +2,7 @@ package checks;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.List;
@@ -56,6 +57,19 @@ public class OneToManyMappingCheckSample {
 
   @Entity
   class AnotherBook {
+    // No reference back
+  }
+
+  // Compliant: uses @JoinTable (explicit join table mapping)
+  @Entity
+  class AuthorWithJoinTable {
+    @OneToMany
+    @JoinTable(name = "author_books")
+    private List<BookWithJoinTable> books;
+  }
+
+  @Entity
+  class BookWithJoinTable {
     // No reference back
   }
 }

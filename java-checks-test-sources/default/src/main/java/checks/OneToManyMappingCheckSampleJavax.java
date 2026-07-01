@@ -3,6 +3,7 @@ package checks;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -56,6 +57,19 @@ public class OneToManyMappingCheckSampleJavax {
 
   @Entity
   class AnotherBook {
+    // No reference back
+  }
+
+  // Compliant: uses @JoinTable (explicit join table mapping)
+  @Entity
+  class AuthorWithJoinTable {
+    @OneToMany
+    @JoinTable(name = "author_books")
+    private List<BookWithJoinTable> books;
+  }
+
+  @Entity
+  class BookWithJoinTable {
     // No reference back
   }
 }
