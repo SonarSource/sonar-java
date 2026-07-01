@@ -1,0 +1,27 @@
+{
+  "title": "Bean Validation constraints should not be placed on static fields",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "validation",
+    "pitfall",
+    "bug"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-8954",
+  "sqKey": "S8954",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "SECURITY": "MEDIUM",
+      "RELIABILITY": "HIGH",
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  }
+}
