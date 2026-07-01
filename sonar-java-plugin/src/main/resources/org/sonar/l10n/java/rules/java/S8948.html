@@ -26,7 +26,7 @@ public class Author {
 additional database tables, extra SQL statements, and more complex query plans. It also makes the database schema less intuitive and harder to
 maintain, as the foreign key is not stored where developers would naturally expect it.</p>
 <p>In Java, this specifically refers to the <code>@OneToMany</code> annotation in JPA (Java Persistence API) and Hibernate.</p>
-<h2>How to fix it in Jakarta EE</h2>
+<h2>How to fix it</h2>
 <p>For bidirectional relationships (where the child entity has a reference back to the parent), use the <code>mappedBy</code> attribute on the
 <code>@OneToMany</code> side to indicate that the relationship is owned by the child entity. This tells JPA to use the foreign key column on the child
 table. The <code>mappedBy</code> value must match the field name in the child entity that references the parent.</p>
@@ -94,13 +94,11 @@ public class Book {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>Jakarta Persistence Specification - OneToMany - <a
-  href="https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html#a11914">Official specification for @OneToMany annotation
-  and its default behavior</a></li>
-  <li>Hibernate ORM User Guide - Associations - <a
-  href="https://docs.jboss.org/hibernate/orm/6.2/userguide/html_single/Hibernate_User_Guide.html#associations">Comprehensive guide to Hibernate
-  associations including one-to-many mappings</a></li>
-  <li>Baeldung - JPA @OneToMany Annotation - <a href="https://www.baeldung.com/jpa-one-to-many">Practical tutorial on using @OneToMany with mappedBy
-  and @JoinColumn</a></li>
+  <li>Jakarta Persistence Specification - <a
+  href="https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html#a538">Relationship Mapping Defaults</a></li>
+  <li>Hibernate documentation - <a
+  href="https://docs.jboss.org/hibernate/orm/6.2/userguide/html_single/Hibernate_User_Guide.html#associations">Hibernate ORM User Guide -
+  Associations</a></li>
+  <li>Baeldung - <a href="https://www.baeldung.com/jpa-hibernate-associations">Understanding JPA/Hibernate Associations</a></li>
 </ul>
 
