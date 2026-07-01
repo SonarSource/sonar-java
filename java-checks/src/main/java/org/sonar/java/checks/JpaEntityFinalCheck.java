@@ -20,8 +20,10 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -38,20 +40,40 @@ public class JpaEntityFinalCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CLASS);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    ClassTree classTree = (ClassTree) tree;
-    SymbolMetadata metadata = classTree.symbol().metadata();
-    if (ENTITY_ANNOTATIONS.stream().noneMatch(metadata::isAnnotatedWith)) {
+    if (tree.is(Tree.Kind.CLASS)) {
+      visitClass((ClassTree) tree);
+    } else {
+      visitMethod((MethodTree) tree);
+    }
+  }
+
+  private void visitClass(ClassTree classTree) {
+    if (!isJpaEntity(classTree.symbol().metadata())) {
       return;
     }
-
-    ModifierKeywordTree finalClassModifier = ModifiersUtils.getModifier(classTree.modifiers(), Modifier.FINAL);
-    if (finalClassModifier != null) {
-      reportIssue(finalClassModifier, "Remove this \"final\" modifier from this JPA entity class.");
+    ModifierKeywordTree finalModifier = ModifiersUtils.getModifier(classTree.modifiers(), Modifier.FINAL);
+    if (finalModifier != null) {
+      reportIssue(finalModifier, "Remove this \"final\" modifier from this JPA entity class.");
     }
+  }
+
+  private void visitMethod(MethodTree methodTree) {
+    ModifierKeywordTree finalModifier = ModifiersUtils.getModifier(methodTree.modifiers(), Modifier.FINAL);
+    if (finalModifier == null) {
+      return;
+    }
+    Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
+    if (enclosingClass != null && isJpaEntity(enclosingClass.metadata())) {
+      reportIssue(finalModifier, "Remove this \"final\" modifier from this JPA entity method.");
+    }
+  }
+
+  private static boolean isJpaEntity(SymbolMetadata metadata) {
+    return ENTITY_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 }

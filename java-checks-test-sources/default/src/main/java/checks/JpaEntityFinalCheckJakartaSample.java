@@ -23,6 +23,32 @@ final class JpaEntityFinalCheckJakartaFinalMappedSuperclass { // Noncompliant {{
 }
 
 @Entity
+class JpaEntityFinalCheckJakartaEntityWithFinalMethod { // Compliant - class itself is not final
+  @Id
+  private Long id;
+
+  public final Long getId() { // Noncompliant {{Remove this "final" modifier from this JPA entity method.}}
+  //          ^^^^^
+    return id;
+  }
+
+  public Long getIdCompliant() { // Compliant
+    return id;
+  }
+}
+
+@MappedSuperclass
+class JpaEntityFinalCheckJakartaMappedSuperclassWithFinalMethod { // Compliant - class itself is not final
+  @Id
+  private Long id;
+
+  public final Long getId() { // Noncompliant {{Remove this "final" modifier from this JPA entity method.}}
+  //          ^^^^^
+    return id;
+  }
+}
+
+@Entity
 class JpaEntityFinalCheckJakartaCompliantEntity { // Compliant
   @Id
   private Long id;
@@ -42,4 +68,9 @@ class JpaEntityFinalCheckJakartaNotAnEntity { // Compliant - not a JPA entity
 }
 
 final class JpaEntityFinalCheckJakartaFinalNotAnEntity { // Compliant - not a JPA entity
+}
+
+class JpaEntityFinalCheckJakartaNotAnEntityWithFinalMethod { // Compliant - not a JPA entity
+  public final void doSomething() { // Compliant - not a JPA entity
+  }
 }

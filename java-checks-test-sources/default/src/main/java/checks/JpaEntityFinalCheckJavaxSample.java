@@ -23,6 +23,17 @@ final class JpaEntityFinalCheckJavaxFinalMappedSuperclass { // Noncompliant {{Re
 }
 
 @Entity
+class JpaEntityFinalCheckJavaxEntityWithFinalMethod { // Compliant - class itself is not final
+  @Id
+  private Long id;
+
+  public final Long getId() { // Noncompliant {{Remove this "final" modifier from this JPA entity method.}}
+  //          ^^^^^
+    return id;
+  }
+}
+
+@Entity
 class JpaEntityFinalCheckJavaxCompliantEntity { // Compliant
   @Id
   private Long id;
