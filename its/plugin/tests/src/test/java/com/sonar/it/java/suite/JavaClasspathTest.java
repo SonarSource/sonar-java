@@ -92,8 +92,8 @@ public class JavaClasspathTest {
     SonarScanner scanner = ditProjectSonarScanner();
     scanner.setProperty("sonar.java.binaries", "target/dummy__Dir");
     BuildResult buildResult = ORCHESTRATOR.executeBuildQuietly(scanner);
-    assertThat(buildResult.getLastStatus()).isNotZero();
-    assertThat(buildResult.getLogs()).contains("No files nor directories matching 'target/dummy__Dir'");
+    assertThat(buildResult.getLastStatus()).isZero();
+    assertThat(buildResult.getLogs()).contains("WARN  Invalid value for 'sonar.java.binaries', no files nor directories matching 'target/dummy__Dir'.");
   }
 
   @Test
@@ -155,26 +155,12 @@ public class JavaClasspathTest {
   }
 
   @Test
-  public void should_support_the_old_binaries_and_libraries_properties() {
-    SonarScanner scanner = ditProjectSonarScanner();
-    scanner.setProperty("sonar.binaries", "target/classes");
-    scanner.setProperty("sonar.libraries", guavaJarPathEscaped);
-    BuildResult buildResult = ORCHESTRATOR.executeBuildQuietly(scanner);
-
-    assertThat(buildResult.getLogs()).contains(
-      "sonar.binaries and sonar.libraries are not supported since version 4.0 of the SonarSource Java Analyzer," +
-        " please use sonar.java.binaries and sonar.java.libraries instead");
-    assertThat(buildResult.isSuccess()).isFalse();
-  }
-
-  @Test
   public void should_log_warnings_if_binaries_missing() {
     SonarScanner scanner = ditProjectSonarScanner();
     BuildResult buildResult = ORCHESTRATOR.executeBuildQuietly(scanner);
     String logs = buildResult.getLogs();
-    assertThat(logs).contains("Your project contains .java files, please provide compiled classes with sonar.java.binaries property,"
-      + " or exclude them from the analysis with sonar.exclusions property.");
-    assertThat(buildResult.isSuccess()).isFalse();
+    assertThat(logs).contains("WARN  Missing 'sonar.java.binaries' and 'sonar.java.libraries' properties. You might end up with less precise analysis results.");
+    assertThat(buildResult.isSuccess()).isTrue();
   }
 
   @Test

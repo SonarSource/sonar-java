@@ -616,11 +616,11 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     if (problemsToFilePaths.isEmpty()) {
       return;
     }
-    javaClasspath.logSuspiciousEmptyLibraries();
+    javaClasspath.logClasspathWarnings();
     if (!isAutoScan()) {
       // In autoscan, test + main code are analyzed in the same batch, and we do not make the distinction between
       // test and main libraries, everything is inside "sonar.java.libraries", it is expected to let the test property empty.
-      javaTestClasspath.logSuspiciousEmptyLibraries();
+      javaTestClasspath.logClasspathWarnings();
     }
     logUndefinedTypes(LOGGED_MAX_NUMBER_UNDEFINED_TYPES);
 

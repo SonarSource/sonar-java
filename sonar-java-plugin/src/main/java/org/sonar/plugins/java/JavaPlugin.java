@@ -32,7 +32,6 @@ import org.sonar.java.DefaultModuleMetadata;
 import org.sonar.java.JavaConstants;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.classpath.ClasspathForMain;
-import org.sonar.java.classpath.ClasspathForMainForSonarLint;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.classpath.ClasspathProperties;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
@@ -52,7 +51,6 @@ public class JavaPlugin implements Plugin {
 
     if (context.getRuntime().getProduct() == SonarProduct.SONARLINT) {
       list.add(NoOpTelemetry.class);
-      list.add(ClasspathForMainForSonarLint.class);
       // Some custom rules (i.e. DBD) depend on the presence of SonarLintCache when executing in a SonarLint context.
       // Hence, we must provide it here.
       list.add(SonarLintCache.class);
@@ -63,7 +61,6 @@ public class JavaPlugin implements Plugin {
       list.add(DroppedPropertiesSensor.class);
       list.add(JavaSonarWayProfile.class);
       list.add(JavaAgenticAIProfile.class);
-      list.add(ClasspathForMain.class);
 
       ExternalReportExtensions.define(context);
     }
@@ -72,6 +69,7 @@ public class JavaPlugin implements Plugin {
     }
     list.addAll(ClasspathProperties.getProperties());
     list.addAll(Arrays.asList(
+      ClasspathForMain.class,
       ClasspathForTest.class,
       Java.class,
       PropertyDefinition.builder(Java.FILE_SUFFIXES_KEY)

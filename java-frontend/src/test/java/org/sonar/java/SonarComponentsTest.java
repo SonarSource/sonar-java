@@ -1084,10 +1084,10 @@ class SonarComponentsTest {
 
     private final SensorContextTester context = SensorContextTester.create(new File(""));
     private final DefaultFileSystem fs = context.fileSystem();
-    private final Configuration settings = context.config();
+    private final MapSettings settings = context.settings();
 
-    private final ClasspathForMain javaClasspath = new ClasspathForMain(settings, fs);
-    private final ClasspathForTest javaTestClasspath = new ClasspathForTest(settings, fs);
+    private final ClasspathForMain javaClasspath = new ClasspathForMain(context.config(), fs);
+    private final ClasspathForTest javaTestClasspath = new ClasspathForTest(context.config(), fs);
 
     private SonarComponents sonarComponents;
 
@@ -1175,26 +1175,24 @@ class SonarComponentsTest {
       logTester.setLevel(Level.INFO);
       logUndefinedTypesWithOneMainAndOneTest();
 
-      assertThat(logTester.logs(Level.WARN))
-        .contains("Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. " +
-          "Verify your configuration, as you might end up with less precise results.")
-        .contains("Dependencies/libraries were not provided for analysis of TEST files. " +
-          "The 'sonar.java.test.libraries' property is empty. Verify your configuration, as you might end up with less precise results.");
+      assertThat(logTester.logs(Level.WARN)).containsExactly(
+        "Missing 'sonar.java.libraries' property. You might end up with less precise analysis results.",
+        "Missing 'sonar.java.test.libraries' property. You might end up with less precise analysis results.",
+        "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them."
+      );
     }
 
     @Test
     void suspicious_empty_libraries_should_not_be_logged_in_autoscan() {
       logTester.setLevel(Level.INFO);
       // Enable autoscan with a property
-      context.setSettings(new MapSettings().setProperty(SonarComponents.SONAR_AUTOSCAN, true));
+      settings.setProperty(SonarComponents.SONAR_AUTOSCAN, true);
 
       logUndefinedTypesWithOneMainAndOneTest();
 
-      assertThat(logTester.logs(Level.WARN))
-        .contains("Dependencies/libraries were not provided for analysis of SOURCE files. The 'sonar.java.libraries' property is empty. " +
-          "Verify your configuration, as you might end up with less precise results.")
-        .doesNotContain("Dependencies/libraries were not provided for analysis of TEST files. " +
-          "The 'sonar.java.test.libraries' property is empty. Verify your configuration, as you might end up with less precise results.");
+      assertThat(logTester.logs(Level.WARN)).containsExactly(
+        "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them."
+      );
     }
 
     @Test
