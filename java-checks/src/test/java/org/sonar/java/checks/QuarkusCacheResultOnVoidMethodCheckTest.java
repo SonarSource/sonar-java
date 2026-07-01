@@ -32,6 +32,15 @@ class QuarkusCacheResultOnVoidMethodCheckTest {
   }
 
   @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/QuarkusCacheResultOnVoidMethodCheckSample.java"))
+      .withCheck(new QuarkusCacheResultOnVoidMethodCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/QuarkusCacheResultOnVoidMethodCheckSample.java"))
