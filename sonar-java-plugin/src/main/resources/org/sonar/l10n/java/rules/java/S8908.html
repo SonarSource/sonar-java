@@ -1,0 +1,44 @@
+<h2>Why is this an issue?</h2>
+<p>Return value caching annotations are designed to cache the output of a method. When a method annotated for result caching is invoked, the framework computes a cache key and checks if the result has been previously cached. If found, the cached value is returned without executing the method body. If not found, the method executes and its return value is stored in the cache.</p>
+<p>This caching mechanism fundamentally requires a return value to function. A <code>void</code> method, by definition, does not return a value - it only produces side effects. Since there is no value to cache or retrieve, applying result caching annotations to a void method is meaningless and will not provide any caching benefits.</p>
+<p>This misuse typically indicates one of the following:</p>
+<ul>
+  <li>A misunderstanding of how result caching works</li>
+  <li>An attempt to cache side effects, which is not supported by these annotations</li>
+  <li>A method that should be refactored to return a value if caching is truly needed</li>
+</ul>
+<p>Framework documentation explicitly states that result caching annotations cannot be used on methods returning <code>void</code>.</p>
+<h2>What is the potential impact?</h2>
+<p>While this issue does not cause runtime errors or security vulnerabilities, it can lead to:</p>
+<ul>
+  <li>Confusion about the intended behavior of the code</li>
+  <li>Wasted developer time investigating why caching is not working as expected</li>
+  <li>Maintenance overhead from unnecessary annotations that serve no purpose</li>
+  <li>Potential performance misconceptions if developers believe expensive operations are being cached when they are not</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Remove the <code>@CacheResult</code> annotation from the void method if caching is not needed, or refactor the method to return a value that can be meaningfully cached.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@CacheResult(cacheName = "my-cache")
+public void processData(String key) { // Noncompliant
+    // Process expensive data
+    expensiveService.process(key);
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@CacheResult(cacheName = "my-cache")
+public String processData(String key) {
+    // Process expensive data and return result
+    String result = expensiveService.process(key);
+    return result;
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Quarkus Cache Guide - <a href="https://quarkus.io/guides/cache">Official Quarkus documentation on application data caching, including proper usage of @CacheResult annotation</a></li>
+  <li>Quarkus @CacheResult Annotation Reference - <a href="https://quarkus.io/guides/cache#cacheresult">Detailed reference for the @CacheResult annotation, explicitly noting it cannot be used on void methods</a></li>
+</ul>
