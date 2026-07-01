@@ -1,6 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  extends: [ "github>SonarSource/renovate-config:quality-jvm-squad" ],
+  extends: [ "local>SonarSource/core-languages-tooling-public:renovate-config" ],
+  addLabels: [ "dependencies" ],
+  rebaseWhen: "conflicted",
+  minimumReleaseAgeBehaviour: "timestamp-required",
+  enabledManagers: [ "maven", "gradle", "gradle-wrapper", "github-actions", "regex" ],
+  timezone: "Europe/Berlin",
+  schedule: [ "before 6am on Monday" ],
+  reviewers: [ "team:quality-jvm-squad" ],
   ignorePaths: [
     "docs/**",
     "its/sources/**",
@@ -10,9 +17,91 @@
   ],
   packageRules: [
     {
+      matchManagers: [ "regex" ],
+      versioning: "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+).(?<build>\\d+)?$"
+    },
+    {
+      description: "Group GitHub Actions updates",
+      matchManagers: [ "github-actions" ],
+      groupName: "GitHub Actions dependencies",
+      groupSlug: "github-actions-dependencies"
+    },
+    {
+      description: "Group Maven updates",
+      matchManagers: [ "maven" ],
+      groupName: "Maven dependencies",
+      groupSlug: "maven-dependencies"
+    },
+    {
+      description: "Group Gradle updates",
+      matchManagers: [ "gradle", "gradle-wrapper" ],
+      groupName: "Gradle dependencies",
+      groupSlug: "gradle-dependencies"
+    },
+    {
+      description: "SonarSource GitHub actions do not need version pinning",
+      matchManagers: [ "github-actions" ],
+      matchPackagePatterns: [ "^SonarSource/" ],
+      matchUpdateTypes: [ "pin", "rollback" ],
+      enabled: false
+    },
+    {
+      description: "gh-action_release uses branch-based versioning (v6, v7) which Renovate cannot resolve -- update manually",
+      matchManagers: [ "github-actions" ],
+      matchPackageNames: [ "SonarSource/gh-action_release" ],
+      enabled: false
+    },
+    {
+      description: "Parent POM should be updated separately",
+      matchManagers: [ "maven" ],
       matchPackageNames: [
-        "org.sonarsource.sslr*"
+        "org.sonarsource.parent:parent",
+        "com.sonarsource.parent:parent"
       ],
+      groupName: "Parent",
+      groupSlug: "parent"
+    },
+    {
+      description: "Plugin API has compatibility rules, so disable it to prevent accidental updates",
+      matchPackageNames: [ "org.sonarsource.api.plugin:sonar-plugin-api*" ],
+      enabled: false
+    },
+    {
+      matchPackageNames: [
+        "org.sonarsource.sonarlint.core*",
+        "org.sonarsource.sonarqube*"
+      ],
+      groupName: "Sonar dependencies",
+      groupSlug: "sonar-dependencies"
+    },
+    {
+      matchPackageNames: [ "org.sonarsource.analyzer-commons*" ],
+      groupName: "Analyzer Commons",
+      groupSlug: "analyzer-commons"
+    },
+    {
+      matchPackageNames: [ "org.sonarsource.orchestrator*" ],
+      groupName: "Orchestrator",
+      groupSlug: "orchestrator"
+    },
+    {
+      matchPackageNames: [ "org.sonarsource.slang*" ],
+      groupName: "Slang",
+      groupSlug: "slang"
+    },
+    {
+      matchManagers: [ "gradle-wrapper" ],
+      matchPackageNames: [ "gradle" ],
+      groupName: "Gradle wrapper",
+      groupSlug: "gradle-wrapper"
+    },
+    {
+      matchPackageNames: [ "org.sonarqube:org.sonarqube.gradle.plugin" ],
+      groupName: "Sonar Gradle Plugin",
+      groupSlug: "sonar-gradle-plugin"
+    },
+    {
+      matchPackageNames: [ "org.sonarsource.sslr*" ],
       groupName: "SSLR",
       groupSlug: "sslr",
     },
@@ -22,10 +111,16 @@
         "org.slf4j:**",
         "org.slf4j"
       ],
-      matchUpdateTypes: [
-        "major"
-      ],
+      matchUpdateTypes: [ "major" ],
       enabled: false
+    }
+  ],
+  regexManagers: [
+    {
+      fileMatch: [ "^snapshot-generation.sh$" ],
+      matchStrings: [
+        "datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\sexport .*?_VERSION=(?<currentValue>.*)\\s"
+      ]
     }
   ],
 }
