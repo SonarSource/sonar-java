@@ -64,7 +64,7 @@ class ClasspathForTestTest {
     javaTestClasspath = createJavaClasspath();
     javaTestClasspath.init();
     assertThat(javaTestClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES)).isEmpty();
-    assertThat(javaTestClasspath.hasJavaSources()).isTrue();
+    assertThat(javaTestClasspath.hasJavaFiles()).isTrue();
 
     javaTestClasspath.logClasspathWarnings();
 
@@ -77,7 +77,7 @@ class ClasspathForTestTest {
     javaTestClasspath = createJavaClasspath();
     javaTestClasspath.init();
     assertThat(javaTestClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES)).isEmpty();
-    assertThat(javaTestClasspath.hasJavaSources()).isTrue();
+    assertThat(javaTestClasspath.hasJavaFiles()).isTrue();
 
     javaTestClasspath.logClasspathWarnings();
 
@@ -93,7 +93,7 @@ class ClasspathForTestTest {
     javaTestClasspath = new ClasspathForTest(settings.asConfig(), new DefaultFileSystem(new File("src/test/files/classpath/")));
     javaTestClasspath.init();
     assertThat(javaTestClasspath.getFilesFromProperty(ClasspathProperties.SONAR_JAVA_TEST_LIBRARIES)).isEmpty();
-    assertThat(javaTestClasspath.hasJavaSources()).isFalse();
+    assertThat(javaTestClasspath.hasJavaFiles()).isFalse();
 
     javaTestClasspath.logClasspathWarnings();
 

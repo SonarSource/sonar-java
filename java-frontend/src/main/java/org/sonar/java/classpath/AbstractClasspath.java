@@ -91,7 +91,7 @@ public abstract class AbstractClasspath {
     if (!initialized) {
       initialized = true;
       validateLibraries = hasJavaFiles();
-      validatePropertiesPresence(binariesProperty, librariesProperty);
+      validatePropertiesPresence();
       binaries.addAll(getFilesFromProperty(binariesProperty));
       Set<File> libraries = new LinkedHashSet<>(getJdkJars());
       Set<File> extraLibraries = getFilesFromProperty(librariesProperty);
@@ -104,7 +104,7 @@ public abstract class AbstractClasspath {
     }
   }
 
-  protected void validatePropertiesPresence(String binariesProperty, String librariesProperty) {
+  protected void validatePropertiesPresence() {
     if (settings.getBoolean(SonarComponents.SONAR_AUTOSCAN).orElse(false)) {
       return;
     }
@@ -161,12 +161,12 @@ public abstract class AbstractClasspath {
       List<String> fileNames = Arrays.stream(settings.getStringArray(property))
         .filter(s -> !s.isEmpty()).toList();
       File baseDir = fs.baseDir();
-      boolean hasJavaSources = hasJavaSources();
+      boolean hasJavaFiles = hasJavaFiles();
       boolean validateLibs = validateLibraries;
       boolean isLibraryProperty = property.endsWith("libraries");
       for (String pathPattern : fileNames) {
         Set<File> libraryFilesForPattern = getFilesForPattern(baseDir.toPath(), pathPattern, isLibraryProperty);
-        if (validateLibraries && libraryFilesForPattern.isEmpty() && hasJavaSources) {
+        if (validateLibraries && libraryFilesForPattern.isEmpty() && hasJavaFiles) {
           classpathWarnings.add(String.format("Invalid value for '%s', no files nor directories matching '%s'.", property, pathPattern));
         }
         validateLibraries = validateLibs;
@@ -177,10 +177,6 @@ public abstract class AbstractClasspath {
       }
     }
     return result;
-  }
-
-  protected boolean hasJavaSources() {
-    return fs.hasFiles(sourcePredicate());
   }
 
   protected boolean hasMoreThanOneJavaFile() {
