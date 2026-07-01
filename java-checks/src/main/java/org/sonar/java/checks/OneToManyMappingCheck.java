@@ -23,6 +23,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -43,14 +44,18 @@ public class OneToManyMappingCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.VARIABLE);
+    return List.of(Tree.Kind.VARIABLE, Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    var variable = (VariableTree) tree;
-    var annotations = variable.modifiers().annotations();
+    var annotations = tree.is(Tree.Kind.METHOD)
+      ? ((MethodTree) tree).modifiers().annotations()
+      : ((VariableTree) tree).modifiers().annotations();
+    checkAnnotations(annotations);
+  }
 
+  private void checkAnnotations(List<AnnotationTree> annotations) {
     annotations.stream()
       .filter(OneToManyMappingCheck::isOneToManyAnnotation)
       .filter(annotation -> !hasMappedBy(annotation))
