@@ -1,0 +1,25 @@
+{
+  "title": "\"CacheKeyGenerator\" implementations should be instantiable by the framework",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "quarkus",
+    "injection",
+    "pitfall"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-8909",
+  "sqKey": "S8909",
+  "scope": "Main",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  }
+}
