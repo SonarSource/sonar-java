@@ -8,25 +8,25 @@ import java.util.Optional;
 
 public class QuarkusCacheResultOnVoidMethodCheckSample {
 
-  @CacheResult(cacheName = "my-cache")
-  public void processData(String key) { // Noncompliant {{Methods annotated with "@CacheResult" should not return void.}}
-//       ^^^^
+  @CacheResult(cacheName = "my-cache") // Noncompliant {{Methods annotated with "@CacheResult" should not return void.}}
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  public void processData(String key) {
   }
 
-  @CacheResult(cacheName = "calc-cache", lockTimeout = 1000)
-  public void performCalculation(String input) { // Noncompliant
+  @CacheResult(cacheName = "calc-cache", lockTimeout = 1000) // Noncompliant
+  public void performCalculation(String input) {
   }
 
-  @CacheResult(cacheName = "cache")
-  void packagePrivateVoid(String data) { // Noncompliant
+  @CacheResult(cacheName = "cache") // Noncompliant
+  void packagePrivateVoid(String data) {
   }
 
-  @CacheResult(cacheName = "cache")
-  protected void protectedVoid() { // Noncompliant
+  @CacheResult(cacheName = "cache") // Noncompliant
+  protected void protectedVoid() {
   }
 
-  @CacheResult(cacheName = "cache")
-  private void privateVoid(int value) { // Noncompliant
+  @CacheResult(cacheName = "cache") // Noncompliant
+  private void privateVoid(int value) {
   }
 
   @CacheResult(cacheName = "my-cache")

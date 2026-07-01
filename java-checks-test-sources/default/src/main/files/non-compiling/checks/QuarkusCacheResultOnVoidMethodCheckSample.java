@@ -4,8 +4,8 @@ import io.quarkus.cache.CacheResult;
 
 public class QuarkusCacheResultOnVoidMethodCheckSample {
 
-  @CacheResult(cacheName = "my-cache")
-  public void processData(UnknownType key) { // Noncompliant
+  @CacheResult(cacheName = "my-cache") // Noncompliant
+  public void processData(UnknownType key) {
   }
 
   @CacheResult(cacheName = "my-cache")

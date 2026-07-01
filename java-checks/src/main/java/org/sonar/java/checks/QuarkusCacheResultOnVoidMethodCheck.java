@@ -20,6 +20,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -37,16 +38,17 @@ public class QuarkusCacheResultOnVoidMethodCheck extends IssuableSubscriptionVis
   @Override
   public void visitNode(Tree tree) {
     var mt = (MethodTree) tree;
-    if (mt.symbol().metadata().isAnnotatedWith(CACHE_RESULT_ANNOTATION)) {
-      TypeTree returnType = mt.returnType();
-      // returnType can only be null if the method is a constructor. Since the @CacheResult annotation is not allowed on constructors, and since
-      // we hence only visit methods, not constructors, we assume that returnType is not null.
-      Type symbolType = returnType.symbolType();
-      if (symbolType.isUnknown()) {
+    TypeTree returnType = mt.returnType();
+    // returnType can only be null if the method is a constructor. Since the @CacheResult annotation is not allowed on constructors, and since
+    // we hence only visit methods, not constructors, we assume that returnType is not null.
+    Type symbolType = returnType.symbolType();
+    if (symbolType.isUnknown() || !symbolType.isVoid()) {
+      return;
+    }
+    for (AnnotationTree annotation : mt.modifiers().annotations()) {
+      if (annotation.symbolType().is(CACHE_RESULT_ANNOTATION)) {
+        reportIssue(annotation, "Methods annotated with \"@CacheResult\" should not return void.");
         return;
-      }
-      if (symbolType.isVoid()) {
-        reportIssue(returnType, "Methods annotated with \"@CacheResult\" should not return void.");
       }
     }
   }
