@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "local>SonarSource/core-languages-tooling-public:quality-jvm-squad"
+    "local>SonarSource/core-languages-tooling-public:renovate-config"
   ],
   "ignorePaths": [
     "docs/**",
@@ -11,6 +11,95 @@
     "java-surefire/src/test/resources/**"
   ],
   "packageRules": [
+    {
+      "description": "SonarSource GitHub actions do not need version pinning",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchPackagePatterns": [
+        "^SonarSource/"
+      ],
+      "matchUpdateTypes": [
+        "pin",
+        "rollback"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "gh-action_release uses branch-based versioning (v6, v7) which Renovate cannot resolve -- update manually",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchPackageNames": [
+        "SonarSource/gh-action_release"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Parent POM should be updated separately",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchPackageNames": [
+        "org.sonarsource.parent:parent",
+        "com.sonarsource.parent:parent"
+      ],
+      "groupName": "Parent",
+      "groupSlug": "parent"
+    },
+    {
+      "description": "Plugin API has compatibility rules, so disable it to prevent accidental updates",
+      "matchPackageNames": [
+        "org.sonarsource.api.plugin:sonar-plugin-api*"
+      ],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": [
+        "org.sonarsource.sonarlint.core*",
+        "org.sonarsource.sonarqube*"
+      ],
+      "groupName": "Sonar dependencies",
+      "groupSlug": "sonar-dependencies"
+    },
+    {
+      "matchPackageNames": [
+        "org.sonarsource.analyzer-commons*"
+      ],
+      "groupName": "Analyzer Commons",
+      "groupSlug": "analyzer-commons"
+    },
+    {
+      "matchPackageNames": [
+        "org.sonarsource.orchestrator*"
+      ],
+      "groupName": "Orchestrator",
+      "groupSlug": "orchestrator"
+    },
+    {
+      "matchPackageNames": [
+        "org.sonarsource.slang*"
+      ],
+      "groupName": "Slang",
+      "groupSlug": "slang"
+    },
+    {
+      "matchManagers": [
+        "gradle-wrapper"
+      ],
+      "matchPackageNames": [
+        "gradle"
+      ],
+      "groupName": "Gradle wrapper",
+      "groupSlug": "gradle-wrapper"
+    },
+    {
+      "matchPackageNames": [
+        "org.sonarqube:org.sonarqube.gradle.plugin"
+      ],
+      "groupName": "Sonar Gradle Plugin",
+      "groupSlug": "sonar-gradle-plugin"
+    },
     {
       "matchPackageNames": [
         "org.sonarsource.sslr*"
@@ -28,5 +117,12 @@
       ],
       "enabled": false
     }
+  ],
+  "enabledManagers": [
+    "maven",
+    "gradle",
+    "gradle-wrapper",
+    "github-actions",
+    "regex"
   ]
 }
