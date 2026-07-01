@@ -28,12 +28,20 @@ class JpaEntityFinalCheckJakartaEntityWithFinalMethod { // Compliant - class its
   private Long id;
 
   public final Long getId() { // Noncompliant {{Remove this "final" modifier from this JPA entity method.}}
-  //          ^^^^^
+  //     ^^^^^
     return id;
   }
 
   public Long getIdCompliant() { // Compliant
     return id;
+  }
+
+  private final Long getIdPrivate() { // Compliant - private methods cannot be overridden by proxies
+    return id;
+  }
+
+  public static final Long getIdStatic() { // Compliant - static methods cannot be overridden by proxies
+    return 0L;
   }
 }
 
@@ -43,7 +51,7 @@ class JpaEntityFinalCheckJakartaMappedSuperclassWithFinalMethod { // Compliant -
   private Long id;
 
   public final Long getId() { // Noncompliant {{Remove this "final" modifier from this JPA entity method.}}
-  //          ^^^^^
+  //     ^^^^^
     return id;
   }
 }

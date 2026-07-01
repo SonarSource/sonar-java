@@ -67,7 +67,11 @@ public class JpaEntityFinalCheck extends IssuableSubscriptionVisitor {
     if (finalModifier == null) {
       return;
     }
-    Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
+    Symbol methodSymbol = methodTree.symbol();
+    if (methodSymbol.isStatic() || methodSymbol.isPrivate()) {
+      return;
+    }
+    Symbol.TypeSymbol enclosingClass = methodSymbol.enclosingClass();
     if (enclosingClass != null && isJpaEntity(enclosingClass.metadata())) {
       reportIssue(finalModifier, "Remove this \"final\" modifier from this JPA entity method.");
     }
