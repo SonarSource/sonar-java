@@ -64,7 +64,6 @@ public class CacheKeyGeneratorInstantiableCheck extends IssuableSubscriptionVisi
   private static boolean isApplicableClass(ClassTree classTree) {
     return !isAnonymous(classTree)
       && !classTree.symbol().isAbstract()
-      && !classTree.symbol().isInterface()
       && implementsCacheKeyGenerator(classTree);
   }
 
@@ -85,14 +84,13 @@ public class CacheKeyGeneratorInstantiableCheck extends IssuableSubscriptionVisi
   private static boolean matchesAnnotation(AnnotationTree annotationTree, String fullyQualifiedName) {
     String simpleName = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf('.') + 1);
     Tree annotationType = annotationTree.annotationType();
-    return switch (annotationType.kind()) {
-      case IDENTIFIER -> ((IdentifierTree) annotationType).name().equals(simpleName);
-      case MEMBER_SELECT -> {
-        MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) annotationType;
-        yield memberSelect.identifier().name().equals(simpleName) || memberSelect.expression().symbolType().is(fullyQualifiedName);
-      }
-      default -> false;
-    };
+    if (annotationType.is(Tree.Kind.IDENTIFIER)) {
+      return ((IdentifierTree) annotationType).name().equals(simpleName);
+    } else if (annotationType.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) annotationType;
+      return memberSelect.identifier().name().equals(simpleName) || memberSelect.expression().symbolType().is(fullyQualifiedName);
+    }
+    return false;
   }
 
   private static boolean hasPublicNoArgsConstructor(ClassTree classTree) {

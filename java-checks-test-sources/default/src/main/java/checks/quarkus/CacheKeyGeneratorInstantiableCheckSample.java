@@ -155,6 +155,24 @@ abstract class CompliantAbstractClass implements CacheKeyGenerator {
 interface CompliantInterface extends CacheKeyGenerator {
 }
 
+class AnonymousClassUser {
+  // Anonymous class implementing CacheKeyGenerator - covers isAnonymous check (line 72)
+  CacheKeyGenerator generator = new CacheKeyGenerator() {
+    @Override
+    public Object generate(Method method, Object... methodParams) {
+      return methodParams[0];
+    }
+  };
+}
+
+@jakarta.enterprise.context.SessionScoped
+class CompliantFullyQualifiedSessionScoped implements CacheKeyGenerator {
+  @Override
+  public Object generate(Method method, Object... methodParams) {
+    return methodParams[0];
+  }
+}
+
 class NotACacheKeyGenerator {
   public NotACacheKeyGenerator(String param) {}
 }
