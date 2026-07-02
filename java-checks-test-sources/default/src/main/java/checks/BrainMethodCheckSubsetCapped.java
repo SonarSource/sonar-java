@@ -1,9 +1,9 @@
 package checks;
 
-// With numberOfFoundIssuesThreshold=5, issuesToReportPercentage=10, numberOfIssuesPerModuleThreshold=5:
-// 60 issues found, 10% = 6 > numberOfIssuesPerModuleThreshold=5.
-// Issues to report = min(60 * 10 / 100, 5) = min(6, 5) = 5.
-// The 5 most complex methods (highest brain score) are reported.
+// With numberOfFoundIssuesThreshold=5, issuesToReportPercentage=10, numberOfAdditionalIssuesThreshold=5:
+// 60 issues found, 10% = 6 > numberOfAdditionalIssuesThreshold=5.
+// Issues to report = numberOfFoundIssuesThreshold + min(60 * 10 / 100, 5) = 5 + min(6, 5) = 10.
+// The 10 most complex methods (highest brain score) are reported.
 class BrainMethodCheckSubsetCapped {
 
   void method1(String a, String b) { // Noncompliant
@@ -47,31 +47,31 @@ class BrainMethodCheckSubsetCapped {
     }
   }
 
-  void method6(String a, String b) { // Compliant
+  void method6(String a, String b) { // Noncompliant
     if (a != null) {
       System.out.println(a + b);
     }
   }
 
-  void method7(String a, String b) { // Compliant
+  void method7(String a, String b) { // Noncompliant
     if (a != null) {
       System.out.println(a + b);
     }
   }
 
-  void method8(String a, String b) { // Compliant
+  void method8(String a, String b) { // Noncompliant
     if (a != null) {
       System.out.println(a + b);
     }
   }
 
-  void method9(String a, String b) { // Compliant
+  void method9(String a, String b) { // Noncompliant
     if (a != null) {
       System.out.println(a + b);
     }
   }
 
-  void method10(String a, String b) { // Compliant
+  void method10(String a, String b) { // Noncompliant
     if (a != null) {
       System.out.println(a + b);
     }

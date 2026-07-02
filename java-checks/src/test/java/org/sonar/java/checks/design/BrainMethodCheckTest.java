@@ -86,8 +86,8 @@ class BrainMethodCheckTest {
 
   @Test
   void testSubsetPercentageAppliedBetweenThresholds() {
-    // 10 issues found, numberOfFoundIssuesThreshold(5) < 10 < numberOfIssuesPerModuleThreshold(20):
-    // reports min(10 * 10 / 100, 20) = 1 issue
+    // 10 issues found, numberOfFoundIssuesThreshold(5) < 10 < numberOfAdditionalIssuesThreshold(20):
+    // reports 5 + min(10 * 10 / 100, 20) = 5 + 1 = 6 issues
     CheckVerifier.newVerifier()
       .onFile(SUBSET_FILE_PATH)
       .withChecks(checkForSubsetTests())
@@ -96,8 +96,8 @@ class BrainMethodCheckTest {
 
   @Test
   void testSubsetPercentageAppliedAboveModuleThreshold() {
-    // 21 issues found > numberOfIssuesPerModuleThreshold=20:
-    // reports min(21 * 10 / 100, 20) = 2 issues
+    // 21 issues found > numberOfAdditionalIssuesThreshold=20:
+    // reports 5 + min(21 * 10 / 100, 20) = 5 + 2 = 7 issues
     CheckVerifier.newVerifier()
       .onFile(SUBSET_LARGE_FILE_PATH)
       .withChecks(checkForSubsetTests())
@@ -106,8 +106,8 @@ class BrainMethodCheckTest {
 
   @Test
   void testSubsetCappedAtModuleThreshold() {
-    // 60 issues found, 10% = 6 > numberOfIssuesPerModuleThreshold=5:
-    // reports min(60 * 10 / 100, 5) = 5 issues — cap is the binding constraint
+    // 60 issues found, 10% = 6 > numberOfAdditionalIssuesThreshold=5:
+    // reports 5 + min(60 * 10 / 100, 5) = 5 + 5 = 10 issues — percentage component is capped
     CheckVerifier.newVerifier()
       .onFile(SUBSET_CAPPED_FILE_PATH)
       .withChecks(checkForCappedSubsetTest())
@@ -122,7 +122,7 @@ class BrainMethodCheckTest {
     check.nestingThreshold = 1;
     check.numberOfFoundIssuesThreshold = 5;
     check.issuesToReportPercentage = 10;
-    check.numberOfIssuesPerModuleThreshold = 20;
+    check.numberOfAdditionalIssuesThreshold = 20;
     return check;
   }
 
@@ -134,7 +134,7 @@ class BrainMethodCheckTest {
     check.nestingThreshold = 1;
     check.numberOfFoundIssuesThreshold = 5;
     check.issuesToReportPercentage = 10;
-    check.numberOfIssuesPerModuleThreshold = 5;
+    check.numberOfAdditionalIssuesThreshold = 5;
     return check;
   }
 
