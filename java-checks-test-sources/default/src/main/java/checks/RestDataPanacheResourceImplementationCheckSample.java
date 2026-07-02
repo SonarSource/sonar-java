@@ -34,31 +34,31 @@ class MongoPersonRepository implements PanacheMongoRepositoryBase<MongoPerson, L
 interface PeopleResource extends PanacheEntityResource<Person, Long> {
 }
 
-class PeopleResourceImpl implements PeopleResource { // Noncompliant {{Remove this implementation class; Quarkus generates the resource implementation automatically.}}
+class PeopleResourceImpl implements PeopleResource { // Noncompliant {{Remove this implementation class; Quarkus generates the resource implementation automatically.}} [[sc=7;ec=25]]
 }
 
 interface PersonRepositoryResource extends PanacheRepositoryResource<PersonRepository, Person, Long> {
 }
 
-class PersonRepositoryResourceImpl implements PersonRepositoryResource { // Noncompliant
+class PersonRepositoryResourceImpl implements PersonRepositoryResource { // Noncompliant [[sc=7;ec=35]]
 }
 
 interface MongoPersonResource extends PanacheMongoEntityResource<MongoPerson, Long> {
 }
 
-class MongoPersonResourceImpl implements MongoPersonResource { // Noncompliant
+class MongoPersonResourceImpl implements MongoPersonResource { // Noncompliant [[sc=7;ec=30]]
 }
 
 interface MongoPersonRepositoryResource extends PanacheMongoRepositoryResource<MongoPersonRepository, MongoPerson, Long> {
 }
 
-class MongoPersonRepositoryResourceImpl implements MongoPersonRepositoryResource { // Noncompliant
+class MongoPersonRepositoryResourceImpl implements MongoPersonRepositoryResource { // Noncompliant [[sc=7;ec=40]]
 }
 
-abstract class AbstractPersonResource implements PeopleResource { // Noncompliant
+abstract class AbstractPersonResource implements PeopleResource { // Noncompliant [[sc=16;ec=38]]
 }
 
-class ConcretePersonResource extends AbstractPersonResource { // Noncompliant
+class ConcretePersonResource extends AbstractPersonResource { // Noncompliant [[sc=7;ec=29]]
 }
 
 interface CompliantResource extends PanacheEntityResource<Person, Long> {
