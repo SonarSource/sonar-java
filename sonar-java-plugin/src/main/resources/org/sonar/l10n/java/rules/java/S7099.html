@@ -1,0 +1,41 @@
+<p>
+  Archive entry names, request parameters, and similar attacker-controlled path components should be validated before they are used to
+  construct file-system paths or classpath/resource lookups.
+</p>
+
+<h2>Why is this an issue?</h2>
+<p>
+  If untrusted input is used directly in path construction, an attacker may inject <code>../</code> sequences or other crafted values that
+  escape the intended directory and access unexpected files or resources.
+</p>
+<p>
+  This can happen when code:
+</p>
+<ul>
+  <li>uses <code>ZipEntry.getName()</code> or <code>JarEntry.getName()</code> to create output paths during archive extraction,</li>
+  <li>uses request parameters to create directories or files, or</li>
+  <li>uses attacker-controlled names in <code>ClassLoader.getResource(...)</code> lookups.</li>
+</ul>
+
+<h2>How to fix it</h2>
+<ul>
+  <li>Normalize and validate the path before using it.</li>
+  <li>Reject parent-directory traversal such as <code>../</code> and absolute paths.</li>
+  <li>Ensure the resolved path stays inside the intended base directory.</li>
+</ul>
+
+<h2>Sensitive code example</h2>
+<pre>
+String fileName = zipEntry.getName();
+File newFile = new File(destDir, fileName); // Sensitive
+</pre>
+
+<h2>Compliant solution</h2>
+<pre>
+String fileName = zipEntry.getName();
+File newFile = new File(destDir, fileName);
+String basePath = destDir.getCanonicalPath() + File.separator;
+if (!newFile.getCanonicalPath().startsWith(basePath)) {
+  throw new IllegalArgumentException("Invalid archive entry path");
+}
+</pre>
