@@ -34,7 +34,7 @@ class MongoPersonRepository implements PanacheMongoRepositoryBase<MongoPerson, L
 interface PeopleResource extends PanacheEntityResource<Person, Long> {
 }
 
-class PeopleResourceImpl implements PeopleResource { // Noncompliant {{Remove this implementation class; Quarkus generates the resource implementation automatically.}} [[sc=7;ec=25]]
+class PeopleResourceImpl implements PeopleResource { // Noncompliant {{Remove this implementation class; Quarkus generates the resource implementation automatically and will ignore this one.}} [[sc=7;ec=25]]
 }
 
 interface PersonRepositoryResource extends PanacheRepositoryResource<PersonRepository, Person, Long> {

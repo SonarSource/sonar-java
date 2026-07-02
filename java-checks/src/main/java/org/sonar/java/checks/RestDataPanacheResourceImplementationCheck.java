@@ -44,7 +44,7 @@ public class RestDataPanacheResourceImplementationCheck extends IssuableSubscrip
       return;
     }
     if (implementsPanacheResourceInterface(classTree)) {
-      reportIssue(classTree.simpleName(), "Remove this implementation class; Quarkus generates the resource implementation automatically.");
+      reportIssue(classTree.simpleName(), "Remove this implementation class; Quarkus generates the resource implementation automatically and will ignore this one.");
     }
   }
 
