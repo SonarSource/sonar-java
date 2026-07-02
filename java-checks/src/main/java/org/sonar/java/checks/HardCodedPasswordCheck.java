@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
@@ -75,26 +76,31 @@ public class HardCodedPasswordCheck extends AbstractHardCodedCredentialChecker {
   @Override
   protected void handleStringLiteral(LiteralTree tree) {
     String cleanedLiteral = LiteralUtils.trimQuotes(tree.value());
-    if (isURLWithCredentials(cleanedLiteral)) {
-      reportIssue(tree, "Review this hard-coded URL, which may contain a password.");
+    Optional<String> urlPassword = extractURLPassword(cleanedLiteral);
+    if (urlPassword.isPresent()) {
+      if (!isKnownNonSecret(urlPassword.get())) {
+        reportIssue(tree, "Review this hard-coded URL, which may contain a password.");
+      }
     } else {
       super.handleStringLiteral(tree);
     }
   }
 
-  private static boolean isURLWithCredentials(String stringLiteral) {
-    if (URL_PREFIX.matcher(stringLiteral).find()) {
+  private static Optional<String> extractURLPassword(String url) {
+    if (URL_PREFIX.matcher(url).find()) {
       try {
-        String userInfo = new URL(stringLiteral).getUserInfo();
+        String userInfo = new URL(url).getUserInfo();
         if (userInfo != null) {
           Matcher matcher = NON_EMPTY_URL_CREDENTIAL.matcher(userInfo);
-          return matcher.matches() && !matcher.group("user").equals(matcher.group("password"));
+          if (matcher.matches() && !matcher.group("user").equals(matcher.group("password"))) {
+            return Optional.of(matcher.group("password"));
+          }
         }
       } catch (MalformedURLException e) {
-        // ignore, stringLiteral is not a valid URL
+        // ignore, url is not a valid URL
       }
     }
-    return false;
+    return Optional.empty();
   }
 
   private void handleMethodInvocation(MethodInvocationTree mit) {

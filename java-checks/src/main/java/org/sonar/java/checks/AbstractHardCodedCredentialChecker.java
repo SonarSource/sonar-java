@@ -16,10 +16,8 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -36,10 +34,10 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.appsec.SecretClassifier;
 
 public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscriptionVisitor {
 
-  private static final Set<String> ALLOW_LIST = Collections.singleton("anonymous");
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
@@ -57,8 +55,6 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
 
   private List<Pattern> variablePatterns = null;
   private List<Pattern> literalPatterns = null;
-
-  private static final int MINIMUM_CREDENTIAL_LENGTH = 2;
 
   protected abstract String getCredentialWords();
 
@@ -145,7 +141,7 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
       literalPatterns().map(pattern -> pattern.matcher(cleanedLiteral))
         // contains "pwd=" or similar
         .filter(Matcher::find)
-        .filter(matcher -> !isExcludedLiteral(matcher.group(2)))
+        .filter(matcher -> isPotentialCredential(matcher.group(2)))
         .findAny()
         .ifPresent(matcher -> report(tree, matcher.group(1)));
     }
@@ -156,16 +152,12 @@ public abstract class AbstractHardCodedCredentialChecker extends IssuableSubscri
     return parent != null && parent.is(Tree.Kind.VARIABLE) && isCredentialVariableName(((VariableTree) parent).simpleName()).isPresent();
   }
 
-  protected boolean isPotentialCredential(String literal) {
-    String trimmed = literal.trim();
-    return trimmed.length() >= MINIMUM_CREDENTIAL_LENGTH && !ALLOW_LIST.contains(trimmed);
+  protected static boolean isKnownNonSecret(String candidate) {
+    return SecretClassifier.isKnownNonSecret(candidate);
   }
 
-  private boolean isExcludedLiteral(String followingString) {
-    return !isPotentialCredential(followingString)
-      || followingString.startsWith("?")
-      || followingString.startsWith(":")
-      || followingString.contains("%s");
+  protected boolean isPotentialCredential(String literal) {
+    return !isKnownNonSecret(literal.trim());
   }
 
   protected void handleVariable(VariableTree tree) {

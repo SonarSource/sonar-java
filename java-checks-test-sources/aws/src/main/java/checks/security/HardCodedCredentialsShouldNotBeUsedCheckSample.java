@@ -32,10 +32,11 @@ import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRespon
 import static java.lang.System.getProperty;
 
 public class HardCodedCredentialsShouldNotBeUsedCheckSample {
-  static final String FINAL_SECRET_STRING = "hunter2";
-//                                          ^^^^^^^^^>
-  static final byte[] FINAL_SECRET_BYTE_ARRAY = FINAL_SECRET_STRING.getBytes(StandardCharsets.UTF_8);
-//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
+  static final String FINAL_SECRET_STRING = "hunter2"; // Compliant, fake value filter
+  static final String FINAL_SECRET_STRING_2 = "xvxf6_gaa";
+//                                            ^^^^^^^^^^^>
+  static final byte[] FINAL_SECRET_BYTE_ARRAY = FINAL_SECRET_STRING_2.getBytes(StandardCharsets.UTF_8);
+//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
   private static String secretStringField = "hunter2";
   private static byte[] secretByteArrayField = new byte[]{0xC, 0xA, 0xF, 0xE};
   private static char[] secretCharArrayField = new char[]{0xC, 0xA, 0xF, 0xE};
@@ -54,39 +55,44 @@ public class HardCodedCredentialsShouldNotBeUsedCheckSample {
 //                 ^^^
     SHA256.getHMAC(effectivelyConstantString.getBytes(), message); // Noncompliant
     SHA256.getHMAC("anotherS3cr37".getBytes(), message); // Noncompliant
+    // FINAL_SECRET_STRING.getBytes() cannot be resolved to the value "hunter2" that should be filtered -> FPs
     SHA256.getHMAC(FINAL_SECRET_STRING.getBytes(), message); // Noncompliant
     SHA256.getHMAC(FINAL_SECRET_STRING.getBytes(StandardCharsets.UTF_8), message); // Noncompliant
     SHA256.getHMAC(FINAL_SECRET_STRING.getBytes("UTF-8"), message); // Noncompliant
     SHA256.getHMAC((FINAL_SECRET_STRING).getBytes("UTF-8"), message); // Noncompliant
-    SHA256.getHMAC(new byte[]{(byte) 0xC, (byte) 0xA, (byte) 0xF, (byte) 0xE}, message); // Noncompliant
+    // FP should be filtered as short string value
+    SHA256.getHMAC(new byte[]{(byte) 0xC, (byte) 0xA, (byte) 0xF, (byte) 0xE}, message); // Noncompliant 
 
     // String based
     HttpServletRequest request = new HttpServletRequestWrapper(null);
-    request.login("user", "password"); // Noncompliant
+    request.login("user", "password"); // Compliant, fake value filter
+    request.login("user", "xvxf6_gaa"); // Noncompliant
     request.login("user", effectivelyConstantString); // Noncompliant
 //                        ^^^^^^^^^^^^^^^^^^^^^^^^^
-    request.login("user", FINAL_SECRET_STRING); // Noncompliant
-//                        ^^^^^^^^^^^^^^^^^^^
-    String plainTextSecret = new String("BOOM");
-//                           ^^^^^^^^^^^^^^^^^^>
-    request.login("user", plainTextSecret); // Noncompliant
-//                        ^^^^^^^^^^^^^^^
+    request.login("user", FINAL_SECRET_STRING); // Compliant, fake values filter
+    request.login("user", FINAL_SECRET_STRING_2); // Noncompliant
+//                        ^^^^^^^^^^^^^^^^^^^^^
+    String plainTextSecret = new String("BOOM"); // Compliant, short values filter
+    String plainTextSecret2 = new String("BOOMBOOM");
+//                            ^^^^^^^^^^^^^^^^^^^^^^>
+    request.login("user", plainTextSecret2); // Noncompliant
+//                        ^^^^^^^^^^^^^^^^
     request.login("user", new String("secret")); // Noncompliant
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, 0, 7)); // Noncompliant
 //                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@37<
-//                                          ^^^^^^^^^@35<
+//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@38<
+//                                            ^^^^^^^^^^^@36<
     request.login("user", new String(FINAL_SECRET_BYTE_ARRAY, encoding)); // Noncompliant
 //                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@37<
-//                                          ^^^^^^^^^@35<
+//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^@38<
+//                                            ^^^^^^^^^^^@36<
 
-    String conditionalButPredictable = condition ? FINAL_SECRET_STRING : plainTextSecret;
-//                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
+    String conditionalButPredictable = condition ? FINAL_SECRET_STRING_2 : plainTextSecret2;
+//                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>
     request.login("user", conditionalButPredictable); // Noncompliant
 //                        ^^^^^^^^^^^^^^^^^^^^^^^^^
-//                                          ^^^^^^^^^@35<
-//                           ^^^^^^^^^^^^^^^^^^@70<
+//                                            ^^^^^^^^^^^@36<
+//                            ^^^^^^^^^^^^^^^^^^^^^^@76<
     request.login("user", Json.MEDIA_TYPE); // Noncompliant
 //                        ^^^^^^^^^^^^^^^
     String concatenatedPassword = "abc" + true + ":" + 12 + ":" + 43L + ":" + 'a' + ":" + 0.2f + ":" + 0.2d;
@@ -95,7 +101,8 @@ public class HardCodedCredentialsShouldNotBeUsedCheckSample {
 //                        ^^^^^^^^^^^^^^^^^^^^
 
     jakarta.servlet.http.HttpServletRequest requestJakarta = new jakarta.servlet.http.HttpServletRequestWrapper(null);
-    requestJakarta.login("user", "password"); // Noncompliant
+    requestJakarta.login("user", "password"); // Compliant
+    requestJakarta.login("user", "xvxf6_gaa"); // Noncompliant
     KeyStore store = KeyStore.getInstance(null);
 
     store.getKey("", new char[]{0xC, 0xA, 0xF, 0xE}); // Noncompliant
@@ -118,30 +125,42 @@ public class HardCodedCredentialsShouldNotBeUsedCheckSample {
 
     Encryptors.delux(effectivelyConstantString.subSequence(0, effectivelyConstantString.length()), effectivelyConstantString); // Noncompliant
 //                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    // "password".subSequence(0, 0) cannot be resolved to the value "password" that should be filtered -> FPs
     Encryptors.delux("password".subSequence(0, 0), "salt"); // Noncompliant
+    // TP
+    Encryptors.delux("xvxf6_gaa".subSequence(0, 0), "salt"); // Noncompliant
 
-    new Pbkdf2PasswordEncoder("secret"); // Noncompliant
-    new Pbkdf2PasswordEncoder(("secret")); // Noncompliant
+    new Pbkdf2PasswordEncoder("secret"); // Compliant, fake value filter
+    new Pbkdf2PasswordEncoder("xvxf6_gaa"); // Noncompliant
+    new Pbkdf2PasswordEncoder(("xvxf6_gaa")); // Noncompliant
+    
 
     String notInitialized;
     notInitialized = "abc";
-    new Pbkdf2PasswordEncoder(notInitialized); // Noncompliant
+    new Pbkdf2PasswordEncoder(notInitialized); // Compliant, short value filter
 
-    String longString = "abcdefghiklmnop";
+    String notInitialized2;
+    notInitialized2 = "xvxf6_gaa";
+    new Pbkdf2PasswordEncoder(notInitialized2); // Noncompliant
+
+    String longString = "abcdefghiklmnop"; // Cpmpliant fake value contains 'abcd'
+    // longString.substring(2) cannot be resolved to the value "abcdefghiklmnop" that should be filtered -> FPs
     new Pbkdf2PasswordEncoder(longString.substring(2)); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.substring(0, 2)); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.trim()); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.strip()); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.stripIndent()); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.stripLeading()); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.stripTrailing()); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.translateEscapes()); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.intern()); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.toLowerCase()); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.toLowerCase(Locale.ROOT)); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.toUpperCase()); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.toUpperCase(Locale.ROOT)); // Noncompliant
-    new Pbkdf2PasswordEncoder(longString.toString()); // Noncompliant
+    String longString2 = "67uLmZeieGxDtp!cUm324D*7vji294";
+    new Pbkdf2PasswordEncoder(longString2.substring(2)); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.substring(0, 2)); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.trim()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.strip()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.stripIndent()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.stripLeading()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.stripTrailing()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.translateEscapes()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.intern()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.toLowerCase()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.toLowerCase(Locale.ROOT)); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.toUpperCase()); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.toUpperCase(Locale.ROOT)); // Noncompliant
+    new Pbkdf2PasswordEncoder(longString2.toString()); // Noncompliant
 
     Object stringAsObject = "abc";
     new Pbkdf2PasswordEncoder(stringAsObject.toString()); // Noncompliant
@@ -149,7 +168,9 @@ public class HardCodedCredentialsShouldNotBeUsedCheckSample {
     java.util.function.Consumer<String> lambda = (arg) -> {
       new Pbkdf2PasswordEncoder(arg);
       String variableWithNullOwner = "abc";
-      new Pbkdf2PasswordEncoder(variableWithNullOwner); // Noncompliant
+      new Pbkdf2PasswordEncoder(variableWithNullOwner); // Compliant, short value filter    
+      String variableWithNullOwner2 = "xvxf6_gaa";
+      new Pbkdf2PasswordEncoder(variableWithNullOwner2); // Noncompliant
     };
 
     byte[] secretBytes = FINAL_SECRET_STRING.getBytes("UTF-8");
@@ -163,7 +184,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheckSample {
       .signWith(paremSignatureAlgorithm, secretBytes); // Noncompliant
 
     Jwts.builder()
-      .signWith(SignatureAlgorithm.HS256, FINAL_SECRET_STRING); // Noncompliant
+      .signWith(SignatureAlgorithm.HS256, FINAL_SECRET_STRING); // Compliant, "hunter2" rejected by the fake value filter
 
     Jwts.builder()
       .signWith(SignatureAlgorithm.HS256, TextCodec.BASE64.encode(FINAL_SECRET_STRING)); // Noncompliant

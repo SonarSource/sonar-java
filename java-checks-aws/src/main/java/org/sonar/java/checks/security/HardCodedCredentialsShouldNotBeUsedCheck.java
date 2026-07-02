@@ -28,7 +28,9 @@ import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.CredentialMethod;
 import org.sonar.java.checks.helpers.CredentialMethodsLoader;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonarsource.analyzer.commons.appsec.SecretClassifier;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -108,6 +110,10 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       ExpressionTree argument = arguments.get(targetArgumentIndex);
       var secondaryLocations = new ArrayList<JavaFileScannerContext.Location>();
       if (isExpressionDerivedFromPlainText(argument, secondaryLocations, new HashSet<>())) {
+        String value = ExpressionsHelper.getConstantValueAsString(argument).value();
+        if (value != null && SecretClassifier.isKnownNonSecret(value)) {
+          continue;
+        }
         reportIssue(argument, ISSUE_MESSAGE, secondaryLocations, null);
       }
     }
