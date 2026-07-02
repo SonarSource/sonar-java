@@ -56,6 +56,11 @@ public class JpaEntityFinalCheck extends IssuableSubscriptionVisitor {
     if (!isJpaEntity(classTree.symbol().metadata())) {
       return;
     }
+    // Hibernate allows final entity classes that implement an interface declaring all attribute getters/setters.
+    // To avoid false positives, we skip classes that implement any interface.
+    if (!classTree.superInterfaces().isEmpty()) {
+      return;
+    }
     ModifierKeywordTree finalModifier = ModifiersUtils.getModifier(classTree.modifiers(), Modifier.FINAL);
     if (finalModifier != null) {
       reportIssue(finalModifier, "Remove this \"final\" modifier from this JPA entity class.");

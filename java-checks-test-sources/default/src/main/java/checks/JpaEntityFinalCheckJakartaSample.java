@@ -56,6 +56,21 @@ class JpaEntityFinalCheckJakartaMappedSuperclassWithFinalMethod { // Compliant -
   }
 }
 
+interface JpaEntityFinalCheckJakartaEntityInterface {
+  Long getId();
+}
+
+@Entity
+final class JpaEntityFinalCheckJakartaFinalEntityWithInterface implements JpaEntityFinalCheckJakartaEntityInterface { // Compliant - implements interface, proxy can be interface-based
+  @Id
+  private Long id;
+
+  @Override
+  public Long getId() {
+    return id;
+  }
+}
+
 @Entity
 class JpaEntityFinalCheckJakartaCompliantEntity { // Compliant
   @Id

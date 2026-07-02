@@ -41,6 +41,21 @@ class JpaEntityFinalCheckJavaxEntityWithFinalMethod { // Compliant - class itsel
   }
 }
 
+interface JpaEntityFinalCheckJavaxEntityInterface {
+  Long getId();
+}
+
+@Entity
+final class JpaEntityFinalCheckJavaxFinalEntityWithInterface implements JpaEntityFinalCheckJavaxEntityInterface { // Compliant - implements interface, proxy can be interface-based
+  @Id
+  private Long id;
+
+  @Override
+  public Long getId() {
+    return id;
+  }
+}
+
 @Entity
 class JpaEntityFinalCheckJavaxCompliantEntity { // Compliant
   @Id
