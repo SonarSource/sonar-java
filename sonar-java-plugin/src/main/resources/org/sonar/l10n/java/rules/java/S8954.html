@@ -1,0 +1,69 @@
+<p>This rule raises an issue when a Bean Validation constraint annotation (such as <code>@NotNull</code>, <code>@Size</code>, <code>@Min</code>,
+<code>@Pattern</code>, etc.) is placed on a <code>static</code> field.</p>
+<h2>Why is this an issue?</h2>
+<p>In Java, class-level members are referred to as <strong>static fields</strong> and <strong>static methods</strong>. The Bean Validation framework
+(such as Hibernate Validator) will ignore constraints placed on any members declared with the <code>static</code> keyword.</p>
+<p>For example, consider this configuration class:</p>
+<pre>
+class Configuration {
+    @NotNull
+    static String apiKey;
+
+    static void setApiKey(String key) {
+        apiKey = key;
+    }
+}
+</pre>
+<p>The <code>@NotNull</code> constraint on the <code>apiKey</code> field will never be evaluated by the Bean Validation framework because the field is
+declared as <code>static</code>. This means that <code>apiKey</code> could be set to <code>null</code> without any validation error being raised,
+potentially leading to runtime errors elsewhere in the application.</p>
+<p>Bean Validation is designed to work with object instances and their state. Static fields belong to the class itself, not to any particular
+instance, so they fall outside the scope of Bean Validation’s validation lifecycle.</p>
+<h3>What is the potential impact?</h3>
+<p>When Bean Validation constraints are placed on static fields, developers may have a false sense of security, believing that the values are being
+validated when they are not. This can lead to several issues:</p>
+<ul>
+  <li><strong>Runtime errors</strong>: Invalid values that should have been caught by validation may cause <code>NullPointerException</code> or other
+  exceptions at runtime.</li>
+  <li><strong>Security vulnerabilities</strong>: Missing validation on configuration values (such as API keys or endpoints) could allow malicious or
+  malformed data to be used.</li>
+  <li><strong>Data integrity problems</strong>: Invalid static configuration values may lead to incorrect application behavior or corrupt data
+  processing.</li>
+  <li><strong>Maintenance confusion</strong>: Future developers may waste time debugging why validation constraints aren’t working as expected.</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Move the constraint to an instance field. This is the most straightforward solution and aligns with how Bean Validation is designed to work.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class User {
+    @NotNull  // Noncompliant
+    private static String defaultRole;
+
+    @NotNull
+    private String username;
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class User {
+    @NotNull
+    private String username;
+
+    @NotNull
+    private String role;
+
+    public User() {
+        this.role = "USER"; // Set default in constructor
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Bean Validation Specification - <a href="https://beanvalidation.org/2.0/spec/">Official Bean Validation 2.0 specification documenting constraint
+  validation behavior</a></li>
+  <li>Hibernate Validator Documentation - <a href="https://hibernate.org/validator/documentation/">Reference implementation documentation for Bean
+  Validation</a></li>
+</ul>
+
