@@ -17,6 +17,7 @@ import java.lang.annotation.Target;
 class BeanValidationConstraintOnStaticFieldCheckSample {
 
   @NotNull // Noncompliant {{Remove this Bean Validation constraint from this static field, as it will be ignored by the Bean Validation framework.}}
+//^^^^^^^^
   private static String staticField;
 
   @Size(min = 1, max = 100) // Noncompliant

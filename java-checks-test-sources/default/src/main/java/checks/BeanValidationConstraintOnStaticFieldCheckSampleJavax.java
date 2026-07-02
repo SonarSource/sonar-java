@@ -56,6 +56,10 @@ class BeanValidationConstraintOnStaticFieldCheckSampleJavax {
 
 class JavaxCustomConstraintValidator implements ConstraintValidator<JavaxCustomConstraint, String> {
   @Override
+  public void initialize(JavaxCustomConstraint constraintAnnotation) {
+  }
+
+  @Override
   public boolean isValid(String value, ConstraintValidatorContext context) {
     return value != null && !value.isEmpty();
   }
