@@ -1,0 +1,76 @@
+<p>This issue arises when Java classes annotated with <code>@Entity</code> or <code>@MappedSuperclass</code> are declared <code>final</code>, or when
+methods within these classes are declared <code>final</code>. JPA providers require the ability to create proxy subclasses for lazy loading and other
+runtime optimizations, which is prevented by the <code>final</code> modifier.</p>
+<h2>Why is this an issue?</h2>
+<p>JPA (Java Persistence API) providers like Hibernate rely on runtime proxy generation to implement several key features:</p>
+<ul>
+  <li><strong>Lazy loading</strong>: Loading associated entities only when they are actually accessed, rather than eagerly fetching everything
+  upfront</li>
+  <li><strong>Dirty checking</strong>: Tracking which fields have changed to optimize database updates</li>
+  <li><strong>Performance optimizations</strong>: Creating lightweight proxies that defer expensive operations</li>
+</ul>
+<p>To create these proxies, the JPA provider needs to generate a subclass of your entity class at runtime. This subclass overrides methods to add the
+lazy loading and tracking behavior.</p>
+<p>When you declare a class or method as <code>final</code>, you prevent inheritance and method overriding. This breaks the proxy mechanism:</p>
+<ul>
+  <li>A <code>final</code> class cannot be subclassed, so no proxy can be created</li>
+  <li>A <code>final</code> method cannot be overridden, so the JPA provider cannot intercept calls to implement lazy loading</li>
+</ul>
+<p>Without working proxies, lazy loading fails. Instead of loading data on demand, the JPA provider may fall back to eager loading, which can cause
+significant performance problems. In some cases, it may even cause runtime exceptions.</p>
+<h3>What is the potential impact?</h3>
+<p>When JPA entities or their methods are marked as <code>final</code>, the application can experience:</p>
+<ul>
+  <li><strong>Performance degradation</strong>: Lazy loading fails, forcing the application to eagerly load entire object graphs. This can result in
+  loading hundreds or thousands of unnecessary records from the database, significantly slowing down queries.</li>
+  <li><strong>Increased memory consumption</strong>: Eagerly loading large object graphs consumes excessive memory, potentially leading to
+  OutOfMemoryErrors in production.</li>
+  <li><strong>Runtime exceptions</strong>: Some JPA providers throw exceptions when they cannot create required proxies, causing application
+  failures.</li>
+  <li><strong>Unpredictable behavior</strong>: The application may work correctly in development or testing (with small datasets) but fail or perform
+  poorly in production (with realistic data volumes).</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Remove the <code>final</code> modifier from the entity class declaration or its methods. This allows the JPA provider to create proxy subclasses
+for lazy loading and other optimizations. If you are using Hibernate, you can also implement an interface that declares all the attribute
+getters/setters.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Entity
+public final class User { // Noncompliant
+    @Id
+    private Long id;
+
+    private String username;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List&lt;Order&gt; orders;
+
+    // getters and setters
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Entity
+public class User {
+    @Id
+    private Long id;
+
+    private String username;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List&lt;Order&gt; orders;
+
+    // getters and setters
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Hibernate ORM User guide - <a href="https://docs.hibernate.org/stable/orm/userguide/html_single/#entity-pojo-final">Prefer non-final
+  classes</a></li>
+  <li>Jakarta Persistence Specification - <a href="https://jakarta.ee/specifications/persistence/3.1/jakarta-persistence-spec-3.1.html#a18">The Entity
+  Class</a></li>
+</ul>
+
