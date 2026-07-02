@@ -37,11 +37,11 @@ validated when they are not. This can lead to several issues:</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 public class User {
-    @NotNull  // Noncompliant
-    private static String defaultRole;
-
     @NotNull
     private String username;
+
+    @NotNull  // Noncompliant
+    private static String defaultRole;
 }
 </pre>
 <h4>Compliant solution</h4>
@@ -61,9 +61,8 @@ public class User {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>Bean Validation Specification - <a href="https://beanvalidation.org/2.0/spec/">Official Bean Validation 2.0 specification documenting constraint
-  validation behavior</a></li>
-  <li>Hibernate Validator Documentation - <a href="https://hibernate.org/validator/documentation/">Reference implementation documentation for Bean
-  Validation</a></li>
+  <li>Jakarta - <a href="https://beanvalidation.org/2.0/spec/">Jakarta Bean Validation specification</a></li>
+  <li>Hibernate Validator - <a
+  href="https://docs.hibernate.org/stable/validator/reference/en-US/html_single/?v=9.1#_field_level_constraints">Field-level constraints</a></li>
 </ul>
 
