@@ -112,7 +112,7 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor implements End
   @Override
   public void endOfAnalysis(ModuleScannerContext context) {
     if (issuesFound.size() > numberOfIssuesToReport) {
-      numberOfIssuesToReport += issuesFound.size() / 10;
+      numberOfIssuesToReport += issuesFound.size() / 15;
       issuesFound.sort((a, b) -> b.brainScore - a.brainScore);
     } else {
       numberOfIssuesToReport = issuesFound.size();

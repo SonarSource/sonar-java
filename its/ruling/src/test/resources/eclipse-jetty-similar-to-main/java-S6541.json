@@ -18,7 +18,6 @@
 783
 ],
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java": [
-416,
 563
 ],
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/QuotedCSVParser.java": [
@@ -31,9 +30,6 @@
 ],
 "org.eclipse.jetty:jetty-project:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MBeanContainer.java": [
 297
-],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CachedContentFactory.java": [
-213
 ],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/CustomRequestLog.java": [
 579
