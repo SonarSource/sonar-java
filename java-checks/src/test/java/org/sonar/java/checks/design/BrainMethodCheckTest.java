@@ -25,7 +25,10 @@ class BrainMethodCheckTest {
 
   private static final String HIGH_COMPLEXITY_FILE_PATH = mainCodeSourcesPath("checks/BrainMethodCheckSample.java");
   private static final String LOW_COMPLEXITY_FILE_PATH = mainCodeSourcesPath("checks/BrainMethodCheckLowerThresholds.java");
+  private static final String SUBSET_SMALL_FILE_PATH = mainCodeSourcesPath("checks/BrainMethodCheckSubsetSmall.java");
   private static final String SUBSET_FILE_PATH = mainCodeSourcesPath("checks/BrainMethodCheckSubsetOfIssues.java");
+  private static final String SUBSET_LARGE_FILE_PATH = mainCodeSourcesPath("checks/BrainMethodCheckSubsetLarge.java");
+  private static final String SUBSET_CAPPED_FILE_PATH = mainCodeSourcesPath("checks/BrainMethodCheckSubsetCapped.java");
 
   @Test
   void testHighComplexityFileWithDefaultThresholds() {
@@ -73,20 +76,66 @@ class BrainMethodCheckTest {
   }
 
   @Test
-  void testSubsetOfIssuesWithLowerThresholds() {
-    var check = new BrainMethodCheck();
+  void testSubsetAllIssuesReportedBelowThreshold() {
+    // 3 issues found < numberOfFoundIssuesThreshold=5: all issues are reported
+    CheckVerifier.newVerifier()
+      .onFile(SUBSET_SMALL_FILE_PATH)
+      .withChecks(checkForSubsetTests())
+      .verifyIssues();
+  }
 
+  @Test
+  void testSubsetPercentageAppliedBetweenThresholds() {
+    // 10 issues found, numberOfFoundIssuesThreshold(5) < 10 < numberOfIssuesPerModuleThreshold(20):
+    // reports min(10 * 10 / 100, 20) = 1 issue
+    CheckVerifier.newVerifier()
+      .onFile(SUBSET_FILE_PATH)
+      .withChecks(checkForSubsetTests())
+      .verifyIssues();
+  }
+
+  @Test
+  void testSubsetPercentageAppliedAboveModuleThreshold() {
+    // 21 issues found > numberOfIssuesPerModuleThreshold=20:
+    // reports min(21 * 10 / 100, 20) = 2 issues
+    CheckVerifier.newVerifier()
+      .onFile(SUBSET_LARGE_FILE_PATH)
+      .withChecks(checkForSubsetTests())
+      .verifyIssues();
+  }
+
+  @Test
+  void testSubsetCappedAtModuleThreshold() {
+    // 60 issues found, 10% = 6 > numberOfIssuesPerModuleThreshold=5:
+    // reports min(60 * 10 / 100, 5) = 5 issues — cap is the binding constraint
+    CheckVerifier.newVerifier()
+      .onFile(SUBSET_CAPPED_FILE_PATH)
+      .withChecks(checkForCappedSubsetTest())
+      .verifyIssues();
+  }
+
+  private static BrainMethodCheck checkForSubsetTests() {
+    var check = new BrainMethodCheck();
     check.locThreshold = 4;
     check.nodvThreshold = 2;
     check.cyclomaticThreshold = 1;
     check.nestingThreshold = 1;
+    check.numberOfFoundIssuesThreshold = 5;
+    check.issuesToReportPercentage = 10;
+    check.numberOfIssuesPerModuleThreshold = 20;
+    return check;
+  }
 
-    check.numberOfIssuesToReport = 1;
-
-    CheckVerifier.newVerifier()
-      .onFile(SUBSET_FILE_PATH)
-      .withChecks(check)
-      .verifyIssues();
+  private static BrainMethodCheck checkForCappedSubsetTest() {
+    var check = new BrainMethodCheck();
+    check.locThreshold = 4;
+    check.nodvThreshold = 2;
+    check.cyclomaticThreshold = 1;
+    check.nestingThreshold = 1;
+    check.numberOfFoundIssuesThreshold = 5;
+    check.issuesToReportPercentage = 10;
+    check.numberOfIssuesPerModuleThreshold = 5;
+    return check;
   }
 
 }
