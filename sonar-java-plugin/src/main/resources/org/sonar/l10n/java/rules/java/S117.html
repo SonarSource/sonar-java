@@ -39,6 +39,19 @@ try {
 } catch (Exception e) { // Compliant
 }
 </pre>
+<p>Local variables inside a method body may have one or more leading underscores, trailing underscores, or both. This convention signals that the
+variable is temporary, unimportant, or intentionally unnamed. The name between the underscores must still match the configured format.</p>
+<pre>
+public class MyClass {
+    public void doSomething() {
+      int _result = compute();   // Compliant
+      int value__ = 0;           // Compliant
+      int __tmp__ = swap();      // Compliant
+    }
+}
+</pre>
+<p>Note that this exception applies only to local variables declared inside a method body. Method parameters must match the configured format without
+leading or trailing underscores.</p>
 <h2>How to fix it</h2>
 <p>First, familiarize yourself with the particular naming convention of the project in question. Then, update the name to match the convention, as
 well as all usages of the name. For many IDEs, you can use built-in renaming and refactoring features to update all usages at once.</p>
@@ -47,8 +60,9 @@ well as all usages of the name. For many IDEs, you can use built-in renaming and
 <p>With the default regular expression <code>^[a-z][a-zA-Z0-9]*$</code>:</p>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 public class MyClass {
-    public void doSomething(int myParam) {
-      int LOCAL;    // Noncompliant
+    public void doSomething(int _myParam) {  // Noncompliant - method parameters cannot have leading or trailing underscores
+      int LOCAL;    // Noncompliant - local variable does not match the naming convention
+      int __BAD__;  // Noncompliant - inner part "BAD" does not match the naming convention
       // ...
     }
 }
@@ -56,8 +70,11 @@ public class MyClass {
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 public class MyClass {
-    public void doSomething(int my_param) {
-      int local;
+    public void doSomething(int myParam) {  // Compliant
+      int local;      // Compliant
+      int _local;     // Compliant - leading underscore allowed for local variables
+      int result__;   // Compliant - trailing underscores allowed for local variables
+      int __tmp__;    // Compliant - leading and trailing underscores allowed for local variables
       // ...
     }
 }
