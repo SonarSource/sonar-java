@@ -48,6 +48,12 @@ class BeanValidationConstraintOnStaticFieldCheckSample {
 
   @CustomConstraint // Compliant - instance field
   private String customConstraintInstanceField;
+
+  @Pattern.List({@Pattern(regexp = "[a-z]+"), @Pattern(regexp = ".{1,10}")}) // Noncompliant
+  private static String patternListStaticField;
+
+  @Pattern.List({@Pattern(regexp = "[a-z]+"), @Pattern(regexp = ".{1,10}")}) // Compliant - instance field
+  private String patternListInstanceField;
 }
 
 @Constraint(validatedBy = CustomConstraintValidator.class)
