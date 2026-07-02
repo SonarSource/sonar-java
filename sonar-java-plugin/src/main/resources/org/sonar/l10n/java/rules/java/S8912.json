@@ -1,0 +1,26 @@
+{
+  "title": "Custom CredentialsProvider implementations should be annotated with @Unremovable",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "quarkus",
+    "credentials",
+    "cdi"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-8912",
+  "sqKey": "S8912",
+  "scope": "All",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "SECURITY": "MEDIUM",
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  }
+}
