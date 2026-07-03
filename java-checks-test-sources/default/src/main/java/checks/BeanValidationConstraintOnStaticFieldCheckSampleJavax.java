@@ -15,18 +15,17 @@ import java.lang.annotation.Target;
 
 class BeanValidationConstraintOnStaticFieldCheckSampleJavax {
 
-  @NotNull
-  private static String staticField; // Noncompliant {{Remove the "static" modifier from this field.}}
-  //      ^^^^^^
+  @NotNull // Noncompliant {{Move this constraint to an instance field.}} [[sc=3;ec=11]]
+  private static String staticField;
 
-  @Size(min = 1, max = 100)
-  static String anotherStaticField; // Noncompliant
+  @Size(min = 1, max = 100) // Noncompliant
+  static String anotherStaticField;
 
-  @Min(1)
-  private static int minStaticField; // Noncompliant
+  @Min(1) // Noncompliant
+  private static int minStaticField;
 
-  @Pattern(regexp = ".*")
-  private static String patternStaticField; // Noncompliant
+  @Pattern(regexp = ".*") // Noncompliant
+  private static String patternStaticField;
 
   @NotNull // Compliant - instance field
   private String instanceField;
@@ -39,8 +38,8 @@ class BeanValidationConstraintOnStaticFieldCheckSampleJavax {
   @SuppressWarnings("unused") // Compliant - not a Bean Validation constraint
   private static String suppressedStaticField;
 
-  @JavaxCustomConstraint
-  private static String customConstraintStaticField; // Noncompliant
+  @JavaxCustomConstraint // Noncompliant
+  private static String customConstraintStaticField;
 
   @JavaxCustomConstraint // Compliant - instance field
   private String customConstraintInstanceField;

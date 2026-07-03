@@ -19,11 +19,9 @@ package org.sonar.java.checks;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -45,11 +43,10 @@ public class BeanValidationConstraintOnStaticFieldCheck extends IssuableSubscrip
     if (!variable.symbol().isStatic()) {
       return;
     }
-    boolean hasConstraint = variable.modifiers().annotations().stream()
-      .anyMatch(BeanValidationConstraintOnStaticFieldCheck::isBeanValidationConstraint);
-    if (hasConstraint) {
-      ModifiersUtils.findModifier(variable.modifiers(), Modifier.STATIC)
-        .ifPresent(staticModifier -> reportIssue(staticModifier, "Remove the \"static\" modifier from this field."));
+    for (AnnotationTree annotation : variable.modifiers().annotations()) {
+      if (isBeanValidationConstraint(annotation)) {
+        reportIssue(annotation, "Move this constraint to an instance field.");
+      }
     }
   }
 

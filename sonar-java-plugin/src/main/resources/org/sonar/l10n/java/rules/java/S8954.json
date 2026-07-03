@@ -9,7 +9,8 @@
   "tags": [
     "validation",
     "pitfall",
-    "bug"
+    "bug",
+    "jakarta"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-8954",
