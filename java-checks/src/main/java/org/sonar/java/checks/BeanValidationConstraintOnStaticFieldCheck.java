@@ -19,12 +19,11 @@ package org.sonar.java.checks;
 import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -46,10 +45,11 @@ public class BeanValidationConstraintOnStaticFieldCheck extends IssuableSubscrip
     if (!variable.symbol().isStatic()) {
       return;
     }
-    for (AnnotationTree annotation : variable.modifiers().annotations()) {
-      if (isBeanValidationConstraint(annotation)) {
-        reportIssue(annotation, "Remove this Bean Validation constraint from this static field, as it will be ignored by the Bean Validation framework.");
-      }
+    boolean hasConstraint = variable.modifiers().annotations().stream()
+      .anyMatch(BeanValidationConstraintOnStaticFieldCheck::isBeanValidationConstraint);
+    if (hasConstraint) {
+      ModifiersUtils.findModifier(variable.modifiers(), Modifier.STATIC)
+        .ifPresent(staticModifier -> reportIssue(staticModifier, "Remove the \"static\" modifier from this field."));
     }
   }
 
@@ -59,26 +59,6 @@ public class BeanValidationConstraintOnStaticFieldCheck extends IssuableSubscrip
       return false;
     }
     SymbolMetadata metadata = annotationType.symbol().metadata();
-    if (CONSTRAINT_META_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith)) {
-      return true;
-    }
-    // Also detect repeatable constraint container annotations (e.g. @Pattern.List)
-    return annotation.arguments().stream().anyMatch(BeanValidationConstraintOnStaticFieldCheck::containsConstraintAnnotation);
-  }
-
-  private static boolean containsConstraintAnnotation(ExpressionTree expr) {
-    if (expr.is(Tree.Kind.ASSIGNMENT)) {
-      return containsConstraintAnnotation(((AssignmentExpressionTree) expr).expression());
-    }
-    if (expr.is(Tree.Kind.NEW_ARRAY)) {
-      return ((NewArrayTree) expr).initializers().stream()
-        .filter(e -> e.is(Tree.Kind.ANNOTATION))
-        .map(AnnotationTree.class::cast)
-        .anyMatch(BeanValidationConstraintOnStaticFieldCheck::isBeanValidationConstraint);
-    }
-    if (expr.is(Tree.Kind.ANNOTATION)) {
-      return isBeanValidationConstraint((AnnotationTree) expr);
-    }
-    return false;
+    return CONSTRAINT_META_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
   }
 }

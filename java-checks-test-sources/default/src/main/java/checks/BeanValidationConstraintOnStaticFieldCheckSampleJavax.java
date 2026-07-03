@@ -15,17 +15,18 @@ import java.lang.annotation.Target;
 
 class BeanValidationConstraintOnStaticFieldCheckSampleJavax {
 
-  @NotNull // Noncompliant {{Remove this Bean Validation constraint from this static field, as it will be ignored by the Bean Validation framework.}}
-  private static String staticField;
+  @NotNull
+  private static String staticField; // Noncompliant {{Remove the "static" modifier from this field.}}
+  //      ^^^^^^
 
-  @Size(min = 1, max = 100) // Noncompliant
-  static String anotherStaticField;
+  @Size(min = 1, max = 100)
+  static String anotherStaticField; // Noncompliant
 
-  @Min(1) // Noncompliant
-  private static int minStaticField;
+  @Min(1)
+  private static int minStaticField; // Noncompliant
 
-  @Pattern(regexp = ".*") // Noncompliant
-  private static String patternStaticField;
+  @Pattern(regexp = ".*")
+  private static String patternStaticField; // Noncompliant
 
   @NotNull // Compliant - instance field
   private String instanceField;
@@ -38,17 +39,14 @@ class BeanValidationConstraintOnStaticFieldCheckSampleJavax {
   @SuppressWarnings("unused") // Compliant - not a Bean Validation constraint
   private static String suppressedStaticField;
 
-  @JavaxCustomConstraint // Noncompliant
-  private static String customConstraintStaticField;
+  @JavaxCustomConstraint
+  private static String customConstraintStaticField; // Noncompliant
 
   @JavaxCustomConstraint // Compliant - instance field
   private String customConstraintInstanceField;
 
-  @Pattern.List({@Pattern(regexp = "[a-z]+"), @Pattern(regexp = ".{1,10}")}) // Noncompliant
+  @Pattern.List({@Pattern(regexp = "[a-z]+"), @Pattern(regexp = ".{1,10}")}) // Compliant - container annotations are not detected (limitation)
   private static String patternListStaticField;
-
-  @Pattern.List({@Pattern(regexp = "[a-z]+"), @Pattern(regexp = ".{1,10}")}) // Compliant
-  private String patternListInstanceField;
 }
 
 @Constraint(validatedBy = JavaxCustomConstraintValidator.class)

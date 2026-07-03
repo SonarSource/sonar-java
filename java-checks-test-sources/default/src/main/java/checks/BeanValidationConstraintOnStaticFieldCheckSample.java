@@ -16,21 +16,21 @@ import java.lang.annotation.Target;
 
 class BeanValidationConstraintOnStaticFieldCheckSample {
 
-  @NotNull // Noncompliant {{Remove this Bean Validation constraint from this static field, as it will be ignored by the Bean Validation framework.}}
-//^^^^^^^^
-  private static String staticField;
+  @NotNull
+  private static String staticField; // Noncompliant {{Remove the "static" modifier from this field.}}
+  //      ^^^^^^
 
-  @Size(min = 1, max = 100) // Noncompliant
-  static String anotherStaticField;
+  @Size(min = 1, max = 100)
+  static String anotherStaticField; // Noncompliant
 
-  @Min(1) // Noncompliant
-  private static int minStaticField;
+  @Min(1)
+  private static int minStaticField; // Noncompliant
 
-  @Pattern(regexp = ".*") // Noncompliant
-  private static String patternStaticField;
+  @Pattern(regexp = ".*")
+  private static String patternStaticField; // Noncompliant
 
-  @NotBlank // Noncompliant
-  private static String notBlankStaticField;
+  @NotBlank
+  private static String notBlankStaticField; // Noncompliant
 
   @NotNull // Compliant - instance field
   private String instanceField;
@@ -43,17 +43,14 @@ class BeanValidationConstraintOnStaticFieldCheckSample {
   @SuppressWarnings("unused") // Compliant - not a Bean Validation constraint
   private static String suppressedStaticField;
 
-  @CustomConstraint // Noncompliant
-  private static String customConstraintStaticField;
+  @CustomConstraint
+  private static String customConstraintStaticField; // Noncompliant
 
   @CustomConstraint // Compliant - instance field
   private String customConstraintInstanceField;
 
-  @Pattern.List({@Pattern(regexp = "[a-z]+"), @Pattern(regexp = ".{1,10}")}) // Noncompliant
+  @Pattern.List({@Pattern(regexp = "[a-z]+"), @Pattern(regexp = ".{1,10}")}) // Compliant - container annotations are not detected (limitation)
   private static String patternListStaticField;
-
-  @Pattern.List({@Pattern(regexp = "[a-z]+"), @Pattern(regexp = ".{1,10}")}) // Compliant - instance field
-  private String patternListInstanceField;
 }
 
 @Constraint(validatedBy = CustomConstraintValidator.class)
