@@ -1,22 +1,25 @@
 {
   "title": "Interfaces annotated with \"@Mapper\" should contain at least one \"@DaoFactory\" method",
   "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "quarkus",
+    "orm",
+    "api"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-8910",
+  "sqKey": "S8910",
+  "scope": "All",
+  "quickfix": "unknown",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "MEDIUM"
     },
     "attribute": "CONVENTIONAL"
-  },
-  "status": "ready",
-  "remediation": {
-    "func": "Constant/Issue",
-    "constantCost": "5min"
-  },
-  "tags": [
-    "confusing"
-  ],
-  "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-8910",
-  "sqKey": "S8910",
-  "scope": "All"
+  }
 }

@@ -3,10 +3,13 @@
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
-    "func": "Constant/Issue",
-    "constantCost": "5min"
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
   },
-  "tags": [],
+  "tags": [
+    "api-design",
+    "confusing"
+  ],
   "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-8908",
   "sqKey": "S8908",
@@ -16,6 +19,6 @@
     "impacts": {
       "MAINTAINABILITY": "LOW"
     },
-    "attribute": "CLEAR"
+    "attribute": "CONVENTIONAL"
   }
 }

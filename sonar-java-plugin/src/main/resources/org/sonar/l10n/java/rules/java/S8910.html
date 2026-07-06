@@ -1,13 +1,21 @@
+<p>This rule raises an issue when an interface is designated as a mapper type but does not contain any methods designated as data access object
+factory methods.</p>
+<p>In Java, this specifically refers to interfaces annotated with <code>@Mapper</code> that lack methods annotated with <code>@DaoFactory</code>.</p>
 <h2>Why is this an issue?</h2>
-<p>In object-relational mapping frameworks that use code generation, a mapper interface serves as a factory for constructing Data Access Object (DAO) instances. This is a core design pattern of such libraries.</p>
-<p>The mapper's sole purpose is to provide factory method declarations that create and return DAO beans. These factory methods enable dependency injection of DAOs throughout your application. Without any factory method declarations, the mapper interface:</p>
+<p>In object-relational mapping frameworks that use code generation, a mapper interface serves as a factory for constructing Data Access Object (DAO)
+instances. This is a core design pattern of such libraries.</p>
+<p>The mapper’s sole purpose is to provide factory method declarations that create and return DAO beans. These factory methods enable dependency
+injection of DAOs throughout your application. Without any factory method declarations, the mapper interface:</p>
 <ul>
   <li>Cannot construct any DAO instances</li>
   <li>Provides no functionality to the application</li>
   <li>Serves no purpose in the codebase</li>
 </ul>
-<p>The framework's code generation mechanism generates implementation code based on the factory method declarations present in the mapper interface. An empty mapper results in generated code that does nothing useful.</p>
-<p>In the DataStax Object Mapper framework, the mapper interface uses the <code>@Mapper</code> annotation, and factory methods are declared using the <code>@DaoFactory</code> annotation. According to the Quarkus documentation: "If you intend to construct and inject a specific DAO bean in your own code, then you first must add a <code>@DaoFactory</code> method for it in a <code>@Mapper</code> interface."</p>
+<p>The framework’s code generation mechanism generates implementation code based on the factory method declarations present in the mapper interface.
+An empty mapper results in generated code that does nothing useful.</p>
+<p>In the DataStax Object Mapper framework, the mapper interface uses the <code>@Mapper</code> annotation, and factory methods are declared using the
+<code>@DaoFactory</code> annotation. According to the Quarkus documentation: "If you intend to construct and inject a specific DAO bean in your own
+code, then you first must add a <code>@DaoFactory</code> method for it in a <code>@Mapper</code> interface."</p>
 <h3>What is the potential impact?</h3>
 <p>An interface marked for code generation without the expected factory methods creates unnecessary code that serves no purpose. This can:</p>
 <ul>
@@ -17,7 +25,8 @@
   <li>Make the codebase harder to maintain</li>
 </ul>
 <h2>How to fix it</h2>
-<p>Add at least one <code>@DaoFactory</code> method to the mapper interface. The method should return a DAO interface that is annotated with <code>@Dao</code>.</p>
+<p>Add at least one <code>@DaoFactory</code> method to the mapper interface. The method should return a DAO interface that is annotated with
+<code>@Dao</code>.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -37,6 +46,7 @@ public interface FruitMapper {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li><a href="https://quarkus.io/guides/cassandra">Quarkus - Using the Cassandra Client</a> - Official Quarkus guide explaining the @Mapper and @DaoFactory pattern</li>
-  <li><a href="https://docs.datastax.com/en/developer/java-driver/latest/manual/mapper/">DataStax Object Mapper Documentation</a> - Comprehensive documentation for the DataStax Java Driver Object Mapper</li>
+  <li>Quarkus Guide - <a href="https://quarkus.io/guides/cassandra">Using the Cassandra Client</a></li>
+  <li>DataStax Documentation - <a href="https://docs.datastax.com/en/developer/java-driver/latest/manual/mapper/">DataStax Java Driver</a></li>
 </ul>
+

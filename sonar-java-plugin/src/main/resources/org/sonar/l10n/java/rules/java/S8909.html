@@ -60,8 +60,11 @@ public class CustomKeyGen implements CacheKeyGenerator {
 <pre data-diff-id="1" data-diff-type="compliant">
 @ApplicationScoped
 public class CustomKeyGen implements CacheKeyGenerator {
-    @Inject
-    ConfigService configService;
+    private final ConfigService configService;
+
+    CustomKeyGen(ConfigService configService) {
+        this.configService = configService;
+    }
 
     @Override
     public Object generate(Method method, Object... methodParams) {
@@ -71,12 +74,15 @@ public class CustomKeyGen implements CacheKeyGenerator {
 }
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li>Quarkus CDI Reference - <a href="https://quarkus.io/guides/cdi-reference">Guide to using CDI (Contexts and Dependency Injection) in Quarkus
-  applications</a></li>
+  <li>Quarkus Caching Guide - Cache Key Generator - <a
+  href="https://quarkus.io/guides/cache#generating-a-cache-key-with-cachekeygenerator">Application Data Caching</a></li>
+  <li>Quarkus CDI Reference - <a href="https://quarkus.io/guides/cdi-reference">Contexts and Dependency Injection</a></li>
 </ul>
 <h3>Related rules</h3>
 <ul>
   <li>{rule:java:S2060} - Classes should not be coupled to their subclasses through constructors or static methods</li>
+  <li>{rule:java:S3306} - Constructor injection should be used instead of field injection</li>
 </ul>
 

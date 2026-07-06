@@ -1,5 +1,4 @@
-<p>This rule raises an issue when a class implements an interface that extends one of the framework’s provided base resource interfaces for REST
-endpoints with built-in database entity operations.</p>
+<p>This rule raises an issue when a class implements an interface that extends one of the framework’s provided base resource interfaces.</p>
 <p>In Java with Quarkus, these interfaces are specifically: <code>PanacheEntityResource</code>, <code>PanacheRepositoryResource</code>,
 <code>PanacheMongoEntityResource</code>, and <code>PanacheMongoRepositoryResource</code>.</p>
 <h2>Why is this an issue?</h2>
@@ -63,10 +62,6 @@ public interface PeopleResource extends PanacheEntityResource&lt;Person, Long&gt
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>Quarkus - Generating Jakarta REST resources with Panache - <a href="https://quarkus.io/guides/rest-data-panache">Official Quarkus documentation
-  on REST Data with Panache, including how to properly use resource interfaces and add custom methods</a></li>
-  <li>Quarkus - Adding additional methods to the generated resource - <a
-  href="https://quarkus.io/guides/rest-data-panache#adding-additional-methods-to-the-generated-resource">Specific section on how to correctly add
-  custom methods using default interface methods</a></li>
+  <li>Quarkus Guide - <a href="https://quarkus.io/guides/rest-data-panache">Generating Jakarta REST resources with Panache</a></li>
 </ul>
 
