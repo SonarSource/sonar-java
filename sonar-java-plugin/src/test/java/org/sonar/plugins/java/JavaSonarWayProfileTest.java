@@ -50,10 +50,14 @@ class JavaSonarWayProfileTest {
       RuleKey.of("javasecurity", "S6287")));
     ProfileRegistrar barCustomRules = registrarContext -> registrarContext.registerDefaultQualityProfileRules(List.of(
       RuleKey.of("javabugs", "S6466")));
+    ProfileRegistrar bazCustomRules = registrarContext ->
+      registrarContext.registerRules("Sonar agentic AI", List.of(RuleKey.of("java", "S1107")));
 
     JavaSonarWayProfile profileDef = new JavaSonarWayProfile(new ProfileRegistrar[] {
       fooCustomRules,
-      barCustomRules});
+      barCustomRules,
+      bazCustomRules
+    });
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profileDef.define(context);
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile profile = context.profile("java", "Sonar way");
@@ -72,7 +76,8 @@ class JavaSonarWayProfileTest {
       .doesNotContain(RuleKey.of("java", "S00116"))
       .contains(RuleKey.of("java", "S116"))
       .doesNotContain(RuleKey.of("java", "S6549"))
-      .doesNotContain(RuleKey.of("javasecurity", "S116"))
+      .doesNotContain(RuleKey.of("java", "S1107"))
+      .doesNotContain(RuleKey.of("javabugs", "S116"))
       .contains(RuleKey.of("javasecurity", "S6549"))
       .contains(RuleKey.of("javasecurity", "S6287"))
       .contains(RuleKey.of("javabugs", "S6466"));

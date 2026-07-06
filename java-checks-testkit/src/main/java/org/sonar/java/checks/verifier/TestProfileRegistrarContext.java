@@ -17,18 +17,22 @@
 package org.sonar.java.checks.verifier;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.java.api.ProfileRegistrar;
 
 public class TestProfileRegistrarContext implements ProfileRegistrar.RegistrarContext {
 
-  public final Set<RuleKey> defaultQualityProfileRules = new HashSet<>();
+  public final Map<String, Set<RuleKey>> rulesByQualityProfile = new HashMap<>();
 
   @Override
-  public void registerDefaultQualityProfileRules(Collection<RuleKey> ruleKeys) {
-    defaultQualityProfileRules.addAll(ruleKeys);
+  public void registerRules(String qualityProfileName, Collection<RuleKey> ruleKeys) {
+    rulesByQualityProfile
+      .computeIfAbsent(qualityProfileName, k -> new HashSet<>())
+      .addAll(ruleKeys);
   }
 
 }

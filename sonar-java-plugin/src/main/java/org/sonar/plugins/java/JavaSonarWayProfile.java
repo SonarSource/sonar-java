@@ -27,6 +27,7 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
  */
 @SonarLintSide
 public class JavaSonarWayProfile extends BuiltInJavaQualityProfile {
+  static final String PROFILE_NAME = SONAR_WAY_PROFILE;
   static final String SONAR_WAY_PATH = "/org/sonar/l10n/java/rules/java/Sonar_way_profile.json";
 
   /**
@@ -42,7 +43,7 @@ public class JavaSonarWayProfile extends BuiltInJavaQualityProfile {
 
   @Override
   String getProfileName() {
-    return "Sonar way";
+    return PROFILE_NAME;
   }
 
   @Override
