@@ -68,7 +68,11 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor implements End
   }
 
   @VisibleForTesting
-  int numberOfIssuesToReport = 10;
+  int numberOfFoundIssuesThreshold = 10;
+  @VisibleForTesting
+  int numberOfAdditionalIssuesThreshold = 20;
+  @VisibleForTesting
+  int issuesToReportPercentage = 10;
   private final List<IssueFound> issuesFound = new ArrayList<>();
 
   @Override
@@ -111,11 +115,13 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor implements End
 
   @Override
   public void endOfAnalysis(ModuleScannerContext context) {
-    if (issuesFound.size() > numberOfIssuesToReport) {
-      numberOfIssuesToReport += issuesFound.size() / 10;
+    int numberOfIssuesToReport = issuesFound.size();
+    if (numberOfIssuesToReport > numberOfFoundIssuesThreshold) {
+      // To reduce noise in large codebases, always report at least numberOfFoundIssuesThreshold issues,
+      // plus a percentage of total found — but the percentage component is capped at numberOfAdditionalIssuesThreshold.
+      numberOfIssuesToReport = numberOfFoundIssuesThreshold
+        + Math.min((numberOfIssuesToReport * issuesToReportPercentage) / 100, numberOfAdditionalIssuesThreshold);
       issuesFound.sort((a, b) -> b.brainScore - a.brainScore);
-    } else {
-      numberOfIssuesToReport = issuesFound.size();
     }
     var defaultContext = (DefaultModuleScannerContext) context;
     for (int i = 0; i < numberOfIssuesToReport; i++) {
