@@ -18,7 +18,6 @@
   "quickfix": "targeted",
   "code": {
     "impacts": {
-      "SECURITY": "MEDIUM",
       "RELIABILITY": "HIGH"
     },
     "attribute": "COMPLETE"
