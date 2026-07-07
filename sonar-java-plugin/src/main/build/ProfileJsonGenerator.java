@@ -29,8 +29,8 @@ public class ProfileJsonGenerator {
   private static final String PROFILES_RELATIVE_PATH = "src/main/resources/profiles";
 
   private static final Map<String, String> PROFILES = Map.of(
-    "sonar_way", "Sonar way",
-    "sonar_agentic_ai", "Sonar agentic AI"
+    "Sonar_way", "Sonar way",
+    "Sonar_agentic_AI", "Sonar agentic AI"
   );
 
   public static void main(String[] args) throws IOException {
