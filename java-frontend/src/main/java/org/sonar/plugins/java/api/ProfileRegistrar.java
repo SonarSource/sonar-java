@@ -23,12 +23,13 @@ import org.sonar.java.annotations.Beta;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**
- * This class can be extended to provide additional rule keys in the builtin default quality profile.
+ * This class can be extended to provide additional rule keys in builtin quality profiles.
  *
  * <pre>
  *   {@code
  *     public void register(RegistrarContext registrarContext) {
  *       registrarContext.registerDefaultQualityProfileRules(ruleKeys);
+ *       registrarContext.registerRules("Sonar agentic AI", ruleKeys);
  *     }
  *   }
  * </pre>
@@ -46,16 +47,27 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 public interface ProfileRegistrar {
 
   /**
-   * This method is called on server side and during an analysis to modify the builtin default quality profile for java.
+   * This method is called on server side and during an analysis to modify builtin quality profiles for Java.
    */
   void register(RegistrarContext registrarContext);
 
   interface RegistrarContext {
 
     /**
-     * Registers additional rules into the "Sonar Way" default quality profile for the language "java".
+     * Registers additional rules into the "Sonar way" default quality profile for the language "java".
      */
-    void registerDefaultQualityProfileRules(Collection<RuleKey> ruleKeys);
+    default void registerDefaultQualityProfileRules(Collection<RuleKey> ruleKeys) {
+      registerRules("Sonar way", ruleKeys);
+    }
+
+    /**
+     * Registers additional rules into a builtin quality profile for the language "java".
+     *
+     * <p>
+     * The profile name is expected to match the profile string coming from RSPEC metadata ({@code defaultQualityProfiles}).
+     * </p>
+     */
+    void registerRules(String qualityProfileName, Collection<RuleKey> ruleKeys);
 
   }
 

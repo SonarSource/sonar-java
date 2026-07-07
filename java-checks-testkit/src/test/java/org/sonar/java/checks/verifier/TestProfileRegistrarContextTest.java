@@ -28,7 +28,10 @@ class TestProfileRegistrarContextTest {
   void store_registration() {
     TestProfileRegistrarContext context = new TestProfileRegistrarContext();
     context.registerDefaultQualityProfileRules(List.of(RuleKey.of("java", "S1234")));
-    assertThat(context.defaultQualityProfileRules).containsExactly(RuleKey.of("java", "S1234"));
+    context.registerRules("Sonar way", List.of(RuleKey.of("java", "S1235")));
+    context.registerRules("Sonar agentic AI", List.of(RuleKey.of("java", "S4321")));
+    assertThat(context.rulesByQualityProfile.get("Sonar way")).containsOnly(RuleKey.of("java", "S1234"), RuleKey.of("java", "S1235"));
+    assertThat(context.rulesByQualityProfile.get("Sonar agentic AI")).containsExactly(RuleKey.of("java", "S4321"));
   }
 
 }

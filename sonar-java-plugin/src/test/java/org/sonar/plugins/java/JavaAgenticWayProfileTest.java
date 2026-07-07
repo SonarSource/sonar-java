@@ -32,7 +32,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.profile.BuiltInQualityProfilesDefinition;
+import org.sonar.plugins.java.api.ProfileRegistrar;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +44,12 @@ class JavaAgenticWayProfileTest {
 
   @Test
   void profile_is_registered_as_expected() {
-    JavaAgenticAIProfile profile = new JavaAgenticAIProfile();
+    ProfileRegistrar agenticCustomRules = registrarContext ->
+      registrarContext.registerRules("Sonar agentic AI", List.of(RuleKey.of("java", "S1107")));
+    ProfileRegistrar sonarWayCustomRules = registrarContext ->
+      registrarContext.registerDefaultQualityProfileRules(List.of(RuleKey.of("java", "S1108")));
+
+    JavaAgenticAIProfile profile = new JavaAgenticAIProfile(new ProfileRegistrar[]{agenticCustomRules, sonarWayCustomRules});
     BuiltInQualityProfilesDefinition.Context context = new BuiltInQualityProfilesDefinition.Context();
     profile.define(context);
 
@@ -53,7 +60,7 @@ class JavaAgenticWayProfileTest {
     BuiltInQualityProfilesDefinition.BuiltInQualityProfile actualProfile = profilesPerLanguages.get("java").get("Sonar agentic AI");
     assertThat(actualProfile.isDefault()).isFalse();
     assertThat(actualProfile.rules())
-      .hasSize(465)
+      .hasSize(466)
       .extracting(BuiltInQualityProfilesDefinition.BuiltInActiveRule::ruleKey)
       .doesNotContainAnyElementsOf(List.of(
         "S101",
@@ -113,6 +120,7 @@ class JavaAgenticWayProfileTest {
         "S6242",
         "S6244",
         "S6246",
+        "S1108",
         "S6548",
         "S6804",
         "S6813",
@@ -125,7 +133,10 @@ class JavaAgenticWayProfileTest {
         "S8491",
         "S8692",
         "S8714"
-        ));
+      ))
+      .contains(
+        "S1107"
+      );
   }
 
 

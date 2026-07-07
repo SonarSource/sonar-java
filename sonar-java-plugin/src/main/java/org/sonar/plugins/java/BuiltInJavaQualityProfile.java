@@ -45,7 +45,10 @@ abstract class BuiltInJavaQualityProfile implements BuiltInQualityProfilesDefini
   static final String GET_REPOSITORY_KEY = "getRepositoryKey";
   static final String SECURITY_REPOSITORY_KEY = "javasecurity";
   static final String DBD_REPOSITORY_KEY = "javabugs";
+  static final String SONAR_WAY_PROFILE = "Sonar way";
+  static final String SONAR_AGENTIC_PROFILE = "Sonar agentic AI";
 
+  private static final Set<String> BUILTIN_PROFILES = Set.of(SONAR_WAY_PROFILE, SONAR_AGENTIC_PROFILE);
 
   protected final ProfileRegistrar[] profileRegistrars;
 
@@ -83,11 +86,17 @@ abstract class BuiltInJavaQualityProfile implements BuiltInQualityProfilesDefini
     profile.done();
   }
 
-  static Set<RuleKey> registerRulesFromJson(String pathToJsonProfile, @Nullable ProfileRegistrar[] profileRegistrars) {
+  Set<RuleKey> registerRulesFromJson(String pathToJsonProfile, @Nullable ProfileRegistrar[] profileRegistrars) {
     Set<RuleKey> ruleKeys = new HashSet<>(loadRuleKeys(pathToJsonProfile));
     if (profileRegistrars != null) {
       for (ProfileRegistrar profileRegistrar : profileRegistrars) {
-        profileRegistrar.register(ruleKeys::addAll);
+        profileRegistrar.register((qualityProfileName, registrarRuleKeys) -> {
+          if (qualityProfileName.equals(getProfileName())) {
+            ruleKeys.addAll(registrarRuleKeys);
+          } else if (!BUILTIN_PROFILES.contains(qualityProfileName)) {
+            LOG.debug("No builtin quality profile called '{}' was found: skipping rules registration.", qualityProfileName);
+          }
+        });
       }
     }
 
