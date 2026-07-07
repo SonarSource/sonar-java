@@ -1,0 +1,97 @@
+<p>A component annotated or configured as stateless in an enterprise component framework declares a mutable instance field that is not managed by the
+framework’s dependency injection mechanism.</p>
+<h2>Why is this an issue?</h2>
+<p>Stateless server components are pooled and reused by the application container. When a client invokes a business method, the container assigns an
+available instance from the pool to handle that request. After the method completes, the same instance returns to the pool and may be assigned to a
+completely different client on the next invocation.</p>
+<p>If you store data in an instance variable during one client’s invocation, that data remains in memory and will be visible to the next client who
+receives that component instance. This creates several problems:</p>
+<ul>
+  <li><strong>Data leakage</strong>: Client A’s data becomes visible to Client B</li>
+  <li><strong>Inconsistent behavior</strong>: Methods may see unexpected values from previous invocations</li>
+  <li><strong>Race conditions</strong>: Multiple threads may access the same field concurrently</li>
+</ul>
+<p>The container does not reset or clear instance variables between invocations. It only does so when creating a new instance or during specific
+lifecycle callbacks.</p>
+<p><strong>Safe instance fields</strong></p>
+<p>Container-injected resources are safe because they are either thread-safe or context-aware:</p>
+<ul>
+  <li>Injected component references</li>
+  <li>Dependency injection container beans</li>
+  <li>Injected persistence contexts (container-managed, context-aware)</li>
+  <li>Injected persistence manager factories</li>
+  <li>JNDI resources, data sources, and similar container-managed resources</li>
+  <li>Web service references</li>
+</ul>
+<p>These resources are managed by the container to work correctly in a pooled environment.</p>
+<p>In Java EE/Jakarta EE, these safe resources are typically injected using annotations: <code>@EJB</code> for component references,
+<code>@Inject</code> for CDI beans, <code>@PersistenceContext</code> for entity managers, <code>@PersistenceUnit</code> for entity manager factories,
+<code>@Resource</code> for JNDI resources and data sources, and <code>@WebServiceRef</code> for web service references.</p>
+<h3>What is the potential impact?</h3>
+<p>When mutable state leaks between clients:</p>
+<ul>
+  <li><strong>Security risk</strong>: Sensitive data from one user (passwords, personal information, session data) may be exposed to another user</li>
+  <li><strong>Data corruption</strong>: Business logic may operate on stale or incorrect data, leading to wrong calculations, duplicate processing, or
+  inconsistent database updates</li>
+  <li><strong>Unpredictable behavior</strong>: The application behaves differently depending on which shared component instance is used, making bugs
+  difficult to reproduce and diagnose</li>
+</ul>
+<h2>How to fix it</h2>
+<p>The right fix depends on the intended purpose of each instance field.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Stateless
+public class OrderService {
+    private int lastOrderId;      // Noncompliant
+    private int maxRetries = 3;   // Noncompliant
+    private int requestCount;     // Noncompliant
+
+    public void processOrder(Order order) {
+        lastOrderId = order.getId();
+        requestCount++;
+        // lastOrderId and requestCount may leak to the next client
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Stateless
+public class OrderService {
+    private static final int MAX_RETRIES = 3;  // Compliant; safe as a static final field
+
+    @EJB
+    private OrderStats orderStats;  // Compliant; shared state delegated to a helper singleton EJB
+
+    public void processOrder(Order order) {
+        int lastOrderId = order.getId();  // Compliant; moved to a method-local variable
+        orderStats.incrementRequestCount();
+    }
+}
+
+@Singleton
+public class OrderStats {
+    private int requestCount;
+
+    @Lock(LockType.WRITE)
+    public void incrementRequestCount() {
+        requestCount++;
+    }
+
+    @Lock(LockType.READ)
+    public int getRequestCount() {
+        return requestCount;
+    }
+}
+</pre>
+<p>If a value must persist across multiple method calls for the same client, consider switching to a <code>@Stateful</code> session bean instead,
+which provides a dedicated instance per client.</p>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Jakarta EE Documentation - <a
+  href="https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0.html#a50">Enterprise JavaBeans - Session
+  Beans</a></li>
+  <li>Oracle Java EE Tutorial - <a href="https://docs.oracle.com/javaee/7/tutorial/ejb-intro002.htm">What Is a Session Bean?</a></li>
+</ul>
+

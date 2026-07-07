@@ -1,0 +1,26 @@
+{
+  "title": "Stateless session beans should not store mutable state in instance variables",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "ejb",
+    "jakarta",
+    "concurrency"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-8983",
+  "sqKey": "S8983",
+  "scope": "Main",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH",
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "MODULAR"
+  }
+}
