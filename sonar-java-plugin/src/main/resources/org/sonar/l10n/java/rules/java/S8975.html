@@ -1,0 +1,59 @@
+<p>An issue is raised when the return value of an entity merge operation is discarded.</p>
+<h2>Why is this an issue?</h2>
+<p>In ORM (Object-Relational Mapping) frameworks, entities can be in different states within the tracking context:</p>
+<ul>
+  <li><strong>Tracked</strong>: The entity is associated with an ORM session. Changes to the entity are automatically tracked and synchronized to the
+  database.</li>
+  <li><strong>Detached</strong>: The entity was previously tracked but is no longer associated with an ORM session. Changes are not tracked.</li>
+  <li><strong>Transient</strong>: The entity has never been associated with an ORM session.</li>
+</ul>
+<p>State merging operations are used to copy the state of a detached or transient entity into a tracked entity within the current ORM session.
+Importantly, ORM specifications typically state that:</p>
+<ul>
+  <li>The entity instance passed as an argument remains in its original state (detached or transient).</li>
+  <li>The operation returns a <strong>different</strong> entity instance that is tracked by the ORM session.</li>
+</ul>
+<p>If you discard the return value and continue using the original entity instance, any modifications you make will not be tracked by the ORM session.
+These changes will not be synchronized to the database during the transaction commit, leading to data loss.</p>
+<p>The only safe way to use state merging operations is to capture the return value and use that tracked instance for all subsequent operations.</p>
+<p>In JPA specifically, this refers to the <code>EntityManager.merge()</code> method operating on the persistence context. The entity states are
+called managed (rather than tracked), and the association is with a persistence context (rather than an ORM session).</p>
+<h3>What is the potential impact?</h3>
+<p>Data loss can occur when changes made to the entity are not persisted to the database. This can lead to:</p>
+<ul>
+  <li>Inconsistent application state where in-memory objects differ from database records</li>
+  <li>Silent failures where updates appear successful but are never saved</li>
+  <li>Difficult-to-diagnose bugs, especially in complex transactions with multiple entity operations</li>
+</ul>
+<p>In business-critical applications, this can result in lost customer data, incorrect financial records, or corrupted application state.</p>
+<h2>How to fix it</h2>
+<p>Capture the return value of <code>merge()</code> and use the returned managed entity for all subsequent operations. Stop using the original
+detached entity after the merge.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public void updateEntity(MyEntity detachedEntity) {
+    EntityManager em = getEntityManager();
+    em.merge(detachedEntity); // Noncompliant; changes are NOT persisted
+    detachedEntity.setName("Updated Name");
+    detachedEntity.setValue(42);
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public void updateEntity(MyEntity detachedEntity) {
+    EntityManager em = getEntityManager();
+    MyEntity managedEntity = em.merge(detachedEntity);  // Compliant; changes ARE persisted
+    managedEntity.setName("Updated Name");
+    managedEntity.setValue(42);
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>JPA Specification - <a href="https://jakarta.ee/specifications/persistence/3.0/jakarta-persistence-spec-3.0.html#a1060">Entity
+  Operations</a></li>
+  <li>Hibernate ORM - Persistence context - <a href="https://docs.hibernate.org/orm/current/userguide/html_single/#pc-detach">Working with detached
+  data</a></li>
+</ul>
+
