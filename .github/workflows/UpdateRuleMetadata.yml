@@ -16,6 +16,7 @@ jobs:
         with:
           labels: ''
           rspec-token-suffix: 'rspec'
+          rule-api-version: '2.26.0.6023'
           post-update: |
             sed --in-place='' -e 's/rule:java:S3649/rule:javasecurity:S3649/g' 'sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S2077.html'
 

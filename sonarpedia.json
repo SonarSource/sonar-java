@@ -7,5 +7,6 @@
   "options": {
     "no-language-in-filenames": true,
     "preserve-filenames": false
-  }
+  },
+  "profiles-path": "./sonar-java-plugin/src/main/resources/profiles"
 }
