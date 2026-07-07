@@ -3,10 +3,10 @@
   "languages": [
     "JAVA"
   ],
-  "latest-update": "2026-07-06T12:46:45.971922719Z",
+  "profiles-path": "./sonar-java-plugin/src/main/resources/profiles",
+  "latest-update": "2026-07-07T08:51:35.551104566Z",
   "options": {
     "no-language-in-filenames": true,
     "preserve-filenames": false
-  },
-  "profiles-path": "./sonar-java-plugin/src/main/resources/profiles"
+  }
 }
