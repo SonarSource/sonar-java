@@ -11,8 +11,12 @@ Starting with Spring Web 5.3, this binding happens automatically without requiri
 variables to properties that have setter methods (including Lombok-generated setters). For records (Spring Web 5.3+), Spring binds path variables to
 record components through their accessor methods. The <code>@BindParam</code> annotation can be used on record components to specify custom binding
 names.</p>
-<p>This rule will raise an issue if a method has a path template with a placeholder, but no corresponding <code>@PathVariable</code>, matching class
-property, or matching record component, or vice-versa.</p>
+<p>Spring Framework 7 also supports resolving an API version from a path segment. When
+<code>ApiVersionConfigurer.usePathSegment(...)</code> is configured, the API version resolver reads the raw request path segment independently of
+controller argument binding. A placeholder in an explicitly versioned mapping can therefore be structural and does not need to be exposed as a
+handler method parameter.</p>
+<p>Except for a placeholder recognized as an API-version path segment, this rule will raise an issue if a method has a path template with a
+placeholder, but no corresponding <code>@PathVariable</code>, matching class property, or matching record component, or vice-versa.</p>
 <h2>How to fix it</h2>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -133,9 +137,9 @@ public ResponseEntity&lt;String&gt; getOrder(OrderRequest request) { // Complian
   Framework API - PutMapping</a></li>
   <li><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/DeleteMapping.html">Spring
   Framework API - DeleteMapping</a></li>
+  <li><a href="https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-config/api-version.html">Spring Framework - API Version</a></li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>
   <li><a href="https://www.baeldung.com/spring-pathvariable">Baeldung - Spring @PathVariable</a></li>
 </ul>
-

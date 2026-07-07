@@ -17,6 +17,7 @@
 package org.sonar.java.checks.spring;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -38,12 +39,29 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModule;
 import static org.sonar.java.test.classpath.TestClasspathUtils.SPRING_32_MODULE;
+import static org.sonar.java.test.classpath.TestClasspathUtils.SPRING_WEB_70_MODULE;
 
 class MissingPathVariableAnnotationCheckTest {
   private static final String TEST_SOURCE_FILE = mainCodeSourcesPath("checks/spring/s6856/MissingPathVariableAnnotationCheck_PathVariable.java");
   private static final String TEST_SOURCE_FILE_MODEL_ATTRIBUTE = mainCodeSourcesPath("checks/spring/s6856/MissingPathVariableAnnotationCheck_ModelAttribute.java");
   private static final String SETTER_PROPERTIES_TEST_FILE = mainCodeSourcesPath("checks/spring/s6856/ExtractSetterPropertiesTestData.java");
   private static final String RECORD_COMPONENTS_TEST_FILE = mainCodeSourcesPathInModule(SPRING_32_MODULE, "checks/ExtractRecordPropertiesTestData.java");
+  private static final String API_VERSION_PATH_TEST_FILE = mainCodeSourcesPathInModule(
+    SPRING_WEB_70_MODULE, "checks/spring/s6856/MissingPathVariableAnnotationCheck_ApiVersionPath.java");
+  private static final String API_VERSION_PATH_CONFIGURATION_FILE = mainCodeSourcesPathInModule(
+    SPRING_WEB_70_MODULE, "checks/spring/s6856/ApiVersionPathConfiguration.java");
+  private static final String API_VERSION_PATH_UNCONDITIONAL_CONFIGURATION_FILE = mainCodeSourcesPathInModule(
+    SPRING_WEB_70_MODULE, "checks/spring/s6856/ApiVersionPathUnconditionalConfiguration.java");
+  private static final String NON_PATH_API_VERSION_TEST_FILE =
+    "src/test/files/checks/spring/MissingPathVariableAnnotationCheck_NonPathApiVersion.java";
+  private static final String INACTIVE_API_VERSION_CONFIGURATION_TEST_FILE =
+    "src/test/files/checks/spring/MissingPathVariableAnnotationCheck_InactiveConfiguration.java";
+  private static final String MULTIPLE_API_VERSION_INDICES_TEST_FILE =
+    "src/test/files/checks/spring/MissingPathVariableAnnotationCheck_MultipleIndices.java";
+  private static final String ESCAPING_API_VERSION_CONFIGURATION_TEST_FILE =
+    "src/test/files/checks/spring/MissingPathVariableAnnotationCheck_EscapingConfiguration.java";
+  private static final String DYNAMIC_API_VERSION_INDEX_TEST_FILE =
+    "src/test/files/checks/spring/MissingPathVariableAnnotationCheck_DynamicIndex.java";
 
   private static final JavaFileScanner check = new MissingPathVariableAnnotationCheck();
   private static final Map<String, Type> testTypes = new HashMap<>();
@@ -120,6 +138,69 @@ class MissingPathVariableAnnotationCheckTest {
       .onFile(mainCodeSourcesPathInModule(SPRING_32_MODULE, "checks/MissingPathVariableAnnotationCheck_classAndRecord.java"))
       .withCheck(check)
       .withClassPath(SPRING_32_MODULE.getClassPath())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_spring_7_path_api_version() {
+    CheckVerifier.newVerifier()
+      .onFiles(List.of(API_VERSION_PATH_TEST_FILE, API_VERSION_PATH_CONFIGURATION_FILE))
+      .withCheck(new MissingPathVariableAnnotationCheck())
+      .withClassPath(SPRING_WEB_70_MODULE.getClassPath())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_spring_7_unconditional_path_api_version() {
+    CheckVerifier.newVerifier()
+      .onFiles(List.of(API_VERSION_PATH_TEST_FILE, API_VERSION_PATH_UNCONDITIONAL_CONFIGURATION_FILE))
+      .withCheck(new MissingPathVariableAnnotationCheck())
+      .withClassPath(SPRING_WEB_70_MODULE.getClassPath())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_spring_7_path_api_version_with_alternative_resolver() {
+    CheckVerifier.newVerifier()
+      .onFile(NON_PATH_API_VERSION_TEST_FILE)
+      .withCheck(new MissingPathVariableAnnotationCheck())
+      .withClassPath(SPRING_WEB_70_MODULE.getClassPath())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_spring_7_ignores_inactive_api_version_configuration() {
+    CheckVerifier.newVerifier()
+      .onFile(INACTIVE_API_VERSION_CONFIGURATION_TEST_FILE)
+      .withCheck(new MissingPathVariableAnnotationCheck())
+      .withClassPath(SPRING_WEB_70_MODULE.getClassPath())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_spring_7_multiple_path_api_version_indices_are_ambiguous() {
+    CheckVerifier.newVerifier()
+      .onFile(MULTIPLE_API_VERSION_INDICES_TEST_FILE)
+      .withCheck(new MissingPathVariableAnnotationCheck())
+      .withClassPath(SPRING_WEB_70_MODULE.getClassPath())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_spring_7_configurer_escape_is_ambiguous() {
+    CheckVerifier.newVerifier()
+      .onFile(ESCAPING_API_VERSION_CONFIGURATION_TEST_FILE)
+      .withCheck(new MissingPathVariableAnnotationCheck())
+      .withClassPath(SPRING_WEB_70_MODULE.getClassPath())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_spring_7_dynamic_path_api_version_index_is_ambiguous() {
+    CheckVerifier.newVerifier()
+      .onFile(DYNAMIC_API_VERSION_INDEX_TEST_FILE)
+      .withCheck(new MissingPathVariableAnnotationCheck())
+      .withClassPath(SPRING_WEB_70_MODULE.getClassPath())
       .verifyIssues();
   }
 
