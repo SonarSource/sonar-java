@@ -1,0 +1,34 @@
+name: 'Ruling Diff Comment'
+description: 'Posts a human-readable summary of ruling file changes on PRs'
+
+inputs:
+  pr-number:
+    description: 'Pull request number'
+    required: true
+  repository:
+    description: 'owner/repo'
+    required: true
+  base-sha:
+    description: 'Base commit SHA for diff'
+    required: true
+  head-sha:
+    description: 'Head commit SHA for diff'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Generate and post ruling diff comment
+      shell: bash
+      env:
+        GH_TOKEN: ${{ env.GH_TOKEN }}
+        PR_NUMBER: ${{ inputs.pr-number }}
+        REPOSITORY: ${{ inputs.repository }}
+        BASE_SHA: ${{ inputs.base-sha }}
+        HEAD_SHA: ${{ inputs.head-sha }}
+      run: |
+        python3 "${{ github.action_path }}/ruling_diff.py" \
+          --pr-number "$PR_NUMBER" \
+          --repository "$REPOSITORY" \
+          --base-sha "$BASE_SHA" \
+          --head-sha "$HEAD_SHA"

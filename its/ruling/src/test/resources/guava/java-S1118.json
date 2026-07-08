@@ -6,10 +6,12 @@
 27
 ],
 "com.google.guava:guava:src/com/google/common/collect/ImmutableMultimap.java": [
-343
+343,
+512
 ],
-"com.google.guava:guava:src/com/google/common/reflect/Types.java": [
-618
+"com.google.guava:guava:src/com/google/common/reflect/TypeToken.java": [
+156,
+892
 ],
 "com.google.guava:guava:src/com/google/thirdparty/publicsuffix/TrieParser.java": [
 30

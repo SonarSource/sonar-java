@@ -1,0 +1,49 @@
+name: Ruling Diff Comment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'its/ruling/src/test/resources/**'
+      - '.github/actions/ruling-diff-comment/**'
+      - '.github/workflows/ruling-diff-comment.yml'
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: 'Pull request number'
+        required: true
+        type: string
+      base-sha:
+        description: 'Base commit SHA for diff'
+        required: true
+        type: string
+      head-sha:
+        description: 'Head commit SHA for diff'
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ruling-diff-comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - uses: ./.github/actions/ruling-diff-comment
+        with:
+          pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
+          repository: ${{ github.repository }}
+          base-sha: ${{ inputs.base-sha || github.event.pull_request.base.sha }}
+          head-sha: ${{ inputs.head-sha || github.event.pull_request.head.sha }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
