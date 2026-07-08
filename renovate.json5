@@ -12,42 +12,6 @@
   ],
   "packageRules": [
     {
-      "description": "SonarSource GitHub actions do not need version pinning",
-      "matchManagers": [
-        "github-actions"
-      ],
-      "matchPackageNames": [
-        "SonarSource/**"
-      ],
-      "matchUpdateTypes": [
-        "pin",
-        "rollback"
-      ],
-      "enabled": false
-    },
-    {
-      "description": "gh-action_release uses branch-based versioning (v6, v7) which Renovate cannot resolve -- update manually",
-      "matchManagers": [
-        "github-actions"
-      ],
-      "matchPackageNames": [
-        "SonarSource/gh-action_release"
-      ],
-      "enabled": false
-    },
-    {
-      "description": "Parent POM should be updated separately",
-      "matchManagers": [
-        "maven"
-      ],
-      "matchPackageNames": [
-        "org.sonarsource.parent:parent",
-        "com.sonarsource.parent:parent"
-      ],
-      "groupName": "Parent",
-      "groupSlug": "parent"
-    },
-    {
       "description": "Plugin API has compatibility rules, so disable it to prevent accidental updates",
       "matchPackageNames": [
         "org.sonarsource.api.plugin:sonar-plugin-api*"
@@ -118,11 +82,5 @@
       ],
       "enabled": false
     }
-  ],
-  "enabledManagers": [
-    "maven",
-    "gradle",
-    "gradle-wrapper",
-    "github-actions"
   ]
 }
