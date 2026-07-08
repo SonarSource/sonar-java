@@ -15,6 +15,7 @@ import javax.xml.ws.WebServiceRef;
 @Stateless
 class StatelessWithMutableFields {
   private int requestCount;           // Noncompliant {{Remove this mutable instance field or replace it with a local variable, a "static final" constant, or an injected resource.}}
+  //          ^^^^^^^^^^^^
   private String lastClientId;        // Noncompliant
   private Object cachedResult = null; // Noncompliant
   public int publicField;             // Noncompliant
