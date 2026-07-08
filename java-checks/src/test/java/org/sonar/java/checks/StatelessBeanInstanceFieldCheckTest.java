@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class StatelessBeanInstanceFieldCheckTest {
 
@@ -34,7 +35,7 @@ class StatelessBeanInstanceFieldCheckTest {
   @Test
   void test_jakarta() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/StatelessBeanInstanceFieldCheckJakartaSample.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/StatelessBeanInstanceFieldCheckJakartaSample.java"))
       .withCheck(new StatelessBeanInstanceFieldCheck())
       .verifyIssues();
   }
