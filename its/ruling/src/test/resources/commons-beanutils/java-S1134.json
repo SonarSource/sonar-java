@@ -1,13 +1,10 @@
 {
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaClass.java": [
-190
+190,
+215
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
-213,
 425
-],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaClass.java": [
-60
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaMap.java": [
 247
@@ -15,13 +12,13 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
 345,
 702,
-722,
+719,
 886,
 980,
 999,
 1028,
 1166,
-1182,
+1203,
 1280,
 1296
 ],
