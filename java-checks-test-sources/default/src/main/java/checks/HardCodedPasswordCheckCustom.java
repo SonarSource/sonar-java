@@ -25,7 +25,7 @@ class HardCodedPasswordCheckCustom {
     String variableNameWithPwdInIt = "xvxf6_gaa"; // Compliant
     String otherVariableNameWithPasswordInIt;
     fieldNameWithPasswordInIt = "xx";
-    this.fieldNameWithBazookaInIt = "xx"; // Compliant, , short value filter
+    this.fieldNameWithBazookaInIt = "xx"; // Compliant, short value filter
 
 
     HardCodedPasswordCheckCustom myA = new HardCodedPasswordCheckCustom();

@@ -143,7 +143,7 @@ public class HardCodedCredentialsShouldNotBeUsedCheckSample {
     notInitialized2 = "xvxf6_gaa";
     new Pbkdf2PasswordEncoder(notInitialized2); // Noncompliant
 
-    String longString = "abcdefghiklmnop"; // Cpmpliant fake value contains 'abcd'
+    String longString = "abcdefghiklmnop"; // Compliant fake value contains 'abcd'
     // longString.substring(2) cannot be resolved to the value "abcdefghiklmnop" that should be filtered -> FPs
     new Pbkdf2PasswordEncoder(longString.substring(2)); // Noncompliant
     String longString2 = "67uLmZeieGxDtp!cUm324D*7vji294";
