@@ -22,9 +22,9 @@ class HardCodedSecretCheckSample {
     // ========== 1. String literal ==========
     // The variable name does not influence the issue, only the string is considered.
     String variable1 = "blabla";
-    String variable2 = "login=a&secret=bacdefghijklmnopqrs"; // Noncompliant {{'secret' detected in this expression, review this potentially hard-coded secret.}}
-//                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    String variable2 = "login=a&secret=abcdefghijklmnopqrs"; // Compliant, fake secret filter (contains "abcd")
     String variable3 = "login=a&token=bacdefghijklmnopqrs"; // Noncompliant
+//                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     String variable4 = "login=a&api_key=bacdefghijklmnopqrs"; // Noncompliant
     String variable5 = "login=a&api.key=bacdefghijklmnopqrs"; // Noncompliant
     String variable6 = "login=a&api-key=bacdefghijklmnopqrs"; // Noncompliant
@@ -54,7 +54,7 @@ class HardCodedSecretCheckSample {
     String query1 = "secret=?bacdefghijklmnopqrs"; // Noncompliant
     String query1_1 = "secret=???"; // Compliant
     String query1_2 = "secret=X"; // Compliant
-    String query1_3 = "secret=anonymous"; // Compliant
+    String query1_3 = "secret=anonymous"; // Compliant, bellow the enthropy threshold
     String query4 = "secret='" + secret + "'"; // Compliant
     String query2 = "secret=:password"; // Compliant
     String query3 = "secret=:param"; // Compliant
@@ -104,14 +104,14 @@ class HardCodedSecretCheckSample {
     String secret003 = "examples/commit/8e1d746900f5411e9700fea0"; // Compliant, excluded by the classifier (matches the "example" substring), not by the human-language check
     String secret004 = "examples/commit/revision/469001e9700fea0";
     String secret005 = "xml/src/main/java/org/xwiki/xml/html/file";
-    String secret006 = "bacdefghijklmnop"; // Compliant
+    String secret006 = "bacdefghijklmnop"; // Compliant, under the enthropy threshold 
     String secret007 = "bacdefghijklmnopq"; // Noncompliant
     String secret008 = "0213456789bacdef0"; // Noncompliant
     String secret009 = "021345678902134567890213456789"; // Noncompliant
     String secret010 = "bacdefghijklmnopbacdefghijkl"; // Noncompliant
     String secret011 = "021345670213456702134567021345";
     String secret012 = "021345678021345678021345678012"; // Noncompliant
-    String secret013 = "234.167.076.213";
+    String secret013 = "234.167.076";
     String ip_secret1 = "bfee:e3e1:9a92:6617:02d5:256a:b87a:fbcc"; // Compliant: ipv6 format
     String ip_secret2 = "2001:db8:1::ab9:C0A8:102"; // Compliant: ipv6 format
     String ip_secret3 = "::ab9:C0A8:102"; // Compliant: ipv6 format
@@ -160,7 +160,7 @@ class HardCodedSecretCheckSample {
     String OKAPI_KEYBOARD = "what a strange keyboard for animals"; // Compliant
     String okApiKeyValue = "Spaces are UNEXPECTED 012 345 678"; // Compliant
     String tokenism = "(Queen's Partner's Stored Knowledge is a Minimal Sham)"; // Compliant
-    String tokenWithExcludedCharacters2 = "bacdefghij|klmnopqrs"; // Noncompliant
+    String tokenWithExcludedCharacters2 = "abcdefghij|klmnopqrs"; // Compliant, contain fake secret pattern "abcd"
 
     // ========== 3. Assignment ==========
     fieldNameWithSecretInIt = "bacdefghijklmnopqrs"; // Noncompliant
@@ -197,7 +197,7 @@ class HardCodedSecretCheckSample {
     }
     if("password".equals(auth)) {
     }
-    if(auth.equals("password-2134")) {
+    if(auth.equals("password-1234")) {
     }
     if(auth.equals("")) {
     }

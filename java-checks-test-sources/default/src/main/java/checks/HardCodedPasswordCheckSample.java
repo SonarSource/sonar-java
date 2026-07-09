@@ -142,7 +142,6 @@ class HardCodedPasswordCheckSample {
 
     // ========== 3. Assignment ==========
     // The variable name should contain a password word
-
     fieldNameWithPasswordInIt = "xx"; // Compliant, short value filter
     fieldNameWithPasswordInIt = "xvxf6_gaa"; // Noncompliant {{'Password' detected in this expression, review this potentially hard-coded password.}}
 //  ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -223,7 +222,7 @@ class HardCodedPasswordCheckSample {
     // ========== 4.3 Setting password ==========
     // When a method call has two arguments potentially containing String, we report an issue the same way we would with a variable declaration
     A myA = new A();
-    myA.setProperty("password", "xxxxx"); /// Compliant, short value filter
+    myA.setProperty("password", "xxxxx"); // Compliant, short value filter
     myA.setProperty("password", "xvxf6_gaa"); // Noncompliant
     myA.setProperty("passwd", "xxxxx"); // Compliant, short value filter
     myA.setProperty("passwd", "xvxf6_gaa"); // Noncompliant
@@ -243,7 +242,7 @@ class HardCodedPasswordCheckSample {
     // Other test cases
     myA.setProperty(12, "xxxxx");
     myA.setProperty(new Object(), new Object());
-    myA.setProperty("something", "else").setProperty("password", "xxxxx"); // Compliant, short value filter
+    myA.setProperty("something", "else").setProperty("password", "xxxxx"); // Compliant, short/repeated value filter
     myA.setProperty("something", "else").setProperty("password", "xvxf6_gaa"); // Noncompliant
 //                                       ^^^^^^^^^^^
 
