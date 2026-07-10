@@ -59,7 +59,7 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   private List<String> lines = null;
   private String content;
 
-  public DefaultJavaFileScannerContext(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
+  public DefaultJavaFileScannerContext(@Nullable CompilationUnitTree tree, @Nullable InputFile inputFile, @Nullable Sema semanticModel,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
                                        boolean fileParsed, boolean inAndroidContext, @Nullable CacheContext cacheContext) {
     super(sonarComponents, inputFile, javaVersion, inAndroidContext, cacheContext);

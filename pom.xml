@@ -94,7 +94,7 @@
       at SonarSource/sonarqube/gradle.properties
      -->
     <sonar.plugin.api.version>13.0.0.3026</sonar.plugin.api.version>
-    <sonarlint.plugin.api.version>11.3.0.85510</sonarlint.plugin.api.version>
+    <sonarlint.plugin.api.version>11.6.0.85952</sonarlint.plugin.api.version>
     <sonar.sca.exclusions>its/**,java-checks-test-sources/**</sonar.sca.exclusions>
     <analyzer.commons.version>2.25.0.4954</analyzer.commons.version>
     <orchestrator.version>6.1.0.3962</orchestrator.version>
