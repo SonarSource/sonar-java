@@ -64,6 +64,10 @@ class BadLocalVariableName {
   void foo() {
     IntUnaryOperator f1 = (int _) -> 0; // Compliant, unnamed variable
     IntUnaryOperator f2 = _ -> 0; // Compliant, unnamed variable
+    IntUnaryOperator f3 = _good -> 0; // Compliant, leading underscore stripped before check
+    IntUnaryOperator f4 = good_ -> 0; // Compliant, trailing underscore stripped before check
+    IntUnaryOperator f5 = _BAD -> 0; // Noncompliant {{Rename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
+//                        ^^^^
   }
 
   // Method names are not checked by this rule

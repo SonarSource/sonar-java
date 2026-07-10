@@ -39,19 +39,21 @@ try {
 } catch (Exception e) { // Compliant
 }
 </pre>
-<p>Local variables inside a method body may have one or more leading underscores, trailing underscores, or both. This convention signals that the
-variable is temporary, unimportant, or intentionally unnamed. The name between the underscores must still match the configured format.</p>
+<p>Local variables inside a method body and named lambda parameters may have one or more leading underscores, trailing underscores, or both. This
+convention signals that the variable is temporary, unimportant, or intentionally unnamed. The name between the underscores must still match the
+configured format.</p>
 <pre>
 public class MyClass {
     public void doSomething() {
-      int _result = compute();   // Compliant
-      int value__ = 0;           // Compliant
-      int __tmp__ = swap();      // Compliant
+      int _result = compute();                    // Compliant
+      int value__ = 0;                            // Compliant
+      int __tmp__ = swap();                       // Compliant
+      IntUnaryOperator f = _value -&gt; _value + 1; // Compliant - lambda parameter
     }
 }
 </pre>
-<p>Note that this exception applies only to local variables declared inside a method body. Method parameters must match the configured format without
-leading or trailing underscores.</p>
+<p>Note that this exception applies only to local variables declared inside a method body and to named lambda parameters. Method parameters and
+constructor parameters must match the configured format without leading or trailing underscores.</p>
 <h2>How to fix it</h2>
 <p>First, familiarize yourself with the particular naming convention of the project in question. Then, update the name to match the convention, as
 well as all usages of the name. For many IDEs, you can use built-in renaming and refactoring features to update all usages at once.</p>
