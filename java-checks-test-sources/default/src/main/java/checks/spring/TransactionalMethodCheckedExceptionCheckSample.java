@@ -127,4 +127,9 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   @Transactional(rollbackFor = IOException.class)
   public void partialConfig() throws SQLException {
   }
+
+  @Transactional(value = "txManager") // Noncompliant
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  public void withValueAttribute() throws IOException {
+  }
 }
