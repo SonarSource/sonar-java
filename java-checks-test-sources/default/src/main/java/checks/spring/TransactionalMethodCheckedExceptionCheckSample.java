@@ -132,4 +132,24 @@ public class TransactionalMethodCheckedExceptionCheckSample {
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   public void withValueAttribute() throws IOException {
   }
+
+  // Test nested structure to ensure parent traversal works
+  static class OuterClass {
+    @Transactional // Noncompliant
+    static class InnerClassWithAnnotation {
+      public void nestedMethod() throws IOException {
+      }
+    }
+
+    static class InnerClassNoAnnotation {
+      public void nestedMethodNoAnnotation() throws IOException {
+        // No @Transactional at any level, so no issue
+      }
+    }
+  }
+
+  @Transactional // Noncompliant
+  interface TransactionalInterface {
+    void interfaceMethod() throws IOException;
+  }
 }
