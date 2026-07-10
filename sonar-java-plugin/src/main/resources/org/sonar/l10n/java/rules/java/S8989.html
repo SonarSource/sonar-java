@@ -1,11 +1,18 @@
-<h2>Why is this an issue?</h2>
+<p>This is an issue when a method is annotated with <code>@Transactional</code> and declares one or more checked exceptions in its <code>throws</code>
+clause, but does not explicitly configure how the transaction should behave when those exceptions occur.</p>
 <p>In Spring Framework, the <code>@Transactional</code> annotation controls database transactions. By default:</p>
 <ul>
-  <li><strong>Unchecked exceptions</strong> (subclasses of <code>RuntimeException</code> or <code>Error</code>) automatically trigger a transaction rollback</li>
+  <li><strong>Unchecked exceptions</strong> (subclasses of <code>RuntimeException</code> or <code>Error</code>) automatically trigger a transaction
+  rollback</li>
   <li><strong>Checked exceptions</strong> do NOT trigger a rollback - the transaction commits even when these exceptions are thrown</li>
 </ul>
-<p>When you declare a checked exception in your method signature but don't specify the rollback behavior, Spring will commit the transaction even if that exception occurs. This often leads to data being saved in an inconsistent state.</p>
-<p>When a method throws a checked exception, it typically signals that something went wrong during execution. In the context of database transactions, you usually want to roll back the transaction when errors occur to maintain data integrity.</p>
+<p>When you declare a checked exception in your method signature but don’t specify the rollback behavior, Spring will commit the transaction even if
+that exception occurs. This often leads to data being saved in an inconsistent state.</p>
+<h2>Why is this an issue?</h2>
+<p>When a method throws a checked exception, it typically signals that something went wrong during execution. In the context of database transactions,
+you usually want to roll back the transaction when errors occur to maintain data integrity.</p>
+<p>However, Spring’s <code>@Transactional</code> annotation only rolls back transactions automatically for unchecked exceptions (like
+<code>RuntimeException</code>). For checked exceptions, the transaction commits by default - even when the exception indicates a failure.</p>
 <p>This default behavior creates a dangerous mismatch between intent and outcome:</p>
 <ul>
   <li>Your code throws an exception to signal an error</li>
@@ -14,37 +21,35 @@
 </ul>
 <p>This silent failure mode is particularly problematic because:</p>
 <ul>
-  <li>It's not obvious from the code that checked exceptions won't trigger rollback</li>
+  <li>It’s not obvious from the code that checked exceptions won’t trigger rollback</li>
   <li>The behavior differs from what most developers expect</li>
   <li>Partial transaction commits can leave your database in an inconsistent state</li>
 </ul>
-<p>By explicitly specifying <code>rollbackFor</code> or <code>noRollbackFor</code>, you make the intended behavior clear and prevent unexpected transaction commits.</p>
-
+<p>By explicitly specifying <code>rollbackFor</code> or <code>noRollbackFor</code>, you make the intended behavior clear and prevent unexpected
+transaction commits.</p>
 <h3>What is the potential impact?</h3>
-<p>When checked exceptions don't trigger rollbacks as expected, the consequences can be severe:</p>
-
-<h4>Data Corruption</h4>
-<p>Partial transactions commit to the database, leaving data in an inconsistent state. For example, if an order processing method saves an order but fails when creating the invoice, you end up with an order record but no corresponding invoice.</p>
-
-<h4>Silent Failures</h4>
-<p>The application throws an exception indicating failure, but the database changes persist anyway. Error handling code may log the error or show a failure message to users, while the "failed" operation actually modified the database.</p>
-
-<h4>Business Logic Violations</h4>
-<p>Multi-step operations that should be atomic (all-or-nothing) can partially complete. This violates business rules that depend on data consistency, such as:</p>
+<p>When checked exceptions don’t trigger rollbacks as expected, the consequences can be severe:</p>
+<h3>Data Corruption</h3>
+<p>Partial transactions commit to the database, leaving data in an inconsistent state. For example, if an order processing method saves an order but
+fails when creating the invoice, you end up with an order record but no corresponding invoice.</p>
+<h3>Silent Failures</h3>
+<p>The application throws an exception indicating failure, but the database changes persist anyway. Error handling code may log the error or show a
+failure message to users, while the "failed" operation actually modified the database.</p>
+<h3>Business Logic Violations</h3>
+<p>Multi-step operations that should be atomic (all-or-nothing) can partially complete. This violates business rules that depend on data consistency,
+such as:</p>
 <ul>
   <li>Account balances not matching transaction history</li>
   <li>Inventory counts becoming incorrect</li>
   <li>Orphaned records without their required relationships</li>
 </ul>
-
-<h4>Difficult Debugging</h4>
-<p>Because the transaction commits silently, these bugs are hard to diagnose. The code appears to handle errors correctly (it throws and catches exceptions), but the database state doesn't match expectations.</p>
-
+<h3>Difficult Debugging</h3>
+<p>Because the transaction commits silently, these bugs are hard to diagnose. The code appears to handle errors correctly (it throws and catches
+exceptions), but the database state doesn’t match expectations.</p>
 <h2>How to fix it in Spring</h2>
-<p>Explicitly specify <code>rollbackFor</code> to include the checked exceptions that should trigger a rollback. This is the most common fix, as most checked exceptions represent error conditions that should prevent the transaction from committing.</p>
-
+<p>Explicitly specify <code>rollbackFor</code> to include the checked exceptions that should trigger a rollback. This is the most common fix, as most
+checked exceptions represent error conditions that should prevent the transaction from committing.</p>
 <h3>Code examples</h3>
-
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 @Transactional
@@ -53,7 +58,6 @@ public void processOrder(Order order) throws IOException, SQLException { // Nonc
     notificationService.sendConfirmation(order); // May throw IOException
 }
 </pre>
-
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 @Transactional(rollbackFor = {IOException.class, SQLException.class})
@@ -62,9 +66,8 @@ public void processOrder(Order order) throws IOException, SQLException {
     notificationService.sendConfirmation(order); // May throw IOException
 }
 </pre>
-
-<p>If you want to roll back on all exceptions (both checked and unchecked), you can specify <code>Exception.class</code> as the rollback trigger. This is a safe default when you're unsure which specific exceptions to list.</p>
-
+<p>If you want to roll back on all exceptions (both checked and unchecked), you can specify <code>Exception.class</code> as the rollback trigger. This
+is a safe default when you’re unsure which specific exceptions to list.</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="2" data-diff-type="noncompliant">
 @Transactional
@@ -73,7 +76,6 @@ public void importData(File file) throws Exception { // Noncompliant
     recordRepository.saveAll(records);
 }
 </pre>
-
 <h4>Compliant solution</h4>
 <pre data-diff-id="2" data-diff-type="compliant">
 @Transactional(rollbackFor = Exception.class)
@@ -82,9 +84,8 @@ public void importData(File file) throws Exception {
     recordRepository.saveAll(records);
 }
 </pre>
-
-<p>In rare cases where you intentionally want the transaction to commit even when a checked exception is thrown, use <code>noRollbackFor</code> to document this decision explicitly. This makes it clear the behavior is intentional, not an oversight.</p>
-
+<p>In rare cases where you intentionally want the transaction to commit even when a checked exception is thrown, use <code>noRollbackFor</code> to
+document this decision explicitly. This makes it clear the behavior is intentional, not an oversight.</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="3" data-diff-type="noncompliant">
 @Transactional
@@ -94,7 +95,6 @@ public void processWithNotification(Order order) throws NotificationException { 
     notificationService.sendEmail(order);
 }
 </pre>
-
 <h4>Compliant solution</h4>
 <pre data-diff-id="3" data-diff-type="compliant">
 @Transactional(noRollbackFor = NotificationException.class)
@@ -104,10 +104,13 @@ public void processWithNotification(Order order) throws NotificationException {
     notificationService.sendEmail(order);
 }
 </pre>
-
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li><a href="https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html">Spring Framework Documentation - Transaction Management</a> - Official Spring documentation explaining the @Transactional annotation and its rollback behavior</li>
-  <li><a href="https://www.baeldung.com/spring-transactional-rollback">Baeldung - Spring @Transactional Rollback</a> - Practical guide to configuring transaction rollback in Spring applications</li>
+  <li>Spring Framework Documentation - Transaction Management - <a
+  href="https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html">Official Spring documentation
+  explaining the @Transactional annotation and its rollback behavior</a></li>
+  <li>Baeldung - Spring @Transactional Rollback - <a href="https://www.baeldung.com/spring-transactional-rollback">Practical guide to configuring
+  transaction rollback in Spring applications</a></li>
 </ul>
+

@@ -3,21 +3,24 @@
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
-    "func": "Constant/Issue",
-    "constantCost": "5min"
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
   },
   "tags": [
-    "spring"
+    "spring",
+    "transaction",
+    "pitfall"
   ],
-  "code": {
-    "impacts": {
-      "MAINTAINABILITY": "HIGH"
-    },
-    "attribute": "CLEAR"
-  },
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-8989",
   "sqKey": "S8989",
   "scope": "Main",
-  "quickfix": "unknown"
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM",
+      "MAINTAINABILITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  }
 }
