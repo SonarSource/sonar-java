@@ -12,22 +12,27 @@ public class TransactionalMethodCheckedExceptionCheckSample {
 
   @Transactional
   public void processOrder(Order order) throws IOException, SQLException { // Noncompliant {{Specify rollback behavior for checked exceptions using "rollbackFor" or "noRollbackFor" attributes.}}
+//            ^^^^^^^^^^^^
   }
 
   @Transactional
   public void importData() throws Exception { // Noncompliant
+//            ^^^^^^^^^^
   }
 
   @Transactional(timeout = 30)
   public void withOtherAttributes() throws SQLException { // Noncompliant
+//            ^^^^^^^^^^^^^^^^^^^
   }
 
   @Transactional
   public void customException() throws CustomCheckedException { // Noncompliant
+//            ^^^^^^^^^^^^^^^
   }
 
   @Transactional
   public void mixedExceptions() throws IOException, RuntimeException { // Noncompliant
+//            ^^^^^^^^^^^^^^^
   }
 
   @Transactional(rollbackFor = IOException.class)
@@ -78,6 +83,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   @Transactional
   static class ClassLevelNoConfig {
     public void noConfig() throws IOException { // Noncompliant
+//              ^^^^^^^^
     }
 
     @Transactional(rollbackFor = IOException.class)
@@ -91,6 +97,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
 
   @org.springframework.transaction.annotation.Transactional
   public void fullyQualified() throws IOException { // Noncompliant
+//            ^^^^^^^^^^^^^^
   }
 
   @Transactional(rollbackFor = IOException.class)
