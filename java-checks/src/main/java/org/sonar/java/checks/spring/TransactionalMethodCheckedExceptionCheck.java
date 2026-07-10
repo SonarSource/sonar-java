@@ -84,9 +84,9 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
   }
 
   private static AnnotationTree getTransactionalAnnotation(MethodTree method) {
-    // Check method-level annotation first
+    // Check method-level annotation first (including meta-annotations)
     for (AnnotationTree annotation : method.modifiers().annotations()) {
-      if (annotation.symbolType().is(SpringUtils.TRANSACTIONAL_ANNOTATION)) {
+      if (isTransactionalAnnotation(annotation)) {
         return annotation;
       }
     }
@@ -99,7 +99,7 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
 
     if (parent instanceof ClassTree classTree) {
       for (AnnotationTree annotation : classTree.modifiers().annotations()) {
-        if (annotation.symbolType().is(SpringUtils.TRANSACTIONAL_ANNOTATION)) {
+        if (isTransactionalAnnotation(annotation)) {
           return annotation;
         }
       }
@@ -108,12 +108,21 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     return null;
   }
 
+  private static boolean isTransactionalAnnotation(AnnotationTree annotation) {
+    // Check if the annotation itself is @Transactional
+    if (annotation.symbolType().is(SpringUtils.TRANSACTIONAL_ANNOTATION)) {
+      return true;
+    }
+    // Check if the annotation is meta-annotated with @Transactional (composed annotation)
+    return annotation.symbolType().symbol().metadata().isAnnotatedWith(SpringUtils.TRANSACTIONAL_ANNOTATION);
+  }
+
   private List<JavaQuickFix> computeQuickFixes(AnnotationTree annotation, List<Type> checkedExceptions) {
     List<JavaQuickFix> quickFixes = new ArrayList<>();
 
-    // Quick fix 1: Add rollbackFor with all checked exceptions
+    // Quick fix 1: Add rollbackFor with all checked exceptions (using fully qualified names)
     String exceptionsList = checkedExceptions.stream()
-      .map(Type::name)
+      .map(Type::fullyQualifiedName)
       .map(name -> name + ".class")
       .collect(Collectors.joining(", "));
 
@@ -121,10 +130,16 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
       ? ("rollbackFor = " + exceptionsList)
       : ("rollbackFor = {" + exceptionsList + "}");
 
-    quickFixes.add(createQuickFix(annotation, rollbackForAttribute, "Add rollbackFor attribute"));
+    // Only add the specific exceptions quick fix if it's different from Exception.class
+    boolean isAlreadyExceptionClass = checkedExceptions.size() == 1
+      && "java.lang.Exception".equals(checkedExceptions.get(0).fullyQualifiedName());
+
+    if (!isAlreadyExceptionClass) {
+      quickFixes.add(createQuickFix(annotation, rollbackForAttribute, "Add rollbackFor attribute"));
+    }
 
     // Quick fix 2: Add rollbackFor = Exception.class (covers all checked exceptions)
-    quickFixes.add(createQuickFix(annotation, "rollbackFor = Exception.class", "Add rollbackFor = Exception.class"));
+    quickFixes.add(createQuickFix(annotation, "rollbackFor = java.lang.Exception.class", "Add rollbackFor = Exception.class"));
 
     return quickFixes;
   }

@@ -2,7 +2,15 @@ package checks.spring;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import org.springframework.transaction.annotation.Transactional;
+
+// Composed/meta-annotation for testing
+@Retention(RetentionPolicy.RUNTIME)
+@Transactional
+@interface MyTransactional {
+}
 
 class Order {}
 class NotificationException extends Exception {}
@@ -13,18 +21,16 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   @Transactional // Noncompliant {{Specify rollback behavior for checked exceptions using "rollbackFor" or "noRollbackFor" attributes.}} [[quickfixes=qf1,qf2]]
 //^^^^^^^^^^^^^^
   // fix@qf1 {{Add rollbackFor attribute}}
-  // edit@qf1 [[sc=3;ec=17]] {{@Transactional(rollbackFor = {IOException.class, SQLException.class})}}
+  // edit@qf1 [[sc=3;ec=17]] {{@Transactional(rollbackFor = {java.io.IOException.class, java.sql.SQLException.class})}}
   // fix@qf2 {{Add rollbackFor = Exception.class}}
-  // edit@qf2 [[sc=3;ec=17]] {{@Transactional(rollbackFor = Exception.class)}}
+  // edit@qf2 [[sc=3;ec=17]] {{@Transactional(rollbackFor = java.lang.Exception.class)}}
   public void processOrder(Order order) throws IOException, SQLException {
   }
 
-  @Transactional // Noncompliant [[quickfixes=qf3,qf4]]
+  @Transactional // Noncompliant [[quickfixes=qf3]]
 //^^^^^^^^^^^^^^
-  // fix@qf3 {{Add rollbackFor attribute}}
-  // edit@qf3 [[sc=3;ec=17]] {{@Transactional(rollbackFor = Exception.class)}}
-  // fix@qf4 {{Add rollbackFor = Exception.class}}
-  // edit@qf4 [[sc=3;ec=17]] {{@Transactional(rollbackFor = Exception.class)}}
+  // fix@qf3 {{Add rollbackFor = Exception.class}}
+  // edit@qf3 [[sc=3;ec=17]] {{@Transactional(rollbackFor = java.lang.Exception.class)}}
   public void importData() throws Exception {
   }
 
@@ -36,18 +42,18 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   @Transactional // Noncompliant [[quickfixes=qf7,qf8]]
 //^^^^^^^^^^^^^^
   // fix@qf7 {{Add rollbackFor attribute}}
-  // edit@qf7 [[sc=3;ec=17]] {{@Transactional(rollbackFor = CustomCheckedException.class)}}
+  // edit@qf7 [[sc=3;ec=17]] {{@Transactional(rollbackFor = checks.spring.CustomCheckedException.class)}}
   // fix@qf8 {{Add rollbackFor = Exception.class}}
-  // edit@qf8 [[sc=3;ec=17]] {{@Transactional(rollbackFor = Exception.class)}}
+  // edit@qf8 [[sc=3;ec=17]] {{@Transactional(rollbackFor = java.lang.Exception.class)}}
   public void customException() throws CustomCheckedException {
   }
 
   @Transactional // Noncompliant [[quickfixes=qf9,qf10]]
 //^^^^^^^^^^^^^^
   // fix@qf9 {{Add rollbackFor attribute}}
-  // edit@qf9 [[sc=3;ec=17]] {{@Transactional(rollbackFor = IOException.class)}}
+  // edit@qf9 [[sc=3;ec=17]] {{@Transactional(rollbackFor = java.io.IOException.class)}}
   // fix@qf10 {{Add rollbackFor = Exception.class}}
-  // edit@qf10 [[sc=3;ec=17]] {{@Transactional(rollbackFor = Exception.class)}}
+  // edit@qf10 [[sc=3;ec=17]] {{@Transactional(rollbackFor = java.lang.Exception.class)}}
   public void mixedExceptions() throws IOException, RuntimeException {
   }
 
@@ -99,9 +105,9 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   @Transactional // Noncompliant [[quickfixes=qf11,qf12]]
 //^^^^^^^^^^^^^^
   // fix@qf11 {{Add rollbackFor attribute}}
-  // edit@qf11 [[sc=3;ec=17]] {{@Transactional(rollbackFor = IOException.class)}}
+  // edit@qf11 [[sc=3;ec=17]] {{@Transactional(rollbackFor = java.io.IOException.class)}}
   // fix@qf12 {{Add rollbackFor = Exception.class}}
-  // edit@qf12 [[sc=3;ec=17]] {{@Transactional(rollbackFor = Exception.class)}}
+  // edit@qf12 [[sc=3;ec=17]] {{@Transactional(rollbackFor = java.lang.Exception.class)}}
   static class ClassLevelNoConfig {
     public void noConfig() throws IOException {
     }
@@ -118,9 +124,9 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   @org.springframework.transaction.annotation.Transactional // Noncompliant [[quickfixes=qf13,qf14]]
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>^^^^^^^^^^^^^^^^^^^^^^^^
   // fix@qf13 {{Add rollbackFor attribute}}
-  // edit@qf13 [[sc=3;ec=60]] {{@org.springframework.transaction.annotation.Transactional(rollbackFor = IOException.class)}}
+  // edit@qf13 [[sc=3;ec=60]] {{@org.springframework.transaction.annotation.Transactional(rollbackFor = java.io.IOException.class)}}
   // fix@qf14 {{Add rollbackFor = Exception.class}}
-  // edit@qf14 [[sc=3;ec=60]] {{@org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)}}
+  // edit@qf14 [[sc=3;ec=60]] {{@org.springframework.transaction.annotation.Transactional(rollbackFor = java.lang.Exception.class)}}
   public void fullyQualified() throws IOException {
   }
 
@@ -151,5 +157,10 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   @Transactional // Noncompliant
   interface TransactionalInterface {
     void interfaceMethod() throws IOException;
+  }
+
+  // Test meta-annotated (composed) annotation
+  @MyTransactional // Noncompliant
+  public void metaAnnotated() throws IOException {
   }
 }
