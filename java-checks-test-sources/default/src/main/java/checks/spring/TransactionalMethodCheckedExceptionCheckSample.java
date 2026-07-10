@@ -163,4 +163,17 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   @MyTransactional // Noncompliant
   public void metaAnnotated() throws IOException {
   }
+
+  // Test unknown type (unresolved exception) - line 168 coverage
+  @Transactional
+  public void unknownException() throws UnresolvedCheckedException {
+    // UnresolvedCheckedException is not imported/defined, so type.isUnknown() returns true
+    // Should not raise an issue since we can't determine if it's a checked exception
+  }
+
+  // Test annotation with value attribute (transaction manager name)
+  @Transactional("txManager") // Noncompliant
+  public void valueShorthand() throws IOException {
+    // Has value attribute but no rollback configuration
+  }
 }
