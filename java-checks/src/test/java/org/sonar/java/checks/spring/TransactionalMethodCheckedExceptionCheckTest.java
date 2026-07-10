@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class TransactionalMethodCheckedExceptionCheckTest {
 
@@ -39,5 +40,13 @@ class TransactionalMethodCheckedExceptionCheckTest {
       .withCheck(new TransactionalMethodCheckedExceptionCheck())
       .withClassPath(Collections.emptyList())
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_nonCompiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/spring/TransactionalMethodCheckedExceptionCheckSampleNonCompiling.java"))
+      .withCheck(new TransactionalMethodCheckedExceptionCheck())
+      .verifyIssues();
   }
 }
