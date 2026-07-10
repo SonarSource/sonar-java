@@ -48,7 +48,6 @@ import org.assertj.core.api.Fail;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
@@ -190,7 +189,6 @@ public class JavaRulingTest {
   }
 
   @Test
-  @Ignore("Excluded to speed up CI for PR demo")
   public void spring_mall() throws Exception {
     String projectName = "mall";
     MavenBuild build = test_project("com.macro.mall:mall", projectName);
@@ -203,7 +201,6 @@ public class JavaRulingTest {
   }
 
   @Test
-  @Ignore("Excluded to speed up CI for PR demo")
   public void guava() throws Exception {
     String projectName = "guava";
     MavenBuild build = test_project("com.google.guava:guava", projectName);
@@ -230,7 +227,6 @@ public class JavaRulingTest {
   }
 
   @Test
-  @Ignore("Excluded to speed up CI for PR demo")
   public void eclipse_jetty_incremental() throws Exception {
     if (isCommunityEditionTestsOnly()) {
       return;
@@ -350,7 +346,6 @@ public class JavaRulingTest {
   }
 
   @Test
-  @Ignore("Excluded to speed up CI for PR demo")
   public void sonarqube_server() throws Exception {
     // sonarqube-6.5/server/sonar-server (v.6.5)
     String projectName = "sonar-server";
@@ -360,7 +355,6 @@ public class JavaRulingTest {
   }
 
   @Test
-  @Ignore("Excluded to speed up CI for PR demo")
   public void jboss_ejb3_tutorial() throws Exception {
     // https://github.com/jbossejb3/jboss-ejb3-tutorial (18/01/2015)
     String projectName = "jboss-ejb3-tutorial";
@@ -380,7 +374,6 @@ public class JavaRulingTest {
   }
 
   @Test
-  @Ignore("Excluded to speed up CI for PR demo")
   public void regex_examples() throws IOException {
     String projectName = "regex-examples";
     MavenBuild build = test_project("org.regex-examples:regex-examples", projectName)
@@ -392,7 +385,6 @@ public class JavaRulingTest {
    * Vibe-bot runs this test when testing samples; so it's excluded from the GitHub Actions workflow.
    */
   @Test
-  @Ignore("Excluded to speed up CI for PR demo")
   public void vibebot() throws IOException {
     String projectName = "vibebot";
     File pomFile = FileLocation.of("../vibebot/pom.xml").getFile().getCanonicalFile();
