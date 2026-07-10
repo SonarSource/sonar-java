@@ -1,0 +1,23 @@
+{
+  "title": "Methods with \"@Transactional\" should specify rollback behavior for checked exceptions",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "HIGH"
+    },
+    "attribute": "CLEAR"
+  },
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-8989",
+  "sqKey": "S8989",
+  "scope": "Main",
+  "quickfix": "unknown"
+}
