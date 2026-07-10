@@ -39,12 +39,7 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
 
   private static final String DEFAULT_SECRET_WORDS = "api[_.-]?key,auth,credential,secret,token";
   private static final String DEFAULT_RANDOMNESS_SENSIBILITY= "5.0";
-  private static final int MINIMUM_CREDENTIAL_LENGTH = 17;
 
-  private static final String FIRST_ACCEPTED_CHARACTER = "[\\w.+/~$:&-]";
-  private static final String FOLLOWING_ACCEPTED_CHARACTER = "[=\\w.+/~$:&-]";
-  private static final Pattern SECRET_PATTERN =
-    Pattern.compile(FIRST_ACCEPTED_CHARACTER + "(" + FOLLOWING_ACCEPTED_CHARACTER + "|\\\\\\\\" + FOLLOWING_ACCEPTED_CHARACTER + ")++");
   private static final Pattern IPV_6_PATTERN = Pattern.compile(IP_V6_ALONE);
 
   private RandomnessDetector randomnessDetector;
@@ -102,11 +97,9 @@ public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
 
   @Override
   protected boolean isPotentialCredential(String literal) {
-    if (literal.length() < MINIMUM_CREDENTIAL_LENGTH || !SECRET_PATTERN.matcher(literal).matches()) {
-      return false;
-    }
     return getRandomnessDetector().isRandom(literal)
-      && isNotIpV6(literal);
+      && isNotIpV6(literal)
+      && !isKnownNonSecret(literal);
   }
 
   private RandomnessDetector getRandomnessDetector() {
