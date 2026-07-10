@@ -27,7 +27,7 @@ import org.sonar.plugins.java.api.caching.CacheContext;
 public class DefaultInputFileScannerContext extends DefaultModuleScannerContext implements InputFileScannerContext {
   protected final InputFile inputFile;
 
-  public DefaultInputFileScannerContext(@Nullable SonarComponents sonarComponents, InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext,
+  public DefaultInputFileScannerContext(@Nullable SonarComponents sonarComponents, @Nullable InputFile inputFile, JavaVersion javaVersion, boolean inAndroidContext,
                                         @Nullable CacheContext cacheContext) {
     super(sonarComponents, javaVersion, inAndroidContext, cacheContext);
     this.inputFile = inputFile;
