@@ -30,8 +30,6 @@ import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.Version;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -60,7 +58,7 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
 
     List<Type> checkedExceptions = throwsClauses.stream()
       .map(TypeTree::symbolType)
-      .filter(this::isCheckedException)
+      .filter(TransactionalMethodCheckedExceptionCheck::isCheckedException)
       .toList();
 
     if (checkedExceptions.isEmpty()) {
@@ -150,7 +148,7 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     }
   }
 
-  private boolean isCheckedException(Type type) {
+  private static boolean isCheckedException(Type type) {
     if (type.isUnknown()) {
       return false;
     }
@@ -173,19 +171,6 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
         }
         return false;
       });
-  }
-
-  private boolean hasRollbackConfiguration(SymbolMetadata metadata) {
-    List<SymbolMetadata.AnnotationValue> values = metadata.valuesForAnnotation(SpringUtils.TRANSACTIONAL_ANNOTATION);
-    if (values == null) {
-      return false;
-    }
-
-    return values.stream()
-      .anyMatch(av -> "rollbackFor".equals(av.name())
-        || "rollbackForClassName".equals(av.name())
-        || "noRollbackFor".equals(av.name())
-        || "noRollbackForClassName".equals(av.name()));
   }
 
   @Override
