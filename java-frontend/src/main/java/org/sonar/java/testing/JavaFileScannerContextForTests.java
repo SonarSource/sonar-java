@@ -43,7 +43,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
   private final Set<AnalyzerMessage> issues = new LinkedHashSet<>();
   private final Map<AnalyzerMessage.TextSpan, List<JavaQuickFix>> quickFixes = new HashMap<>();
 
-  public JavaFileScannerContextForTests(CompilationUnitTree tree, InputFile inputFile, Sema semanticModel,
+  public JavaFileScannerContextForTests(@Nullable CompilationUnitTree tree, InputFile inputFile, @Nullable Sema semanticModel,
                                         @Nullable SonarComponents sonarComponents, JavaVersion javaVersion,
                                         boolean failedParsing, boolean inAndroidContext, @Nullable CacheContext cacheContext) {
     super(tree, inputFile, semanticModel, sonarComponents, javaVersion, failedParsing, inAndroidContext, cacheContext);
