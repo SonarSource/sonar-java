@@ -117,9 +117,9 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
       .map(name -> name + ".class")
       .collect(Collectors.joining(", "));
 
-    String rollbackForAttribute = checkedExceptions.size() == 1
-      ? "rollbackFor = " + exceptionsList
-      : "rollbackFor = {" + exceptionsList + "}";
+    String rollbackForAttribute = (checkedExceptions.size() == 1)
+      ? ("rollbackFor = " + exceptionsList)
+      : ("rollbackFor = {" + exceptionsList + "}");
 
     quickFixes.add(createQuickFix(annotation, rollbackForAttribute, "Add rollbackFor attribute"));
 
