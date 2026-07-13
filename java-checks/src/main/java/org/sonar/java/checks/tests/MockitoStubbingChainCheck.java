@@ -20,9 +20,12 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9017")
@@ -30,6 +33,7 @@ public class MockitoStubbingChainCheck extends BaseTreeVisitor implements JavaFi
 
   private static final String WHEN_MESSAGE = "Complete this stubbing by adding \"thenReturn()\", \"thenThrow()\", \"thenAnswer()\", or \"thenCallRealMethod()\".";
   private static final String DO_MESSAGE = "Complete this stubbing by adding \".when(mock).method()\".";
+  private static final String STUBBER_WHEN_MESSAGE = "Complete this stubbing by adding the method to stub.";
 
   private static final MethodMatchers MOCKITO_WHEN = MethodMatchers.create()
     .ofTypes("org.mockito.Mockito")
@@ -68,6 +72,11 @@ public class MockitoStubbingChainCheck extends BaseTreeVisitor implements JavaFi
   }
 
   @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    // skip: the stub may be stored in a pre-declared variable and completed later
+  }
+
+  @Override
   public void visitReturnStatement(ReturnStatementTree tree) {
     // skip: returning a partial stub is valid (e.g. helper methods)
   }
@@ -80,7 +89,14 @@ public class MockitoStubbingChainCheck extends BaseTreeVisitor implements JavaFi
     Boolean previous = isChained;
     isChained = true;
     scan(mit.methodSelect());
-    // arguments are intentionally not scanned
+    // Scan lambda/anonymous-class arguments as independent chains (reset isChained so
+    // incomplete stubs inside their bodies are detected, but they are not part of this chain)
+    isChained = null;
+    for (ExpressionTree arg : mit.arguments()) {
+      if (arg.is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.NEW_CLASS)) {
+        scan(arg);
+      }
+    }
     isChained = previous;
   }
 
@@ -92,8 +108,12 @@ public class MockitoStubbingChainCheck extends BaseTreeVisitor implements JavaFi
       context.reportIssue(this, mit, WHEN_MESSAGE);
       return true;
     }
-    if (MOCKITO_DO_METHODS.matches(mit) || STUBBER_WHEN.matches(mit)) {
+    if (MOCKITO_DO_METHODS.matches(mit)) {
       context.reportIssue(this, mit, DO_MESSAGE);
+      return true;
+    }
+    if (STUBBER_WHEN.matches(mit)) {
+      context.reportIssue(this, mit, STUBBER_WHEN_MESSAGE);
       return true;
     }
     return false;

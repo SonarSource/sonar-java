@@ -51,7 +51,8 @@ class MockitoStubbingChainCheckSample {
   @Test
   void incompleteDoChainMissingMethodCall() {
     UserRepository repo = mock(UserRepository.class);
-    doThrow(new RuntimeException()).when(repo); // Noncompliant {{Complete this stubbing by adding ".when(mock).method()".}}
+    doThrow(new RuntimeException()).when(repo); // Noncompliant {{Complete this stubbing by adding the method to stub.}}
+  //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
   @Test
@@ -67,8 +68,32 @@ class MockitoStubbingChainCheckSample {
   @Test
   void whenStoredInVariable() {
     UserRepository repo = mock(UserRepository.class);
-    OngoingStubbing<User> stub = when(repo.findUser(42)); // Compliant - variable assignment skipped
+    OngoingStubbing<User> stub = when(repo.findUser(42)); // Compliant - variable declaration skipped
     stub.thenReturn(new User("Alice"));
+  }
+
+  @Test
+  void whenStoredViaAssignment() {
+    UserRepository repo = mock(UserRepository.class);
+    OngoingStubbing<User> stub;
+    stub = when(repo.findUser(42)); // Compliant - assignment expression skipped
+    stub.thenReturn(new User("Alice"));
+  }
+
+  @Test
+  void incompleteWhenInsideLambda() {
+    UserRepository repo = mock(UserRepository.class);
+    org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> {
+      when(repo.findUser(1)); // Noncompliant {{Complete this stubbing by adding "thenReturn()", "thenThrow()", "thenAnswer()", or "thenCallRealMethod()".}}
+    });
+  }
+
+  @Test
+  void completeWhenInsideLambda() {
+    UserRepository repo = mock(UserRepository.class);
+    org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> {
+      when(repo.findUser(1)).thenReturn(new User("Alice")); // Compliant
+    });
   }
 
   OngoingStubbing<User> helperMethod(UserRepository repo) {
