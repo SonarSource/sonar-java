@@ -155,11 +155,11 @@ public class JavaClasspathTest {
   }
 
   @Test
-  public void should_log_warnings_if_binaries_missing() {
+  public void should_log_warnings_if_libraries_missing() {
     SonarScanner scanner = ditProjectSonarScanner();
     BuildResult buildResult = ORCHESTRATOR.executeBuildQuietly(scanner);
     String logs = buildResult.getLogs();
-    assertThat(logs).contains("WARN  Missing 'sonar.java.binaries' and 'sonar.java.libraries' properties. You might end up with less precise analysis results.");
+    assertThat(logs).containsPattern("WARN  Missing .*'sonar\\.java\\.libraries' propert(y|ies)\\. You might end up with less precise analysis results\\.");
     assertThat(buildResult.isSuccess()).isTrue();
   }
 
