@@ -115,7 +115,7 @@ public class MockFieldShouldUseMockAnnotationCheck extends IssuableSubscriptionV
       Object value = runWithValues.get(0).value();
       if (value instanceof Symbol.TypeSymbol typeSymbol) {
         String fqn = typeSymbol.type().fullyQualifiedName();
-        return fqn != null && fqn.startsWith(MOCKITO_JUNIT_RUNNER_PREFIX);
+        return fqn.equals(MOCKITO_JUNIT_RUNNER_PREFIX) || fqn.startsWith(MOCKITO_JUNIT_RUNNER_PREFIX + "$");
       }
     }
     return false;

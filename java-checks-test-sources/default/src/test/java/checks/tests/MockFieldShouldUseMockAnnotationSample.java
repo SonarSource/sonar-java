@@ -113,6 +113,11 @@ public class MockFieldShouldUseMockAnnotationSample {
     }
   }
 
+  @ExtendWith(org.junit.jupiter.api.extension.Extension.class)
+  class NonMockitoExtension {
+    private PaymentService service = mock(PaymentService.class); // Compliant - not a Mockito extension
+  }
+
   // ===== Multiple extensions =====
 
   @ExtendWith({MockitoExtension.class, org.junit.jupiter.api.extension.Extension.class})
