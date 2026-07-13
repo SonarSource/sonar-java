@@ -199,6 +199,12 @@ class SecureCookieCheckSampleB extends Cookie {
     setSecure(true);
     return; // code coverage
   }
+  public Object clone() {
+    return new SecureCookieCheckSampleB("name", "value"); // self-instantiation, compliant
+  }
+  Cookie cloneDifferentType() {
+    return new Cookie("name", "value"); // Noncompliant
+  }
   Date codeCoverage(Cookie cookie) {
     SecureCookieCheckSample a = new SecureCookieCheckSample();
     a.foo(cookie);
