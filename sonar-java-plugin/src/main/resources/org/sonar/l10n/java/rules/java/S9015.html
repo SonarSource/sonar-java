@@ -1,0 +1,112 @@
+<p>This is an issue when a test class field is initialized using a manual mock creation method while the class is annotated with a testing framework
+extension that automatically initializes mocks.</p>
+<p>In Java with Mockito, this specifically occurs when using the <code>mock()</code> method for field initialization in a class annotated with
+<code>@ExtendWith(MockitoExtension.class)</code> (JUnit 5) or <code>@RunWith(MockitoJUnitRunner.class)</code> (JUnit 4).</p>
+<h2>Why is this an issue?</h2>
+<p>When you use the testing framework’s test runner or extension, it automatically processes mock annotations in your test class. This means you can
+declare mocks using annotations instead of manually calling the mock creation function.</p>
+<p>Using mock annotations has several advantages:</p>
+<ul>
+  <li><strong>Cleaner code</strong>: The annotation approach is more declarative and easier to read. It clearly shows which fields are mocks at a
+  glance.</li>
+  <li><strong>Idiomatic practice</strong>: Mock annotations are the standard way to declare mocks when using the testing framework’s runner or
+  extension.</li>
+  <li><strong>Strict stubbing enabled</strong>: Most importantly, annotation-based mocks benefit from strict stubbing, which is enabled by default
+  with the framework’s test runner or extension.</li>
+</ul>
+<p>Strict stubbing is a valuable feature that helps maintain test quality:</p>
+<ul>
+  <li>It fails your test if you stub a method but never call it during the test. This detects dead code in your tests - stubs that were set up but are
+  no longer needed.</li>
+  <li>It fails your test if you configure unnecessary stubbing. This keeps your tests focused and prevents outdated setup code from accumulating.</li>
+  <li>It catches common mistakes, like stubbing the wrong method or setting up behavior that your test doesn’t actually verify.</li>
+</ul>
+<p>The mock creation function is still appropriate for creating ad-hoc mocks inside test method bodies, where you need a mock for just one specific
+test case. But for field-level mocks that multiple tests might use, annotations are the better choice.</p>
+<h3>What is the potential impact?</h3>
+<p>Using programmatic mock creation methods for field initialization instead of declarative mock annotations makes tests harder to maintain and can
+hide quality issues. Without automatic validation of mock usage, unnecessary or unused mocks can accumulate over time, making tests slower to
+understand and update. The test suite becomes less reliable at catching setup mistakes or outdated test code.</p>
+<h2>How to fix it in JUnit 4</h2>
+<p>For JUnit 4 tests using MockitoJUnitRunner, replace the field initialization with the <code>@Mock</code> annotation.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@RunWith(MockitoJUnitRunner.class)
+public class OrderProcessorTest {
+  private final PaymentService paymentService = mock(PaymentService.class); // Noncompliant
+  private final NotificationService notificationService = mock(NotificationService.class); // Noncompliant
+
+  @Test
+  public void testProcessOrder() {
+    // test logic...
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@RunWith(MockitoJUnitRunner.class)
+public class OrderProcessorTest {
+  @Mock
+  private PaymentService paymentService;
+
+  @Mock
+  private NotificationService notificationService;
+
+  @Test
+  public void testProcessOrder() {
+    // test logic...
+  }
+}
+</pre>
+<h2>How to fix it in JUnit 5</h2>
+<p>For JUnit 5 tests using MockitoExtension, replace the field initialization with the <code>@Mock</code> annotation. Note that ad-hoc mocks created
+inside test methods can still use <code>mock()</code> - this rule only applies to field declarations.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@ExtendWith(MockitoExtension.class)
+class DataProcessorTest {
+  private final DataSource dataSource = mock(DataSource.class); // Noncompliant
+
+  @Test
+  void testProcessData() {
+    // This ad-hoc mock inside a method is fine
+    DataValidator validator = mock(DataValidator.class);
+
+    when(dataSource.getData()).thenReturn(someData);
+    // test logic...
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@ExtendWith(MockitoExtension.class)
+class DataProcessorTest {
+  @Mock
+  private DataSource dataSource;
+
+  @Test
+  void testProcessData() {
+    // This ad-hoc mock inside a method is fine
+    DataValidator validator = mock(DataValidator.class);
+
+    when(dataSource.getData()).thenReturn(someData);
+    // test logic...
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Mockito Documentation - <a href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mock.html">@Mock
+  Annotation</a></li>
+  <li>Mockito Documentation - <a
+  href="https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org.mockito.junit.jupiter/org/mockito/junit/jupiter/MockitoExtension.html">MockitoExtension (JUnit 5)</a></li>
+  <li>Mockito Documentation - <a
+  href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/junit/MockitoJUnitRunner.html">MockitoJUnitRunner (JUnit
+  4)</a></li>
+  <li>Baeldung - <a href="https://www.baeldung.com/mockito-unnecessary-stubbing-exception">Mockito Strict Stubbing and the
+  UnnecessaryStubbingException</a></li>
+</ul>
+
