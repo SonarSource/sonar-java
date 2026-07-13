@@ -17,7 +17,6 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
@@ -68,7 +67,7 @@ public class SpringComponentSpecializationCheck extends IssuableSubscriptionVisi
 
     if (endsWithIgnoreCase(className, "Service") ||
         endsWithIgnoreCase(className, "ServiceImpl") ||
-        containsIgnoreCase(className, "ServiceFacade")) {
+        endsWithIgnoreCase(className, "ServiceFacade")) {
       return "Service";
     }
 
@@ -88,7 +87,4 @@ public class SpringComponentSpecializationCheck extends IssuableSubscriptionVisi
     return str.substring(str.length() - suffix.length()).equalsIgnoreCase(suffix);
   }
 
-  private static boolean containsIgnoreCase(String str, String substring) {
-    return str.toLowerCase(Locale.ROOT).contains(substring.toLowerCase(Locale.ROOT));
-  }
 }
