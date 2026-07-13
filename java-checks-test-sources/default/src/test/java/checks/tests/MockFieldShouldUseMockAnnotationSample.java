@@ -30,7 +30,9 @@ public class MockFieldShouldUseMockAnnotationSample {
   @ExtendWith(MockitoExtension.class)
   class JUnit5WithExtendWith {
     private final PaymentService paymentService = mock(PaymentService.class); // Noncompliant {{Use "@Mock" annotation instead of "mock()" for field declaration.}}
+    //                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
     private final NotificationService notificationService = mock(NotificationService.class); // Noncompliant {{Use "@Mock" annotation instead of "mock()" for field declaration.}}
+    //                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     @Mock
     private DataSource dataSource; // Compliant - already uses @Mock
