@@ -1,5 +1,5 @@
 {
-  "title": "Mockito stubbing chains should be completed",
+  "title": "Mockito stubbing chains should be complete",
   "type": "BUG",
   "status": "ready",
   "remediation": {
