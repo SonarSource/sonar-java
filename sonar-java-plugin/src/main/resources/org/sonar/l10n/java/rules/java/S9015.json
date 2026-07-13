@@ -1,5 +1,5 @@
 {
-  "title": "Mock fields should use @Mock annotation when MockitoExtension or MockitoJUnitRunner is active",
+  "title": "Mock fields should use \"@Mock\" annotation when \"MockitoExtension\" or \"MockitoJUnitRunner\" is active",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -15,7 +15,7 @@
   "ruleSpecification": "RSPEC-9015",
   "sqKey": "S9015",
   "scope": "Tests",
-  "quickfix": "unknown",
+  "quickfix": "targeted",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "MEDIUM"

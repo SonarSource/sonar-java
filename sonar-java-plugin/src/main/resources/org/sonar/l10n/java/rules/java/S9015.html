@@ -21,12 +21,8 @@ declare mocks using annotations instead of manually calling the mock creation fu
   <li>It fails your test if you configure unnecessary stubbing. This keeps your tests focused and prevents outdated setup code from accumulating.</li>
   <li>It catches common mistakes, like stubbing the wrong method or setting up behavior that your test doesn’t actually verify.</li>
 </ul>
-<p>When you use the mock creation function directly in a field initializer, you bypass the annotation processing. This means the mock is created
-outside the test runner’s control, and strict stubbing won’t apply to it.</p>
 <p>The mock creation function is still appropriate for creating ad-hoc mocks inside test method bodies, where you need a mock for just one specific
 test case. But for field-level mocks that multiple tests might use, annotations are the better choice.</p>
-<p>In Mockito specifically, this refers to using MockitoExtension (JUnit 5) or MockitoJUnitRunner (JUnit 4) as the test runner/extension, the
-<code>@Mock</code> annotation for declaring mocks, and the <code>mock()</code> method for direct mock creation.</p>
 <h3>What is the potential impact?</h3>
 <p>Using programmatic mock creation methods for field initialization instead of declarative mock annotations makes tests harder to maintain and can
 hide quality issues. Without automatic validation of mock usage, unnecessary or unused mocks can accumulate over time, making tests slower to
@@ -103,13 +99,14 @@ class DataProcessorTest {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>Mockito Documentation - <a href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mock.html">@Mock Annotation</a></li>
-  <li>Mockito Documentation - <a href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#strict_stubbing">Strict
-  Stubbing</a></li>
+  <li>Mockito Documentation - <a href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/Mock.html">@Mock
+  Annotation</a></li>
   <li>Mockito Documentation - <a
-  href="https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org/mockito/junit/jupiter/MockitoExtension.html">MockitoExtension (JUnit
-  5)</a></li>
+  href="https://javadoc.io/doc/org.mockito/mockito-junit-jupiter/latest/org.mockito.junit.jupiter/org/mockito/junit/jupiter/MockitoExtension.html">MockitoExtension (JUnit 5)</a></li>
   <li>Mockito Documentation - <a
-  href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/junit/MockitoJUnitRunner.html">MockitoJUnitRunner (JUnit 4)</a></li>
+  href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/junit/MockitoJUnitRunner.html">MockitoJUnitRunner (JUnit
+  4)</a></li>
+  <li>Baeldung - <a href="https://www.baeldung.com/mockito-unnecessary-stubbing-exception">Mockito Strict Stubbing and the
+  UnnecessaryStubbingException</a></li>
 </ul>
 
