@@ -1,0 +1,26 @@
+{
+  "title": "Mockito stubbing chains should be completed",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "mockito",
+    "tests",
+    "junit"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-9017",
+  "sqKey": "S9017",
+  "scope": "Tests",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH",
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "COMPLETE"
+  }
+}
