@@ -17,6 +17,7 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
@@ -88,6 +89,6 @@ public class SpringComponentSpecializationCheck extends IssuableSubscriptionVisi
   }
 
   private static boolean containsIgnoreCase(String str, String substring) {
-    return str.toLowerCase().contains(substring.toLowerCase());
+    return str.toLowerCase(Locale.ROOT).contains(substring.toLowerCase(Locale.ROOT));
   }
 }
