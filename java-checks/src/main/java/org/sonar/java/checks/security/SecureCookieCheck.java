@@ -16,7 +16,9 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +34,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -113,6 +116,7 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
   private final Map<Symbol.VariableSymbol, NewClassTree> unsecuredCookies = new HashMap<>();
   private final Set<NewClassTree> cookieConstructors = new HashSet<>();
+  private final Deque<Symbol.TypeSymbol> enclosingClass = new ArrayDeque<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -120,13 +124,15 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
       Tree.Kind.VARIABLE,
       Tree.Kind.ASSIGNMENT,
       Tree.Kind.METHOD_INVOCATION,
-      Tree.Kind.NEW_CLASS);
+      Tree.Kind.NEW_CLASS,
+      Tree.Kind.CLASS);
   }
 
   @Override
   public void setContext(JavaFileScannerContext context) {
     unsecuredCookies.clear();
     cookieConstructors.clear();
+    enclosingClass.clear();
     super.setContext(context);
   }
 
@@ -143,8 +149,17 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
       addToUnsecuredCookies((AssignmentExpressionTree) tree);
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       checkSecureCall((MethodInvocationTree) tree);
+    } else if (tree.is(Tree.Kind.CLASS)) {
+      enclosingClass.push(((ClassTree) tree).symbol());
     } else {
       checkConstructor((NewClassTree) tree);
+    }
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.CLASS)) {
+      enclosingClass.pop();
     }
   }
 
@@ -190,9 +205,14 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkConstructor(NewClassTree tree) {
-    if (isCookieClass(tree.symbolType()) && isSecureParamFalse(tree)) {
+    if (isCookieClass(tree.symbolType()) && isSecureParamFalse(tree) && !isSelfInstantiation(tree)) {
       cookieConstructors.add(tree);
     }
+  }
+
+  private boolean isSelfInstantiation(NewClassTree tree) {
+    Symbol.TypeSymbol enclosing = enclosingClass.peek();
+    return enclosing != null && !tree.symbolType().isUnknown() && tree.symbolType().equals(enclosing.type());
   }
 
   private static boolean isSecureParamFalse(NewClassTree newClassTree) {
