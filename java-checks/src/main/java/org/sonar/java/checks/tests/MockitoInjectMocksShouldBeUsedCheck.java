@@ -30,12 +30,14 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -181,29 +183,18 @@ public class MockitoInjectMocksShouldBeUsedCheck extends IssuableSubscriptionVis
 
   private static boolean callsOpenOrInitMocksInSetup(List<MethodTree> setupMethods) {
     for (MethodTree method : setupMethods) {
-      OpenMocksVisitor visitor = new OpenMocksVisitor();
-      method.accept(visitor);
-      if (visitor.found) {
-        return true;
+      if (method.block() == null) {
+        return false;
+      }
+      for (StatementTree statement : method.block().body()) {
+        if (statement instanceof ExpressionStatementTree expressionStatementTree
+          && expressionStatementTree.expression() instanceof MethodInvocationTree mit
+          && OPEN_OR_INIT_MOCKS.matches(mit)) {
+          return true;
+        }
       }
     }
     return false;
-  }
-
-  private static class OpenMocksVisitor extends BaseTreeVisitor {
-    private boolean found = false;
-
-    @Override
-    public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (OPEN_OR_INIT_MOCKS.matches(tree)) {
-        found = true;
-      }
-    }
-
-    @Override
-    public void visitClass(ClassTree tree) {
-      // don't descend into nested/anonymous classes
-    }
   }
 
   private static class SetupMethodVisitor extends BaseTreeVisitor {
@@ -219,11 +210,10 @@ public class MockitoInjectMocksShouldBeUsedCheck extends IssuableSubscriptionVis
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
       ExpressionTree expression = tree.expression();
-      if (expression.is(Tree.Kind.NEW_CLASS) && isFieldAssignment(tree.variable())) {
-        NewClassTree newClass = (NewClassTree) expression;
-        if (allArgsMockFields(newClass)) {
-          issues.add(newClass);
-        }
+      if (expression instanceof NewClassTree newClass
+        && isFieldAssignment(tree.variable())
+        && allArgsMockFields(newClass)) {
+        issues.add(newClass);
       }
       super.visitAssignmentExpression(tree);
     }
@@ -234,15 +224,13 @@ public class MockitoInjectMocksShouldBeUsedCheck extends IssuableSubscriptionVis
     }
 
     private static Symbol extractSymbol(ExpressionTree expression) {
-      if (expression.is(Tree.Kind.IDENTIFIER)) {
-        return ((IdentifierTree) expression).symbol();
+      if (expression instanceof IdentifierTree identifierTree) {
+        return identifierTree.symbol();
       }
-      if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expression;
-        ExpressionTree expr = memberSelect.expression();
-        if (expr.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) expr).name())) {
-          return memberSelect.identifier().symbol();
-        }
+      if (expression instanceof MemberSelectExpressionTree memberSelect
+        && memberSelect.expression() instanceof IdentifierTree identifierTree
+        && "this".equals(identifierTree.name())) {
+        return memberSelect.identifier().symbol();
       }
       return null;
     }
