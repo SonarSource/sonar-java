@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="e" uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="e" uri="owasp.encoder.jakarta" %>
 
 <%@ page import="org.owasp.encoder.Encode" %> 
 

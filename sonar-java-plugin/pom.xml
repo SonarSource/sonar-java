@@ -78,10 +78,10 @@
       <artifactId>sonar-performance-measure</artifactId>
     </dependency>
 
-    <!-- Keep legacy Java EE symbols available for analysis and JSP libraries using javax APIs. -->
+    <!-- Keep legacy Servlet symbols available when analyzing projects without an explicit classpath. -->
     <dependency>
       <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-jsp-api</artifactId>
+      <artifactId>tomcat-servlet-api</artifactId>
       <version>9.0.120</version>
     </dependency>
 
@@ -192,7 +192,7 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>21100000</maxsize>
+                  <maxsize>21000000</maxsize>
                   <minsize>19000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
@@ -260,15 +260,6 @@
                   </includes>
                 </filter>
                 <filter>
-                  <artifact>org.apache.tomcat:tomcat-jsp-api</artifact>
-                  <includes>
-                    <include>javax/servlet/jsp/**</include>
-                  </includes>
-                  <excludes>
-                    <exclude>javax/servlet/jsp/resources/**</exclude>
-                  </excludes>
-                </filter>
-                <filter>
                   <artifact>org.apache.tomcat:tomcat-servlet-api</artifact>
                   <includes>
                     <include>javax/servlet/**</include>
@@ -276,12 +267,6 @@
                   <excludes>
                     <exclude>javax/servlet/resources/**</exclude>
                   </excludes>
-                </filter>
-                <filter>
-                  <artifact>org.apache.tomcat:tomcat-el-api</artifact>
-                  <includes>
-                    <include>javax/el/**</include>
-                  </includes>
                 </filter>
                 <!-- this is needed because org.apache.el.ExpressionFactoryImpl is instantiated with reflection -->
                 <filter>
