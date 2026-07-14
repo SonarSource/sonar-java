@@ -95,7 +95,7 @@ public class MockitoStubbingChainCheck extends BaseTreeVisitor implements JavaFi
   }
 
   private void visitMethodInvocation(MethodInvocationTree mit, boolean isChained) {
-    if (!isChained && isIncompleteStubbing(mit, isChained)) {
+    if (!isChained && isIncompleteStubbing(mit)) {
       return;
     }
     if (mit.methodSelect() instanceof MemberSelectExpressionTree mset
@@ -104,10 +104,7 @@ public class MockitoStubbingChainCheck extends BaseTreeVisitor implements JavaFi
     }
   }
 
-  private boolean isIncompleteStubbing(MethodInvocationTree mit, boolean isChained) {
-    if (isChained) {
-      return false;
-    }
+  private boolean isIncompleteStubbing(MethodInvocationTree mit) {
     if (MOCKITO_WHEN.matches(mit)) {
       context.reportIssue(this, mit, WHEN_MESSAGE);
       return true;
