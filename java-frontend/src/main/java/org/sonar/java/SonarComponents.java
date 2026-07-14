@@ -22,9 +22,13 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +38,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.LongSupplier;
 import java.util.function.UnaryOperator;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
@@ -83,6 +90,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   private static final Logger LOG = LoggerFactory.getLogger(SonarComponents.class);
   private static final int LOGGED_MAX_NUMBER_UNDEFINED_TYPES = 50;
+  private static final List<String> JSP_RUNTIME_API_PREFIXES = List.of("jakarta/el/", "jakarta/servlet/");
 
   public static final String FAIL_ON_EXCEPTION_KEY = "sonar.internal.analysis.failFast";
   public static final String SONAR_BATCH_MODE_KEY = "sonar.java.internal.batchMode";
@@ -136,6 +144,9 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   private SensorContext context;
   private UnaryOperator<List<JavaCheck>> checkFilter = UnaryOperator.identity();
   private final Set<RuleKey> additionalAutoScanCompatibleRuleKeys;
+
+  @Nullable
+  private File autoScanPluginJar;
 
   private boolean alreadyLoggedSkipStatus = false;
 
@@ -273,6 +284,63 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     jspClasspath.add(findPluginJar());
     jspClasspath.addAll(getJavaClasspath());
     return jspClasspath;
+  }
+
+  public List<File> getAutoScanClasspath() {
+    List<File> autoScanClasspath = new ArrayList<>();
+    // Jasper is disabled in AutoScan; do not expose its bundled Jakarta APIs as inferred project dependencies.
+    autoScanClasspath.add(pluginJarWithoutJspRuntimeApis());
+    autoScanClasspath.addAll(getJavaClasspath());
+    autoScanClasspath.addAll(getJavaTestClasspath());
+    return autoScanClasspath.stream().distinct().toList();
+  }
+
+  private File pluginJarWithoutJspRuntimeApis() {
+    if (autoScanPluginJar != null) {
+      return autoScanPluginJar;
+    }
+    File pluginJar = findPluginJar();
+    if (!pluginJar.isFile()) {
+      // Unit tests and IDE executions load analyzer classes from a directory rather than a shaded plugin JAR.
+      return pluginJar;
+    }
+    Path outputDirectory = fs.workDir().toPath().resolve("autoscan");
+    Path target = outputDirectory.resolve(pluginJar.getName());
+    try {
+      Files.createDirectories(outputDirectory);
+      Path temporary = Files.createTempFile(outputDirectory, "sonar-java-plugin-", ".jar");
+      try {
+        createAutoScanPluginJar(pluginJar.toPath(), temporary);
+        Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
+      } finally {
+        Files.deleteIfExists(temporary);
+      }
+      autoScanPluginJar = target.toFile();
+      return autoScanPluginJar;
+    } catch (IOException e) {
+      throw new AnalysisException("Failed to prepare the Java analyzer classpath for AutoScan.", e);
+    }
+  }
+
+  @VisibleForTesting
+  static void createAutoScanPluginJar(Path source, Path target) throws IOException {
+    try (JarFile sourceJar = new JarFile(source.toFile());
+      JarOutputStream targetJar = new JarOutputStream(Files.newOutputStream(target))) {
+      Enumeration<JarEntry> entries = sourceJar.entries();
+      while (entries.hasMoreElements()) {
+        JarEntry entry = entries.nextElement();
+        if (JSP_RUNTIME_API_PREFIXES.stream().anyMatch(entry.getName()::startsWith)) {
+          continue;
+        }
+        targetJar.putNextEntry(new JarEntry(entry));
+        if (!entry.isDirectory()) {
+          try (var input = sourceJar.getInputStream(entry)) {
+            input.transferTo(targetJar);
+          }
+        }
+        targetJar.closeEntry();
+      }
+    }
   }
 
   /**

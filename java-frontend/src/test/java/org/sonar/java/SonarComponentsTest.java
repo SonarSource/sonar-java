@@ -21,6 +21,7 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
@@ -32,6 +33,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.LongSupplier;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 
@@ -40,6 +44,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -725,6 +730,35 @@ class SonarComponentsTest {
       checkFactory, context.activeRules());
     List<String> jspClassPath = sonarComponents.getJspClasspath().stream().map(File::getAbsolutePath).toList();
     assertThat(jspClassPath).containsExactly(plugin.getAbsolutePath(), someJar.getAbsolutePath());
+  }
+
+  @Test
+  void autoscan_plugin_jar_should_exclude_jakarta_jsp_runtime_apis(@TempDir Path tempDirectory) throws IOException {
+    Path source = tempDirectory.resolve("plugin.jar");
+    Path target = tempDirectory.resolve("autoscan-plugin.jar");
+    List<String> entries = List.of(
+      "org/sonar/java/Analyzer.class",
+      "javax/servlet/Servlet.class",
+      "jakarta/servlet/Servlet.class",
+      "jakarta/el/ELContext.class"
+    );
+    try (JarOutputStream jar = new JarOutputStream(Files.newOutputStream(source))) {
+      for (String entry : entries) {
+        jar.putNextEntry(new JarEntry(entry));
+        jar.write(entry.getBytes(StandardCharsets.UTF_8));
+        jar.closeEntry();
+      }
+    }
+
+    SonarComponents.createAutoScanPluginJar(source, target);
+
+    try (JarFile jar = new JarFile(target.toFile())) {
+      assertThat(Collections.list(jar.entries()))
+        .extracting(JarEntry::getName)
+        .containsExactly("org/sonar/java/Analyzer.class", "javax/servlet/Servlet.class");
+      assertThat(new String(jar.getInputStream(jar.getJarEntry("javax/servlet/Servlet.class")).readAllBytes(), StandardCharsets.UTF_8))
+        .isEqualTo("javax/servlet/Servlet.class");
+    }
   }
 
   @Test
