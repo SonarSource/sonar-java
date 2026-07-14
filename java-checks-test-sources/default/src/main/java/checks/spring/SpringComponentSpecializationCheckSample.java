@@ -10,57 +10,57 @@ public class SpringComponentSpecializationCheckSample {
 
   // Service patterns
 
-  @Component // Noncompliant {{Use @Service instead of @Component}}
+  @Component // Noncompliant {{Use @Service instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class CustomerServiceImpl {
   }
 
-  @Component // Noncompliant {{Use @Service instead of @Component}}
+  @Component // Noncompliant {{Use @Service instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class OrderService {
   }
 
-  @Component // Noncompliant {{Use @Service instead of @Component}}
+  @Component // Noncompliant {{Use @Service instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class PaymentServiceFacade {
   }
 
   // Repository patterns
 
-  @Component // Noncompliant {{Use @Repository instead of @Component}}
+  @Component // Noncompliant {{Use @Repository instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class ProductRepository {
   }
 
-  @Component // Noncompliant {{Use @Repository instead of @Component}}
+  @Component // Noncompliant {{Use @Repository instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class UserRepositoryImpl {
   }
 
-  @Component // Noncompliant {{Use @Repository instead of @Component}}
+  @Component // Noncompliant {{Use @Repository instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class OrderDao {
   }
 
-  @Component // Noncompliant {{Use @Repository instead of @Component}}
+  @Component // Noncompliant {{Use @Repository instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class CustomerDao {
   }
 
   // RestController patterns
 
-  @Component // Noncompliant {{Use @RestController instead of @Component}}
+  @Component // Noncompliant {{Use @RestController instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class FooBarRestController {
   }
 
-  @Component // Noncompliant {{Use @RestController instead of @Component}}
+  @Component // Noncompliant {{Use @RestController instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class ApiRestController {
   }
 
-  @Component // Noncompliant {{Use @RestController instead of @Component}}
+  @Component // Noncompliant {{Use @RestController instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class UserRestControllerImpl {
   }
 
   // Controller patterns
 
-  @Component // Noncompliant {{Use @Controller instead of @Component}}
+  @Component // Noncompliant {{Use @Controller instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class HomeController {
   }
 
-  @Component // Noncompliant {{Use @Controller instead of @Component}}
+  @Component // Noncompliant {{Use @Controller instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class LoginControllerImpl {
   }
 
@@ -107,33 +107,33 @@ public class SpringComponentSpecializationCheckSample {
 
   // Case variations
 
-  @Component // Noncompliant {{Use @Service instead of @Component}}
+  @Component // Noncompliant {{Use @Service instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class userservice {
   }
 
-  @Component // Noncompliant {{Use @Repository instead of @Component}}
+  @Component // Noncompliant {{Use @Repository instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class USERREPOSITORY {
   }
 
-  @Component // Noncompliant {{Use @Controller instead of @Component}}
+  @Component // Noncompliant {{Use @Controller instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class maincontroller {
   }
 
-  @Component // Noncompliant {{Use @RestController instead of @Component}}
+  @Component // Noncompliant {{Use @RestController instead of @Component, or rename this type if the @Component annotation is intentional}}
   public class apirestcontroller {
   }
 
   // Interface patterns
 
-  @Component // Noncompliant {{Use @Repository instead of @Component}}
+  @Component // Noncompliant {{Use @Repository instead of @Component, or rename this type if the @Component annotation is intentional}}
   public interface UserRepository {
   }
 
-  @Component // Noncompliant {{Use @Service instead of @Component}}
+  @Component // Noncompliant {{Use @Service instead of @Component, or rename this type if the @Component annotation is intentional}}
   public interface PaymentService {
   }
 
-  @Component // Noncompliant {{Use @Repository instead of @Component}}
+  @Component // Noncompliant {{Use @Repository instead of @Component, or rename this type if the @Component annotation is intentional}}
   public interface ProductDao {
   }
 
