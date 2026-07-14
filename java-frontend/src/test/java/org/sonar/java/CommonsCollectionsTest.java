@@ -42,11 +42,11 @@ class CommonsCollectionsTest extends MeasurerTester {
     Map<String, Double> metrics = getMetrics();
 
     assertThat(metrics.get("classes").intValue()).isEqualTo(412);
-    assertThat(metrics.get("ncloc").intValue()).isEqualTo(26477);
-    assertThat(metrics.get("statements").intValue()).isEqualTo(12113);
-    assertThat(metrics.get("comment_lines").intValue()).isEqualTo(18034);
-    assertThat(metrics.get("functions").intValue()).isEqualTo(3782);
-    assertThat(metrics.get("complexity").intValue()).isEqualTo(6740);
+    assertThat(metrics.get("ncloc").intValue()).isEqualTo(26323);
+    assertThat(metrics.get("statements").intValue()).isEqualTo(12047);
+    assertThat(metrics.get("comment_lines").intValue()).isEqualTo(17908);
+    assertThat(metrics.get("functions").intValue()).isEqualTo(3762);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(6714);
   }
 
 }
