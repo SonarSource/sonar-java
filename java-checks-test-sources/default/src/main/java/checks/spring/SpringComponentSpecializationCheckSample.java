@@ -122,4 +122,34 @@ public class SpringComponentSpecializationCheckSample {
   @Component // Noncompliant {{Use @RestController instead of @Component}}
   public class apirestcontroller {
   }
+
+  // Interface patterns
+
+  @Component // Noncompliant {{Use @Repository instead of @Component}}
+  public interface UserRepository {
+  }
+
+  @Component // Noncompliant {{Use @Service instead of @Component}}
+  public interface PaymentService {
+  }
+
+  @Component // Noncompliant {{Use @Repository instead of @Component}}
+  public interface ProductDao {
+  }
+
+  // Compliant interfaces - correct annotations used
+
+  @Repository
+  public interface CategoryRepository {
+  }
+
+  @Service
+  public interface NotificationService {
+  }
+
+  // Compliant interfaces - generic names
+
+  @Component
+  public interface EventListener {
+  }
 }
