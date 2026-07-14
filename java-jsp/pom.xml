@@ -93,16 +93,25 @@
                   <groupId>org.springframework</groupId>
                   <artifactId>spring-webmvc</artifactId>
                   <version>5.2.3.RELEASE</version>
+                  <destFileName>spring-webmvc.jar</destFileName>
                 </artifactItem>
                 <artifactItem>
                   <groupId>javax</groupId>
                   <artifactId>javaee-web-api</artifactId>
                   <version>8.0.1</version>
+                  <destFileName>javaee-web-api-8.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax</groupId>
+                  <artifactId>javaee-web-api</artifactId>
+                  <version>6.0</version>
+                  <destFileName>javaee-web-api-6.jar</destFileName>
                 </artifactItem>
                 <artifactItem>
                   <groupId>javax.servlet</groupId>
                   <artifactId>jstl</artifactId>
                   <version>1.2</version>
+                  <destFileName>jstl.jar</destFileName>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>

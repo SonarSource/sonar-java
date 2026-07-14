@@ -64,6 +64,15 @@ class JasperTest {
     </html>""";
 
   private static final String SPRING_TLD = "<%@ taglib prefix=\"spring\" uri=\"http://www.springframework.org/tags\" %>\n";
+  private static final String JSTL_SOURCE = """
+    <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
+    <html>
+    <body>
+    <h2>Hello World!</h2>
+    <c:if test="true">what-if</c:if>
+    </body>
+    </html>
+    """;
 
   Path tempFolder;
   Path webInf;
@@ -74,9 +83,10 @@ class JasperTest {
   @RegisterExtension
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
   private Path jspFile;
-  private final File springJar = Paths.get("target/test-jars/spring-webmvc-5.2.3.RELEASE.jar").toFile();
-  private final File jstlJar = Paths.get("target/test-jars/jstl-1.2.jar").toFile();
-  private final File jee6Jar = Paths.get("target/test-jars/javaee-web-api-6.0.jar").toFile();
+  private final File springJar = Paths.get("target/test-jars/spring-webmvc.jar").toFile();
+  private final File jstlJar = Paths.get("target/test-jars/jstl.jar").toFile();
+  private final File javaee6Jar = Paths.get("target/test-jars/javaee-web-api-6.jar").toFile();
+  private final File javaee8Jar = Paths.get("target/test-jars/javaee-web-api-8.jar").toFile();
 
   @BeforeEach
   void setUp() throws Exception {
@@ -172,21 +182,23 @@ class JasperTest {
 
 
   @Test
-  void test_with_classpath_jee6_jstl() throws Exception {
-    SensorContextTester ctx = jspContext("""
-        <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
-        <html>
-        <body>
-        <h2>Hello World!</h2>
-        <c:if test="true">what-if</c:if>
-        </body>
-        </html>
-        """);
-    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, asList(jee6Jar, jstlJar));
+  void test_linkage_error_with_classpath_javaee6_jstl() throws Exception {
+    SensorContextTester ctx = jspContext(JSTL_SOURCE);
+    assertThat(javaee6Jar).exists();
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, asList(javaee6Jar, jstlJar));
 
     assertThat(generatedFiles).isEmpty();
     assertThat(logTester.logs(Level.DEBUG)).matches(logs -> logs.stream().anyMatch(line ->
       line.startsWith("Error transpiling src/main/webapp/WEB-INF/jsp/test.jsp. Error:\njava.lang.ClassFormatError")));
+  }
+
+  @Test
+  void test_with_classpath_javaee8_jstl() throws Exception {
+    SensorContextTester ctx = jspContext(JSTL_SOURCE);
+    assertThat(javaee8Jar).exists();
+    Collection<GeneratedFile> generatedFiles = new Jasper().generateFiles(ctx, asList(javaee8Jar, jstlJar));
+
+    assertThat(generatedFiles).hasSize(1);
   }
 
   @Test

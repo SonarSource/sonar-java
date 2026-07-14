@@ -12,6 +12,17 @@
   ],
   "packageRules": [
     {
+      "description": "Java EE 6 is a test fixture that deliberately triggers a LinkageError",
+      "matchFileNames": [
+        "java-jsp/pom.xml"
+      ],
+      "matchPackageNames": [
+        "javax:javaee-web-api"
+      ],
+      "matchCurrentVersion": "/^6\\./",
+      "enabled": false
+    },
+    {
       "description": "Plugin API has compatibility rules, so disable it to prevent accidental updates",
       "matchPackageNames": [
         "org.sonarsource.api.plugin:sonar-plugin-api*"
