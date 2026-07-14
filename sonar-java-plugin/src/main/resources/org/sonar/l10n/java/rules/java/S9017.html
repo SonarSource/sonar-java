@@ -1,0 +1,94 @@
+<p>This rule raises an issue when test mock stubbing is syntactically incomplete.</p>
+<p>In Mockito, this means: a <code>when()</code> call must be followed by <code>thenReturn()</code>, <code>thenThrow()</code>,
+<code>thenAnswer()</code>, or <code>thenCallRealMethod()</code>; and a <code>doReturn()</code>, <code>doThrow()</code>, <code>doAnswer()</code>,
+<code>doNothing()</code>, or <code>doCallRealMethod()</code> call must be followed by <code>.when(mock).method()</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>Test double frameworks allow you to configure behavior through chained API calls. These chains must be syntactically complete to take effect.</p>
+<p>When you write the first part of a stub configuration (specifying which method call to intercept) without completing the chain with a behavior
+specification (what value to return or action to take), the configuration is discarded. The method continues to return its default value (null for
+objects, 0 for numbers, false for booleans).</p>
+<p>Similarly, when you write the behavior specification first (what to return) without completing it with the method specification (which method to
+stub), the configured behavior is never attached to any method. It is silently dropped.</p>
+<p>Both patterns compile and run without errors in lenient testing frameworks. This makes them hard to spot during code review or testing. The test
+may pass because it never actually exercises the intended stub, or it may fail with a confusing error message that doesn’t point to the incomplete
+stubbing.</p>
+<p>The incomplete stub creates a gap between what you intended to test and what the test actually verifies. This undermines the reliability of your
+test suite.</p>
+<h3>What is the potential impact?</h3>
+<p>Incomplete mock object stubs can cause:</p>
+<ul>
+  <li><strong>False passes</strong>: Tests pass because they’re checking the wrong behavior (default return values from unconfigured mock methods
+  instead of your intended stub behavior)</li>
+  <li><strong>Misleading failures</strong>: Tests fail with null pointer exceptions or assertion errors that don’t indicate the real problem</li>
+  <li><strong>Maintenance burden</strong>: Developers waste time debugging test failures that stem from incomplete mock configurations rather than
+  actual code issues</li>
+  <li><strong>Reduced confidence</strong>: The test suite becomes less trustworthy when tests don’t verify what they appear to verify</li>
+</ul>
+<h2>How to fix it in Mockito</h2>
+<p>Complete the <code>when()</code> chain by adding a behavior method such as <code>thenReturn()</code>, <code>thenThrow()</code>,
+<code>thenAnswer()</code>, or <code>thenCallRealMethod()</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Test
+void testFindUser() {
+  UserRepository mock = mock(UserRepository.class);
+  when(mock.findUser(42)); // Noncompliant
+
+  User user = service.getUser(42);
+  assertNotNull(user); // Will fail - findUser returns null
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Test
+void testFindUser() {
+  UserRepository mock = mock(UserRepository.class);
+  when(mock.findUser(42)).thenReturn(new User("Alice"));
+
+  User user = service.getUser(42);
+  assertNotNull(user); // Now passes correctly
+}
+</pre>
+<p>Complete the <code>do*()</code> chain by adding <code>.when(mock).method()</code> to specify which method should have the configured behavior.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@Test
+void testDeleteUser() {
+  UserRepository mock = mock(UserRepository.class);
+  doThrow(new RuntimeException()); // Noncompliant
+
+  assertThrows(RuntimeException.class, () -&gt; {
+    service.deleteUser(42);
+  }); // Will fail - no exception is thrown
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@Test
+void testDeleteUser() {
+  UserRepository mock = mock(UserRepository.class);
+  doThrow(new RuntimeException()).when(mock).deleteUser(42);
+
+  assertThrows(RuntimeException.class, () -&gt; {
+    service.deleteUser(42);
+  }); // Now passes correctly
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Mockito Documentation - <a
+  href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/stubbing/OngoingStubbing.html">Interface
+  OngoingStubbing&lt;T&gt;</a></li>
+  <li>Mockito Documentation - <a
+  href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/stubbing/BaseStubber.html#doReturn(java.lang.Object)">Interface
+  BaseStubber</a></li>
+  <li>Mockito FAQ - <a href="https://github.com/mockito/mockito/wiki/FAQ#what-are-unfinished-verificationstubbing-errors">What are unfinished
+  verification/stubbing errors?</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S2970} - Assertions should be complete - similar pattern of incomplete test code</li>
+</ul>
+
