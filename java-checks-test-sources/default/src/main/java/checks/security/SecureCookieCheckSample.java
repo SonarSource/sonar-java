@@ -276,6 +276,9 @@ class SecureCookieCheckSampleB extends Cookie {
   Cookie cloneDifferentType() {
     return new Cookie("name", "value"); // Noncompliant
   }
+  void fieldAccessReceiver() {
+    this.c.setSecure(false); // Noncompliant
+  }
   Date codeCoverage(Cookie cookie) {
     SecureCookieCheckSample a = new SecureCookieCheckSample();
     a.foo(cookie);

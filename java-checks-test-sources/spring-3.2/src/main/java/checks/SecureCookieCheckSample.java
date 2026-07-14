@@ -38,4 +38,8 @@ public class SecureCookieCheckSample {
     ResponseCookie.from("token", "").secure(false).maxAge(0).httpOnly(true).path("/").build();
   }
 
+  public void deleteCookieWithNonLiteralMaxAge(long maxAge) {
+    ResponseCookie.from("token", "").maxAge(maxAge).secure(false).httpOnly(true).path("/").build(); // Noncompliant
+  }
+
 }
