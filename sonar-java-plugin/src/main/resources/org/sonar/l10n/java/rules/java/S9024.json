@@ -1,5 +1,5 @@
 {
-  "title": "@InjectMocks should be used instead of manually constructing test objects",
+  "title": "\"@InjectMocks\" should be used instead of manually constructing test objects",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
