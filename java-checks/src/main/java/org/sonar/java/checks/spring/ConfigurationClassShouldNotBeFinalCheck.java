@@ -21,6 +21,7 @@ import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -66,11 +67,7 @@ public class ConfigurationClassShouldNotBeFinalCheck extends IssuableSubscriptio
   }
 
   private static Optional<ModifierKeywordTree> getFinalModifier(ClassTree tree) {
-    return tree.modifiers().stream()
-      .filter(modifier -> modifier.is(Tree.Kind.MODIFIER))
-      .map(ModifierKeywordTree.class::cast)
-      .filter(modifier -> modifier.modifier() == Modifier.FINAL)
-      .findFirst();
+    return ModifiersUtils.findModifier(tree.modifiers(), Modifier.FINAL);
   }
 
   private static boolean hasProxyBeanMethodsDisabled(AnnotationTree annotation) {
