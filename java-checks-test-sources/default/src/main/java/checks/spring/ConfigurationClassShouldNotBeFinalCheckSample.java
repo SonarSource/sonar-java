@@ -1,5 +1,6 @@
 package checks.spring;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -114,5 +115,16 @@ class OuterClassCompliant {
     public String taskScheduler() {
       return "taskScheduler";
     }
+  }
+}
+
+// Meta-annotations like @SpringBootApplication are intentionally not detected by this rule
+// to avoid complexity with determining proxyBeanMethods for composed annotations
+@SpringBootApplication
+final class FinalSpringBootApplication { // Compliant - meta-annotations not detected
+
+  @Bean
+  public String appBean() {
+    return "appBean";
   }
 }

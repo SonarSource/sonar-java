@@ -43,6 +43,8 @@ public class ConfigurationClassShouldNotBeFinalCheck extends IssuableSubscriptio
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
 
+    // Note: This check only detects direct @Configuration annotations, not meta-annotations
+    // like @SpringBootApplication. This is intentional to avoid complexity with proxyBeanMethods.
     Optional<AnnotationTree> configurationAnnotation = getConfigurationAnnotation(classTree);
     if (configurationAnnotation.isEmpty()) {
       return;
