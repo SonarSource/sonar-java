@@ -14,7 +14,7 @@
   <description>Code Analyzer for Java :: Front-end (Java Parser)</description>
 
   <properties>
-    <commons-collections.version>3.2.2</commons-collections.version>
+    <commons-collections.version>3.2.1</commons-collections.version>
   </properties>
 
   <dependencies>
