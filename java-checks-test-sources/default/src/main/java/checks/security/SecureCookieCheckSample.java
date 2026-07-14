@@ -213,6 +213,42 @@ class SecureCookieCheckSample {
     cookie.setMaxAge(maxAge);
     response.addCookie(cookie);
   }
+
+  void deleteCookieAssignedWithEmptyValue(HttpServletResponse response) {
+    Cookie cookie;
+    cookie = new Cookie("name", "");
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieAssignedWithRealValue(String token, HttpServletResponse response) {
+    Cookie cookie;
+    cookie = new Cookie("name", token); // Noncompliant
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithExplicitSetSecureFalse(HttpServletResponse response) {
+    Cookie cookie = new Cookie("refreshToken", null);
+    cookie.setHttpOnly(true);
+    cookie.setSecure(false);
+    cookie.setPath("/");
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithExplicitSetSecureFalseMaxAgeFirst(HttpServletResponse response) {
+    Cookie cookie = new Cookie("refreshToken", null);
+    cookie.setMaxAge(0);
+    cookie.setSecure(false);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithExplicitSetSecureFalseNoMaxAge(HttpServletResponse response) {
+    Cookie cookie = new Cookie("refreshToken", null);
+    cookie.setSecure(false); // Noncompliant
+    response.addCookie(cookie);
+  }
 }
 
 class SecureCookieCheckSampleB extends Cookie {

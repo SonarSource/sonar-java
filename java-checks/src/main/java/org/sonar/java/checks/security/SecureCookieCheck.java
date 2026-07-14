@@ -130,6 +130,10 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private final Map<Symbol.VariableSymbol, NewClassTree> unsecuredCookies = new HashMap<>();
   private final Map<Symbol.VariableSymbol, NewClassTree> deletionCandidateCookies = new HashMap<>();
   private final Set<NewClassTree> cookieConstructors = new HashSet<>();
+  // Both below are pure, order-independent facts recorded as soon as seen and never removed;
+  // the deletion-cookie decision itself is only made in leaveFile(), once the whole file has been scanned.
+  private final Set<Symbol.VariableSymbol> maxAgeZeroSeen = new HashSet<>();
+  private final Map<Symbol.VariableSymbol, MethodInvocationTree> deletionCandidateSecureCalls = new HashMap<>();
   private final Deque<Symbol.TypeSymbol> enclosingClass = new ArrayDeque<>();
 
   @Override
@@ -147,6 +151,8 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     unsecuredCookies.clear();
     deletionCandidateCookies.clear();
     cookieConstructors.clear();
+    maxAgeZeroSeen.clear();
+    deletionCandidateSecureCalls.clear();
     enclosingClass.clear();
     super.setContext(context);
   }
@@ -154,6 +160,11 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     cookieConstructors.forEach(r -> reportIssue(r.identifier(), MESSAGE));
+    deletionCandidateSecureCalls.forEach((symbol, mit) -> {
+      if (!maxAgeZeroSeen.contains(symbol)) {
+        reportIssue(mit.arguments(), MESSAGE);
+      }
+    });
   }
 
   @Override
@@ -210,13 +221,19 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
       ExpressionsHelper.ValueResolution<Boolean> valueResolution = ExpressionsHelper.getConstantValueAsBoolean(mit.arguments().get(0));
       Boolean secureArgument = valueResolution.value();
       boolean isFalse = secureArgument != null && !secureArgument;
-      if (isFalse && !isDeletionCookieChain(mit)) {
-        reportIssue(mit.arguments(), MESSAGE, valueResolution.valuePath(), null);
-      }
       ExpressionTree methodObject = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
-      if (methodObject.is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifierTree = (IdentifierTree) methodObject;
-        NewClassTree newClassTree = unsecuredCookies.remove(identifierTree.symbol());
+      Symbol.VariableSymbol receiverSymbol = methodObject.is(Tree.Kind.IDENTIFIER) ? (Symbol.VariableSymbol) ((IdentifierTree) methodObject).symbol() : null;
+      if (isFalse && !isDeletionCookieChain(mit)) {
+        // setMaxAge(0) may appear before or after this call in the same method: for a deletion candidate,
+        // defer the decision to leaveFile(), which checks maxAgeZeroSeen once the whole file has been scanned.
+        if (receiverSymbol != null && deletionCandidateCookies.containsKey(receiverSymbol)) {
+          deletionCandidateSecureCalls.put(receiverSymbol, mit);
+        } else {
+          reportIssue(mit.arguments(), MESSAGE, valueResolution.valuePath(), null);
+        }
+      }
+      if (receiverSymbol != null) {
+        NewClassTree newClassTree = unsecuredCookies.remove(receiverSymbol);
         cookieConstructors.remove(newClassTree);
       }
     }
@@ -265,9 +282,9 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     if (isSetMaxAgeZeroCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree methodObject = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
       if (methodObject.is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifierTree = (IdentifierTree) methodObject;
-        NewClassTree newClassTree = deletionCandidateCookies.remove(identifierTree.symbol());
-        cookieConstructors.remove(newClassTree);
+        Symbol.VariableSymbol receiverSymbol = (Symbol.VariableSymbol) ((IdentifierTree) methodObject).symbol();
+        maxAgeZeroSeen.add(receiverSymbol);
+        cookieConstructors.remove(deletionCandidateCookies.get(receiverSymbol));
       }
     }
   }
