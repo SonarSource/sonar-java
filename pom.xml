@@ -319,6 +319,13 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-expression</artifactId>
         <version>7.0.8</version>
+        <exclusions>
+          <!-- Annotation APIs must not leak into analysis of projects without libraries. -->
+          <exclusion>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
