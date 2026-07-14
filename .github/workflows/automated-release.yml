@@ -67,7 +67,7 @@ jobs:
       create-sli-ticket: ${{ github.event.inputs.ide-integration == 'true' }}
       create-slvscode-ticket: ${{ github.event.inputs.ide-integration == 'true' }}
       branch: ${{ github.event.inputs.branch }}
-      pm-email: "jean.jimbo@sonarsource.com"
+      pm-email: "geoffray.adde@sonarsource.com"
       slack-channel: "squad-corelang-releases"
       verbose: ${{ github.event.inputs.verbose == 'true' }}
       use-jira-sandbox: ${{ github.event.inputs.dry-run == 'true' }}
