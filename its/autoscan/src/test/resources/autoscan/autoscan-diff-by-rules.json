@@ -2118,6 +2118,12 @@
     "falsePositives": 0
   },
   {
+    "ruleKey": "S5673",
+    "hasTruePositives": false,
+    "falseNegatives": 17,
+    "falsePositives": 0
+  },
+  {
     "ruleKey": "S5679",
     "hasTruePositives": false,
     "falseNegatives": 2,

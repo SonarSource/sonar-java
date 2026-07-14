@@ -13,6 +13,10 @@
   <name>SonarQube Java :: Front-end</name>
   <description>Code Analyzer for Java :: Front-end (Java Parser)</description>
 
+  <properties>
+    <commons-collections.version>3.2.2</commons-collections.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -132,15 +136,15 @@
                 <artifactItem>
                   <groupId>commons-collections</groupId>
                   <artifactId>commons-collections</artifactId>
-                  <version>3.2.1</version>
+                  <version>${commons-collections.version}</version>
                   <classifier>sources</classifier>
-                  <outputDirectory>${project.build.directory}/test-projects/commons-collections-3.2.1/src</outputDirectory>
+                  <outputDirectory>${project.build.directory}/test-projects/commons-collections/src</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>commons-collections</groupId>
                   <artifactId>commons-collections</artifactId>
-                  <version>3.2.1</version>
-                  <outputDirectory>${project.build.directory}/test-projects/commons-collections-3.2.1/bin</outputDirectory>
+                  <version>${commons-collections.version}</version>
+                  <outputDirectory>${project.build.directory}/test-projects/commons-collections/bin</outputDirectory>
                 </artifactItem>
                 <!-- struts-core -->
                 <artifactItem>
