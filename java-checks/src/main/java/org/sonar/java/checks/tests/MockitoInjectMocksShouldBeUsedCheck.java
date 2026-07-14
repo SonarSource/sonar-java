@@ -183,14 +183,13 @@ public class MockitoInjectMocksShouldBeUsedCheck extends IssuableSubscriptionVis
 
   private static boolean callsOpenOrInitMocksInSetup(List<MethodTree> setupMethods) {
     for (MethodTree method : setupMethods) {
-      if (method.block() == null) {
-        return false;
-      }
-      for (StatementTree statement : method.block().body()) {
-        if (statement instanceof ExpressionStatementTree expressionStatementTree
-          && expressionStatementTree.expression() instanceof MethodInvocationTree mit
-          && OPEN_OR_INIT_MOCKS.matches(mit)) {
-          return true;
+      if (method.block() != null) {
+        for (StatementTree statement : method.block().body()) {
+          if (statement instanceof ExpressionStatementTree expressionStatementTree
+            && expressionStatementTree.expression() instanceof MethodInvocationTree mit
+            && OPEN_OR_INIT_MOCKS.matches(mit)) {
+            return true;
+          }
         }
       }
     }
