@@ -228,6 +228,10 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  /**
+   * Tracked separately from {@link #unsecuredCookies}: whether a cookie's value is null/empty is independent of
+   * whether it's secure, so a deletion candidate isn't necessarily a pending "unsecured" issue (e.g. secure=true).
+   */
   private void addToDeletionCandidates(VariableTree variableTree) {
     ExpressionTree initializer = variableTree.initializer();
     Symbol variableTreeSymbol = variableTree.symbol();
@@ -248,6 +252,10 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  /**
+   * Value is always the 2nd constructor argument across the cookie types tracked here (e.g. {@code Cookie(name, value)});
+   * the {@code >= 2} guard excludes no-arg/name-only overloads rather than acting as a general bounds check.
+   */
   private static boolean isDeletionValue(NewClassTree newClassTree) {
     Arguments arguments = newClassTree.arguments();
     return arguments.size() >= 2 && isNullOrEmptyLiteral(arguments.get(1));
@@ -273,6 +281,12 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
       && LiteralUtils.isZero(mit.arguments().get(0));
   }
 
+  /**
+   * Only suppresses the Spring builder path: the servlet/JAX-RS Cookie constructor path is handled separately
+   * by {@link #deletionCandidateCookies}/{@link #checkMaxAgeCall}, since it never reaches this method.
+   * Walks the whole fluent chain rather than just {@code mit}'s receivers, since {@code .from(...)}
+   * and {@code .maxAge(0)} can appear in either order relative to the {@code secure(false)} call being checked.
+   */
   private static boolean isDeletionCookieChain(MethodInvocationTree mit) {
     boolean hasEmptyOrNullValue = false;
     boolean hasMaxAgeZero = false;
