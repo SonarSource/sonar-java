@@ -765,6 +765,7 @@ class SonarComponentsTest {
   @Test
   void autoscan_classpath_should_report_plugin_copy_failures(@TempDir Path tempDirectory) throws IOException {
     Path pluginJar = createPluginJar(tempDirectory.resolve("plugin.jar"));
+    File pluginFile = pluginJar.toFile();
     Path invalidWorkDirectory = tempDirectory.resolve("not-a-directory");
     Files.writeString(invalidWorkDirectory, "file");
     SensorContextTester sensorContextTester = SensorContextTester.create(tempDirectory);
@@ -773,7 +774,7 @@ class SonarComponentsTest {
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, mock(ClasspathForMain.class), mock(ClasspathForTest.class),
       checkFactory, context.activeRules());
 
-    assertThatThrownBy(() -> sonarComponents.getAutoScanClasspath(pluginJar.toFile()))
+    assertThatThrownBy(() -> sonarComponents.getAutoScanClasspath(pluginFile))
       .isInstanceOf(AnalysisException.class)
       .hasMessage("Failed to prepare the Java analyzer classpath for AutoScan.")
       .hasCauseInstanceOf(IOException.class);
