@@ -22,10 +22,12 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9017")
@@ -54,7 +56,6 @@ public class MockitoStubbingChainCheck extends BaseTreeVisitor implements JavaFi
     .withAnyParameters()
     .build();
 
-  private Boolean isChained = null;
   private JavaFileScannerContext context;
 
   @Override
@@ -83,25 +84,28 @@ public class MockitoStubbingChainCheck extends BaseTreeVisitor implements JavaFi
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
-    if (isIncompleteStubbing(mit)) {
-      return;
-    }
-    Boolean previous = isChained;
-    isChained = true;
-    scan(mit.methodSelect());
-    // Scan lambda/anonymous-class arguments as independent chains (reset isChained so
-    // incomplete stubs inside their bodies are detected, but they are not part of this chain)
-    isChained = null;
+    visitMethodInvocation(mit, false);
+    // also check stubs inside block-bodied lambda arguments (e.g. assertThrows(() -> { when(...); }))
     for (ExpressionTree arg : mit.arguments()) {
-      if (arg.is(Tree.Kind.LAMBDA_EXPRESSION, Tree.Kind.NEW_CLASS)) {
-        scan(arg);
+      if (arg instanceof LambdaExpressionTree lambda
+        && lambda.body() instanceof BlockTree block) {
+        visitBlock(block);
       }
     }
-    isChained = previous;
   }
 
-  private boolean isIncompleteStubbing(MethodInvocationTree mit) {
-    if (Boolean.TRUE.equals(isChained)) {
+  private void visitMethodInvocation(MethodInvocationTree mit, boolean isChained) {
+    if (!isChained && isIncompleteStubbing(mit, isChained)) {
+      return;
+    }
+    if (mit.methodSelect() instanceof MemberSelectExpressionTree mset
+      && mset.expression() instanceof MethodInvocationTree innerMit) {
+      visitMethodInvocation(innerMit, true);
+    }
+  }
+
+  private boolean isIncompleteStubbing(MethodInvocationTree mit, boolean isChained) {
+    if (isChained) {
       return false;
     }
     if (MOCKITO_WHEN.matches(mit)) {
