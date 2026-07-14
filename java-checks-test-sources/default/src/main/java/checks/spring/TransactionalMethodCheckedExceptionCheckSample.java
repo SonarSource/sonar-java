@@ -18,7 +18,7 @@ class CustomCheckedException extends Exception {}
 
 public class TransactionalMethodCheckedExceptionCheckSample {
 
-  @Transactional
+  @Transactional // [[secondary=+1]]
   public void processOrder(Order order) throws IOException, SQLException { // Noncompliant [[quickfixes=qf1,qf2]]
 //            ^^^^^^^^^^^^
   // fix@qf1 {{Add rollbackFor attribute}}
@@ -27,19 +27,19 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   // edit@qf2 [[sl=-1;sc=3;el=-1;ec=17]] {{@Transactional(rollbackFor = java.lang.Exception.class)}}
   }
 
-  @Transactional
+  @Transactional // [[secondary=+1]]
   public void importData() throws Exception { // Noncompliant [[quickfixes=qf3]]
 //            ^^^^^^^^^^
   // fix@qf3 {{Add rollbackFor = Exception.class}}
   // edit@qf3 [[sl=-1;sc=3;el=-1;ec=17]] {{@Transactional(rollbackFor = java.lang.Exception.class)}}
   }
 
-  @Transactional(timeout = 30)
+  @Transactional(timeout = 30) // [[secondary=+1]]
   public void withOtherAttributes() throws SQLException { // Noncompliant
 //            ^^^^^^^^^^^^^^^^^^^
   }
 
-  @Transactional
+  @Transactional // [[secondary=+1]]
   public void customException() throws CustomCheckedException { // Noncompliant [[quickfixes=qf7,qf8]]
 //            ^^^^^^^^^^^^^^^
   // fix@qf7 {{Add rollbackFor attribute}}
@@ -48,7 +48,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   // edit@qf8 [[sl=-1;sc=3;el=-1;ec=17]] {{@Transactional(rollbackFor = java.lang.Exception.class)}}
   }
 
-  @Transactional
+  @Transactional // [[secondary=+1]]
   public void mixedExceptions() throws IOException, RuntimeException { // Noncompliant [[quickfixes=qf9,qf10]]
 //            ^^^^^^^^^^^^^^^
   // fix@qf9 {{Add rollbackFor attribute}}
@@ -117,7 +117,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   public void errorNotChecked() throws Error {
   }
 
-  @org.springframework.transaction.annotation.Transactional
+  @org.springframework.transaction.annotation.Transactional // [[secondary=+1]]
   public void fullyQualified() throws IOException { // Noncompliant [[quickfixes=qf13,qf14]]
 //            ^^^^^^^^^^^^^^
   // fix@qf13 {{Add rollbackFor attribute}}
@@ -130,7 +130,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   public void partialConfig() throws SQLException {
   }
 
-  @Transactional(value = "txManager")
+  @Transactional(value = "txManager") // [[secondary=+1]]
   public void withValueAttribute() throws IOException { // Noncompliant
 //            ^^^^^^^^^^^^^^^^^^
   }
@@ -158,13 +158,13 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   }
 
   // Test meta-annotated (composed) annotation
-  @MyTransactional
+  @MyTransactional // [[secondary=+1]]
   public void metaAnnotated() throws IOException { // Noncompliant
 //            ^^^^^^^^^^^^^
   }
 
   // Test annotation with value attribute (transaction manager name)
-  @Transactional("txManager")
+  @Transactional("txManager") // [[secondary=+1]]
   public void valueShorthand() throws IOException { // Noncompliant
 //            ^^^^^^^^^^^^^^
     // Has value attribute but no rollback configuration

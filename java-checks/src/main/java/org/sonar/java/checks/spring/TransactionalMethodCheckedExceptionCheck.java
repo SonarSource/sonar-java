@@ -90,6 +90,7 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     } else {
       issueBuilder
         .withMessage("Specify rollback behavior for checked exceptions using \"rollbackFor\" or \"noRollbackFor\" attributes.")
+        .withSecondaries(new JavaFileScannerContext.Location("@Transactional annotation", transactionalAnnotation))
         .withQuickFixes(() -> computeQuickFixes(transactionalAnnotation, checkedExceptions));
     }
 
