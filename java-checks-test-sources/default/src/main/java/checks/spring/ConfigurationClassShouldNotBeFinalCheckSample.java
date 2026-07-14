@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 @Configuration
 final class BasicFinalConfig { // Noncompliant {{Remove the "final" modifier from this "@Configuration" class.}}
-//     ^^^^^
 
   @Bean
   public String dataSource() {
