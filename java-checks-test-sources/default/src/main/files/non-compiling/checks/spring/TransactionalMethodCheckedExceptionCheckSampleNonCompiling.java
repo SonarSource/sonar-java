@@ -9,7 +9,7 @@ class TransactionalMethodCheckedExceptionCheckSampleNonCompiling {
   public void unknownException() throws UnresolvedCheckedException { // No issue - type is unknown
   }
 
-  @Transactional // Noncompliant
-  public void knownException() throws java.io.IOException {
+  @Transactional
+  public void knownException() throws java.io.IOException { // Noncompliant
   }
 }

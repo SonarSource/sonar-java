@@ -29,6 +29,7 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -75,12 +76,24 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
       return;
     }
 
-    QuickFixHelper.newIssue(context)
+    boolean isClassLevel = isClassLevelAnnotation(method, transactionalAnnotation);
+
+    var issueBuilder = QuickFixHelper.newIssue(context)
       .forRule(this)
-      .onTree(transactionalAnnotation)
-      .withMessage("Specify rollback behavior for checked exceptions using \"rollbackFor\" or \"noRollbackFor\" attributes.")
-      .withQuickFixes(() -> computeQuickFixes(transactionalAnnotation, checkedExceptions))
-      .report();
+      .onTree(method.simpleName());
+
+    if (isClassLevel) {
+      issueBuilder
+        .withMessage("Specify rollback behavior for checked exceptions using \"rollbackFor\" or \"noRollbackFor\" attributes on the class-level @Transactional.")
+        .withSecondaries(new JavaFileScannerContext.Location("Class-level @Transactional annotation", transactionalAnnotation))
+        .withQuickFixes(() -> computeQuickFixes(transactionalAnnotation, checkedExceptions));
+    } else {
+      issueBuilder
+        .withMessage("Specify rollback behavior for checked exceptions using \"rollbackFor\" or \"noRollbackFor\" attributes.")
+        .withQuickFixes(() -> computeQuickFixes(transactionalAnnotation, checkedExceptions));
+    }
+
+    issueBuilder.report();
   }
 
   private static AnnotationTree getTransactionalAnnotation(MethodTree method) {
@@ -106,6 +119,17 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     }
 
     return null;
+  }
+
+  private static boolean isClassLevelAnnotation(MethodTree method, AnnotationTree annotation) {
+    // Check if the annotation is on the method itself
+    for (AnnotationTree methodAnnotation : method.modifiers().annotations()) {
+      if (methodAnnotation == annotation) {
+        return false;
+      }
+    }
+    // If not on the method, it must be class-level
+    return true;
   }
 
   private static boolean isTransactionalAnnotation(AnnotationTree annotation) {
