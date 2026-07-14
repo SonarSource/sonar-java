@@ -287,19 +287,23 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   }
 
   public List<File> getAutoScanClasspath() {
+    return getAutoScanClasspath(findPluginJar());
+  }
+
+  @VisibleForTesting
+  List<File> getAutoScanClasspath(File pluginJar) {
     List<File> autoScanClasspath = new ArrayList<>();
     // Jasper is disabled in AutoScan; do not expose its bundled Jakarta APIs as inferred project dependencies.
-    autoScanClasspath.add(pluginJarWithoutJspRuntimeApis());
+    autoScanClasspath.add(pluginJarWithoutJspRuntimeApis(pluginJar));
     autoScanClasspath.addAll(getJavaClasspath());
     autoScanClasspath.addAll(getJavaTestClasspath());
     return autoScanClasspath.stream().distinct().toList();
   }
 
-  private File pluginJarWithoutJspRuntimeApis() {
+  private File pluginJarWithoutJspRuntimeApis(File pluginJar) {
     if (autoScanPluginJar != null) {
       return autoScanPluginJar;
     }
-    File pluginJar = findPluginJar();
     if (!pluginJar.isFile()) {
       // Unit tests and IDE executions load analyzer classes from a directory rather than a shaded plugin JAR.
       return pluginJar;

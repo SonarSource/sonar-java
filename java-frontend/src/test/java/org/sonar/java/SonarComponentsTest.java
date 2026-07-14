@@ -733,32 +733,67 @@ class SonarComponentsTest {
   }
 
   @Test
-  void autoscan_plugin_jar_should_exclude_jakarta_jsp_runtime_apis(@TempDir Path tempDirectory) throws IOException {
-    Path source = tempDirectory.resolve("plugin.jar");
-    Path target = tempDirectory.resolve("autoscan-plugin.jar");
-    List<String> entries = List.of(
-      "org/sonar/java/Analyzer.class",
-      "javax/servlet/Servlet.class",
-      "jakarta/servlet/Servlet.class",
-      "jakarta/el/ELContext.class"
-    );
-    try (JarOutputStream jar = new JarOutputStream(Files.newOutputStream(source))) {
-      for (String entry : entries) {
-        jar.putNextEntry(new JarEntry(entry));
-        jar.write(entry.getBytes(StandardCharsets.UTF_8));
-        jar.closeEntry();
-      }
-    }
+  void autoscan_classpath_should_filter_plugin_jar_and_cache_it(@TempDir Path tempDirectory) throws IOException {
+    Path pluginJar = createPluginJar(tempDirectory.resolve("plugin.jar"));
+    File mainClasspath = new File("main.jar");
+    File testClasspath = new File("test.jar");
+    ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
+    ClasspathForTest javaTestClasspath = mock(ClasspathForTest.class);
+    when(javaClasspath.getElements()).thenReturn(List.of(mainClasspath));
+    when(javaTestClasspath.getElements()).thenReturn(List.of(testClasspath));
 
-    SonarComponents.createAutoScanPluginJar(source, target);
+    SensorContextTester sensorContextTester = SensorContextTester.create(tempDirectory);
+    DefaultFileSystem fs = sensorContextTester.fileSystem();
+    fs.setWorkDir(tempDirectory.resolve("work"));
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath,
+      checkFactory, context.activeRules());
+    List<File> autoScanClasspath = sonarComponents.getAutoScanClasspath(pluginJar.toFile());
+    File autoScanPlugin = autoScanClasspath.get(0);
 
-    try (JarFile jar = new JarFile(target.toFile())) {
+    assertThat(autoScanClasspath).containsExactly(autoScanPlugin, mainClasspath, testClasspath);
+    assertThat(autoScanPlugin.toPath()).isEqualTo(tempDirectory.resolve("work/autoscan/plugin.jar"));
+    assertThat(sonarComponents.getAutoScanClasspath(pluginJar.toFile()).get(0)).isSameAs(autoScanPlugin);
+    try (JarFile jar = new JarFile(autoScanPlugin)) {
       assertThat(Collections.list(jar.entries()))
         .extracting(JarEntry::getName)
         .containsExactly("org/sonar/java/Analyzer.class", "javax/servlet/Servlet.class");
       assertThat(new String(jar.getInputStream(jar.getJarEntry("javax/servlet/Servlet.class")).readAllBytes(), StandardCharsets.UTF_8))
         .isEqualTo("javax/servlet/Servlet.class");
     }
+  }
+
+  @Test
+  void autoscan_classpath_should_report_plugin_copy_failures(@TempDir Path tempDirectory) throws IOException {
+    Path pluginJar = createPluginJar(tempDirectory.resolve("plugin.jar"));
+    Path invalidWorkDirectory = tempDirectory.resolve("not-a-directory");
+    Files.writeString(invalidWorkDirectory, "file");
+    SensorContextTester sensorContextTester = SensorContextTester.create(tempDirectory);
+    DefaultFileSystem fs = sensorContextTester.fileSystem();
+    fs.setWorkDir(invalidWorkDirectory);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, mock(ClasspathForMain.class), mock(ClasspathForTest.class),
+      checkFactory, context.activeRules());
+
+    assertThatThrownBy(() -> sonarComponents.getAutoScanClasspath(pluginJar.toFile()))
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage("Failed to prepare the Java analyzer classpath for AutoScan.")
+      .hasCauseInstanceOf(IOException.class);
+  }
+
+  private static Path createPluginJar(Path pluginJar) throws IOException {
+    List<String> entries = List.of(
+      "org/sonar/java/Analyzer.class",
+      "javax/servlet/Servlet.class",
+      "jakarta/servlet/Servlet.class",
+      "jakarta/el/ELContext.class"
+    );
+    try (JarOutputStream jar = new JarOutputStream(Files.newOutputStream(pluginJar))) {
+      for (String entry : entries) {
+        jar.putNextEntry(new JarEntry(entry));
+        jar.write(entry.getBytes(StandardCharsets.UTF_8));
+        jar.closeEntry();
+      }
+    }
+    return pluginJar;
   }
 
   @Test
