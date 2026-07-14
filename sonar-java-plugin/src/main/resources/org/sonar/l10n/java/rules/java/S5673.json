@@ -1,0 +1,23 @@
+{
+  "title": "Spring components should use specialized annotations",
+  "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-5673",
+  "sqKey": "S5673",
+  "scope": "All",
+  "quickfix": "unknown"
+}
