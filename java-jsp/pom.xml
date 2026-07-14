@@ -92,7 +92,8 @@
                 <artifactItem>
                   <groupId>org.springframework</groupId>
                   <artifactId>spring-webmvc</artifactId>
-                  <version>5.2.3.RELEASE</version>
+                  <version>6.2.15</version>
+                  <destFileName>spring-webmvc.jar</destFileName>
                 </artifactItem>
                 <artifactItem>
                   <groupId>javax</groupId>

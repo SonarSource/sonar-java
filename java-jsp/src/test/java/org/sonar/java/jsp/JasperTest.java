@@ -74,7 +74,7 @@ class JasperTest {
   @RegisterExtension
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
   private Path jspFile;
-  private final File springJar = Paths.get("target/test-jars/spring-webmvc-5.2.3.RELEASE.jar").toFile();
+  private final File springJar = Paths.get("target/test-jars/spring-webmvc.jar").toFile();
   private final File jstlJar = Paths.get("target/test-jars/jstl-1.2.jar").toFile();
   private final File jee6Jar = Paths.get("target/test-jars/javaee-web-api-6.0.jar").toFile();
 
