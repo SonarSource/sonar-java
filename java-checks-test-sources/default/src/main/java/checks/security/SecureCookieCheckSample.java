@@ -178,6 +178,41 @@ class SecureCookieCheckSample {
   Http.CookieBuilder getC7() {
     return play.mvc.Http.Cookie.builder("theme", "blue").withSecure(false); // Noncompliant
   }
+
+  void deleteCookieWithEmptyValue(HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", "");
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithNullValue(HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", null);
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithRealValue(String token, HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", token); // Noncompliant
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithoutMaxAge(HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", null); // Noncompliant
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithNonZeroMaxAge(HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", null); // Noncompliant
+    cookie.setMaxAge(60);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithNonLiteralMaxAge(int maxAge, HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", ""); // Noncompliant
+    cookie.setMaxAge(maxAge);
+    response.addCookie(cookie);
+  }
 }
 
 class SecureCookieCheckSampleB extends Cookie {

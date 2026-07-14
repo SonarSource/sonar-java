@@ -22,4 +22,16 @@ public class SecureCookieCheckSample {
     return "Enjoy your Cookie!";
   }
 
+  public void deleteCookie() {
+    ResponseCookie.from("token", "").maxAge(0).secure(false).httpOnly(true).path("/").build();
+  }
+
+  public void deleteCookieMissingMaxAge() {
+    ResponseCookie.from("token", "").secure(false).httpOnly(true).path("/").build(); // Noncompliant
+  }
+
+  public void deleteCookieWithRealValue(String token) {
+    ResponseCookie.from("token", token).maxAge(0).secure(false).httpOnly(true).path("/").build(); // Noncompliant
+  }
+
 }
