@@ -9,8 +9,8 @@ class TransactionalMethodCheckedExceptionCheckSampleNonCompiling {
   public void unknownException() throws UnresolvedCheckedException { // No issue - type is unknown
   }
 
-  @Transactional // [[secondary=+1]]
-  public void knownException() throws java.io.IOException { // Noncompliant
+  @Transactional
+  public void knownException() throws java.io.IOException { // Noncompliant [[secondary=12]]
 //            ^^^^^^^^^^^^^^
   }
 }
