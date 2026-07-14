@@ -276,7 +276,7 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private static boolean isDeletionCookieChain(MethodInvocationTree mit) {
     boolean hasEmptyOrNullValue = false;
     boolean hasMaxAgeZero = false;
-    ExpressionTree current = mit;
+    ExpressionTree current = chainRoot(mit);
     while (current != null && current.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree currentMit = (MethodInvocationTree) current;
       if (RESPONSE_COOKIE_FROM.matches(currentMit)) {
@@ -288,6 +288,20 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
       current = methodSelect.is(Tree.Kind.MEMBER_SELECT) ? ((MemberSelectExpressionTree) methodSelect).expression() : null;
     }
     return hasEmptyOrNullValue && hasMaxAgeZero;
+  }
+
+  /**
+   * Climbs to the outermost method call of the fluent chain {@code mit} belongs to, so the whole chain
+   * (including calls made after {@code mit}, e.g. {@code secure(false)} followed by {@code maxAge(0)}) gets inspected.
+   */
+  private static ExpressionTree chainRoot(MethodInvocationTree mit) {
+    ExpressionTree root = mit;
+    Tree parent = mit.parent();
+    while (parent != null && parent.is(Tree.Kind.MEMBER_SELECT) && parent.parent() != null && parent.parent().is(Tree.Kind.METHOD_INVOCATION)) {
+      root = (ExpressionTree) parent.parent();
+      parent = root.parent();
+    }
+    return root;
   }
 
   private static boolean isNullOrEmptyLiteral(ExpressionTree expression) {
