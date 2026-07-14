@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
 @Configuration
-public final class BasicFinalConfig { // Noncompliant {{Remove the "final" modifier from this "@Configuration" class.}}
+final class BasicFinalConfig { // Noncompliant {{Remove the "final" modifier from this "@Configuration" class.}}
 //     ^^^^^
 
   @Bean
@@ -16,7 +16,7 @@ public final class BasicFinalConfig { // Noncompliant {{Remove the "final" modif
 }
 
 @Configuration
-public final class FinalConfigMultipleBeans { // Noncompliant
+final class FinalConfigMultipleBeans { // Noncompliant
 
   @Bean
   public String foo() {
@@ -31,7 +31,7 @@ public final class FinalConfigMultipleBeans { // Noncompliant
 
 @Configuration
 @EnableScheduling
-public final class FinalConfigOtherAnnotations { // Noncompliant
+final class FinalConfigOtherAnnotations { // Noncompliant
 
   @Bean
   public String scheduler() {
@@ -51,7 +51,7 @@ class OuterClass {
 }
 
 @Configuration(proxyBeanMethods = true)
-public final class FinalConfigProxyEnabled { // Noncompliant
+final class FinalConfigProxyEnabled { // Noncompliant
 
   @Bean
   public String dataSource() {
@@ -60,7 +60,7 @@ public final class FinalConfigProxyEnabled { // Noncompliant
 }
 
 @Configuration
-public class NonFinalConfig {
+class NonFinalConfig {
 
   @Bean
   public String dataSource() {
@@ -74,7 +74,7 @@ public class NonFinalConfig {
 }
 
 @Configuration(proxyBeanMethods = false)
-public final class FinalConfigProxyDisabled {
+final class FinalConfigProxyDisabled {
 
   @Bean
   public String dataSource() {
@@ -83,7 +83,7 @@ public final class FinalConfigProxyDisabled {
 }
 
 @Component
-public final class FinalComponentNotConfiguration {
+final class FinalComponentNotConfiguration {
 
   public String createDataSource() {
     return "dataSource";
@@ -91,7 +91,7 @@ public final class FinalComponentNotConfiguration {
 }
 
 @Configuration
-public abstract class AbstractConfig {
+abstract class AbstractConfig {
 
   @Bean
   public String dataSource() {
