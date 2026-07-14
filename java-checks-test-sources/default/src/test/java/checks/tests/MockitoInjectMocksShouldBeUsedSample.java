@@ -1,6 +1,7 @@
 package checks.tests;
 
 import org.junit.Before;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -9,6 +10,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 
 public class MockitoInjectMocksShouldBeUsedSample {
 
@@ -107,6 +109,35 @@ public class MockitoInjectMocksShouldBeUsedSample {
 
   // ===== JUnit 5 - @ExtendWith(MockitoExtension.class) =====
 
+  @ExtendWith({MockitoExtension.class, org.junit.jupiter.api.extension.Extension.class})
+  class JUnit5NoncompliantMultipleExtensions {
+    @Mock
+    private PaymentGateway paymentGateway;
+
+    private OrderProcessor orderProcessor;
+
+    @BeforeEach
+    void setUp() {
+      orderProcessor = new OrderProcessor(paymentGateway); // Noncompliant {{Use "@InjectMocks" to inject these mock fields instead of manually constructing the object.}}
+      //               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    }
+  }
+
+  // checkMockitoExtensionInMetadata: meta-annotation recursion
+  @MockitoSettings
+  class JUnit5NoncompliantMetaAnnotation {
+    @Mock
+    private PaymentGateway paymentGateway;
+
+    private OrderProcessor orderProcessor;
+
+    @BeforeEach
+    void setUp() {
+      orderProcessor = new OrderProcessor(paymentGateway); // Noncompliant {{Use "@InjectMocks" to inject these mock fields instead of manually constructing the object.}}
+      //               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    }
+  }
+
   @ExtendWith(MockitoExtension.class)
   class JUnit5NoncompliantBeforeEach {
     @Mock
@@ -121,6 +152,27 @@ public class MockitoInjectMocksShouldBeUsedSample {
     void setUp() {
       orderProcessor = new OrderProcessor(paymentGateway, inventoryService); // Noncompliant {{Use "@InjectMocks" to inject these mock fields instead of manually constructing the object.}}
       //               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    }
+  }
+
+  @RunWith(MockitoJUnitRunner.class)
+  public class JUnit4NoncompliantMultipleSetupMethods {
+    @Mock
+    private PaymentGateway paymentGateway;
+
+    private OrderProcessor orderProcessor;
+    private OrderProcessor anotherProcessor;
+
+    @Before
+    public void setUpFirst() {
+      orderProcessor = new OrderProcessor(paymentGateway); // Noncompliant {{Use "@InjectMocks" to inject these mock fields instead of manually constructing the object.}}
+      //               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    }
+
+    @Before
+    public void setUpSecond() {
+      anotherProcessor = new OrderProcessor(paymentGateway); // Noncompliant {{Use "@InjectMocks" to inject these mock fields instead of manually constructing the object.}}
+      //                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     }
   }
 
@@ -246,6 +298,66 @@ public class MockitoInjectMocksShouldBeUsedSample {
     @org.junit.Test
     public void testSomething() {
       orderProcessor = new OrderProcessor(paymentGateway); // Compliant - not in a setup method
+    }
+  }
+
+  @ExtendWith(MockitoExtension.class)
+  class CompliantBeforeAll {
+    @Mock
+    private PaymentGateway paymentGateway;
+
+    private static OrderProcessor orderProcessor;
+
+    @BeforeAll
+    static void setUp() {
+      orderProcessor = new OrderProcessor(); // Compliant - @BeforeAll is not a recognised setup annotation
+    }
+  }
+
+  @ExtendWith(org.junit.jupiter.api.extension.Extension.class)
+  class CompliantNonMockitoExtension {
+    @Mock
+    private PaymentGateway paymentGateway;
+
+    private OrderProcessor orderProcessor;
+
+    @BeforeEach
+    void setUp() {
+      orderProcessor = new OrderProcessor(paymentGateway); // Compliant - not a Mockito extension
+    }
+  }
+
+  @ExtendWith(MockitoExtension.class)
+  class CompliantAnonymousClassInSetup {
+    @Mock
+    private PaymentGateway paymentGateway;
+
+    private OrderProcessor orderProcessor;
+
+    @BeforeEach
+    void setUp() {
+      orderProcessor = new OrderProcessor(); // Compliant - no mock args
+      Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          // assignment inside anonymous class body - visitClass override stops traversal here
+          OrderProcessor inner = new OrderProcessor(paymentGateway); // Compliant - inside anonymous class, not visited
+        }
+      };
+    }
+  }
+
+  // this.mockField as constructor arg - non-identifier arg, allArgsMockFields returns false
+  @ExtendWith(MockitoExtension.class)
+  class CompliantThisPrefixOnArg {
+    @Mock
+    private PaymentGateway paymentGateway;
+
+    private OrderProcessor orderProcessor;
+
+    @BeforeEach
+    void setUp() {
+      orderProcessor = new OrderProcessor(this.paymentGateway); // Compliant - this.field args are not recognised
     }
   }
 
