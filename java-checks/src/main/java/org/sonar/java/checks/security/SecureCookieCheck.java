@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.LiteralUtils;
@@ -222,7 +223,7 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
       Boolean secureArgument = valueResolution.value();
       boolean isFalse = secureArgument != null && !secureArgument;
       ExpressionTree methodObject = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
-      Symbol.VariableSymbol receiverSymbol = methodObject.is(Tree.Kind.IDENTIFIER) ? (Symbol.VariableSymbol) ((IdentifierTree) methodObject).symbol() : null;
+      Symbol.VariableSymbol receiverSymbol = variableSymbolOf(methodObject);
       if (isFalse && !isDeletionCookieChain(mit)) {
         // setMaxAge(0) may appear before or after this call in the same method: for a deletion candidate,
         // defer the decision to leaveFile(), which checks maxAgeZeroSeen once the whole file has been scanned.
@@ -281,12 +282,21 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private void checkMaxAgeCall(MethodInvocationTree mit) {
     if (isSetMaxAgeZeroCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree methodObject = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
-      if (methodObject.is(Tree.Kind.IDENTIFIER)) {
-        Symbol.VariableSymbol receiverSymbol = (Symbol.VariableSymbol) ((IdentifierTree) methodObject).symbol();
+      Symbol.VariableSymbol receiverSymbol = variableSymbolOf(methodObject);
+      if (receiverSymbol != null) {
         maxAgeZeroSeen.add(receiverSymbol);
         cookieConstructors.remove(deletionCandidateCookies.get(receiverSymbol));
       }
     }
+  }
+
+  @CheckForNull
+  private static Symbol.VariableSymbol variableSymbolOf(ExpressionTree expression) {
+    if (!expression.is(Tree.Kind.IDENTIFIER)) {
+      return null;
+    }
+    Symbol symbol = ((IdentifierTree) expression).symbol();
+    return symbol.isVariableSymbol() ? (Symbol.VariableSymbol) symbol : null;
   }
 
   private static boolean isSetMaxAgeZeroCall(MethodInvocationTree mit) {
