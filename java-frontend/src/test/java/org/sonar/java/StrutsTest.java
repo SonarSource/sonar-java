@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class StrutsTest extends MeasurerTester {
 
-  private static final File PROJECT_DIR = new File("target/test-projects/struts-core-1.3.9");
+  private static final File PROJECT_DIR = new File("target/test-projects/struts-core");
   private static final File SOURCE_DIR = new File(PROJECT_DIR, "src");
 
   @Override
@@ -42,11 +42,11 @@ class StrutsTest extends MeasurerTester {
     Map<String, Double> metrics = getMetrics();
 
     assertThat(metrics.get("classes").intValue()).isEqualTo(146);
-    assertThat(metrics.get("ncloc").intValue()).isEqualTo(14007);
-    assertThat(metrics.get("statements").intValue()).isEqualTo(6403 /* empty statements between members of class */+ 3);
-    assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7605);
+    assertThat(metrics.get("ncloc").intValue()).isEqualTo(14011);
+    assertThat(metrics.get("statements").intValue()).isEqualTo(6404 /* empty statements between members of class */+ 3);
+    assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7606);
     assertThat(metrics.get("functions").intValue()).isEqualTo(1429);
-    assertThat(metrics.get("complexity").intValue()).isEqualTo(3055);
+    assertThat(metrics.get("complexity").intValue()).isEqualTo(3056);
   }
 
 }
