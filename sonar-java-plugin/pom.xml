@@ -78,6 +78,13 @@
       <artifactId>sonar-performance-measure</artifactId>
     </dependency>
 
+    <!-- Keep legacy Java EE symbols available for analysis and JSP libraries using javax APIs. -->
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-jsp-api</artifactId>
+      <version>9.0.120</version>
+    </dependency>
+
     <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>
       <artifactId>sonar-plugin-api</artifactId>
@@ -185,7 +192,7 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>21000000</maxsize>
+                  <maxsize>21100000</maxsize>
                   <minsize>19000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
@@ -252,6 +259,30 @@
                     <include>**</include>
                   </includes>
                 </filter>
+                <filter>
+                  <artifact>org.apache.tomcat:tomcat-jsp-api</artifact>
+                  <includes>
+                    <include>javax/servlet/jsp/**</include>
+                  </includes>
+                  <excludes>
+                    <exclude>javax/servlet/jsp/resources/**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.tomcat:tomcat-servlet-api</artifact>
+                  <includes>
+                    <include>javax/servlet/**</include>
+                  </includes>
+                  <excludes>
+                    <exclude>javax/servlet/resources/**</exclude>
+                  </excludes>
+                </filter>
+                <filter>
+                  <artifact>org.apache.tomcat:tomcat-el-api</artifact>
+                  <includes>
+                    <include>javax/el/**</include>
+                  </includes>
+                </filter>
                 <!-- this is needed because org.apache.el.ExpressionFactoryImpl is instantiated with reflection -->
                 <filter>
                   <artifact>org.apache.tomcat.embed:tomcat-embed-el</artifact>
@@ -307,6 +338,10 @@
                 <licenseUrlReplacement>
                     <regexp>http://www.opensource.org/licenses/bsd-license.php</regexp>
                     <replacement>${project.baseUri}/license-resources/bsd.txt</replacement>
+                </licenseUrlReplacement>
+                <licenseUrlReplacement>
+                    <regexp>http://www\.apache\.org/licenses/LICENSE-2\.0\.txt\s+and\s+https://opensource\.org/license/CDDL-1\.0\s+and</regexp>
+                    <replacement>${project.baseUri}/license-resources/tomcat.txt</replacement>
                 </licenseUrlReplacement>
             </licenseUrlReplacements>
             <licenseUrlFileNameSanitizers>
