@@ -178,6 +178,77 @@ class SecureCookieCheckSample {
   Http.CookieBuilder getC7() {
     return play.mvc.Http.Cookie.builder("theme", "blue").withSecure(false); // Noncompliant
   }
+
+  void deleteCookieWithEmptyValue(HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", "");
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithNullValue(HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", null);
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithRealValue(String token, HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", token); // Noncompliant
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithoutMaxAge(HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", null); // Noncompliant
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithNonZeroMaxAge(HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", null); // Noncompliant
+    cookie.setMaxAge(60);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithNonLiteralMaxAge(int maxAge, HttpServletResponse response) {
+    Cookie cookie = new Cookie("name", ""); // Noncompliant
+    cookie.setMaxAge(maxAge);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieAssignedWithEmptyValue(HttpServletResponse response) {
+    Cookie cookie;
+    cookie = new Cookie("name", "");
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieAssignedWithRealValue(String token, HttpServletResponse response) {
+    Cookie cookie;
+    cookie = new Cookie("name", token); // Noncompliant
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithExplicitSetSecureFalse(HttpServletResponse response) {
+    Cookie cookie = new Cookie("refreshToken", null);
+    cookie.setHttpOnly(true);
+    cookie.setSecure(false);
+    cookie.setPath("/");
+    cookie.setMaxAge(0);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithExplicitSetSecureFalseMaxAgeFirst(HttpServletResponse response) {
+    Cookie cookie = new Cookie("refreshToken", null);
+    cookie.setMaxAge(0);
+    cookie.setSecure(false);
+    response.addCookie(cookie);
+  }
+
+  void deleteCookieWithExplicitSetSecureFalseNoMaxAge(HttpServletResponse response) {
+    Cookie cookie = new Cookie("refreshToken", null);
+    cookie.setSecure(false); // Noncompliant
+    response.addCookie(cookie);
+  }
 }
 
 class SecureCookieCheckSampleB extends Cookie {
@@ -204,6 +275,9 @@ class SecureCookieCheckSampleB extends Cookie {
   }
   Cookie cloneDifferentType() {
     return new Cookie("name", "value"); // Noncompliant
+  }
+  void fieldAccessReceiver() {
+    this.c.setSecure(false); // Noncompliant
   }
   Date codeCoverage(Cookie cookie) {
     SecureCookieCheckSample a = new SecureCookieCheckSample();

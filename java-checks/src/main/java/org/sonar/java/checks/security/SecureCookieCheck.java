@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.LiteralUtils;
@@ -54,6 +55,7 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   private static final String JAX_RS_NEW_COOKIE_JAKARTA = "jakarta.ws.rs.core.NewCookie";
   private static final String SPRING_SAVED_COOKIE = "org.springframework.security.web.savedrequest.SavedCookie";
   private static final String PLAY_COOKIE = "play.mvc.Http$Cookie";
+  private static final String SPRING_HTTP_COOKIE_BUILDER = "org.springframework.http.ResponseCookie$ResponseCookieBuilder";
   private static final List<String> COOKIES = Arrays.asList(
     "javax.servlet.http.Cookie",
     "jakarta.servlet.http.Cookie",
@@ -67,7 +69,7 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     PLAY_COOKIE,
     "play.mvc.Http$CookieBuilder",
     "org.springframework.boot.web.server.Cookie",
-    "org.springframework.http.ResponseCookie$ResponseCookieBuilder");
+    SPRING_HTTP_COOKIE_BUILDER);
 
   private static final List<String> SETTER_NAMES = Arrays.asList("setSecure", "withSecure", "secure");
 
@@ -114,8 +116,25 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING, "java.lang.Integer", JAVA_LANG_STRING, JAVA_LANG_STRING, BOOLEAN, BOOLEAN, "play.mvc.Http$Cookie$SameSite")
     .build();
 
+  private static final MethodMatchers RESPONSE_COOKIE_FROM = MethodMatchers.create()
+    .ofTypes("org.springframework.http.ResponseCookie")
+    .names("from")
+    .addParametersMatcher(JAVA_LANG_STRING, JAVA_LANG_STRING)
+    .build();
+
+  private static final MethodMatchers RESPONSE_COOKIE_MAX_AGE_ZERO = MethodMatchers.create()
+    .ofTypes(SPRING_HTTP_COOKIE_BUILDER)
+    .names("maxAge")
+    .addParametersMatcher("long")
+    .build();
+
   private final Map<Symbol.VariableSymbol, NewClassTree> unsecuredCookies = new HashMap<>();
+  private final Map<Symbol.VariableSymbol, NewClassTree> deletionCandidateCookies = new HashMap<>();
   private final Set<NewClassTree> cookieConstructors = new HashSet<>();
+  // Both below are pure, order-independent facts recorded as soon as seen and never removed;
+  // the deletion-cookie decision itself is only made in leaveFile(), once the whole file has been scanned.
+  private final Set<Symbol.VariableSymbol> maxAgeZeroSeen = new HashSet<>();
+  private final Map<Symbol.VariableSymbol, MethodInvocationTree> deletionCandidateSecureCalls = new HashMap<>();
   private final Deque<Symbol.TypeSymbol> enclosingClass = new ArrayDeque<>();
 
   @Override
@@ -131,7 +150,10 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   @Override
   public void setContext(JavaFileScannerContext context) {
     unsecuredCookies.clear();
+    deletionCandidateCookies.clear();
     cookieConstructors.clear();
+    maxAgeZeroSeen.clear();
+    deletionCandidateSecureCalls.clear();
     enclosingClass.clear();
     super.setContext(context);
   }
@@ -139,16 +161,24 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     cookieConstructors.forEach(r -> reportIssue(r.identifier(), MESSAGE));
+    deletionCandidateSecureCalls.forEach((symbol, mit) -> {
+      if (!maxAgeZeroSeen.contains(symbol)) {
+        reportIssue(mit.arguments(), MESSAGE);
+      }
+    });
   }
 
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.VARIABLE)) {
       addToUnsecuredCookies((VariableTree) tree);
+      addToDeletionCandidates((VariableTree) tree);
     } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
       addToUnsecuredCookies((AssignmentExpressionTree) tree);
+      addToDeletionCandidates((AssignmentExpressionTree) tree);
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       checkSecureCall((MethodInvocationTree) tree);
+      checkMaxAgeCall((MethodInvocationTree) tree);
     } else if (tree.is(Tree.Kind.CLASS)) {
       enclosingClass.push(((ClassTree) tree).symbol());
     } else {
@@ -192,13 +222,19 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
       ExpressionsHelper.ValueResolution<Boolean> valueResolution = ExpressionsHelper.getConstantValueAsBoolean(mit.arguments().get(0));
       Boolean secureArgument = valueResolution.value();
       boolean isFalse = secureArgument != null && !secureArgument;
-      if (isFalse) {
-        reportIssue(mit.arguments(), MESSAGE, valueResolution.valuePath(), null);
-      }
       ExpressionTree methodObject = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
-      if (methodObject.is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifierTree = (IdentifierTree) methodObject;
-        NewClassTree newClassTree = unsecuredCookies.remove(identifierTree.symbol());
+      Symbol.VariableSymbol receiverSymbol = variableSymbolOf(methodObject);
+      if (isFalse && !isDeletionCookieChain(mit)) {
+        // setMaxAge(0) may appear before or after this call in the same method: for a deletion candidate,
+        // defer the decision to leaveFile(), which checks maxAgeZeroSeen once the whole file has been scanned.
+        if (receiverSymbol != null && deletionCandidateCookies.containsKey(receiverSymbol)) {
+          deletionCandidateSecureCalls.put(receiverSymbol, mit);
+        } else {
+          reportIssue(mit.arguments(), MESSAGE, valueResolution.valuePath(), null);
+        }
+      }
+      if (receiverSymbol != null) {
+        NewClassTree newClassTree = unsecuredCookies.remove(receiverSymbol);
         cookieConstructors.remove(newClassTree);
       }
     }
@@ -208,6 +244,109 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
     if (isCookieClass(tree.symbolType()) && isSecureParamFalse(tree) && !isSelfInstantiation(tree)) {
       cookieConstructors.add(tree);
     }
+  }
+
+  /**
+   * Tracked separately from {@link #unsecuredCookies}: whether a cookie's value is null/empty is independent of
+   * whether it's secure, so a deletion candidate isn't necessarily a pending "unsecured" issue (e.g. secure=true).
+   */
+  private void addToDeletionCandidates(VariableTree variableTree) {
+    ExpressionTree initializer = variableTree.initializer();
+    Symbol variableTreeSymbol = variableTree.symbol();
+
+    if (initializer != null && initializer.is(Tree.Kind.NEW_CLASS) && variableTreeSymbol.isVariableSymbol()
+      && isCookieClass(variableTreeSymbol.type()) && isDeletionValue((NewClassTree) initializer)) {
+      deletionCandidateCookies.put((Symbol.VariableSymbol) variableTreeSymbol, (NewClassTree) initializer);
+    }
+  }
+
+  private void addToDeletionCandidates(AssignmentExpressionTree assignment) {
+    if (assignment.expression().is(Tree.Kind.NEW_CLASS) && assignment.variable().is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree assignmentVariable = (IdentifierTree) assignment.variable();
+      Symbol assignmentVariableSymbol = assignmentVariable.symbol();
+      if (isCookieClass(assignmentVariable.symbolType()) && isDeletionValue((NewClassTree) assignment.expression()) && !assignmentVariableSymbol.isUnknown()) {
+        deletionCandidateCookies.put((Symbol.VariableSymbol) assignmentVariableSymbol, (NewClassTree) assignment.expression());
+      }
+    }
+  }
+
+  /**
+   * Value is always the 2nd constructor argument across the cookie types tracked here (e.g. {@code Cookie(name, value)});
+   * the {@code >= 2} guard excludes no-arg/name-only overloads rather than acting as a general bounds check.
+   */
+  private static boolean isDeletionValue(NewClassTree newClassTree) {
+    Arguments arguments = newClassTree.arguments();
+    return arguments.size() >= 2 && isNullOrEmptyLiteral(arguments.get(1));
+  }
+
+  private void checkMaxAgeCall(MethodInvocationTree mit) {
+    if (isSetMaxAgeZeroCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree methodObject = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
+      Symbol.VariableSymbol receiverSymbol = variableSymbolOf(methodObject);
+      if (receiverSymbol != null) {
+        maxAgeZeroSeen.add(receiverSymbol);
+        cookieConstructors.remove(deletionCandidateCookies.get(receiverSymbol));
+      }
+    }
+  }
+
+  @CheckForNull
+  private static Symbol.VariableSymbol variableSymbolOf(ExpressionTree expression) {
+    if (!expression.is(Tree.Kind.IDENTIFIER)) {
+      return null;
+    }
+    Symbol symbol = ((IdentifierTree) expression).symbol();
+    return symbol.isVariableSymbol() ? (Symbol.VariableSymbol) symbol : null;
+  }
+
+  private static boolean isSetMaxAgeZeroCall(MethodInvocationTree mit) {
+    return mit.arguments().size() == 1
+      && !mit.methodSymbol().isUnknown()
+      && !mit.methodSymbol().owner().isUnknown()
+      && isCookieClass(mit.methodSymbol().owner().type())
+      && "setMaxAge".equals(getIdentifier(mit).name())
+      && LiteralUtils.isZero(mit.arguments().get(0));
+  }
+
+  /**
+   * Only suppresses the Spring builder path: the servlet/JAX-RS Cookie constructor path is handled separately
+   * by {@link #deletionCandidateCookies}/{@link #checkMaxAgeCall}, since it never reaches this method.
+   * Walks the whole fluent chain rather than just {@code mit}'s receivers, since {@code .from(...)}
+   * and {@code .maxAge(0)} can appear in either order relative to the {@code secure(false)} call being checked.
+   */
+  private static boolean isDeletionCookieChain(MethodInvocationTree mit) {
+    boolean hasEmptyOrNullValue = false;
+    boolean hasMaxAgeZero = false;
+    ExpressionTree current = chainRoot(mit);
+    while (current != null && current.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree currentMit = (MethodInvocationTree) current;
+      if (RESPONSE_COOKIE_FROM.matches(currentMit)) {
+        hasEmptyOrNullValue = isNullOrEmptyLiteral(currentMit.arguments().get(1));
+      } else if (RESPONSE_COOKIE_MAX_AGE_ZERO.matches(currentMit) && LiteralUtils.isZero(currentMit.arguments().get(0))) {
+        hasMaxAgeZero = true;
+      }
+      ExpressionTree methodSelect = currentMit.methodSelect();
+      current = methodSelect.is(Tree.Kind.MEMBER_SELECT) ? ((MemberSelectExpressionTree) methodSelect).expression() : null;
+    }
+    return hasEmptyOrNullValue && hasMaxAgeZero;
+  }
+
+  /**
+   * Climbs to the outermost method call of the fluent chain {@code mit} belongs to, so the whole chain
+   * (including calls made after {@code mit}, e.g. {@code secure(false)} followed by {@code maxAge(0)}) gets inspected.
+   */
+  private static ExpressionTree chainRoot(MethodInvocationTree mit) {
+    ExpressionTree root = mit;
+    Tree parent = mit.parent();
+    while (parent != null && parent.is(Tree.Kind.MEMBER_SELECT) && parent.parent() != null && parent.parent().is(Tree.Kind.METHOD_INVOCATION)) {
+      root = (ExpressionTree) parent.parent();
+      parent = root.parent();
+    }
+    return root;
+  }
+
+  private static boolean isNullOrEmptyLiteral(ExpressionTree expression) {
+    return expression.is(Tree.Kind.NULL_LITERAL) || LiteralUtils.isEmptyString(expression);
   }
 
   private boolean isSelfInstantiation(NewClassTree tree) {

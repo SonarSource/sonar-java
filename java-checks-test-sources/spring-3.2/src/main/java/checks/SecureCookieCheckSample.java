@@ -22,4 +22,24 @@ public class SecureCookieCheckSample {
     return "Enjoy your Cookie!";
   }
 
+  public void deleteCookie() {
+    ResponseCookie.from("token", "").maxAge(0).secure(false).httpOnly(true).path("/").build();
+  }
+
+  public void deleteCookieMissingMaxAge() {
+    ResponseCookie.from("token", "").secure(false).httpOnly(true).path("/").build(); // Noncompliant
+  }
+
+  public void deleteCookieWithRealValue(String token) {
+    ResponseCookie.from("token", token).maxAge(0).secure(false).httpOnly(true).path("/").build(); // Noncompliant
+  }
+
+  public void deleteCookieMaxAgeAfterSecure() {
+    ResponseCookie.from("token", "").secure(false).maxAge(0).httpOnly(true).path("/").build();
+  }
+
+  public void deleteCookieWithNonLiteralMaxAge(long maxAge) {
+    ResponseCookie.from("token", "").maxAge(maxAge).secure(false).httpOnly(true).path("/").build(); // Noncompliant
+  }
+
 }
