@@ -18,7 +18,6 @@ package org.sonar.java.checks.tests;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,10 +45,6 @@ public class MockitoInjectMocksShouldBeUsedCheck extends IssuableSubscriptionVis
 
   private static final String MOCK_ANNOTATION = "org.mockito.Mock";
   private static final String SPY_ANNOTATION = "org.mockito.Spy";
-  private static final String MOCKITO_EXTENSION = "org.mockito.junit.jupiter.MockitoExtension";
-  private static final String EXTEND_WITH_ANNOTATION = "org.junit.jupiter.api.extension.ExtendWith";
-  private static final String RUN_WITH_ANNOTATION = "org.junit.runner.RunWith";
-  private static final String MOCKITO_JUNIT_RUNNER_PREFIX = "org.mockito.junit.MockitoJUnitRunner";
 
   private static final List<String> SETUP_ANNOTATIONS = List.of(
     "org.junit.Before",
@@ -124,61 +119,7 @@ public class MockitoInjectMocksShouldBeUsedCheck extends IssuableSubscriptionVis
   }
 
   private static boolean isMockitoManagedClass(ClassTree classTree, List<MethodTree> setupMethods) {
-    Symbol classSymbol = classTree.symbol();
-    return isAnnotatedWithMockitoExtension(classSymbol)
-      || isAnnotatedWithMockitoJUnitRunner(classSymbol)
-      || callsOpenOrInitMocksInSetup(setupMethods);
-  }
-
-  private static boolean isAnnotatedWithMockitoExtension(Symbol classSymbol) {
-    return checkMockitoExtensionInMetadata(classSymbol.metadata(), new HashSet<>());
-  }
-
-  private static boolean checkMockitoExtensionInMetadata(SymbolMetadata metadata, Set<Symbol> visited) {
-    List<SymbolMetadata.AnnotationValue> extendWithValues = metadata.valuesForAnnotation(EXTEND_WITH_ANNOTATION);
-    if (extendWithValues != null) {
-      for (SymbolMetadata.AnnotationValue av : extendWithValues) {
-        if (isMockitoExtensionClass(av.value())) {
-          return true;
-        }
-      }
-    }
-    for (SymbolMetadata.AnnotationInstance annotation : metadata.annotations()) {
-      Symbol annotationSymbol = annotation.symbol();
-      if (!visited.contains(annotationSymbol)) {
-        visited.add(annotationSymbol);
-        if (checkMockitoExtensionInMetadata(annotationSymbol.metadata(), visited)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private static boolean isMockitoExtensionClass(Object value) {
-    if (value instanceof Symbol symbol) {
-      return symbol.type().is(MOCKITO_EXTENSION);
-    }
-    if (value instanceof Object[] values) {
-      for (Object v : values) {
-        if (v instanceof Symbol symbol && symbol.type().is(MOCKITO_EXTENSION)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private static boolean isAnnotatedWithMockitoJUnitRunner(Symbol classSymbol) {
-    List<SymbolMetadata.AnnotationValue> runWithValues = classSymbol.metadata().valuesForAnnotation(RUN_WITH_ANNOTATION);
-    if (runWithValues != null && runWithValues.size() == 1) {
-      Object value = runWithValues.get(0).value();
-      if (value instanceof Symbol.TypeSymbol typeSymbol) {
-        String fqn = typeSymbol.type().fullyQualifiedName();
-        return fqn.equals(MOCKITO_JUNIT_RUNNER_PREFIX) || fqn.startsWith(MOCKITO_JUNIT_RUNNER_PREFIX + "$");
-      }
-    }
-    return false;
+    return MockitoManagedClassHelper.isMockitoManagedClass(classTree) || callsOpenOrInitMocksInSetup(setupMethods);
   }
 
   private static boolean callsOpenOrInitMocksInSetup(List<MethodTree> setupMethods) {
