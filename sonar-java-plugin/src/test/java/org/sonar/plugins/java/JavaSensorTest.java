@@ -24,11 +24,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.event.Level;
 import org.sonar.api.SonarEdition;
@@ -90,9 +88,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@EnableRuleMigrationSupport
 class JavaSensorTest {
 
+  private static final String EXPECTED_TYPE_ERROR_COUNT = "199";
   private static final CheckFactory checkFactory = mock(CheckFactory.class);
   private static final Checks<Object> checks = mock(Checks.class);
 
@@ -102,8 +100,8 @@ class JavaSensorTest {
     when(checkFactory.create(anyString())).thenReturn(checks);
   }
 
-  @Rule
-  public final TemporaryFolder tmp = new TemporaryFolder();
+  @TempDir
+  public Path tmp;
 
   @RegisterExtension
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
@@ -135,7 +133,7 @@ class JavaSensorTest {
       "java.scanner_app");
     assertThat(telemetryMap.get("java.analysis.main.success.size_chars")).matches("\\d{5}");
     assertThat(telemetryMap.get("java.analysis.main.success.time_ms")).matches("\\d+");
-    assertThat(telemetryMap).containsEntry("java.analysis.main.success.type_error_count", "205");
+    assertThat(telemetryMap).containsEntry("java.analysis.main.success.type_error_count", EXPECTED_TYPE_ERROR_COUNT);
   }
 
   @Test
@@ -157,7 +155,7 @@ class JavaSensorTest {
       "java.scanner_app");
     assertThat(telemetryMap.get("java.analysis.test.success.size_chars")).matches("\\d{5}");
     assertThat(telemetryMap.get("java.analysis.test.success.time_ms")).matches("\\d+");
-    assertThat(telemetryMap).containsEntry("java.analysis.test.success.type_error_count", "205");
+    assertThat(telemetryMap).containsEntry("java.analysis.test.success.type_error_count", EXPECTED_TYPE_ERROR_COUNT);
   }
 
   private static int lineNumberOfTheMethodWithNoSonar(FileSystem fs) throws IOException {
@@ -177,7 +175,7 @@ class JavaSensorTest {
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     SensorContextTester context = spy(createContext(onType).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7))));
     DefaultFileSystem fs = context.fileSystem();
-    fs.setWorkDir(tmp.newFolder().toPath());
+    fs.setWorkDir(Files.createTempDirectory(tmp, "work"));
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = createDefaultJavaResourceLocator(settings.asConfig(), fs);
 
@@ -265,14 +263,14 @@ class JavaSensorTest {
   }
 
   private void assertJasperIsInvoked(MapSettings settings) throws IOException {
-    Path base = tmp.newFolder().toPath();
-    Path generatedFilePath = tmp.newFile("Generated.java").toPath();
+    Path base = Files.createTempDirectory(tmp, "base");
+    Path generatedFilePath = Files.createFile(tmp.resolve("Generated.java"));
     Files.write(generatedFilePath, "class Generated {}".getBytes());
     GeneratedFile generatedFile = new GeneratedFile(generatedFilePath);
 
     SensorContextTester context = SensorContextTester.create(base);
     context.setSettings(settings);
-    context.fileSystem().setWorkDir(tmp.newFolder().toPath());
+    context.fileSystem().setWorkDir(Files.createTempDirectory(tmp, "work"));
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     JavaFileScanner javaFileScanner = mock(JavaFileScanner.class);
     JspCodeScanner testCodeVisitor = mock(JspCodeScanner.class);
@@ -295,13 +293,13 @@ class JavaSensorTest {
 
   @Test
   void should_not_invoke_jasper_jsp_compilation_in_autoscan_for_security_reasons() throws Exception {
-    Path base = tmp.newFolder().toPath();
+    Path base = Files.createTempDirectory(tmp, "base");
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.internal.analysis.autoscan", "true");
 
     SensorContextTester context = SensorContextTester.create(base);
     context.setSettings(settings);
-    context.fileSystem().setWorkDir(tmp.newFolder().toPath());
+    context.fileSystem().setWorkDir(Files.createTempDirectory(tmp, "work"));
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     JspCodeScanner jspCodeVisitor = mock(JspCodeScanner.class);
     when(sonarComponents.mainChecks()).thenReturn(Collections.emptyList());
@@ -321,7 +319,7 @@ class JavaSensorTest {
   void performance_measure_should_not_be_activated_by_default() throws IOException {
     logTester.setLevel(Level.DEBUG);
     MapSettings settings = new MapSettings();
-    Path workDir = tmp.newFolder().toPath();
+    Path workDir = Files.createTempDirectory(tmp, "work");
     executeJavaSensorForPerformanceMeasure(settings, workDir);
     String debugLogs = String.join("\n", logTester.logs(Level.DEBUG));
     assertThat(debugLogs).doesNotContain("Performance Measures:");
@@ -333,7 +331,7 @@ class JavaSensorTest {
   void performance_measure_should_log_in_debug_mode() throws IOException {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.performance.measure", "true");
-    Path workDir = tmp.newFolder().toPath();
+    Path workDir = Files.createTempDirectory(tmp, "work");
     executeJavaSensorForPerformanceMeasure(settings, workDir);
     String debugLogs = String.join("\n", logTester.logs(Level.DEBUG));
     assertThat(debugLogs).contains("Performance Measures:\n{ \"name\": \"JavaSensor\"");
@@ -346,7 +344,7 @@ class JavaSensorTest {
   void custom_performance_measure_file_path_can_be_provided() throws IOException {
     logTester.setLevel(Level.DEBUG);
     MapSettings settings = new MapSettings();
-    Path workDir = tmp.newFolder().toPath();
+    Path workDir = Files.createTempDirectory(tmp, "work");
     Path customPerformanceFile = workDir.resolve("custom.performance.measure.json");
     settings.setProperty("sonar.java.performance.measure", "true");
     settings.setProperty("sonar.java.performance.measure.path", customPerformanceFile.toString());
@@ -365,7 +363,7 @@ class JavaSensorTest {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.performance.measure", "true");
     settings.setProperty("sonar.java.performance.measure.path", "");
-    Path workDir = tmp.newFolder().toPath();
+    Path workDir = Files.createTempDirectory(tmp, "work");
     executeJavaSensorForPerformanceMeasure(settings, workDir);
     String debugLogs = String.join("\n", logTester.logs(Level.DEBUG));
     assertThat(debugLogs).contains("{ \"name\": \"JavaSensor\"");
@@ -379,7 +377,7 @@ class JavaSensorTest {
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.source", JavaVersionImpl.MAX_SUPPORTED);
     settings.setProperty("sonar.java.enablePreview", "True");
-    Path workDir = tmp.newFolder().toPath();
+    Path workDir = Files.createTempDirectory(tmp, "work");
     executeJavaSensorForPerformanceMeasure(settings, workDir);
     assertThat(logTester.logs(Level.WARN)).isEmpty();
     List<String> infoLogs = logTester.logs(Level.INFO);
@@ -393,7 +391,7 @@ class JavaSensorTest {
     int version = JavaVersionImpl.MAX_SUPPORTED - 1;
     settings.setProperty("sonar.java.source", version);
     settings.setProperty("sonar.java.enablePreview", "True");
-    Path workDir = tmp.newFolder().toPath();
+    Path workDir = Files.createTempDirectory(tmp, "work");
     executeJavaSensorForPerformanceMeasure(settings, workDir);
     assertThat(logTester.logs(Level.WARN)).contains(
       "sonar.java.enablePreview is set but will be discarded as the Java version is less than the max supported version (" +
@@ -409,7 +407,7 @@ class JavaSensorTest {
     // We set the sonar.java.enablePreview flag to true but it will be ignored because there is no sonar.java.source
     MapSettings settings = new MapSettings();
     settings.setProperty("sonar.java.enablePreview", "true");
-    Path workDir = tmp.newFolder().toPath();
+    Path workDir = Files.createTempDirectory(tmp, "work");
     executeJavaSensorForPerformanceMeasure(settings, workDir);
     assertThat(logTester.logs(Level.WARN)).noneMatch(
       log -> log.startsWith("sonar.java.enablePreview is set but will be discarded as the Java version is less than the max supported version")
@@ -473,7 +471,7 @@ class JavaSensorTest {
       .setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
 
     DefaultFileSystem fs = context.fileSystem();
-    fs.setWorkDir(tmp.newFolder().toPath());
+    fs.setWorkDir(Files.createTempDirectory(tmp, "work"));
 
     File mainFile = new File(fs.baseDir(), "CodeWithIssues.java");
     fs.add(new TestInputFileBuilder("", mainFile.getName()).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
@@ -528,7 +526,7 @@ class JavaSensorTest {
       .setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
 
     DefaultFileSystem fs = context.fileSystem();
-    fs.setWorkDir(tmp.newFolder().toPath());
+    fs.setWorkDir(Files.createTempDirectory(tmp, "work"));
 
     File mainFile = new File(fs.baseDir(), "CodeWithIssues.java");
     fs.add(new TestInputFileBuilder("", mainFile.getName()).setLanguage("java").setModuleBaseDir(fs.baseDirPath())

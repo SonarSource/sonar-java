@@ -18,14 +18,13 @@ package org.sonar.java;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.internal.MapSettings;
@@ -33,10 +32,9 @@ import org.sonar.api.config.internal.MapSettings;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.InputFileUtils.addFile;
 
-@EnableRuleMigrationSupport
 class BatchGeneratorTest {
-  @Rule
-  public TemporaryFolder temp = new TemporaryFolder();
+  @TempDir
+  public Path temp;
 
   @Test
   void batch_generator_returns_an_empty_list_when_no_input_files() {
@@ -48,7 +46,7 @@ class BatchGeneratorTest {
 
   @Test
   void batch_generator_returns_at_most_one_item_per_batch_when_size_is_zero() throws IOException {
-    File baseDir = temp.getRoot().getAbsoluteFile();
+    File baseDir = temp.toFile().getAbsoluteFile();
     SensorContextTester sensorContext = SensorContextTester.create(baseDir);
     sensorContext.setSettings(new MapSettings());
     List<InputFile> inputFiles = new ArrayList<>();
@@ -69,7 +67,7 @@ class BatchGeneratorTest {
 
   @Test
   void batch_generator_returns_batches_with_multiple_files_that_are_smaller_than_batch_size() throws IOException {
-    File baseDir = temp.getRoot().getAbsoluteFile();
+    File baseDir = temp.toFile().getAbsoluteFile();
     SensorContextTester sensorContext = SensorContextTester.create(baseDir);
     sensorContext.setSettings(new MapSettings());
     InputFile fileA = addFile(temp, "class A { public void doSomething() {} }", sensorContext);
@@ -107,7 +105,7 @@ class BatchGeneratorTest {
 
   @Test
   void batch_generator_includes_file_excluded_from_previous_batch_into_next_batch() throws IOException {
-    File baseDir = temp.getRoot().getAbsoluteFile();
+    File baseDir = temp.toFile().getAbsoluteFile();
     SensorContextTester sensorContext = SensorContextTester.create(baseDir);
     sensorContext.setSettings(new MapSettings());
     InputFile fileA = addFile(temp, "class A { public void doSomething() {} }", sensorContext);

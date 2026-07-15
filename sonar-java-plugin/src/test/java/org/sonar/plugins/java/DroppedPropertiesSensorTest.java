@@ -16,13 +16,12 @@
  */
 package org.sonar.plugins.java;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
@@ -32,18 +31,17 @@ import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@EnableRuleMigrationSupport
 class DroppedPropertiesSensorTest {
 
-  @Rule
-  public TemporaryFolder tmp = new TemporaryFolder();
+  @TempDir
+  public Path tmp;
 
   @RegisterExtension
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
   void test() throws Exception {
-    SensorContextTester contextTester = SensorContextTester.create(tmp.newFolder());
+    SensorContextTester contextTester = SensorContextTester.create(tmp.toFile());
     MapSettings mapSettings = new MapSettings().setProperty("sonar.jacoco.reportPaths", "/path");
     contextTester.setSettings(mapSettings);
     List<String> analysisWarnings = new ArrayList<>();
@@ -57,7 +55,7 @@ class DroppedPropertiesSensorTest {
 
   @Test
   void test_two_reportPaths_property() throws Exception {
-    SensorContextTester contextTester = SensorContextTester.create(tmp.newFolder());
+    SensorContextTester contextTester = SensorContextTester.create(tmp.toFile());
     MapSettings mapSettings = new MapSettings().setProperty("sonar.jacoco.reportPaths", "/path")
       .setProperty("sonar.jacoco.reportPath", "/path");
     contextTester.setSettings(mapSettings);
@@ -71,7 +69,7 @@ class DroppedPropertiesSensorTest {
 
   @Test
   void test_two_reportPaths_property_plus_another() throws Exception {
-    SensorContextTester contextTester = SensorContextTester.create(tmp.newFolder());
+    SensorContextTester contextTester = SensorContextTester.create(tmp.toFile());
     MapSettings mapSettings = new MapSettings().setProperty("sonar.jacoco.reportPaths", "/path")
       .setProperty("sonar.jacoco.reportPath", "/path")
       .setProperty("sonar.jacoco.itReportPath", "/path");
@@ -87,7 +85,7 @@ class DroppedPropertiesSensorTest {
 
   @Test
   void test_empty() throws Exception {
-    SensorContextTester contextTester = SensorContextTester.create(tmp.newFolder());
+    SensorContextTester contextTester = SensorContextTester.create(tmp.toFile());
     List<String> analysisWarnings = new ArrayList<>();
     DroppedPropertiesSensor sensor = new DroppedPropertiesSensor(analysisWarnings::add);
     sensor.execute(contextTester);

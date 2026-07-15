@@ -18,18 +18,17 @@ package org.sonar.java;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.rules.TemporaryFolder;
 import org.slf4j.event.Level;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
@@ -83,7 +82,6 @@ import static org.mockito.Mockito.when;
 import static org.sonar.java.InputFileUtils.addFile;
 import static org.sonar.java.TestUtils.mockSonarComponents;
 
-@EnableRuleMigrationSupport
 class JavaFrontendTest {
 
 
@@ -95,8 +93,8 @@ class JavaFrontendTest {
   private static final Version LATESTS_SONAR_API_VERSION = Version.create(8, 13);
   public static final SonarRuntime SONARQUBE_RUNTIME = SonarRuntimeImpl.forSonarQube(LATESTS_SONAR_API_VERSION, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
 
-  @Rule
-  public TemporaryFolder temp = new TemporaryFolder();
+  @TempDir
+  public Path temp;
 
   @RegisterExtension
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
@@ -211,7 +209,7 @@ class JavaFrontendTest {
 
     var settings = new MapSettings();
     if (sensorContext == null) {
-      File baseDir = temp.getRoot().getAbsoluteFile();
+      File baseDir = temp.toFile().getAbsoluteFile();
       sensorContext = SensorContextTester.create(baseDir);
       sensorContext.setSettings(settings);
     }
@@ -239,7 +237,7 @@ class JavaFrontendTest {
 
   @Test
   void test_scan_logs_when_caching_is_enabled_and_can_skip_unchanged_files() throws ApiMismatchException {
-    File baseDir = temp.getRoot().getAbsoluteFile();
+    File baseDir = temp.toFile().getAbsoluteFile();
     SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
     sensorContextTester.setSettings(new MapSettings());
 
@@ -273,7 +271,7 @@ class JavaFrontendTest {
 
   @Test
   void test_scan_logs_when_caching_is_enabled_and_cannot_skip_unchanged_files() throws ApiMismatchException {
-    File baseDir = temp.getRoot().getAbsoluteFile();
+    File baseDir = temp.toFile().getAbsoluteFile();
     SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
     sensorContextTester.setSettings(new MapSettings());
 
@@ -307,7 +305,7 @@ class JavaFrontendTest {
 
   @Test
   void test_scan_logs_when_caching_is_enabled_and_cannot_determine_if_unchanged_files_can_be_skipped() throws ApiMismatchException {
-    File baseDir = temp.getRoot().getAbsoluteFile();
+    File baseDir = temp.toFile().getAbsoluteFile();
     SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
     sensorContextTester.setSettings(new MapSettings());
 
@@ -341,7 +339,7 @@ class JavaFrontendTest {
 
   @Test
   void test_scan_logs_when_caching_is_disabled_and_can_skip_unchanged_files() throws ApiMismatchException {
-    File baseDir = temp.getRoot().getAbsoluteFile();
+    File baseDir = temp.toFile().getAbsoluteFile();
     SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
     sensorContextTester.setSettings(new MapSettings());
 
@@ -374,7 +372,7 @@ class JavaFrontendTest {
 
   @Test
   void test_scan_logs_when_caching_is_disabled_and_cannot_skip_unchanged_files() throws ApiMismatchException {
-    File baseDir = temp.getRoot().getAbsoluteFile();
+    File baseDir = temp.toFile().getAbsoluteFile();
     SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
     sensorContextTester.setSettings(new MapSettings());
 
@@ -407,7 +405,7 @@ class JavaFrontendTest {
 
   @Test
   void test_scan_logs_when_caching_is_disabled_when_sonar_components_is_null() {
-    File baseDir = temp.getRoot().getAbsoluteFile();
+    File baseDir = temp.toFile().getAbsoluteFile();
     SensorContextTester sensorContextTester = SensorContextTester.create(baseDir);
     sensorContextTester.setSettings(new MapSettings());
 
@@ -751,7 +749,7 @@ class JavaFrontendTest {
 
   private List<InputFile> scan(MapSettings settings, SonarRuntime sonarRuntime, String... codeList) throws IOException {
     if (sensorContext == null) {
-      File baseDir = temp.getRoot().getAbsoluteFile();
+      File baseDir = temp.toFile().getAbsoluteFile();
       sensorContext = SensorContextTester.create(baseDir);
       sensorContext.setSettings(settings);
     }
@@ -768,7 +766,7 @@ class JavaFrontendTest {
 
   private List<InputFile> scan(MapSettings settings, SonarRuntime sonarRuntime, List<InputFile> inputFiles, @Nullable CheckRegistrar[] checkRegistrars) {
     if (sensorContext == null) {
-      File baseDir = temp.getRoot().getAbsoluteFile();
+      File baseDir = temp.toFile().getAbsoluteFile();
       sensorContext = SensorContextTester.create(baseDir);
       sensorContext.setSettings(settings);
     }
