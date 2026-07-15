@@ -41,6 +41,16 @@
       "enabled": false
     },
     {
+      "description": "Tomcat 10 and later use Jakarta APIs, while JSP analysis requires the Java EE APIs from Tomcat 9",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchPackageNames": [
+        "/^org\\.apache\\.tomcat(?:\\.|:)/"
+      ],
+      "allowedVersions": "/^9\\./"
+    },
+    {
       "description": "Plugin API has compatibility rules, so disable it to prevent accidental updates",
       "matchPackageNames": [
         "org.sonarsource.api.plugin:sonar-plugin-api*"

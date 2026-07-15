@@ -54,6 +54,7 @@ class JasperOptionsTest {
     assertThat(options.isSmapDumped()).isTrue();
     assertThat(options.isSmapSuppressed()).isFalse();
     assertThat(options.getTrimSpaces()).isEqualTo(TrimSpacesOption.FALSE);
+    assertThat(options.getIeClassId()).isEqualTo(JasperOptions.DEFAULT_IE_CLASS_ID);
     assertThat(options.getScratchDir()).isEqualTo(output.toFile());
     assertThat(options.getClassPath()).isNull();
     assertThat(options.getCompiler()).isNull();

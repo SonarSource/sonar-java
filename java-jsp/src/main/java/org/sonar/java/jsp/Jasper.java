@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
-import jakarta.servlet.jsp.JspFactory;
+import javax.servlet.jsp.JspFactory;
 import org.apache.jasper.JasperException;
 import org.apache.jasper.JspCompilationContext;
 import org.apache.jasper.compiler.Compiler;
