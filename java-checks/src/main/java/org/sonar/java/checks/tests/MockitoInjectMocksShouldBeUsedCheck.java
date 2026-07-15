@@ -18,6 +18,7 @@ package org.sonar.java.checks.tests;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -180,7 +181,20 @@ public class MockitoInjectMocksShouldBeUsedCheck extends IssuableSubscriptionVis
       if (args.isEmpty()) {
         return false;
       }
-      return args.stream().allMatch(arg -> arg.is(Tree.Kind.IDENTIFIER) && mockFields.contains(((IdentifierTree) arg).symbol()));
+      List<Symbol> argSymbols = new ArrayList<>();
+      for (ExpressionTree arg : args) {
+        if (!arg.is(Tree.Kind.IDENTIFIER)) {
+          return false;
+        }
+        Symbol symbol = ((IdentifierTree) arg).symbol();
+        if (!mockFields.contains(symbol)) {
+          return false;
+        }
+        argSymbols.add(symbol);
+      }
+      // @InjectMocks resolves by type: two args of the same type make injection ambiguous
+      Set<String> seenTypes = new HashSet<>();
+      return argSymbols.stream().allMatch(s -> seenTypes.add(s.type().fullyQualifiedName()));
     }
 
     @Override

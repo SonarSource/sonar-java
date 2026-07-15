@@ -29,6 +29,10 @@ public class MockitoInjectMocksShouldBeUsedSample {
     OrderProcessor(PaymentGateway gateway, String name) {}
   }
 
+  static class SameTypeDependenciesOrderProcessor {
+    SameTypeDependenciesOrderProcessor(PaymentGateway primaryGateway, PaymentGateway backupGateway) {}
+  }
+
   // ===== JUnit 4 - @RunWith(MockitoJUnitRunner.class) =====
 
   @RunWith(MockitoJUnitRunner.class)
@@ -207,6 +211,23 @@ public class MockitoInjectMocksShouldBeUsedSample {
   }
 
   // ===== Compliant cases =====
+
+  // @InjectMocks resolves by type: two mocks of the same type make injection ambiguous
+  @RunWith(MockitoJUnitRunner.class)
+  public class CompliantSameTypeMocks {
+    @Mock
+    private PaymentGateway primaryGateway;
+
+    @Mock
+    private PaymentGateway backupGateway;
+
+    private SameTypeDependenciesOrderProcessor orderProcessor;
+
+    @Before
+    public void setUp() {
+      orderProcessor = new SameTypeDependenciesOrderProcessor(primaryGateway, backupGateway); // Compliant - two @Mock fields of the same type
+    }
+  }
 
   @RunWith(MockitoJUnitRunner.class)
   public class CompliantAlreadyUsingInjectMocks {
