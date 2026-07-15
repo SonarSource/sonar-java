@@ -8,8 +8,7 @@
   },
   "tags": [
     "mockito",
-    "tests",
-    "confusing"
+    "tests"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-9016",

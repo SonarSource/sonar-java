@@ -1,6 +1,6 @@
 <p>This is an issue when using mocking framework stubbing syntax to specify return values and creating a mock object directly as an argument to the
 return value specification method.</p>
-<p>In Java with Mockito, this specifically refers to the <code>when().thenReturn()</code> pattern.</p>
+<p>In Java with Mockito, this specifically refers to inlining the mock creation inside the <code>thenReturn()</code> method.</p>
 <h2>Why is this an issue?</h2>
 <p>Mocking frameworks use an internal state machine to track stubbing operations and validate that they are completed correctly. When you create a
 mock object inline within a return value specification, the framework registers the mock creation as a new event before it finishes recording the
@@ -20,8 +20,7 @@ that contains the actual problem. This makes debugging significantly harder beca
 net that detects incomplete or improperly configured test doubles.</p>
 <p>This can lead to:</p>
 <ul>
-  <li>Test failures appearing in unrelated tests, making debugging time-consuming</li>
-  <li>Intermittent test behavior that is difficult to reproduce</li>
+  <li>Test failures appearing in the current or following tests, making debugging time-consuming</li>
   <li>Misleading error messages that point to the wrong location</li>
   <li>Reduced confidence in the test suite</li>
 </ul>
