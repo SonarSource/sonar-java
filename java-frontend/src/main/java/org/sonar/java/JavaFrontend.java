@@ -70,7 +70,6 @@ public class JavaFrontend {
   private final SonarComponents sonarComponents;
   private final Telemetry telemetry;
   private final List<File> globalClasspath;
-  private final List<File> autoScanClasspath;
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
   private final JavaAstScanner astScannerForGeneratedFiles;
@@ -109,7 +108,6 @@ public class JavaFrontend {
 
     globalClasspath = Stream.of(classpath, testClasspath, jspClasspath)
       .flatMap(Collection::stream).distinct().toList();
-    autoScanClasspath = sonarComponents.isAutoScan() ? sonarComponents.getAutoScanClasspath() : List.of();
 
     //AstScanner for main files
     astScanner = new JavaAstScanner(sonarComponents, telemetry, TelemetryKey.JAVA_ANALYSIS_MAIN);
@@ -281,7 +279,7 @@ public class JavaFrontend {
 
     @Override
     public List<File> getClasspath() {
-      return autoScanClasspath;
+      return globalClasspath;
     }
 
     @Override
