@@ -19,14 +19,13 @@ package org.sonar.java.ast.visitors;
 import com.google.common.io.Files;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Collections;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.rules.TemporaryFolder;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
@@ -50,11 +49,10 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.sonar.java.TestUtils.mockSonarComponents;
 
-@EnableRuleMigrationSupport
 class SyntaxHighlighterVisitorTest {
 
-  @Rule
-  public TemporaryFolder temp = new TemporaryFolder();
+  @TempDir
+  Path temp;
 
   private SensorContextTester context;
   private SonarComponents sonarComponents;
@@ -63,7 +61,7 @@ class SyntaxHighlighterVisitorTest {
 
   @BeforeEach
   void setUp() {
-    context = SensorContextTester.create(temp.getRoot());
+    context = SensorContextTester.create(temp.toFile());
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),
       mock(ClasspathForMain.class), mock(ClasspathForTest.class), mock(CheckFactory.class), mock(ActiveRules.class));
     sonarComponents.setSensorContext(context);
@@ -73,7 +71,7 @@ class SyntaxHighlighterVisitorTest {
   @Test
   void parse_error() throws Exception {
     SensorContextTester spy = spy(context);
-    File file = temp.newFile().getAbsoluteFile();
+    File file = temp.resolve("parse_error.java").toFile().getAbsoluteFile();
     Files.asCharSink(file, StandardCharsets.UTF_8).write("ParseError");
     scan(TestUtils.inputFile(file));
     verify(spy, never()).newHighlighting();
