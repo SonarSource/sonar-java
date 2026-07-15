@@ -65,17 +65,17 @@ public class JspCodeCheck extends IssuableSubscriptionVisitor implements JspCode
   }
 
   private void visitMethodInvocation(MethodInvocationTree tree) {
-    if (isInvocation(tree, "index_jsp.java", 116) ||
-      isInvocation(tree, "test_005finclude_jsp.java", 124) ||
-      isInvocation(tree, "test_005finclude_jsp.java", 129)) {
+    if (isInvocation(tree, "index_jsp.java", "write") ||
+      isInvocation(tree, "test_005finclude_jsp.java", "getParameter") ||
+      isInvocation(tree, "test_005finclude_jsp.java", "print")) {
       context.sourceMap()
         .flatMap(sourceMap -> sourceMap.sourceMapLocationFor(tree))
         .ifPresent(this::writeToFile);
     }
   }
 
-  private boolean isInvocation(MethodInvocationTree tree, String inputFile, int line) {
-    return context.getInputFile().filename().equals(inputFile) && tree.firstToken().range().start().line() == line;
+  private boolean isInvocation(MethodInvocationTree tree, String inputFile, String methodName) {
+    return context.getInputFile().filename().equals(inputFile) && tree.methodSymbol().name().equals(methodName);
   }
 
   private void writeToFile(SourceMap.Location location) {

@@ -21,6 +21,7 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
@@ -32,6 +33,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.LongSupplier;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
 import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 
@@ -40,6 +44,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -725,6 +730,71 @@ class SonarComponentsTest {
       checkFactory, context.activeRules());
     List<String> jspClassPath = sonarComponents.getJspClasspath().stream().map(File::getAbsolutePath).toList();
     assertThat(jspClassPath).containsExactly(plugin.getAbsolutePath(), someJar.getAbsolutePath());
+  }
+
+  @Test
+  void autoscan_classpath_should_filter_plugin_jar_and_cache_it(@TempDir Path tempDirectory) throws IOException {
+    Path pluginJar = createPluginJar(tempDirectory.resolve("plugin.jar"));
+    File mainClasspath = new File("main.jar");
+    File testClasspath = new File("test.jar");
+    ClasspathForMain javaClasspath = mock(ClasspathForMain.class);
+    ClasspathForTest javaTestClasspath = mock(ClasspathForTest.class);
+    when(javaClasspath.getElements()).thenReturn(List.of(mainClasspath));
+    when(javaTestClasspath.getElements()).thenReturn(List.of(testClasspath));
+
+    SensorContextTester sensorContextTester = SensorContextTester.create(tempDirectory);
+    DefaultFileSystem fs = sensorContextTester.fileSystem();
+    fs.setWorkDir(tempDirectory.resolve("work"));
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, javaClasspath, javaTestClasspath,
+      checkFactory, context.activeRules());
+    List<File> autoScanClasspath = sonarComponents.getAutoScanClasspath(pluginJar.toFile());
+    File autoScanPlugin = autoScanClasspath.get(0);
+
+    assertThat(autoScanClasspath).containsExactly(autoScanPlugin, mainClasspath, testClasspath);
+    assertThat(autoScanPlugin.toPath()).isEqualTo(tempDirectory.resolve("work/autoscan/plugin.jar"));
+    assertThat(sonarComponents.getAutoScanClasspath(pluginJar.toFile()).get(0)).isSameAs(autoScanPlugin);
+    try (JarFile jar = new JarFile(autoScanPlugin)) {
+      assertThat(Collections.list(jar.entries()))
+        .extracting(JarEntry::getName)
+        .containsExactly("org/sonar/java/Analyzer.class", "javax/servlet/Servlet.class");
+      assertThat(new String(jar.getInputStream(jar.getJarEntry("javax/servlet/Servlet.class")).readAllBytes(), StandardCharsets.UTF_8))
+        .isEqualTo("javax/servlet/Servlet.class");
+    }
+  }
+
+  @Test
+  void autoscan_classpath_should_report_plugin_copy_failures(@TempDir Path tempDirectory) throws IOException {
+    Path pluginJar = createPluginJar(tempDirectory.resolve("plugin.jar"));
+    File pluginFile = pluginJar.toFile();
+    Path invalidWorkDirectory = tempDirectory.resolve("not-a-directory");
+    Files.writeString(invalidWorkDirectory, "file");
+    SensorContextTester sensorContextTester = SensorContextTester.create(tempDirectory);
+    DefaultFileSystem fs = sensorContextTester.fileSystem();
+    fs.setWorkDir(invalidWorkDirectory);
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fs, mock(ClasspathForMain.class), mock(ClasspathForTest.class),
+      checkFactory, context.activeRules());
+
+    assertThatThrownBy(() -> sonarComponents.getAutoScanClasspath(pluginFile))
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage("Failed to prepare the Java analyzer classpath for AutoScan.")
+      .hasCauseInstanceOf(IOException.class);
+  }
+
+  private static Path createPluginJar(Path pluginJar) throws IOException {
+    List<String> entries = List.of(
+      "org/sonar/java/Analyzer.class",
+      "javax/servlet/Servlet.class",
+      "jakarta/servlet/Servlet.class",
+      "jakarta/el/ELContext.class"
+    );
+    try (JarOutputStream jar = new JarOutputStream(Files.newOutputStream(pluginJar))) {
+      for (String entry : entries) {
+        jar.putNextEntry(new JarEntry(entry));
+        jar.write(entry.getBytes(StandardCharsets.UTF_8));
+        jar.closeEntry();
+      }
+    }
+    return pluginJar;
   }
 
   @Test

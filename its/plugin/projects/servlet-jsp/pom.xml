@@ -12,6 +12,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <jakarta.jstl.version>3.0.1</jakarta.jstl.version>
+    <owasp.encoder.version>1.4.0</owasp.encoder.version>
 
     <sonar.sources>src/main/java,src/main/webapp</sonar.sources>
   </properties>
@@ -24,21 +26,26 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>jstl</artifactId>
-        <version>1.2</version>
-    </dependency>  
+      <groupId>jakarta.servlet.jsp.jstl</groupId>
+      <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+      <version>${jakarta.jstl.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.web</groupId>
+      <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+      <version>${jakarta.jstl.version}</version>
+    </dependency>
 		<!-- OWASP Sanitization Encoder (Java) -->
 		<dependency>
 			<groupId>org.owasp.encoder</groupId>
 			<artifactId>encoder</artifactId>
-			<version>1.2.2</version>
+			<version>${owasp.encoder.version}</version>
 		</dependency>
 		<!-- OWASP Sanitization Encoder (JSP) -->
 		<dependency>
 			<groupId>org.owasp.encoder</groupId>
-			<artifactId>encoder-jsp</artifactId>
-			<version>1.2.2</version>
+			<artifactId>encoder-jakarta-jsp</artifactId>
+			<version>${owasp.encoder.version}</version>
 		</dependency>       
     <dependency>
       <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>

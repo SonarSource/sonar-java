@@ -78,6 +78,13 @@
       <artifactId>sonar-performance-measure</artifactId>
     </dependency>
 
+    <!-- Keep legacy Servlet symbols available when analyzing projects without an explicit classpath. -->
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-servlet-api</artifactId>
+      <version>9.0.120</version>
+    </dependency>
+
     <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>
       <artifactId>sonar-plugin-api</artifactId>
@@ -257,6 +264,41 @@
                     <include>**</include>
                   </includes>
                 </filter>
+                <filter>
+                  <artifact>org.apache.tomcat:tomcat-servlet-api</artifact>
+                  <includes>
+                    <include>javax/servlet/**</include>
+                  </includes>
+                  <excludes>
+                    <exclude>javax/servlet/resources/**</exclude>
+                    <!-- Match the Servlet API classes retained by Tomcat 9 shade minimization. -->
+                    <exclude>javax/servlet/GenericFilter.class</exclude>
+                    <exclude>javax/servlet/ServletContextAttributeEvent.class</exclude>
+                    <exclude>javax/servlet/ServletContextAttributeListener.class</exclude>
+                    <exclude>javax/servlet/ServletContextEvent.class</exclude>
+                    <exclude>javax/servlet/ServletContextListener.class</exclude>
+                    <exclude>javax/servlet/ServletRequestAttributeEvent.class</exclude>
+                    <exclude>javax/servlet/ServletRequestAttributeListener.class</exclude>
+                    <exclude>javax/servlet/ServletRequestEvent.class</exclude>
+                    <exclude>javax/servlet/ServletRequestListener.class</exclude>
+                    <exclude>javax/servlet/ServletRequestWrapper.class</exclude>
+                    <exclude>javax/servlet/annotation/HandlesTypes.class</exclude>
+                    <exclude>javax/servlet/annotation/WebFilter.class</exclude>
+                    <exclude>javax/servlet/annotation/WebInitParam.class</exclude>
+                    <exclude>javax/servlet/annotation/WebListener.class</exclude>
+                    <exclude>javax/servlet/annotation/WebServlet.class</exclude>
+                    <exclude>javax/servlet/http/HttpFilter.class</exclude>
+                    <exclude>javax/servlet/http/HttpServletRequestWrapper.class</exclude>
+                    <exclude>javax/servlet/http/HttpSessionActivationListener.class</exclude>
+                    <exclude>javax/servlet/http/HttpSessionAttributeListener.class</exclude>
+                    <exclude>javax/servlet/http/HttpSessionBindingEvent.class</exclude>
+                    <exclude>javax/servlet/http/HttpSessionBindingListener.class</exclude>
+                    <exclude>javax/servlet/http/HttpSessionEvent.class</exclude>
+                    <exclude>javax/servlet/http/HttpSessionIdListener.class</exclude>
+                    <exclude>javax/servlet/http/HttpSessionListener.class</exclude>
+                    <exclude>javax/servlet/http/HttpUtils.class</exclude>
+                  </excludes>
+                </filter>
                 <!-- this is needed because org.apache.el.ExpressionFactoryImpl is instantiated with reflection -->
                 <filter>
                   <artifact>org.apache.tomcat.embed:tomcat-embed-el</artifact>
@@ -312,6 +354,10 @@
                 <licenseUrlReplacement>
                     <regexp>http://www.opensource.org/licenses/bsd-license.php</regexp>
                     <replacement>${project.baseUri}/license-resources/bsd.txt</replacement>
+                </licenseUrlReplacement>
+                <licenseUrlReplacement>
+                    <regexp>http://www\.apache\.org/licenses/LICENSE-2\.0\.txt\s+and\s+https://opensource\.org/license/CDDL-1\.0\s+and</regexp>
+                    <replacement>${project.baseUri}/license-resources/tomcat.txt</replacement>
                 </licenseUrlReplacement>
             </licenseUrlReplacements>
             <licenseUrlFileNameSanitizers>

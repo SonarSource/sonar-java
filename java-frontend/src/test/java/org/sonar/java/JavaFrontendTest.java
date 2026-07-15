@@ -514,6 +514,25 @@ class JavaFrontendTest {
   }
 
   @Test
+  void autoscan_should_use_its_dedicated_classpath() {
+    SonarComponents components = mockSonarComponents();
+    List<File> autoScanClasspath = List.of(new File("autoscan-plugin.jar"));
+    when(components.isAutoScan()).thenReturn(true);
+    when(components.getAutoScanClasspath()).thenReturn(autoScanClasspath);
+
+    JavaFrontend frontend = new JavaFrontend(
+      new JavaVersionImpl(),
+      components,
+      mock(Measurer.class),
+      new NoOpTelemetry(),
+      mock(JavaResourceLocator.class),
+      mainCodeIssueScannerAndFilter
+    );
+
+    assertThat(frontend.new AutoScanBatchContext().getClasspath()).isEqualTo(autoScanClasspath);
+  }
+
+  @Test
   void test_end_of_analysis_should_be_called_once() throws IOException {
     scan(SONARLINT_RUNTIME, "class A {}", "class B {}");
     assertThat(mainCodeIssueScannerAndFilter.scanFileInvocationCount).isEqualTo(2);

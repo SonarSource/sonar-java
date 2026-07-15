@@ -32,7 +32,7 @@
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-jasper</artifactId>
-      <version>9.0.120</version>
+      <version>11.0.24</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.jdt</groupId>
@@ -92,7 +92,8 @@
                 <artifactItem>
                   <groupId>org.springframework</groupId>
                   <artifactId>spring-webmvc</artifactId>
-                  <version>5.2.3.RELEASE</version>
+                  <version>6.2.15</version>
+                  <destFileName>spring-webmvc.jar</destFileName>
                 </artifactItem>
                 <artifactItem>
                   <groupId>javax</groupId>
