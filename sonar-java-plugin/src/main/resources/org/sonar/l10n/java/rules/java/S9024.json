@@ -1,0 +1,25 @@
+{
+  "title": "\"@InjectMocks\" should be used instead of manually constructing test objects",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "mockito",
+    "junit",
+    "tests"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9024",
+  "sqKey": "S9024",
+  "scope": "Tests",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  }
+}

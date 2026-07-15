@@ -1,0 +1,126 @@
+<p>This is an issue when a test class manually instantiates the object under test in a setup method by passing mock-annotated fields as constructor
+arguments, instead of using the test framework’s automatic dependency injection annotation.</p>
+<p>In Java with Mockito, this specifically refers to instantiating the object under test manually instead of using the <code>@InjectMocks</code>
+annotation, in a class annotated with @ExtendWith(MockitoExtension.class) (JUnit 5) or @RunWith(MockitoJUnitRunner.class) (JUnit 4).</p>
+<h2>Why is this an issue?</h2>
+<p>When writing unit tests with mocking frameworks, developers often need to inject mock dependencies into the object being tested. While it’s
+possible to manually construct this object by passing mock-annotated fields as constructor arguments in a test setup method, this approach creates
+unnecessary boilerplate code.</p>
+<p>Mocking frameworks provide dependency injection annotations specifically for this purpose. These annotations automatically inject all mock and spy
+annotated fields into the object under test, eliminating the need for manual construction.</p>
+<p>The manual approach has several drawbacks:</p>
+<ul>
+  <li><strong>Boilerplate code</strong>: You must write and maintain a setup method that constructs the object.</li>
+  <li><strong>Fragility</strong>: When the constructor signature changes (adding, removing, or reordering parameters), you must manually update the
+  setup method. This is error-prone and time-consuming.</li>
+  <li><strong>Reduced readability</strong>: The manual wiring obscures the test’s intent, making it harder to understand at a glance which object is
+  under test.</li>
+  <li><strong>Maintenance burden</strong>: Across many test classes, this pattern multiplies the effort required for refactoring.</li>
+</ul>
+<p>By contrast, automatic dependency injection annotations automatically adapt to constructor changes, keep test code concise, and clearly signal
+which object is under test.</p>
+<p>In Mockito specifically, use the <code>@InjectMocks</code> annotation to mark the object under test, and <code>@Mock</code> or <code>@Spy</code>
+annotations for dependencies.</p>
+<h3>What is the potential impact?</h3>
+<p>This issue impacts code maintainability. Tests with manual object construction require more effort to write and update, especially during
+refactoring. While the tests still function correctly, the extra boilerplate increases the cognitive load on developers and makes the codebase harder
+to maintain over time.</p>
+<h2>How to fix it in JUnit 4</h2>
+<p>For JUnit 4 tests using <code>@RunWith(MockitoJUnitRunner.class)</code>, replace manual construction in a setup method with the
+<code>@InjectMocks</code> annotation.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@RunWith(MockitoJUnitRunner.class)
+public class OrderProcessorTest {
+    @Mock
+    private PaymentGateway paymentGateway;
+
+    @Mock
+    private InventoryService inventoryService;
+
+    private OrderProcessor orderProcessor;
+
+    @Before
+    public void setUp() {
+        orderProcessor = new OrderProcessor(paymentGateway, inventoryService); // Noncompliant
+    }
+
+    @Test
+    public void testProcessOrder() {
+        // test implementation
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@RunWith(MockitoJUnitRunner.class)
+public class OrderProcessorTest {
+    @Mock
+    private PaymentGateway paymentGateway;
+
+    @Mock
+    private InventoryService inventoryService;
+
+    @InjectMocks
+    private OrderProcessor orderProcessor;
+
+    @Test
+    public void testProcessOrder() {
+        // test implementation
+    }
+}
+</pre>
+<h2>How to fix it in JUnit 5</h2>
+<p>For JUnit 5 tests using MockitoExtension, replace manual construction with <code>@InjectMocks</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@ExtendWith(MockitoExtension.class)
+public class OrderProcessorTest {
+    @Mock
+    private PaymentGateway paymentGateway;
+
+    @Mock
+    private InventoryService inventoryService;
+
+    private OrderProcessor orderProcessor;
+
+    @BeforeEach
+    public void setUp() {
+        orderProcessor = new OrderProcessor(paymentGateway, inventoryService); // Noncompliant
+    }
+
+    @Test
+    public void testProcessOrder() {
+        // test implementation
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@ExtendWith(MockitoExtension.class)
+public class OrderProcessorTest {
+    @Mock
+    private PaymentGateway paymentGateway;
+
+    @Mock
+    private InventoryService inventoryService;
+
+    @InjectMocks
+    private OrderProcessor orderProcessor;
+
+    @Test
+    public void testProcessOrder() {
+        // test implementation
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Mockito Documentation - <a
+  href="https://javadoc.io/doc/org.mockito/mockito-core/latest/org.mockito/org/mockito/InjectMocks.html">@InjectMocks</a></li>
+  <li>Baeldung - <a href="https://www.baeldung.com/mockito-annotations">Getting Started with Mockito @Mock, @Spy, @Captor and @InjectMocks</a></li>
+</ul>
+
