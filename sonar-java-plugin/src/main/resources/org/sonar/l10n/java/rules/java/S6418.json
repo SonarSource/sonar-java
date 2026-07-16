@@ -14,9 +14,10 @@
   },
   "quickfix": "infeasible",
   "tags": [
-    "cwe",
     "cert",
-    "former-hotspot"
+    "cwe",
+    "former-hotspot",
+    "secret"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-6418",

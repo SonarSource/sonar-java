@@ -2,7 +2,7 @@
 <h2>Why is this an issue?</h2>
 <p>When SQL queries are constructed by concatenating or formatting user-supplied values directly into the query string, the structure of the query
 itself can be altered by a malicious input. This rule flags calls to SQL execution functions where the query string is built using string
-concatenation or format operators rather than parameterized queries or prepared statements. Unlike rule {rule:javasecurity:S3649}, this rule does not perform
+concatenation or format operators rather than parameterized queries or prepared statements. Unlike rule {rule:java:S3649}, this rule does not perform
 taint analysis — it flags all dynamically formatted SQL queries as a potential risk regardless of the data source.</p>
 <h3>What is the potential impact?</h3>
 <h4>SQL injection</h4>

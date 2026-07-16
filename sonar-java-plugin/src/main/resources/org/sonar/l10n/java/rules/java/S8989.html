@@ -49,6 +49,14 @@ exceptions), but the database state doesn’t match expectations.</p>
 <h2>How to fix it in Spring</h2>
 <p>Explicitly specify <code>rollbackFor</code> to include the checked exceptions that should trigger a rollback. This is the most common fix, as most
 checked exceptions represent error conditions that should prevent the transaction from committing.</p>
+<p>Choose your approach based on the exception’s meaning:</p>
+<ul>
+  <li>Use <code>rollbackFor</code> with specific exception types when you know exactly which exceptions represent failures requiring rollback</li>
+  <li>Use <code>rollbackFor = Exception.class</code> when the method throws <code>Exception</code> or multiple checked exception types that all
+  represent failures</li>
+  <li>Use <code>noRollbackFor</code> only when a checked exception represents an expected, recoverable condition where you intentionally want the
+  transaction to commit (such as a notification failure after successfully saving core data)</li>
+</ul>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -107,10 +115,9 @@ public void processWithNotification(Order order) throws NotificationException {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>Spring Framework Documentation - Transaction Management - <a
-  href="https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html">Official Spring documentation
-  explaining the @Transactional annotation and its rollback behavior</a></li>
-  <li>Baeldung - Spring @Transactional Rollback - <a href="https://www.baeldung.com/spring-transactional-rollback">Practical guide to configuring
-  transaction rollback in Spring applications</a></li>
+  <li>Spring Framework Documentation - <a
+  href="https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html">Using @Transactional</a></li>
+  <li>Baeldung - <a href="https://www.baeldung.com/transaction-configuration-with-jpa-and-spring#5-transaction-rollback">Transactions with Spring and
+  JPA - Transaction rollback</a></li>
 </ul>
 
