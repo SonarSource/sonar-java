@@ -427,7 +427,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     AnalyzerMessage issue,
     @Nullable Expectations.RemediationFunction remediationFunction) {
 
-    int line = issue.getLine();
+    Integer line = issue.getLine();
     if (expected.containsKey(line)) {
       Expectations.Issue attrs = expected.get(line).get(0);
       validateRemediationFunction(attrs, issue, remediationFunction);

@@ -40,7 +40,7 @@ class DroppedPropertiesSensorTest {
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
   @Test
-  void test() throws Exception {
+  void test() {
     SensorContextTester contextTester = SensorContextTester.create(tmp.toFile());
     MapSettings mapSettings = new MapSettings().setProperty("sonar.jacoco.reportPaths", "/path");
     contextTester.setSettings(mapSettings);
@@ -54,7 +54,7 @@ class DroppedPropertiesSensorTest {
   }
 
   @Test
-  void test_two_reportPaths_property() throws Exception {
+  void test_two_reportPaths_property() {
     SensorContextTester contextTester = SensorContextTester.create(tmp.toFile());
     MapSettings mapSettings = new MapSettings().setProperty("sonar.jacoco.reportPaths", "/path")
       .setProperty("sonar.jacoco.reportPath", "/path");
@@ -68,7 +68,7 @@ class DroppedPropertiesSensorTest {
   }
 
   @Test
-  void test_two_reportPaths_property_plus_another() throws Exception {
+  void test_two_reportPaths_property_plus_another() {
     SensorContextTester contextTester = SensorContextTester.create(tmp.toFile());
     MapSettings mapSettings = new MapSettings().setProperty("sonar.jacoco.reportPaths", "/path")
       .setProperty("sonar.jacoco.reportPath", "/path")
@@ -84,7 +84,7 @@ class DroppedPropertiesSensorTest {
   }
 
   @Test
-  void test_empty() throws Exception {
+  void test_empty() {
     SensorContextTester contextTester = SensorContextTester.create(tmp.toFile());
     List<String> analysisWarnings = new ArrayList<>();
     DroppedPropertiesSensor sensor = new DroppedPropertiesSensor(analysisWarnings::add);
