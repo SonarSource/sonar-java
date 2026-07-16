@@ -29,14 +29,20 @@ import org.sonar.api.batch.sensor.internal.SensorContextTester;
 
 class InputFileUtils {
   public static InputFile addFile(TemporaryFolder temp, String code, SensorContextTester context) throws IOException {
+    return addFile(temp.getRoot(), code, context);
+  }
+
+  public static InputFile addFile(File tempDir, String code, SensorContextTester context) throws IOException {
     Matcher matcher = Pattern.compile("(?:^|\\s)(?:class|interface|enum|record)\\s++(\\w++)").matcher(code);
     if (matcher.find()) {
       String className = matcher.group(1);
       InputFile.Type type = className.endsWith("Test") ? InputFile.Type.TEST : InputFile.Type.MAIN;
-      File file = temp.newFile(className + ".java").getAbsoluteFile();
+      File file = new File(tempDir, className + ".java").getAbsoluteFile();
+      file.createNewFile();
       return generateInputFile(code, context, file, type);
     } else {
-      File file = temp.newFile("Unnamed.java").getAbsoluteFile();
+      File file = new File(tempDir, "Unnamed.java").getAbsoluteFile();
+      file.createNewFile();
       return generateInputFile(code, context, file, InputFile.Type.MAIN);
     }
   }
