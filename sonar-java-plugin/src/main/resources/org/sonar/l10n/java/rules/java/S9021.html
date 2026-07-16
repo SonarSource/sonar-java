@@ -1,12 +1,14 @@
+<p>This is an issue when a Spring <code>@Configuration</code> class is declared <code>final</code>. Spring needs to create CGLIB proxies for
+configuration classes that contain <code>@Bean</code> methods, and the <code>final</code> modifier prevents the necessary subclassing.</p>
 <h2>Why is this an issue?</h2>
 <p>Spring Framework uses CGLIB proxies to enforce singleton semantics for beans defined in <code>@Configuration</code> classes. When you call a
 <code>@Bean</code> method from within another <code>@Bean</code> method, Spring intercepts the call through a proxy to return the singleton instance
 rather than creating a new object.</p>
 <p>The Java <code>final</code> keyword prevents class inheritance, which blocks CGLIB from creating the necessary subclass proxy. Without this proxy,
-inter-bean method calls create new instances instead of retrieving the singleton, breaking Spring's container management.</p>
+inter-bean method calls create new instances instead of retrieving the singleton, breaking Spring’s container management.</p>
 <p>This typically manifests as a <code>ConfigurationClassPostProcessor</code> exception during application startup, preventing the Spring context from
 initializing.</p>
-<h2>What is the potential impact?</h2>
+<h3>What is the potential impact?</h3>
 <p>When Spring <code>@Configuration</code> classes are marked <code>final</code>, the application fails to start. The
 <code>ConfigurationClassPostProcessor</code> throws an exception because CGLIB cannot create the required proxy subclass.</p>
 <p>If this check were bypassed, the impact would be more subtle: inter-bean method calls would create duplicate instances instead of using singletons,
@@ -16,7 +18,11 @@ leading to:</p>
   <li><strong>Inconsistent state</strong>: Different parts of the application working with different object instances</li>
   <li><strong>Configuration drift</strong>: Bean initialization logic executing multiple times with potentially different results</li>
 </ul>
-<h2>How to fix it</h2>
+<p>If you see this issue but your configuration class genuinely doesn’t call other <code>@Bean</code> methods directly, consider using
+<code>@Configuration(proxyBeanMethods = false)</code> instead of suppressing the issue. This makes the intent explicit and improves startup
+performance. Mark this as a false positive only if the class is not actually a <code>@Configuration</code> class or if the <code>final</code> modifier
+is required by a framework constraint you cannot control.</p>
+<h2>How to fix it in Spring</h2>
 <p>Remove the <code>final</code> modifier from the <code>@Configuration</code> class. This allows Spring to create the CGLIB proxy needed to enforce
 singleton semantics for inter-bean method calls.</p>
 <h3>Code examples</h3>
@@ -52,7 +58,7 @@ public class DatabaseConfig {
     }
 }
 </pre>
-<p>If you don't need inter-bean method calls and want to optimize startup performance, use <code>@Configuration(proxyBeanMethods = false)</code>. This
+<p>If you don’t need inter-bean method calls and want to optimize startup performance, use <code>@Configuration(proxyBeanMethods = false)</code>. This
 disables CGLIB proxying, allowing the class to be <code>final</code>. However, you must use dependency injection instead of calling <code>@Bean</code>
 methods directly.</p>
 <h4>Noncompliant code example</h4>
@@ -90,8 +96,9 @@ public final class DatabaseConfig {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li><a href="https://docs.spring.io/spring-framework/reference/core/beans/java/configuration-annotation.html">Spring Framework - @Configuration
-  Annotation</a></li>
-  <li><a href="https://docs.spring.io/spring-framework/reference/core/aop/proxying.html">Spring Framework - Proxying Mechanisms</a></li>
-  <li><a href="https://docs.spring.io/spring-boot/reference/using/configuration-classes.html">Spring Boot - Configuration Classes</a></li>
+  <li>Spring Framework Documentation - <a href="https://docs.spring.io/spring-framework/reference/core/beans/java/configuration-annotation.html">Using
+  the @Configuration annotation</a></li>
+  <li>Spring Framework Documentation - <a href="https://docs.spring.io/spring-framework/reference/core/beans/java/bean-annotation.html">Using the
+  @Bean annotation</a></li>
 </ul>
+
