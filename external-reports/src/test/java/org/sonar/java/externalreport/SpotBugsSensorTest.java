@@ -23,13 +23,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.rules.TemporaryFolder;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.rule.Severity;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
@@ -43,7 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.sonar.java.externalreport.ExternalReportTestUtils.onlyOneLogElement;
 
-@EnableRuleMigrationSupport
 class SpotBugsSensorTest {
 
   private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "spotbugs")
@@ -52,8 +49,8 @@ class SpotBugsSensorTest {
   private static SensorContextTester sensorContext = SensorContextTester.create(PROJECT_DIR);
   private static SpotBugsSensor spotBugsSensor = new SpotBugsSensor(sensorContext.runtime());
 
-  @Rule
-  public final TemporaryFolder tmp = new TemporaryFolder();
+  @TempDir
+  public Path tmp;
 
   @RegisterExtension
   public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);

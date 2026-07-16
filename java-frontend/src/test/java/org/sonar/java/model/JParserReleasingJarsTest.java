@@ -18,11 +18,11 @@ package org.sonar.java.model;
 
 import com.google.common.io.Files;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -31,11 +31,10 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@EnableRuleMigrationSupport
 class JParserReleasingJarsTest {
 
-  @org.junit.Rule
-  public TemporaryFolder temp = new TemporaryFolder();
+  @TempDir
+  public Path temp;
 
   private static final String PROJECT_JAR = "src/test/files/other/project.jar";
   private static final String SOURCE = "package foo.bar;\n"
@@ -75,7 +74,7 @@ class JParserReleasingJarsTest {
    */
   @Test
   void should_be_able_to_delete_jar() throws Exception {
-    File newJar = new File(temp.newFolder(), "project2.jar");
+    File newJar = temp.resolve("project2.jar").toFile();
     Files.copy(new File(PROJECT_JAR), newJar);
 
     assertThat(newJar).exists();
@@ -90,7 +89,7 @@ class JParserReleasingJarsTest {
    */
   @Test
   void jParser_should_release_jar_after_use() throws Exception {
-    File newJar = new File(temp.newFolder(), "project3.jar");
+    File newJar = temp.resolve("project3.jar").toFile();
     Files.copy(new File(PROJECT_JAR), newJar);
 
     assertThat(newJar).exists();

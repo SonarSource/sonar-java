@@ -17,13 +17,12 @@
 package org.sonar.java.ast.visitors;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
@@ -42,17 +41,16 @@ import org.sonar.java.model.VisitorsBridge;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-@EnableRuleMigrationSupport
 class SonarSymbolTableVisitorTest {
 
-  @Rule
-  public TemporaryFolder temp = new TemporaryFolder();
+  @TempDir
+  public Path temp;
   private SensorContextTester context;
   private SonarComponents sonarComponents;
 
   @BeforeEach
   void setUp() {
-    context = SensorContextTester.create(temp.getRoot());
+    context = SensorContextTester.create(temp.toFile());
     sonarComponents = new SonarComponents(mock(FileLinesContextFactory.class), context.fileSystem(),
       mock(ClasspathForMain.class), mock(ClasspathForTest.class), mock(CheckFactory.class), mock(ActiveRules.class));
     sonarComponents.setSensorContext(context);

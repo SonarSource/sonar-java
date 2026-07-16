@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
-import org.junit.rules.TemporaryFolder;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
@@ -50,14 +49,14 @@ public final class ExternalReportTestUtils {
     return elements.get(0);
   }
 
-  public static File generateReport(Path projectDir, TemporaryFolder tmp, String fileName) throws IOException {
+  public static File generateReport(Path projectDir, Path tmp, String fileName) throws IOException {
     Path filePath = projectDir.resolve(fileName);
     if (!filePath.toFile().exists()) {
       return filePath.toFile();
     }
     String reportData = new String(Files.readAllBytes(filePath), UTF_8);
     reportData = reportData.replace("${PROJECT_DIR}", projectDir.toRealPath() + File.separator);
-    File reportFile = tmp.newFile(fileName).getCanonicalFile();
+    File reportFile = Files.createFile(tmp.resolve(fileName)).toFile().getCanonicalFile();
     Files.write(reportFile.toPath(), reportData.getBytes(UTF_8));
     return reportFile;
   }

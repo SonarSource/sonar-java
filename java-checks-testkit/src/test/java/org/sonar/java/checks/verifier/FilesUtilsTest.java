@@ -22,19 +22,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@EnableRuleMigrationSupport
 class FilesUtilsTest {
-  @org.junit.Rule
-  public TemporaryFolder temp = new TemporaryFolder();
+  @TempDir
+  public Path temp;
 
   @Test
   void verify_get_classpath_files() throws IOException {
-    Path tmp = temp.newFolder().toPath();
+    Path tmp = Files.createDirectory(temp.resolve("tmp"));
     Path jar = tmp.resolve("test.jar");
     Path zip = tmp.resolve("test.zip");
     Path invalid = tmp.resolve("test.txt");
@@ -43,7 +41,7 @@ class FilesUtilsTest {
     Files.createFile(zip);
     Files.createFile(invalid);
 
-    List<File> list = FilesUtils.getFilesRecursively(temp.getRoot().toPath(), new String[] {"zip", "jar"});
+    List<File> list = FilesUtils.getFilesRecursively(temp, new String[] {"zip", "jar"});
     assertThat(list).containsOnly(jar.toFile(), zip.toFile());
   }
 
