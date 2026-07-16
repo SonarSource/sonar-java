@@ -132,7 +132,7 @@ class JavaSensorTest {
       "java.scanner_app");
     assertThat(telemetryMap.get("java.analysis.main.success.size_chars")).matches("\\d{5}");
     assertThat(telemetryMap.get("java.analysis.main.success.time_ms")).matches("\\d+");
-    assertThat(telemetryMap).containsEntry("java.analysis.main.success.type_error_count", "205");
+    assertThat(telemetryMap).containsEntry("java.analysis.main.success.type_error_count", "199");
   }
 
   @Test
@@ -154,7 +154,7 @@ class JavaSensorTest {
       "java.scanner_app");
     assertThat(telemetryMap.get("java.analysis.test.success.size_chars")).matches("\\d{5}");
     assertThat(telemetryMap.get("java.analysis.test.success.time_ms")).matches("\\d+");
-    assertThat(telemetryMap).containsEntry("java.analysis.test.success.type_error_count", "205");
+    assertThat(telemetryMap).containsEntry("java.analysis.test.success.type_error_count", "199");
   }
 
   private static int lineNumberOfTheMethodWithNoSonar(FileSystem fs) throws IOException {
