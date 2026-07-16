@@ -3,14 +3,14 @@
   "type": "CODE_SMELL",
   "code": {
     "impacts": {
-      "MAINTAINABILITY": "LOW"
+      "MAINTAINABILITY": "MEDIUM"
     },
     "attribute": "CLEAR"
   },
   "status": "ready",
   "remediation": {
-    "func": "Constant/Issue",
-    "constantCost": "2min"
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
   },
   "tags": [
     "spring"

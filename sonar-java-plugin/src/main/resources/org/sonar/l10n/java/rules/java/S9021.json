@@ -3,20 +3,22 @@
   "type": "BUG",
   "status": "ready",
   "remediation": {
-    "func": "Constant/Issue",
-    "constantCost": "5min"
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
   },
   "tags": [
-    "spring"
+    "spring",
+    "pitfall"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-9021",
   "sqKey": "S9021",
   "scope": "Main",
+  "quickfix": "unknown",
   "code": {
     "impacts": {
       "RELIABILITY": "HIGH"
     },
-    "attribute": "LOGICAL"
+    "attribute": "MODULAR"
   }
 }

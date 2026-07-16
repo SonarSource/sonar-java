@@ -13,7 +13,8 @@
     "constantCost": "60min"
   },
   "tags": [
-    "cwe"
+    "cwe",
+    "secret"
   ],
   "defaultSeverity": "Blocker",
   "ruleSpecification": "RSPEC-6437",

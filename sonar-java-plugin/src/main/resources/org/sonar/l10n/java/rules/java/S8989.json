@@ -15,7 +15,7 @@
   "ruleSpecification": "RSPEC-8989",
   "sqKey": "S8989",
   "scope": "Main",
-  "quickfix": "unknown",
+  "quickfix": "partial",
   "code": {
     "impacts": {
       "RELIABILITY": "MEDIUM",
