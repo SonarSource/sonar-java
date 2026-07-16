@@ -1,0 +1,22 @@
+{
+  "title": "\"@Configuration\" classes should not be final",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "spring"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-9021",
+  "sqKey": "S9021",
+  "scope": "Main",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  }
+}
