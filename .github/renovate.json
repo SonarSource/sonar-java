@@ -9,5 +9,57 @@
     "its/plugin/projects/**",
     "java-checks-test-sources/**",
     "java-surefire/src/test/resources/**"
+  ],
+  "packageRules": [
+    {
+      "description": "External projects used as stable Java analyzer test corpora",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchFileNames": [
+        "java-frontend/pom.xml"
+      ],
+      "matchPackageNames": [
+        "commons-collections:commons-collections",
+        "org.apache.struts:struts-core"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Libraries used as stable JSP compatibility fixtures",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchFileNames": [
+        "java-jsp/pom.xml"
+      ],
+      "matchPackageNames": [
+        "org.springframework:spring-webmvc",
+        "javax:javaee-web-api",
+        "javax.servlet:jstl"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Tomcat 10 and later use Jakarta APIs, while JSP analysis requires the Java EE APIs from Tomcat 9",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchPackageNames": [
+        "/^org\\.apache\\.tomcat(?:\\.|:)/"
+      ],
+      "allowedVersions": "/^9\\./"
+    },
+    {
+      "description": "Major SLF4J version changes can create incompatibilities, so we prefer to update it manually.",
+      "matchPackageNames": [
+        "org.slf4j:**",
+        "org.slf4j"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    }
   ]
 }
