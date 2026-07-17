@@ -13,7 +13,6 @@
 146
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/app/TomcatContextsTest.java": [
-60,
 94,
 129,
 135

@@ -1,15 +1,14 @@
 {
-  "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/ce/log/CeLoggingTest.java": [
-    60,
-    64
-  ],
-  "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ws/TreeActionTest.java": [
-    88
-  ],
-  "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/language/ws/LanguageWsTest.java": [
-    51
-  ],
-  "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/ws/ShowActionTest.java": [
-    150
-  ]
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/ce/log/CeLoggingTest.java": [
+64
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ws/TreeActionTest.java": [
+88
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/language/ws/LanguageWsTest.java": [
+51
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/ws/ShowActionTest.java": [
+150
+]
 }
