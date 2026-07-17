@@ -19,7 +19,6 @@ package org.sonar.java.externalreport;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -43,7 +42,7 @@ import static org.sonar.java.externalreport.ExternalReportTestUtils.onlyOneLogEl
 
 class SpotBugsSensorTest {
 
-  private static final Path PROJECT_DIR = Paths.get("src", "test", "resources", "spotbugs")
+  private static final Path PROJECT_DIR = Path.of("src", "test", "resources", "spotbugs")
     .toAbsolutePath().normalize();
 
   private static SensorContextTester sensorContext = SensorContextTester.create(PROJECT_DIR);
