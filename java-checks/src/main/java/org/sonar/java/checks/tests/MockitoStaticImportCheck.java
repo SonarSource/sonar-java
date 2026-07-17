@@ -25,6 +25,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S8924")
 public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
@@ -51,8 +52,19 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
     }
     MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
     String methodName = mset.identifier().name();
-    if (MOCKITO_METHODS.matches(mit.methodSymbol())) {
+    if (MOCKITO_METHODS.matches(mit.methodSymbol()) && !requiresTypeWitness(mit)) {
       reportIssue(methodSelect, "Use a static import for \"%s\".".formatted(methodName));
     }
+  }
+
+  private static boolean requiresTypeWitness(MethodInvocationTree mit) {
+    if (mit.typeArguments() == null) {
+      return false;
+    }
+    Tree parent = mit.parent();
+    if (parent instanceof VariableTree variableTree) {
+      return variableTree.type().is(Tree.Kind.VAR_TYPE);
+    }
+    return true;
   }
 }
