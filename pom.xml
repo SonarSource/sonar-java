@@ -86,7 +86,7 @@
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
-    <sonar.version>25.1.0.102122</sonar.version>
+    <sonar.version>26.7.0.124771</sonar.version>
     <!-- Required by shadow scans -->
     <sonar.organization>sonarsource</sonar.organization>
     <!-- Compile and test against the latest plugin API. Runtime compatibility is validated independently. -->
