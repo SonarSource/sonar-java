@@ -661,6 +661,28 @@ class InternalJavaIssueBuilderTest {
       return this;
     }
 
+    @Override
+    public NewIssue addInternalTag(String internalTag) {
+      parent.addInternalTag(internalTag);
+      return this;
+    }
+
+    @Override
+    public NewIssue addInternalTags(Collection<String> internalTags) {
+      parent.addInternalTags(internalTags);
+      return this;
+    }
+
+    @Override
+    public NewIssue setInternalTags(Collection<String> internalTags) {
+      parent.setInternalTags(internalTags);
+      return this;
+    }
+
+    @Override
+    public List<String> internalTags() {
+      return parent.internalTags();
+    }
 
   }
 
