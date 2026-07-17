@@ -2,5 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>SonarSource/renovate-config:quality-corelang-squad"
+  ],
+  "ignorePaths": [
+    "docs/**",
+    "its/sources/**",
+    "its/plugin/projects/**",
+    "java-checks-test-sources/**",
+    "java-surefire/src/test/resources/**"
   ]
 }
