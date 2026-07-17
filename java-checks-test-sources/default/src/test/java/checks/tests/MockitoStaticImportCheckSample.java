@@ -1,5 +1,6 @@
 package checks.tests;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -149,4 +150,12 @@ class MockitoStaticImportCheckSample {
     when(service.process(org.mockito.ArgumentMatchers.eq("input"))).thenReturn("result");
     verify(service).getValue();
   }
+
+  @Test
+  void compliant_parameterized_type_witness() {
+    // Mockito. prefix is mandatory when using explicit type witness — static imports don't support this syntax
+    final var mock = Mockito.<List<MyService>>mock();
+    verify(mock).size();
+  }
+
 }

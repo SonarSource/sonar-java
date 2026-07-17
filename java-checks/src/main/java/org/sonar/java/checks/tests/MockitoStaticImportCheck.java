@@ -51,7 +51,7 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
     }
     MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodSelect;
     String methodName = mset.identifier().name();
-    if (MOCKITO_METHODS.matches(mit.methodSymbol())) {
+    if (MOCKITO_METHODS.matches(mit.methodSymbol()) && mit.typeArguments() == null) {
       reportIssue(methodSelect, "Use a static import for \"%s\".".formatted(methodName));
     }
   }
