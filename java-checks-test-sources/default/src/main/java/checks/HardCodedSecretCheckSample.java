@@ -62,7 +62,7 @@ class HardCodedSecretCheckSample {
     String query6 = "secret=\"%s\""; // Compliant
     String query7 = "\"secret=\""; // Compliant
 
-    String params1 = "user=admin&secret=Secret1023456789021345678"; // Noncompliant
+    String params1 = "user=admin&secret=Secret1023456789021345678"; // Compliant, fake value filter
     String params2 = "secret=no\nuser=admin0213456789"; // Compliant
     String sqlserver1= "pgsql:host=localhost port=5432 dbname=test user=postgres secret=bacdefghijklmnopqrs"; // Noncompliant
     String sqlserver2 = "pgsql:host=localhost port=5432 dbname=test secret=no user=bacdefghijklmnopqrs"; // Compliant
@@ -123,10 +123,10 @@ class HardCodedSecretCheckSample {
     String secret018 = "&12&345678021345678021345&67801&"; // Noncompliant
 
 
-    // Don't filter when the secret is containing any of the secret word.
-    String secretConst = "Secret_0213456789021345678"; // Noncompliant
-    String secrets = "secret_0213456789021345678"; // Noncompliant
-    final String SECRET = "Secret_0213456789021345678"; // Noncompliant
+    // Values containing a fake-secret keyword are filtered.
+    String secretConst = "Secret_0213456789021345678"; // Compliant, fake value filter
+    String secrets = "secret_0213456789021345678"; // Compliant, fake value filter
+    final String SECRET = "Secret_0213456789021345678"; // Compliant, fake value filter
     // Simple constants will be filtered thanks to the entropy check
     final String SECRET_INPUT = "[id='secret']"; // Compliant
     final String SECRET_PROPERTY = "custom.secret"; // Compliant

@@ -45,8 +45,8 @@ class HardCodedPasswordCheckSample {
     String query1_1 = "password=???"; // Compliant
     // Password starting with "\"" are ignored
     String query7 = "\"password=\""; // Compliant
-    // Password starting with ":" are reported
-    String query2 = "password=:password"; // Noncompliant
+    // Passwords starting with ":" are reported unless excluded by the fake value filter
+    String query2 = "password=:password"; // Compliant, fake value filter
     String query3 = "password=:param"; // Noncompliant
     // Password containing "%s" are ignored
     String query5 = "password=%s"; // Compliant
@@ -73,8 +73,8 @@ class HardCodedPasswordCheckSample {
     String query13 = "password=anonymous\tuser=user"; // Noncompliant
     String query14 = "password=anonymous\nuser=user"; // Noncompliant
     String query15 = "password=something&user=user%s"; // Noncompliant
-    // Password starting with ":" are reported
-    String query16 = "passwordProtected password=:notAPassword"; // Noncompliant
+    // Passwords starting with ":" are reported unless excluded by the fake value filter
+    String query16 = "passwordProtected password=:notAPassword"; // Compliant, fake value filter
 
     // ========== 1.2 Urls ==========
     // Exclusions also apply when the password if found in an url
@@ -161,7 +161,7 @@ class HardCodedPasswordCheckSample {
     passphrase = "xvxf6_gaa".toCharArray(); // Noncompliant
     passphrase = "whatever".toCharArray(); // Compliant, fake value filter
     passphrase = "xvxf6_gaa".toCharArray(); // Noncompliant
-    passphrase = PASSED.toCharArray(); // Noncompliant
+    passphrase = PASSED.toCharArray(); // Compliant, fake value filter
     passphrase = "".toCharArray();
     passphrase = "X".toCharArray();
     // Contains a fake password keyword: password
@@ -184,7 +184,7 @@ class HardCodedPasswordCheckSample {
     if("xvxf6_gaa".equals(password)) { // Noncompliant
 //                        ^^^^^^^^
     }
-    if(PASSED.equals(password)) { // Noncompliant
+    if(PASSED.equals(password)) { // Compliant, fake value filter
     }
     // Short password are ignored
     if(password.equals("X")) {
