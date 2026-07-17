@@ -45,6 +45,12 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Setup source directory symlinks
+        run: |
+          cd its/sources
+          # Create symlink for sonar-server to match expected path structure
+          ln -s sonarqube-6.5/server/sonar-server sonar-server
+
       # Use the action from the branch we just pushed
       - name: Post ruling diff comment
         uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@master
