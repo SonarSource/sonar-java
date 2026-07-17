@@ -16,6 +16,7 @@
  */
 package org.sonar.plugins.java;
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -23,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
@@ -42,8 +42,8 @@ import static org.mockito.Mockito.verify;
 class JavaRulesDefinitionTest {
 
   private static final String REPOSITORY_KEY = "java";
-  private static final SonarRuntime SONAR_RUNTIME_9_2 = SonarRuntimeImpl.forSonarLint(Version.create(9, 2));
-  private static final SonarRuntime SONAR_RUNTIME_9_8 = SonarRuntimeImpl.forSonarQube(Version.create(9, 8), SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
+  private static final SonarRuntime SONAR_RUNTIME_9_2 = TestSonarRuntime.forSonarLint(Version.create(9, 2));
+  private static final SonarRuntime SONAR_RUNTIME_9_8 = TestSonarRuntime.forSonarQube(Version.create(9, 8), SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
 
   @Test
   void test_creation_of_rules() {

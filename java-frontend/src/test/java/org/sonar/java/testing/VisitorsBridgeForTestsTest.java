@@ -16,13 +16,13 @@
  */
 package org.sonar.java.testing;
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
@@ -42,7 +42,7 @@ class VisitorsBridgeForTestsTest {
 
   @Test
   void test_semantic_disabled() {
-    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7)));
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponents.setSensorContext(context);
 
@@ -66,7 +66,7 @@ class VisitorsBridgeForTestsTest {
 
   @Test
   void test_report_with_analysis_message() {
-    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7)));
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponents.setSensorContext(context);
 
@@ -92,7 +92,7 @@ class VisitorsBridgeForTestsTest {
 
   @Test
   void create_InputFileScannerContext_also_sets_testContexts() {
-    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7)));
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null);
     sonarComponents.setSensorContext(context);
     DummyVisitor javaCheck = new DummyVisitor();

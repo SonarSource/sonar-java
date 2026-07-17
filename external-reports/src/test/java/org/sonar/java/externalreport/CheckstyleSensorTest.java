@@ -16,6 +16,7 @@
  */
 package org.sonar.java.externalreport;
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -30,12 +31,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.rule.Severity;
-import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.ExternalIssue;
 import org.sonar.api.rules.RuleType;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
+import org.sonar.scanner.plugin.api.impl.sensor.DefaultSensorDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.sonar.java.externalreport.ExternalReportTestUtils.onlyOneLogElement;

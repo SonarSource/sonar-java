@@ -16,6 +16,9 @@
  */
 package org.sonar.plugins.java;
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,19 +36,10 @@ import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
-import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
-import org.sonar.api.batch.rule.internal.NewActiveRule;
-import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.config.Configuration;
-import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -74,6 +68,12 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonar.scanner.plugin.api.impl.config.MapSettings;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestFileSystem;
+import org.sonar.scanner.plugin.api.impl.fs.DefaultInputFile;
+import org.sonar.scanner.plugin.api.impl.rule.ActiveRulesBuilder;
+import org.sonar.scanner.plugin.api.impl.rule.NewActiveRule;
+import org.sonar.scanner.plugin.api.impl.sensor.DefaultSensorDescriptor;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
@@ -90,7 +90,7 @@ import static org.mockito.Mockito.when;
 
 class JavaSensorTest {
 
-  private static final String EXPECTED_TYPE_ERROR_COUNT = "199";
+  private static final String EXPECTED_TYPE_ERROR_COUNT = "205";
   private static final CheckFactory checkFactory = mock(CheckFactory.class);
   private static final Checks<Object> checks = mock(Checks.class);
 
@@ -173,8 +173,8 @@ class JavaSensorTest {
     settings.setProperty("sonar.scanner.app", "ScannerJavaSensorTest");
 
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    SensorContextTester context = spy(createContext(onType).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7))));
-    DefaultFileSystem fs = context.fileSystem();
+    SensorContextTester context = spy(createContext(onType).setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7))));
+    TestFileSystem fs = context.fileSystem();
     fs.setWorkDir(Files.createTempDirectory(tmp, "work"));
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = createDefaultJavaResourceLocator(settings.asConfig(), fs);
@@ -183,7 +183,8 @@ class JavaSensorTest {
 
     jss.execute(context);
     int expectedNoSonarLine = lineNumberOfTheMethodWithNoSonar(fs);
-    verify(noSonarFilter, times(1)).noSonarInFile(fs.inputFiles().iterator().next(), Collections.singleton(expectedNoSonarLine));
+    verify(noSonarFilter, times(1)).noSonarInFile(
+      fs.inputFiles(fs.predicates().all()).iterator().next(), Collections.singleton(expectedNoSonarLine));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     // There are additional entries, but we do not test them.
@@ -213,11 +214,11 @@ class JavaSensorTest {
 
   private static SensorContextTester createContext(InputFile.Type onType) throws IOException {
     SensorContextTester context = SensorContextTester.create(new File("src/test/java/").getAbsoluteFile());
-    DefaultFileSystem fs = context.fileSystem();
+    TestFileSystem fs = context.fileSystem();
 
     String effectiveKey = "org/sonar/plugins/java/JavaSensorTest.java";
     File file = new File(fs.baseDir(), effectiveKey);
-    DefaultInputFile inputFile = new TestInputFileBuilder("", effectiveKey).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
+    DefaultInputFile inputFile = new TestInputFileBuilder("", effectiveKey).setLanguage("java").setModuleBaseDir(fs.baseDir().toPath())
       .setType(onType)
       .initMetadata(new String(Files.readAllBytes(file.toPath()), UTF_8))
       .setCharset(UTF_8)
@@ -227,7 +228,7 @@ class JavaSensorTest {
   }
 
   private static SonarComponents createSonarComponentsMock(SensorContextTester contextTester) {
-    DefaultFileSystem fs = contextTester.fileSystem();
+    TestFileSystem fs = contextTester.fileSystem();
     ClasspathForTest javaTestClasspath = new ClasspathForTest(contextTester.config(), fs);
     ClasspathForMain javaClasspath = new ClasspathForMain(contextTester.config(), fs);
 
@@ -243,7 +244,7 @@ class JavaSensorTest {
     return sonarComponents;
   }
 
-  private static DefaultJavaResourceLocator createDefaultJavaResourceLocator(Configuration settings, DefaultFileSystem fs) {
+  private static DefaultJavaResourceLocator createDefaultJavaResourceLocator(Configuration settings, TestFileSystem fs) {
     ClasspathForMain classpathForMain = new ClasspathForMain(settings, fs);
     ClasspathForTest classpathForTest = new ClasspathForTest(settings, fs);
 
@@ -468,13 +469,13 @@ class JavaSensorTest {
 
     SensorContextTester context = SensorContextTester.create(new File("src/test/files").getAbsoluteFile())
       .setSettings(settings)
-      .setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
+      .setRuntime(TestSonarRuntime.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
 
-    DefaultFileSystem fs = context.fileSystem();
+    TestFileSystem fs = context.fileSystem();
     fs.setWorkDir(Files.createTempDirectory(tmp, "work"));
 
     File mainFile = new File(fs.baseDir(), "CodeWithIssues.java");
-    fs.add(new TestInputFileBuilder("", mainFile.getName()).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
+    fs.add(new TestInputFileBuilder("", mainFile.getName()).setLanguage("java").setModuleBaseDir(fs.baseDir().toPath())
       .setType(InputFile.Type.MAIN).initMetadata(Files.readString(mainFile.toPath())).setCharset(UTF_8).build());
 
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
@@ -523,17 +524,17 @@ class JavaSensorTest {
   private SensorContextTester analyzeTwoFilesWithIssues(MapSettings settings) throws IOException {
     SensorContextTester context = SensorContextTester.create(new File("src/test/files").getAbsoluteFile())
       .setSettings(settings)
-      .setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
+      .setRuntime(TestSonarRuntime.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
 
-    DefaultFileSystem fs = context.fileSystem();
+    TestFileSystem fs = context.fileSystem();
     fs.setWorkDir(Files.createTempDirectory(tmp, "work"));
 
     File mainFile = new File(fs.baseDir(), "CodeWithIssues.java");
-    fs.add(new TestInputFileBuilder("", mainFile.getName()).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
+    fs.add(new TestInputFileBuilder("", mainFile.getName()).setLanguage("java").setModuleBaseDir(fs.baseDir().toPath())
       .setType(InputFile.Type.MAIN).initMetadata(Files.readString(mainFile.toPath())).setCharset(UTF_8).build());
 
     File testFile = new File(fs.baseDir(), "CodeWithIssuesTest.java");
-    fs.add(new TestInputFileBuilder("", testFile.getName()).setLanguage("java").setModuleBaseDir(fs.baseDirPath())
+    fs.add(new TestInputFileBuilder("", testFile.getName()).setLanguage("java").setModuleBaseDir(fs.baseDir().toPath())
       .setType(InputFile.Type.TEST).initMetadata(Files.readString(testFile.toPath())).setCharset(UTF_8).build());
 
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
@@ -568,9 +569,9 @@ class JavaSensorTest {
   private void executeJavaSensorForPerformanceMeasure(MapSettings settings, Path workDir) throws IOException {
     Configuration configuration = settings.asConfig();
     SensorContextTester context = createContext(InputFile.Type.MAIN)
-      .setRuntime(SonarRuntimeImpl.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
+      .setRuntime(TestSonarRuntime.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
     context.setSettings(settings);
-    DefaultFileSystem fs = context.fileSystem();
+    TestFileSystem fs = context.fileSystem();
     fs.setWorkDir(workDir);
     SonarComponents components = createSonarComponentsMock(context);
     DefaultJavaResourceLocator resourceLocator = createDefaultJavaResourceLocator(context.config(), fs);

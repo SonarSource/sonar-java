@@ -40,8 +40,18 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.sonarsource.sonarqube</groupId>
-      <artifactId>sonar-plugin-api-impl</artifactId>
+      <groupId>org.sonarsource.scanner.engine</groupId>
+      <artifactId>plugin-api-scanner-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.scanner.engine</groupId>
+      <artifactId>sensor-test-fixtures</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonarsource.scanner.engine</groupId>
+      <artifactId>sonar-scanner-extension-framework</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -73,6 +83,12 @@
       <groupId>org.sonarsource.java</groupId>
       <artifactId>test-classpath-reader</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Required only for the forbid-junit4 testCheck to resolve forbidden classes from forbid_junit4.txt. -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -16,6 +16,8 @@
  */
 package org.sonar.java;
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -39,9 +41,6 @@ import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -66,6 +65,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.scanner.plugin.api.impl.config.MapSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -87,11 +87,11 @@ class JavaFrontendTest {
 
   // sonarlint.plugin.api.version
   public static final Version LATEST_SONARLINT_API_VERSION = Version.create(8, 18);
-  public static final SonarRuntime SONARLINT_RUNTIME = SonarRuntimeImpl.forSonarLint(LATEST_SONARLINT_API_VERSION);
+  public static final SonarRuntime SONARLINT_RUNTIME = TestSonarRuntime.forSonarLint(LATEST_SONARLINT_API_VERSION);
 
   //
   private static final Version LATESTS_SONAR_API_VERSION = Version.create(8, 13);
-  public static final SonarRuntime SONARQUBE_RUNTIME = SonarRuntimeImpl.forSonarQube(LATESTS_SONAR_API_VERSION, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
+  public static final SonarRuntime SONARQUBE_RUNTIME = TestSonarRuntime.forSonarQube(LATESTS_SONAR_API_VERSION, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
 
   @TempDir
   public Path temp;

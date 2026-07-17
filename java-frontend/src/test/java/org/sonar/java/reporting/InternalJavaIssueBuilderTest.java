@@ -17,6 +17,7 @@
 package org.sonar.java.reporting;
 
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,10 +38,7 @@ import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
-import org.sonar.api.batch.fs.internal.DefaultTextPointer;
-import org.sonar.api.batch.fs.internal.DefaultTextRange;
 import org.sonar.api.batch.rule.Severity;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.batch.sensor.issue.IssueLocation;
 import org.sonar.api.batch.sensor.issue.NewIssue;
@@ -49,7 +47,6 @@ import org.sonar.api.batch.sensor.issue.fix.InputFileEdit;
 import org.sonar.api.batch.sensor.issue.fix.NewQuickFix;
 import org.sonar.api.batch.sensor.issue.fix.QuickFix;
 import org.sonar.api.batch.sensor.issue.fix.TextEdit;
-import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
 import org.sonar.api.issue.impact.SoftwareQuality;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.SonarComponents;
@@ -61,6 +58,9 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.scanner.plugin.api.impl.fs.DefaultTextPointer;
+import org.sonar.scanner.plugin.api.impl.fs.DefaultTextRange;
+import org.sonar.scanner.plugin.api.impl.sensor.issue.DefaultIssue;
 import org.sonarsource.sonarlint.core.analysis.container.analysis.filesystem.SonarLintInputFile;
 import org.sonarsource.sonarlint.core.analysis.sonarapi.DefaultSonarLintIssue;
 

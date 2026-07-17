@@ -91,6 +91,7 @@
     <sonar.organization>sonarsource</sonar.organization>
     <!-- Compile and test against the latest plugin API. Runtime compatibility is validated independently. -->
     <sonar.plugin.api.version>13.8.0.4399</sonar.plugin.api.version>
+    <sonar.scanner.version>13.4.1.4007</sonar.scanner.version>
     <sonarlint.plugin.api.version>11.6.0.85952</sonarlint.plugin.api.version>
     <sonar.sca.exclusions>its/**,java-checks-test-sources/**</sonar.sca.exclusions>
     <analyzer.commons.version>2.25.0.4954</analyzer.commons.version>
@@ -153,9 +154,21 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.sonarsource.sonarqube</groupId>
-        <artifactId>sonar-plugin-api-impl</artifactId>
-        <version>${sonar.version}</version>
+        <groupId>org.sonarsource.scanner.engine</groupId>
+        <artifactId>plugin-api-scanner-impl</artifactId>
+        <version>${sonar.scanner.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.sonarsource.scanner.engine</groupId>
+        <artifactId>sensor-test-fixtures</artifactId>
+        <version>${sonar.scanner.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.sonarsource.scanner.engine</groupId>
+        <artifactId>sonar-scanner-extension-framework</artifactId>
+        <version>${sonar.scanner.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>

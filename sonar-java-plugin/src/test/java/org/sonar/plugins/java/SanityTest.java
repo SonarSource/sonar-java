@@ -17,6 +17,9 @@
 package org.sonar.plugins.java;
 
 import com.sonar.sslr.api.RecognitionException;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -37,11 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.testfixtures.log.LogAndArguments;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.AnnotationUtils;
@@ -57,6 +55,8 @@ import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestFileSystem;
+import org.sonar.scanner.plugin.api.impl.fs.DefaultInputFile;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -287,8 +287,8 @@ class SanityTest {
   }
 
   private static SonarComponents sonarComponents(File moduleBaseDir, List<InputFile> inputFiles) {
-    SensorContextTester context = SensorContextTester.create(moduleBaseDir).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
-    DefaultFileSystem fileSystem = context.fileSystem();
+    SensorContextTester context = SensorContextTester.create(moduleBaseDir).setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7)));
+    TestFileSystem fileSystem = context.fileSystem();
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {

@@ -16,6 +16,8 @@
  */
 package org.sonar.java.externalreport;
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,8 +26,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
