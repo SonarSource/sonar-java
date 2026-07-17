@@ -1,0 +1,61 @@
+<p>This is an issue when using mocking framework stubbing syntax to specify return values and creating a mock object directly as an argument to the
+return value specification method.</p>
+<p>In Java with Mockito, this specifically refers to inlining the mock creation inside the <code>thenReturn()</code> method.</p>
+<h2>Why is this an issue?</h2>
+<p>Mocking frameworks use an internal state machine to track stubbing operations and validate that they are completed correctly. When you create a
+mock object inline within a return value specification, the framework registers the mock creation as a new event before it finishes recording the
+stubbing chain.</p>
+<p>This sequence confuses the framework’s validation mechanism. The framework cannot properly detect whether the previous stubbing operation was
+finished or left incomplete. This breaks one of the framework’s key safety features: detecting unfinished stubbing.</p>
+<p>Unfinished stubbing detection helps catch common mistakes like:</p>
+<ul>
+  <li>Forgetting to add a return value specification after the stubbing setup</li>
+  <li>Putting method calls in the wrong place</li>
+  <li>Incomplete test setup</li>
+</ul>
+<p>When inline mock creation prevents this detection, you may encounter confusing error messages in <em>subsequent</em> tests rather than in the test
+that contains the actual problem. This makes debugging significantly harder because the error location and the root cause are separated.</p>
+<h3>What is the potential impact?</h3>
+<p>When this pattern is used, the testing framework’s validation system is compromised. The immediate consequence is that developers lose the safety
+net that detects incomplete or improperly configured test doubles.</p>
+<p>This can lead to:</p>
+<ul>
+  <li>Test failures appearing in the current or following tests, making debugging time-consuming</li>
+  <li>Misleading error messages that point to the wrong location</li>
+  <li>Reduced confidence in the test suite</li>
+</ul>
+<p>In Mockito, this pattern specifically breaks the framework’s ability to detect unfinished stubbing, which is one of its key safety features.</p>
+<h2>How to fix it</h2>
+<p>Extract the mock object creation to a local variable, then pass that variable to <code>thenReturn()</code>. This ensures Mockito can properly track
+the stubbing sequence and validate that it is complete.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import static org.mockito.Mockito.*;
+
+class MyTest {
+    void testMethod() {
+        MyClass mock = mock(MyClass.class);
+        when(mock.foo()).thenReturn(mock(Foo.class)); // Noncompliant
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import static org.mockito.Mockito.*;
+
+class MyTest {
+    void testMethod() {
+        MyClass mock = mock(MyClass.class);
+        Foo foo = mock(Foo.class);
+        when(mock.foo()).thenReturn(foo);
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Mockito Wiki - <a href="https://github.com/mockito/mockito/wiki/FAQ#can-i-thenreturn-an-inlined-mock-">FAQ - Can I thenReturn() an inlined
+  mock()?</a></li>
+</ul>
+
