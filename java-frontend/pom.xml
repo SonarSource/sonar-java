@@ -85,6 +85,7 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- Required only for the forbid-junit4 testCheck to resolve forbidden classes from forbid_junit4.txt. -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
