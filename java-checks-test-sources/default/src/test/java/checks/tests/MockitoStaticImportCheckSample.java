@@ -158,4 +158,10 @@ class MockitoStaticImportCheckSample {
     verify(mock).size();
   }
 
+  @Test
+  void noncompliant_parameterized_type_witness() {
+    final List<MyService> mock = Mockito.<List<MyService>>mock(); // Noncompliant
+    verify(mock).size();
+  }
+
 }
