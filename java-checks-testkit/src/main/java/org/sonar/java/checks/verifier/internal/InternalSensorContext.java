@@ -33,6 +33,7 @@ import org.sonar.api.batch.sensor.error.NewAnalysisError;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.issue.NewExternalIssue;
 import org.sonar.api.batch.sensor.issue.NewIssue;
+import org.sonar.api.batch.sensor.issue.NewIssueResolution;
 import org.sonar.api.batch.sensor.measure.NewMeasure;
 import org.sonar.api.batch.sensor.rule.NewAdHocRule;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
@@ -179,6 +180,11 @@ public class InternalSensorContext extends InternalMockedSonarAPI implements Sen
   }
 
   @Override
+  public NewIssueResolution newIssueResolution() {
+    throw notSupportedException("newIssueResolution()");
+  }
+
+  @Override
   public <G extends Serializable> NewMeasure<G> newMeasure() {
     throw notSupportedException("newMeasure()");
   }
@@ -206,5 +212,10 @@ public class InternalSensorContext extends InternalMockedSonarAPI implements Sen
   @Override
   public void addAnalysisData(String s, String s1, InputStream inputStream) {
     throw notSupportedException("addAnalysisData(String,String,InputStream)");
+  }
+
+  @Override
+  public boolean isFeatureAvailable(String featureKey) {
+    return false;
   }
 }
