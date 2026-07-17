@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.config.internal.MapSettings;
 import org.sonar.java.TestUtils;
 import org.sonar.java.testing.ThreadLocalLogTester;
+import org.sonar.scanner.plugin.api.impl.config.MapSettings;
+import org.sonar.scanner.plugin.api.impl.fs.DefaultFileSystem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;

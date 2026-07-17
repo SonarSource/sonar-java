@@ -21,10 +21,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.slf4j.event.Level;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
+import org.sonar.scanner.plugin.api.impl.config.MapSettings;
+import org.sonar.scanner.plugin.api.impl.fs.DefaultFileSystem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

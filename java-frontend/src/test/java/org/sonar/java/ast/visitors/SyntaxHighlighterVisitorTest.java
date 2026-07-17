@@ -17,6 +17,7 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.io.Files;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -30,7 +31,6 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.highlighting.TypeOfText;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;

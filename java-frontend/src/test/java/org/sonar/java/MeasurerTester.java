@@ -16,6 +16,8 @@
  */
 package org.sonar.java;
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestFileSystem;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,8 +27,6 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.measure.Measure;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.java.model.JavaVersionImpl;
@@ -44,7 +44,7 @@ public abstract class MeasurerTester {
   public void setUp() {
     context = SensorContextTester.create(projectDir());
 
-    DefaultFileSystem fs = context.fileSystem();
+    TestFileSystem fs = context.fileSystem();
 
     FileUtils.listFiles(sourceDir(), new String[] {"java"}, true).stream()
       .map(file -> TestUtils.inputFile("", sourceDir(), file, InputFile.Type.MAIN))
@@ -52,7 +52,7 @@ public abstract class MeasurerTester {
 
     Measurer measurer = new Measurer(context, mock(NoSonarFilter.class));
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), measurer, new NoOpTelemetry(), mock(JavaResourceLocator.class), null);
-    List<InputFile> files = StreamSupport.stream(fs.inputFiles().spliterator(), false).toList();
+    List<InputFile> files = StreamSupport.stream(fs.inputFiles(fs.predicates().all()).spliterator(), false).toList();
     frontend.scan(files, Collections.emptyList(), Collections.emptyList());
   }
 
@@ -62,7 +62,7 @@ public abstract class MeasurerTester {
 
   public Map<String, Double> getMetrics() {
     Map<String, Double> metrics = new HashMap<>();
-    for (InputFile inputFile : context.fileSystem().inputFiles()) {
+    for (InputFile inputFile : context.fileSystem().inputFiles(context.fileSystem().predicates().all())) {
       for (Measure measure : context.measures(inputFile.key())) {
         if (measure.value() != null) {
           String key = measure.metric().key();

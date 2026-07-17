@@ -16,6 +16,7 @@
  */
 package org.sonar.java.reporting;
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,13 +24,12 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
 import org.sonar.api.batch.fs.TextRange;
-import org.sonar.api.batch.fs.internal.DefaultInputProject;
-import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.batch.sensor.internal.SensorStorage;
 import org.sonar.api.batch.sensor.issue.IssueLocation;
-import org.sonar.api.batch.sensor.issue.internal.DefaultIssue;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.scanner.plugin.api.impl.SensorStorage;
+import org.sonar.scanner.plugin.api.impl.fs.DefaultInputProject;
+import org.sonar.scanner.plugin.api.impl.sensor.issue.DefaultIssue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;

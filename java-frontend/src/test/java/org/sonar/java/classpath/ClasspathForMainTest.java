@@ -32,15 +32,14 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.config.PropertyDefinitions;
-import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.config.internal.MultivalueProperty;
-import org.sonar.api.utils.System2;
 import org.sonar.java.AnalysisWarningsWrapper;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.testing.ThreadLocalLogTester;
+import org.sonar.scanner.extension.PropertyDefinitions;
+import org.sonar.scanner.plugin.api.impl.config.MapSettings;
+import org.sonar.scanner.plugin.api.impl.config.MultivalueProperty;
+import org.sonar.scanner.plugin.api.impl.fs.DefaultFileSystem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
@@ -67,7 +66,7 @@ class ClasspathForMainTest {
     Files.createDirectories(baseDir.resolve("empty"));
     fs = new DefaultFileSystem(baseDir);
     fs.add(TestUtils.emptyInputFile("foo.java"));
-    PropertyDefinitions propertyDefinitions = new PropertyDefinitions(System2.INSTANCE);
+    PropertyDefinitions propertyDefinitions = new PropertyDefinitions();
     ClasspathProperties.getProperties().forEach(propertyDefinitions::addComponent);
     settings = new MapSettings(propertyDefinitions) {
       /**

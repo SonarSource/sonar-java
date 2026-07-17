@@ -17,7 +17,8 @@
 package org.sonar.java.filters;
 
 import com.sonar.sslr.api.RecognitionException;
-
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,12 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.assertj.core.api.Fail;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.config.internal.MapSettings;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scan.issue.filter.FilterableIssue;
 import org.sonar.api.utils.AnnotationUtils;
@@ -49,6 +46,7 @@ import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.scanner.plugin.api.impl.config.MapSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -174,7 +172,7 @@ public class FilterVerifier {
   }
 
   private static SonarComponents sonarComponents(InputFile inputFile) {
-    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(SonarRuntimeImpl.forSonarLint(Version.create(6, 7)));
+    SensorContextTester context = SensorContextTester.create(new File("")).setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7)));
     context.setSettings(new MapSettings().setProperty(SonarComponents.FAIL_ON_EXCEPTION_KEY, true));
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null) {
       @Override

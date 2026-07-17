@@ -16,12 +16,12 @@
  */
 package org.sonar.plugins.java;
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.Plugin;
 import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
-import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
@@ -36,7 +36,7 @@ class JavaPluginTest {
 
   @Test
   void sonarLint_9_9_extensions() {
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarLint(VERSION_9_9);
+    SonarRuntime runtime = TestSonarRuntime.forSonarLint(VERSION_9_9);
     Plugin.Context context = new Plugin.Context(runtime);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
@@ -47,7 +47,7 @@ class JavaPluginTest {
 
   @Test
   void sonarqube_9_9_extensions() {
-    SonarRuntime sqCommunity = SonarRuntimeImpl.forSonarQube(VERSION_9_9, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
+    SonarRuntime sqCommunity = TestSonarRuntime.forSonarQube(VERSION_9_9, SonarQubeSide.SCANNER, SonarEdition.COMMUNITY);
     Plugin.Context context = new Plugin.Context(sqCommunity);
     javaPlugin.define(context);
     assertThat(context.getExtensions())
@@ -57,7 +57,7 @@ class JavaPluginTest {
 
   @Test
   void sonarqube_9_9_commercial_extensions() {
-    SonarRuntime sqEnterprise = SonarRuntimeImpl.forSonarQube(VERSION_9_9, SonarQubeSide.SCANNER, SonarEdition.ENTERPRISE);
+    SonarRuntime sqEnterprise = TestSonarRuntime.forSonarQube(VERSION_9_9, SonarQubeSide.SCANNER, SonarEdition.ENTERPRISE);
     Plugin.Context context = new Plugin.Context(sqEnterprise);
     javaPlugin.define(context);
     assertThat(context.getExtensions())

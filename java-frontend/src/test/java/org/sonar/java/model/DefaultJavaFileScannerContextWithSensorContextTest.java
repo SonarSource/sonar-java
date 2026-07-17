@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model;
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -31,20 +32,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.sensor.SensorContext;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.platform.Server;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;

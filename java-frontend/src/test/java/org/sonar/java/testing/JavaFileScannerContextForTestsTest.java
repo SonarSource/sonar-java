@@ -16,6 +16,8 @@
  */
 package org.sonar.java.testing;
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
+import com.sonarsource.scanner.engine.sensor.test.fixtures.TestFileSystem;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,8 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
@@ -66,7 +66,7 @@ class JavaFileScannerContextForTestsTest {
     inputFile = TestUtils.emptyInputFile("");
     JavaVersionImpl javaVersion = new JavaVersionImpl();
     SensorContextTester sensorContext = SensorContextTester.create(new File("."));
-    DefaultFileSystem fileSystem = sensorContext.fileSystem();
+    TestFileSystem fileSystem = sensorContext.fileSystem();
     fileSystem.add(inputFile);
 
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, null, null, null, null);
