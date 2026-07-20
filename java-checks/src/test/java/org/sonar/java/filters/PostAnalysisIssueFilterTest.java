@@ -50,7 +50,8 @@ class PostAnalysisIssueFilterTest {
 
     context = mock(JavaFileScannerContext.class);
     when(context.getInputFile()).thenReturn(INPUT_FILE);
-    when(context.getSemanticModel()).thenReturn(mock(Sema.class));
+    Sema sema = mock(Sema.class);
+    when(context.getSemanticModel()).thenReturn(sema);
 
     fakeIssue = mock(FilterableIssue.class);
     when(fakeIssue.componentKey()).thenReturn("component");

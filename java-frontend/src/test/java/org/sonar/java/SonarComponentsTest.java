@@ -547,7 +547,8 @@ class SonarComponentsTest {
     InputFile inputFile = inputFileBuilder.build();
     fileSystem.add(inputFile);
 
-    when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
+    RuleKey ruleKey = mock(RuleKey.class);
+    when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(ruleKey);
 
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, fileSystem, null,
       null, checkFactory, specificContext.activeRules(), new CheckRegistrar[]{expectedRegistrar});
