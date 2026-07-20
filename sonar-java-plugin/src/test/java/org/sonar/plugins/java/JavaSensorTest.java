@@ -479,7 +479,8 @@ class JavaSensorTest {
       .setType(InputFile.Type.MAIN).initMetadata(Files.readString(mainFile.toPath())).setCharset(UTF_8).build());
 
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
-    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(mock(FileLinesContext.class));
+    FileLinesContext fileLinesContextMock = mock(FileLinesContext.class);
+    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContextMock);
     ClasspathForTest javaTestClasspath = new ClasspathForTest(context.config(), fs);
     ClasspathForMain javaClasspath = new ClasspathForMain(context.config(), fs);
     DefaultJavaResourceLocator resourceLocator = createDefaultJavaResourceLocator(context.config(), fs);
@@ -538,7 +539,8 @@ class JavaSensorTest {
       .setType(InputFile.Type.TEST).initMetadata(Files.readString(testFile.toPath())).setCharset(UTF_8).build());
 
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
-    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(mock(FileLinesContext.class));
+    FileLinesContext fileLinesContextMock = mock(FileLinesContext.class);
+    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContextMock);
     ClasspathForTest javaTestClasspath = new ClasspathForTest(context.config(), fs);
     ClasspathForMain javaClasspath = new ClasspathForMain(context.config(), fs);
     DefaultJavaResourceLocator resourceLocator = createDefaultJavaResourceLocator(context.config(), fs);
