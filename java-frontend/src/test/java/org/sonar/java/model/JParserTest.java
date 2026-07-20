@@ -703,7 +703,8 @@ class JParserTest {
     JParserConfig config = spy(JParserConfig.Mode.BATCH
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, List.of(), false));
     // Return a lazy ASTParser that do nothing to ensure that we have not analyzed files
-    when(config.astParser()).thenReturn(mock(ASTParser.class));
+    ASTParser astParser = mock(ASTParser.class);
+    when(config.astParser()).thenReturn(astParser);
 
     config.parse(inputFiles, () -> false, new AnalysisProgress(inputFiles.size()), doNothingAction);
 
