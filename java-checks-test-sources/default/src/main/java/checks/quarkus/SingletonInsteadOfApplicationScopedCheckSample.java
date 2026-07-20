@@ -4,7 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Singleton;
 
-@Singleton // Noncompliant {{Replace "@Singleton" by "@ApplicationScoped" or add a comment indicating why "@Singleton" is necessary.}} [[sc=1;ec=11]]
+@Singleton // Noncompliant [[sc=1;ec=11]]
 class NoncompliantService {
   public String foo() {
     return "foo";
@@ -12,7 +12,7 @@ class NoncompliantService {
 }
 
 class NoncompliantProducerClass {
-  @Singleton // Noncompliant {{Replace "@Singleton" by "@ApplicationScoped" or add a comment indicating why "@Singleton" is necessary.}}
+  @Singleton // Noncompliant
 //^^^^^^^^^^
   public NoncompliantService produceService() {
     return new NoncompliantService();
@@ -45,6 +45,36 @@ class CompliantProducerWithComment {
 class CompliantWithJavadocComment {
   public String getConfig() {
     return "config";
+  }
+}
+
+@Singleton // singleton scope required: this bean is a lightweight config holder with no interception needs
+class CompliantWithInlineComment {
+  public String getConfig() {
+    return "config";
+  }
+}
+
+class CompliantProducerWithInlineComment {
+  @Singleton // singleton scope required: non-proxied instance expected by external library
+  public CompliantWithInlineComment produceConfig() {
+    return new CompliantWithInlineComment();
+  }
+}
+
+@Singleton
+// singleton scope required: lightweight config holder with no interception needs
+class CompliantWithFollowingLineComment {
+  public String getConfig() {
+    return "config";
+  }
+}
+
+class CompliantProducerWithFollowingLineComment {
+  @Singleton
+  // singleton scope required: non-proxied instance expected by external library
+  public CompliantWithFollowingLineComment produceConfig() {
+    return new CompliantWithFollowingLineComment();
   }
 }
 

@@ -17,12 +17,17 @@
 package org.sonar.java.checks.quarkus;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S9068")
@@ -38,18 +43,51 @@ public class SingletonInsteadOfApplicationScopedCheck extends IssuableSubscripti
 
   @Override
   public void visitNode(Tree tree) {
-    ModifiersTree modifiers = tree instanceof ClassTree classTree
-      ? classTree.modifiers()
-      : ((MethodTree) tree).modifiers();
+    ModifiersTree modifiers;
+    SyntaxToken declarationToken;
+    if (tree instanceof ClassTree classTree) {
+      modifiers = classTree.modifiers();
+      declarationToken = classTree.declarationKeyword();
+    } else {
+      MethodTree methodTree = (MethodTree) tree;
+      modifiers = methodTree.modifiers();
+      declarationToken = methodTree.returnType().firstToken();
+    }
 
     modifiers.annotations().stream()
       .filter(annotation -> annotation.annotationType().symbolType().is(JAKARTA_SINGLETON))
-      .filter(annotation -> !hasJustifyingComment(annotation))
+      .filter(annotation -> !hasJustifyingComment(annotation, modifiers, declarationToken))
       .forEach(annotation -> reportIssue(annotation, MESSAGE));
   }
 
-  private static boolean hasJustifyingComment(AnnotationTree annotation) {
-    return annotation.firstToken().trivias().stream()
-      .anyMatch(trivia -> trivia.comment().toLowerCase(java.util.Locale.ROOT).contains("singleton"));
+  private static boolean hasJustifyingComment(AnnotationTree annotation, ModifiersTree modifiers, SyntaxToken declarationToken) {
+    // Comment appearing before the annotation (trivia on its @ token)
+    if (containsSingletonComment(annotation.firstToken().trivias())) {
+      return true;
+    }
+    // Comment after the annotation (inline or on the following line): it attaches as trivia to the
+    // next token in the stream, which may be another annotation's @, a modifier keyword, or the
+    // declaration keyword / return type.
+    Stream<SyntaxToken> candidateTokens = Stream.concat(
+      Stream.concat(
+        modifiers.annotations().stream()
+          .map(Tree::firstToken)
+          .filter(t -> !t.equals(annotation.firstToken())),
+        modifiers.modifiers().stream()
+          .map(ModifierKeywordTree::keyword)
+      ),
+      Stream.of(declarationToken)
+    );
+    return candidateTokens
+      .flatMap(token -> token.trivias().stream())
+      .anyMatch(SingletonInsteadOfApplicationScopedCheck::isSingletonComment);
+  }
+
+  private static boolean containsSingletonComment(List<SyntaxTrivia> trivias) {
+    return trivias.stream().anyMatch(SingletonInsteadOfApplicationScopedCheck::isSingletonComment);
+  }
+
+  private static boolean isSingletonComment(SyntaxTrivia trivia) {
+    return trivia.comment().toLowerCase(Locale.ROOT).contains("singleton");
   }
 }
