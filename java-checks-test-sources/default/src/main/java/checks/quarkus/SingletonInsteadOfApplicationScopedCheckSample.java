@@ -49,14 +49,14 @@ class CompliantWithJavadocComment {
 }
 
 @ApplicationScoped
-class CompliantApplicationScoped {
+class SingletonCheckCompliantApplicationScoped {
   public String hello() {
     return "hello";
   }
 }
 
 @Dependent
-class CompliantDependent {
+class SingletonCheckCompliantDependent {
 }
 
 class CompliantNoScope {
