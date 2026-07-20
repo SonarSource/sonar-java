@@ -1,0 +1,217 @@
+<p>This rule raises an issue when a CDI bean uses the <code>@Singleton</code> annotation from <code>jakarta.inject</code> instead of
+<code>@ApplicationScoped</code> in a Quarkus application.</p>
+<h2>Why is this an issue?</h2>
+<p>In Quarkus applications, both <code>@Singleton</code> (from Jakarta Dependency Injection) and <code>@ApplicationScoped</code> (from Jakarta
+Contexts and Dependency Injection) create single-instance beans. However, they behave differently in important ways.</p>
+<p><code>@ApplicationScoped</code> beans are full CDI beans with these capabilities:</p>
+<ul>
+  <li>Support for CDI interceptors (like <code>@Transactional</code>, <code>@CacheResult</code>, custom interceptors)</li>
+  <li>Support for CDI decorators</li>
+  <li>Can be mocked in tests using QuarkusMock</li>
+  <li>Participate in CDI events and observers</li>
+  <li>Support lazy initialization via client proxies</li>
+</ul>
+<p><code>@Singleton</code> beans are simpler but more limited:</p>
+<ul>
+  <li>Created eagerly at startup</li>
+  <li>Do not support interception - methods annotated with interceptor annotations will be ignored</li>
+  <li>Cannot be mocked using QuarkusMock in tests</li>
+  <li>Direct references without proxy support</li>
+</ul>
+<p>For most application-level services, <code>@ApplicationScoped</code> is the better choice because it provides the full CDI feature set that Quarkus
+applications typically need.</p>
+<h3>When @Singleton might be acceptable</h3>
+<p>There are specific scenarios where <code>@Singleton</code> may be intentionally chosen:</p>
+<ul>
+  <li><strong>Low-level infrastructure beans</strong>: Beans that provide basic utilities without needing interceptors, decorators, or mocking (e.g.,
+  configuration holders, simple factories)</li>
+  <li><strong>Performance-critical paths</strong>: Beans where the proxy overhead of <code>@ApplicationScoped</code> is measured and found to be
+  significant (rare, and should be documented)</li>
+  <li><strong>Third-party integration</strong>: When integrating libraries that specifically expect non-proxied instances</li>
+  <li><strong>Startup beans</strong>: Beans that must be instantiated eagerly at startup and have no CDI feature requirements</li>
+</ul>
+<p>If you choose to use <code>@Singleton</code>, document why you need it and confirm that:</p>
+<ul>
+  <li>The bean does not and will not use CDI interceptors</li>
+  <li>The bean does not need to be mocked in tests, or you use alternative mocking strategies</li>
+  <li>You understand the limitations and accept them for this specific case</li>
+</ul>
+<h3>Exceptions</h3>
+<p>This rule may be safely ignored when:</p>
+<ul>
+  <li>The bean is a low-level infrastructure component with no interceptor requirements</li>
+  <li>The bean’s design explicitly prohibits the use of CDI proxies (e.g., final classes used intentionally)</li>
+  <li>You have documented performance reasons for avoiding the proxy overhead</li>
+</ul>
+<p>However, these cases are rare. Most application services should use <code>@ApplicationScoped</code>.</p>
+<h3>Distinguishing false positives from intentional usage</h3>
+<p>To determine if a flagged <code>@Singleton</code> is a false positive or intentional:</p>
+<p><strong>It’s likely a real issue if:</strong></p>
+<ul>
+  <li>The bean uses any CDI interceptor annotations (<code>@Transactional</code>, <code>@CacheResult</code>, <code>@Retry</code>, etc.)</li>
+  <li>The bean needs to be mocked in tests</li>
+  <li>The bean is an application-level service (controllers, services, repositories)</li>
+  <li>There’s no documented reason for using <code>@Singleton</code></li>
+</ul>
+<p><strong>It might be intentional if:</strong></p>
+<ul>
+  <li>The bean is clearly infrastructure-level (e.g., named <code>ConfigurationHolder</code>, <code>SimpleFactory</code>)</li>
+  <li>There’s a comment explaining why <code>@Singleton</code> is used</li>
+  <li>The bean is extremely simple with no methods that would benefit from interception</li>
+  <li>The bean is part of a documented design pattern that requires non-proxied instances</li>
+</ul>
+<p>When in doubt, prefer <code>@ApplicationScoped</code> unless you have a specific, documented reason to use <code>@Singleton</code>.</p>
+<h3>What is the potential impact?</h3>
+<p>Using <code>@Singleton</code> instead of <code>@ApplicationScoped</code> can lead to several issues:</p>
+<h3>Silent interceptor failures</h3>
+<p>Interceptors like <code>@Transactional</code>, <code>@CacheResult</code>, or custom interceptors will be silently ignored on
+<code>@Singleton</code> beans. This can cause:</p>
+<ul>
+  <li>Database transactions not being created, leading to data inconsistency</li>
+  <li>Cache annotations being ignored, resulting in performance degradation</li>
+  <li>Security checks being bypassed if implemented via interceptors</li>
+</ul>
+<p>These failures are particularly dangerous because the code compiles and runs without errors - the interceptors simply don’t work.</p>
+<h3>Testing difficulties</h3>
+<p><code>@Singleton</code> beans cannot be mocked using QuarkusMock in tests. This means:</p>
+<ul>
+  <li>Integration tests cannot isolate the bean for testing</li>
+  <li>External dependencies (databases, APIs) cannot be easily stubbed</li>
+  <li>Tests may become slower and more fragile</li>
+  <li>Test coverage may be reduced</li>
+</ul>
+<h3>Reduced flexibility</h3>
+<p>Choosing <code>@Singleton</code> limits your future options:</p>
+<ul>
+  <li>Adding interceptors later requires changing the scope annotation</li>
+  <li>Adopting CDI decorators becomes impossible</li>
+  <li>Lazy initialization via proxies is unavailable</li>
+</ul>
+<h2>How to fix it in Quarkus</h2>
+<p>Replace the <code>@Singleton</code> annotation with <code>@ApplicationScoped</code>. Update the import statement to use
+<code>jakarta.enterprise.context.ApplicationScoped</code> instead of <code>jakarta.inject.Singleton</code>. This is the recommended approach for most
+application beans.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import jakarta.inject.Singleton;
+
+@Singleton // Noncompliant
+public class UserService {
+    public String getUser(Long id) {
+        // implementation
+        return "user";
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import jakarta.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
+public class UserService {
+    public String getUser(Long id) {
+        // implementation
+        return "user";
+    }
+}
+</pre>
+<p>When using interceptors like <code>@Transactional</code>, <code>@ApplicationScoped</code> is required for the interceptor to function.
+<code>@Singleton</code> beans are not intercepted, so the transaction will not work.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+import jakarta.inject.Singleton;
+import jakarta.transaction.Transactional;
+
+@Singleton // Noncompliant
+public class OrderService {
+    @Transactional
+    public void createOrder(Order order) {
+        // This transaction will NOT work as expected
+        // because @Singleton doesn't support interception
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+
+@ApplicationScoped
+public class OrderService {
+    @Transactional
+    public void createOrder(Order order) {
+        // Transaction works correctly
+    }
+}
+</pre>
+<p>In test scenarios, <code>@ApplicationScoped</code> beans can be mocked using QuarkusMock, while <code>@Singleton</code> beans cannot. This makes
+testing easier and more reliable.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+import jakarta.inject.Singleton;
+
+@Singleton // Noncompliant
+public class EmailService {
+    public void sendEmail(String to, String subject) {
+        // Actual email sending logic
+        // Cannot be easily mocked in tests
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+import jakarta.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
+public class EmailService {
+    public void sendEmail(String to, String subject) {
+        // Actual email sending logic
+        // Can be mocked in tests with QuarkusMock
+    }
+}
+
+// In test:
+// QuarkusMock.installMockForType(mockEmailService, EmailService.class);
+</pre>
+<p>If you have a documented, valid reason to use <code>@Singleton</code> (such as a low-level infrastructure bean with no interceptor needs), you can
+keep it but should add a comment explaining why. This is an alternative to changing the annotation, though it’s only appropriate in specific
+cases.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="4" data-diff-type="noncompliant">
+import jakarta.inject.Singleton;
+
+@Singleton // Noncompliant
+public class ApplicationConfig {
+    private final String version = "1.0.0";
+
+    public String getVersion() {
+        return version;
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="4" data-diff-type="compliant">
+import jakarta.inject.Singleton;
+
+// Using @Singleton intentionally: this is a simple configuration holder
+// with no interceptor requirements and no need for testing isolation.
+// It's instantiated eagerly at startup to validate configuration.
+@Singleton
+public class ApplicationConfig {
+    private final String version = "1.0.0";
+
+    public String getVersion() {
+        return version;
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Quarkus - <a href="https://quarkus.io/guides/cdi-reference#supported_features">Contexts and Dependency Injection - Supported Features</a></li>
+  <li>Quarkus - <a href="https://quarkus.io/guides/cdi-reference#applicationscoped-vs-singleton">Contexts and Dependency Injection - ApplicationScoped
+  vs Singleton</a></li>
+  <li>Quarkus - <a href="https://quarkus.io/guides/getting-started-testing#quarkus-mock">Testing Guide - Mocking</a></li>
+</ul>
+
