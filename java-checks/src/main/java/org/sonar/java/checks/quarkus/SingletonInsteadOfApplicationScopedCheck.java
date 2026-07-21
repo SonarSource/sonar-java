@@ -38,7 +38,7 @@ public class SingletonInsteadOfApplicationScopedCheck extends IssuableSubscripti
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CLASS, Tree.Kind.METHOD);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.RECORD, Tree.Kind.METHOD);
   }
 
   @Override

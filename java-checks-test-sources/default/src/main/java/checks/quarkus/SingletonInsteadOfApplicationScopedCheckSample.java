@@ -78,6 +78,13 @@ class CompliantProducerWithFollowingLineComment {
   }
 }
 
+@Singleton // Noncompliant [[sc=1;ec=11]]
+record NoncompliantRecord(String value) {}
+
+// Singleton scope required: external lib needs a non-proxied instance.
+@Singleton
+record CompliantRecord(String value) {}
+
 @ApplicationScoped
 class SingletonCheckCompliantApplicationScoped {
   public String hello() {
