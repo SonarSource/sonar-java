@@ -36,6 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -205,7 +206,10 @@ public class JavaRulingTest {
     String projectName = "guava";
     MavenBuild build = test_project("com.google.guava:guava", projectName);
     build
-      .setProperty("java.version", "17")
+      // Keep compilation and analysis on Java 17 without overriding the Java runtime version seen by the scanner.
+      .setGoals(new ArrayList<>(List.of("clean package -Djava.version=17")))
+      .addSonarGoal()
+      .setProperty("sonar.java.source", "17")
       .setProperty("maven-bundle-plugin.version", "5.1.4")
       .setProperty("maven.javadoc.skip", "true")
       .setProperty("animal.sniffer.skip", "true")
