@@ -22,6 +22,7 @@
     <module>java-17</module>
     <module>spring-3.2</module>
     <module>spring-web-4.0</module>
+    <module>spring-web-7.0</module>
 
     <!-- should be the last module to be able to test classpath files "target/test-classpath.txt" of the previous modules -->
     <module>test-classpath-reader</module>

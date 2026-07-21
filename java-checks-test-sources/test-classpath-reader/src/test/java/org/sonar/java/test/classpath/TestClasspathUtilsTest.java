@@ -43,6 +43,7 @@ class TestClasspathUtilsTest {
     assertThat(Path.of(TestClasspathUtils.JAVA_17_MODULE.getPath())).exists();
     assertThat(Path.of(TestClasspathUtils.SPRING_32_MODULE.getPath())).exists();
     assertThat(Path.of(TestClasspathUtils.SPRING_WEB_40_MODULE.getPath())).exists();
+    assertThat(Path.of(TestClasspathUtils.SPRING_WEB_70_MODULE.getPath())).exists();
 
     TestClasspathUtils.Module unknowModule = new TestClasspathUtils.Module("unknow");
     assertThat(unknowModule.getPath()).isNull();
@@ -60,6 +61,7 @@ class TestClasspathUtilsTest {
     assertThat(TestClasspathUtils.JAVA_17_MODULE.getClassPath()).hasSizeGreaterThan(5);
     assertThat(TestClasspathUtils.SPRING_32_MODULE.getClassPath()).hasSizeGreaterThan(15);
     assertThat(TestClasspathUtils.SPRING_WEB_40_MODULE.getClassPath()).hasSizeGreaterThan(5);
+    assertThat(TestClasspathUtils.SPRING_WEB_70_MODULE.getClassPath()).hasSizeGreaterThan(5);
 
     TestClasspathUtils.Module unknowModule = new TestClasspathUtils.Module("unknow");
     assertThat(unknowModule.getClassPath()).isEmpty();

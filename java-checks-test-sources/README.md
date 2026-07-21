@@ -15,7 +15,7 @@ This is the right place when a sample:
 * needs the classpath or dependencies prepared by `java-checks-test-sources`
 * should be compiled as part of one of the dedicated test-source modules
 * is intentionally non-compiling and should live under `src/main/files/non-compiling`
-* targets a specific dedicated module such as `default`, `java-17`, `spring-3.2`, or `spring-web-4.0`
+* targets a specific dedicated module such as `default`, `java-17`, `spring-3.2`, `spring-web-4.0`, or `spring-web-7.0`
 
 Prefer `java-checks/src/test/files` only for fixtures that are not supposed to belong to one of these Maven modules,
 for example parser-only inputs or other ad hoc verifier fixtures.
