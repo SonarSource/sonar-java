@@ -18,53 +18,40 @@ package org.sonar.java.checks.quarkus;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.java.checks.helpers.ExpressionsHelper;
 
 @Rule(key = "S9068")
-public class SingletonInsteadOfApplicationScopedCheck extends IssuableSubscriptionVisitor {
+public class SingletonInsteadOfApplicationScopedCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
   private static final String JAKARTA_SINGLETON = "jakarta.inject.Singleton";
-  private static final String QUARKUS_PREFIX = "io.quarkus";
   private static final String MESSAGE = "Replace \"@Singleton\" by \"@ApplicationScoped\" or add a comment indicating why \"@Singleton\" is necessary.";
 
-  private boolean analyzingQuarkusFile = false;
-
   @Override
-  public void leaveFile(org.sonar.plugins.java.api.JavaFileScannerContext context) {
-    analyzingQuarkusFile = false;
+  public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
+    return dependencyFinder.apply("quarkus-arc").isPresent();
   }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.CLASS, Tree.Kind.RECORD, Tree.Kind.METHOD);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.RECORD, Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree instanceof CompilationUnitTree compilationUnit) {
-      analyzingQuarkusFile = compilationUnit.imports().stream()
-        .filter(ImportTree.class::isInstance)
-        .map(ImportTree.class::cast)
-        .anyMatch(i -> ExpressionsHelper.concatenate((ExpressionTree) i.qualifiedIdentifier()).startsWith(QUARKUS_PREFIX));
-      return;
-    }
-    if (!analyzingQuarkusFile) {
-      return;
-    }
     ModifiersTree modifiers;
     SyntaxToken declarationToken;
     if (tree instanceof ClassTree classTree) {
@@ -96,10 +83,8 @@ public class SingletonInsteadOfApplicationScopedCheck extends IssuableSubscripti
           .map(Tree::firstToken)
           .filter(t -> !t.equals(annotation.firstToken())),
         modifiers.modifiers().stream()
-          .map(ModifierKeywordTree::keyword)
-      ),
-      Stream.of(declarationToken)
-    );
+          .map(ModifierKeywordTree::keyword)),
+      Stream.of(declarationToken));
     return candidateTokens
       .flatMap(token -> token.trivias().stream())
       .anyMatch(SingletonInsteadOfApplicationScopedCheck::isSingletonComment);

@@ -19,32 +19,37 @@ package org.sonar.java.checks.quarkus;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPathInModule;
+import static org.sonar.java.test.classpath.TestClasspathUtils.QUARKUS_ARC_315_MODULE;
 
 class SingletonInsteadOfApplicationScopedCheckTest {
+
+  private static final String SAMPLE = mainCodeSourcesPathInModule(QUARKUS_ARC_315_MODULE, "checks/quarkus/SingletonInsteadOfApplicationScopedCheckSample.java");
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/quarkus/SingletonInsteadOfApplicationScopedCheckSample.java"))
+      .onFile(SAMPLE)
       .withCheck(new SingletonInsteadOfApplicationScopedCheck())
+      .withClassPath(QUARKUS_ARC_315_MODULE.getClassPath())
       .verifyIssues();
   }
 
   @Test
   void testWithoutSemantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/quarkus/SingletonInsteadOfApplicationScopedCheckSample.java"))
+      .onFile(SAMPLE)
       .withCheck(new SingletonInsteadOfApplicationScopedCheck())
       .withoutSemantic()
       .verifyNoIssues();
   }
 
   @Test
-  void testNonQuarkusFile() {
+  void testWithoutQuarkusOnClasspath() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/quarkus/SingletonInsteadOfApplicationScopedCheckSampleNonQuarkus.java"))
+      .onFile(SAMPLE)
       .withCheck(new SingletonInsteadOfApplicationScopedCheck())
+      .withClassPath(java.util.List.of())
       .verifyNoIssues();
   }
 }
