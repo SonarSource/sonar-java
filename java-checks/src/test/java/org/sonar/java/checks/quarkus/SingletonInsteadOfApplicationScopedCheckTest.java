@@ -39,4 +39,12 @@ class SingletonInsteadOfApplicationScopedCheckTest {
       .withoutSemantic()
       .verifyNoIssues();
   }
+
+  @Test
+  void testNonQuarkusFile() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/quarkus/SingletonInsteadOfApplicationScopedCheckSampleNonQuarkus.java"))
+      .withCheck(new SingletonInsteadOfApplicationScopedCheck())
+      .verifyNoIssues();
+  }
 }
