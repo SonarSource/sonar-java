@@ -4,11 +4,14 @@ import org.apache.commons.lang.math.JVMRandom;
 
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class ReuseRandomCheckSample {
 
   static Random staticField = new Random(); // Compliant for static field
+  static IntStream staticFieldChain = new Random().ints(100); // Compliant
   Random field = new Random(); // Compliant for field
+  IntStream fieldChain = new Random().ints(100); // Compliant
 
   ReuseRandomCheckSample() {
     Random localVar = new Random(); // Compliant in constructor
@@ -57,4 +60,12 @@ public class ReuseRandomCheckSample {
     }
   }
 
+}
+
+class StaticFieldInitializerRandomInts {
+  static IntStream randomInts = new Random().ints(100); // Compliant
+}
+
+class InstanceFieldInitializerRandomInts {
+  IntStream randomInts = new Random().ints(100); // Compliant
 }
