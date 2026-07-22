@@ -48,19 +48,19 @@ public class ReuseRandomCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    if (!isInConstructorOrStaticMain(newClassTree) && isUsedOnlyLocally(newClassTree)) {
+    if (!isEffectivelyOneTimeInitialized(newClassTree) && isUsedOnlyLocally(newClassTree)) {
       reportIssue(newClassTree.identifier(), "Save and re-use this \"Random\".");
     }
   }
 
-  private static boolean isInConstructorOrStaticMain(ExpressionTree tree) {
+  private static boolean isEffectivelyOneTimeInitialized(ExpressionTree tree) {
     MethodTree enclosingMethod = ExpressionUtils.getEnclosingMethod(tree);
-    if (enclosingMethod != null) {
-      Symbol.MethodSymbol symbol = enclosingMethod.symbol();
-      String name = symbol.name();
-      return MethodMatchers.CONSTRUCTOR.equals(name) || ("main".equals(name) && symbol.isStatic());
+    if (enclosingMethod == null) {
+      return true;
     }
-    return false;
+    Symbol.MethodSymbol symbol = enclosingMethod.symbol();
+    String name = symbol.name();
+    return MethodMatchers.CONSTRUCTOR.equals(name) || ("main".equals(name) && symbol.isStatic());
   }
 
   private static boolean isUsedOnlyLocally(Tree tree) {
