@@ -205,7 +205,8 @@ public class JavaRulingTest {
     String projectName = "guava";
     MavenBuild build = test_project("com.google.guava:guava", projectName);
     build
-      .setProperty("java.version", "17")
+      // Keep compilation and analysis on Java 17 without overriding the Java runtime version seen by the scanner.
+      .setProperty("sonar.java.source", "17")
       .setProperty("maven-bundle-plugin.version", "5.1.4")
       .setProperty("maven.javadoc.skip", "true")
       .setProperty("animal.sniffer.skip", "true")
