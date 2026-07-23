@@ -5,8 +5,8 @@ on the JDK. For better efficiency and randomness, create a single <code>Random</
 randomly or uniformly distributed. Some JDK will use the current time as seed, making the generated numbers not random.</p>
 <p>This rule finds cases where a new <code>Random</code> is created each time a method is invoked.</p>
 <h3>Exceptions</h3>
-<p>This rule doesn’t apply to classes that use a <code>Random</code> in their constructors or the static <code>main</code> function and nowhere
-else.</p>
+<p>This rule doesn’t apply to classes that use a <code>Random</code> in their constructors, the static <code>main</code> function, field initializers,
+or class initializer blocks and nowhere else.</p>
 <h2>How to fix it</h2>
 <p>Define and reuse the <code>Random</code> object.</p>
 <h3>Code examples</h3>
