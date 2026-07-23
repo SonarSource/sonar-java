@@ -53,14 +53,14 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.CLASS, Tree.Kind.METHOD_INVOCATION);
+    return List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.RECORD, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
   public void visitNode(Tree tree) {
     switch (tree.kind()) {
       case COMPILATION_UNIT -> collectConflictingImports((CompilationUnitTree) tree);
-      case CLASS -> pushClassMethods((ClassTree) tree);
+      case CLASS, ENUM, INTERFACE, RECORD -> pushClassMethods((ClassTree) tree);
       case METHOD_INVOCATION -> checkMethodInvocation((MethodInvocationTree) tree);
       default -> { /* not visited */ }
     }
@@ -68,8 +68,9 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS)) {
-      classMethodsStack.pop();
+    switch (tree.kind()) {
+      case CLASS, ENUM, INTERFACE, RECORD -> classMethodsStack.pop();
+      default -> { /* nothing */ }
     }
   }
 
@@ -77,7 +78,7 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
     conflictingImportedNames = compilationUnitTree.imports().stream()
       .filter(clause -> clause instanceof ImportTree importTree && importTree.isStatic())
       .map(clause -> ExpressionsHelper.concatenate((ExpressionTree) ((ImportTree) clause).qualifiedIdentifier()))
-      .filter(fqn -> !fqn.startsWith(MOCKITO_IMPORT_PREFIX))
+      .filter(fqn -> !fqn.startsWith(MOCKITO_IMPORT_PREFIX) && !fqn.endsWith(".*"))
       .map(fqn -> fqn.substring(fqn.lastIndexOf('.') + 1))
       .collect(Collectors.toSet());
   }

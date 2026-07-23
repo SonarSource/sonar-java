@@ -25,16 +25,4 @@ class MockitoStaticImportCheckNameConflictSample {
     Mockito.verify(service).getValue(); // Compliant
   }
 
-  // local method named verify() is in scope — Mockito.verify() prefix is required to disambiguate
-  static class WithLocalVerify {
-    void verify(Object o) {}
-
-    @Test
-    void compliant_local_method_conflict() {
-      MyService service = mock(MyService.class);
-      service.getValue();
-      Mockito.verify(service).getValue(); // Compliant
-    }
-  }
-
 }

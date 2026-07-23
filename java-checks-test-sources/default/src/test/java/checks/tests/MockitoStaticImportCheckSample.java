@@ -164,4 +164,43 @@ class MockitoStaticImportCheckSample {
     verify(mock).size();
   }
 
+  static class WithLocalVerify {
+    void verify(Object o) {}
+
+    @Test
+    void compliant_local_method_in_class() {
+      MyService service = mock(MyService.class);
+      service.getValue();
+      Mockito.verify(service).getValue(); // Compliant - local verify() shadows the static import
+    }
+  }
+
+  enum WithLocalVerifyEnum {
+    INSTANCE;
+    void verify(Object o) {}
+
+    void compliant_local_method_in_enum() {
+      MyService service = mock(MyService.class);
+      Mockito.verify(service).getValue(); // Compliant
+    }
+  }
+
+  interface WithLocalVerifyInterface {
+    default void verify(Object o) {}
+
+    default void compliant_local_method_in_interface() {
+      MyService service = mock(MyService.class);
+      Mockito.verify(service).getValue(); // Compliant
+    }
+  }
+
+  record WithLocalMockRecord(int value) {
+    MyService mock(Class<MyService> myServiceClass) { return null; }
+
+    void compliant_local_method_in_record() {
+      MyService service = Mockito.mock(MyService.class); // Compliant - local mock() is in scope
+      verify(service).getValue();
+    }
+  }
+
 }
