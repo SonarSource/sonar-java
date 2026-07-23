@@ -39,4 +39,12 @@ class MockitoStaticImportCheckTest {
       .withoutSemantic()
       .verifyNoIssues();
   }
+
+  @Test
+  void test_name_conflict() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/MockitoStaticImportCheckNameConflictSample.java"))
+      .withCheck(new MockitoStaticImportCheck())
+      .verifyNoIssues();
+  }
 }
