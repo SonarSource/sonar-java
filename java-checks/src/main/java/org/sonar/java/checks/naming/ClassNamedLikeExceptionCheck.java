@@ -37,9 +37,13 @@ public class ClassNamedLikeExceptionCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
+    if (classTree.simpleName() == null) {
+      return;
+    }
+
     Symbol.TypeSymbol symbol = classTree.symbol();
     String className = symbol.name();
-    if (endsWithException(className) && !isSubtypeOfException(symbol) && !hasUnknownSuperType(symbol)) {
+    if (endsWithException(className) && !isSubtypeOfException(symbol) && !hasUnknownSuperType(classTree, symbol)) {
       String suffix = className.substring(className.length() - "exception".length());
       reportIssue(classTree.simpleName(), "Rename this class to remove \"" + suffix + "\" or correct its inheritance.");
     }
@@ -51,6 +55,15 @@ public class ClassNamedLikeExceptionCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isSubtypeOfException(Symbol symbol) {
     return symbol.type().isSubtypeOf("java.lang.Exception");
+  }
+
+  private static boolean hasUnknownSuperType(ClassTree classTree, Symbol.TypeSymbol symbol) {
+    // In ECJ batch mode with compilation errors, an unresolvable supertype yields superClass() == null
+    // rather than an UnknownType. Guard against this to avoid false positives.
+    if (classTree.superClass() != null && symbol.superClass() == null) {
+      return true;
+    }
+    return hasUnknownSuperType(symbol);
   }
 
   private static boolean hasUnknownSuperType(Symbol.TypeSymbol symbol) {
