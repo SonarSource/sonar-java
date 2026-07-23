@@ -1,0 +1,114 @@
+<p>This rule raises an issue when a CDI bean uses the <code>@Singleton</code> annotation from <code>jakarta.inject</code> instead of
+<code>@ApplicationScoped</code> in a Quarkus application.</p>
+<h2>Why is this an issue?</h2>
+<p>In Quarkus applications, both <code>@Singleton</code> (from Jakarta Dependency Injection) and <code>@ApplicationScoped</code> (from Jakarta
+Contexts and Dependency Injection) create single-instance beans. However, they behave differently in important ways.</p>
+<p><code>@ApplicationScoped</code> beans are full CDI beans with these capabilities:</p>
+<ul>
+  <li>Support lazy initialization via client proxies</li>
+  <li>Can be mocked in tests using QuarkusMock</li>
+  <li>Can be destroyed and recreated at runtime thanks to proxy-based method delegation</li>
+</ul>
+<p><code>@Singleton</code> beans are simpler but more limited:</p>
+<ul>
+  <li>Created eagerly when the bean is injected</li>
+  <li>Cannot be mocked using QuarkusMock in tests</li>
+</ul>
+<p>For most application-level services, <code>@ApplicationScoped</code> is the better choice because it provides the full CDI feature set that Quarkus
+applications typically need.</p>
+<h3>When @Singleton might be acceptable</h3>
+<p><code>@Singleton</code> might have a slightly better performance than <code>@ApplicationScoped</code> because of the absence of client proxy. Thus,
+there are specific scenarios where <code>@Singleton</code> may be intentionally chosen:</p>
+<ul>
+  <li><strong>Low-level infrastructure beans</strong>: Beans that provide basic utilities and don’t require lazy initialization</li>
+  <li><strong>Performance-critical paths</strong>: Beans where the proxy overhead of <code>@ApplicationScoped</code> is measured and found to be
+  significant (rare, and should be documented)</li>
+  <li><strong>Third-party integration</strong>: When integrating libraries that specifically expect non-proxied instances</li>
+</ul>
+<p>If you choose to use <code>@Singleton</code>, document why you need it and confirm that:</p>
+<ul>
+  <li>The bean does not need to be mocked in tests, or you use alternative mocking strategies</li>
+  <li>You understand the limitations and accept them for this specific case</li>
+</ul>
+<h3>What is the potential impact?</h3>
+<p>Using <code>@Singleton</code> instead of <code>@ApplicationScoped</code> can lead to several issues:</p>
+<h3>Testing difficulties</h3>
+<p><code>@Singleton</code> beans cannot be mocked using QuarkusMock in tests. This means:</p>
+<ul>
+  <li>Integration tests cannot isolate the bean for testing</li>
+  <li>External dependencies (databases, APIs) cannot be easily stubbed</li>
+  <li>Tests may become slower and more fragile</li>
+  <li>Test coverage may be reduced</li>
+</ul>
+<h3>Reduced flexibility</h3>
+<p>Choosing <code>@Singleton</code> limits your future options:</p>
+<ul>
+  <li>Lazy initialization via proxies is unavailable</li>
+</ul>
+<h2>How to fix it in Quarkus</h2>
+<p>Replace the <code>@Singleton</code> annotation with <code>@ApplicationScoped</code>. Update the import statement to use
+<code>jakarta.enterprise.context.ApplicationScoped</code> instead of <code>jakarta.inject.Singleton</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import jakarta.inject.Singleton;
+
+@Singleton // Noncompliant
+public class UserService {
+    public String getUser(Long id) {
+        // implementation
+        return "user";
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import jakarta.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
+public class UserService {
+    public String getUser(Long id) {
+        // implementation
+        return "user";
+    }
+}
+</pre>
+<p>If you have a documented, valid reason to use <code>@Singleton</code>, you can keep it but should add a comment explaining why. This is an
+alternative to changing the annotation, though it’s only appropriate in specific cases.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="4" data-diff-type="noncompliant">
+import jakarta.inject.Singleton;
+
+@Singleton // Noncompliant
+public class ApplicationConfig {
+    private final String version = "1.0.0";
+
+    public String getVersion() {
+        return version;
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="4" data-diff-type="compliant">
+import jakarta.inject.Singleton;
+
+// Using @Singleton intentionally: this is a simple configuration holder
+// with no interceptor requirements and no need for testing isolation.
+// It's instantiated eagerly at startup to validate configuration.
+@Singleton
+public class ApplicationConfig {
+    private final String version = "1.0.0";
+
+    public String getVersion() {
+        return version;
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Quarkus - <a href="https://quarkus.io/guides/cdi-reference">Contexts and Dependency Injection</a></li>
+  <li>Quarkus - <a
+  href="https://quarkus.io/guides/cdi#applicationscoped-and-singleton-look-very-similar-which-one-should-i-choose-for-my-quarkus-application">@ApplicationScoped and @Singleton look very similar. Which one should I choose for my Quarkus application?</a></li>
+</ul>
+

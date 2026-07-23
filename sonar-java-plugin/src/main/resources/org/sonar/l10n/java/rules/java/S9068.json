@@ -1,0 +1,25 @@
+{
+  "title": "\"@ApplicationScoped\" should be preferred over \"@Singleton\" in Quarkus applications",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "jee",
+    "injection",
+    "testing"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9068",
+  "sqKey": "S9068",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "MODULAR"
+  }
+}

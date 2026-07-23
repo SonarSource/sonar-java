@@ -48,6 +48,7 @@ public final class TestClasspathUtils {
   public static final Module JAVA_17_MODULE = new Module("java-checks-test-sources/java-17");
   public static final Module SPRING_32_MODULE = new Module("java-checks-test-sources/spring-3.2");
   public static final Module SPRING_WEB_40_MODULE = new Module("java-checks-test-sources/spring-web-4.0");
+  public static final Module QUARKUS_ARC_315_MODULE = new Module("java-checks-test-sources/quarkus-arc-3.15");
   private static final Path testJarsPath = Path.of("java-checks-test-sources/target/test-jars");
 
   public static List<File> getTestJars(List<String> jars) {
