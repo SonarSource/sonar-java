@@ -7,6 +7,7 @@
 311
 ],
 "org.eclipse.jetty:jetty-project:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/MBeanContainerLifeCycleTest.java": [
-95
+60,
+  95
 ]
 }
