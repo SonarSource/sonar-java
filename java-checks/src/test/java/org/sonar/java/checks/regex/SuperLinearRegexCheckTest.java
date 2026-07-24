@@ -24,6 +24,32 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 class SuperLinearRegexCheckTest {
 
   @Test
+  void test_reproducer_unset() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/regex/SuperLinearRegexCheckReproducer.java"))
+      .withCheck(new SuperLinearRegexCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_reproducer_9() {
+    CheckVerifier.newVerifier()
+      .withJavaVersion(9)
+      .onFile(mainCodeSourcesPath("checks/regex/SuperLinearRegexCheckReproducer.java"))
+      .withCheck(new SuperLinearRegexCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void test_reproducer_8() {
+    CheckVerifier.newVerifier()
+      .withJavaVersion(8)
+      .onFile(mainCodeSourcesPath("checks/regex/SuperLinearRegexCheckReproducer.java"))
+      .withCheck(new SuperLinearRegexCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
   void test_java_version_unset() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/regex/SuperLinearRegexCheckSample.java"))
