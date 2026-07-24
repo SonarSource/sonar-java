@@ -27,11 +27,9 @@ import org.junit.jupiter.api.io.TempDir;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FilesUtilsTest {
-  @TempDir
-  public Path temp;
 
   @Test
-  void verify_get_classpath_files() throws IOException {
+  void verify_get_classpath_files(@TempDir Path temp) throws IOException {
     Path tmp = Files.createDirectory(temp.resolve("tmp"));
     Path jar = tmp.resolve("test.jar");
     Path zip = tmp.resolve("test.zip");
