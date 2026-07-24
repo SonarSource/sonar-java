@@ -246,12 +246,6 @@
                   </includes>
                 </filter>
                 <filter>
-                  <artifact>xml-apis:xml-apis</artifact>
-                  <includes>
-                    <include>**</include>
-                  </includes>
-                </filter>
-                <filter>
                   <artifact>org.apache.tomcat.embed:tomcat-embed-jasper</artifact>
                   <includes>
                     <include>**</include>
