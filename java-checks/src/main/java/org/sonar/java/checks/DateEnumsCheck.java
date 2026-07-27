@@ -138,8 +138,8 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   private QuickFixHelper.ImportSupplier importSupplier;
 
   // Project-level state — accumulated across files
-  private int projectTotalCount;
-  private int projectRaisedCount;
+  private int projectTotalMethodsUsageCount;
+  private int projectTotalNoEnumUsageCount;
   private final List<InternalJavaIssueBuilder> issuesFound = new ArrayList<>();
 
   @Override
@@ -175,7 +175,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    projectTotalCount++;
+    projectTotalMethodsUsageCount++;
 
     if (METHOD_WITH_MONTH_AS_SECOND_ARGUMENT.matches(mit)) {
       ExpressionTree secondArgument = mit.arguments().get(1);
@@ -201,7 +201,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   }
 
   private void collectIssue(ExpressionTree arg, String replacement, String issueMessage, String importName) {
-    projectRaisedCount++;
+    projectTotalNoEnumUsageCount++;
     // Compute the quick fix eagerly while the file context is still available
     JavaQuickFix quickFix = computeQuickfix(arg, replacement, importName);
     issuesFound.add(QuickFixHelper.newIssue(context)
@@ -247,7 +247,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       return;
     }
 
-    projectTotalCount++;
+    projectTotalMethodsUsageCount++;
 
     int intLiteral = getIntLiteral(literalSide);
     if (intLiteral == -1) {
@@ -267,7 +267,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   public void endOfAnalysis(ModuleScannerContext context) {
-    if (projectTotalCount > 0 && projectRaisedCount * 100 >= RAISED_PERCENTAGE_THRESHOLD * projectTotalCount) {
+    if (projectTotalMethodsUsageCount > 0 && projectTotalNoEnumUsageCount * 100 >= RAISED_PERCENTAGE_THRESHOLD * projectTotalMethodsUsageCount) {
       issuesFound.forEach(InternalJavaIssueBuilder::report);
     }
   }
