@@ -26,6 +26,7 @@ import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
@@ -151,6 +152,14 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     importSupplier = null;
+  }
+
+  @Override
+  public boolean scanWithoutParsing(InputFileScannerContext context) {
+    // Always parse every file: the raise/suppress decision is module-wide and threshold-based,
+    // so all files must be visited on every run to build correct counts and issue builders.
+    // Skipping unchanged files would produce stale issues or missing issues when the threshold flips.
+    return false;
   }
 
   @Override
