@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
@@ -36,5 +37,27 @@ class DateEnumsCheckTest {
       .onFile(mainCodeSourcesPath("checks/DateEnumsCheckImportSample.java"))
       .withCheck(new DateEnumsCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_above_threshold() {
+    // 8 out of 9 total usages use int literals (89%) -> above 80% threshold -> issues are raised
+    CheckVerifier.newVerifier()
+      .onFiles(List.of(
+        mainCodeSourcesPath("checks/s8694/above/IntLiteralFile.java"),
+        mainCodeSourcesPath("checks/s8694/above/EnumFile.java")))
+      .withCheck(new DateEnumsCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_below_threshold() {
+    // 3 out of 7 total usages uses int literals (43%) -> below 80% threshold -> no issues are raised
+    CheckVerifier.newVerifier()
+      .onFiles(List.of(
+        mainCodeSourcesPath("checks/s8694/below/IntLiteralFile.java"),
+        mainCodeSourcesPath("checks/s8694/below/EnumFile.java")))
+      .withCheck(new DateEnumsCheck())
+      .verifyNoIssues();
   }
 }
