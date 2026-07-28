@@ -1,0 +1,30 @@
+<h2>Why is this an issue?</h2>
+<p>In Java, primitive numeric types have fixed value ranges defined by the language specification. When you compare a variable of a bounded type
+against a constant that is outside the type's range, the result is predetermined and the comparison is unnecessary.</p>
+<p>For example, a <code>byte</code> variable can only hold values from -128 to 127. Comparing it against 200 will always yield the same result,
+regardless of the variable's actual value.</p>
+<p>These comparisons indicate a logic error, a wrong variable type, or dead code.</p>
+<h2>How to fix it</h2>
+<p>Ensure the constant is within the variable's type range, or change the variable to a wider type if comparisons against larger values are
+needed.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+byte b = 0;
+if (b &gt; 200) { // Noncompliant - always false
+    doSomething();
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+int b = 0;
+if (b &gt; 200) { // Compliant
+    doSomething();
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html">Primitive Data Types</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html#jls-4.2">Integral Types and Values</a></li>
+</ul>

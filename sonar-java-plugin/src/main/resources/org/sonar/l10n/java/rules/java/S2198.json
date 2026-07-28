@@ -1,0 +1,23 @@
+{
+  "title": "Unnecessary mathematical comparisons should not be made",
+  "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "suspicious"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-2198",
+  "sqKey": "S2198",
+  "scope": "Main",
+  "quickfix": "unknown"
+}
