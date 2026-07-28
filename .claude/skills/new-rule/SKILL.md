@@ -14,11 +14,12 @@ This skill provides sonar-java-specific guidelines for implementing new rules.
   - Ensure your local rspec repository is up-to-date with the rule branch
   - Use rule-api jar (check Maven local repository for available versions)
   - Command: `java -jar <rule-api.jar> generate -branch rule/add-RSPEC-S{RULE_ID} -rule S{RULE_ID}`
+  - If the branch `rule/add-RSPEC-S{RULE_ID}` does not exist (e.g., for older rules already merged to master), fall back to: `java -jar <rule-api.jar> generate -rule S{RULE_ID}`
   - This generates HTML and JSON files and updates the Sonar way profile automatically
 - Generated files will be placed in:
   - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S{RULE_ID}.html`
   - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S{RULE_ID}.json`
-  - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/Sonar_way_profile.json` (updated)
+  - `sonar-java-plugin/src/main/resources/profiles`
 
 ### 2. Tests
 - Run JavaAgenticWayProfileTest before creating a PR
