@@ -1,0 +1,6 @@
+{
+  "name": "Sonar agentic AI",
+  "ruleKeys": [
+    "S1944"
+  ]
+}

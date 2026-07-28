@@ -1,0 +1,34 @@
+{
+  "title": "Inappropriate casts should not be made",
+  "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "tags": [
+    "cwe",
+    "cert",
+    "suspicious"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-1944",
+  "sqKey": "S1944",
+  "scope": "All",
+  "securityStandards": {
+    "CERT": [
+      "EXP36-C."
+    ],
+    "CWE": [
+      588,
+      704
+    ]
+  },
+  "quickfix": "unknown"
+}
