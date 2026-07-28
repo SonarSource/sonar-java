@@ -1,24 +1,61 @@
+<p>This is an issue when comparing a numeric variable with a limited value range against a constant that falls outside the variable’s possible value
+range, resulting in a comparison that always evaluates to <code>true</code> or always to <code>false</code>.</p>
 <h2>Why is this an issue?</h2>
-<p>In Java, primitive numeric types have fixed value ranges defined by the language specification. When you compare a variable of a bounded type
-against a constant that is outside the type's range, the result is predetermined and the comparison is unnecessary.</p>
-<p>For example, a <code>byte</code> variable can only hold values from -128 to 127. Comparing it against 200 will always yield the same result,
-regardless of the variable's actual value.</p>
-<p>These comparisons indicate a logic error, a wrong variable type, or dead code.</p>
+<p>In statically-typed languages with fixed-width numeric types, primitive numeric types have value ranges defined by the language specification:</p>
+<ul>
+  <li>8-bit signed integers: -128 to 127</li>
+  <li>16-bit signed integers: -32,768 to 32,767</li>
+  <li>16-bit unsigned integers: 0 to 65,535</li>
+  <li>32-bit signed integers: -2,147,483,648 to 2,147,483,647</li>
+  <li>64-bit signed integers: -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807</li>
+  <li>Single-precision floating-point: approximately ±3.4 × 10<sup>38</sup> (limited by IEEE 754 single precision)</li>
+  <li>Double-precision floating-point: approximately ±1.7 × 10<sup>308</sup> (limited by IEEE 754 double precision)</li>
+</ul>
+<p>When you compare a variable of one of these types against a constant that is outside its range, the type system guarantees the result before the
+program even runs. For example, an 8-bit signed integer variable can never be greater than 127, so a comparison checking if it exceeds 200 will always
+be <code>false</code>.</p>
+<p>These comparisons indicate one of several problems:</p>
+<ul>
+  <li><strong>Logic error</strong>: The developer misunderstood the range of values the variable can hold</li>
+  <li><strong>Wrong type</strong>: The variable should have been declared with a larger type (e.g., 32-bit instead of 8-bit)</li>
+  <li><strong>Wrong constant</strong>: The constant value is incorrect for the intended comparison</li>
+  <li><strong>Dead code</strong>: The condition guards code that can never execute (if always <code>false</code>) or always executes (if always
+  <code>true</code>)</li>
+</ul>
+<p>Such comparisons make the code confusing and harder to maintain. They may also hide genuine bugs where the developer’s intent does not match the
+actual behavior.</p>
+<p>In Java, these types are named: <code>byte</code> (8-bit signed), <code>short</code> (16-bit signed), <code>char</code> (16-bit unsigned),
+<code>int</code> (32-bit signed), <code>long</code> (64-bit signed), <code>float</code> (single-precision), and <code>double</code>
+(double-precision).</p>
+<h3>What is the potential impact?</h3>
+<p>Impossible comparisons create several problems:</p>
+<ul>
+  <li><strong>Dead code branches</strong>: When a comparison is always <code>false</code>, the code inside the conditional block will never execute.
+  When always <code>true</code>, the <code>else</code> branch becomes unreachable.</li>
+  <li><strong>Hidden logic errors</strong>: The comparison may reflect a misunderstanding of the data’s range, suggesting that other parts of the code
+  may also be incorrect.</li>
+  <li><strong>Maintenance burden</strong>: Future developers reading the code may waste time trying to understand why a seemingly meaningful check is
+  present.</li>
+  <li><strong>Misleading intent</strong>: The code suggests validation or range checking that isn’t actually happening, which could lead to incorrect
+  assumptions about data safety.</li>
+</ul>
 <h2>How to fix it</h2>
-<p>Ensure the constant is within the variable's type range, or change the variable to a wider type if comparisons against larger values are
-needed.</p>
+<p>When comparing a <code>byte</code> variable against a constant, ensure the constant is within the <code>byte</code> range (-128 to 127). If you
+need to compare against larger values, declare the variable as a wider type like <code>short</code> or <code>int</code>.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 byte b = 0;
-if (b &gt; 200) { // Noncompliant - always false
+if (b &gt; 200) { // Noncompliant
+    // This code never executes
     doSomething();
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
-int b = 0;
-if (b &gt; 200) { // Compliant
+int b = getUserInput();
+if (b &gt; 200) {
+    // With an int, b can actually exceed 200
     doSomething();
 }
 </pre>
@@ -27,4 +64,7 @@ if (b &gt; 200) { // Compliant
 <ul>
   <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html">Primitive Data Types</a></li>
   <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html#jls-4.2">Integral Types and Values</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html#jls-4.2.3">Floating-Point Types and
+  Values</a></li>
 </ul>
+

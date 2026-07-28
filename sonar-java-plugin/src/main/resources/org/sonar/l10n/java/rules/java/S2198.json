@@ -3,14 +3,14 @@
   "type": "CODE_SMELL",
   "code": {
     "impacts": {
-      "RELIABILITY": "HIGH"
+      "MAINTAINABILITY": "HIGH"
     },
     "attribute": "LOGICAL"
   },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5min"
+    "constantCost": "15min"
   },
   "tags": [
     "suspicious"
