@@ -338,6 +338,39 @@ public class JavaRulingTest {
       .isLessThan((long) (time2 * 0.95));
   }
 
+  @Test
+  public void java_time_example_incremental() throws Exception {
+    // Main branch: 85% int literals → above 80% threshold → S8694 suppresses all issues
+    final var mainBranch = "main";
+    String mainSourceCode = "java-time-example";
+
+    MavenBuild branchBuild = test_project("example:java-time-example", mainSourceCode)
+      .setProperties(
+        "sonar.branch.name", mainBranch,
+        "sonar.scm.provider", "git",
+        "sonar.scm.disabled", "false",
+        INCREMENTAL_ANALYSIS_KEY, "true",
+        SONAR_CACHING_ENABLED_KEY, "true"
+      );
+    executeBuildWithCommonProperties(branchBuild, mainSourceCode);
+
+    // PR: 50% int literals → below 80% threshold → S8694 raises issues
+    String prSourceCode = "java-time-example-less-threshold";
+    final var prBranch = "java-time-example-pr";
+
+    MavenBuild prBuild = test_existing_project("example:java-time-example", prSourceCode)
+      .setProperties(
+        "sonar.pullrequest.key", prBranch,
+        "sonar.pullrequest.branch", prBranch,
+        "sonar.pullrequest.base", mainBranch,
+        "sonar.scm.provider", "git",
+        "sonar.scm.disabled", "false",
+        INCREMENTAL_ANALYSIS_KEY, "true",
+        SONAR_CACHING_ENABLED_KEY, "true"
+      );
+    executeBuildWithCommonProperties(prBuild, prSourceCode);
+  }
+
   private static String getFileLocationAbsolutePath(FileLocation location) {
     try {
       return location.getFile().getCanonicalFile().getAbsolutePath();

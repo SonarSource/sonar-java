@@ -1,0 +1,62 @@
+{
+"example:java-time-example:src/main/java/example/AppointmentService.java": [
+20,
+21,
+23,
+24,
+25,
+26,
+28,
+29,
+30,
+31
+],
+"example:java-time-example:src/main/java/example/CalendarUtils.java": [
+21,
+22,
+24,
+25,
+26,
+27,
+29,
+30,
+32,
+33
+],
+"example:java-time-example:src/main/java/example/EventScheduler.java": [
+21,
+22,
+24,
+25,
+26,
+27,
+29,
+30,
+32,
+33
+],
+"example:java-time-example:src/main/java/example/HolidayChecker.java": [
+21,
+22,
+24,
+25,
+26,
+27,
+29,
+30,
+32,
+33
+],
+"example:java-time-example:src/main/java/example/ReportGenerator.java": [
+21,
+22,
+24,
+25,
+26,
+27,
+29,
+30,
+32,
+33
+]
+}
