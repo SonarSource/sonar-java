@@ -276,7 +276,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   public void endOfAnalysis(ModuleScannerContext context) {
-    if (projectTotalMethodsUsageCount > 0 && projectTotalNoEnumUsageCount * 100 >= RAISED_PERCENTAGE_THRESHOLD * projectTotalMethodsUsageCount) {
+    if (projectTotalMethodsUsageCount > 0 && projectTotalNoEnumUsageCount * 100 < RAISED_PERCENTAGE_THRESHOLD * projectTotalMethodsUsageCount) {
       issuesFound.forEach(InternalJavaIssueBuilder::report);
     }
   }

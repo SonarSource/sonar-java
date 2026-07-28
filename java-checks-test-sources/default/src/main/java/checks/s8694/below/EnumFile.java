@@ -6,7 +6,7 @@ import java.time.Month;
 import java.time.MonthDay;
 import java.time.YearMonth;
 
-// 3 out of 7 total usages across the project use int literals (43%) -> below 80% threshold -> no issues are raised
+// 3 out of 7 total usages across the project use int literals (43%) -> below 80% threshold -> issues are raised
 public class EnumFile {
 
   void test() {

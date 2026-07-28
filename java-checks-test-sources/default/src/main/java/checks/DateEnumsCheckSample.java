@@ -32,6 +32,11 @@ public class DateEnumsCheckSample {
     LocalDateTime dateTime = LocalDateTime.of(2024, Month.DECEMBER, 25, 10, 30);
     YearMonth yearMonth = YearMonth.of(2024, Month.JUNE);
     MonthDay monthDay = MonthDay.of(Month.FEBRUARY, 16);
+    LocalDate date2 = LocalDate.of(2024, Month.MARCH, 10);
+    LocalDate date3 = LocalDate.of(2024, Month.APRIL, 5);
+    LocalDateTime dateTime2 = LocalDateTime.of(2024, Month.MAY, 20, 12, 0);
+    YearMonth yearMonth2 = YearMonth.of(2024, Month.JULY);
+    MonthDay monthDay2 = MonthDay.of(Month.AUGUST, 1);
     OffsetDateTime offsetDateTime = OffsetDateTime.of(2025, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC); // Compliant; no "of" method available with a Month enum
     ZonedDateTime zdt = ZonedDateTime.of(2026, 12, 21, 3, 33, 33, 4, ZoneId.of("Europe/Paris")); // Compliant; no "of" method available with a Month enum
     LocalDate variableMonth = LocalDate.of(2024, monthNumber, 15); // Compliant; intLiteral == -1, argument is not an int literal
