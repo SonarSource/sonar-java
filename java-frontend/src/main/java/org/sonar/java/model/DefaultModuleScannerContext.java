@@ -22,10 +22,13 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.fs.InputComponent;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.CacheContextImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.FluentReporting;
+import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.ModuleScannerContext;
@@ -76,6 +79,10 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
 
   public void reportIssue(AnalyzerMessage message) {
     sonarComponents.reportIssue(message);
+  }
+
+  public FluentReporting.JavaIssueBuilder newIssueForFile(InputFile inputFile) {
+    return new InternalJavaIssueBuilder(inputFile, sonarComponents);
   }
 
   @Override

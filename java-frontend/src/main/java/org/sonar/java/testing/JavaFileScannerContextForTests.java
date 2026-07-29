@@ -137,4 +137,9 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
   public FluentReporting.JavaIssueBuilder newIssue() {
     return new JavaIssueBuilderForTests(getInputFile(), issues, quickFixes);
   }
+
+  @Override
+  public FluentReporting.JavaIssueBuilder newIssueForFile(InputFile inputFile) {
+    return new JavaIssueBuilderForTests(inputFile, issues, quickFixes);
+  }
 }

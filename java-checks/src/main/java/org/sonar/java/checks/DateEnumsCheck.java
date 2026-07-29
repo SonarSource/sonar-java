@@ -17,13 +17,20 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.ConditionalRuleCacheUtils.CachedFileData;
+import org.sonar.java.checks.ConditionalRuleCacheUtils.CachedIssue;
+import org.sonar.java.checks.ConditionalRuleCacheUtils.ImportEditData;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.DefaultModuleScannerContext;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.reporting.InternalJavaIssueBuilder;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -31,6 +38,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -49,6 +57,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   private static final String JAVA_TIME_YEAR_MONTH = "java.time.YearMonth";
   private static final String JAVA_TIME_MONTH_DAY = "java.time.MonthDay";
   private static final int RAISED_PERCENTAGE_THRESHOLD = 80;
+  private static final String CACHE_KEY_PREFIX = "java:S8694:";
 
   private static final MethodMatchers METHOD_WITH_MONTH_AS_SECOND_ARGUMENT = MethodMatchers.or(
     MethodMatchers.create()
@@ -138,28 +147,67 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   private QuickFixHelper.ImportSupplier importSupplier;
 
-  // Project-level state — accumulated across files
+  // Per-file state — reset at setContext, consumed at leaveFile
+  private int currentFileTotalCount;
+  private int currentFileNoEnumCount;
+  private final List<CachedIssue> currentFileIssues = new ArrayList<>();
+
+  // Project-level accumulators — contributions from both fresh and cached files
   private int projectTotalMethodsUsageCount;
   private int projectTotalNoEnumUsageCount;
-  private final List<InternalJavaIssueBuilder> issuesFound = new ArrayList<>();
+
+  // All potential issue locations keyed by file — populated from both fresh scans and cache reads
+  private final Map<InputFile, List<CachedIssue>> issuesByFile = new HashMap<>();
 
   @Override
   public void setContext(JavaFileScannerContext context) {
     super.setContext(context);
     importSupplier = null;
+    currentFileTotalCount = 0;
+    currentFileNoEnumCount = 0;
+    currentFileIssues.clear();
   }
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     importSupplier = null;
+    projectTotalMethodsUsageCount += currentFileTotalCount;
+    projectTotalNoEnumUsageCount += currentFileNoEnumCount;
+    if (!currentFileIssues.isEmpty()) {
+      issuesByFile.put(context.getInputFile(), new ArrayList<>(currentFileIssues));
+    }
+
+    CacheContext cacheContext = context.getCacheContext();
+    if (cacheContext.isCacheEnabled()) {
+      cacheContext.getWriteCache().write(
+        cacheKey(context.getInputFile()),
+        ConditionalRuleCacheUtils.serialize(currentFileTotalCount, currentFileNoEnumCount, currentFileIssues));
+    }
+
+    currentFileTotalCount = 0;
+    currentFileNoEnumCount = 0;
+    currentFileIssues.clear();
   }
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext context) {
-    // Always parse every file: the raise/suppress decision is module-wide and threshold-based,
-    // so all files must be visited on every run to build correct counts and issue builders.
-    // Skipping unchanged files would produce stale issues or missing issues when the threshold flips.
-    return false;
+    CacheContext cacheContext = context.getCacheContext();
+    if (!cacheContext.isCacheEnabled()) {
+      return false;
+    }
+    String key = cacheKey(context.getInputFile());
+    byte[] data = cacheContext.getReadCache().readBytes(key);
+    if (data == null) {
+      return false;
+    }
+    CachedFileData cached = ConditionalRuleCacheUtils.deserialize(data);
+    projectTotalMethodsUsageCount += cached.totalCount();
+    projectTotalNoEnumUsageCount += cached.noEnumCount();
+    if (!cached.issues().isEmpty()) {
+      issuesByFile.put(context.getInputFile(), cached.issues());
+    }
+    cacheContext.getWriteCache().copyFromPrevious(key);
+    return true;
   }
 
   @Override
@@ -184,7 +232,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    projectTotalMethodsUsageCount++;
+    currentFileTotalCount++;
 
     if (METHOD_WITH_MONTH_AS_SECOND_ARGUMENT.matches(mit)) {
       ExpressionTree secondArgument = mit.arguments().get(1);
@@ -210,24 +258,20 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   }
 
   private void collectIssue(ExpressionTree arg, String replacement, String issueMessage, String importName) {
-    projectTotalNoEnumUsageCount++;
-    // Compute the quick fix eagerly while the file context is still available
-    JavaQuickFix quickFix = computeQuickfix(arg, replacement, importName);
-    issuesFound.add(QuickFixHelper.newIssue(context)
-      .forRule(this)
-      .onTree(arg)
-      .withMessage(issueMessage)
-      .withQuickFix(() -> quickFix));
-  }
-
-  private JavaQuickFix computeQuickfix(Tree replacedTree, String replacement, String importName) {
-    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(String.format("Replace with %s.", replacement))
-      .addTextEdit(JavaTextEdit.replaceTree(replacedTree, replacement));
+    currentFileNoEnumCount++;
+    AnalyzerMessage.TextSpan span = AnalyzerMessage.textSpanFor(arg);
     if (importSupplier == null) {
       importSupplier = QuickFixHelper.newImportSupplier(context);
     }
-    importSupplier.newImportEdit(importName).ifPresent(builder::addTextEdit);
-    return builder.build();
+    ImportEditData importEdit = importSupplier.newImportEdit(importName)
+      .map(ie -> {
+        AnalyzerMessage.TextSpan s = ie.getTextSpan();
+        return new ImportEditData(s.startLine, s.startCharacter, s.endLine, s.endCharacter, ie.getReplacement());
+      })
+      .orElse(null);
+    currentFileIssues.add(new CachedIssue(
+      span.startLine, span.startCharacter, span.endLine, span.endCharacter,
+      issueMessage, replacement, importEdit));
   }
 
   @Override
@@ -256,7 +300,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       return;
     }
 
-    projectTotalMethodsUsageCount++;
+    currentFileTotalCount++;
 
     int intLiteral = getIntLiteral(literalSide);
     if (intLiteral == -1) {
@@ -276,9 +320,34 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   public void endOfAnalysis(ModuleScannerContext context) {
-    if (projectTotalMethodsUsageCount > 0 && projectTotalNoEnumUsageCount * 100 < RAISED_PERCENTAGE_THRESHOLD * projectTotalMethodsUsageCount) {
-      issuesFound.forEach(InternalJavaIssueBuilder::report);
+    if (projectTotalMethodsUsageCount == 0
+      || projectTotalNoEnumUsageCount * 100 >= RAISED_PERCENTAGE_THRESHOLD * projectTotalMethodsUsageCount) {
+      return;
     }
+    DefaultModuleScannerContext defaultContext = (DefaultModuleScannerContext) context;
+    issuesByFile.forEach((inputFile, issues) ->
+      issues.forEach(issue ->
+        defaultContext.newIssueForFile(inputFile)
+          .forRule(this)
+          .onRange(issue.startLine(), issue.startCol(), issue.endLine(), issue.endCol())
+          .withMessage(issue.message())
+          .withQuickFix(() -> buildQuickFix(issue))
+          .report()
+      )
+    );
+  }
+
+  private static JavaQuickFix buildQuickFix(CachedIssue issue) {
+    var span = new AnalyzerMessage.TextSpan(issue.startLine(), issue.startCol(), issue.endLine(), issue.endCol());
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(String.format("Replace with %s.", issue.replacement()))
+      .addTextEdit(JavaTextEdit.replaceTextSpan(span, issue.replacement()));
+    if (issue.importEdit() != null) {
+      ImportEditData ie = issue.importEdit();
+      builder.addTextEdit(JavaTextEdit.replaceTextSpan(
+        new AnalyzerMessage.TextSpan(ie.startLine(), ie.startCol(), ie.endLine(), ie.endCol()),
+        ie.replacement()));
+    }
+    return builder.build();
   }
 
   private static String getMonthEnumName(int month) {
@@ -323,5 +392,9 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   private static boolean isValidDay(int day) {
     return day >= 1 && day <= 7;
+  }
+
+  private static String cacheKey(InputFile inputFile) {
+    return CACHE_KEY_PREFIX + inputFile.key();
   }
 }

@@ -37,7 +37,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
+public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilder {
 
   private static final String RULE_NAME = "rule";
   private static final String TEXT_SPAN_NAME = "position";
@@ -103,7 +103,12 @@ public class InternalJavaIssueBuilder implements JavaIssueBuilderExtended {
     return onRange(AnalyzerMessage.textSpanBetween(from, to));
   }
 
-  private InternalJavaIssueBuilder onRange(AnalyzerMessage.TextSpan range) {
+  @Override
+  public InternalJavaIssueBuilder onRange(int startLine, int startCharacter, int endLine, int endCharacter) {
+    return onRange(new AnalyzerMessage.TextSpan(startLine, startCharacter, endLine, endCharacter));
+  }
+
+  public InternalJavaIssueBuilder onRange(AnalyzerMessage.TextSpan range) {
     requiresValueToBeSet(this.rule, RULE_NAME);
     requiresSetOnlyOnce(this.textSpan, TEXT_SPAN_NAME);
 

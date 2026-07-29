@@ -17,6 +17,7 @@
 package org.sonar.java.reporting;
 
 import java.util.List;
+import java.util.function.Supplier;
 import org.sonar.java.annotations.Beta;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -34,6 +35,8 @@ public interface FluentReporting {
 
     JavaIssueBuilder onRange(Tree from, Tree to);
 
+    JavaIssueBuilder onRange(int startLine, int startCharacter, int endLine, int endCharacter);
+
     JavaIssueBuilder withMessage(String message);
 
     /**
@@ -48,6 +51,10 @@ public interface FluentReporting {
     JavaIssueBuilder withFlows(List<List<JavaFileScannerContext.Location>> flows);
 
     JavaIssueBuilder withCost(int cost);
+
+    JavaIssueBuilder withQuickFix(Supplier<JavaQuickFix> quickFix);
+
+    JavaIssueBuilder withQuickFixes(Supplier<List<JavaQuickFix>> quickFixes);
 
     void report();
   }
