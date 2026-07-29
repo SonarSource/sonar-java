@@ -22,8 +22,6 @@ public class DateEnumsCheckSample {
     //                                ^
     MonthDay md = MonthDay.of(2, 16); // Noncompliant
     //                        ^
-    MonthDay monthDay = MonthDay.of(+2, 16); // Compliant; ignored by the rule to keep it simple
-    LocalDate ld = LocalDate.of(2024, -1, 15); // Compliant; ignored by the rule to keep it simple
     DayOfWeek day = DayOfWeek.of(2); // Noncompliant {{Use a "java.time.DayOfWeek" enum constant instead of this int literal.}}
     Month month = Month.of(10); // Noncompliant {{Use a "java.time.Month" enum constant instead of this int literal.}}
     //            ^^^^^^^^^^^^
@@ -34,11 +32,16 @@ public class DateEnumsCheckSample {
     LocalDateTime dateTime = LocalDateTime.of(2024, Month.DECEMBER, 25, 10, 30);
     YearMonth yearMonth = YearMonth.of(2024, Month.JUNE);
     MonthDay monthDay = MonthDay.of(Month.FEBRUARY, 16);
-    LocalDateTime dateTimeWithVariable = LocalDateTime.of(2024, monthNumber, 25, 10, 30);
+    LocalDate date2 = LocalDate.of(2024, Month.MARCH, 10);
+    LocalDate date3 = LocalDate.of(2024, Month.APRIL, 5);
+    LocalDateTime dateTime2 = LocalDateTime.of(2024, Month.MAY, 20, 12, 0);
+    YearMonth yearMonth2 = YearMonth.of(2024, Month.JULY);
+    MonthDay monthDay2 = MonthDay.of(Month.AUGUST, 1);
     OffsetDateTime offsetDateTime = OffsetDateTime.of(2025, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC); // Compliant; no "of" method available with a Month enum
     ZonedDateTime zdt = ZonedDateTime.of(2026, 12, 21, 3, 33, 33, 4, ZoneId.of("Europe/Paris")); // Compliant; no "of" method available with a Month enum
-    DayOfWeek parenthesized = DayOfWeek.of((-3)); // Compliant; ignored by the rule to keep it simple
-    DayOfWeek parenthesizedOutside = DayOfWeek.of(-(3)); // Compliant; ignored by the rule to keep it simple
+    LocalDate variableMonth = LocalDate.of(2024, monthNumber, 15); // Compliant; intLiteral == -1, argument is not an int literal
+    LocalDate outOfRangeMonth = LocalDate.of(2024, 13, 1); // Compliant; isValidMonth == false, month 13 is out of range
+    DayOfWeek outOfRangeDay = DayOfWeek.of(8); // Compliant; isValidDay == false, day 8 is out of range
   }
 
   boolean noncompliantDateManipulation(LocalDate date, DayOfWeek day, Month month) {
@@ -57,16 +60,51 @@ public class DateEnumsCheckSample {
     return date.getMonthValue() < 2; // Compliant; this comparison cannot be made using enum constants
   }
 
-  boolean compliantDateManipulation(LocalDate date, DayOfWeek day, Month month) {
+  boolean compliantDateManipulation(LocalDate date, DayOfWeek day, Month month, int monthNumber) {
     if (date.getMonth() == Month.SEPTEMBER) {
       return true;
     }
     if (month == Month.MARCH) {
       return true;
     }
+    if (date.getMonthValue() == monthNumber) { // Compliant; intLiteral == -1, right operand is not an int literal
+      return true;
+    }
+    if (date.getMonthValue() == 13) { // Compliant; isValidMonth == false, month 13 is out of range
+      return true;
+    }
+    if (day.getValue() == 8) { // Compliant; isValidDay == false, day 8 is out of range
+      return true;
+    }
     return day == DayOfWeek.THURSDAY;
   }
 
+
+  void moreNoncompliantCases(LocalDate date, YearMonth ym, MonthDay md, DayOfWeek day, Month month) {
+    LocalDateTime.of(2024, 3, 15, 10, 30); // Noncompliant
+    LocalDateTime.of(2024, 4, 15, 10, 30, 45); // Noncompliant
+    LocalDateTime.of(2024, 5, 15, 10, 30, 45, 0); // Noncompliant
+    YearMonth.of(2024, 6); // Noncompliant
+    YearMonth.of(2024, 7); // Noncompliant
+    YearMonth.of(2024, 8); // Noncompliant
+    MonthDay.of(9, 1); // Noncompliant
+    MonthDay.of(10, 1); // Noncompliant
+    MonthDay.of(11, 1); // Noncompliant
+    Month.of(1); // Noncompliant
+    Month.of(2); // Noncompliant
+    DayOfWeek.of(3); // Noncompliant
+    DayOfWeek.of(4); // Noncompliant
+    LocalDate.of(2024, 5, 1); // Noncompliant
+    LocalDate.of(2024, 6, 1); // Noncompliant
+    LocalDate.of(2024, 7, 1); // Noncompliant
+    boolean b1 = date.getMonthValue() == 1; // Noncompliant
+    boolean b2 = date.getMonthValue() != 2; // Noncompliant
+    boolean b3 = 3 == date.getMonthValue(); // Noncompliant
+    boolean b4 = ym.getMonthValue() == 4; // Noncompliant
+    boolean b5 = md.getMonthValue() == 5; // Noncompliant
+    boolean b6 = day.getValue() == 6; // Noncompliant
+    boolean b7 = 7 == month.getValue(); // Noncompliant
+  }
 
   void quickfixDateCreation() {
     LocalDate date = LocalDate.of(2024, 1, 15); // Noncompliant [[quickfixes=qf1]]
