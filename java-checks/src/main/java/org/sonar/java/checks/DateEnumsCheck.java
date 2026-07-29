@@ -147,32 +147,32 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   private QuickFixHelper.ImportSupplier importSupplier;
 
-  // Per-file state — reset at setContext, consumed at leaveFile
-  private int currentFileTotalCount;
-  private int currentFileNoEnumCount;
+  // Per-file state
+  private int currentFileTotalUsageCount;
+  private int currentFileNoEnumUsageCount;
   private final List<CachedIssue> currentFileIssues = new ArrayList<>();
 
   // Project-level accumulators — contributions from both fresh and cached files
-  private int projectTotalMethodsUsageCount;
+  private int projectTotalUsageCount;
   private int projectTotalNoEnumUsageCount;
 
-  // All potential issue locations keyed by file — populated from both fresh scans and cache reads
+  // All potential issue locations — populated from both fresh scans and cache reads
   private final Map<InputFile, List<CachedIssue>> issuesByFile = new HashMap<>();
 
   @Override
   public void setContext(JavaFileScannerContext context) {
     super.setContext(context);
     importSupplier = null;
-    currentFileTotalCount = 0;
-    currentFileNoEnumCount = 0;
+    currentFileTotalUsageCount = 0;
+    currentFileNoEnumUsageCount = 0;
     currentFileIssues.clear();
   }
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     importSupplier = null;
-    projectTotalMethodsUsageCount += currentFileTotalCount;
-    projectTotalNoEnumUsageCount += currentFileNoEnumCount;
+    projectTotalUsageCount += currentFileTotalUsageCount;
+    projectTotalNoEnumUsageCount += currentFileNoEnumUsageCount;
     if (!currentFileIssues.isEmpty()) {
       issuesByFile.put(context.getInputFile(), new ArrayList<>(currentFileIssues));
     }
@@ -181,11 +181,11 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     if (cacheContext.isCacheEnabled()) {
       cacheContext.getWriteCache().write(
         cacheKey(context.getInputFile()),
-        ConditionalRuleCacheUtils.serialize(currentFileTotalCount, currentFileNoEnumCount, currentFileIssues));
+        ConditionalRuleCacheUtils.serialize(currentFileTotalUsageCount, currentFileNoEnumUsageCount, currentFileIssues));
     }
 
-    currentFileTotalCount = 0;
-    currentFileNoEnumCount = 0;
+    currentFileTotalUsageCount = 0;
+    currentFileNoEnumUsageCount = 0;
     currentFileIssues.clear();
   }
 
@@ -201,8 +201,8 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       return false;
     }
     CachedFileData cached = ConditionalRuleCacheUtils.deserialize(data);
-    projectTotalMethodsUsageCount += cached.totalCount();
-    projectTotalNoEnumUsageCount += cached.noEnumCount();
+    projectTotalUsageCount += cached.totalCount();
+    projectTotalNoEnumUsageCount += cached.issueCount();
     if (!cached.issues().isEmpty()) {
       issuesByFile.put(context.getInputFile(), cached.issues());
     }
@@ -232,7 +232,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    currentFileTotalCount++;
+    currentFileTotalUsageCount++;
 
     if (METHOD_WITH_MONTH_AS_SECOND_ARGUMENT.matches(mit)) {
       ExpressionTree secondArgument = mit.arguments().get(1);
@@ -258,7 +258,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   }
 
   private void collectIssue(ExpressionTree arg, String replacement, String issueMessage, String importName) {
-    currentFileNoEnumCount++;
+    currentFileNoEnumUsageCount++;
     AnalyzerMessage.TextSpan span = AnalyzerMessage.textSpanFor(arg);
     if (importSupplier == null) {
       importSupplier = QuickFixHelper.newImportSupplier(context);
@@ -300,7 +300,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       return;
     }
 
-    currentFileTotalCount++;
+    currentFileTotalUsageCount++;
 
     int intLiteral = getIntLiteral(literalSide);
     if (intLiteral == -1) {
@@ -320,8 +320,8 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   public void endOfAnalysis(ModuleScannerContext context) {
-    boolean shouldRaiseIssues = projectTotalMethodsUsageCount > 0
-      && projectTotalNoEnumUsageCount * 100 < RAISED_PERCENTAGE_THRESHOLD * projectTotalMethodsUsageCount;
+    boolean shouldRaiseIssues = projectTotalUsageCount > 0
+      && projectTotalNoEnumUsageCount * 100 < RAISED_PERCENTAGE_THRESHOLD * projectTotalUsageCount;
     if (shouldRaiseIssues) {
       DefaultModuleScannerContext defaultContext = (DefaultModuleScannerContext) context;
       issuesByFile.forEach((inputFile, issues) ->
@@ -335,7 +335,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
         )
       );
     }
-    projectTotalMethodsUsageCount = 0;
+    projectTotalUsageCount = 0;
     projectTotalNoEnumUsageCount = 0;
     issuesByFile.clear();
   }

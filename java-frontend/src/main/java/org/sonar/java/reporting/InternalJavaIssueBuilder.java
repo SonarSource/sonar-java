@@ -108,7 +108,7 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
     return onRange(new AnalyzerMessage.TextSpan(startLine, startCharacter, endLine, endCharacter));
   }
 
-  public InternalJavaIssueBuilder onRange(AnalyzerMessage.TextSpan range) {
+  private InternalJavaIssueBuilder onRange(AnalyzerMessage.TextSpan range) {
     requiresValueToBeSet(this.rule, RULE_NAME);
     requiresSetOnlyOnce(this.textSpan, TEXT_SPAN_NAME);
 

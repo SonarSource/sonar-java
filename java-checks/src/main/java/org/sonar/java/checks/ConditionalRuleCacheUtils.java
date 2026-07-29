@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
  *
  * <p>Serialization format:
  * <pre>
- * Line 0: totalCount|noEnumCount
+ * Line 0: totalCount|issueCount
  * Lines 1..N (one per issue):
  *   sl|sc|el|ec|b64(message)|b64(replacement)|hasImport[|importSL|importSC|importEL|importEC|b64(importReplacement)]
  * </pre>
@@ -56,12 +56,20 @@ class ConditionalRuleCacheUtils {
   ) {}
 
   /** All cache data for a single file. */
-  record CachedFileData(int totalCount, int noEnumCount, List<CachedIssue> issues) {}
+  record CachedFileData(int totalCount, int issueCount, List<CachedIssue> issues) {}
 
-  static byte[] serialize(int totalCount, int noEnumCount, List<CachedIssue> issues) {
+  /**
+   * Serializes per-file analysis data into a byte array suitable for writing to the SonarQube write cache.
+   *
+   * @param totalCount   total number of method/comparison usages in the file (both int-literal and enum)
+   * @param issueCount   number of usages in the file that triggered a potential issue
+   * @param issues       potential issues collected during the scan; may be empty if no violations were found
+   * @return UTF-8 bytes in the format described in the class-level Javadoc
+   */
+  static byte[] serialize(int totalCount, int issueCount, List<CachedIssue> issues) {
     Base64.Encoder enc = Base64.getEncoder();
     var sb = new StringBuilder();
-    sb.append(totalCount).append('|').append(noEnumCount).append('\n');
+    sb.append(totalCount).append('|').append(issueCount).append('\n');
     for (CachedIssue issue : issues) {
       sb.append(issue.startLine()).append('|')
         .append(issue.startCol()).append('|')
@@ -83,6 +91,15 @@ class ConditionalRuleCacheUtils {
     return sb.toString().getBytes(StandardCharsets.UTF_8);
   }
 
+  /**
+   * Deserializes per-file analysis data previously written by {@link #serialize}.
+   *
+   * <p>Returns an empty {@link CachedFileData} (zero counts, no issues) when {@code data} is empty
+   * or contains only a blank first line, which indicates a cache miss or a file with no usages.
+   *
+   * @param data bytes previously produced by {@link #serialize}; must not be {@code null}
+   * @return the deserialized file data
+   */
   static CachedFileData deserialize(byte[] data) {
     Base64.Decoder dec = Base64.getDecoder();
     String text = new String(data, StandardCharsets.UTF_8);
@@ -92,7 +109,7 @@ class ConditionalRuleCacheUtils {
     }
     String[] header = lines[0].split("\\|", 2);
     int totalCount = Integer.parseInt(header[0]);
-    int noEnumCount = Integer.parseInt(header[1]);
+    int issueCount = Integer.parseInt(header[1]);
     List<CachedIssue> issues = new ArrayList<>();
     for (int i = 1; i < lines.length; i++) {
       if (lines[i].isEmpty()) {
@@ -117,6 +134,6 @@ class ConditionalRuleCacheUtils {
       }
       issues.add(new CachedIssue(sl, sc, el, ec, message, replacement, importEdit));
     }
-    return new CachedFileData(totalCount, noEnumCount, issues);
+    return new CachedFileData(totalCount, issueCount, issues);
   }
 }

@@ -32,7 +32,7 @@ class ConditionalRuleCacheUtilsTest {
     CachedFileData result = ConditionalRuleCacheUtils.deserialize(data);
 
     assertThat(result.totalCount()).isEqualTo(7);
-    assertThat(result.noEnumCount()).isEqualTo(3);
+    assertThat(result.issueCount()).isEqualTo(3);
     assertThat(result.issues()).isEmpty();
   }
 
@@ -43,7 +43,7 @@ class ConditionalRuleCacheUtilsTest {
     CachedFileData result = ConditionalRuleCacheUtils.deserialize(data);
 
     assertThat(result.totalCount()).isEqualTo(4);
-    assertThat(result.noEnumCount()).isEqualTo(1);
+    assertThat(result.issueCount()).isEqualTo(1);
     assertThat(result.issues()).hasSize(1);
 
     CachedIssue deserialized = result.issues().get(0);
@@ -69,9 +69,9 @@ class ConditionalRuleCacheUtilsTest {
 
     ImportEditData deserializedImport = deserialized.importEdit();
     assertThat(deserializedImport.startLine()).isEqualTo(1);
-    assertThat(deserializedImport.startCol()).isEqualTo(0);
+    assertThat(deserializedImport.startCol()).isZero();
     assertThat(deserializedImport.endLine()).isEqualTo(1);
-    assertThat(deserializedImport.endCol()).isEqualTo(0);
+    assertThat(deserializedImport.endCol()).isZero();
     assertThat(deserializedImport.replacement()).isEqualTo("import java.time.Month;\n");
   }
 
@@ -84,7 +84,7 @@ class ConditionalRuleCacheUtilsTest {
     CachedFileData result = ConditionalRuleCacheUtils.deserialize(data);
 
     assertThat(result.totalCount()).isEqualTo(10);
-    assertThat(result.noEnumCount()).isEqualTo(2);
+    assertThat(result.issueCount()).isEqualTo(2);
     assertThat(result.issues()).hasSize(2);
     assertThat(result.issues().get(0).importEdit()).isNotNull();
     assertThat(result.issues().get(1).importEdit()).isNull();
@@ -95,7 +95,7 @@ class ConditionalRuleCacheUtilsTest {
     CachedFileData result = ConditionalRuleCacheUtils.deserialize(new byte[0]);
 
     assertThat(result.totalCount()).isZero();
-    assertThat(result.noEnumCount()).isZero();
+    assertThat(result.issueCount()).isZero();
     assertThat(result.issues()).isEmpty();
   }
 
