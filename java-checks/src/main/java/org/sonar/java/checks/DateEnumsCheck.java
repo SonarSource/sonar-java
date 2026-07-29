@@ -320,21 +320,24 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   @Override
   public void endOfAnalysis(ModuleScannerContext context) {
-    if (projectTotalMethodsUsageCount == 0
-      || projectTotalNoEnumUsageCount * 100 >= RAISED_PERCENTAGE_THRESHOLD * projectTotalMethodsUsageCount) {
-      return;
+    boolean shouldRaiseIssues = projectTotalMethodsUsageCount > 0
+      && projectTotalNoEnumUsageCount * 100 < RAISED_PERCENTAGE_THRESHOLD * projectTotalMethodsUsageCount;
+    if (shouldRaiseIssues) {
+      DefaultModuleScannerContext defaultContext = (DefaultModuleScannerContext) context;
+      issuesByFile.forEach((inputFile, issues) ->
+        issues.forEach(issue ->
+          defaultContext.newIssueForFile(inputFile)
+            .forRule(this)
+            .onRange(issue.startLine(), issue.startCol(), issue.endLine(), issue.endCol())
+            .withMessage(issue.message())
+            .withQuickFix(() -> buildQuickFix(issue))
+            .report()
+        )
+      );
     }
-    DefaultModuleScannerContext defaultContext = (DefaultModuleScannerContext) context;
-    issuesByFile.forEach((inputFile, issues) ->
-      issues.forEach(issue ->
-        defaultContext.newIssueForFile(inputFile)
-          .forRule(this)
-          .onRange(issue.startLine(), issue.startCol(), issue.endLine(), issue.endCol())
-          .withMessage(issue.message())
-          .withQuickFix(() -> buildQuickFix(issue))
-          .report()
-      )
-    );
+    projectTotalMethodsUsageCount = 0;
+    projectTotalNoEnumUsageCount = 0;
+    issuesByFile.clear();
   }
 
   private static JavaQuickFix buildQuickFix(CachedIssue issue) {
