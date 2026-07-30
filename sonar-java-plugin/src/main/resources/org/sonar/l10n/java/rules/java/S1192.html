@@ -2,7 +2,15 @@
 <p>Duplicated string literals make the process of refactoring complex and error-prone, as any change would need to be propagated on all
 occurrences.</p>
 <h3>Exceptions</h3>
-<p>To prevent generating some false-positives, literals having less than 5 characters are excluded.</p>
+<p>The following cases are excluded from duplicate detection:</p>
+<ul>
+  <li>Literals shorter than the configured <code>minimalLength</code> (default: 5 characters)</li>
+  <li>Literals used in annotations</li>
+  <li>Literals that are part of a string concatenation fragment (e.g., SQL built from adjacent string literals)</li>
+  <li>Literals used in test files</li>
+  <li>Literals passed as arguments to logging methods (SLF4J, Java Util Logging, Log4j 2)</li>
+  <li>Literals matching the configured <code>excludePatterns</code> regular expression</li>
+</ul>
 <h2>How to fix it</h2>
 <p>Use constants to replace the duplicated string literals. Constants can be referenced from many places, but only need to be updated in a single
 place.</p>
