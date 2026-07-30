@@ -59,6 +59,14 @@ class StringLiteralDuplicatedCheckTest {
   }
 
   @Test
+  void no_issues_for_logging_arguments() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringLiteralDuplicatedCheckLoggingSample.java"))
+      .withCheck(new StringLiteralDuplicatedCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void threshold_at_two() {
     StringLiteralDuplicatedCheck visitor = new StringLiteralDuplicatedCheck();
     visitor.threshold = 2;

@@ -9,8 +9,11 @@ public class StringLiteralDuplicatedCheckSample {
     System.out.println("bbbbb");
     System.out.println("bbbbb");
     System.out.println("ccccc"); // Noncompliant {{Define a constant instead of duplicating this literal "ccccc" 3 times.}}
+//                     ^^^^^^^
     System.out.println("ccccc");
+//                     ^^^^^^^<
     System.out.println("ccccc");
+//                     ^^^^^^^<
     System.out.println("dddd");
     System.out.println("dddd");
   }
@@ -73,8 +76,11 @@ class ConstantAlreadyDefined {
 
 class CompleteCoverage {
   private final String notConstant = "blablah"; // Noncompliant {{Define a constant instead of duplicating this literal "blablah" 3 times.}}
+//                                   ^^^^^^^^^
   private final String notConstant2 = "blablah";
+//                                    ^^^^^^^^^<
   static String notConstant3 = "blablah";
+//                             ^^^^^^^^^<
   String notConstant4;
   int notString = 42;
 
@@ -144,22 +150,28 @@ class DuplicatedExceptionArguments {
   private Throwable constructButDoNotThrow(int r) {
     if (r == 0) {
       return new NullPointerException("build message"); // Noncompliant {{Define a constant instead of duplicating this literal "build message" 3 times.}}
+//                                    ^^^^^^^^^^^^^^^
     } else if (r == 1) {
       return new IllegalArgumentException("build message");
+//                                        ^^^^^^^^^^^^^^^<
     } else {
       return new AssertionError("build message");
+//                              ^^^^^^^^^^^^^^^<
     }
   }
 
   public static void constructAndThenThrow(int r) {
     if (r == 0) {
       var first = new IllegalArgumentException("this is a repeated message"); // Noncompliant
+//                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       throw first;
     } else if (r < 0) {
       var second = new IllegalArgumentException("this is a repeated message");
+//                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       throw second;
     } else {
       var third = new IllegalArgumentException("this is a repeated message");
+//                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
       throw third;
     }
   }
@@ -182,10 +194,13 @@ class DuplicatedExceptionArguments {
   private void areNonCompliantWhenPassedToMethod(int r) {
     if (r == 0) {
       throw new IllegalArgumentException(transform("nested string 2", "AAA")); // Noncompliant {{Define a constant instead of duplicating this literal "nested string 2" 3 times.}}
+//                                                 ^^^^^^^^^^^^^^^^^
     } else if (r == 1) {
       throw new IllegalArgumentException(transform("nested string 2", "BBB"));
+//                                                 ^^^^^^^^^^^^^^^^^<
     } else if (r == 2) {
       throw new IllegalArgumentException(transform("nested string 2", "CCC"));
+//                                                 ^^^^^^^^^^^^^^^^^<
     }
   }
 
@@ -211,12 +226,16 @@ class DuplicatedExceptionArguments {
   private void reportCorrectCount(int r) {
     if (r == 1) {
       throw new RuntimeException("message shared between exception and fun calls"); // Noncompliant {{Define a constant instead of duplicating this literal "message shared between exception and fun calls" 4 times.}}
+//                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     } else if (r == 2) {
       devNull("message shared between exception and fun calls", 2);
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
     } else if  (r == 3) {
       devNull("message shared between exception and fun calls", 3);
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
     } else {
       devNull("message shared between exception and fun calls", 4);
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^<
     }
   }
 }

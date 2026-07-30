@@ -25,9 +25,10 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.LoggingMatchers;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.utils.JavaFileTypeClassifier;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.utils.JavaFileTypeClassifier;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -35,6 +36,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -67,24 +69,32 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     scan(context.getTree());
     occurrences.forEach((key, literalTrees) -> {
       int literalOccurrence = literalTrees.size();
-      // Do not consider `throw new Exception("repeated message")` for reporting duplicates,
-      // but still report it if a constant is available.
-      int triggeringOccurrences = (int) literalTrees.stream().filter(tree -> !isThrowableArgument(tree)).count();
+      // Do not consider `throw new Exception("repeated message")` or logging calls for reporting
+      // duplicates, but still report against a constant if a non-logging usage exists.
+      int triggeringOccurrences = (int) literalTrees.stream()
+        .filter(tree -> !isThrowableArgument(tree) && !isLoggingArgument(tree)).count();
       if (constants.containsKey(key)) {
         VariableTree constant = constants.get(key);
-        List<LiteralTree> duplications = literalTrees.stream().filter(literal -> literal.parent() != constant).toList();
+        List<LiteralTree> duplications = literalTrees.stream()
+          .filter(literal -> literal.parent() != constant && !isLoggingArgument(literal))
+          .toList();
+        if (duplications.isEmpty()) {
+          return;
+        }
         context.reportIssue(this, duplications.iterator().next(),
           "Use already-defined constant '" + constant.simpleName() + "' instead of duplicating its value here.",
           secondaryLocations(duplications.subList(1, duplications.size())), literalOccurrence);
       } else if (triggeringOccurrences >= threshold) {
-        LiteralTree literalTree = literalTrees.iterator().next();
-        String message = literalTree.is(Tree.Kind.TEXT_BLOCK) ? ("Define a constant instead of duplicating this text block " + literalOccurrence + " times.")
-          : ("Define a constant instead of duplicating this literal \"" + key + "\" " + literalOccurrence + " times.");
+        List<LiteralTree> reportedTrees = literalTrees.stream().filter(tree -> !isLoggingArgument(tree)).toList();
+        LiteralTree literalTree = reportedTrees.iterator().next();
+        int reportedOccurrences = reportedTrees.size();
+        String message = literalTree.is(Tree.Kind.TEXT_BLOCK) ? ("Define a constant instead of duplicating this text block " + reportedOccurrences + " times.")
+          : ("Define a constant instead of duplicating this literal \"" + key + "\" " + reportedOccurrences + " times.");
         context.reportIssue(
           this,
           literalTree,
           message,
-          secondaryLocations(literalTrees), literalOccurrence);
+          secondaryLocations(reportedTrees.subList(1, reportedTrees.size())), reportedOccurrences);
       }
     });
   }
@@ -114,6 +124,25 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
       .map(Tree::parent)
       .filter(t -> t.is(Tree.Kind.THROW_STATEMENT))
       .isPresent();
+  }
+
+  /**
+   * Returns {@code true} when {@code literalTree} is passed as an argument to a logging method
+   * (SLF4J, Java Util Logging, or Log4j 2), including through string concatenation.
+   * Such occurrences are suppressed: log messages are rarely extracted to constants in practice.
+   */
+  private static boolean isLoggingArgument(LiteralTree literalTree) {
+    Tree parent = literalTree.parent();
+    // If the literal is part of a concatenation, move up to the argument level.
+    while (parent != null && parent.is(Tree.Kind.PLUS)) {
+      parent = parent.parent();
+    }
+    if (parent == null || !parent.is(Tree.Kind.ARGUMENTS)) {
+      return false;
+    }
+    Tree mit = parent.parent();
+    return mit != null && mit.is(Tree.Kind.METHOD_INVOCATION)
+      && LoggingMatchers.LOG_METHODS.matches((MethodInvocationTree) mit);
   }
 
   @Override
