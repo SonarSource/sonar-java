@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.IllegalRuleParameterException;
 import org.sonar.java.checks.helpers.LoggingMatchers;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.ModifiersUtils;
@@ -78,9 +79,7 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     if (JavaFileTypeClassifier.isTestFile(context)) {
       return;
     }
-    if (excludePattern == null && !excludePatterns.isEmpty()) {
-      excludePattern = Pattern.compile(excludePatterns, Pattern.DOTALL);
-    }
+    compileExcludePattern();
     occurrences.clear();
     constants.clear();
     scan(context.getTree());
@@ -168,6 +167,16 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
       String stringValue = LiteralUtils.getAsStringValue(tree).replace("\\n", "\n");
       if (stringValue.length() >= minimalLength && !isExcluded(stringValue)) {
         occurrences.computeIfAbsent(stringValue, key -> new ArrayList<>()).add(tree);
+      }
+    }
+  }
+
+  private void compileExcludePattern() {
+    if (excludePattern == null && !excludePatterns.isEmpty()) {
+      try {
+        excludePattern = Pattern.compile(excludePatterns, Pattern.DOTALL);
+      } catch (RuntimeException e) {
+        throw new IllegalRuleParameterException("Unable to compile regular expression: " + excludePatterns, e);
       }
     }
   }

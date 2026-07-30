@@ -63,18 +63,15 @@ class JavaFileTypeClassifierTest {
   }
 
   @Test
-  void hasTestNamingConvention_recognizesPrefixes() {
-    assertNamingConvention(true, "TestFoo.java");
-    assertNamingConvention(true, "ITFoo.java");
-  }
-
-  @Test
   void hasTestNamingConvention_returnsFalse_forProductionNames() {
     assertNamingConvention(false, "Foo.java");
     assertNamingConvention(false, "FooService.java");
     assertNamingConvention(false, "FooController.java");
     // Lower-case 'test' in the middle is not a match
     assertNamingConvention(false, "MyTestedCode.java");
+    // Prefix-only conventions are not recognized
+    assertNamingConvention(false, "TestFoo.java");
+    assertNamingConvention(false, "ITFoo.java");
   }
 
   private void assertNamingConvention(boolean expected, String filename) {

@@ -21,7 +21,6 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
-import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class StringLiteralDuplicatedCheckTest {
 

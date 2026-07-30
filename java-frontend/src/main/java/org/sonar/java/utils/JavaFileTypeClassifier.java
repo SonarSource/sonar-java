@@ -87,15 +87,12 @@ public final class JavaFileTypeClassifier {
   private static final List<String> TEST_PATH_SUBPATHS = List.of("src/it/java", "src/its/java");
 
   /**
-   * Matches file names (without {@code .java} extension) that follow standard test naming conventions:
-   * <ul>
-   *   <li>Prefix: {@code Test}, {@code IT} (e.g. {@code TestFoo}, {@code ITFoo})</li>
-   *   <li>Suffix: {@code Test}, {@code Tests}, {@code TestCase}, {@code IT}, {@code ITCase}, {@code Spec}, {@code Specs}
-   *       (e.g. {@code FooTest}, {@code FooSpec})</li>
-   * </ul>
+   * Matches file names (without {@code .java} extension) that follow standard test naming conventions
+   * by suffix: {@code Test}, {@code Tests}, {@code TestCase}, {@code IT}, {@code ITCase}, {@code Spec}, {@code Specs}
+   * (e.g. {@code FooTest}, {@code FooSpec}, {@code FooIT}).
    */
   private static final Pattern TEST_NAME_PATTERN = Pattern.compile(
-    "^((Test|IT)[a-zA-Z0-9_]+|[A-Z][a-zA-Z0-9_]*(Test|Tests|TestCase|IT|ITCase|Spec|Specs))$"
+    "^[A-Z]\\w*(Test|Tests|TestCase|IT|ITCase|Spec|Specs)$"
   );
 
   private JavaFileTypeClassifier() {
@@ -126,9 +123,8 @@ public final class JavaFileTypeClassifier {
   }
 
   /**
-   * Returns {@code true} if the file name (without {@code .java} extension) matches a standard
-   * test naming convention: prefixes {@code Test}/  {@code IT}, or suffixes
-   * {@code Test}/{@code Tests}/{@code TestCase}/{@code IT}/{@code ITCase}/{@code Spec}/{@code Specs}.
+   * Returns {@code true} if the file name (without {@code .java} extension) matches
+   * {@link #TEST_NAME_PATTERN}.
    *
    * @param context the current file scanner context
    */
