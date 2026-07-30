@@ -16,7 +16,6 @@
  */
 package org.sonar.java.utils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -82,11 +81,10 @@ public final class JavaFileTypeClassifier {
   );
 
   /**
-   * Path segments that indicate a file lives in an integration-test source tree
-   * (e.g. Maven's {@code src/it/java} or {@code src/its/java}).
-   * Matching is case-insensitive.
+   * Path substrings that indicate a file lives in an integration-test source tree,
+   * following the Maven convention of {@code src/it/java} or {@code src/its/java}.
    */
-  private static final Set<String> TEST_PATH_SEGMENTS = Set.of("it", "its");
+  private static final List<String> TEST_PATH_SUBPATHS = List.of("src/it/java", "src/its/java");
 
   /**
    * Matches file names (without {@code .java} extension) that follow standard test naming conventions:
@@ -141,8 +139,8 @@ public final class JavaFileTypeClassifier {
   }
 
   /**
-   * Returns {@code true} if any segment of the file's URI path matches a known integration-test
-   * directory name: {@code it} or {@code its} (case-insensitive).
+   * Returns {@code true} if the file's URI path contains a known integration-test source tree
+   * substring: {@code src/it/java} or {@code src/its/java}.
    *
    * <p>This covers the Maven convention of placing integration tests under
    * {@code src/it/java} or {@code src/its/java}.
@@ -150,9 +148,8 @@ public final class JavaFileTypeClassifier {
    * @param context the current file scanner context
    */
   static boolean hasTestPathSegment(JavaFileScannerContext context) {
-    String[] segments = context.getInputFile().uri().getPath().split("/");
-    return Arrays.stream(segments)
-      .anyMatch(segment -> TEST_PATH_SEGMENTS.contains(segment.toLowerCase(Locale.ROOT)));
+    String path = context.getInputFile().uri().getPath().toLowerCase(Locale.ROOT);
+    return TEST_PATH_SUBPATHS.stream().anyMatch(path::contains);
   }
 
   /**
