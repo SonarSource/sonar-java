@@ -67,6 +67,16 @@ class StringLiteralDuplicatedCheckTest {
   }
 
   @Test
+  void exclude_patterns() {
+    StringLiteralDuplicatedCheck check = new StringLiteralDuplicatedCheck();
+    check.excludePatterns = "excluded [a-z]+";
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringLiteralDuplicatedCheckExcludePatternsSample.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
+
+  @Test
   void minimal_length_at_three() {
     StringLiteralDuplicatedCheck check = new StringLiteralDuplicatedCheck();
     check.minimalLength = 3;

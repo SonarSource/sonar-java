@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -60,6 +61,15 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     defaultValue = "" + DEFAULT_MINIMAL_LENGTH)
   public int minimalLength = DEFAULT_MINIMAL_LENGTH;
 
+  @RuleProperty(
+    key = "excludePatterns",
+    description = "Regular expression that strings must match to be excluded from the check. Leave empty to disable.",
+    defaultValue = "")
+  public String excludePatterns = "";
+
+  @Nullable
+  private Pattern excludePattern = null;
+
   private final Map<String, List<LiteralTree>> occurrences = new HashMap<>();
   private final Map<String, VariableTree> constants = new HashMap<>();
 
@@ -67,6 +77,9 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   public void scanFile(JavaFileScannerContext context) {
     if (JavaFileTypeClassifier.isTestFile(context)) {
       return;
+    }
+    if (excludePattern == null && !excludePatterns.isEmpty()) {
+      excludePattern = Pattern.compile(excludePatterns, Pattern.DOTALL);
     }
     occurrences.clear();
     constants.clear();
@@ -153,10 +166,14 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
   public void visitLiteral(LiteralTree tree) {
     if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK) && !isStringLiteralFragment(tree)) {
       String stringValue = LiteralUtils.getAsStringValue(tree).replace("\\n", "\n");
-      if (stringValue.length() >= minimalLength) {
+      if (stringValue.length() >= minimalLength && !isExcluded(stringValue)) {
         occurrences.computeIfAbsent(stringValue, key -> new ArrayList<>()).add(tree);
       }
     }
+  }
+
+  private boolean isExcluded(String stringValue) {
+    return excludePattern != null && excludePattern.matcher(stringValue).matches();
   }
 
   private static boolean isStringLiteralFragment(ExpressionTree tree) {
