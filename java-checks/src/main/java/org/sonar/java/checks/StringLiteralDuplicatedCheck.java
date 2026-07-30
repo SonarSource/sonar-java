@@ -46,15 +46,19 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final int DEFAULT_THRESHOLD = 3;
-
-  // String literals include quotes, so this means length 5 as defined in RSPEC
-  private static final int MINIMAL_LITERAL_LENGTH = 7;
+  private static final int DEFAULT_MINIMAL_LENGTH = 5;
 
   @RuleProperty(
     key = "threshold",
     description = "Number of times a literal must be duplicated to trigger an issue",
     defaultValue = "" + DEFAULT_THRESHOLD)
   public int threshold = DEFAULT_THRESHOLD;
+
+  @RuleProperty(
+    key = "minimalLength",
+    description = "Minimal length a string literal must have to be considered for duplication",
+    defaultValue = "" + DEFAULT_MINIMAL_LENGTH)
+  public int minimalLength = DEFAULT_MINIMAL_LENGTH;
 
   private final Map<String, List<LiteralTree>> occurrences = new HashMap<>();
   private final Map<String, VariableTree> constants = new HashMap<>();
@@ -147,10 +151,9 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
 
   @Override
   public void visitLiteral(LiteralTree tree) {
-    if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK)) {
-      String literal = tree.value();
-      if (literal.length() >= MINIMAL_LITERAL_LENGTH && !isStringLiteralFragment(tree)) {
-        String stringValue = LiteralUtils.getAsStringValue(tree).replace("\\n", "\n");
+    if (tree.is(Tree.Kind.STRING_LITERAL, Tree.Kind.TEXT_BLOCK) && !isStringLiteralFragment(tree)) {
+      String stringValue = LiteralUtils.getAsStringValue(tree).replace("\\n", "\n");
+      if (stringValue.length() >= minimalLength) {
         occurrences.computeIfAbsent(stringValue, key -> new ArrayList<>()).add(tree);
       }
     }
