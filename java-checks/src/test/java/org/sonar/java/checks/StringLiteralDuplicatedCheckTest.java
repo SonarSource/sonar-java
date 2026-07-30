@@ -21,6 +21,7 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class StringLiteralDuplicatedCheckTest {
 
@@ -47,6 +48,14 @@ class StringLiteralDuplicatedCheckTest {
       .onFile(nonCompilingTestSourcesPath("checks/TextBlocksDuplicatedCheckSample.java"))
       .withCheck(new StringLiteralDuplicatedCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void no_issues_in_file_defined_as_test() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringLiteralDuplicatedCheckSampleTest.java"))
+      .withCheck(new StringLiteralDuplicatedCheck())
+      .verifyNoIssues();
   }
 
   @Test

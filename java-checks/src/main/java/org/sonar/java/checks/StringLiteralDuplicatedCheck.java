@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.utils.JavaFileTypeClassifier;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -58,6 +59,9 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    if (JavaFileTypeClassifier.isTestFile(context)) {
+      return;
+    }
     occurrences.clear();
     constants.clear();
     scan(context.getTree());
