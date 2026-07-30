@@ -117,48 +117,61 @@ public class UselessMathematicalComparisonCheck extends IssuableSubscriptionVisi
       case GREATER_THAN_OR_EQUAL_TO -> Kind.LESS_THAN_OR_EQUAL_TO;
       case LESS_THAN -> Kind.GREATER_THAN;
       case LESS_THAN_OR_EQUAL_TO -> Kind.GREATER_THAN_OR_EQUAL_TO;
-      default -> kind; // EQUAL_TO, NOT_EQUAL_TO are symmetric
+      // EQUAL_TO, NOT_EQUAL_TO are symmetric
+      default -> kind;
     };
   }
 
   @Nullable
   private static Boolean evaluateComparison(Kind normalizedKind, long min, long max, long constant) {
     return switch (normalizedKind) {
-      // var > constant
-      case GREATER_THAN -> {
-        if (constant >= max) yield Boolean.FALSE;
-        else if (constant < min) yield Boolean.TRUE;
-        else yield null;
-      }
-      // var >= constant
-      case GREATER_THAN_OR_EQUAL_TO -> {
-        if (constant > max) yield Boolean.FALSE;
-        else if (constant <= min) yield Boolean.TRUE;
-        else yield null;
-      }
-      // var < constant
-      case LESS_THAN -> {
-        if (constant <= min) yield Boolean.FALSE;
-        else if (constant > max) yield Boolean.TRUE;
-        else yield null;
-      }
-      // var <= constant
-      case LESS_THAN_OR_EQUAL_TO -> {
-        if (constant < min) yield Boolean.FALSE;
-        else if (constant >= max) yield Boolean.TRUE;
-        else yield null;
-      }
-      // var == constant
-      case EQUAL_TO -> {
-        if (constant < min || constant > max) yield Boolean.FALSE;
-        else yield null;
-      }
-      // var != constant
-      case NOT_EQUAL_TO -> {
-        if (constant < min || constant > max) yield Boolean.TRUE;
-        else yield null;
-      }
+      case GREATER_THAN -> evaluateGreaterThan(min, max, constant);
+      case GREATER_THAN_OR_EQUAL_TO -> evaluateGreaterThanOrEqual(min, max, constant);
+      case LESS_THAN -> evaluateLessThan(min, max, constant);
+      case LESS_THAN_OR_EQUAL_TO -> evaluateLessThanOrEqual(min, max, constant);
+      case EQUAL_TO -> (constant < min || constant > max) ? Boolean.FALSE : null;
+      case NOT_EQUAL_TO -> (constant < min || constant > max) ? Boolean.TRUE : null;
       default -> null;
     };
+  }
+
+  @Nullable
+  private static Boolean evaluateGreaterThan(long min, long max, long constant) {
+    if (constant >= max) {
+      return Boolean.FALSE;
+    } else if (constant < min) {
+      return Boolean.TRUE;
+    }
+    return null;
+  }
+
+  @Nullable
+  private static Boolean evaluateGreaterThanOrEqual(long min, long max, long constant) {
+    if (constant > max) {
+      return Boolean.FALSE;
+    } else if (constant <= min) {
+      return Boolean.TRUE;
+    }
+    return null;
+  }
+
+  @Nullable
+  private static Boolean evaluateLessThan(long min, long max, long constant) {
+    if (constant <= min) {
+      return Boolean.FALSE;
+    } else if (constant > max) {
+      return Boolean.TRUE;
+    }
+    return null;
+  }
+
+  @Nullable
+  private static Boolean evaluateLessThanOrEqual(long min, long max, long constant) {
+    if (constant < min) {
+      return Boolean.FALSE;
+    } else if (constant >= max) {
+      return Boolean.TRUE;
+    }
+    return null;
   }
 }
