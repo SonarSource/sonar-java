@@ -43,7 +43,8 @@ public class ReplaceUnusedExceptionParameterWithUnnamedPatternCheck extends Issu
     VariableTree v = catchTree.parameter();
     IdentifierTree ident = v.simpleName();
 
-    if (!ident.isUnnamedVariable() && v.symbol().usages().isEmpty()) {
+    // completely ignored for an absent semantic model
+    if (!ident.isUnnamedVariable() && context.getSemanticModel() != null && v.symbol().usages().isEmpty()) {
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(ident)
