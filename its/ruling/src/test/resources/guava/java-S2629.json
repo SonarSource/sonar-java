@@ -1,5 +1,14 @@
 {
+"com.google.guava:guava:src/com/google/common/io/Closer.java": [
+253
+],
 "com.google.guava:guava:src/com/google/common/reflect/ClassPath.java": [
 448
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+763
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/UncaughtExceptionHandlers.java": [
+67
 ]
 }

@@ -50,6 +50,42 @@ class StringLiteralDuplicatedCheckTest {
   }
 
   @Test
+  void no_issues_in_file_defined_as_test() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringLiteralDuplicatedCheckSampleTest.java"))
+      .withCheck(new StringLiteralDuplicatedCheck())
+      .verifyNoIssues();
+  }
+
+  @Test
+  void no_issues_for_logging_arguments() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringLiteralDuplicatedCheckLoggingSample.java"))
+      .withCheck(new StringLiteralDuplicatedCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void exclude_patterns() {
+    StringLiteralDuplicatedCheck check = new StringLiteralDuplicatedCheck();
+    check.excludePatterns = "excluded [a-z]+";
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringLiteralDuplicatedCheckExcludePatternsSample.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
+
+  @Test
+  void minimal_length_at_three() {
+    StringLiteralDuplicatedCheck check = new StringLiteralDuplicatedCheck();
+    check.minimalLength = 3;
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringLiteralDuplicatedCheckMinimalLengthSample.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
+
+  @Test
   void threshold_at_two() {
     StringLiteralDuplicatedCheck visitor = new StringLiteralDuplicatedCheck();
     visitor.threshold = 2;

@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.LoggingMatchers;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -41,13 +42,10 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
-
 @Rule(key = "S2629")
 public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String STRING = "java.lang.String";
-  private static final String OBJECT_ARR = "java.lang.Object[]";
 
   private static class SLF4J {
 
@@ -62,19 +60,6 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
     private static final String LOGGER = "org.slf4j.Logger";
     private static final String MARKER = "org.slf4j.Marker";
 
-    private static final MethodMatchers LOG = MethodMatchers.create()
-      .ofSubTypes(LOGGER)
-      .names(METHOD_NAMES)
-      .addParametersMatcher(STRING)
-      .addParametersMatcher(STRING, ANY)
-      .addParametersMatcher(STRING, ANY, ANY)
-      .addParametersMatcher(STRING, OBJECT_ARR)
-      .addParametersMatcher(MARKER, STRING)
-      .addParametersMatcher(MARKER, STRING, ANY)
-      .addParametersMatcher(MARKER, STRING, ANY, ANY)
-      .addParametersMatcher(MARKER, STRING, OBJECT_ARR)
-      .build();
-
     private static final MethodMatchers TEST = MethodMatchers.create()
       .ofSubTypes(LOGGER)
       .names(testMethodNames(METHOD_NAMES))
@@ -85,29 +70,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
 
   private static class JUL {
 
-    private static final String[] METHOD_NAMES = {
-      "severe",
-      "warning",
-      "info",
-      "config",
-      "fine",
-      "finer",
-      "finest"
-    };
-
     private static final String LOGGER = "java.util.logging.Logger";
-
-    private static final MethodMatchers LOG = MethodMatchers.or(
-      MethodMatchers.create()
-        .ofTypes(LOGGER)
-        .names(METHOD_NAMES)
-        .addParametersMatcher(STRING)
-        .build(),
-      MethodMatchers.create()
-        .ofTypes(LOGGER)
-        .names("log")
-        .addParametersMatcher("java.util.logging.Level", STRING)
-        .build());
 
     private static final MethodMatchers TEST = MethodMatchers.create()
       .ofTypes(LOGGER)
@@ -133,18 +96,6 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
     private static final Predicate<Type> SUPPLIER = type -> type.isSubtypeOf("org.apache.logging.log4j.util.Supplier") ||
       type.isSubtypeOf("org.apache.logging.log4j.util.MessageSupplier");
 
-    private static final MethodMatchers LOG = MethodMatchers.or(
-      MethodMatchers.create()
-        .ofSubTypes(LOGGER)
-        .names(METHOD_NAMES)
-        .withAnyParameters()
-        .build(),
-      MethodMatchers.create()
-        .ofSubTypes(LOGGER)
-        .names("log")
-        .withAnyParameters()
-        .build());
-
     private static final MethodMatchers TEST = MethodMatchers.or(
       MethodMatchers.create()
         .ofSubTypes(LOGGER)
@@ -165,11 +116,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
     .withAnyParameters()
     .build();
 
-  private static final MethodMatchers LAZY_ARG_METHODS = MethodMatchers.or(
-    PRECONDITIONS,
-    SLF4J.LOG,
-    JUL.LOG,
-    LOG4J.LOG);
+  private static final MethodMatchers LAZY_ARG_METHODS = MethodMatchers.or(PRECONDITIONS, LoggingMatchers.LOG_METHODS);
 
   private static final MethodMatchers LOG_LEVEL_TESTS = MethodMatchers.or(
     SLF4J.TEST,
