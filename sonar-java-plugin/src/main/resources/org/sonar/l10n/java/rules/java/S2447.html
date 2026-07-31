@@ -1,7 +1,14 @@
 <h2>Why is this an issue?</h2>
-<p>Callers of a <code>Boolean</code> method may be expecting to receive <code>true</code> or <code>false</code> in response. But <code>Boolean</code>
-objects can take <code>null</code> as a possible value. <code>Boolean</code> methods should not return <code>null</code> unless the code is annotated
-appropriately. With the proper annotation, the caller is aware that the returned value could be null.</p>
+<p>Callers of a <code>Boolean</code> method often expect to receive either <code>true</code> or <code>false</code>. However, unlike the primitive
+<code>boolean</code> type, <code>Boolean</code> objects can also be <code>null</code>. When a <code>null</code> <code>Boolean</code> is implicitly
+unboxed, using it as a primitive value can cause a <code>NullPointerException</code>.</p>
+<p>This rule is intentionally scoped to methods returning <code>Boolean</code>. The same unboxing risk exists for other nullable wrapper types, but
+<code>Boolean</code> values are commonly used as predicates, where <code>null</code> introduces a third state to a value callers may otherwise expect
+to be binary. The rule does not prohibit a deliberate tri-state <code>Boolean</code>; it requires the nullable return contract to be explicit.</p>
+<p>If <code>null</code> is a legitimate return value, annotate the method with a nullability annotation supported by the analyzer. Examples include
+<code>@javax.annotation.Nullable</code>, <code>@javax.annotation.CheckForNull</code>, <code>@jakarta.annotation.Nullable</code>, and
+<code>@org.jspecify.annotations.Nullable</code>. This makes the contract clear to callers and to tools that check nullability. If <code>null</code> is
+not a legitimate value, return a primitive <code>boolean</code> or a non-null <code>Boolean</code> instead.</p>
 <h3>Noncompliant code example</h3>
 <pre>
 public Boolean isUsable() {
@@ -20,17 +27,17 @@ public void caller() {
 @javax.annotation.Nullable
 public Boolean isUsable() {
   // ...
-  return null;
+  return null; // null represents an unknown state
 }
 
 @javax.annotation.CheckForNull
-public Boolean isUsable() {
+public Boolean isUsableOrUnknown() {
   // ...
-  return null;
+  return null; // null represents an unknown state
 }
 
 public void caller() {
-  if (Boolean.True.equals(isUsable())) { // This caller knows to check and avoid ambiguity
+  if (Boolean.TRUE.equals(isUsable())) { // null is handled explicitly
     // ...
   }
 }
