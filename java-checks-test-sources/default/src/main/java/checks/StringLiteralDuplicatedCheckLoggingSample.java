@@ -48,9 +48,10 @@ class MixedLoggingAndNonLogging {
   private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(MixedLoggingAndNonLogging.class);
 
   void doStuff(String v1, String v2, String v3) {
-    LOG.error("validation error"); // Compliant — the logging occurrence does not count
-    doValidate("validation error", v1); // Noncompliant {{Define a constant instead of duplicating this literal "validation error" 3 times.}}
-//             ^^^^^^^^^^^^^^^^^^
+    LOG.error("validation error"); // Noncompliant {{Define a constant instead of duplicating this literal "validation error" 4 times.}}
+//            ^^^^^^^^^^^^^^^^^^
+    doValidate("validation error", v1);
+//             ^^^^^^^^^^^^^^^^^^<
     doValidate("validation error", v2);
 //             ^^^^^^^^^^^^^^^^^^<
     doValidate("validation error", v3);
@@ -58,4 +59,16 @@ class MixedLoggingAndNonLogging {
   }
 
   private void doValidate(String msg, String value) {}
+}
+
+class ReportedWhenConstantExists {
+
+  private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(ReportedWhenConstantExists.class);
+
+  private static final String CONSTANT = "constant message";
+
+  void doStuff() {
+    LOG.error("constant message"); // Noncompliant {{Use already-defined constant 'CONSTANT' instead of duplicating its value here.}}
+//            ^^^^^^^^^^^^^^^^^^
+  }
 }

@@ -36,7 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree;
  * <p>This classifier combines three signals:
  * <ol>
  *   <li>Platform truth: {@link InputFile#type()} from the Sonar scanner</li>
- *   <li>Naming conventions: file name patterns like {@code FooTest}, {@code ITFoo}, {@code FooSpec}</li>
+ *   <li>Naming conventions: file name patterns like {@code FooTest}, {@code FooIT}, {@code FooSpec}</li>
  *   <li>AST annotations: class-level test framework annotations ({@code @RunWith}, {@code @SpringBootTest}, etc.)</li>
  * </ol>
  *

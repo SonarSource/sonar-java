@@ -380,8 +380,8 @@
   {
     "ruleKey": "S1192",
     "hasTruePositives": true,
-    "falseNegatives": 3,
-    "falsePositives": 23
+    "falseNegatives": 0,
+    "falsePositives": 20
   },
   {
     "ruleKey": "S1193",

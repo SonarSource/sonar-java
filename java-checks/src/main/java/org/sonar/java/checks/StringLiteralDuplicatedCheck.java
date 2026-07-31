@@ -86,31 +86,27 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     occurrences.forEach((key, literalTrees) -> {
       int literalOccurrence = literalTrees.size();
       // Do not consider `throw new Exception("repeated message")` or logging calls for reporting
-      // duplicates, but still report against a constant if a non-logging usage exists.
+      // duplicates, but still report all occurrences against an already-defined constant.
       int triggeringOccurrences = (int) literalTrees.stream()
         .filter(tree -> !isThrowableArgument(tree) && !isLoggingArgument(tree)).count();
       if (constants.containsKey(key)) {
         VariableTree constant = constants.get(key);
         List<LiteralTree> duplications = literalTrees.stream()
-          .filter(literal -> literal.parent() != constant && !isLoggingArgument(literal))
+          .filter(literal -> literal.parent() != constant)
           .toList();
-        if (duplications.isEmpty()) {
-          return;
-        }
         context.reportIssue(this, duplications.iterator().next(),
           "Use already-defined constant '" + constant.simpleName() + "' instead of duplicating its value here.",
           secondaryLocations(duplications.subList(1, duplications.size())), literalOccurrence);
       } else if (triggeringOccurrences >= threshold) {
-        List<LiteralTree> reportedTrees = literalTrees.stream().filter(tree -> !isLoggingArgument(tree)).toList();
-        LiteralTree literalTree = reportedTrees.iterator().next();
-        int reportedOccurrences = reportedTrees.size();
+        LiteralTree literalTree = literalTrees.iterator().next();
+        int reportedOccurrences = literalTrees.size();
         String message = literalTree.is(Tree.Kind.TEXT_BLOCK) ? ("Define a constant instead of duplicating this text block " + reportedOccurrences + " times.")
           : ("Define a constant instead of duplicating this literal \"" + key + "\" " + reportedOccurrences + " times.");
         context.reportIssue(
           this,
           literalTree,
           message,
-          secondaryLocations(reportedTrees.subList(1, reportedTrees.size())), reportedOccurrences);
+          secondaryLocations(literalTrees.subList(1, literalTrees.size())), reportedOccurrences);
       }
     });
   }
