@@ -31,4 +31,13 @@ class IndexOfWithPositiveNumberCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/IndexOfWithPositiveNumber.java"))
+      .withCheck(new IndexOfWithPositiveNumberCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

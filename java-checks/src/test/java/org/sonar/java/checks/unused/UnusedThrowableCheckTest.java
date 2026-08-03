@@ -29,4 +29,13 @@ class UnusedThrowableCheckTest {
       .withCheck(new UnusedThrowableCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/unused/UnusedThrowableCheck.java"))
+      .withCheck(new UnusedThrowableCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

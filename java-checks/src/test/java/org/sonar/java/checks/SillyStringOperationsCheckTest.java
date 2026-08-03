@@ -30,4 +30,13 @@ class SillyStringOperationsCheckTest {
       .withCheck(new SillyStringOperationsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SillyStringOperationsCheckSample.java"))
+      .withCheck(new SillyStringOperationsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

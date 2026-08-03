@@ -28,4 +28,13 @@ class RightCurlyBraceStartLineCheckTest {
       .withCheck(new RightCurlyBraceStartLineCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RightCurlyBraceStartLineCheck.java")
+      .withCheck(new RightCurlyBraceStartLineCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

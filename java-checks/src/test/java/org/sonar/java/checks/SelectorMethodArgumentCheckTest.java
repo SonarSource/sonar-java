@@ -27,4 +27,13 @@ class SelectorMethodArgumentCheckTest {
       .withCheck(new SelectorMethodArgumentCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SelectorMethodArgumentCheck.java")
+      .withCheck(new SelectorMethodArgumentCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -39,4 +39,13 @@ class TypeUpperBoundNotFinalCheckTest {
       .withCheck(new TypeUpperBoundNotFinalCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/TypeUpperBoundNotFinalCheckSample.java"))
+      .withCheck(new TypeUpperBoundNotFinalCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

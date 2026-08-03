@@ -30,4 +30,13 @@ class ClassComparedByNameCheckTest {
       .withCheck(new ClassComparedByNameCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ClassComparedByNameCheck.java"))
+      .withCheck(new ClassComparedByNameCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

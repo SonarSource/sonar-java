@@ -28,4 +28,13 @@ class FieldModifierCheckTest {
       .withCheck(new FieldModifierCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FieldModifier.java")
+      .withCheck(new FieldModifierCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

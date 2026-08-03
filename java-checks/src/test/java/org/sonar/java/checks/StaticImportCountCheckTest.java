@@ -67,4 +67,13 @@ class StaticImportCountCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TEST_FILES_DIR + "CompliantImports.java")
+      .withCheck(new StaticImportCountCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

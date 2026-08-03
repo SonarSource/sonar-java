@@ -37,4 +37,13 @@ class LambdaOptionalParenthesisCheckTest {
       .withJavaVersion(8)
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LambdaOptionalParenthesisCheck_no_version.java")
+      .withCheck(new LambdaOptionalParenthesisCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -30,4 +30,13 @@ class DoubleBraceInitializationCheckTest {
       .withCheck(new DoubleBraceInitializationCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DoubleBraceInitializationCheckSample.java"))
+      .withCheck(new DoubleBraceInitializationCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

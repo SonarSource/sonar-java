@@ -38,4 +38,13 @@ class LambdaSingleExpressionCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LambdaSingleExpressionCheck_no_version.java")
+      .withCheck(new LambdaSingleExpressionCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

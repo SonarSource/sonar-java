@@ -62,4 +62,13 @@ class SystemOutOrErrUsageCheckTest {
       .withCheck(new SystemOutOrErrUsageCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SystemOutOrErrUsageCheckSample.java"))
+      .withCheck(new SystemOutOrErrUsageCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

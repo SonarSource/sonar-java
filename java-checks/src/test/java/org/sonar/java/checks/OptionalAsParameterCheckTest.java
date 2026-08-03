@@ -29,4 +29,13 @@ class OptionalAsParameterCheckTest {
       .withCheck(new OptionalAsParameterCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/OptionalAsParameterCheckSample.java"))
+      .withCheck(new OptionalAsParameterCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

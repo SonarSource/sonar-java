@@ -30,4 +30,13 @@ class IterableIteratorCheckTest {
       .withCheck(new IterableIteratorCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/IterableIteratorCheckSample.java"))
+      .withCheck(new IterableIteratorCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

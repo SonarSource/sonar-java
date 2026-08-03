@@ -31,4 +31,13 @@ class NoPmdTagPresenceCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/NoPmdTagPresenceCheckSample.java"))
+      .withCheck(new NoPmdTagPresenceCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

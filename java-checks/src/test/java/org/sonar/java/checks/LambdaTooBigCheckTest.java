@@ -40,4 +40,13 @@ class LambdaTooBigCheckTest {
       .withCheck(check)
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/LambdaTooBigCheckSample.java"))
+      .withCheck(new LambdaTooBigCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

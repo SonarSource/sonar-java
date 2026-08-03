@@ -39,4 +39,13 @@ class UnderscoreOnNumberCheckTest {
       .withJavaVersion(6)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UnderscoreOnNumberCheck.java"))
+      .withCheck(new UnderscoreOnNumberCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

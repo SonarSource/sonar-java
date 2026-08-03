@@ -38,4 +38,13 @@ class ImmediatelyReturnedVariableCheckTest {
       .verifyNoIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ImmediatelyReturnedVariableCheckSample.java"))
+      .withCheck(new ImmediatelyReturnedVariableCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

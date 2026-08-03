@@ -43,4 +43,13 @@ class AtLeastOneConstructorCheckTest {
       .withCheck(new AtLeastOneConstructorCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/AtLeastOneConstructorCheckSample.java"))
+      .withCheck(new AtLeastOneConstructorCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -64,4 +64,13 @@ class RunFinalizersCheckTest {
         .verifyNoIssues();
     }
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/RunFinalizersCheckSample.java"))
+      .withCheck(new RunFinalizersCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

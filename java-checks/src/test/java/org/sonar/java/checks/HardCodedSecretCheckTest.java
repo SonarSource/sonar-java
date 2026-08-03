@@ -42,4 +42,13 @@ class HardCodedSecretCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/HardCodedSecretCheckSample.java"))
+      .withCheck(new HardCodedSecretCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -37,4 +37,13 @@ class CompareToResultTestCheckTest {
       .withCheck(new CompareToResultTestCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/CompareToResultTestCheck.java"))
+      .withCheck(new CompareToResultTestCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

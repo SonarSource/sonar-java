@@ -30,4 +30,13 @@ class UselessIncrementCheckTest {
       .withCheck(new UselessIncrementCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UselessIncrementCheck.java"))
+      .withCheck(new UselessIncrementCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

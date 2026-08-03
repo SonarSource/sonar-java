@@ -38,4 +38,13 @@ class EntityManagerMergeUnusedResultCheckTest {
       .withCheck(new EntityManagerMergeUnusedResultCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/EntityManagerMergeUnusedResultCheckSampleJakarta.java"))
+      .withCheck(new EntityManagerMergeUnusedResultCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

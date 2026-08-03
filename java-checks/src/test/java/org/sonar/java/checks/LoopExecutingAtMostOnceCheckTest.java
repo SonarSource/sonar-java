@@ -29,4 +29,13 @@ class LoopExecutingAtMostOnceCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LoopExecutingAtMostOnceCheck.java")
+      .withCheck(new LoopExecutingAtMostOnceCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

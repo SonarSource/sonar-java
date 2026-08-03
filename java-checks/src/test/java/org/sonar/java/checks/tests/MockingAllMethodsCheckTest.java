@@ -31,4 +31,13 @@ class MockingAllMethodsCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/MockingAllMethodsCheck.java"))
+      .withCheck(new MockingAllMethodsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

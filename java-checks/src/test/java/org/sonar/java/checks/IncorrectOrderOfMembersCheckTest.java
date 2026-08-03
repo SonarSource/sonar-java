@@ -31,4 +31,13 @@ class IncorrectOrderOfMembersCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/IncorrectOrderOfMembersCheckSample.java"))
+      .withCheck(new IncorrectOrderOfMembersCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

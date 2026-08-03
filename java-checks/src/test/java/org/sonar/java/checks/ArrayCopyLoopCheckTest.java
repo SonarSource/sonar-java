@@ -30,4 +30,13 @@ class ArrayCopyLoopCheckTest {
       .withCheck(new ArrayCopyLoopCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ArrayCopyLoopCheckSample.java"))
+      .withCheck(new ArrayCopyLoopCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

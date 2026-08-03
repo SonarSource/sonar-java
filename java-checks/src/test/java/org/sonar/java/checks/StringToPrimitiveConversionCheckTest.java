@@ -39,4 +39,13 @@ class StringToPrimitiveConversionCheckTest {
       .withCheck(new StringToPrimitiveConversionCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringToPrimitiveConversionCheckSample.java"))
+      .withCheck(new StringToPrimitiveConversionCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

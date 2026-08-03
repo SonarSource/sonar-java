@@ -138,4 +138,13 @@ class BrainMethodCheckTest {
     return check;
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/BrainMethodCheckSample.java"))
+      .withChecks(new BrainMethodCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

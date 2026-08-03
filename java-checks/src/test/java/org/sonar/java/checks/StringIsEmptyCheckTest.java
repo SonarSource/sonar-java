@@ -75,4 +75,13 @@ class StringIsEmptyCheckTest {
       .withCheck(new StringIsEmptyCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringIsEmptyCheckSample.java"))
+      .withCheck(new StringIsEmptyCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

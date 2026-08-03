@@ -30,4 +30,13 @@ class LDAPDeserializationCheckTest {
       .withCheck(new LDAPDeserializationCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/LDAPDeserializationCheckSample.java"))
+      .withCheck(new LDAPDeserializationCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -31,4 +31,13 @@ class KeySetInsteadOfEntrySetCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/KeySetInsteadOfEntrySet.java"))
+      .withCheck(new KeySetInsteadOfEntrySetCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

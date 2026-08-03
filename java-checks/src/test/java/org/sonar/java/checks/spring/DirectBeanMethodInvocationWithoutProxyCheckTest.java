@@ -29,4 +29,13 @@ class DirectBeanMethodInvocationWithoutProxyCheckTest {
       .withCheck(new DirectBeanMethodInvocationWithoutProxyCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/DirectBeanMethodInvocationWithoutProxyCheckSample.java"))
+      .withCheck(new DirectBeanMethodInvocationWithoutProxyCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

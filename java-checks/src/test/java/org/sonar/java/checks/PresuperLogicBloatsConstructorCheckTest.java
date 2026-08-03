@@ -48,4 +48,14 @@ class PresuperLogicBloatsConstructorCheckTest {
       .withJavaVersion(24)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/PresuperLogicShoudntBloatConstructorSample.java"))
+      .withCheck(new PresuperLogicBloatsConstructorCheck())
+      .withJavaVersion(25)
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

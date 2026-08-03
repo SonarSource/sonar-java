@@ -126,4 +126,13 @@ class MarkdownJavadocSyntaxCheckTest {
     int index = endIndexOfTag(matcher, javadoc);
     assertThat(index).isEqualTo(javadoc.length());
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/MarkdownJavadocSyntaxCheckSample.java"))
+      .withCheck(new MarkdownJavadocSyntaxCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

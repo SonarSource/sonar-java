@@ -186,4 +186,13 @@ class FileHeaderCheckTest {
     assertThat(e.getMessage()).isEqualTo("[FileHeaderCheck] Unable to compile the regular expression: **");
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FileHeaderCheck/Class1.java"))
+      .withCheck(new FileHeaderCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

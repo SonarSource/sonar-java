@@ -28,4 +28,13 @@ class SerialVersionUidCheckTest {
       .withCheck(new SerialVersionUidCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/serialization/SerialVersionUidCheckSample.java"))
+      .withCheck(new SerialVersionUidCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

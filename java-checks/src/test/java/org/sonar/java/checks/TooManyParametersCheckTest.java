@@ -62,4 +62,13 @@ class TooManyParametersCheckTest {
     );
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/TooManyParametersCheckSample.java"))
+      .withCheck(new TooManyParametersCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

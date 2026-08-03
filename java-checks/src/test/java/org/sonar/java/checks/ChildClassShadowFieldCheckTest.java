@@ -29,4 +29,13 @@ class ChildClassShadowFieldCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ChildClassShadowField.java")
+      .withCheck(new ChildClassShadowFieldCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

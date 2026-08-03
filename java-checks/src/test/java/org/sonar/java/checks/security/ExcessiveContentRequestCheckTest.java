@@ -364,4 +364,13 @@ class ExcessiveContentRequestCheckTest {
       .verifyNoIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/ExcessiveContentRequestCheck/ExcessiveContentRequestCheckSample.java"))
+      .withCheck(new ExcessiveContentRequestCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

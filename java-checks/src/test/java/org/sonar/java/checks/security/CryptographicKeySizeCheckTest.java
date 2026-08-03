@@ -30,4 +30,13 @@ class CryptographicKeySizeCheckTest {
       .withCheck(new CryptographicKeySizeCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/CryptographicKeySizeCheck.java"))
+      .withCheck(new CryptographicKeySizeCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

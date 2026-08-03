@@ -31,4 +31,13 @@ class AndroidBroadcastingCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/AndroidBroadcastingCheckSample.java"))
+      .withCheck(new AndroidBroadcastingCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

@@ -55,4 +55,13 @@ class AssertionCompareToSelfCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertionCompareToSelfCheck_Assertj.java"))
+      .withCheck(new AssertionCompareToSelfCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

@@ -40,4 +40,13 @@ class ImmediateReverseBoxingCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ImmediateReverseBoxingCheckSample.java"))
+      .withCheck(new ImmediateReverseBoxingCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

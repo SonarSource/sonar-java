@@ -29,4 +29,13 @@ class InnerClassTooManyLinesCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InnerClassTooManyLinesCheck.java")
+      .withCheck(new InnerClassTooManyLinesCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

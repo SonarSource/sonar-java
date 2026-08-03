@@ -31,4 +31,13 @@ class WebViewsFileAccessCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/WebViewsFileAccessCheck.java"))
+      .withCheck(new WebViewsFileAccessCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

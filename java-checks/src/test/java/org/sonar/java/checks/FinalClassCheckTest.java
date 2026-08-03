@@ -28,4 +28,13 @@ class FinalClassCheckTest {
       .withCheck(new FinalClassCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FinalClassCheck.java")
+      .withCheck(new FinalClassCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

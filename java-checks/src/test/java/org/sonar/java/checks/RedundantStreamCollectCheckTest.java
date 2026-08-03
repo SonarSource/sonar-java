@@ -28,4 +28,13 @@ class RedundantStreamCollectCheckTest {
       .withCheck(new RedundantStreamCollectCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RedundantStreamCollectCheck.java")
+      .withCheck(new RedundantStreamCollectCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

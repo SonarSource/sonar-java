@@ -31,4 +31,13 @@ class NonStaticClassInitializerCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/NonStaticClassInitializerCheckSample.java"))
+      .withCheck(new NonStaticClassInitializerCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

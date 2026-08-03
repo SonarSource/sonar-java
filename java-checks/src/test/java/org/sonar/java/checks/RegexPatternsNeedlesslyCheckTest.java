@@ -29,4 +29,13 @@ class RegexPatternsNeedlesslyCheckTest {
       .withCheck(new RegexPatternsNeedlesslyCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/RegexPatternsNeedlesslyCheckSample.java"))
+      .withCheck(new RegexPatternsNeedlesslyCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

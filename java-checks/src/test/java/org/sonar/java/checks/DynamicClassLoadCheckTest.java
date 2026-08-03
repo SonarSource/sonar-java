@@ -31,4 +31,13 @@ class DynamicClassLoadCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DynamicClassLoadCheckSample.java"))
+      .withCheck(new DynamicClassLoadCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

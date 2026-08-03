@@ -41,6 +41,14 @@ class CollectorsToListCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    createCheckVerifier()
+      .withJavaVersion(16)
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
   private static CheckVerifier createCheckVerifier() {
     return CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/CollectorsToListCheckSample.java"))

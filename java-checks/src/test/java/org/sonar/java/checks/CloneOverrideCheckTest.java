@@ -27,4 +27,13 @@ class CloneOverrideCheckTest {
       .withCheck(new CloneOverrideCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CloneOverrideCheck.java")
+      .withCheck(new CloneOverrideCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

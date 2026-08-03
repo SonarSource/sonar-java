@@ -30,4 +30,13 @@ class ReadObjectSynchronizedCheckTest {
       .withCheck(new ReadObjectSynchronizedCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ReadObjectSynchronized.java"))
+      .withCheck(new ReadObjectSynchronizedCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

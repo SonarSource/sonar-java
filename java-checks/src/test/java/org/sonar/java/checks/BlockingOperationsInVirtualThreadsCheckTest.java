@@ -39,4 +39,14 @@ class BlockingOperationsInVirtualThreadsCheckTest {
       .withJavaVersion(20)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/BlockingOperationsInVirtualThreadsCheckSample.java"))
+      .withCheck(new BlockingOperationsInVirtualThreadsCheck())
+      .withJavaVersion(21)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

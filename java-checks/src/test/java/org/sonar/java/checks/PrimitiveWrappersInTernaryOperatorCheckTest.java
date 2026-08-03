@@ -29,4 +29,13 @@ class PrimitiveWrappersInTernaryOperatorCheckTest {
       .withCheck(new PrimitiveWrappersInTernaryOperatorCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PrimitiveWrappersInTernaryOperatorCheckSample.java"))
+      .withCheck(new PrimitiveWrappersInTernaryOperatorCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -31,4 +31,13 @@ class FixmeTagPresenceCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FixmeTagPresenceCheckSample.java"))
+      .withCheck(new FixmeTagPresenceCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

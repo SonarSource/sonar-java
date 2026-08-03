@@ -28,4 +28,13 @@ class WaitInWhileLoopCheckTest {
       .withCheck(new WaitInWhileLoopCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/WaitInWhileLoopCheck.java")
+      .withCheck(new WaitInWhileLoopCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

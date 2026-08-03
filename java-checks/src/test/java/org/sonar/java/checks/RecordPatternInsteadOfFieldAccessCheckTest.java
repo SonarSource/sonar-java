@@ -31,4 +31,14 @@ class RecordPatternInsteadOfFieldAccessCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/RecordPatternInsteadOfFieldAccessCheckSample.java"))
+      .withCheck(new RecordPatternInsteadOfFieldAccessCheck())
+      .withJavaVersion(21)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

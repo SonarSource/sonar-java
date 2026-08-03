@@ -31,4 +31,13 @@ class RedundantModifierCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/RedundantModifierCheckSample.java"))
+      .withCheck(new RedundantModifierCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

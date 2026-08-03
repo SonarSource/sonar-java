@@ -31,4 +31,13 @@ class ArraysAsListOfPrimitiveToStreamCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ArraysAsListOfPrimitiveToStreamCheckSample.java"))
+      .withCheck(new ArraysAsListOfPrimitiveToStreamCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

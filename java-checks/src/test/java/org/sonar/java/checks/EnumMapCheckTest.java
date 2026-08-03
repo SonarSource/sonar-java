@@ -31,4 +31,13 @@ class EnumMapCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/EnumMapCheckSample.java"))
+      .withCheck(new EnumMapCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

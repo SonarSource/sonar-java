@@ -31,4 +31,13 @@ class ThreadStartedInConstructorCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ThreadStartedInConstructor.java"))
+      .withCheck(new ThreadStartedInConstructorCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

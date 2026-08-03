@@ -28,4 +28,13 @@ class DoublePrefixOperatorCheckTest {
       .withCheck(new DoublePrefixOperatorCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/DoublePrefixOperatorCheck/DoublePrefixOperatorCheck.java")
+      .withCheck(new DoublePrefixOperatorCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

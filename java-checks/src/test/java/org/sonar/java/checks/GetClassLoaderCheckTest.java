@@ -30,4 +30,13 @@ class GetClassLoaderCheckTest {
       .withCheck(new GetClassLoaderCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/GetClassLoaderCheckSample.java"))
+      .withCheck(new GetClassLoaderCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -27,4 +27,13 @@ class ObjectFinalizeOverloadedCheckTest {
       .withCheck(new ObjectFinalizeOverloadedCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ObjectFinalizeOverloadedCheck.java")
+      .withCheck(new ObjectFinalizeOverloadedCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

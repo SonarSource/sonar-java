@@ -39,4 +39,13 @@ class AnnotationDefaultArgumentCheckTest {
       .withCheck(new AnnotationDefaultArgumentCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/AnnotationDefaultArgumentCheckSample.java"))
+      .withCheck(new AnnotationDefaultArgumentCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

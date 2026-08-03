@@ -41,4 +41,13 @@ class StrongCipherAlgorithmCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StrongCipherAlgorithmCheckSample.java"))
+      .withCheck(new StrongCipherAlgorithmCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

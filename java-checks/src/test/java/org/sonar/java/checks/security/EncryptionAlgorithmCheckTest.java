@@ -31,4 +31,13 @@ class EncryptionAlgorithmCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/EncryptionAlgorithmCheckSample.java"))
+      .withCheck(new EncryptionAlgorithmCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

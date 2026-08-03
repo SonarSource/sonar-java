@@ -38,4 +38,13 @@ class BeanValidationConstraintOnStaticFieldCheckTest {
       .withCheck(new BeanValidationConstraintOnStaticFieldCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/BeanValidationConstraintOnStaticFieldCheckSample.java"))
+      .withCheck(new BeanValidationConstraintOnStaticFieldCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

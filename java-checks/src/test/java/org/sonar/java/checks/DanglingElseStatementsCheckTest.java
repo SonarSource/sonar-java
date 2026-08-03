@@ -30,4 +30,13 @@ class DanglingElseStatementsCheckTest {
       .withCheck(new DanglingElseStatementsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DanglingElseStatementsCheckSample.java"))
+      .withCheck(new DanglingElseStatementsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -76,4 +76,13 @@ class SuppressWarningsCheckTest {
     check.warningsCommaSeparated = parameter;
     return check;
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SuppressWarningsCheck/former_squid_rule_keys.java"))
+      .withCheck(getCheck("squid:S1068, java:S115"))
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

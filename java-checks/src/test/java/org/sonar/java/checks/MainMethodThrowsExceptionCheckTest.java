@@ -40,4 +40,14 @@ class MainMethodThrowsExceptionCheckTest {
       .withJavaVersion(25)
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MainMethodThrowsExceptionCheckSample.java"))
+      .withCheck(new MainMethodThrowsExceptionCheck())
+      .withJavaVersion(21)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -49,4 +49,14 @@ class SwitchCasesShouldBeCommaSeparatedCheckTest {
       .withJavaVersion(13)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SwitchCasesShouldBeCommaSeparatedCheckSample.java"))
+      .withCheck(new SwitchCasesShouldBeCommaSeparatedCheck())
+      .withJavaVersion(14)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

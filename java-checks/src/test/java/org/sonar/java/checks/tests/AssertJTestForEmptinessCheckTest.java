@@ -31,4 +31,13 @@ class AssertJTestForEmptinessCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertJTestForEmptinessCheckSample.java"))
+      .withCheck(new AssertJTestForEmptinessCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

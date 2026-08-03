@@ -30,4 +30,13 @@ class NotifyCheckTest {
       .withCheck(new NotifyCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/NotifyCheckSample.java"))
+      .withCheck(new NotifyCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

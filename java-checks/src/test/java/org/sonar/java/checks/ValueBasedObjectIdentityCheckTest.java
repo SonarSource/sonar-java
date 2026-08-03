@@ -40,4 +40,13 @@ class ValueBasedObjectIdentityCheckTest {
       .verifyNoIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ValueBasedObjectIdentityCheckSample.java"))
+      .withCheck(new ValueBasedObjectIdentityCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

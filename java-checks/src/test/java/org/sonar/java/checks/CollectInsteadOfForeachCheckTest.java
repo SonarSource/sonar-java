@@ -28,4 +28,13 @@ class CollectInsteadOfForeachCheckTest {
       .withCheck(new CollectInsteadOfForeachCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CollectInsteadOfForeachCheck.java")
+      .withCheck(new CollectInsteadOfForeachCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -77,4 +77,13 @@ class DisallowedMethodCheckTest {
       .withCheck(disallowedMethodCheck)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DisallowedMethodCheck/empty_method_name.java"))
+      .withCheck(new DisallowedMethodCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

@@ -30,4 +30,13 @@ class SyncGetterAndSetterCheckTest {
       .withCheck(new SyncGetterAndSetterCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SyncGetterAndSetterCheckSample.java"))
+      .withCheck(new SyncGetterAndSetterCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

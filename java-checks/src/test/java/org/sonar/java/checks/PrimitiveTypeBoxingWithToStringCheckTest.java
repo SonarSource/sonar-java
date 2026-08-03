@@ -29,4 +29,13 @@ class PrimitiveTypeBoxingWithToStringCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/PrimitiveTypeBoxingWithToStringCheck.java")
+      .withCheck(new PrimitiveTypeBoxingWithToStringCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

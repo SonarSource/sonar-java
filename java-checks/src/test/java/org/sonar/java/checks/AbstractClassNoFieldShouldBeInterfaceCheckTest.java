@@ -103,4 +103,14 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
       .withClassPath(Collections.emptyList())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(TEST_FILE))
+      .withCheck(new AbstractClassNoFieldShouldBeInterfaceCheck())
+      .withJavaVersion(7)
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

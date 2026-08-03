@@ -28,4 +28,13 @@ class MethodIdenticalImplementationsCheckTest {
       .withCheck(new MethodIdenticalImplementationsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MethodIdenticalImplementationsCheck.java")
+      .withCheck(new MethodIdenticalImplementationsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

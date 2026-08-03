@@ -39,4 +39,13 @@ class ClassNamedLikeExceptionCheckTest {
       .withCheck(new ClassNamedLikeExceptionCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/naming/ClassNamedLikeExceptionCheck.java"))
+      .withCheck(new ClassNamedLikeExceptionCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }
