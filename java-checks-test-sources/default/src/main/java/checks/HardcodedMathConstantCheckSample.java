@@ -93,11 +93,19 @@ class HardcodedMathConstantCheckSample {
 
   // Compliant - scientific notation (skipped)
   double sci1 = 3.14e0;
-  double sci2 = 314e-2;
+  double sci2 = 314E-2;
 
   // Compliant - hex float literals (skipped)
   double hex1 = 0x1.0p0;
+  double hex2 = 0X1.0p0;
 
   // Compliant - leading-dot literal with too few significant digits
   double leadingDot = .693;
+
+  // Float literal with F suffix
+  float piFloatF = 3.14159F; // Noncompliant {{Use "Math.PI" instead of this approximation of pi.}}
+
+  // Leading-dot literal with enough significant digits
+  double leadingDotLn2 = .6931; // Noncompliant {{Use "Math.log(2)" instead of this approximation of the natural logarithm of 2.}}
+
 }

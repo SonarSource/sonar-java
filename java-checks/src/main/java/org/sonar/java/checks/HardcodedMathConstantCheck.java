@@ -112,16 +112,14 @@ public class HardcodedMathConstantCheck extends IssuableSubscriptionVisitor {
     int count = 0;
     for (int i = 0; i < normalized.length(); i++) {
       char c = normalized.charAt(i);
-      if (c == '.' || c == '-' || c == '+') {
+      if (c == '.') {
         continue;
       }
-      if (c >= '0' && c <= '9') {
-        if (c != '0') {
-          foundNonZero = true;
-        }
-        if (foundNonZero) {
-          count++;
-        }
+      if (c != '0') {
+        foundNonZero = true;
+      }
+      if (foundNonZero) {
+        count++;
       }
     }
     return count;
