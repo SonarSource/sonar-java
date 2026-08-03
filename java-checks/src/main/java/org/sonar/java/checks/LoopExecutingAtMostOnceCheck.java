@@ -25,20 +25,26 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.SwitchExpressionTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 @Rule(key = "S1751")
@@ -97,12 +103,18 @@ public class LoopExecutingAtMostOnceCheck extends IssuableSubscriptionVisitor {
    *  break; // last unconditional jump to exit the infinite loop
    * }
    * </code>
+   * For {@code for(;;)} loops, the exemption only applies when the body contains a conditional
+   * control-flow structure (if, switch, loop, or try), distinguishing the goto-idiom from
+   * a degenerate {@code for(;;) { break; }} that always exits immediately.
    */
   private static boolean isEmptyConditionLoop(Tree loopTree) {
     switch (loopTree.kind()) {
       case FOR_STATEMENT:
         ForStatementTree fst = (ForStatementTree) loopTree;
-        return fst.initializer().isEmpty() && fst.condition() == null && fst.update().isEmpty();
+        return fst.initializer().isEmpty()
+          && fst.condition() == null
+          && fst.update().isEmpty()
+          && containsConditional(fst.statement());
       case WHILE_STATEMENT:
         // 'while(false)' does not compile, unreachable code
         return isTrue(((WhileStatementTree) loopTree).condition());
@@ -113,6 +125,70 @@ public class LoopExecutingAtMostOnceCheck extends IssuableSubscriptionVisitor {
       default:
         // variable and expression of For-Each statement can not be empty
         return false;
+    }
+  }
+
+  /**
+   * Returns true if {@code tree} contains at least one conditional, loop, or try statement
+   * at any depth, without crossing lambda or anonymous class boundaries.
+   */
+  private static boolean containsConditional(Tree tree) {
+    ConditionalVisitor visitor = new ConditionalVisitor();
+    tree.accept(visitor);
+    return visitor.found;
+  }
+
+  private static class ConditionalVisitor extends BaseTreeVisitor {
+    boolean found = false;
+
+    @Override
+    public void visitIfStatement(IfStatementTree tree) {
+      found = true;
+    }
+
+    @Override
+    public void visitSwitchStatement(SwitchStatementTree tree) {
+      found = true;
+    }
+
+    @Override
+    public void visitSwitchExpression(SwitchExpressionTree tree) {
+      found = true;
+    }
+
+    @Override
+    public void visitForStatement(ForStatementTree tree) {
+      found = true;
+    }
+
+    @Override
+    public void visitForEachStatement(ForEachStatement tree) {
+      found = true;
+    }
+
+    @Override
+    public void visitWhileStatement(WhileStatementTree tree) {
+      found = true;
+    }
+
+    @Override
+    public void visitDoWhileStatement(DoWhileStatementTree tree) {
+      found = true;
+    }
+
+    @Override
+    public void visitTryStatement(TryStatementTree tree) {
+      found = true;
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree tree) {
+      // scope boundary — do not descend into lambdas
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // scope boundary — do not descend into anonymous/inner classes
     }
   }
 

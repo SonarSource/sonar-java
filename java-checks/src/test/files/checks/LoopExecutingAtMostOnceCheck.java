@@ -243,6 +243,10 @@ abstract class C {
   }
 
   void m5() {
+    for (;;){
+      break;  // Noncompliant
+    }
+
     for(;;) {
       if (isItTrue()) {
         // ...
@@ -295,6 +299,49 @@ abstract class C {
     } while ((((true))));
   }
 
+  void m5_extra() {
+    // for(;;) with nested loop — goto-idiom → Compliant
+    for(;;) {
+      while (isItTrue()) {
+        break; // Noncompliant
+      }
+      break; // Compliant
+    }
+
+    // for(;;) with switch — goto-idiom → Compliant
+    for(;;) {
+      switch (getInt()) {
+        case 1: break;
+      }
+      break; // Compliant
+    }
+
+    // for(;;) with try — goto-idiom → Compliant
+    for(;;) {
+      try {
+        doSomething();
+      } catch (Exception e) {
+        break;
+      }
+      break; // Compliant
+    }
+
+    // for(;;) with only a method call (no conditional) → Noncompliant
+    for(;;) {
+      foo();
+      break; // Noncompliant
+    }
+
+    // for(;;) with conditional inside lambda — lambda is a scope boundary → Noncompliant
+    for(;;) {
+      Runnable r = () -> { if (isItTrue()) return; };
+      break; // Noncompliant
+    }
+  }
+
+  abstract int getInt();
+  abstract void doSomething() throws Exception;
+  abstract void foo();
   abstract boolean isItTrue();
 }
 
