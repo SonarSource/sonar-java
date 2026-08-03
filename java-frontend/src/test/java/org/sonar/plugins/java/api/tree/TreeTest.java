@@ -16,6 +16,7 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,6 +26,14 @@ class TreeTest {
   @Test
   void test() {
     assertThat(Tree.Kind.values()).hasSize(129);
+  }
+
+  @Test
+  void class_kinds_contains_exactly_all_kinds_backed_by_class_tree() {
+    Tree.Kind[] expected = Arrays.stream(Tree.Kind.values())
+      .filter(kind -> kind.getAssociatedInterface() == ClassTree.class)
+      .toArray(Tree.Kind[]::new);
+    assertThat(Tree.CLASS_KINDS).containsExactlyInAnyOrder(expected);
   }
 
 }
