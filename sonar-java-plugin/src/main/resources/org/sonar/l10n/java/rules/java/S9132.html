@@ -1,0 +1,27 @@
+<h2>Why is this an issue?</h2>
+<p>Scheduled thread pool executors are designed with a fixed-size thread pool architecture. Unlike standard thread pool implementations, they use an
+unbounded work queue and maintain a fixed number of threads equal to the core pool size configuration.</p>
+<p>When you call <code>setMaximumPoolSize()</code> on a <code>ScheduledThreadPoolExecutor</code>, the call completes without error, but it has no effect
+on the executor's behavior. The pool will never create threads beyond the core pool size, regardless of how high you set the maximum pool size.</p>
+<p>This happens because scheduled thread pool executors override the task queuing behavior. All tasks go into an unbounded queue, and the executor
+never needs to create additional threads beyond the core pool size to handle the workload.</p>
+<p>Attempting to adjust the maximum pool size suggests a misunderstanding of how this executor works, and indicates that the code may not behave as
+intended.</p>
+<h2>How to fix it</h2>
+<p>Remove the call to <code>setMaximumPoolSize()</code> and use <code>setCorePoolSize()</code> instead to control the number of threads in the pool.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+executor.setMaximumPoolSize(10); // Noncompliant
+</pre>
+<h3>Compliant solution</h3>
+<pre>
+ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+executor.setCorePoolSize(10); // Pool now maintains exactly 10 threads
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledThreadPoolExecutor.html">Oracle Java SE -
+  ScheduledThreadPoolExecutor (Java SE 17)</a></li>
+</ul>
