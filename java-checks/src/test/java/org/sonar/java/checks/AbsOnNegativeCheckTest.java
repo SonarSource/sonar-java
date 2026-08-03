@@ -29,4 +29,13 @@ class AbsOnNegativeCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AbsOnNegative.java")
+      .withCheck(new AbsOnNegativeCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -31,4 +31,13 @@ class EmptyStringRepetitionCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/regex/EmptyStringRepetitionCheckSample.java"))
+      .withCheck(new EmptyStringRepetitionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

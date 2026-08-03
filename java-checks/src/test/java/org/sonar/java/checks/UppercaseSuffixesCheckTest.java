@@ -39,4 +39,13 @@ class UppercaseSuffixesCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UppercaseSuffixesCheck.java")
+      .withCheck(new UppercaseSuffixesCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

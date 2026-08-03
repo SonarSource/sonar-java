@@ -31,4 +31,13 @@ class InvalidRegexCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/regex/InvalidRegexCheckSample.java"))
+      .withCheck(new InvalidRegexCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

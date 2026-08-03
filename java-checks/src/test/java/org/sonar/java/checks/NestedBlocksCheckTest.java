@@ -40,4 +40,13 @@ class NestedBlocksCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/NestedBlocksCheckSample.java"))
+      .withCheck(new NestedBlocksCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -30,4 +30,13 @@ class StringConcatenationInLoopCheckTest {
       .withCheck(new StringConcatenationInLoopCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringConcatenationInLoopCheckSample.java"))
+      .withCheck(new StringConcatenationInLoopCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

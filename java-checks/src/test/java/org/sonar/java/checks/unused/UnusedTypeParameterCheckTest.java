@@ -39,4 +39,13 @@ class UnusedTypeParameterCheckTest {
       .withCheck(new UnusedTypeParameterCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedTypeParameterCheck.java"))
+      .withCheck(new UnusedTypeParameterCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

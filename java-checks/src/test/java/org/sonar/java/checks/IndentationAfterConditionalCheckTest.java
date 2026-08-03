@@ -29,4 +29,13 @@ class IndentationAfterConditionalCheckTest {
       .withCheck(new IndentationAfterConditionalCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/IndentationAfterConditionalCheckSample.java"))
+      .withCheck(new IndentationAfterConditionalCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

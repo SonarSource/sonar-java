@@ -40,4 +40,13 @@ class DisableAutoEscapingCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/DisableAutoEscapingCheckSample.java"))
+      .withCheck(new DisableAutoEscapingCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

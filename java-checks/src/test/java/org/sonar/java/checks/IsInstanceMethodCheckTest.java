@@ -39,4 +39,13 @@ class IsInstanceMethodCheckTest {
       .withCheck(new IsInstanceMethodCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/IsInstanceMethodCheckSample.java"))
+      .withCheck(new IsInstanceMethodCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

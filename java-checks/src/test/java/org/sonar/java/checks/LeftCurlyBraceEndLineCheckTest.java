@@ -54,4 +54,13 @@ class LeftCurlyBraceEndLineCheckTest {
       .withJavaVersion(14)
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/LeftCurlyBraceEndLineCheckSample.java"))
+      .withCheck(new LeftCurlyBraceEndLineCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

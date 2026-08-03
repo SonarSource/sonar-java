@@ -28,4 +28,13 @@ class ProtectedMemberInFinalClassCheckTest {
       .withCheck(new ProtectedMemberInFinalClassCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ProtectedMemberInFinalClassCheck.java")
+      .withCheck(new ProtectedMemberInFinalClassCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

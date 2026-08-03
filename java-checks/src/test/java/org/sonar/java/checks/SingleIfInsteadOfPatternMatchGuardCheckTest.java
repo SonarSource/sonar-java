@@ -31,4 +31,14 @@ class SingleIfInsteadOfPatternMatchGuardCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/SingleIfInsteadOfPatternMatchGuardCheckSample.java"))
+      .withCheck(new SingleIfInsteadOfPatternMatchGuardCheck())
+      .withJavaVersion(22)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

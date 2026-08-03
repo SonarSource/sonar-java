@@ -29,4 +29,13 @@ class BooleanInversionCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/BooleanInversionCheck.java")
+      .withCheck(new BooleanInversionCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

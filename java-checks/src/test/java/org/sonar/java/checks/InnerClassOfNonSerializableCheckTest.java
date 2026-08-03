@@ -31,4 +31,13 @@ class InnerClassOfNonSerializableCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/InnerClassOfNonSerializableCheckSample.java"))
+      .withCheck(new InnerClassOfNonSerializableCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

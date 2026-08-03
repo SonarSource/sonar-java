@@ -31,4 +31,13 @@ class PopulateBeansCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PopulateBeansCheckSample.java"))
+      .withCheck(new PopulateBeansCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

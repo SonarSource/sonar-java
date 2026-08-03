@@ -29,4 +29,13 @@ class URLHashCodeAndEqualsCheckTest {
       .withCheck(new URLHashCodeAndEqualsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/URLHashCodeAndEqualsCheck.java"))
+      .withCheck(new URLHashCodeAndEqualsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

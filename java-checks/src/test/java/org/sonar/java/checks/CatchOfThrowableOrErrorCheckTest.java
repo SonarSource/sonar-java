@@ -49,4 +49,13 @@ class CatchOfThrowableOrErrorCheckTest {
       .withClassPath(Collections.emptyList())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CatchOfThrowableOrErrorCheck.java"))
+      .withCheck(new CatchOfThrowableOrErrorCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

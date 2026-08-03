@@ -49,4 +49,13 @@ class VerifiedServerHostnamesCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(TEST_FOLDER + "HostnameVerifier.java"))
+      .withCheck(new VerifiedServerHostnamesCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

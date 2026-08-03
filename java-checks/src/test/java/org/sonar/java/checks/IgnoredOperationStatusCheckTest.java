@@ -27,4 +27,13 @@ class IgnoredOperationStatusCheckTest {
       .withCheck(new IgnoredOperationStatusCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/IgnoredOperationStatusCheck.java")
+      .withCheck(new IgnoredOperationStatusCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -39,4 +39,14 @@ class InitializeSubclassFieldsBeforeSuperCheckTest {
       .withJavaVersion(24)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/InitializeSubclassFieldsBeforeSuperSample.java"))
+      .withCheck(new InitializeSubclassFieldsBeforeSuperCheck())
+      .withJavaVersion(25)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

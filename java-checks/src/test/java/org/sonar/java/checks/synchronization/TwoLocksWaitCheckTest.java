@@ -30,4 +30,13 @@ class TwoLocksWaitCheckTest {
       .withCheck(new TwoLocksWaitCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/TwoLocksWaitCheckSample.java"))
+      .withCheck(new TwoLocksWaitCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

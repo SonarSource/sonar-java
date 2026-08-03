@@ -31,4 +31,13 @@ class AssertionInTryCatchCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertionInTryCatchCheckSample.java"))
+      .withCheck(new AssertionInTryCatchCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

@@ -29,4 +29,13 @@ class CatchRethrowingCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CatchRethrowingCheck.java")
+      .withCheck(new CatchRethrowingCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -30,4 +30,13 @@ class CallSuperMethodFromInnerClassCheckTest {
       .withCheck(new CallSuperMethodFromInnerClassCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CallSuperMethodFromInnerClassCheck.java"))
+      .withCheck(new CallSuperMethodFromInnerClassCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

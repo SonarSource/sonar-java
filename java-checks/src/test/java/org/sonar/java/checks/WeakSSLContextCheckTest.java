@@ -60,4 +60,13 @@ class WeakSSLContextCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/WeakSSLContextCheckJava8.java"))
+      .withCheck(new WeakSSLContextCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

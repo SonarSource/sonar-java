@@ -65,4 +65,13 @@ class IndentationCheckTest {
       .withCheck(new IndentationCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/IndentationCheck_custom.java"))
+      .withCheck(new IndentationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

@@ -69,4 +69,13 @@ class DeadStoreCheckTest {
       super.visitVariable(tree);
     }
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/DeadStoreCheckSample.java"))
+      .withCheck(new DeadStoreCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

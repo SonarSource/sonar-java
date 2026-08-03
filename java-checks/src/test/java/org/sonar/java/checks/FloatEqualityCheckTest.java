@@ -30,4 +30,13 @@ class FloatEqualityCheckTest {
       .withCheck(new FloatEqualityCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FloatEquality.java"))
+      .withCheck(new FloatEqualityCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

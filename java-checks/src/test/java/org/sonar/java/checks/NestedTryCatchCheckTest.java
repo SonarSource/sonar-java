@@ -31,4 +31,13 @@ class NestedTryCatchCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/NestedTryCatchCheckSample.java"))
+      .withCheck(new NestedTryCatchCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

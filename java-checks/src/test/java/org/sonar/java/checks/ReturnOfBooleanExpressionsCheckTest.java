@@ -27,4 +27,13 @@ class ReturnOfBooleanExpressionsCheckTest {
       .withCheck(new ReturnOfBooleanExpressionsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ReturnOfBooleanExpressionsCheck.java")
+      .withCheck(new ReturnOfBooleanExpressionsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -28,4 +28,13 @@ class ThrowCheckedExceptionCheckTest {
       .withCheck(new ThrowCheckedExceptionCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThrowCheckedExceptionCheck.java")
+      .withCheck(new ThrowCheckedExceptionCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

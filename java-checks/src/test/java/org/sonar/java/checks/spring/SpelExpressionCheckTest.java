@@ -30,4 +30,13 @@ class SpelExpressionCheckTest {
       .withCheck(new SpelExpressionCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/SpelExpressionCheckSample.java"))
+      .withCheck(new SpelExpressionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

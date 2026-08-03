@@ -30,4 +30,13 @@ class ShiftOnIntOrLongCheckTest {
       .withCheck(new ShiftOnIntOrLongCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ShiftOnIntOrLongCheckSample.java"))
+      .withCheck(new ShiftOnIntOrLongCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

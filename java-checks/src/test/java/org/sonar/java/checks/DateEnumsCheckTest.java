@@ -80,6 +80,7 @@ class DateEnumsCheckTest {
   }
 
   @Test
+<<<<<<< HEAD
   void test_above_threshold() {
     // 8 out of 9 total usages use int literals (89%) -> above 80% threshold -> considered code-style -> no issues raised
     CheckVerifier.newVerifier()
@@ -208,5 +209,14 @@ class DateEnumsCheckTest {
     assertThat(logTester.logs(Level.TRACE).stream().filter(
       msg -> msg.matches("Cache miss for key '[^']+'")
     )).hasSize(1);
+  }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DateEnumsCheckSample.java"))
+      .withCheck(new DateEnumsCheck())
+      .withoutSemantic()
+      .verifyIssues();
   }
 }

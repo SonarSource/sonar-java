@@ -47,4 +47,13 @@ class AssertionsWithoutMessageCheckTest {
       .removeJarsFromClasspath("testng-7.12.0")
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertionsWithoutMessageCheckSample.java"))
+      .withCheck(new AssertionsWithoutMessageCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

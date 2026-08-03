@@ -31,4 +31,13 @@ class LabelsShouldNotBeUsedCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/LabelsShouldNotBeUsedCheckSample.java"))
+      .withCheck(new LabelsShouldNotBeUsedCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

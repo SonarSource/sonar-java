@@ -30,4 +30,13 @@ class UnnecessaryBitOperationCheckTest {
       .withCheck(new UnnecessaryBitOperationCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UnnecessaryBitOperationCheck.java"))
+      .withCheck(new UnnecessaryBitOperationCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

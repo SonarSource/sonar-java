@@ -64,4 +64,13 @@ class DisallowedConstructorCheckTest {
       .verifyNoIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DisallowedConstructorCheck/detected_all_overload.java"))
+      .withCheck(new DisallowedConstructorCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

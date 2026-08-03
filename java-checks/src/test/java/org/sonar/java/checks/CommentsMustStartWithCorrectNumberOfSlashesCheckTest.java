@@ -52,4 +52,14 @@ class CommentsMustStartWithCorrectNumberOfSlashesCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CommentsMustStartWithCorrectNumberOfSlashesCheckSample.java"))
+      .withCheck(new CommentsMustStartWithCorrectNumberOfSlashesCheck())
+      .withJavaVersion(16)
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

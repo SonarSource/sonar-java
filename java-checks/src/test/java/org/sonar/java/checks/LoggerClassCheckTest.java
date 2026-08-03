@@ -30,4 +30,13 @@ class LoggerClassCheckTest {
       .withCheck(new LoggerClassCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/LoggerClass.java"))
+      .withCheck(new LoggerClassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

@@ -56,4 +56,13 @@ class MissingDeprecatedCheckTest {
       .withCheck(new MissingDeprecatedCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MissingDeprecatedCheckSample.java"))
+      .withCheck(new MissingDeprecatedCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -45,4 +45,13 @@ class FieldDependencyInjectionCheckTest {
       .withCheck(new FieldDependencyInjectionCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/FieldDependencyInjectionCheckSample.java"))
+      .withCheck(new FieldDependencyInjectionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

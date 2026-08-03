@@ -49,4 +49,13 @@ class SuperLinearRegexCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/regex/SuperLinearRegexCheckSample.java"))
+      .withCheck(new SuperLinearRegexCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

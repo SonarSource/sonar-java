@@ -40,4 +40,13 @@ class JUnit45MethodAnnotationCheckTest {
       .verifyNoIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/JUnit45MethodAnnotationCheckSample.java"))
+      .withCheck(new JUnit45MethodAnnotationCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

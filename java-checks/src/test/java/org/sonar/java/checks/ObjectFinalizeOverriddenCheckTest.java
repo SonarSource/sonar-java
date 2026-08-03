@@ -35,4 +35,13 @@ class ObjectFinalizeOverriddenCheckTest {
       .withCheck(new ObjectFinalizeOverriddenCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ObjectFinalizeOverriddenCheckSample.java"))
+      .withCheck(new ObjectFinalizeOverriddenCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -29,4 +29,13 @@ class AsyncMethodsCalledViaThisCheckTest {
       .withCheck(new AsyncMethodsCalledViaThisCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/AsyncMethodsCalledViaThisCheckSample.java"))
+      .withCheck(new AsyncMethodsCalledViaThisCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

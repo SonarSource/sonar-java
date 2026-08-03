@@ -31,4 +31,13 @@ class DisclosingTechnologyFingerprintsCheckTest {
       .verifyIssues();
   }
   
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/DisclosingTechnologyFingerprints.java"))
+      .withCheck(new DisclosingTechnologyFingerprintsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

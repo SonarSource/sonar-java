@@ -29,4 +29,13 @@ class UselessParenthesesCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UselessParenthesesCheck.java")
+      .withCheck(new UselessParenthesesCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

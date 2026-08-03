@@ -30,4 +30,13 @@ class StringBufferAndBuilderWithCharCheckTest {
       .withCheck(new StringBufferAndBuilderWithCharCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringBufferAndBuilderWithCharCheckSample.java"))
+      .withCheck(new StringBufferAndBuilderWithCharCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

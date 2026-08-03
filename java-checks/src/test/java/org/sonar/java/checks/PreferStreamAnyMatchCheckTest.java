@@ -30,4 +30,13 @@ class PreferStreamAnyMatchCheckTest {
       .withCheck(new PreferStreamAnyMatchCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PreferStreamAnyMatch.java"))
+      .withCheck(new PreferStreamAnyMatchCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

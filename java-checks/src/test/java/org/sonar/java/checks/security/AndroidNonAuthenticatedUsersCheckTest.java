@@ -31,4 +31,13 @@ class AndroidNonAuthenticatedUsersCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/AndroidNonAuthenticatedUsersCheckSample.java"))
+      .withCheck(new AndroidNonAuthenticatedUsersCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

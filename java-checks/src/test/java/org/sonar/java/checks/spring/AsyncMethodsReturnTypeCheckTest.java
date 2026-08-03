@@ -38,4 +38,13 @@ class AsyncMethodsReturnTypeCheckTest {
       .withCheck(new AsyncMethodsReturnTypeCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/AsyncMethodsReturnTypeCheckSample.java"))
+      .withCheck(new AsyncMethodsReturnTypeCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

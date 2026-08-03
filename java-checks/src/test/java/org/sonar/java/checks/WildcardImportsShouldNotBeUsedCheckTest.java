@@ -31,4 +31,13 @@ class WildcardImportsShouldNotBeUsedCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/WildcardImportsShouldNotBeUsedCheck.java"))
+      .withCheck(new WildcardImportsShouldNotBeUsedCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

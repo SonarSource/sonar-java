@@ -27,4 +27,13 @@ class SynchronizedFieldAssignmentCheckTest {
       .withCheck(new SynchronizedFieldAssignmentCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SynchronizedFieldAssignmentCheck.java")
+      .withCheck(new SynchronizedFieldAssignmentCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

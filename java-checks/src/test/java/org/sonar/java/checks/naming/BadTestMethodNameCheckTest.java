@@ -46,4 +46,13 @@ class BadTestMethodNameCheckTest {
       .withCheck(check)
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/naming/BadTestMethodNameCheckCustom.java"))
+      .withCheck(new BadTestMethodNameCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

@@ -30,4 +30,13 @@ class SynchronizedLockCheckTest {
       .withCheck(new SynchronizedLockCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SynchronizedLockCheckSample.java"))
+      .withCheck(new SynchronizedLockCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

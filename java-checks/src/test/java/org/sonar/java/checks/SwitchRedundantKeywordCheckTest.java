@@ -31,4 +31,14 @@ class SwitchRedundantKeywordCheckTest {
       .withJavaVersion(14)
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SwitchRedundantKeywordCheckSample.java"))
+      .withCheck(new SwitchRedundantKeywordCheck())
+      .withJavaVersion(14)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

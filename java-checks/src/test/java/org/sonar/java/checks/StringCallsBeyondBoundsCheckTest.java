@@ -28,4 +28,13 @@ class StringCallsBeyondBoundsCheckTest {
       .withCheck(new StringCallsBeyondBoundsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StringCallsBeyondBoundsCheck.java")
+      .withCheck(new StringCallsBeyondBoundsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

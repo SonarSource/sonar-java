@@ -50,4 +50,13 @@ class DiamondOperatorCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DiamondOperatorCheck_no_version.java"))
+      .withCheck(new DiamondOperatorCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

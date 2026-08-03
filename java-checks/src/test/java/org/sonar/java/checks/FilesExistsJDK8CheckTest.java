@@ -46,4 +46,14 @@ class FilesExistsJDK8CheckTest {
       .withCheck(new FilesExistsJDK8Check())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/FilesExistsJDK8Check.java")
+      .withCheck(new FilesExistsJDK8Check())
+      .withJavaVersion(8)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

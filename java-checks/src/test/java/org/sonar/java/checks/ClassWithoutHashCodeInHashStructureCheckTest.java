@@ -37,4 +37,13 @@ class ClassWithoutHashCodeInHashStructureCheckTest {
       .withCheck(new ClassWithoutHashCodeInHashStructureCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ClassWithoutHashCodeInHashStructureCheck.java"))
+      .withCheck(new ClassWithoutHashCodeInHashStructureCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -29,4 +29,13 @@ class NullReturnedOnComputeIfPresentOrAbsentCheckTest {
       .withCheck(new NullReturnedOnComputeIfPresentOrAbsentCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/NullReturnedOnComputeIfPresentOrAbsent.java"))
+      .withCheck(new NullReturnedOnComputeIfPresentOrAbsentCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

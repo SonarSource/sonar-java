@@ -30,4 +30,13 @@ class WriteObjectTheOnlySynchronizedMethodCheckTest {
       .withCheck(new WriteObjectTheOnlySynchronizedMethodCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/WriteObjectTheOnlySynchronizedMethodCheck.java"))
+      .withCheck(new WriteObjectTheOnlySynchronizedMethodCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

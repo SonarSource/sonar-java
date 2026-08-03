@@ -51,4 +51,14 @@ class InstanceOfPatternMatchingCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/InstanceOfPatternMatching.java"))
+      .withCheck(new InstanceOfPatternMatchingCheck())
+      .withJavaVersion(16)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

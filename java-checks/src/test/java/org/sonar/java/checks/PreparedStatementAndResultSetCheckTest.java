@@ -40,4 +40,13 @@ class PreparedStatementAndResultSetCheckTest {
       .verifyNoIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PreparedStatementAndResultSetCheckSample.java"))
+      .withCheck(new PreparedStatementAndResultSetCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

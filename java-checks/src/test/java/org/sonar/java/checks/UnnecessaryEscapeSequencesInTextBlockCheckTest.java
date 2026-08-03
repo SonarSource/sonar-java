@@ -30,4 +30,13 @@ class UnnecessaryEscapeSequencesInTextBlockCheckTest {
       .withCheck(new UnnecessaryEscapeSequencesInTextBlockCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UnnecessaryEscapeSequencesInTextBlock.java"))
+      .withCheck(new UnnecessaryEscapeSequencesInTextBlockCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -29,4 +29,13 @@ class ObjectFinalizeOverriddenNotPublicCheckTest {
       .withCheck(new ObjectFinalizeOverriddenNotPublicCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeOverriddenNotPublicCheckSample.java"))
+      .withCheck(new ObjectFinalizeOverriddenNotPublicCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

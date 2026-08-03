@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.java.checks.verifier.CheckVerifier;
+import org.junit.jupiter.api.Test;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -44,4 +45,13 @@ class DefaultEncodingUsageCheckTest {
       .verifyNoIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DefaultEncodingUsageCheckSample.java"))
+      .withCheck(new DefaultEncodingUsageCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

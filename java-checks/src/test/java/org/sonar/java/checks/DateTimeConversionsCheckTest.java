@@ -30,4 +30,13 @@ class DateTimeConversionsCheckTest {
       .withCheck(new DateTimeConversionsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DateTimeConversionsCheckSample.java"))
+      .withCheck(new DateTimeConversionsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

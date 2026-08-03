@@ -31,4 +31,13 @@ class UnquantifiedNonCapturingGroupCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/regex/UnquantifiedNonCapturingGroupCheck.java"))
+      .withCheck(new UnquantifiedNonCapturingGroupCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

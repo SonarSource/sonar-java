@@ -32,4 +32,13 @@ class IntegerToHexStringCheckTest {
       .withCheck(new IntegerToHexStringCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/IntegerToHexStringCheckSample.java"))
+      .withCheck(new IntegerToHexStringCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

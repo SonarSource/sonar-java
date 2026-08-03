@@ -29,4 +29,13 @@ class ForLoopUsedAsWhileLoopCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ForLoopUsedAsWhileLoopCheck.java")
+      .withCheck(new ForLoopUsedAsWhileLoopCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

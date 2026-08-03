@@ -49,4 +49,13 @@ class TransactionalMethodCheckedExceptionCheckTest {
       .withCheck(new TransactionalMethodCheckedExceptionCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/TransactionalMethodCheckedExceptionCheckSample.java"))
+      .withCheck(new TransactionalMethodCheckedExceptionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

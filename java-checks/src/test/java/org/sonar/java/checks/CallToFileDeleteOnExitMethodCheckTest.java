@@ -31,4 +31,13 @@ class CallToFileDeleteOnExitMethodCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CallToFileDeleteOnExitMethod.java"))
+      .withCheck(new CallToFileDeleteOnExitMethodCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

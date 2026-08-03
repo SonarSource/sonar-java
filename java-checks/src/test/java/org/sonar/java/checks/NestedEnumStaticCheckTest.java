@@ -40,4 +40,13 @@ class NestedEnumStaticCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/NestedEnumStatic.java"))
+      .withCheck(new NestedEnumStaticCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

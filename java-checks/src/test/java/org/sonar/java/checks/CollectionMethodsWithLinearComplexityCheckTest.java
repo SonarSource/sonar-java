@@ -29,4 +29,13 @@ class CollectionMethodsWithLinearComplexityCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CollectionMethodsWithLinearComplexity.java")
+      .withCheck(new CollectionMethodsWithLinearComplexityCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

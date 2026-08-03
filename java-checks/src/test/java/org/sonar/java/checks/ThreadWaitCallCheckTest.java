@@ -30,4 +30,13 @@ class ThreadWaitCallCheckTest {
       .withCheck(new ThreadWaitCallCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ThreadWaitCallCheckSample.java"))
+      .withCheck(new ThreadWaitCallCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

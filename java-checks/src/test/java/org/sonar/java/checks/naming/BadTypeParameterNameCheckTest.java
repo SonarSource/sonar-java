@@ -46,4 +46,13 @@ class BadTypeParameterNameCheckTest {
       .verifyNoIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadGenericNameNoncompliant.java")
+      .withCheck(new BadTypeParameterNameCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

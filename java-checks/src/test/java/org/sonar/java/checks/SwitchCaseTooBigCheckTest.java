@@ -61,4 +61,13 @@ class SwitchCaseTooBigCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SwitchCaseTooBigCheckSample.java"))
+      .withCheck(new SwitchCaseTooBigCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

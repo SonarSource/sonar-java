@@ -28,4 +28,13 @@ class SpringBeanNamingConventionCheckTest {
       .withCheck(new SpringBeanNamingConventionCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/SpringBeanNamingConventionCheckSample.java"))
+      .withCheck(new SpringBeanNamingConventionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

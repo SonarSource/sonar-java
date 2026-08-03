@@ -39,4 +39,13 @@ class SerialVersionUidInRecordCheckTest {
       .withCheck(new SerialVersionUidInRecordCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/serialization/SerialVersionUidInRecordCheckSample.java"))
+      .withCheck(new SerialVersionUidInRecordCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

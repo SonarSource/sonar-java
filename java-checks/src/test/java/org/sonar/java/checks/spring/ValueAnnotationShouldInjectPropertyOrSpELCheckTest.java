@@ -39,4 +39,13 @@ class ValueAnnotationShouldInjectPropertyOrSpELCheckTest {
       .withCheck(new ValueAnnotationShouldInjectPropertyOrSpELCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/ValueAnnotationShouldInjectPropertyOrSpELCheckSample.java"))
+      .withCheck(new ValueAnnotationShouldInjectPropertyOrSpELCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

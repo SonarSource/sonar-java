@@ -38,4 +38,13 @@ class RandomizedTestDataCheckTest {
       .withCheck(new RandomizedTestDataCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/RandomizedTestDataCheckSample.java"))
+      .withCheck(new RandomizedTestDataCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

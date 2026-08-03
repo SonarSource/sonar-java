@@ -38,4 +38,13 @@ class JpaEntityFinalCheckTest {
       .withCheck(new JpaEntityFinalCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/JpaEntityFinalCheckJakartaSample.java"))
+      .withCheck(new JpaEntityFinalCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

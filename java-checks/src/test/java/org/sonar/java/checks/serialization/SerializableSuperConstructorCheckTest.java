@@ -40,4 +40,13 @@ class SerializableSuperConstructorCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/serialization/SerializableSuperConstructorCheckSample.java"))
+      .withCheck(new SerializableSuperConstructorCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

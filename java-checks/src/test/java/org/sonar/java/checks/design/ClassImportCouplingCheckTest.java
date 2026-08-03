@@ -46,4 +46,13 @@ class ClassImportCouplingCheckTest {
       .withCheck(new ClassImportCouplingCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/design/ClassImportCouplingCheck.java"))
+      .withCheck(new ClassImportCouplingCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

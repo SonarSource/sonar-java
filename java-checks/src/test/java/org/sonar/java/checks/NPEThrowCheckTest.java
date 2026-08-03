@@ -31,4 +31,13 @@ class NPEThrowCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/NPEThrowCheckSample.java"))
+      .withCheck(new NPEThrowCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -57,4 +57,13 @@ class TooManyAssertionsCheckTest {
       .verifyNoIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/TooManyAssertionsCheckCustom2.java"))
+      .withCheck(new TooManyAssertionsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

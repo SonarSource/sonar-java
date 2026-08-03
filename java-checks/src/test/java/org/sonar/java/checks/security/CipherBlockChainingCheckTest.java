@@ -83,4 +83,13 @@ class CipherBlockChainingCheckTest {
       .withCheck(new CipherBlockChainingCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(DEFAULT_SOURCE_PATH))
+      .withCheck(new CipherBlockChainingCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

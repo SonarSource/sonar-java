@@ -29,4 +29,13 @@ class CloneMethodCallsSuperCloneCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CloneMethodCallsSuperCloneCheck.java")
+      .withCheck(new CloneMethodCallsSuperCloneCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

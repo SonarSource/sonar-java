@@ -64,4 +64,13 @@ class TransactionalMethodVisibilityCheckTest {
       .withCheck(new TransactionalMethodVisibilityCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/TransactionalMethodVisibilityCheckSample_Spring5.java"))
+      .withCheck(new TransactionalMethodVisibilityCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

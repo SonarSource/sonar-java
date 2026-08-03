@@ -31,4 +31,13 @@ class XxeActiveMQCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/XxeActiveMQCheck.java"))
+      .withCheck(new XxeActiveMQCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

@@ -73,4 +73,13 @@ class MismatchPackageDirectoryCheckTest {
       .verifyIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/mismatchPackage/Matching.java"))
+      .withCheck(new MismatchPackageDirectoryCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

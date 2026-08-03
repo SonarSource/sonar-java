@@ -41,4 +41,14 @@ class DeprecatedArgumentsCheckTest {
       .verifyNoIssues();
   }
 
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DeprecatedArgumentsCheckSample.java"))
+      .withCheck(new DeprecatedArgumentsCheck())
+      .withJavaVersion(9)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }
