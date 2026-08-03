@@ -16,7 +16,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -41,7 +40,7 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.INTERFACE, Tree.Kind.CLASS, Tree.Kind.RECORD);
+    return Tree.CLASS_KINDS;
   }
 
   @Override
@@ -79,7 +78,7 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
       } else if (member.is(Tree.Kind.METHOD)) {
         // check method
         checkMethod(classNullabilityData, (MethodTree) member, scope);
-      } else if (member.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD)) {
+      } else if (member.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE)) {
         // check inner class
         checkInnerClass(classNullabilityData, (ClassTree) member, scope);
       }

@@ -205,6 +205,20 @@ interface RedundantNullabilityAnnotationsCheckSampleInterface {
 
   }
 
+  @NullMarked // Noncompliant {{Remove redundant annotation @NullMarked at class level as inside scope annotation @NullMarked at package level.}}
+  static @interface Annotation {
+  }
+
+  @NullMarked // Noncompliant {{Remove redundant annotation @NullMarked at class level as inside scope annotation @NullMarked at package level.}}
+  enum InnerEnum {
+    A,
+    B;
+
+    public void f(@NonNull String s) { // Noncompliant {{Remove redundant annotation @NonNull as inside scope annotation @NullMarked at class level.}}
+      // Do something
+    }
+  }
+
 }
 
 enum TEST_COVERAGE {

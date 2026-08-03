@@ -16,7 +16,6 @@
  */
 package org.sonar.java.checks.unused;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
@@ -25,6 +24,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 @Rule(key = "S3985")
 public class UnusedPrivateClassCheck extends IssuableSubscriptionVisitor {
@@ -33,7 +33,7 @@ public class UnusedPrivateClassCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.COMPILATION_UNIT, Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.ENUM);
+    return ListUtils.concat(Tree.CLASS_KINDS, List.of(Tree.Kind.COMPILATION_UNIT));
   }
 
   @Override

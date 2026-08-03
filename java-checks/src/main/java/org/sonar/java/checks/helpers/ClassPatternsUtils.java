@@ -102,7 +102,7 @@ public class ClassPatternsUtils {
   }
 
   private static boolean isClassTree(Tree member) {
-    return member.is(Tree.Kind.CLASS) || member.is(Tree.Kind.ANNOTATION_TYPE) || member.is(Tree.Kind.INTERFACE) || member.is(Tree.Kind.ENUM);
+    return Tree.CLASS_KINDS.contains(member.kind());
   }
 
   private static boolean hasStaticModifier(ModifiersTree modifiers) {

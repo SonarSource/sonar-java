@@ -17,7 +17,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
@@ -27,8 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.ModifiersUtils;
@@ -42,6 +39,9 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @DeprecatedRuleKey(ruleKey = "HiddenFieldCheck", repositoryKey = "squid")
 @Rule(key = "S1117")
@@ -53,18 +53,12 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
-        Tree.Kind.CLASS,
-        Tree.Kind.ENUM,
-        Tree.Kind.INTERFACE,
-        Tree.Kind.ANNOTATION_TYPE,
-        Tree.Kind.RECORD,
-        Tree.Kind.IMPLICIT_CLASS,
-        Tree.Kind.VARIABLE,
-        Tree.Kind.METHOD,
-        Tree.Kind.CONSTRUCTOR,
-        Tree.Kind.STATIC_INITIALIZER
-    );
+    return ListUtils.concat(Tree.CLASS_KINDS, List.of(
+      Tree.Kind.VARIABLE,
+      Tree.Kind.METHOD,
+      Tree.Kind.CONSTRUCTOR,
+      Tree.Kind.STATIC_INITIALIZER
+    ));
   }
 
   @Override
@@ -131,14 +125,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isClassTree(Tree tree) {
-    return tree.is(
-      Tree.Kind.CLASS,
-      Tree.Kind.ENUM,
-      Tree.Kind.INTERFACE,
-      Tree.Kind.ANNOTATION_TYPE,
-      Tree.Kind.RECORD,
-      Tree.Kind.IMPLICIT_CLASS
-    );
+    return Tree.CLASS_KINDS.contains(tree.kind());
   }
 
   @Override

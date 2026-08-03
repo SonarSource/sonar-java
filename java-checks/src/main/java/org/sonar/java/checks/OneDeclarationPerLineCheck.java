@@ -17,7 +17,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +35,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 
@@ -46,12 +46,12 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Arrays.asList(Kind.INTERFACE, Kind.CLASS, Kind.ENUM, Kind.ANNOTATION_TYPE, Kind.BLOCK, Kind.STATIC_INITIALIZER, Kind.CASE_GROUP);
+    return ListUtils.concat(Tree.CLASS_KINDS, List.of(Kind.BLOCK, Kind.STATIC_INITIALIZER, Kind.CASE_GROUP));
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Kind.INTERFACE, Kind.CLASS, Kind.ENUM, Kind.ANNOTATION_TYPE)) {
+    if (Tree.CLASS_KINDS.contains(tree.kind())) {
       // Field class declaration
       checkVariables(((ClassTree) tree).members());
     } else if (tree.is(Kind.BLOCK, Kind.STATIC_INITIALIZER)) {
