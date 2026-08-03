@@ -16,8 +16,9 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.sonar.java.annotations.Beta;
+import java.util.List;
 import javax.annotation.Nullable;
+import org.sonar.java.annotations.Beta;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 /**
@@ -27,6 +28,23 @@ import org.sonar.sslr.grammar.GrammarRuleKey;
  */
 @Beta
 public interface Tree {
+
+  /**
+   * The {@link Kind}s of all class-like type declarations: {@link Kind#CLASS}, {@link Kind#ENUM}, {@link Kind#INTERFACE},
+   * {@link Kind#ANNOTATION_TYPE}, {@link Kind#RECORD} and {@link Kind#IMPLICIT_CLASS}. All of these are backed by {@link ClassTree}.
+   *
+   * <p>Use this as the single source of truth when a visitor or predicate must handle every class-like structure, instead of
+   * hand-listing the kinds. In particular, it can be returned directly from {@code nodesToVisit()} of a subscription visitor that
+   * needs to visit all class declarations.</p>
+   */
+  List<Kind> CLASS_KINDS = List.of(
+    Kind.CLASS,
+    Kind.ENUM,
+    Kind.INTERFACE,
+    Kind.ANNOTATION_TYPE,
+    Kind.RECORD,
+    Kind.IMPLICIT_CLASS
+  );
 
   boolean is(Kind... kinds);
 
@@ -151,6 +169,7 @@ public interface Tree {
 
     /**
      * {@link SwitchExpressionTree}
+     *
      * @since SonarJava 5.12: Support of Java 12
      */
     SWITCH_EXPRESSION(SwitchExpressionTree.class),
