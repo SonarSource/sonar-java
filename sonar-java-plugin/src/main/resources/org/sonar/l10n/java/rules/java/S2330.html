@@ -1,0 +1,51 @@
+<h2>Why is this an issue?</h2>
+<p>Array covariance is a feature in Java where if type <code>A</code> is a subtype of type <code>B</code>, then <code>A[]</code> is also considered
+a subtype of <code>B[]</code>. This means you can assign an array of a more specific type to a variable of a more general array type.</p>
+<p>While this can be convenient for read-only operations, it creates a significant risk when writing to the array. The Java compiler allows these
+assignments because they are type-safe from a compile-time perspective. However, the runtime type system still tracks the actual array type.</p>
+<p>When you try to store an element into a covariant array, the JVM performs a runtime check to ensure the element is compatible with the array's
+actual component type. If the types don't match, an <code>ArrayStoreException</code> is thrown.</p>
+<h3>Noncompliant code example</h3>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+abstract class Fruit { }
+class Apple extends Fruit { }
+class Orange extends Fruit { }
+
+class Program {
+  public static void main(String[] args) {
+    Fruit[] fruits = new Apple[1]; // Noncompliant
+    fillWithOranges(fruits);
+  }
+
+  static void fillWithOranges(Fruit[] fruits) {
+    for (int i = 0; i &lt; fruits.length; i++) {
+      fruits[i] = new Orange(); // Will throw ArrayStoreException
+    }
+  }
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+abstract class Fruit { }
+class Apple extends Fruit { }
+class Orange extends Fruit { }
+
+class Program {
+  public static void main(String[] args) {
+    Orange[] fruits = new Orange[1]; // Compliant
+    fillWithOranges(fruits);
+  }
+
+  static void fillWithOranges(Orange[] fruits) {
+    for (int i = 0; i &lt; fruits.length; i++) {
+      fruits[i] = new Orange();
+    }
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-10.html">Array Types</a></li>
+  <li>Java SE Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/ArrayStoreException.html">ArrayStoreException</a></li>
+</ul>
