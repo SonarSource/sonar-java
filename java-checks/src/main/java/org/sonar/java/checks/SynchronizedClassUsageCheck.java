@@ -18,7 +18,6 @@ package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
@@ -40,6 +39,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
 
 @Rule(key = "S1149")
@@ -59,7 +59,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
     // We register on compilation units to clear the visited set when scanning a new file
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.COMPILATION_UNIT, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
+    return ListUtils.concat(Tree.CLASS_KINDS, List.of(Tree.Kind.COMPILATION_UNIT));
   }
 
   @Override

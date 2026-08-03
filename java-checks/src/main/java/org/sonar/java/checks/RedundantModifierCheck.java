@@ -16,7 +16,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
@@ -34,7 +33,7 @@ public class RedundantModifierCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.RECORD);
+    return Tree.CLASS_KINDS;
   }
 
   @Override

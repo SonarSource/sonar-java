@@ -16,6 +16,10 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
@@ -24,12 +28,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 @Rule(key = "S1067")
 public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
@@ -56,9 +55,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(
-      Tree.Kind.CLASS,
-      Tree.Kind.RECORD,
+    return ListUtils.concat(Tree.CLASS_KINDS, List.of(
       Tree.Kind.POSTFIX_INCREMENT,
       Tree.Kind.POSTFIX_DECREMENT,
       Tree.Kind.PREFIX_INCREMENT,
@@ -118,12 +115,12 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
       Tree.Kind.IDENTIFIER,
       Tree.Kind.ARRAY_TYPE,
       Tree.Kind.LAMBDA_EXPRESSION,
-      Tree.Kind.PRIMITIVE_TYPE);
+      Tree.Kind.PRIMITIVE_TYPE));
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS, Tree.Kind.RECORD, Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
+    if (Tree.CLASS_KINDS.contains(tree.kind()) || tree.is(Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
       count.push(0);
       level.push(0);
     } else {
@@ -136,7 +133,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.CLASS, Tree.Kind.RECORD, Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
+    if (Tree.CLASS_KINDS.contains(tree.kind()) || tree.is(Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
       count.pop();
       level.pop();
     } else {
@@ -155,7 +152,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isInsideEquals(Tree tree) {
     Tree parent = tree.parent();
-    while (parent != null && !parent.is(Tree.Kind.CLASS, Tree.Kind.RECORD)) {
+    while (parent != null && !Tree.CLASS_KINDS.contains(parent.kind())) {
       if (parent.is(Tree.Kind.METHOD) && MethodTreeUtils.isEqualsMethod((MethodTree) parent)) {
         return true;
       }

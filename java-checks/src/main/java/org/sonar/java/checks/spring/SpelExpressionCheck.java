@@ -70,7 +70,7 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
     "[a-zA-Z0-9/_-]++(\\[\\d++])*+(\\.[a-zA-Z0-9/_-]++(\\[\\d++])*+)*+");
 
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE);
+    return Tree.CLASS_KINDS;
   }
 
   @Override

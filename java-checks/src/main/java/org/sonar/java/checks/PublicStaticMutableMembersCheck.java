@@ -44,6 +44,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 @Rule(key = "S2386")
 public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor {
@@ -115,7 +116,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.INTERFACE, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.ASSIGNMENT);
+    return ListUtils.concat(Tree.CLASS_KINDS, List.of(Tree.Kind.ASSIGNMENT));
   }
 
   @Override
@@ -170,8 +171,8 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
 
   @Override
   public void leaveNode(Tree tree) {
-    // cleanup
-    if (tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM)) {
+    // cleanup for every class-like declaration visited (i.e. all subscribed nodes except ASSIGNMENT)
+    if (!tree.is(Tree.Kind.ASSIGNMENT)) {
       IMMUTABLE_CANDIDATES.removeAll(CLASS_IMMUTABLE_CANDIDATES.getOrDefault(tree, Collections.emptyList()));
     }
   }
