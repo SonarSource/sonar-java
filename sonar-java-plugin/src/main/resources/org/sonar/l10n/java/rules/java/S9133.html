@@ -1,0 +1,51 @@
+<h2>Why is this an issue?</h2>
+<p>Hard-coding approximate values of well-known mathematical constants creates several problems in your codebase.</p>
+<p>First, these hard-coded values often lack the full precision available in predefined library constants. For example, writing <code>3.14</code> instead of
+using a library-provided constant for &pi; loses significant decimal places, potentially leading to calculation errors in scientific or engineering
+applications.</p>
+<p>Second, hard-coded values make your code less readable. When other developers see <code>3.14159</code>, they must recognize it as &pi; themselves.
+Using named constants from standard libraries makes the intent immediately clear.</p>
+<p>Third, maintenance becomes harder. If you need to change the precision or update the value across your codebase, you must find and modify multiple
+literal values. With named constants, the meaning is centralized and clear.</p>
+<p>In Java, these constants and functions are available in the <code>Math</code> class: <code>Math.PI</code>, <code>Math.E</code>,
+<code>Math.sqrt(2)</code>, and <code>Math.log(2)</code>.</p>
+<h2>How to fix it</h2>
+<p>Replace hard-coded numeric approximations with the appropriate predefined constant from the <code>Math</code> class. For &pi;, use
+<code>Math.PI</code>. For Euler's number, use <code>Math.E</code>. For other common constants that don't have direct equivalents, use mathematical
+expressions like <code>Math.sqrt(2)</code> or <code>Math.log(2)</code>.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+public class CircleCalculator {
+    public double calculateArea(double radius) {
+        return 3.14 * radius * radius; // Noncompliant
+    }
+
+    public double calculateCircumference(double radius) {
+        return 2 * 3.14159 * radius; // Noncompliant
+    }
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre>
+public class CircleCalculator {
+    public double calculateArea(double radius) {
+        return Math.PI * radius * radius;
+    }
+
+    public double calculateCircumference(double radius) {
+        return 2 * Math.PI * radius;
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Math.html">Math (Java SE 17 &amp; JDK
+  17)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/StrictMath.html">StrictMath (Java SE 17
+  &amp; JDK 17)</a></li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/1106.html">CWE-1106: Insufficient Use of Symbolic Constants</a></li>
+</ul>
