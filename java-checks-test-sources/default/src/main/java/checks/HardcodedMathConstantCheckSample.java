@@ -2,8 +2,7 @@ package checks;
 
 class HardcodedMathConstantCheckSample {
 
-  // Pi approximations at various precisions
-  double pi1 = 3.14; // Noncompliant {{Use "Math.PI" instead of this approximation of pi.}}
+  // Pi approximations at various precisions (4+ significant digits)
   double pi2 = 3.14159; // Noncompliant {{Use "Math.PI" instead of this approximation of pi.}}
   double pi3 = 3.14159265; // Noncompliant {{Use "Math.PI" instead of this approximation of pi.}}
   double pi4 = 3.14159265358979; // Noncompliant {{Use "Math.PI" instead of this approximation of pi.}}
@@ -19,14 +18,21 @@ class HardcodedMathConstantCheckSample {
   double sqrt2_2 = 1.41421; // Noncompliant {{Use "Math.sqrt(2)" instead of this approximation of the square root of 2.}}
   double sqrt2_3 = 1.4142135; // Noncompliant {{Use "Math.sqrt(2)" instead of this approximation of the square root of 2.}}
 
-  // ln(2) approximations
-  double ln2_1 = 0.693; // Noncompliant {{Use "Math.log(2)" instead of this approximation of the natural logarithm of 2.}}
-  double ln2_2 = 0.69314; // Noncompliant {{Use "Math.log(2)" instead of this approximation of the natural logarithm of 2.}}
-  double ln2_3 = 0.693147; // Noncompliant {{Use "Math.log(2)" instead of this approximation of the natural logarithm of 2.}}
+  // ln(2) approximations (4+ significant digits)
+  double ln2_2 = 0.6931; // Noncompliant {{Use "Math.log(2)" instead of this approximation of the natural logarithm of 2.}}
+  double ln2_3 = 0.69314; // Noncompliant {{Use "Math.log(2)" instead of this approximation of the natural logarithm of 2.}}
+  double ln2_4 = 0.693147; // Noncompliant {{Use "Math.log(2)" instead of this approximation of the natural logarithm of 2.}}
 
   // Float literals
   float piFloat = 3.14159f; // Noncompliant {{Use "Math.PI" instead of this approximation of pi.}}
   float eFloat = 2.718f; // Noncompliant {{Use "Math.E" instead of this approximation of Euler's number.}}
+
+  // Underscore-separated literal (normalize strips underscores)
+  double piUnderscore = 3.14_159; // Noncompliant {{Use "Math.PI" instead of this approximation of pi.}}
+
+  // D-suffix double literal (normalize strips suffix)
+  double piDsuffix = 3.14159d; // Noncompliant {{Use "Math.PI" instead of this approximation of pi.}}
+  double eDsuffix = 2.71828D; // Noncompliant {{Use "Math.E" instead of this approximation of Euler's number.}}
 
   // Static final field
   private static final double MY_PI = 3.14159265358979; // Noncompliant
@@ -70,11 +76,16 @@ class HardcodedMathConstantCheckSample {
   double unrelated5 = 100.0;
   double unrelated6 = 0.001;
 
-  // Compliant - too few significant digits
-  double tooImprecise1 = 3.1;
-  double tooImprecise2 = 2.7;
-  double tooImprecise3 = 1.4;
-  double tooImprecise4 = 0.69;
+  // Compliant - zero value (covers absoluteValue == 0.0 branch)
+  double zero = 0.0;
+
+  // Compliant - too few significant digits (fewer than 4)
+  double tooImprecise1 = 3.14;
+  double tooImprecise2 = 3.1;
+  double tooImprecise3 = 2.7;
+  double tooImprecise4 = 1.4;
+  double tooImprecise5 = 0.69;
+  double tooImprecise6 = 0.693;
 
   // Compliant - outside tolerance
   double outsideTolerance1 = 3.15;
@@ -86,4 +97,7 @@ class HardcodedMathConstantCheckSample {
 
   // Compliant - hex float literals (skipped)
   double hex1 = 0x1.0p0;
+
+  // Compliant - leading-dot literal with too few significant digits
+  double leadingDot = .693;
 }

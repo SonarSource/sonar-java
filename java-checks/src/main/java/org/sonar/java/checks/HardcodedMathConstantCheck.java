@@ -25,8 +25,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S9133")
 public class HardcodedMathConstantCheck extends IssuableSubscriptionVisitor {
 
-  private static final double RELATIVE_TOLERANCE = 0.002;
-  private static final int MIN_SIGNIFICANT_DIGITS = 3;
+  private static final int MIN_SIGNIFICANT_DIGITS = 4;
 
   private enum MathConstant {
     PI(Math.PI, "Math.PI", "pi"),
@@ -72,13 +71,18 @@ public class HardcodedMathConstantCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    if (countSignificantDigits(normalized) < MIN_SIGNIFICANT_DIGITS) {
+    int significantDigits = countSignificantDigits(normalized);
+    if (significantDigits < MIN_SIGNIFICANT_DIGITS) {
       return;
     }
 
+    // Tolerance is based on the literal's own precision: half a unit in the last significant digit.
+    // This ensures we only flag values that match the constant across all their significant digits.
+    double relativeTolerance = 5.0 * Math.pow(10, -significantDigits);
+
     for (MathConstant constant : MathConstant.values()) {
       double relativeError = Math.abs(absoluteValue - constant.value) / constant.value;
-      if (relativeError < RELATIVE_TOLERANCE) {
+      if (relativeError < relativeTolerance) {
         reportIssue(tree, "Use \"" + constant.replacement + "\" instead of this approximation of " + constant.description + ".");
         return;
       }
