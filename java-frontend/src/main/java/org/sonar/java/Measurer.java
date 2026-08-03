@@ -39,14 +39,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class Measurer extends SubscriptionVisitor {
 
-  private static final Tree.Kind[] CLASS_KINDS = new Tree.Kind[]{
-    Tree.Kind.CLASS,
-    Tree.Kind.INTERFACE,
-    Tree.Kind.ENUM,
-    Tree.Kind.ANNOTATION_TYPE,
-    Tree.Kind.RECORD,
-    Tree.Kind.IMPLICIT_CLASS
-  };
+  private static final Tree.Kind[] CLASS_KINDS = Tree.CLASS_KINDS.toArray(new Tree.Kind[0]);
 
   private final SensorContext sensorContext;
   private final NoSonarFilter noSonarFilter;
