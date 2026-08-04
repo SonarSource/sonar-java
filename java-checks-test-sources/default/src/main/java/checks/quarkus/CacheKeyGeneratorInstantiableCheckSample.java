@@ -121,6 +121,13 @@ class NoncompliantPackagePrivateImplicitConstructor implements CacheKeyGenerator
   }
 }
 
+public class CacheKeyGeneratorInstantiableCheckSample implements CacheKeyGenerator {
+  @Override
+  public Object generate(Method method, Object... methodParams) {
+    return methodParams[0];
+  }
+}
+
 class CompliantExplicitNoArgsConstructor implements CacheKeyGenerator {
   public CompliantExplicitNoArgsConstructor() {}
 
