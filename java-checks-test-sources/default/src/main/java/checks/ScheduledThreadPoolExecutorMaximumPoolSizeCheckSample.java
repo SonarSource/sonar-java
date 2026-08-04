@@ -37,7 +37,7 @@ class ScheduledThreadPoolExecutorMaximumPoolSizeCheckSample {
   void onSubtype() {
     CustomScheduledExecutor custom = new CustomScheduledExecutor(5);
     custom.setMaximumPoolSize(10); // Noncompliant
-//          ^^^^^^^^^^^^^^^^^^
+//         ^^^^^^^^^^^^^^^^^^
   }
 
   // Compliant cases
