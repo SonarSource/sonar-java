@@ -96,10 +96,8 @@ public class HardcodedMathConstantCheck extends IssuableSubscriptionVisitor {
     if ("fd".indexOf(Character.toLowerCase(last)) >= 0) {
       value = value.substring(0, value.length() - 1);
     }
-    // Skip hex, binary, and octal literals
-    if (value.startsWith("0x") || value.startsWith("0X") ||
-      value.startsWith("0b") || value.startsWith("0B") ||
-      (value.length() > 1 && value.charAt(0) == '0' && Character.isDigit(value.charAt(1)))) {
+    // Skip hex float literals
+    if (value.startsWith("0x") || value.startsWith("0X")) {
       return null;
     }
     // Skip scientific notation

@@ -100,6 +100,9 @@ class HardcodedMathConstantCheckSample {
   double hex1 = 0x1.0p0;
   double hex2 = 0X1.0p0;
 
+  // Leading-zero float literal (not octal — octal notation does not apply to floating-point)
+  double leadingZeroPi = 03.14159; // Noncompliant {{Use "Math.PI" instead of this approximation of pi.}}
+
   // Leading-dot literal with enough significant digits (3)
   double leadingDot = .693; // Noncompliant {{Use "Math.log(2)" instead of this approximation of the natural logarithm of 2.}}
 
