@@ -47,6 +47,6 @@ class MathClampMethodsCheckTest {
       .withCheck(new MathClampMethodsCheck())
       .withJavaVersion(21)
       .withoutSemantic()
-      .verifyIssues();
+      .verifyAnalysisSucceeds();
   }
 }

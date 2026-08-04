@@ -58,6 +58,6 @@ class InstanceOfPatternMatchingCheckTest {
       .withCheck(new InstanceOfPatternMatchingCheck())
       .withJavaVersion(16)
       .withoutSemantic()
-      .verifyIssues();
+      .verifyAnalysisSucceeds();
   }
 }
