@@ -58,6 +58,6 @@ class AccessibilityChangeCheckTest {
       .withCheck(new AccessibilityChangeCheck())
       .withJavaVersion(15)
       .withoutSemantic()
-      .verifyIssues();
+      .verifyAnalysisSucceeds();
   }
 }

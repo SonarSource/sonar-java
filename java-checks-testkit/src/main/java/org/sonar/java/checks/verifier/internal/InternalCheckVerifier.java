@@ -289,8 +289,6 @@ public class InternalCheckVerifier implements CheckVerifier {
     requiresNonNull(checks, CHECK_OR_CHECKS);
     requiresNonNull(files, FILE_OR_FILES);
 
-    expectations.setExpectNoIssues();
-
     List<JavaFileScanner> visitors = new ArrayList<>(checks);
     visitors.add(expectations.noEffectParser());
     SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, null);

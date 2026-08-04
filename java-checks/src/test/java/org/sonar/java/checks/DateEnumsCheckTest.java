@@ -80,7 +80,6 @@ class DateEnumsCheckTest {
   }
 
   @Test
-<<<<<<< HEAD
   void test_above_threshold() {
     // 8 out of 9 total usages use int literals (89%) -> above 80% threshold -> considered code-style -> no issues raised
     CheckVerifier.newVerifier()
