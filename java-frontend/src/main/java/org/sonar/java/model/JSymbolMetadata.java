@@ -63,8 +63,6 @@ final class JSymbolMetadata implements SymbolMetadata {
 
   private final Map<NullabilityTarget, NullabilityData> nullabilityCache = new EnumMap<>(NullabilityTarget.class);
 
-  // True when this metadata represents a type argument (e.g. Object in List<Object>).
-  // Type argument nullability should not inherit from the enclosing method's return type annotations.
   private final boolean isTypeArgMetadata;
 
   JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] annotationBindings) {
