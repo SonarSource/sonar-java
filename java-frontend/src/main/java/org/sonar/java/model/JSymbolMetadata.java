@@ -63,20 +63,26 @@ final class JSymbolMetadata implements SymbolMetadata {
 
   private final Map<NullabilityTarget, NullabilityData> nullabilityCache = new EnumMap<>(NullabilityTarget.class);
 
+  // True when this metadata represents a type argument (e.g. Object in List<Object>).
+  // Type argument nullability should not inherit from the enclosing method's return type annotations.
+  private final boolean isTypeArgMetadata;
+
   JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] annotationBindings) {
     this.sema = Objects.requireNonNull(sema);
     this.symbol = symbol;
     this.symbolBindings = annotationBindings;
     this.parameterMetas = new SymbolMetadata[0];
+    this.isTypeArgMetadata = false;
 
     this.annotationBindings = annotationBindings;
   }
 
-  private JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] symbolAnnotations, JSymbolMetadata[] parameterMetaDatas) {
+  private JSymbolMetadata(JSema sema, Symbol symbol, IAnnotationBinding[] symbolAnnotations, JSymbolMetadata[] parameterMetaDatas, boolean isTypeArgMetadata) {
     this.sema = Objects.requireNonNull(sema);
     this.symbol = symbol;
     this.symbolBindings = symbolAnnotations;
     this.parameterMetas = parameterMetaDatas;
+    this.isTypeArgMetadata = isTypeArgMetadata;
 
     int total = symbolBindings.length;
     for (JSymbolMetadata parameterMetaData : parameterMetaDatas) {
@@ -100,15 +106,18 @@ final class JSymbolMetadata implements SymbolMetadata {
     System.arraycopy(type.getTypeAnnotations(), 0, symbolAnnotations, externalAnnotations.length, type.getTypeAnnotations().length);
 
     var parameterMetaDatas = Arrays.stream(type.getTypeArguments())
-      .map(param -> of(sema, owner, param, new IAnnotationBinding[0]))
+      .map(param -> ofTypeArg(sema, owner, param))
       .toArray(JSymbolMetadata[]::new);
 
-    return new JSymbolMetadata(
-      sema,
-      owner,
-      symbolAnnotations,
-      parameterMetaDatas
-    );
+    return new JSymbolMetadata(sema, owner, symbolAnnotations, parameterMetaDatas, false);
+  }
+
+  private static JSymbolMetadata ofTypeArg(JSema sema, Symbol owner, ITypeBinding param) {
+    var symbolAnnotations = param.getTypeAnnotations();
+    var parameterMetaDatas = Arrays.stream(param.getTypeArguments())
+      .map(p -> ofTypeArg(sema, owner, p))
+      .toArray(JSymbolMetadata[]::new);
+    return new JSymbolMetadata(sema, owner, symbolAnnotations, parameterMetaDatas, true);
   }
 
   private static NullabilityData[] forEachLevel(Function<NullabilityLevel, NullabilityData> initializer) {
@@ -212,8 +221,10 @@ final class JSymbolMetadata implements SymbolMetadata {
       return nullabilityDataAtLevel;
     }
 
-    // Check nullability from the inheritance hierarchy
-    if (symbol.isMethodSymbol()) {
+    // Check nullability from the inheritance hierarchy.
+    // Skipped for type argument metadata: type arg nullability must not inherit from the enclosing
+    // method's return type annotations, which belong to the outer type, not the type argument.
+    if (symbol.isMethodSymbol() && !isTypeArgMetadata) {
       NullabilityData nullabilityDataFromInheritance = getNullabilityDataFromInheritance((Symbol.MethodSymbol) symbol, target);
       if (nullabilityDataFromInheritance.type() != NullabilityType.NO_ANNOTATION) {
         return nullabilityDataFromInheritance;
