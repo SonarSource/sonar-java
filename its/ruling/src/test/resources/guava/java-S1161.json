@@ -6,6 +6,10 @@
 358,
 406
 ],
+"com.google.guava:guava:src/com/google/common/collect/Ordering.java": [
+539,
+615
+],
 "com.google.guava:guava:src/com/google/common/reflect/Parameter.java": [
 89,
 106,

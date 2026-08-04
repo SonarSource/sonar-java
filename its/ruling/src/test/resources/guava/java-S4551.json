@@ -6,5 +6,8 @@
 "com.google.guava:guava:src/com/google/common/collect/GeneralRange.java": [
 235,
 236
+],
+"com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java": [
+313
 ]
 }
