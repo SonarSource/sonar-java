@@ -195,5 +195,75 @@ class ArrayCovarianceCheckSample {
     };
   }
 
+  // --- Noncompliant: varargs with multiple covariant array arguments ---
+
+  void acceptVarargsFruits(Fruit[]... arrays) {}
+  void acceptVarargsObjects(Object[]... arrays) {}
+  void acceptMixedVarargs(int x, Fruit[]... arrays) {}
+
+  void varargsMultipleCovariantArguments() {
+    Apple[] apples = new Apple[1];
+    Orange[] oranges = new Orange[1];
+    Fruit[] fruits = new Fruit[1];
+    acceptVarargsFruits(
+      apples, // Noncompliant
+      oranges // Noncompliant
+    );
+    acceptVarargsObjects(
+      new String[1], // Noncompliant
+      new Integer[2] // Noncompliant
+    );
+    acceptMixedVarargs(1,
+      apples, // Noncompliant
+      oranges // Noncompliant
+    );
+    acceptVarargsFruits(
+      fruits, // Compliant - same type
+      apples // Noncompliant
+    );
+  }
+
+  // --- Noncompliant: varargs single covariant array argument ---
+
+  void varargsSingleCovariantArgument() {
+    acceptVarargsFruits(new Apple[1]); // Noncompliant
+  }
+
+  // --- Compliant: varargs with matching types ---
+
+  void varargsMatchingType() {
+    Fruit[] fruits1 = new Fruit[1];
+    Fruit[] fruits2 = new Fruit[2];
+    acceptVarargsFruits(fruits1, fruits2); // Compliant
+  }
+
+  // --- Compliant: varargs called with no vararg arguments ---
+
+  void varargsNoArguments() {
+    acceptVarargsFruits(); // Compliant
+    acceptMixedVarargs(1); // Compliant
+  }
+
+  // --- Noncompliant: non-varargs method with multiple parameters ---
+
+  void acceptMultipleFruits(Fruit[] a, Fruit[] b) {}
+
+  void multipleParameterCovariance() {
+    acceptMultipleFruits(
+      new Apple[1], // Noncompliant
+      new Orange[1] // Noncompliant
+    );
+  }
+
+  // --- Compliant: varargs with non-array element type ---
+
+  void acceptVarargsInts(int... values) {}
+  void acceptVarargsStrings(String... values) {}
+
+  void varargsPrimitiveAndExact() {
+    acceptVarargsInts(1, 2, 3); // Compliant
+    acceptVarargsStrings("a", "b"); // Compliant
+  }
+
   private void doNothing() {}
 }
