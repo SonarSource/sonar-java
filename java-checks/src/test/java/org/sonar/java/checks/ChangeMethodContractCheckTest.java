@@ -57,7 +57,7 @@ class ChangeMethodContractCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/jspecify/nullmarked/ChangeMethodContractCheck.java"))
       .withCheck(new ChangeMethodContractCheck())
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
   @Test

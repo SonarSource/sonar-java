@@ -12,6 +12,11 @@ class ChangeMethodContractCheck {
 
   @NullUnmarked
   String annotatedUnmarked(Object a) { return null; }
+
+  void nullableParameter(@Nullable Object nullable) {}
+
+  String nonNullReturn() { return ""; }
+
 }
 
 class ChangeMethodContractCheck_B extends ChangeMethodContractCheck {
@@ -19,6 +24,14 @@ class ChangeMethodContractCheck_B extends ChangeMethodContractCheck {
   @NullMarked
   @Override
   String annotatedUnmarked(Object a) { return null; } // Compliant - NullUnmarked doesn't add any information about nullability
+
+  @Override
+  void nullableParameter(Object nonNull) {} // Noncompliant
+  //                     ^^^^^^
+
+  @Override
+  @Nullable String nonNullReturn() { return null; } // Noncompliant {{Fix the incompatibility of the annotation @Nullable to honor @NullMarked at package level of the overridden method.}}
+  //        ^^^^^^
 
 }
 
