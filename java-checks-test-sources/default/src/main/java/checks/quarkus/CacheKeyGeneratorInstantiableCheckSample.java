@@ -121,10 +121,17 @@ class NoncompliantPackagePrivateImplicitConstructor implements CacheKeyGenerator
   }
 }
 
-public class CacheKeyGeneratorInstantiableCheckSample implements CacheKeyGenerator {
+public class CacheKeyGeneratorInstantiableCheckSample implements CacheKeyGenerator { // Noncompliant
+//           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  private final String prefix;
+
+  public CacheKeyGeneratorInstantiableCheckSample(String prefix) {
+    this.prefix = prefix;
+  }
+
   @Override
   public Object generate(Method method, Object... methodParams) {
-    return methodParams[0];
+    return prefix + methodParams[0];
   }
 }
 
