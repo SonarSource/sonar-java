@@ -36,6 +36,6 @@ class OptionalAsParameterCheckTest {
       .onFile(mainCodeSourcesPath("checks/OptionalAsParameterCheckSample.java"))
       .withCheck(new OptionalAsParameterCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

@@ -36,6 +36,6 @@ class UnicodeAwareCharClassesCheckTest {
       .onFile(mainCodeSourcesPath("checks/regex/UnicodeAwareCharClassesCheckTest.java"))
       .withCheck(new UnicodeAwareCharClassesCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

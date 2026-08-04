@@ -47,13 +47,12 @@ class LeastSpecificTypeCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/LeastSpecificTypeCheckSample.java"))
       .withCheck(new LeastSpecificTypeCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

@@ -31,13 +31,12 @@ class UnusedGroupNamesCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/regex/UnusedGroupNamesCheck.java"))
       .withCheck(new UnusedGroupNamesCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

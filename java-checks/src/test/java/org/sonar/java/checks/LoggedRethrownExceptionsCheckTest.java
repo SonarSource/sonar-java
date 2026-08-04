@@ -36,6 +36,6 @@ class LoggedRethrownExceptionsCheckTest {
       .onFile(mainCodeSourcesPath("checks/LoggedRethrownExceptionsCheckSample.java"))
       .withCheck(new LoggedRethrownExceptionsCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

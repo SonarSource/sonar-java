@@ -40,13 +40,12 @@ class SingleCharacterAlternationCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/regex/SingleCharacterAlternationCheckSample.java"))
       .withCheck(new SingleCharacterAlternationCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

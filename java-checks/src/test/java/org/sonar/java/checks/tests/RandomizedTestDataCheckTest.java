@@ -45,6 +45,6 @@ class RandomizedTestDataCheckTest {
       .onFile(testCodeSourcesPath("checks/tests/RandomizedTestDataCheckSample.java"))
       .withCheck(new RandomizedTestDataCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

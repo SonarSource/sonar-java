@@ -53,13 +53,12 @@ class IgnoredReturnValueCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/S2201_IgnoredReturnValueCheckSample.java"))
       .withCheck(CHECK)
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

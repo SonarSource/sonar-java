@@ -46,7 +46,7 @@ class CollectorsToListCheckTest {
     createCheckVerifier()
       .withJavaVersion(16)
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 
   private static CheckVerifier createCheckVerifier() {

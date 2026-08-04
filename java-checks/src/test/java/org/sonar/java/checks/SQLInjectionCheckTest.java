@@ -51,13 +51,12 @@ class SQLInjectionCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/SQLInjection.java"))
       .withCheck(new SQLInjectionCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

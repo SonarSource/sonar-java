@@ -162,6 +162,20 @@ class MissingPackageInfoCheckTest {
   }
 
   @Test
+  void test_without_semantic() {
+    CheckVerifier.newInternalVerifier()
+      .onFiles(
+        mainCodeSourcesPath("DefaultPackage.java"),
+        mainCodeSourcesPath("checks/packageInfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/package-info.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/HelloWorld.java"),
+        mainCodeSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java"))
+      .withCheck(new MissingPackageInfoCheck())
+      .withoutSemantic()
+      .verifyIssueOnProject(EXPECTED_MESSAGE);
+  }
+
+  @Test
   void emptyCache() throws NoSuchAlgorithmException, IOException {
     logTester.setLevel(Level.TRACE);
     String filePath = mainCodeSourcesPath("checks/packageInfo/HelloWorld.java");

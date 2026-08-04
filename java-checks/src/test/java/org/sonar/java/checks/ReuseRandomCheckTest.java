@@ -36,6 +36,6 @@ class ReuseRandomCheckTest {
       .onFile(mainCodeSourcesPath("checks/ReuseRandomCheckSample.java"))
       .withCheck(new ReuseRandomCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

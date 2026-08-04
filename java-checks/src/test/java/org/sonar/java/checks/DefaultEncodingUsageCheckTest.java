@@ -16,10 +16,10 @@
  */
 package org.sonar.java.checks;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.junit.jupiter.api.Test;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -44,7 +44,6 @@ class DefaultEncodingUsageCheckTest {
       .withJavaVersion(javaVersion)
       .verifyNoIssues();
   }
-
 
   @Test
   void test_without_semantic() {

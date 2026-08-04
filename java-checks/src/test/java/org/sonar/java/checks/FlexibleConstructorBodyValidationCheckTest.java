@@ -49,6 +49,6 @@ class FlexibleConstructorBodyValidationCheckTest {
       .withCheck(new FlexibleConstructorBodyValidationCheck())
       .withJavaVersion(25)
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

@@ -32,4 +32,13 @@ class MockitoAnnotatedObjectsShouldBeInitializedCheckTest {
       .withClassPath(JAVA_17_MODULE.getClassPath())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPathInModule(JAVA_17_MODULE, "checks/tests/MockitoAnnotatedObjectsShouldBeInitialized.java"))
+      .withCheck(new MockitoAnnotatedObjectsShouldBeInitializedCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

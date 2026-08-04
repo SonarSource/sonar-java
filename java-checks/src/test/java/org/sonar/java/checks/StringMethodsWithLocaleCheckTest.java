@@ -30,7 +30,6 @@ class StringMethodsWithLocaleCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()

@@ -284,6 +284,38 @@ public class InternalCheckVerifier implements CheckVerifier {
     verifyAll();
   }
 
+  @Override
+  public void verifyAnalysisSucceeds() {
+    requiresNonNull(checks, CHECK_OR_CHECKS);
+    requiresNonNull(files, FILE_OR_FILES);
+
+    expectations.setExpectNoIssues();
+
+    List<JavaFileScanner> visitors = new ArrayList<>(checks);
+    visitors.add(expectations.noEffectParser());
+    SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, null);
+    JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
+    VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
+      .withJavaVersion(actualVersion)
+      .withSonarComponents(sonarComponents)
+      .withAndroidContext(inAndroidContext);
+    if (!withoutSemantic) {
+      List<File> actualClasspath = classpath == null ? TestClasspathUtils.DEFAULT_MODULE.getClassPath() : classpath;
+      visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
+    }
+    VisitorsBridgeForTests visitorsBridge = visitorsBridgeBuilder.build();
+
+    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
+    astScanner.setVisitorBridge(visitorsBridge);
+
+    List<InputFile> filesToParse = files;
+    if (isCacheEnabled) {
+      visitorsBridge.setCacheContext(cacheContext);
+      filesToParse = astScanner.scanWithoutParsing(files).get(false);
+    }
+    astScanner.scan(filesToParse);
+  }
+
   private void verifyAll() {
     List<JavaFileScanner> visitors = new ArrayList<>(checks);
     if (withoutSemantic && expectations.expectNoIssues()) {

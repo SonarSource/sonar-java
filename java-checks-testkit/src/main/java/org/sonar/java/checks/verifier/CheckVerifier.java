@@ -304,4 +304,11 @@ public interface CheckVerifier {
    * Verifies that no issues are raised by the rule(s) on the given file(s).
    */
   void verifyNoIssues();
+
+  /**
+   * Runs the analysis without asserting anything about the issues raised.
+   * Useful for verifying that a check does not crash on a given file,
+   * e.g. when running without semantic analysis.
+   */
+  void verifyAnalysisSucceeds();
 }

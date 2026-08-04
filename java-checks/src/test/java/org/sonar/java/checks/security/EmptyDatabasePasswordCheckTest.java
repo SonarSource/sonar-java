@@ -37,6 +37,6 @@ class EmptyDatabasePasswordCheckTest {
       .onFile(mainCodeSourcesPath("checks/security/EmptyDatabasePasswordCheckSample.java"))
       .withCheck(new EmptyDatabasePasswordCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

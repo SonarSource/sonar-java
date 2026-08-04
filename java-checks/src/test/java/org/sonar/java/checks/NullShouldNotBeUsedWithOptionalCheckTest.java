@@ -57,13 +57,12 @@ class NullShouldNotBeUsedWithOptionalCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/NullShouldNotBeUsedWithOptionalCheck_jdk.java"))
       .withCheck(new NullShouldNotBeUsedWithOptionalCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

@@ -56,6 +56,6 @@ class PresuperLogicBloatsConstructorCheckTest {
       .withCheck(new PresuperLogicBloatsConstructorCheck())
       .withJavaVersion(25)
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

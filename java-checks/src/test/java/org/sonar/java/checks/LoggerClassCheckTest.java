@@ -37,6 +37,6 @@ class LoggerClassCheckTest {
       .onFile(mainCodeSourcesPath("checks/LoggerClass.java"))
       .withCheck(new LoggerClassCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

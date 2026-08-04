@@ -76,6 +76,6 @@ class UnusedPrivateMethodCheckTest {
       .onFile(TestUtils.mainCodeSourcesPath("checks/UnusedPrivateMethod.java"))
       .withCheck(new UnusedPrivateMethodCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

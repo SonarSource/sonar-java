@@ -231,6 +231,28 @@ class AbstractRegexCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    @Rule(key = "S000")
+    class IssueOnAllRegexCheck extends AbstractRegexCheck {
+      @Override
+      public void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation) {
+        if (regexForLiterals.getSyntaxErrors().isEmpty()) {
+          int mask = regexForLiterals.getInitialFlags().getMask();
+          String flags = mask == 0 ? "" : ",initialFlags=" + mask;
+          reportIssue(methodInvocationOrAnnotation, regexForLiterals.getResult().getText() + flags);
+        } else {
+          reportIssue(methodInvocationOrAnnotation, regexForLiterals.getSyntaxErrors().get(0).getMessage());
+        }
+      }
+    }
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/regex/AbstractRegexCheckSample.java"))
+      .withCheck(new IssueOnAllRegexCheck())
+      .withoutSemantic()
+      .verifyAnalysisSucceeds();
+  }
+
   private static TestCase getArg(String expression, String... preStatements) {
     CompilationUnitTree cut = JParserTestUtils.parse(String.format(JAVA_CODE, Arrays.stream(preStatements).collect(Collectors.joining("\n")), expression));
     ClassTree a = (ClassTree) cut.types().get(0);

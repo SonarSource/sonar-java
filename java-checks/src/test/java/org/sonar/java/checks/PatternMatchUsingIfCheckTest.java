@@ -33,7 +33,6 @@ class PatternMatchUsingIfCheckTest {
 
   // No test with Java version < 21 because the sample crashes the parser
 
-
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
