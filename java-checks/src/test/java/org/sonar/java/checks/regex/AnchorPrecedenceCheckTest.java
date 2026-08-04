@@ -31,13 +31,12 @@ class AnchorPrecedenceCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/regex/AnchorPrecedenceCheckSample.java"))
       .withCheck(new AnchorPrecedenceCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

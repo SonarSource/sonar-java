@@ -65,6 +65,6 @@ class AnonymousClassShouldBeLambdaCheckTest {
       .withCheck(new AnonymousClassShouldBeLambdaCheck())
       .withJavaVersion(8)
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

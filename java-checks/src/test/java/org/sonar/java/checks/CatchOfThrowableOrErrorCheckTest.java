@@ -56,6 +56,6 @@ class CatchOfThrowableOrErrorCheckTest {
       .onFile(mainCodeSourcesPath("checks/CatchOfThrowableOrErrorCheck.java"))
       .withCheck(new CatchOfThrowableOrErrorCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

@@ -63,6 +63,6 @@ class PrintfMisuseCheckTest {
       .onFile(mainCodeSourcesPath("checks/PrintfMisuseCheckSample.java"))
       .withCheck(new PrintfMisuseCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

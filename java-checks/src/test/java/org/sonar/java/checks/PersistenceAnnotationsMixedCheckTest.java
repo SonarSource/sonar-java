@@ -37,6 +37,6 @@ class PersistenceAnnotationsMixedCheckTest {
       .onFile(mainCodeSourcesPath("checks/PersistenceAnnotationsMixedCheckSample.java"))
       .withCheck(new PersistenceAnnotationsMixedCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

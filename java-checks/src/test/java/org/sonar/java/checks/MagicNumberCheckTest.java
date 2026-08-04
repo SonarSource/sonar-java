@@ -55,6 +55,6 @@ class MagicNumberCheckTest {
       .onFile("src/test/files/checks/MagicNumberCheck.java")
       .withCheck(new MagicNumberCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

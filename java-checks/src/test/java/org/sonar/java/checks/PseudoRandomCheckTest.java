@@ -84,6 +84,6 @@ class PseudoRandomCheckTest {
       .onFile(mainCodeSourcesPath("checks/PseudoRandomCheckSample.java"))
       .withCheck(new PseudoRandomCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

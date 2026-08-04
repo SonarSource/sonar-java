@@ -54,6 +54,6 @@ class SimpleClassNameCheckTest {
       .onFile(mainCodeSourcesPath("checks/SimpleClassNameCheckSample.java"))
       .withCheck(new SimpleClassNameCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

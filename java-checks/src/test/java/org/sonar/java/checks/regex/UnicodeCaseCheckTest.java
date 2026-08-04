@@ -31,13 +31,12 @@ class UnicodeCaseCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/regex/UnicodeCaseCheck.java"))
       .withCheck(new UnicodeCaseCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

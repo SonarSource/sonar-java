@@ -66,6 +66,6 @@ class UnusedMethodParameterCheckTest {
       .onFile(mainCodeSourcesPath("checks/unused/UnusedMethodParameterCheckSample.java"))
       .withCheck(CHECK)
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

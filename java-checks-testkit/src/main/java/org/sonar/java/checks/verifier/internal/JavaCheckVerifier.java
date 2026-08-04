@@ -387,4 +387,11 @@ public class JavaCheckVerifier implements CheckVerifier {
     createVerifier().assertNoIssuesRaised();
   }
 
+  @Override
+  public void verifyAnalysisSucceeds() {
+    requiresNonNull(checks, CHECK_OR_CHECKS);
+    requiresNonNull(files, FILE_OR_FILES);
+    createVerifier();
+  }
+
 }

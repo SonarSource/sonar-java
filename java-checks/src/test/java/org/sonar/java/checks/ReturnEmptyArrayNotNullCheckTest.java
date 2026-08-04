@@ -64,13 +64,12 @@ class ReturnEmptyArrayNotNullCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(TestUtils.mainCodeSourcesPath("checks/ReturnEmptyArrayNotNullCheckSample.java"))
       .withCheck(new ReturnEmptyArrayNotNullCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

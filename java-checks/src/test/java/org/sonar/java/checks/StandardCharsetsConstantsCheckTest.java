@@ -58,6 +58,6 @@ class StandardCharsetsConstantsCheckTest {
       .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheckSample.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

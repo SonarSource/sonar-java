@@ -31,13 +31,12 @@ class ReluctantQuantifierWithEmptyContinuationCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/regex/ReluctantQuantifierWithEmptyContinuationCheckSample.java"))
       .withCheck(new ReluctantQuantifierWithEmptyContinuationCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

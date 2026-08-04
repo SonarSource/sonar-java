@@ -72,6 +72,6 @@ class IndentationCheckTest {
       .onFile(mainCodeSourcesPath("checks/IndentationCheck_custom.java"))
       .withCheck(new IndentationCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }

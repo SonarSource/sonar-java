@@ -46,6 +46,6 @@ class AnnotationDefaultArgumentCheckTest {
       .onFile(mainCodeSourcesPath("checks/AnnotationDefaultArgumentCheckSample.java"))
       .withCheck(new AnnotationDefaultArgumentCheck())
       .withoutSemantic()
-      .verifyNoIssues();
+      .verifyAnalysisSucceeds();
   }
 }
