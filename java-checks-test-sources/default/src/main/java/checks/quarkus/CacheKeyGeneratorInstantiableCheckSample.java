@@ -99,6 +99,20 @@ class CompliantRequestScoped implements CacheKeyGenerator {
   }
 }
 
+class NoncompliantPublicWithExplicitConstructor implements CacheKeyGenerator { // Noncompliant
+//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  private final ConfigService configService;
+
+  public NoncompliantPublicWithExplicitConstructor(ConfigService configService) {
+    this.configService = configService;
+  }
+
+  @Override
+  public Object generate(Method method, Object... methodParams) {
+    return configService.getPrefix() + methodParams[0];
+  }
+}
+
 class NoncompliantPackagePrivateImplicitConstructor implements CacheKeyGenerator { // Noncompliant
 //    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   @Override
