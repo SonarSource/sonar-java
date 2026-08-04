@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -116,6 +117,8 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
       checkFieldModification(((MemberSelectExpressionTree) expression).identifier());
     } else if (expression.is(Kind.ARRAY_ACCESS_EXPRESSION)) {
       checkVariableModification(((ArrayAccessExpressionTree) expression).expression());
+    } else if (expression.is(Kind.PARENTHESIZED_EXPRESSION)) {
+      checkVariableModification(((ParenthesizedTree) expression).expression());
     }
   }
 
