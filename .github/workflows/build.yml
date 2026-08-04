@@ -78,7 +78,12 @@ jobs:
         with:
           version: 2026.7.17
       - name: Select Java Version
-        run: mise use java@21
+        shell: bash # Set explicitly so Bash is used on Windows runners too.
+        run: |
+          mise use java@21
+          JAVA_21_HOME="$(mise where java@21)"
+          echo "JAVA_HOME=${JAVA_21_HOME}" >> "$GITHUB_ENV"
+          echo "${JAVA_21_HOME}/bin" >> "$GITHUB_PATH"
       - name: Ensure Separate Job Cache Key
         uses: ./.github/actions/write-file
         with:
@@ -187,7 +192,12 @@ jobs:
         with:
           version: 2026.7.17
       - name: Select Java Version
-        run: mise use java@21
+        shell: bash # Set explicitly so Bash is used on Windows runners too.
+        run: |
+          mise use java@21
+          JAVA_21_HOME="$(mise where java@21)"
+          echo "JAVA_HOME=${JAVA_21_HOME}" >> "$GITHUB_ENV"
+          echo "${JAVA_21_HOME}/bin" >> "$GITHUB_PATH"
       - name: Ensure Separate Job Cache Key
         uses: ./.github/actions/write-file
         with:
@@ -395,7 +405,12 @@ jobs:
         run: |
           mvn clean compile test-compile --batch-mode
       - name: Select Java 21
-        run: mise use java@21
+        shell: bash
+        run: |
+          mise use java@21
+          JAVA_21_HOME="$(mise where java@21)"
+          echo "JAVA_HOME=${JAVA_21_HOME}" >> "$GITHUB_ENV"
+          echo "${JAVA_21_HOME}/bin" >> "$GITHUB_PATH"
       - name: Orchestrator Cache
         uses: ./.github/actions/orchestrator-cache
         with:
