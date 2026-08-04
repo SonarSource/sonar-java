@@ -42,7 +42,7 @@ public class ArrayCovarianceCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.RETURN_STATEMENT,
-      Tree.Kind.YIELD_STATEMENT, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+      Tree.Kind.YIELD_STATEMENT, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS, Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
@@ -63,6 +63,7 @@ public class ArrayCovarianceCheck extends IssuableSubscriptionVisitor {
         var invocation = (NewClassTree) tree;
         visitInvocation(invocation.methodSymbol(), invocation.arguments());
       }
+      case LAMBDA_EXPRESSION -> visitLambdaExpression((LambdaExpressionTree) tree);
       default -> {
         // do nothing
       }
@@ -90,6 +91,15 @@ public class ArrayCovarianceCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  private void visitLambdaExpression(LambdaExpressionTree tree) {
+    var body = tree.body();
+    if (body.is(Tree.Kind.BLOCK)) {
+      return;
+    }
+    var lhsType = tree.symbol().returnType().type();
+    checkArrayCovariance(lhsType, (ExpressionTree) body);
+  }
+
   private void visitYieldStatement(YieldStatementTree tree) {
     Tree enclosing = ExpressionUtils.getEnclosingTree(tree, Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.SWITCH_STATEMENT);
     if (enclosing == null || enclosing.is(Tree.Kind.SWITCH_STATEMENT)) {
@@ -109,25 +119,31 @@ public class ArrayCovarianceCheck extends IssuableSubscriptionVisitor {
       return;
     }
     var varargType = (Type.ArrayType) parameterTypes.get(nonVarargCount);
-    checkArrayCovariance(varargType, arguments.get(nonVarargCount));
     var elementType = varargType.elementType();
-    for (int i = nonVarargCount; i < arguments.size(); i++) {
+    // For the first vararg argument, check against the whole array type first (pre-built array interpretation).
+    // Only fall back to element-type check if the whole-array check did not report, to avoid double reporting.
+    if (!checkArrayCovariance(varargType, arguments.get(nonVarargCount))) {
+      checkArrayCovariance(elementType, arguments.get(nonVarargCount));
+    }
+    for (int i = nonVarargCount + 1; i < arguments.size(); i++) {
       checkArrayCovariance(elementType, arguments.get(i));
     }
   }
 
-  private void checkArrayCovariance(Type lhsType, ExpressionTree rhsExpression) {
+  private boolean checkArrayCovariance(Type lhsType, ExpressionTree rhsExpression) {
     var rhsType = rhsExpression.symbolType();
     if (!lhsType.isArray() || !rhsType.isArray() || rhsType.isNullType() || rhsType.isUnknown() || lhsType.isUnknown()) {
-      return;
+      return false;
     }
     var lhsElementType = ((Type.ArrayType) lhsType).elementType();
     var rhsElementType = ((Type.ArrayType) rhsType).elementType();
     if (lhsElementType.isUnknown() || rhsElementType.isUnknown() || lhsElementType.isPrimitive() || rhsElementType.isPrimitive()) {
-      return;
+      return false;
     }
     if (rhsElementType.isSubtypeOf(lhsElementType) && !lhsElementType.isSubtypeOf(rhsElementType)) {
       context.reportIssue(this, rhsExpression, MESSAGE);
+      return true;
     }
+    return false;
   }
 }

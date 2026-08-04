@@ -88,6 +88,12 @@ class ArrayCovarianceCheckSample {
     };
   }
 
+  // --- Noncompliant: expression-bodied lambda return ---
+
+  void expressionBodiedLambdaReturn() {
+    Supplier<Fruit[]> s = () -> new Apple[1]; // Noncompliant
+  }
+
   // --- Noncompliant: switch expression ---
 
   void switchExpression(int code) {
@@ -178,6 +184,12 @@ class ArrayCovarianceCheckSample {
     };
   }
 
+  // --- Compliant: expression-bodied lambda returning matching type ---
+
+  void expressionBodiedLambdaCompliant() {
+    Supplier<Apple[]> s = () -> new Apple[1]; // Compliant
+  }
+
   // --- Compliant: switch expression with matching types ---
 
   void switchCompliant(int code, Fruit[] fruits) {
@@ -227,6 +239,13 @@ class ArrayCovarianceCheckSample {
 
   void varargsSingleCovariantArgument() {
     acceptVarargsFruits(new Apple[1]); // Noncompliant
+  }
+
+  // --- Noncompliant: varargs single covariant array-of-arrays argument (should report once, not twice) ---
+
+  void varargsSingleCovariantArrayOfArrays() {
+    Apple[][] appleArrays = new Apple[1][];
+    acceptVarargsFruits(appleArrays); // Noncompliant
   }
 
   // --- Compliant: varargs with matching types ---
