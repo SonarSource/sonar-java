@@ -38,7 +38,7 @@ class NullableGenericChild_WithNullable extends NullableGenericParent {
 class NullableGenericChild_NoNullable extends NullableGenericParent {
   @Override
   protected List<Object> handle(@Nullable Object body) { // Compliant
-    return null;
+    return new java.util.ArrayList<>();
   }
 }
 
