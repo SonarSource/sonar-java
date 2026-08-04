@@ -34,6 +34,21 @@ class Generic<X> {
   }
 }
 
+// Quarkus Panache: static methods are bytecode-generated in subclasses, so accessing them via the subclass is intended
+class MeetingType extends io.quarkus.hibernate.orm.panache.PanacheEntityBase {
+  void doSomething() {
+    MeetingType.listAll(); // Compliant - Panache generates static methods in subclasses
+    MeetingType.count(); // Compliant
+  }
+}
+
+class MongoMeetingType extends io.quarkus.mongodb.panache.PanacheMongoEntityBase {
+  void doSomething() {
+    MongoMeetingType.listAll(); // Compliant - Panache generates static methods in subclasses
+    MongoMeetingType.count(); // Compliant
+  }
+}
+
 class GuavaFP {
   // method is incorrectly resolved as Set.of, specifically excluded in implementation to avoid
   // see SONARJAVA-3095

@@ -71,6 +71,7 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
       if (!staticType.isUnknown() && !expressionType.isUnknown()
         && !expressionType.erasure().equals(staticType.erasure())
         && (memberOwnerIsInCurrentPackage || owner.isPublic())
+        && !isPanacheEntityBase(staticType)
       ) {
         QuickFixHelper.newIssue(context)
           .forRule(this)
@@ -85,6 +86,11 @@ public class StaticMemberAccessCheck extends IssuableSubscriptionVisitor {
   private static String classPackage(Type classType) {
     int endPackage = classType.fullyQualifiedName().lastIndexOf('.');
     return endPackage == -1 ? "" : classType.fullyQualifiedName().substring(0, endPackage);
+  }
+
+  private static boolean isPanacheEntityBase(Type type) {
+    return type.isSubtypeOf("io.quarkus.hibernate.orm.panache.PanacheEntityBase")
+      || type.isSubtypeOf("io.quarkus.mongodb.panache.PanacheMongoEntityBase");
   }
 
   private static boolean isListOrSetOf(MemberSelectExpressionTree mse) {
