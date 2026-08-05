@@ -21,6 +21,10 @@ class StaticFieldUpateCheckSample {
     myA.staticValue = 1; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     myA.staticArray[0] = 1; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     myA.toString();
+    (staticValue)++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
+    (StaticFieldUpateCheckSample.staticValue)++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
+    (staticValue) = value + 1; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
+    ((staticValue))++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
 
     class InnerClass {
       InnerClass() {
