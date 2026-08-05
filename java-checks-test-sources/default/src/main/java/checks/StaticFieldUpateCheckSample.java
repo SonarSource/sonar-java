@@ -13,6 +13,7 @@ class StaticFieldUpateCheckSample {
     staticValue = value + 1; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
 //  ^^^^^^^^^^^
     staticValue += value; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
+    staticValue >>= value; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     staticValue++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     ++staticValue; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     StaticFieldUpateCheckSample.staticValue++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}

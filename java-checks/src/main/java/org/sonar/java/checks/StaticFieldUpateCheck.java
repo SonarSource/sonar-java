@@ -40,19 +40,6 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 @Rule(key = "S2696")
 public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
 
-  private static final Kind[] ASSIGNMENT_EXPRESSIONS = new Kind[]{
-    Kind.AND_ASSIGNMENT,
-    Kind.ASSIGNMENT,
-    Kind.DIVIDE_ASSIGNMENT,
-    Kind.LEFT_SHIFT_ASSIGNMENT,
-    Kind.MINUS_ASSIGNMENT,
-    Kind.MULTIPLY_ASSIGNMENT,
-    Kind.OR_ASSIGNMENT,
-    Kind.PLUS_ASSIGNMENT,
-    Kind.REMAINDER_ASSIGNMENT,
-    Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
-    Kind.XOR_ASSIGNMENT};
-
   private static final Kind[] UNARY_EXPRESSIONS = new Kind[]{
     Kind.POSTFIX_DECREMENT,
     Kind.POSTFIX_INCREMENT,
@@ -65,7 +52,7 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
   public List<Kind> nodesToVisit() {
     ArrayList<Kind> nodesToVisit = new ArrayList<>(super.nodesToVisit());
     nodesToVisit.add(Kind.STATIC_INITIALIZER);
-    nodesToVisit.addAll(Arrays.asList(ASSIGNMENT_EXPRESSIONS));
+    nodesToVisit.addAll(Kind.ASSIGNMENT_KINDS);
     nodesToVisit.addAll(Arrays.asList(UNARY_EXPRESSIONS));
     return nodesToVisit;
   }
@@ -80,8 +67,8 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
     } else if (tree.is(Kind.STATIC_INITIALIZER)) {
       withinStaticMethod.push(true);
     } else if (isInInstanceMethod() && !hasAnyParentStatic() && !hasAnyParentSync()) {
-      if (tree.is(ASSIGNMENT_EXPRESSIONS)) {
-        checkVariableModification(((AssignmentExpressionTree) tree).variable());
+      if (tree instanceof AssignmentExpressionTree assignment) {
+        checkVariableModification(assignment.variable());
       } else if (tree.is(UNARY_EXPRESSIONS)) {
         checkVariableModification(((UnaryExpressionTree) tree).expression());
       }
