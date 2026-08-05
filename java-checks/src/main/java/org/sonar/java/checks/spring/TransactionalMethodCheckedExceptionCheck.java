@@ -24,6 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -51,6 +53,11 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
+
+    // @Transactional has no effect on private methods (Spring AOP cannot intercept them)
+    if (ModifiersUtils.hasModifier(method.modifiers(), Modifier.PRIVATE)) {
+      return;
+    }
 
     List<TypeTree> throwsClauses = method.throwsClauses();
     if (throwsClauses.isEmpty()) {

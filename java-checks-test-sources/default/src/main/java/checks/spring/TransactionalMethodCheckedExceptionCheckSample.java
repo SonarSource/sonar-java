@@ -169,4 +169,23 @@ public class TransactionalMethodCheckedExceptionCheckSample {
 //            ^^^^^^^^^^^^^^
     // Has value attribute but no rollback configuration
   }
+
+  // @Transactional has no effect on private methods (Spring AOP cannot intercept them)
+  @Transactional
+  private void privateMethod() throws IOException { // Compliant - private methods are not proxied by Spring
+  }
+
+  @Transactional
+  private void privateMethodMultipleExceptions() throws IOException, SQLException { // Compliant
+  }
+
+  @Transactional
+  static class ClassLevelWithPrivateMethod {
+    private void privateInClassLevel() throws IOException { // Compliant - private methods are not proxied
+    }
+
+    public void publicInClassLevel() throws IOException { // Noncompliant [[secondary=182]]
+//              ^^^^^^^^^^^^^^^^^^
+    }
+  }
 }
