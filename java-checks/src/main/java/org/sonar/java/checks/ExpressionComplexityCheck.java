@@ -55,7 +55,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ListUtils.concat(Tree.CLASS_KINDS, List.of(
+    return ListUtils.concat(Tree.Kind.CLASS_KINDS, List.of(
       Tree.Kind.POSTFIX_INCREMENT,
       Tree.Kind.POSTFIX_DECREMENT,
       Tree.Kind.PREFIX_INCREMENT,
@@ -120,7 +120,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (Tree.CLASS_KINDS.contains(tree.kind()) || tree.is(Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
+    if (Tree.Kind.CLASS_KINDS.contains(tree.kind()) || tree.is(Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
       count.push(0);
       level.push(0);
     } else {
@@ -133,7 +133,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (Tree.CLASS_KINDS.contains(tree.kind()) || tree.is(Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
+    if (Tree.Kind.CLASS_KINDS.contains(tree.kind()) || tree.is(Tree.Kind.NEW_ARRAY) || isLambdaWithBlock(tree)) {
       count.pop();
       level.pop();
     } else {
@@ -152,7 +152,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isInsideEquals(Tree tree) {
     Tree parent = tree.parent();
-    while (parent != null && !Tree.CLASS_KINDS.contains(parent.kind())) {
+    while (parent != null && !Tree.Kind.CLASS_KINDS.contains(parent.kind())) {
       if (parent.is(Tree.Kind.METHOD) && MethodTreeUtils.isEqualsMethod((MethodTree) parent)) {
         return true;
       }

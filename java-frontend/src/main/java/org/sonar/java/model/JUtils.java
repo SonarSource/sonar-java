@@ -115,7 +115,7 @@ public final class JUtils {
       if (t == null) {
         return null;
       }
-      if (Tree.CLASS_KINDS.contains(t.kind())) {
+      if (Tree.Kind.CLASS_KINDS.contains(t.kind())) {
         return ((ClassTree) t).symbol();
       }
       t = t.parent();

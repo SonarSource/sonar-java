@@ -38,7 +38,7 @@ public class PublicApiChecker {
     // Utility class
   }
 
-  private static final Tree.Kind[] CLASS_KINDS = Tree.CLASS_KINDS.toArray(new Tree.Kind[0]);
+  private static final Tree.Kind[] CLASS_KINDS = Tree.Kind.CLASS_KINDS.toArray(new Tree.Kind[0]);
 
   private static final Tree.Kind[] METHOD_KINDS = {
     Tree.Kind.METHOD,

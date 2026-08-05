@@ -33,7 +33,7 @@ class TreeTest {
     Tree.Kind[] expected = Arrays.stream(Tree.Kind.values())
       .filter(kind -> kind.getAssociatedInterface() == ClassTree.class)
       .toArray(Tree.Kind[]::new);
-    assertThat(Tree.CLASS_KINDS).containsExactlyInAnyOrder(expected);
+    assertThat(Tree.Kind.CLASS_KINDS).containsExactlyInAnyOrder(expected);
   }
 
 }

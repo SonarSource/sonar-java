@@ -41,7 +41,7 @@ public abstract class AbstractCallToDeprecatedCodeChecker extends IssuableSubscr
 
   @Override
   public final List<Tree.Kind> nodesToVisit() {
-    return ListUtils.concat(Tree.CLASS_KINDS, List.of(Tree.Kind.IDENTIFIER, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR));
+    return ListUtils.concat(Tree.Kind.CLASS_KINDS, List.of(Tree.Kind.IDENTIFIER, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR));
   }
 
   @Override
@@ -120,7 +120,7 @@ public abstract class AbstractCallToDeprecatedCodeChecker extends IssuableSubscr
   }
 
   private static boolean isDeprecatedClassTree(Tree tree) {
-    return Tree.CLASS_KINDS.contains(tree.kind()) && ((ClassTree) tree).symbol().isDeprecated();
+    return Tree.Kind.CLASS_KINDS.contains(tree.kind()) && ((ClassTree) tree).symbol().isDeprecated();
   }
 
   boolean isFlaggedForRemoval(Symbol deprecatedSymbol) {

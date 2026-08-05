@@ -40,7 +40,7 @@ public class InnerClassTooManyLinesCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Tree.CLASS_KINDS;
+    return Kind.CLASS_KINDS;
   }
 
   @Override

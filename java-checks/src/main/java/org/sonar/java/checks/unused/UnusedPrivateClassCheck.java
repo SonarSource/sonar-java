@@ -33,7 +33,7 @@ public class UnusedPrivateClassCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ListUtils.concat(Tree.CLASS_KINDS, List.of(Tree.Kind.COMPILATION_UNIT));
+    return ListUtils.concat(Tree.Kind.CLASS_KINDS, List.of(Tree.Kind.COMPILATION_UNIT));
   }
 
   @Override

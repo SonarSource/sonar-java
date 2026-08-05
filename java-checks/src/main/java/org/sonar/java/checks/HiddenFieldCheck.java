@@ -53,7 +53,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ListUtils.concat(Tree.CLASS_KINDS, List.of(
+    return ListUtils.concat(Tree.Kind.CLASS_KINDS, List.of(
       Tree.Kind.VARIABLE,
       Tree.Kind.METHOD,
       Tree.Kind.CONSTRUCTOR,
@@ -125,7 +125,7 @@ public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isClassTree(Tree tree) {
-    return Tree.CLASS_KINDS.contains(tree.kind());
+    return Tree.Kind.CLASS_KINDS.contains(tree.kind());
   }
 
   @Override

@@ -46,12 +46,12 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ListUtils.concat(Tree.CLASS_KINDS, List.of(Kind.BLOCK, Kind.STATIC_INITIALIZER, Kind.CASE_GROUP));
+    return ListUtils.concat(Kind.CLASS_KINDS, List.of(Kind.BLOCK, Kind.STATIC_INITIALIZER, Kind.CASE_GROUP));
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (Tree.CLASS_KINDS.contains(tree.kind())) {
+    if (Kind.CLASS_KINDS.contains(tree.kind())) {
       // Field class declaration
       checkVariables(((ClassTree) tree).members());
     } else if (tree.is(Kind.BLOCK, Kind.STATIC_INITIALIZER)) {

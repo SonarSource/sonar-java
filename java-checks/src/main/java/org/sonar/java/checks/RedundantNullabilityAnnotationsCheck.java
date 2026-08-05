@@ -40,7 +40,7 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Tree.CLASS_KINDS;
+    return Tree.Kind.CLASS_KINDS;
   }
 
   @Override

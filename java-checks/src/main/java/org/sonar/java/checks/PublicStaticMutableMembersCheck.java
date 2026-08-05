@@ -116,7 +116,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ListUtils.concat(Tree.CLASS_KINDS, List.of(Tree.Kind.ASSIGNMENT));
+    return ListUtils.concat(Tree.Kind.CLASS_KINDS, List.of(Tree.Kind.ASSIGNMENT));
   }
 
   @Override

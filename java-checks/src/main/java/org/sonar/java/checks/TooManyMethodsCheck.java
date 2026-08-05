@@ -48,7 +48,7 @@ public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Tree.CLASS_KINDS;
+    return Tree.Kind.CLASS_KINDS;
   }
 
   @Override

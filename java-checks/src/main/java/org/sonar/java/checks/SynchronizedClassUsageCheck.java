@@ -59,7 +59,7 @@ public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
     // We register on compilation units to clear the visited set when scanning a new file
-    return ListUtils.concat(Tree.CLASS_KINDS, List.of(Tree.Kind.COMPILATION_UNIT));
+    return ListUtils.concat(Tree.Kind.CLASS_KINDS, List.of(Tree.Kind.COMPILATION_UNIT));
   }
 
   @Override

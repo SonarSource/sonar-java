@@ -54,7 +54,7 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ListUtils.concat(Tree.CLASS_KINDS, List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.METHOD_INVOCATION));
+    return ListUtils.concat(Tree.Kind.CLASS_KINDS, List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.METHOD_INVOCATION));
   }
 
   @Override

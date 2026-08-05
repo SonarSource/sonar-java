@@ -63,7 +63,7 @@ public class CollectionIsEmptyCheck extends IssuableSubscriptionVisitor {
     Tree.Kind.GREATER_THAN,
     Tree.Kind.GREATER_THAN_OR_EQUAL_TO
   };
-  private static final Tree.Kind[] CLASS_TREES = Tree.CLASS_KINDS.toArray(new Tree.Kind[0]);
+  private static final Tree.Kind[] CLASS_TREES = Tree.Kind.CLASS_KINDS.toArray(new Tree.Kind[0]);
   private static final Deque<Boolean> IS_COLLECTION_ENCLOSING_TYPES_STACK = new LinkedList<>();
 
   @Override

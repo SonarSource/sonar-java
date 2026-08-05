@@ -31,7 +31,7 @@ public class InterfaceOrSuperclassShadowingCheck extends IssuableSubscriptionVis
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Tree.CLASS_KINDS;
+    return Tree.Kind.CLASS_KINDS;
   }
 
   @Override
