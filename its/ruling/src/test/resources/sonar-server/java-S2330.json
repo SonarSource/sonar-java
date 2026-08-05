@@ -85,6 +85,9 @@
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryImplTest.java": [
 224
 ],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/source/SourceHashRepositoryImplTest.java": [
+82
+],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadMeasureComputersStepTest.java": [
 62,
 71,
