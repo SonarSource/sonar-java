@@ -1,0 +1,21 @@
+{
+  "title": "\"ScheduledThreadPoolExecutor.setMaximumPoolSize\" should not be called",
+  "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9132",
+  "sqKey": "S9132",
+  "scope": "All",
+  "quickfix": "unknown"
+}
