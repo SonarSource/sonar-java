@@ -1,0 +1,28 @@
+<h2>Why is this an issue?</h2>
+<p>Stream reading methods like <code>InputStream.read()</code> and <code>Reader.read()</code> return an <code>int</code> that can represent all
+possible data values (0-255 for byte-oriented streams) plus a special sentinel value (<code>-1</code>) to indicate end-of-stream.</p>
+<p>When the return value is cast to a narrower type (<code>byte</code> or <code>char</code>) before checking for <code>-1</code>, the maximum
+unsigned value (such as 255 or 0xFF) wraps around to <code>-1</code> due to signed integer representation. This makes it impossible to distinguish
+between a legitimate data value and end-of-stream, leading to premature termination or data corruption.</p>
+<h3>Noncompliant code example</h3>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+FileInputStream fis = new FileInputStream("data.bin");
+byte b;
+while ((b = (byte) fis.read()) != -1) {  // Noncompliant
+    process(b);
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+FileInputStream fis = new FileInputStream("data.bin");
+int data;
+while ((data = fis.read()) != -1) {
+    byte b = (byte) data;
+    process(b);
+}
+</pre>
+<h2>Resources</h2>
+<ul>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html#read()">InputStream.read() (Java SE 17 &amp; JDK 17)</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Reader.html#read()">Reader.read() (Java SE 17 &amp; JDK 17)</a></li>
+</ul>
