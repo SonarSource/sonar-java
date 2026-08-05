@@ -1,0 +1,86 @@
+<p>This is an issue when a language-level synchronization primitive is used on an object from a standard concurrency library, such as reentrant locks,
+semaphores, countdown latches, cyclic barriers, or thread-safe queue implementations.</p>
+<p>In Java, this specifically refers to using <code>synchronized</code> blocks on objects from the <code>java.util.concurrent</code> package, such as
+<code>ReentrantLock</code>, <code>Semaphore</code>, <code>CountDownLatch</code>, <code>CyclicBarrier</code>, or <code>BlockingQueue</code>
+implementations.</p>
+<h2>Why is this an issue?</h2>
+<p>Concurrent programming libraries provide their own high-level synchronization mechanisms. These are designed to be more flexible and powerful than
+the language’s basic object locking mechanism.</p>
+<p>When you use the basic locking mechanism on such an object, you are acquiring a lock that is built into the object itself at the language runtime
+level. However, this built-in lock is completely separate from the object’s own synchronization protocol. The two mechanisms do not interact with each
+other at all.</p>
+<p>For example:</p>
+<ul>
+  <li>Using basic locking on a reentrant lock object does NOT call the object’s lock acquisition or release methods</li>
+  <li>Using basic locking on a semaphore object does NOT call the object’s acquire or release methods</li>
+  <li>Using basic locking on a countdown latch object does NOT call the object’s await or countdown methods</li>
+</ul>
+<p>This means that threads using the basic locking mechanism on these objects will not coordinate with threads using the object’s proper API methods.
+Different threads might think they have exclusive access when they actually don’t, leading to race conditions and data corruption.</p>
+<p>This pattern typically indicates a misunderstanding of how concurrent library classes work. The developer likely intended to use the object’s own
+synchronization mechanism but mistakenly used the basic locking mechanism instead.</p>
+<p>In Java, this refers to classes from the <code>java.util.concurrent</code> package and using the <code>synchronized</code> keyword. Specific
+examples include using <code>synchronized(reentrantLock)</code> instead of calling <code>lock()</code>/<code>unlock()</code> on a
+<code>ReentrantLock</code>, or using <code>synchronized(semaphore)</code> instead of calling <code>acquire()</code>/<code>release()</code> on a
+<code>Semaphore</code>.</p>
+<h3>What is the potential impact?</h3>
+<p>When language-level locking mechanisms are used on concurrent data structures that implement their own internal synchronization, the code fails to
+provide the expected thread-safety guarantees:</p>
+<ul>
+  <li><strong>Race conditions</strong>: Multiple threads may access shared resources simultaneously, even though the code appears to prevent this</li>
+  <li><strong>Data corruption</strong>: Concurrent modifications to shared data can lead to inconsistent state</li>
+  <li><strong>Logic errors</strong>: The application may behave incorrectly in multi-threaded scenarios, with bugs that are difficult to reproduce and
+  diagnose</li>
+  <li><strong>False sense of security</strong>: The presence of explicit locking blocks may give developers and reviewers false confidence that the
+  code is thread-safe</li>
+</ul>
+<p>These issues are particularly dangerous because they often only manifest under specific timing conditions, making them hard to detect during
+testing.</p>
+<p>In Java, this specifically refers to using <code>synchronized</code> blocks or methods on <code>java.util.concurrent</code> synchronization objects
+like <code>ReentrantLock</code>, <code>Semaphore</code>, <code>CountDownLatch</code>, <code>CyclicBarrier</code>, or <code>BlockingQueue</code>
+implementations.</p>
+<h2>How to fix it</h2>
+<p>Replace the <code>synchronized</code> block with the correct API methods for the specific <code>java.util.concurrent</code> class you’re using.
+Always use try-finally blocks when acquiring locks to ensure they are released even if an exception occurs.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+private final ReentrantLock lock = new ReentrantLock();
+
+public void doWork() {
+    synchronized (lock) {  // Noncompliant
+        criticalSection();
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+private final ReentrantLock lock = new ReentrantLock();
+
+public void doWork() {
+    lock.lock();
+    try {
+        criticalSection();
+    } finally {
+        lock.unlock();
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/package-summary.html">java.util.concurrent (Java SE 17 &amp;
+  JDK 17)</a></li>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Lock.html">Lock
+  (Java SE 17 &amp; JDK 17)</a></li>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/Semaphore.html">Semaphore
+  (Java SE 17 &amp; JDK 17)</a></li>
+  <li>SpotBugs Documentation - <a href="https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#JLM_JSR166_UTILCONCURRENT_MONITORENTER">Bug
+  Descriptions - JLM_JSR166_UTILCONCURRENT_MONITORENTER</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S2445} - Blocks should be synchronized on "private final" fields</li>
+</ul>
+
