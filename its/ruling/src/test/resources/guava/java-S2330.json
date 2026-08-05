@@ -31,7 +31,8 @@
 ],
 "com.google.guava:guava:src/com/google/common/collect/Ordering.java": [
 791,
-795
+795,
+888
 ],
 "com.google.guava:guava:src/com/google/common/collect/RegularImmutableBiMap.java": [
 66,
