@@ -63,9 +63,9 @@ class UnusedMethodParameterCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/unused/UnusedMethodParameterCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/unused/UnusedMethodParameterCheckSampleWithoutSemantic.java"))
       .withCheck(CHECK)
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

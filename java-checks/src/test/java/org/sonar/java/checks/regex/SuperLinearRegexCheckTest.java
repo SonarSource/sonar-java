@@ -52,9 +52,9 @@ class SuperLinearRegexCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/SuperLinearRegexCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/SuperLinearRegexCheckSampleWithoutSemantic.java"))
       .withCheck(new SuperLinearRegexCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

@@ -34,9 +34,9 @@ class EnumSetCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/EnumSetCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/EnumSetCheckSampleWithoutSemantic.java"))
       .withCheck(new EnumSetCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

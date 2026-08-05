@@ -52,10 +52,10 @@ class PresuperLogicBloatsConstructorCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/PresuperLogicShoudntBloatConstructorSample.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/PresuperLogicShoudntBloatConstructorSampleWithoutSemantic.java"))
       .withCheck(new PresuperLogicBloatsConstructorCheck())
       .withJavaVersion(25)
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

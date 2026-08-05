@@ -247,10 +247,10 @@ class AbstractRegexCheckTest {
       }
     }
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/AbstractRegexCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/AbstractRegexCheckSampleWithoutSemantic.java"))
       .withCheck(new IssueOnAllRegexCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 
   private static TestCase getArg(String expression, String... preStatements) {

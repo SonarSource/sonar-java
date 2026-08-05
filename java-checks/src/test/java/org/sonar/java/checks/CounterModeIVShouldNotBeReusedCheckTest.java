@@ -34,9 +34,9 @@ class CounterModeIVShouldNotBeReusedCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CounterModeIVShouldNotBeReusedCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CounterModeIVShouldNotBeReusedCheckWithoutSemantic.java"))
       .withCheck(new CounterModeIVShouldNotBeReusedCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

@@ -33,9 +33,9 @@ class BasicAuthCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/BasicAuthCheckSample.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/BasicAuthCheckSampleWithoutSemantic.java"))
       .withCheck(new BasicAuthCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

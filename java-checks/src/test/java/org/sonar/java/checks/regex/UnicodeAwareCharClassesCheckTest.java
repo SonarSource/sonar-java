@@ -33,9 +33,9 @@ class UnicodeAwareCharClassesCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/UnicodeAwareCharClassesCheckTest.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/UnicodeAwareCharClassesCheckTestWithoutSemantic.java"))
       .withCheck(new UnicodeAwareCharClassesCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

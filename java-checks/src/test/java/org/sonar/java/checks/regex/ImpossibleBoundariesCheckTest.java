@@ -34,9 +34,9 @@ class ImpossibleBoundariesCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/ImpossibleBoundariesCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/ImpossibleBoundariesCheckSampleWithoutSemantic.java"))
       .withCheck(new ImpossibleBoundariesCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

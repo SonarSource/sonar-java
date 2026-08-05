@@ -50,9 +50,9 @@ class LeastSpecificTypeCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/LeastSpecificTypeCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/LeastSpecificTypeCheckSampleWithoutSemantic.java"))
       .withCheck(new LeastSpecificTypeCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

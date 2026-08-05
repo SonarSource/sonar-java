@@ -43,9 +43,9 @@ class SingleCharacterAlternationCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/SingleCharacterAlternationCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/SingleCharacterAlternationCheckSampleWithoutSemantic.java"))
       .withCheck(new SingleCharacterAlternationCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

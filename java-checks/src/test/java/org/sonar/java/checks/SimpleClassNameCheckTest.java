@@ -51,9 +51,9 @@ class SimpleClassNameCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SimpleClassNameCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/SimpleClassNameCheckSampleWithoutSemantic.java"))
       .withCheck(new SimpleClassNameCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

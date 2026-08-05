@@ -52,9 +52,9 @@ class MagicNumberCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/MagicNumberCheck.java")
+      .onFile("src/test/files/checks/MagicNumberCheckWithoutSemantic.java")
       .withCheck(new MagicNumberCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

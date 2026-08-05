@@ -69,9 +69,9 @@ class IndentationCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/IndentationCheck_custom.java"))
+      .onFile(mainCodeSourcesPath("checks/IndentationCheck_customWithoutSemantic.java"))
       .withCheck(new IndentationCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

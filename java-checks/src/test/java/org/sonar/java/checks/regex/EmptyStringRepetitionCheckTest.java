@@ -34,9 +34,9 @@ class EmptyStringRepetitionCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/EmptyStringRepetitionCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/EmptyStringRepetitionCheckSampleWithoutSemantic.java"))
       .withCheck(new EmptyStringRepetitionCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

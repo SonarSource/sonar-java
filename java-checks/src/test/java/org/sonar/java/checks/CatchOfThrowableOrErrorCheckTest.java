@@ -53,9 +53,9 @@ class CatchOfThrowableOrErrorCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CatchOfThrowableOrErrorCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/CatchOfThrowableOrErrorCheckWithoutSemantic.java"))
       .withCheck(new CatchOfThrowableOrErrorCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

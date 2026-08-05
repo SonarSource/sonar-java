@@ -43,9 +43,9 @@ class AnnotationDefaultArgumentCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AnnotationDefaultArgumentCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/AnnotationDefaultArgumentCheckSampleWithoutSemantic.java"))
       .withCheck(new AnnotationDefaultArgumentCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

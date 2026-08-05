@@ -45,10 +45,10 @@ class FlexibleConstructorBodyValidationCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/FlexibleConstructorBodyValidationCheckSample.java"))
+      .onFile(nonCompilingTestSourcesPath("checks/FlexibleConstructorBodyValidationCheckSampleWithoutSemantic.java"))
       .withCheck(new FlexibleConstructorBodyValidationCheck())
       .withJavaVersion(25)
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

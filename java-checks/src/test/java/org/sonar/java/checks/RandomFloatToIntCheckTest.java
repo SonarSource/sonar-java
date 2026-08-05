@@ -34,9 +34,9 @@ class RandomFloatToIntCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/RandomFloatToIntCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/RandomFloatToIntCheckSampleWithoutSemantic.java"))
       .withCheck(new RandomFloatToIntCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

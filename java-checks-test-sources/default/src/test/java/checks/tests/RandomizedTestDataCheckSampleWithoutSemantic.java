@@ -1,0 +1,65 @@
+package checks.tests;
+
+import java.security.SecureRandom;
+import java.util.Random;
+import java.util.UUID;
+
+import org.apache.commons.lang.math.JVMRandom;
+import org.junit.jupiter.api.Test;
+
+public class RandomizedTestDataCheckSampleWithoutSemantic {
+  @Test
+  public void randomizedTest() {
+
+    UUID userID = UUID.randomUUID(); // Noncompliant
+
+    UUID u1 = UUID.randomUUID();
+
+    UUID u2 = UUID.randomUUID();
+
+    UUID u3 = UUID.randomUUID();
+
+    UUID u4 = UUID.randomUUID();
+
+    UUID u5 = UUID.randomUUID();
+
+
+    int userAge = new Random().nextInt(42); // Noncompliant
+
+
+    int age1 = new Random().nextInt(42);
+
+    int age2 = new Random().nextInt(42);
+
+    int age3 = new Random().nextInt(42);
+
+    int age4 = new Random().nextInt(42);
+
+    int age5 = new Random().nextInt(42);
+
+    MyRandom myRandom = new MyRandom(); // Compliant
+
+    Random random = new Random();
+
+    SecureRandom random1 = new SecureRandom();
+
+    int age6 = new JVMRandom().nextInt(34);
+
+  }
+
+  @Test
+  public void notRandomizedTest() {
+    int userAge = 31; // Compliant
+    UUID userID = UUID.fromString("00000000-000-0000-0000-000000000001"); //Compliant
+  }
+
+  class MyRandom {
+  }
+
+  @Test
+  public void randomizedTestWithSeed() {
+    int userAge = new Random(111111111111L).nextInt(42);
+
+  }
+
+}

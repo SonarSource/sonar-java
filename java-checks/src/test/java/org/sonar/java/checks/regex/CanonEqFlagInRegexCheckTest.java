@@ -34,9 +34,9 @@ class CanonEqFlagInRegexCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/CanonEqFlagInRegexCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/CanonEqFlagInRegexCheckWithoutSemantic.java"))
       .withCheck(new CanonEqFlagInRegexCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

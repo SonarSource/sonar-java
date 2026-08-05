@@ -33,9 +33,9 @@ class LoggedRethrownExceptionsCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/LoggedRethrownExceptionsCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/LoggedRethrownExceptionsCheckSampleWithoutSemantic.java"))
       .withCheck(new LoggedRethrownExceptionsCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

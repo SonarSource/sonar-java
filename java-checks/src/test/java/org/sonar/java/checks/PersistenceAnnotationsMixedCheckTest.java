@@ -34,9 +34,9 @@ class PersistenceAnnotationsMixedCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PersistenceAnnotationsMixedCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/PersistenceAnnotationsMixedCheckSampleWithoutSemantic.java"))
       .withCheck(new PersistenceAnnotationsMixedCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

@@ -34,9 +34,9 @@ class UnusedGroupNamesCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/UnusedGroupNamesCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/UnusedGroupNamesCheckWithoutSemantic.java"))
       .withCheck(new UnusedGroupNamesCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

@@ -35,9 +35,9 @@ class CognitiveComplexityMethodCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/CognitiveComplexityMethodCheckMax0.java")
+      .onFile("src/test/files/checks/CognitiveComplexityMethodCheckMax0WithoutSemantic.java")
       .withCheck(new CognitiveComplexityMethodCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }
