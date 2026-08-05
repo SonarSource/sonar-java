@@ -795,6 +795,29 @@ public interface Tree {
       IMPLICIT_CLASS
     );
 
+    /**
+     * The {@link Kind}s of all assignment expressions: the simple {@link Kind#ASSIGNMENT} and the eleven compound assignment
+     * operators. All of these are backed by {@link AssignmentExpressionTree}.
+     *
+     * <p>Use this as the single source of truth when a visitor or predicate must handle every assignment structure, instead of
+     * hand-listing the kinds. In particular, it can be returned directly from {@code nodesToVisit()} of a subscription visitor that
+     * needs to visit all assignments.</p>
+     */
+    public static final List<Kind> ASSIGNMENT_KINDS = List.of(
+      ASSIGNMENT,
+      MULTIPLY_ASSIGNMENT,
+      DIVIDE_ASSIGNMENT,
+      REMAINDER_ASSIGNMENT,
+      PLUS_ASSIGNMENT,
+      MINUS_ASSIGNMENT,
+      LEFT_SHIFT_ASSIGNMENT,
+      RIGHT_SHIFT_ASSIGNMENT,
+      UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
+      AND_ASSIGNMENT,
+      XOR_ASSIGNMENT,
+      OR_ASSIGNMENT
+    );
+
     final Class<? extends Tree> associatedInterface;
 
     Kind(Class<? extends Tree> associatedInterface) {
