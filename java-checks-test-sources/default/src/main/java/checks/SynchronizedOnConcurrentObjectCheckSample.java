@@ -2,8 +2,10 @@ package checks;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,6 +30,8 @@ class SynchronizedOnConcurrentObjectCheckSample {
   private final CustomLock customLock = new CustomLock();
 
   private final Object objectLock = new Object();
+  private final ConcurrentHashMap<String, String> concurrentMap = new ConcurrentHashMap<>();
+  private Future<?> future;
 
   void noncompliant() {
     synchronized (reentrantLock) { // Noncompliant {{Use the "ReentrantLock" API for synchronization instead of a "synchronized" block.}}
@@ -81,6 +85,14 @@ class SynchronizedOnConcurrentObjectCheckSample {
 
   void compliant() {
     synchronized (objectLock) {
+      // ...
+    }
+
+    synchronized (concurrentMap) {
+      // ...
+    }
+
+    synchronized (future) {
       // ...
     }
 
