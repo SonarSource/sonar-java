@@ -1,0 +1,28 @@
+{
+  "title": "Predefined mathematical constants should be used instead of hard-coded approximations",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "cwe"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9133",
+  "sqKey": "S9133",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "IDENTIFIABLE"
+  },
+  "securityStandards": {
+    "CWE": [
+      1106
+    ]
+  }
+}
