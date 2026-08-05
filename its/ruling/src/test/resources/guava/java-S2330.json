@@ -1,11 +1,4 @@
 {
-"com.google.guava:guava:src/com/google/common/collect/ArrayTable.java": [
-385
-],
-"com.google.guava:guava:src/com/google/common/collect/HashBiMap.java": [
-378,
-379
-],
 "com.google.guava:guava:src/com/google/common/collect/ImmutableBiMap.java": [
 228
 ],
@@ -31,19 +24,14 @@
 ],
 "com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java": [
 375,
-385,
 387
-],
-"com.google.guava:guava:src/com/google/common/collect/LinkedHashMultimap.java": [
-482
 ],
 "com.google.guava:guava:src/com/google/common/collect/ObjectArrays.java": [
 147
 ],
 "com.google.guava:guava:src/com/google/common/collect/Ordering.java": [
 791,
-795,
-888
+795
 ],
 "com.google.guava:guava:src/com/google/common/collect/RegularImmutableBiMap.java": [
 66,
@@ -53,15 +41,6 @@
 60,
 111
 ],
-"com.google.guava:guava:src/com/google/common/hash/Hashing.java": [
-546,
-546,
-553
-],
-"com.google.guava:guava:src/com/google/common/reflect/AbstractInvocationHandler.java": [
-138,
-138
-],
 "com.google.guava:guava:src/com/google/common/reflect/Invokable.java": [
 217,
 251,
@@ -70,8 +49,6 @@
 291
 ],
 "com.google.guava:guava:src/com/google/common/reflect/TypeResolver.java": [
-297,
-297,
 332,
 410
 ],
@@ -79,9 +56,5 @@
 619,
 841,
 998
-],
-"com.google.guava:guava:src/com/google/common/reflect/Types.java": [
-318,
-318
 ]
 }

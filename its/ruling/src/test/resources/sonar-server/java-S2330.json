@@ -10,9 +10,6 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/SuggestionsAction.java": [
 129
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoImpl.java": [
-84
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/StickyFacetBuilder.java": [
 105
 ],
@@ -46,13 +43,6 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/request/ProxyRefreshRequestBuilder.java": [
 72
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/request/ProxySearchRequestBuilder.java": [
-76,
-79
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchQueryFactory.java": [
-56
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIteratorForSingleChunk.java": [
 91
@@ -94,9 +84,6 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureRepositoryImplTest.java": [
 224
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/source/SourceHashRepositoryImplTest.java": [
-82
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/LoadMeasureComputersStepTest.java": [
 62,

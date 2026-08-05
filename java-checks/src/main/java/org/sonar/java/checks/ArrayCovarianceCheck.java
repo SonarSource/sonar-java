@@ -109,7 +109,21 @@ public class ArrayCovarianceCheck extends IssuableSubscriptionVisitor {
     checkArrayCovariance(lhsType, tree.expression());
   }
 
+  private static boolean isArraySafeMethod(Symbol.MethodSymbol methodSymbol) {
+    Symbol owner = methodSymbol.owner();
+    if (owner == null || !owner.isTypeSymbol()) {
+      return false;
+    }
+    var ownerType = owner.type();
+    return ownerType.is("java.util.Arrays")
+      || ownerType.is("java.util.Objects")
+      || (ownerType.is("java.lang.System") && "arraycopy".equals(methodSymbol.name()));
+  }
+
   private void visitInvocation(Symbol.MethodSymbol methodSymbol, Arguments arguments) {
+    if (isArraySafeMethod(methodSymbol)) {
+      return;
+    }
     List<Type> parameterTypes = methodSymbol.parameterTypes();
     var nonVarargCount = parameterTypes.size() - (methodSymbol.isVarArgsMethod() ? 1 : 0);
     for (int i = 0; i < nonVarargCount && i < arguments.size(); i++) {

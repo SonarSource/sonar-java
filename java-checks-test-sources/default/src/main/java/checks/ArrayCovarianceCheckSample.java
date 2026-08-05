@@ -1,6 +1,8 @@
 package checks;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 class ArrayCovarianceCheckSample {
@@ -282,6 +284,36 @@ class ArrayCovarianceCheckSample {
   void varargsPrimitiveAndExact() {
     acceptVarargsInts(1, 2, 3); // Compliant
     acceptVarargsStrings("a", "b"); // Compliant
+  }
+
+  // --- Compliant: java.util.Arrays methods are safe with covariant arrays ---
+
+  void arraysMethods() {
+    Apple[] apples = new Apple[5];
+    Orange[] oranges = new Orange[5];
+    Arrays.fill(apples, null); // Compliant - Arrays.fill is safe
+    Arrays.sort(apples); // Compliant - Arrays.sort only rearranges elements
+    boolean eq = Arrays.equals(apples, oranges); // Compliant - Arrays.equals only reads
+    int hash = Arrays.hashCode(apples); // Compliant - Arrays.hashCode only reads
+    String str = Arrays.toString(apples); // Compliant - Arrays.toString only reads
+    var list = Arrays.asList(apples); // Compliant - Arrays.asList only reads
+    Apple[] copy = Arrays.copyOf(apples, 10); // Compliant - Arrays.copyOf creates a new array
+  }
+
+  // --- Compliant: System.arraycopy is safe ---
+
+  void systemArraycopy() {
+    Apple[] src = new Apple[5];
+    Fruit[] dest = new Fruit[5];
+    System.arraycopy(src, 0, dest, 0, 5); // Compliant - System.arraycopy is safe
+  }
+
+  // --- Compliant: java.util.Objects methods are safe ---
+
+  void objectsMethods() {
+    Apple[] apples = new Apple[5];
+    Orange[] oranges = new Orange[5];
+    boolean eq = Objects.deepEquals(apples, oranges); // Compliant - Objects.deepEquals only reads
   }
 
   private void doNothing() {}
