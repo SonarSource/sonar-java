@@ -1,6 +1,4 @@
-<p>This is an issue when a language-level synchronization primitive is used on an object from a standard concurrency library, such as reentrant locks,
-semaphores, countdown latches, cyclic barriers, or thread-safe queue implementations.</p>
-<p>In Java, this specifically refers to using <code>synchronized</code> blocks on objects from the <code>java.util.concurrent</code> package, such as
+<p>This is an issue when using <code>synchronized</code> blocks on objects from the <code>java.util.concurrent</code> package, such as
 <code>ReentrantLock</code>, <code>Semaphore</code>, <code>CountDownLatch</code>, <code>CyclicBarrier</code>, or <code>BlockingQueue</code>
 implementations.</p>
 <h2>Why is this an issue?</h2>
@@ -36,9 +34,6 @@ provide the expected thread-safety guarantees:</p>
 </ul>
 <p>These issues are particularly dangerous because they often only manifest under specific timing conditions, making them hard to detect during
 testing.</p>
-<p>In Java, this specifically refers to using <code>synchronized</code> blocks or methods on <code>java.util.concurrent</code> synchronization objects
-like <code>ReentrantLock</code>, <code>Semaphore</code>, <code>CountDownLatch</code>, <code>CyclicBarrier</code>, or <code>BlockingQueue</code>
-implementations.</p>
 <h2>How to fix it</h2>
 <p>Replace the <code>synchronized</code> block with the correct API methods for the specific <code>java.util.concurrent</code> class you’re using.
 Always use try-finally blocks when acquiring locks to ensure they are released even if an exception occurs.</p>
@@ -70,14 +65,9 @@ public void doWork() {
 <h3>Documentation</h3>
 <ul>
   <li>Oracle Java Documentation - <a
-  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/package-summary.html">java.util.concurrent (Java SE 17 &amp;
-  JDK 17)</a></li>
-  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/locks/Lock.html">Lock
-  (Java SE 17 &amp; JDK 17)</a></li>
-  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/Semaphore.html">Semaphore
-  (Java SE 17 &amp; JDK 17)</a></li>
-  <li>SpotBugs Documentation - <a href="https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#JLM_JSR166_UTILCONCURRENT_MONITORENTER">Bug
-  Descriptions - JLM_JSR166_UTILCONCURRENT_MONITORENTER</a></li>
+  href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/package-summary.html">java.util.concurrent</a></li>
+  <li>Oracle Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/locks/Lock.html">Lock</a></li>
 </ul>
 <h3>Related rules</h3>
 <ul>
