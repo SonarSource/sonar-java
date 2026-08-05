@@ -293,7 +293,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   }
 
   @Override
-  public void registerMainChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
+  public void registerMainChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances) {
     registerCheckClasses(mainChecks, checks, javaCheckClassesAndInstances);
   }
 
@@ -339,7 +339,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     return ruleKeys.stream().anyMatch(ruleKey -> activeRules.find(ruleKey) != null);
   }
 
-  private Checks<JavaCheck> getCreatedCheckFromFactory(String repositoryKey, Collection<?> javaCheckClassesAndInstances){
+  private Checks<JavaCheck> getCreatedCheckFromFactory(String repositoryKey, Collection<?> javaCheckClassesAndInstances) {
     return checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(javaCheckClassesAndInstances);
   }
 
@@ -594,7 +594,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
       contentHashCache.writeToCache(inputFile);
       return false;
     }
-    if (!canSkipInContext) {
+    if (!canSkipInContext || inputFile.status() != InputFile.Status.SAME) {
       contentHashCache.writeToCache(inputFile);
       return false;
     }

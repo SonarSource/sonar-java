@@ -21,6 +21,7 @@ import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestFileSystem;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -45,6 +46,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
@@ -60,6 +62,8 @@ import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.api.batch.sensor.highlighting.NewHighlighting;
 import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
@@ -71,6 +75,7 @@ import org.sonar.api.rule.RuleScope;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.api.utils.Version;
 import org.sonar.check.Rule;
+import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
@@ -97,6 +102,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -127,6 +133,9 @@ class SonarComponentsTest {
       "canSkipUnchangedFiles not part of sonar-plugin-api. Not skipping. {}";
 
   private static final String DEFAULT_PATH = Path.of("src", "main", "java", "com", "acme", "Source.java").toString();
+
+  private static final String INPUT_FILE_KEY = "MyFile.java";
+  private static final String CONTENT_HASH_KEY = "java:contentHash:MD5:" + INPUT_FILE_KEY;
 
   @Mock
   private FileLinesContextFactory fileLinesContextFactory;
@@ -939,6 +948,75 @@ class SonarComponentsTest {
     InputFile inputFile = mock(InputFile.class);
     when(inputFile.status()).thenReturn(InputFile.Status.CHANGED);
     assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+  }
+
+  @Test
+  void fileCanBeSkipped_returns_true_when_status_is_SAME_and_content_hash_is_cached() throws Exception {
+    InputFile inputFile = mockInputFile(InputFile.Status.SAME);
+    byte[] cachedHash = FileHashingUtils.inputFileContentHash(inputFile);
+    ReadCache readCache = mock(ReadCache.class);
+    when(readCache.read(CONTENT_HASH_KEY)).thenReturn(new ByteArrayInputStream(cachedHash));
+    WriteCache writeCache = mock(WriteCache.class);
+
+    SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    sonarComponents.setSensorContext(cacheEnabledContext(readCache, writeCache));
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isTrue();
+    // The cached hash is still valid for the next analyses
+    verify(writeCache).copyFromPrevious(CONTENT_HASH_KEY);
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = InputFile.Status.class, names = {"ADDED", "CHANGED"})
+  void fileCanBeSkipped_returns_false_when_status_is_not_SAME_even_if_content_hash_is_cached(InputFile.Status status) throws Exception {
+    InputFile inputFile = mockInputFile(status);
+    byte[] cachedHash = FileHashingUtils.inputFileContentHash(inputFile);
+    ReadCache readCache = mock(ReadCache.class);
+    // The cached hash matches the content of the file, but must not be taken into account
+    lenient().when(readCache.read(CONTENT_HASH_KEY)).thenReturn(new ByteArrayInputStream(cachedHash));
+    WriteCache writeCache = mock(WriteCache.class);
+
+    SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    sonarComponents.setSensorContext(cacheEnabledContext(readCache, writeCache));
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+    verify(readCache, never()).read(anyString());
+    // The hash of the file is still cached for the next analyses
+    verify(writeCache).write(eq(CONTENT_HASH_KEY), any(byte[].class));
+  }
+
+  @Test
+  void fileCanBeSkipped_returns_false_when_status_is_SAME_but_content_hash_differs() throws Exception {
+    InputFile inputFile = mockInputFile(InputFile.Status.SAME);
+    byte[] differentHash = "Dummy content hash".getBytes(StandardCharsets.UTF_8);
+    ReadCache readCache = mock(ReadCache.class);
+    when(readCache.read(CONTENT_HASH_KEY)).thenReturn(new ByteArrayInputStream(differentHash));
+    WriteCache writeCache = mock(WriteCache.class);
+
+    SonarComponents sonarComponents = mock(SonarComponents.class, CALLS_REAL_METHODS);
+    doReturn(true).when(sonarComponents).canSkipUnchangedFiles();
+    sonarComponents.setSensorContext(cacheEnabledContext(readCache, writeCache));
+
+    assertThat(sonarComponents.fileCanBeSkipped(inputFile)).isFalse();
+    verify(writeCache).write(eq(CONTENT_HASH_KEY), any(byte[].class));
+  }
+
+  private static InputFile mockInputFile(InputFile.Status status) throws IOException {
+    InputFile inputFile = mock(InputFile.class);
+    when(inputFile.key()).thenReturn(INPUT_FILE_KEY);
+    when(inputFile.status()).thenReturn(status);
+    when(inputFile.contents()).thenReturn("class A { }");
+    return inputFile;
+  }
+
+  private static SensorContext cacheEnabledContext(ReadCache readCache, WriteCache writeCache) {
+    SensorContextTester sensorContext = SensorContextTester.create(new File(""));
+    sensorContext.setCacheEnabled(true);
+    sensorContext.setPreviousCache(readCache);
+    sensorContext.setNextCache(writeCache);
+    return sensorContext;
   }
 
   @Test
