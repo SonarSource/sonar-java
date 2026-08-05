@@ -170,7 +170,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
     // Has value attribute but no rollback configuration
   }
 
-  // @Transactional has no effect on private methods (Spring AOP cannot intercept them)
+  // @Transactional has no effect on non-public methods (Spring proxy-based AOP only intercepts public methods)
   @Transactional
   private void privateMethod() throws IOException { // Compliant - private methods are not proxied by Spring
   }
@@ -180,11 +180,25 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   }
 
   @Transactional
-  static class ClassLevelWithPrivateMethod {
+  protected void protectedMethod() throws IOException { // Compliant - protected methods are not proxied by Spring
+  }
+
+  @Transactional
+  void packagePrivateMethod() throws IOException { // Compliant - package-private methods are not proxied by Spring
+  }
+
+  @Transactional
+  static class ClassLevelWithNonPublicMethods {
     private void privateInClassLevel() throws IOException { // Compliant - private methods are not proxied
     }
 
-    public void publicInClassLevel() throws IOException { // Noncompliant [[secondary=182]]
+    protected void protectedInClassLevel() throws IOException { // Compliant - protected methods are not proxied
+    }
+
+    void packagePrivateInClassLevel() throws IOException { // Compliant - package-private methods are not proxied
+    }
+
+    public void publicInClassLevel() throws IOException { // Noncompliant [[secondary=190]]
 //              ^^^^^^^^^^^^^^^^^^
     }
   }

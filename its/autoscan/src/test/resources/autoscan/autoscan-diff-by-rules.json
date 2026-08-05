@@ -1076,7 +1076,7 @@
   {
     "ruleKey": "S2230",
     "hasTruePositives": false,
-    "falseNegatives": 22,
+    "falseNegatives": 24,
     "falsePositives": 0
   },
   {
@@ -3195,6 +3195,12 @@
     "ruleKey": "S8912",
     "hasTruePositives": false,
     "falseNegatives": 8,
+    "falsePositives": 0
+  },
+  {
+    "ruleKey": "S8989",
+    "hasTruePositives": false,
+    "falseNegatives": 13,
     "falsePositives": 0
   }
 ]
