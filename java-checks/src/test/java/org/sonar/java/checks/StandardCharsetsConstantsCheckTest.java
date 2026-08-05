@@ -55,9 +55,9 @@ class StandardCharsetsConstantsCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/StandardCharsetsConstantsCheckSampleWithoutSemantic.java"))
       .withCheck(new StandardCharsetsConstantsCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

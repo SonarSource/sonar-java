@@ -81,9 +81,9 @@ class PseudoRandomCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/PseudoRandomCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/PseudoRandomCheckSampleWithoutSemantic.java"))
       .withCheck(new PseudoRandomCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

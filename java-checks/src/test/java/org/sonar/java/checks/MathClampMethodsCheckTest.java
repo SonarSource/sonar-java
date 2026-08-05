@@ -43,10 +43,10 @@ class MathClampMethodsCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(TestUtils.mainCodeSourcesPath("checks/MathClampMethodsCheckSample.java"))
+      .onFile(TestUtils.mainCodeSourcesPath("checks/MathClampMethodsCheckSampleWithoutSemantic.java"))
       .withCheck(new MathClampMethodsCheck())
       .withJavaVersion(21)
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

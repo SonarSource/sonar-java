@@ -1,0 +1,81 @@
+package checks.serialization;
+
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+class NonSerializableWithoutConstructor {}
+
+class NonSerializableWithAccessibleNoArgConstructor {
+  public NonSerializableWithAccessibleNoArgConstructor(String arg1) {}
+  public NonSerializableWithAccessibleNoArgConstructor() {}
+}
+
+class NonSerializableWithoutAccessibleNoArgConstructor {
+  int field;
+
+  public NonSerializableWithoutAccessibleNoArgConstructor(String arg1) {}
+  private NonSerializableWithoutAccessibleNoArgConstructor() {}
+}
+
+class S2055_A extends NonSerializableWithoutConstructor implements Serializable {}
+class S2055_B extends NonSerializableWithAccessibleNoArgConstructor implements Serializable {}
+class S2055_C1 extends NonSerializableWithoutAccessibleNoArgConstructor implements Serializable { // Noncompliant
+
+  S2055_C1(String arg1) { super(arg1); }
+}
+class S2055_C2 extends NonSerializableWithoutAccessibleNoArgConstructor implements Serializable { // Compliant
+  S2055_C2(String arg1) { super(arg1); }
+  Object writeReplace() throws ObjectStreamException { return null; }
+}
+class S2055_D implements Serializable {}
+class S2055_E extends NonSerializableWithoutAccessibleNoArgConstructor { S2055_E(String arg1) { super(arg1); } }
+class S2055_F extends S2055_A {}
+class S2055_G {
+  S2055_C1 c1 = new S2055_C1("") {
+    @Override
+    public String toString() { return ""; }
+    Object writeReplace() throws ObjectStreamException { return null; }
+  };
+}
+
+class S2055_Az<T> implements Serializable {
+  public S2055_Az(String arg1) {}
+  private S2055_Az() {}
+}
+
+class S2055_Bz2 extends S2055_Az<String> implements Serializable {
+  S2055_Bz2(String arg1) { super(arg1); }
+}
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+class NonSerializableWithLombokPrivateNoArgsConstructor {
+  int field;
+
+  public NonSerializableWithLombokPrivateNoArgsConstructor(int field) {
+    this.field = field;
+  }
+}
+
+@NoArgsConstructor
+class NonSerializableWithLombokNoArgsConstructor {
+  int field;
+
+  public NonSerializableWithLombokNoArgsConstructor(int field) {
+    this.field = field;
+  }
+}
+
+class S2055_LombokPrivate extends NonSerializableWithLombokPrivateNoArgsConstructor implements Serializable { // FN
+
+  S2055_LombokPrivate(int field) {
+    super(field);
+  }
+}
+
+class S2055_LombokPublic extends NonSerializableWithLombokNoArgsConstructor implements Serializable { // Compliant
+  S2055_LombokPublic(int field) {
+    super(field);
+  }
+}

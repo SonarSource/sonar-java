@@ -61,10 +61,10 @@ class AnonymousClassShouldBeLambdaCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AnonymousClassShouldBeLambdaCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/AnonymousClassShouldBeLambdaCheckSampleWithoutSemantic.java"))
       .withCheck(new AnonymousClassShouldBeLambdaCheck())
       .withJavaVersion(8)
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

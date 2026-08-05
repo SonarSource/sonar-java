@@ -34,9 +34,9 @@ class ReluctantQuantifierCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/ReluctantQuantifierCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/ReluctantQuantifierCheckSampleWithoutSemantic.java"))
       .withCheck(new ReluctantQuantifierCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

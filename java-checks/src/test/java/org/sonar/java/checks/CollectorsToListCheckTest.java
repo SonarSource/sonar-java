@@ -43,10 +43,12 @@ class CollectorsToListCheckTest {
 
   @Test
   void test_without_semantic() {
-    createCheckVerifier()
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CollectorsToListCheckSampleWithoutSemantic.java"))
+      .withCheck(new CollectorsToListCheck())
       .withJavaVersion(16)
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 
   private static CheckVerifier createCheckVerifier() {

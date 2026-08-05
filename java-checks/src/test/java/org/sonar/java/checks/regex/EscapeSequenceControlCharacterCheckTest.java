@@ -34,9 +34,9 @@ class EscapeSequenceControlCharacterCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/EscapeSequenceControlCharacterCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/EscapeSequenceControlCharacterCheckSampleWithoutSemantic.java"))
       .withCheck(new EscapeSequenceControlCharacterCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

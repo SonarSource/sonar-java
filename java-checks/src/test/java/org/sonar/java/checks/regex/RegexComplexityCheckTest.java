@@ -54,9 +54,9 @@ class RegexComplexityCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/RegexComplexityCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/RegexComplexityCheckSampleWithoutSemantic.java"))
       .withCheck(new RegexComplexityCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

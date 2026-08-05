@@ -34,9 +34,9 @@ class ZipEntryCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/security/ZipEntryCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/security/ZipEntryCheckWithoutSemantic.java"))
       .withCheck(new ZipEntryCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

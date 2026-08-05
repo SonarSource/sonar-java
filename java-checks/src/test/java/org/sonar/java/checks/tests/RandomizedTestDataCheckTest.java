@@ -42,9 +42,9 @@ class RandomizedTestDataCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/RandomizedTestDataCheckSample.java"))
+      .onFile(testCodeSourcesPath("checks/tests/RandomizedTestDataCheckSampleWithoutSemantic.java"))
       .withCheck(new RandomizedTestDataCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }

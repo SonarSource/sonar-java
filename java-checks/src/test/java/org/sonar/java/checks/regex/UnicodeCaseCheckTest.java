@@ -34,9 +34,9 @@ class UnicodeCaseCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/regex/UnicodeCaseCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/regex/UnicodeCaseCheckWithoutSemantic.java"))
       .withCheck(new UnicodeCaseCheck())
       .withoutSemantic()
-      .verifyAnalysisSucceeds();
+      .verifyIssues();
   }
 }
