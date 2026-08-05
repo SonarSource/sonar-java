@@ -32,11 +32,18 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S2198")
 public class UselessMathematicalComparisonCheck extends IssuableSubscriptionVisitor {
 
-  private static final Map<Type.Primitives, long[]> TYPE_BOUNDS = Map.of(
+  /**
+   * Only the integral types. A float or double variable can also hold +/-Infinity, so a constant outside the
+   * finite range of the type does not make a relational comparison constant: "f > 1e40" is true when f is
+   * +Infinity, and "d > Double.MAX_VALUE" is a legitimate way to test for +Infinity. Equality would be
+   * decidable, but every equality test on a float or double is already reported by S1244.
+   */
+  private static final Map<Type.Primitives, long[]> INTEGRAL_BOUNDS = Map.of(
     Type.Primitives.BYTE, new long[] {Byte.MIN_VALUE, Byte.MAX_VALUE},
     Type.Primitives.SHORT, new long[] {Short.MIN_VALUE, Short.MAX_VALUE},
     Type.Primitives.CHAR, new long[] {Character.MIN_VALUE, Character.MAX_VALUE},
-    Type.Primitives.INT, new long[] {Integer.MIN_VALUE, Integer.MAX_VALUE}
+    Type.Primitives.INT, new long[] {Integer.MIN_VALUE, Integer.MAX_VALUE},
+    Type.Primitives.LONG, new long[] {Long.MIN_VALUE, Long.MAX_VALUE}
   );
 
   @Override
@@ -70,24 +77,34 @@ public class UselessMathematicalComparisonCheck extends IssuableSubscriptionVisi
 
   @Nullable
   private static Boolean evaluate(ExpressionTree variableCandidate, ExpressionTree constantCandidate, Kind operatorKind, boolean reversed) {
+    Number constantValue = resolveConstantValue(constantCandidate);
+    if (constantValue == null) {
+      return null;
+    }
     long[] bounds = resolveTypeBounds(variableCandidate);
     if (bounds == null) {
       return null;
     }
-    Long constantValue = resolveConstantValue(constantCandidate);
-    if (constantValue == null) {
-      return null;
-    }
-    long min = bounds[0];
-    long max = bounds[1];
     Kind normalizedKind = reversed ? reverseOperator(operatorKind) : operatorKind;
-    return evaluateComparison(normalizedKind, min, max, constantValue);
+    if (isFloatingPoint(constantValue)) {
+      double value = constantValue.doubleValue();
+      if (Double.isNaN(value)) {
+        // Every comparison with NaN is false, which the range reasoning does not model.
+        return null;
+      }
+      // The variable is promoted to double before the comparison, so both bounds are converted to double as
+      // well. That is exact for byte, short, char and int, and rounds to +/-2^63 for long, the very values
+      // (double) Long.MIN_VALUE and (double) Long.MAX_VALUE can take.
+      return evaluateComparison(normalizedKind, compare(value, bounds[0]), compare(value, bounds[1]));
+    }
+    long value = constantValue.longValue();
+    return evaluateComparison(normalizedKind, Long.compare(value, bounds[0]), Long.compare(value, bounds[1]));
   }
 
   @Nullable
   private static long[] resolveTypeBounds(ExpressionTree expression) {
     Type type = expression.symbolType();
-    for (Map.Entry<Type.Primitives, long[]> entry : TYPE_BOUNDS.entrySet()) {
+    for (Map.Entry<Type.Primitives, long[]> entry : INTEGRAL_BOUNDS.entrySet()) {
       if (type.isPrimitive(entry.getKey())) {
         return entry.getValue();
       }
@@ -95,18 +112,34 @@ public class UselessMathematicalComparisonCheck extends IssuableSubscriptionVisi
     return null;
   }
 
+  private static boolean isFloatingPoint(Number constant) {
+    return constant instanceof Double || constant instanceof Float;
+  }
+
+  /**
+   * Ordering consistent with the Java comparison operators, unlike {@link Double#compare}, which orders -0.0
+   * before 0.0 while "-0.0 == 0.0" evaluates to true. NaN must be excluded by the caller.
+   */
+  private static int compare(double value, double bound) {
+    if (value < bound) {
+      return -1;
+    }
+    return value > bound ? 1 : 0;
+  }
+
   @Nullable
-  private static Long resolveConstantValue(ExpressionTree expression) {
-    Long literal = LiteralUtils.longLiteralValue(expression);
-    if (literal != null) {
-      return literal;
+  private static Number resolveConstantValue(ExpressionTree expression) {
+    Long longLiteral = LiteralUtils.longLiteralValue(expression);
+    if (longLiteral != null) {
+      return longLiteral;
+    }
+    Double doubleLiteral = LiteralUtils.doubleLiteralValue(expression);
+    if (doubleLiteral != null) {
+      return doubleLiteral;
     }
     Object constant = ExpressionUtils.resolveAsConstant(expression);
-    if (constant instanceof Integer intVal) {
-      return intVal.longValue();
-    }
-    if (constant instanceof Long longVal) {
-      return longVal;
+    if (constant instanceof Integer || constant instanceof Long || constant instanceof Float || constant instanceof Double) {
+      return (Number) constant;
     }
     return null;
   }
@@ -122,56 +155,31 @@ public class UselessMathematicalComparisonCheck extends IssuableSubscriptionVisi
     };
   }
 
+  /**
+   * Decides "variable op constant", where the variable ranges over [min, max] and both bounds are reachable.
+   *
+   * @param toMin the sign of "constant - min"
+   * @param toMax the sign of "constant - max"
+   * @return the constant result of the comparison, or null when it depends on the value of the variable
+   */
   @Nullable
-  private static Boolean evaluateComparison(Kind normalizedKind, long min, long max, long constant) {
+  private static Boolean evaluateComparison(Kind normalizedKind, int toMin, int toMax) {
     return switch (normalizedKind) {
-      case GREATER_THAN -> evaluateGreaterThan(min, max, constant);
-      case GREATER_THAN_OR_EQUAL_TO -> evaluateGreaterThanOrEqual(min, max, constant);
-      case LESS_THAN -> evaluateLessThan(min, max, constant);
-      case LESS_THAN_OR_EQUAL_TO -> evaluateLessThanOrEqual(min, max, constant);
-      case EQUAL_TO -> (constant < min || constant > max) ? Boolean.FALSE : null;
-      case NOT_EQUAL_TO -> (constant < min || constant > max) ? Boolean.TRUE : null;
+      case GREATER_THAN -> constantResult(toMax >= 0, toMin < 0);
+      case GREATER_THAN_OR_EQUAL_TO -> constantResult(toMax > 0, toMin <= 0);
+      case LESS_THAN -> constantResult(toMin <= 0, toMax > 0);
+      case LESS_THAN_OR_EQUAL_TO -> constantResult(toMin < 0, toMax >= 0);
+      case EQUAL_TO -> constantResult(toMin < 0 || toMax > 0, false);
+      case NOT_EQUAL_TO -> constantResult(false, toMin < 0 || toMax > 0);
       default -> null;
     };
   }
 
   @Nullable
-  private static Boolean evaluateGreaterThan(long min, long max, long constant) {
-    if (constant >= max) {
+  private static Boolean constantResult(boolean alwaysFalse, boolean alwaysTrue) {
+    if (alwaysFalse) {
       return Boolean.FALSE;
-    } else if (constant < min) {
-      return Boolean.TRUE;
     }
-    return null;
-  }
-
-  @Nullable
-  private static Boolean evaluateGreaterThanOrEqual(long min, long max, long constant) {
-    if (constant > max) {
-      return Boolean.FALSE;
-    } else if (constant <= min) {
-      return Boolean.TRUE;
-    }
-    return null;
-  }
-
-  @Nullable
-  private static Boolean evaluateLessThan(long min, long max, long constant) {
-    if (constant <= min) {
-      return Boolean.FALSE;
-    } else if (constant > max) {
-      return Boolean.TRUE;
-    }
-    return null;
-  }
-
-  @Nullable
-  private static Boolean evaluateLessThanOrEqual(long min, long max, long constant) {
-    if (constant < min) {
-      return Boolean.FALSE;
-    } else if (constant >= max) {
-      return Boolean.TRUE;
-    }
-    return null;
+    return alwaysTrue ? Boolean.TRUE : null;
   }
 }
