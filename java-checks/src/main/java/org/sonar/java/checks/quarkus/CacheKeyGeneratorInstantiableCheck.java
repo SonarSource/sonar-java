@@ -95,12 +95,17 @@ public class CacheKeyGeneratorInstantiableCheck extends IssuableSubscriptionVisi
 
   private static boolean hasPublicNoArgsConstructor(ClassTree classTree) {
     Collection<Symbol> constructors = classTree.symbol().lookupSymbols("<init>");
+    if (constructors.isEmpty()) {
+      // No explicit constructors: the compiler generates an implicit no-arg constructor
+      // with the same visibility as the class.
+      return classTree.symbol().isPublic();
+    }
     return constructors.stream()
       .map(Symbol.MethodSymbol.class::cast)
       .filter(CacheKeyGeneratorInstantiableCheck::isNoArgConstructor)
       .findFirst()
       .map(Symbol::isPublic)
-      .orElse(classTree.symbol().isPublic());
+      .orElse(false);
   }
 
   private static boolean isNoArgConstructor(Symbol.MethodSymbol constructor) {
