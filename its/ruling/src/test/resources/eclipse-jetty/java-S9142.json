@@ -1,0 +1,16 @@
+{
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/MultiPartCaptureTest.java": [
+220
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/InetAccessHandlerTest.java": [
+91,
+98,
+105,
+112,
+121
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/NcsaRequestLogTest.java": [
+806,
+808
+]
+}
