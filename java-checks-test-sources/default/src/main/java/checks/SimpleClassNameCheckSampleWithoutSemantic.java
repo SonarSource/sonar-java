@@ -6,13 +6,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-class SimpleClass {
+class SimpleClassWS {
  
   void notWildcardImport() {
-    com.google.common.collect.ImmutableList list; // FN
-    com.google.common.collect.ImmutableList.Builder<Object> builder = // FN
-      com.google.common.collect.ImmutableList.builder(); // FN
-    System.out.println(com.google.common.collect.ImmutableList.class); // FN
 
     ImmutableList.builder();
     ImmutableList anotherList;
@@ -24,8 +20,6 @@ class SimpleClass {
 
     List<String> myList2 =      // Compliant
       new ArrayList<String>();
-
-    com.google.common.collect.ImmutableMap map; // FN
 
     ImmutableMap.builder();
 

@@ -18,7 +18,6 @@ class EmptyDatabasePasswordCheckSampleWithoutSemantic {
 
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd); // Noncompliant
 
-
     String pwd2 = "foo";
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd2);
 
@@ -28,10 +27,7 @@ class EmptyDatabasePasswordCheckSampleWithoutSemantic {
 
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", pwd3); // Noncompliant
 
-
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", getPassword());
-
-    DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", EMPTY_PASSWORD); // FN
 
     DriverManager.getConnection("jdbc:derby:memory:myDB;create=true", "AppLogin", NON_EMPTY_PASSWORD);
 
@@ -53,7 +49,6 @@ class EmptyDatabasePasswordCheckSampleWithoutSemantic {
     String url = null;
     DriverManager.getConnection(url);
     DriverManager.getConnection(null);
-
 
     String pwd4 = getPassword();
     pwd4 += "";
@@ -88,9 +83,6 @@ class EmptyDatabasePasswordCheckSampleWithoutSemantic {
     DriverManager.getConnection("jdbc:mysql://localhost:1111/db?user=user&password="); // Noncompliant
     // empty ?password=&
     DriverManager.getConnection("jdbc:mysql://localhost:1111/db?password=&user=user"); // Noncompliant
-
-
-
 
     DriverManager.getConnection("jdbc:derby:sample;password=;user=jill"); // Noncompliant
 

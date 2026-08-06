@@ -5,8 +5,6 @@ import javax.validation.constraints.Email;
 
 public class SuperLinearRegexCheckSampleWithoutSemantic {
 
-  @Email(regexp = "(.*-)*@.*") // FN
-
   String email;
 
   @jakarta.validation.constraints.Email(regexp = "(.*-)*@.*") // Noncompliant
@@ -65,7 +63,6 @@ public class SuperLinearRegexCheckSampleWithoutSemantic {
     str.matches("x*xx*"); // Noncompliant
     str.matches("x*yx*"); // Compliant
     str.matches("x*a*b*c*d*e*f*g*h*i*x*"); // Noncompliant
-    str.matches("x*a*b*c*d*e*f*g*h*i*j*x*"); // FN because we forget about the first x* when the maximum number of tracked repetitions is exceeded
     str.matches("x*a*b*c*d*e*f*g*h*i*j*x*x*"); // Noncompliant
     // Non-possessive followed by possessive quantifier is actually polynomial
     str.matches(".*\\s*"); // Noncompliant
@@ -109,7 +106,6 @@ public class SuperLinearRegexCheckSampleWithoutSemantic {
   void notFixedInJava9(String str) {
     // The back reference prevents the Java 9+ optimization from being applied
     str.matches("(.?,)*\\1"); // Compliant - LINEAR_WHEN_OPTIMIZED + backref on Java 9+, reported by S5852
-    str.matches("(?:(.?)\\1,)*"); // FN because RegexTreeHelpers.intersects can't currently handle backreferences inside the repetition
   }
 
   void compliant(String str) {

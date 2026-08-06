@@ -1,12 +1,8 @@
 package checks.regex;
 
-import org.hibernate.validator.constraints.URL;
-
 class EmptyStringRepetitionCheckSampleWithoutSemantic {
 
   private static final String REPLACEMENT = "empty";
-
-  @URL(regexp = "(?:)*") // FN
 
   String url;
 

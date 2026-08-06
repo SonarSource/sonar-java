@@ -15,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 
 public class PrintfMisuseCheckSampleWithoutSemantic {
 
-
   public static final String COMPILE_TIME_CONSTANT = "message";
   public static final String NON_COMPILE_TIME_CONSTANT = "" + new Random().nextInt();
 
@@ -96,7 +95,6 @@ public class PrintfMisuseCheckSampleWithoutSemantic {
     "%12$s".formatted(1, 2, "hello");  // Compliant - not enough arguments but this will be caught by S2275
     "First Line\n %d".formatted(1); // Noncompliant
     "First Line".formatted(); // Noncompliant
-
 
     // Print Writer / Stream / Formatter ===============================================================================
     PrintWriter pr = new PrintWriter("file");
@@ -265,60 +263,34 @@ public class PrintfMisuseCheckSampleWithoutSemantic {
     org.slf4j.Logger slf4jLog = org.slf4j.LoggerFactory.getLogger("");
     org.slf4j.Marker marker = org.slf4j.MarkerFactory.getMarker("");
 
-    slf4jLog.debug(marker, "message {}"); // FN
-    slf4jLog.debug(marker, "message ", 1); // FN
     slf4jLog.debug(marker, "message {}", 1);
     slf4jLog.debug(marker, "message {} - {}", 1, 2);
-    slf4jLog.debug(marker, "message {}", 1, 2); // FN
     slf4jLog.debug(marker, "message {} {} {}", 1, 2, 3);
-    slf4jLog.debug(marker, "message {} {}", 1, 2, 3); // FN
-    slf4jLog.debug(marker, "message {} {}", new Object[]{1, 2, 3}); // FN
     slf4jLog.debug(marker, "message {} {} {}", new Object[]{1, 2, 3}); // compliant
-    slf4jLog.debug(marker, "message {} {} {}", new Object[]{1, 2}); // FN
     slf4jLog.debug(marker, "message ", new Exception());
-    slf4jLog.debug(marker, "message {}", new Exception()); // FN
     slf4jLog.debug(marker, "message {}", new Exception().toString());
 
-    slf4jLog.debug("message {}"); // FN
-    slf4jLog.debug("message ", 1); // FN
     slf4jLog.debug("message {}", 1);
     slf4jLog.debug("message {} - {}", 1, 2);
-    slf4jLog.debug("message {}", 1, 2); // FN
     slf4jLog.debug("message {} {} {}", 1, 2, 3);
-    slf4jLog.debug("message {} {}", 1, 2, 3); // FN
-    slf4jLog.debug("message {} {}", new Object[]{1, 2, 3}); // FN
     slf4jLog.debug("message {} {} {}", new Object[]{1, 2, 3}); // compliant
     slf4jLog.debug("message ", new Exception());
-    slf4jLog.debug("message {}", new Exception()); // FN
     slf4jLog.debug("message {}", new Exception().toString());
 
-    slf4jLog.error("message {}"); // FN
-    slf4jLog.error("message {}", new Exception()); // FN
     slf4jLog.error("message {}", new Exception().toString());
     slf4jLog.error("message {}", 1, new Exception()); // Compliant
-    slf4jLog.error("message ", 1); // FN
     slf4jLog.error("message {}", 1);
-    slf4jLog.error("message {}", 1, 2); // FN
     slf4jLog.error("message ", new Exception());
-    slf4jLog.error("message {} {}", 1); // FN
     slf4jLog.error("message {} {}", 1, new Exception()); // Compliant, only a problem when we have only one throwable argument.
     slf4jLog.error("message {} {}", 1, new Exception().toString());
-    slf4jLog.error("message {} {}", 1, 2, 3); // FN
-    slf4jLog.error("message {} {}", 1, 2, new Exception().toString()); // FN
     slf4jLog.error("message {} {}", 1, new Exception()); // Compliant
     slf4jLog.error("message {} {}", 1, 2, new Exception()); // Compliant
-    slf4jLog.error("message {} {} {}", 1, new Exception()); // FN
     slf4jLog.error("message {} {} {}", 1, 2, new Exception()); // Compliant
     slf4jLog.error("message {} {} {}", 1, 2, 3, new Exception()); // Compliant
-    slf4jLog.error("message {} {} {}", 1, 2, new Exception(), 3); // FN
-    slf4jLog.error("message {} {} {}", 1, 2, 3, 4, new Exception()); // FN
 
-    slf4jLog.info("message {}", new Object[] {new Exception()}); // FN
     slf4jLog.info("message {}", new Object[] {1, new Exception()}); // Compliant
-    slf4jLog.info("message {}", new Object[] {new Exception(), 1}); // FN
     slf4jLog.info("message {} {}", new Object[] {1, new Exception()}); // Compliant
     slf4jLog.info("message {} {}", new Object[] {1, 2, new Exception()}); // Compliant
-    slf4jLog.info("message {} {}", new Object[] {1, 2, 3, new Exception()}); // FN
 
     try {
     } catch (Exception e) {
@@ -326,117 +298,61 @@ public class PrintfMisuseCheckSampleWithoutSemantic {
     }
 
     slf4jLog.info("message {} - {}", 1, 2);
-    slf4jLog.info("message {}", 1, 2); // FN
     slf4jLog.info("message {} {} {}", 1, 2, 3);
     slf4jLog.info("message ", new Exception());
-    slf4jLog.info("message {}", new Exception()); // FN
 
-    slf4jLog.trace("message {} {}", 1, 2, 3); // FN
-    slf4jLog.trace("message {} {}", new Object[]{1, 2, 3}); // FN
     slf4jLog.trace("message {} {} {}", new Object[]{1, 2, 3}); // compliant
     slf4jLog.trace("message ", new Exception());
-    slf4jLog.trace("message {}", new Exception()); // FN
 
-    slf4jLog.warn("message {}"); // FN
-    slf4jLog.warn("message ", 1); // FN
     slf4jLog.warn("message {}", 1);
     slf4jLog.warn("message");
     slf4jLog.warn("message ", new Exception());
-    slf4jLog.warn("message {}", new Exception()); // FN
 
-    slf4jLog.error("message: " + value); // FN
-    slf4jLog.error("message: {}" + value, value); // FN
     slf4jLog.error("message:" + value, new Exception()); // Compliant, using error(String, Object, Object) would compile, but no guarantee that
     // the last argument will be treated as a Throwable
     slf4jLog.error("message: {}", value, new Exception()); // Compliant, but may not print the stack trace depending on the underlying framework
-
 
     org.apache.logging.log4j.Logger log4j = org.apache.logging.log4j.LogManager.getLogger();
     org.apache.logging.log4j.Logger formatterLogger = LogManager.getFormatterLogger();
 
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message");  // Compliant
-    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message", 1); // FN
-    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}"); // FN
-    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", new Exception()); // FN
     log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", 1);  // Compliant
-    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {} {}", 1); // FN
-    log4j.log(org.apache.logging.log4j.Level.DEBUG, "message {}", 1, "hello"); // FN
     formatterLogger.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1);  // Compliant
-    formatterLogger.log(org.apache.logging.log4j.Level.DEBUG, "message %d", 1, "hello"); // FN
 
     log4j.debug("message"); // Compliant
-    log4j.debug("message", 1); // FN
-    log4j.error("message", 1); // FN
-    log4j.fatal("message", 1); // FN
-    log4j.info("message", 1); // FN
-    log4j.trace("message", 1); // FN
-    log4j.warn("message", 1); // FN
-    log4j.warn("message {}", 1, 2); // FN
-    log4j.fatal("message {} {}", 1); // FN
-    log4j.info("message {} {}", 1); // FN
-    log4j.trace("message {} {}", 1); // FN
-    log4j.warn("message {} {}", 1); // FN
-    log4j.warn("message {} {} {}", 1, 2); // FN
-
-    log4j.debug("value is " + value); // FN
 
     log4j.debug(() -> "hello"); // Compliant
     log4j.debug("message {}", 1); // Compliant
     log4j.debug("message %s", 1); // false-negative, the rule assumes it's a "FormatterLogger"
     log4j.debug("message {}", () -> 1); // Compliant
     formatterLogger.debug("message %s message %d", "hello", 42); // Compliant
-    formatterLogger.debug("message %s message", "hello", 42); // FN
-    formatterLogger.debug("message %s {} message", "hello", 42); // FN
-    formatterLogger.debug("message %s {} %s message", "hello", 42); // FN
     formatterLogger.printf(org.apache.logging.log4j.Level.DEBUG, "message %s {} %s message", "hello", 42);
     formatterLogger.debug("message %s {} {} message", "hello", 42); // false-negative, the rule doesn't know it's a "FormatterLogger"
-    formatterLogger.printf(org.apache.logging.log4j.Level.DEBUG, "message %s {} {} message", "hello", 42); // FN
 
-    log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message"); // FN
     log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message %s %d", "hello", 42); // Compliant - Java formatters
-    log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message %s", "hello", 42); // FN
-    formatterLogger.printf(org.apache.logging.log4j.Level.DEBUG, "message %s", "hello", 42); // FN
 
-    log4j.error("message {}"); // FN
-    log4j.error("message {}", new Exception()); // FN
-    log4j.error("message ", 1); // FN
     log4j.error("message {}", 1);
-    log4j.error("message {}", 1, 2); // FN
     log4j.error("message ", new Exception());
-    log4j.error("message {}", new Exception()); // FN
     log4j.error("message {}", new Exception().toString());
-    log4j.error("message {} {}", 1); // FN
     log4j.error("message {} {}", 1, new Exception());  // Compliant, only a problem when we have one throwable argument.
     log4j.error("message {} {}", 1, new Exception().toString());
-    log4j.error("message {} {}", 1, 2, 3); // FN
-    log4j.error("message {} {}", 1, 2, new Exception().toString()); // FN
     log4j.error("message {} {}", 1, 2, new Exception()); // Compliant
     log4j.error("message {} {} {}", 1, 2, new Exception()); // Compliant
     log4j.error("message {} {} {}", 1, 2, 3, new Exception()); // Compliant
-    log4j.error("message ", () -> 1); // FN
     log4j.error("message {}", () -> 1);
-    log4j.error("message {} {}", () -> 1); // FN
     log4j.error(() -> "message " + param1);
     log4j.error(() -> "message " + param1, new Exception());
 
-    log4j.error("message {}", new Object[] {new Exception()}); // FN
     log4j.error("message {}", new Object[] {1, new Exception()}); // Compliant
-    log4j.error("message {}", new Object[] {new Exception(), 1}); // FN
     log4j.error("message {} {}", new Object[] {1, new Exception()}); // Compliant
     log4j.error("message {} {}", new Object[] {1, 2, new Exception()}); // Compliant
-    log4j.error("message {} {}", new Object[] {1, 2, 3, new Exception()}); // FN
 
     log4j.debug(() -> "hello"); // Compliant
     log4j.debug("message {}", 1); // Compliant
     log4j.debug("message {}", () -> 1); // Compliant
-    log4j.debug("message %s message %d", "hello", "world"); // FN
-    log4j.debug("message %s message %d %s", "hello", 42); // FN
 
     log4j.printf(org.apache.logging.log4j.Level.DEBUG, "message %s %d", "hello", 42); // Compliant - Java formatters
 
-    log4j.error("message: " + value); // FN
-    log4j.error("message: {}" + value, value); // FN
-    log4j.error("message:" + value, new Exception()); // FN
     log4j.error("message: {}", value, new Exception()); // Compliant, print the stack-trace as expected
   }
 
@@ -445,7 +361,7 @@ public class PrintfMisuseCheckSampleWithoutSemantic {
   }
 }
 
-class sonarjava3044 {
+class sonarjava3044WS {
   void foo(org.slf4j.Logger log, org.slf4j.Marker marker) {
     log.warn(marker, "message");
     log.error(marker, "message");
@@ -455,7 +371,7 @@ class sonarjava3044 {
   }
 }
 
-class SonarJava5098 {
+class SonarJava5098WS {
   void foo() {
     String.format("\\newpage %n"); // Compliant
     String.format("\\\newpage %n"); // Noncompliant

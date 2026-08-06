@@ -7,9 +7,7 @@ import javax.validation.constraints.Pattern.Flag;
 public class UnicodeCaseCheckWithoutSemantic {
 
   @Email(
-    regexp = "söme pättern",
-    flags = Flag.CASE_INSENSITIVE // FN
-
+    regexp = "söme pättern"
   )
   String email1;
 
@@ -31,7 +29,6 @@ public class UnicodeCaseCheckWithoutSemantic {
     str.matches("(?i)söme pättern"); // Noncompliant
 
     str.matches("(?i:söme) pättern"); // Noncompliant
-
 
     String regexPart1 = "(?i:söme)"; // Noncompliant
 
@@ -60,9 +57,7 @@ public class UnicodeCaseCheckWithoutSemantic {
   }
 
   @jakarta.validation.constraints.Email(
-    regexp = "söme pättern",
-    flags = jakarta.validation.constraints.Pattern.Flag.CASE_INSENSITIVE // FN
-
+    regexp = "söme pättern"
   )
   String jakartaEmail1;
 

@@ -41,7 +41,6 @@ class LoggedRethrownExceptionsCheckSampleWithoutSemantic {
       throw new MySQLException(contextInfo, e);
     }
 
-
     try {
       doSomething();
     } catch (SQLException e) { // Compliant
@@ -198,13 +197,6 @@ class LoggedRethrownExceptionsCheckSampleWithoutSemantic {
       doSomething();
     } catch (SQLException e) { // Noncompliant
       logger.log(Level.ALL, "MyError: " + e);
-      throw e;
-    }
-
-    try {
-      doSomething();
-    } catch (SQLException e) { // FN
-      slf4jLogger.error(e.getMessage());
       throw e;
     }
 

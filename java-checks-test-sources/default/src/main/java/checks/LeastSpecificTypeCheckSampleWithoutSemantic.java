@@ -39,27 +39,6 @@ class LeastSpecificTypeCheckSampleWithoutSemantic {
   }
 
   @Resource
-  public void resourceAnnotatedMethod3(List<Object> list) { // FN
-    for (Object o : list) {
-      o.toString();
-    }
-  }
-
-  @Inject
-  public void injectAnnotatedMethod1(List<Object> list) { // FN
-    for (Object o : list) {
-      o.toString();
-    }
-  }
-
-  @Autowired
-  public void autowiredMethod1(List<Object> list) { // FN
-    for (Object o : list) {
-      o.toString();
-    }
-  }
-
-  @Resource
   public void resourceAnnotatedMethod4(Collection<Object> list) { // Compliant - since Spring annotated methods cannot take 'Iterable' as argument
     for (Object o : list) {
       o.toString();
@@ -83,25 +62,6 @@ class LeastSpecificTypeCheckSampleWithoutSemantic {
   @Autowired
   public void autowiredMethod3(List<Object> list) { // Compliant - List interface is used in method body
     list.sort(Comparator.comparingInt(Object::hashCode));
-  }
-
-  @Autowired
-  public void autowiredMethod4(List<Object> list) { // FN
-    list.size();
-  }
-
-  @jakarta.annotation.Resource
-  public void jakartaResourceAnnotatedMethod3(List<Object> list) { // FN
-    for (Object o : list) {
-      o.toString();
-    }
-  }
-
-  @jakarta.inject.Inject
-  public void jakartaInjectAnnotatedMethod1(List<Object> list) { // FN
-    for (Object o : list) {
-      o.toString();
-    }
   }
 
   @jakarta.annotation.Resource

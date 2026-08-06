@@ -43,13 +43,6 @@ class StandardCharsetsConstantsCheckSampleWithoutSemantic {
   private ReadableByteChannel readableByteChannel;
 
   void myMethod() throws Exception {
-    charset = com.google.common.base.Charsets.ISO_8859_1; // FN
-
-    charset = com.google.common.base.Charsets.US_ASCII; // FN
-    charset = com.google.common.base.Charsets.UTF_16; // FN
-    charset = com.google.common.base.Charsets.UTF_16BE; // FN
-    charset = com.google.common.base.Charsets.UTF_16LE; // FN
-    charset = com.google.common.base.Charsets.UTF_8; // FN
 
     // Canonical names of java.nio API and java.io/java.lang API
     Charset.forName("ISO-8859-1"); // Noncompliant
@@ -67,67 +60,7 @@ class StandardCharsetsConstantsCheckSampleWithoutSemantic {
     Charset.forName("utf-8"); // Noncompliant
     Charset.forName("Utf-8"); // Noncompliant
 
-    org.apache.commons.codec.Charsets.toCharset("UTF-8"); // FN
-
-
-    org.apache.commons.io.Charsets.toCharset("UTF-8"); // FN
-
-
-    org.apache.commons.io.IOUtils.toString(bytes, "UTF-8"); // FN
-
-    org.apache.commons.io.IOUtils.toString(inputStream, "UTF-8"); // FN
-
-    org.apache.commons.io.IOUtils.toString(uri, "UTF-8"); // FN
-
-    org.apache.commons.io.IOUtils.toString(url, "UTF-8"); // FN
-
-
     "".getBytes("UTF-8"); // Noncompliant
-
-    new String(bytes, org.apache.commons.lang.CharEncoding.UTF_8); // FN
-    new String(bytes, offset, length, org.apache.commons.lang.CharEncoding.UTF_8); // FN
-
-    new InputStreamReader(inputStream, org.apache.commons.lang.CharEncoding.UTF_8); // FN
-    new OutputStreamWriter(outputStream, org.apache.commons.lang.CharEncoding.UTF_8); // FN
-
-    new org.apache.commons.codec.binary.Hex("UTF-8"); // FN
-    new org.apache.commons.codec.net.QuotedPrintableCodec("UTF-8"); // FN
-
-    org.apache.commons.io.FileUtils.readFileToString(file, "UTF-8"); // FN
-    org.apache.commons.io.FileUtils.readLines(file, "UTF-8"); // FN
-    org.apache.commons.io.FileUtils.write(file, charSequence, "UTF-8"); // FN
-    org.apache.commons.io.FileUtils.write(file, charSequence, "UTF-8", append); // FN
-    org.apache.commons.io.FileUtils.writeStringToFile(file, dataString, "UTF-8"); // FN
-
-    org.apache.commons.io.FileUtils.writeStringToFile(file, dataString, "UTF-8", append); // FN
-
-    org.apache.commons.io.IOUtils.copy(inputStream, writer, "UTF-8"); // FN
-    org.apache.commons.io.IOUtils.copy(reader, outputStream, "UTF-8"); // FN
-    org.apache.commons.io.IOUtils.lineIterator(inputStream, "UTF-8"); // FN
-    org.apache.commons.io.IOUtils.readLines(inputStream, "UTF-8"); // FN
-    org.apache.commons.io.IOUtils.toByteArray(reader, "UTF-8"); // FN
-    org.apache.commons.io.IOUtils.toCharArray(inputStream, "UTF-8"); // FN
-    org.apache.commons.io.IOUtils.toInputStream(charSequence, "UTF-8"); // FN
-    org.apache.commons.io.IOUtils.toInputStream(inputString, "UTF-8"); // FN
-
-    org.apache.commons.io.IOUtils.write(bytes, writer, "UTF-8"); // FN
-    org.apache.commons.io.IOUtils.write(chars, outputStream, "UTF-8"); // FN
-    org.apache.commons.io.IOUtils.write(charSequence, outputStream, "UTF-8"); // FN
-    org.apache.commons.io.IOUtils.write(dataString, outputStream, "UTF-8"); // FN
-
-    org.apache.commons.io.IOUtils.write(stringBuffer, outputStream, "UTF-8"); // FN
-    org.apache.commons.io.IOUtils.writeLines(collection, lineEndingString, outputStream, "UTF-8"); // FN
-
-    new org.apache.commons.io.input.CharSequenceInputStream(charSequence, "UTF-8"); // FN
-    new org.apache.commons.io.input.CharSequenceInputStream(charSequence, "UTF-8", bufferSize); // FN
-    new org.apache.commons.io.input.ReaderInputStream(reader, "UTF-8"); // FN
-    new org.apache.commons.io.input.ReaderInputStream(reader, "UTF-8", bufferSize); // FN
-    new org.apache.commons.io.input.ReversedLinesFileReader(file, blockSize, "UTF-8"); // FN
-    new org.apache.commons.io.output.LockableFileWriter(file, "UTF-8"); // FN
-    new org.apache.commons.io.output.LockableFileWriter(file, "UTF-8", append, lockDirString); // FN
-
-    new org.apache.commons.io.output.WriterOutputStream(writer, "UTF-8"); // FN
-    new org.apache.commons.io.output.WriterOutputStream(writer, "UTF-8", bufferSize, writeImmediately); // FN
 
     // Compliant
     charset = java.nio.charset.StandardCharsets.ISO_8859_1;
@@ -151,102 +84,20 @@ class StandardCharsetsConstantsCheckSampleWithoutSemantic {
   }
 
   void quickfixes() throws Exception {
-    charset = com.google.common.base.Charsets.ISO_8859_1; // FN
-
-
-
-
-    charset = com.google.common.base.Charsets.US_ASCII; // FN
-
-
-
-
-    charset = com.google.common.base.Charsets.UTF_16; // FN
-
-
-
-
-    charset = com.google.common.base.Charsets.UTF_16BE; // FN
-
-
-
-
-    charset = com.google.common.base.Charsets.UTF_16LE; // FN
-
-
-
-
-    charset = com.google.common.base.Charsets.UTF_8; // FN
-
-
-
-
 
     Charset.forName("ISO-8859-1"); // Noncompliant
 
-
-
-
     Charset.forName("ISO_8859_1"); // Noncompliant
-
-
-
 
     Charset.forName("UTF8"); // Noncompliant
 
-
-
-
     Charset.forName("utf-8"); // Noncompliant
-
-
-
 
     Charset.forName("UTF-16LE"); // Noncompliant
 
-
-
-
     Charset.forName("UnicodeLittleUnmarked"); // Noncompliant
 
-
-
-
-    org.apache.commons.codec.Charsets.toCharset("UTF-8"); // FN
-
-
-
-
-
-    org.apache.commons.io.IOUtils.toString(inputStream, "UTF-8"); // FN
-
-
-
-
     "".getBytes("UTF-8"); // Noncompliant
-
-
-
-
-    new String(bytes, offset, length, org.apache.commons.lang.CharEncoding.UTF_8); // FN
-
-
-
-
-    org.apache.commons.io.FileUtils.write(file, charSequence, "UTF-8"); // FN
-
-
-
-
-     org.apache.commons.io.IOUtils.toCharArray(inputStream, "UTF-8"); // FN
-
-
-
-
-    new org.apache.commons.io.input.ReaderInputStream(reader, "ISO-8859-1", bufferSize); // FN
-
-
-
 
   }
 }

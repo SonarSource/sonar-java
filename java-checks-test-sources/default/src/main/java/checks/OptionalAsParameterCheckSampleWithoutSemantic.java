@@ -24,12 +24,6 @@ class OptionalAsParameterCheckSampleWithoutSemantic {
 
   void bar(Optional o) {} // Noncompliant
 
-
-  void foo(com.google.common.base.Optional<OptionalAsParameterCheckSample> a) {} // FN
-
-  void bar(com.google.common.base.Optional o) {} // FN
-
-
   void foo(OptionalInt i) {} // Noncompliant
 
   void foo(OptionalLong l) {} // Noncompliant
@@ -38,7 +32,7 @@ class OptionalAsParameterCheckSampleWithoutSemantic {
 
 }
 
-class Child extends OptionalAsParameterCheckSample {
+class ChildWS extends OptionalAsParameterCheckSample {
   @Override
   void foo(Optional<OptionalAsParameterCheckSample> a) {} // Compliant, as this method is overriding.
 

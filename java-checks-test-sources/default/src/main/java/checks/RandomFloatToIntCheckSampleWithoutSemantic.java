@@ -17,7 +17,7 @@ class RandomFloatToIntCheckSampleWithoutSemantic {
 
   // java.lang.Math
   int rand6 = (int) Math.random() * 50; // Noncompliant
-  int rand7 = (int) new RandomFloatToIntCheckSampleFoo() {
+  int rand7 = (int) new RandomFloatToIntCheckSampleFooWS() {
     int foo() {
       int a = (int) Math.random() * 50; // Noncompliant
       return a;
@@ -32,26 +32,17 @@ class RandomFloatToIntCheckSampleWithoutSemantic {
   // org.apache.commons.lang.math.JVMRandom
 
   JVMRandom jvmRandom = new JVMRandom();
-  int rand11 = (int) jvmRandom.nextDouble() * 50; // FN
-  int rand12 = (int) jvmRandom.nextFloat() * 50; // FN
   float rand13 = (float)jvmRandom.nextFloat();
   int rand14 = (int) jvmRandom.nextInt() * 50;
-  int rand15 = (int)jvmRandom.nextFloat(); // FN
 
   // org.apache.commons.lang.math.RandomUtils
 
-  int rand16 = (int) RandomUtils.nextDouble() * 50; // FN
-  int rand17 = (int) RandomUtils.nextFloat() * 50; // FN
   float rand18 = (float) RandomUtils.nextFloat();
   int rand19 = (int) RandomUtils.nextInt() * 50;
-  int rand20 = (int) RandomUtils.nextFloat(); // FN
 
   // org.apache.commons.lang3.RandomUtils
-  int rand21 = (int) org.apache.commons.lang3.RandomUtils.nextDouble() * 50; // FN
-  int rand22 = (int) org.apache.commons.lang3.RandomUtils.nextFloat() * 50; // FN
   float rand23 = (float) org.apache.commons.lang3.RandomUtils.nextFloat();
   int rand24 = (int) org.apache.commons.lang3.RandomUtils.nextInt() * 50;
-  int rand25 = (int)org.apache.commons.lang3.RandomUtils.nextFloat(); // FN
 
   void testLong(){
     int randInt = (int) r.nextDouble() * 50; // Noncompliant
@@ -62,6 +53,6 @@ class RandomFloatToIntCheckSampleWithoutSemantic {
 
 }
 
-class RandomFloatToIntCheckSampleFoo {
+class RandomFloatToIntCheckSampleFooWS {
 
 }

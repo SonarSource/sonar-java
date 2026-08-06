@@ -19,7 +19,6 @@ class AnonymousClassShouldBeLambdaCheckSampleWithoutSemantic {
       }
     };
 
-
     public String method() {
       return "";
     }
@@ -100,7 +99,7 @@ class AnonymousClassShouldBeLambdaCheckSampleWithoutSemantic {
     (){
       @Override
       public String handle() {
-        return AnonymousClassShouldBeLambdaCheckSample.this.toString();
+        return AnonymousClassShouldBeLambdaCheckSampleWithoutSemantic.this.toString();
       }
     };
 
@@ -167,7 +166,7 @@ class AnonymousClassShouldBeLambdaCheckSampleWithoutSemantic {
   }
 }
 
-class SamWithException {
+class SamWithExceptionWS {
 
   class MyCheckedException extends Exception {}
   interface I {
@@ -183,7 +182,7 @@ class SamWithException {
   }
 }
 
-abstract class WithinLambda {
+abstract class WithinLambdaWS {
 
   @FunctionalInterface
   interface Action<T> {
@@ -192,7 +191,7 @@ abstract class WithinLambda {
 
   abstract <T> T doSomething(Action<T> action);
 
-  private void bar(WithinLambda a) {
+  private void bar(WithinLambdaWS a) {
     a.doSomething(
       (Action<Void>) () -> {
         new Thread(
@@ -207,7 +206,7 @@ abstract class WithinLambda {
   }
 }
 
-interface AB {
+interface ABWS {
   default void foo() {
   }
 
@@ -215,7 +214,7 @@ interface AB {
   }
 
   static void main() {
-    AB a = new AB() { // Compliant
+    ABWS a = new ABWS() { // Compliant
       @Override
       public void foo() {
       }
@@ -223,14 +222,14 @@ interface AB {
   }
 }
 
-interface BA {
+interface BAWS {
   default void foo() {
   }
 
   void bar();
 
   static void main() {
-    BA a = new BA() { // Noncompliant
+    BAWS a = new BAWS() { // Noncompliant
       @Override
       public void bar() {
       }
@@ -238,7 +237,7 @@ interface BA {
   }
 }
 
-class Alpha {
+class AlphaWS {
 
   interface Lvl1 {
     void foo();
@@ -256,17 +255,10 @@ class Alpha {
   };
   Lvl2 level2 = () -> {};
 
-  Function<Object, Date> a = new Function<Object, Date>() { // FN
-    @Override
-    public Date apply(Object o) {
-      return new Date();
-    }
-  };
-
   Function<Object, Date> b = o -> new Date();
 }
 
-class ThisInstanceTest {
+class ThisInstanceTestWS {
 
   interface WithDefault {
     default String defaultMethod() { return "defaultMethod"; }
@@ -308,9 +300,9 @@ class ThisInstanceTest {
   }
 }
 
-abstract class GenericType<X> {
+abstract class GenericTypeWS<X> {
 
-  void foo(GenericType<String> something) {
+  void foo(GenericTypeWS<String> something) {
     bar(something, new MyComparable() { // Compliant - compare is a generic method
       @Override
       public <T extends Comparable<T>> int compare(T obj1, T obj2) {
@@ -319,7 +311,7 @@ abstract class GenericType<X> {
     });
   }
 
-  abstract <T extends Comparable<T>> void bar(GenericType<T> object, MyComparable comp);
+  abstract <T extends Comparable<T>> void bar(GenericTypeWS<T> object, MyComparable comp);
 
   interface MyComparable {
     <T extends Comparable<T>> int compare(T obj1, T obj2);

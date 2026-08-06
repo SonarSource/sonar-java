@@ -22,7 +22,6 @@ public class CounterModeIVShouldNotBeReusedCheckWithoutSemantic {
       Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
       SecretKeySpec skeySpec = new SecretKeySpec(new byte[] {}, "AES");
 
-      
       char[] chars = "testme".toCharArray();
 
       byte[] bytes = String.valueOf(chars).getBytes(utf8);
@@ -39,7 +38,6 @@ public class CounterModeIVShouldNotBeReusedCheckWithoutSemantic {
 
       cipher.init(1, skeySpec, params4); // Noncompliant
 
-      
       byte[] src = "7cVgr5cbdCZV".getBytes(utf8);
 
       GCMParameterSpec params = new GCMParameterSpec(128, src);
@@ -47,7 +45,6 @@ public class CounterModeIVShouldNotBeReusedCheckWithoutSemantic {
       cipher.init(1, skeySpec, params); // Noncompliant
 
       cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new GCMParameterSpec(128, src)); // Noncompliant
-
 
       cipher.init(Cipher.ENCRYPT_MODE, skeySpec, new GCMParameterSpec(128, new byte[]{}));
       
@@ -61,14 +58,11 @@ public class CounterModeIVShouldNotBeReusedCheckWithoutSemantic {
 
       cipher.init(1, skeySpec, gcm); // Noncompliant
 
-      
       GCMParameterSpec gcm3 = new GCMParameterSpec(128, unkownBytes);
       cipher.init(1, skeySpec, gcm3);
       
       GCMParameterSpec gcm4 = new GCMParameterSpec(128, unknownString.getBytes());
       cipher.init(1, skeySpec, gcm4);
-      
-      
       
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
       outputStream.write( "7cVgr5cbdCZV".getBytes(utf8) );
@@ -93,9 +87,6 @@ public class CounterModeIVShouldNotBeReusedCheckWithoutSemantic {
       byte[] nonce    = "7cVgr5cbdCZV".getBytes(utf8); // Secondary location: The initialization vector is a static value
 
       AEADParameters params   = new AEADParameters(new KeyParameter(key), 128, nonce); // Secondary location: The initialization vector is configured here.
-
-      ccmCipher.init(true, params); // FN
-      gcmCipher.init(true, params); // FN
 
       gcmCipher.init(false, params); // Compliant
       

@@ -9,9 +9,9 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.springframework.batch.item.ItemProcessor;
 
-class ReturnEmptyArrayNotNullCheckSampleA {
+class ReturnEmptyArrayNotNullCheckSampleAWS {
 
-  public ReturnEmptyArrayNotNullCheckSampleA() {
+  public ReturnEmptyArrayNotNullCheckSampleAWS() {
     return;
   }
 
@@ -33,7 +33,7 @@ class ReturnEmptyArrayNotNullCheckSampleA {
   }
 
   public int[] f5(boolean cond) {
-    new ReturnEmptyArrayNotNullCheckSampleB() {
+    new ReturnEmptyArrayNotNullCheckSampleBWS() {
       public Object g1() {
         return null;    
       }
@@ -72,7 +72,7 @@ class ReturnEmptyArrayNotNullCheckSampleA {
   }
 }
 
-interface ReturnEmptyArrayNotNullCheckSampleB{
+interface ReturnEmptyArrayNotNullCheckSampleBWS{
   default int[] a(){
     return null; // Noncompliant
   }
@@ -98,7 +98,7 @@ interface ReturnEmptyArrayNotNullCheckSampleB{
   }
 }
 
-class ReturnEmptyArrayNotNullCheckSampleC {
+class ReturnEmptyArrayNotNullCheckSampleCWS {
   @SuppressWarnings("Something")
   public int[] gul() {
     return null; // Noncompliant
@@ -145,7 +145,7 @@ class ReturnEmptyArrayNotNullCheckSampleC {
   }
 }
 
-class ReturnEmptyArrayNotNullCheckSampleD implements ItemProcessor<Integer, List<String>> {
+class ReturnEmptyArrayNotNullCheckSampleDWS implements ItemProcessor<Integer, List<String>> {
   @Override
   public List<String> process(Integer i) {
     return null; // Compliant: ItemProcessor requires to return null value to stop the processing
@@ -156,21 +156,21 @@ class ReturnEmptyArrayNotNullCheckSampleD implements ItemProcessor<Integer, List
   }
 }
 
-interface ReturnEmptyArrayNotNullCheckSampleE {
+interface ReturnEmptyArrayNotNullCheckSampleEWS {
   List<String> bar();
 }
 
-class ReturnEmptyArrayNotNullCheckSampleF implements ReturnEmptyArrayNotNullCheckSampleE {
+class ReturnEmptyArrayNotNullCheckSampleFWS implements ReturnEmptyArrayNotNullCheckSampleEWS {
   @Override
   public List<String> bar() {
     return null; // Noncompliant
   }
 }
 
-class ReturnEmptyArrayNotNullCheckSampleG implements ItemProcessor<Integer, List<String>>, ReturnEmptyArrayNotNullCheckSampleE {
+class ReturnEmptyArrayNotNullCheckSampleGWS implements ItemProcessor<Integer, List<String>>, ReturnEmptyArrayNotNullCheckSampleEWS {
   @Override
   public List<String> bar() {
-    return null; // FN
+    return null;
   }
 
   @Override
@@ -179,7 +179,7 @@ class ReturnEmptyArrayNotNullCheckSampleG implements ItemProcessor<Integer, List
   }
 }
 
-class ReturnEmptyArrayNotNullCheckSampleH implements ItemProcessor<Integer, Integer[]> {
+class ReturnEmptyArrayNotNullCheckSampleHWS implements ItemProcessor<Integer, Integer[]> {
   @Override
   public Integer[] process(Integer a) {
     return null; // Compliant

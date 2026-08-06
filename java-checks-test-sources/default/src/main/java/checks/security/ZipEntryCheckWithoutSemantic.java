@@ -102,60 +102,52 @@ public class ZipEntryCheckWithoutSemantic {
 
 }
 
-class TarUtilities {
-  private TarUtilities() {
+class TarUtilitiesWS {
+  private TarUtilitiesWS() {
     /* This utility class should not be instantiated */
   }
 
   public static List<TarArchiveEntry> getAllEntries(TarFile file) {
-    return file.getEntries(); // FN
-
+    return null;
   }
 
   public static Optional<TarArchiveEntry> getNext(TarArchiveInputStream stream) throws IOException {
-    return Optional.of(stream.getNextEntry()); // FN
-
+    return null;
   }
 
   public static long getEntrySize(TarArchiveEntry entry) {
-    return entry.getSize(); // FN
-
+    return 0;
   }
 }
 
-class SevenZUtilities {
-  private SevenZUtilities() {
+class SevenZUtilitiesWS {
+  private SevenZUtilitiesWS() {
     /* This utility class should not be instantiated */
   }
 
   public static Iterable<SevenZArchiveEntry> getAllEntries(SevenZFile file) {
-    return file.getEntries(); // FN
-
+    return null;
   }
 
   public static long getEntrySize(SevenZArchiveEntry entry) {
-    return entry.getSize(); // FN
-
+    return 0;
   }
 }
 
-class ApacheCommonsZipUtilities {
-  private ApacheCommonsZipUtilities() {
+class ApacheCommonsZipUtilitiesWS {
+  private ApacheCommonsZipUtilitiesWS() {
     /* This utility class should not be instantiated */
   }
 
   public static Enumeration<org.apache.commons.compress.archivers.zip.ZipArchiveEntry> getAllEntries(org.apache.commons.compress.archivers.zip.ZipFile file) {
-    return file.getEntries(); // FN
-
+    return null;
   }
 
   public static Optional<org.apache.commons.compress.archivers.zip.ZipArchiveEntry> getNext(org.apache.commons.compress.archivers.zip.ZipArchiveInputStream stream) throws IOException {
-    return Optional.of(stream.getNextEntry()); // FN
-
+    return null;
   }
 
   public static long getEntrySize(org.apache.commons.compress.archivers.zip.ZipArchiveEntry entry) {
-    return entry.getSize(); // FN
-
+    return 0;
   }
 }

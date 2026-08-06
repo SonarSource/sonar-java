@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -71,7 +70,6 @@ class S2201_IgnoredReturnValueCheckSampleWithoutSemantic {
     Optional<String> o = Optional.empty();
     o.map(String::toString); // Noncompliant
     com.google.common.base.Optional<String> o2 = com.google.common.base.Optional.absent();
-    o2.transform(@Nullable String::toString); // FN
 
     String s = "s";
     s.intern(); // Compliant
@@ -149,16 +147,6 @@ class S2201_IgnoredReturnValueCheckSampleWithoutSemantic {
     Stream.of("a", "b", "c").findAny(); // Noncompliant
     Stream.of("a", "b", "c").toList(); // Noncompliant
 
-    // We don't look inside anonymous classes or lambdas with a block body because getting the return value out of them
-    // would be annoying and I don't expect this usage to come up much
-    Stream.of("a", "b", "c").collect(Collectors.toCollection(() -> { return new ArrayList<>(); })); // FN
-    Stream.of("a", "b", "c").collect(Collectors.toCollection(new Supplier<>() { // FN
-      @Override
-      public Collection<String> get() {
-        return new ArrayList<>();
-      }
-    }));
-
     List < String > myList = new ArrayList<>();
     Stream.of("a", "b", "c").collect(Collectors.toCollection(() -> myList)); // Compliant because we're writing to a variable via the supplier
 
@@ -166,8 +154,6 @@ class S2201_IgnoredReturnValueCheckSampleWithoutSemantic {
     Stream.of("a", "b", "c").collect(Collectors.toMap(s -> s, s -> s, (s1, s2) -> s1+s2, () -> myMap)); // Compliant because we're writing to a variable via the supplier
 
     Stream.of("a", "b", "c").collect(() -> myList, List::add, List::addAll); // Compliant because we're writing to a variable via the supplier
-
-    Stream.of("a", "b", "c").collect(this::makeList, List::add, List::addAll); // FN because we don't follow methods to check whether they return a new or existing collection
 
     Collector collector = Collectors.toCollection(() -> myList);
     Stream.of("a", "b", "c").collect(collector); // Noncompliant

@@ -74,16 +74,12 @@ class SQLInjectionWithoutSemantic {
       a.prepareStatement(query);
       ps.executeQuery();
 
-
       Session session = null;
       session.createQuery("From Customer where id > ?");
-      session.createQuery(query); // FN
       conn.prepareStatement(param);
       conn.prepareStatement(sqlQuery + "plop"); // Noncompliant
 
       String sql = "SELECT lastname, firstname FROM employee where uid = '" + param + "'";
-      entityManager.createNativeQuery(sql); // FN
-      entityManager2.createNativeQuery(sql); // FN
 
       String concatenatedQuery0 = "SELECT * ";
       concatenatedQuery0 += "FROM " + param;
@@ -131,8 +127,6 @@ class SQLInjectionWithoutSemantic {
     query1 += param; // secondary location
 
     conn.prepareStatement(query1); // Noncompliant
-
-
 
     boolean bool = false;
     String query2 = "Select Lname ";
@@ -187,13 +181,10 @@ class SQLInjectionWithoutSemantic {
   PersistenceManager pm;
 
   void jdo(int id, String name) {
-    javax.jdo.Query q = pm.newQuery(Test.class, id + " > query_id "); // FN
-    q.setFilter("name == " + name); // FN
   }
 }
 
-
-class Spring {
+class SpringWS {
 
   private JdbcTemplate jdbcTemplate;
   private JdbcOperations jdbcOperations;
@@ -201,16 +192,11 @@ class Spring {
 
   void test(String parameter) {
     java.lang.String sqlInjection = "select count(*) from t_actor where column =  " + parameter;
-    jdbcTemplate.queryForObject(sqlInjection, Integer.class); // FN
-    jdbcOperations.queryForObject(sqlInjection, Integer.class); // FN
 
-    new PreparedStatementCreatorFactory(sqlInjection); // FN
-    preparedStatementCreatorFactory.newPreparedStatementCreator(sqlInjection, new Object[] {}); // FN
   }
 }
 
-
-class Test {
+class TestWS {
   public void foo(String page, String projectUuid) {
     String from = "from ResourceDBO r, ProjectDBO p where p.id = r.entityId and r.type = :entityType and r.mimeType in :mimeTypes";
     if (projectUuid != null) {
@@ -221,13 +207,12 @@ class Test {
     if (page != null) {
       String countJql = "select count(*) " + from;
       Session session = null;
-      session.createQuery(countJql); // FN
 
     }
   }
 }
 
-class SQLInjectionB {
+class SQLInjectionBWS {
 
   private String user;
   private JdbcTemplate tmpl = new JdbcTemplate();
@@ -243,10 +228,10 @@ class SQLInjectionB {
   }
 }
 
-class SQLFormat {
+class SQLFormatWS {
   private final Statement stmt;
 
-  public SQLFormat(Statement stmt) {
+  public SQLFormatWS(Statement stmt) {
     this.stmt = stmt;
   }
 

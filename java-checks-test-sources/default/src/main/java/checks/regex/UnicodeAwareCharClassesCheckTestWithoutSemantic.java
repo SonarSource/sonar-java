@@ -17,17 +17,11 @@
 package checks.regex;
 
 import java.util.regex.Pattern;
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.URL;
 
 public class UnicodeAwareCharClassesCheckTestWithoutSemantic {
 
-  @Email(regexp = "[a-z]") // FN
-
   String email;
-
-  @URL(regexp = "\\p{Lower}", flags = jakarta.validation.constraints.Pattern.Flag.DOTALL) // FN
-
 
   String url1;
 
@@ -47,15 +41,12 @@ public class UnicodeAwareCharClassesCheckTestWithoutSemantic {
 
     Pattern.compile("[a-zA-Z]"); // Noncompliant
 
-
-
     String regex = "[a-zA-Z]"; // Noncompliant
     Pattern.compile(regex + regex);
   }
 
   void NoncompliantPredefinedPosixClasses() {
     Pattern.compile("\\p{Lower}"); // Noncompliant
-
 
     Pattern.compile("\\p{Alnum}"); // Noncompliant
     Pattern.compile("\\p{Space}"); // Noncompliant

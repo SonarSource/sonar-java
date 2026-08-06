@@ -10,13 +10,10 @@ class BasicAuthCheckSampleWithoutSemantic {
   void foo(String authent, URL url) throws IOException, URISyntaxException {
     String encoding = Base64.getEncoder().encodeToString("login:passwd".getBytes(StandardCharsets.UTF_8));
     org.apache.http.client.methods.HttpPost httppost = new org.apache.http.client.methods.HttpPost(url.toURI());
-    httppost.setHeader("Authorization", "Basic " + encoding+encoding); // FN
 
-    httppost.addHeader("Authorization", "Basic " + encoding); // FN
     httppost.setHeader("Authorization", "Digest " + encoding);
     httppost.setHeader("Authorization", authent);
     httppost.setHeader("FlaFla", "Basic " + encoding);
-    httppost.setHeader(new org.apache.http.message.BasicHeader("Authorization", "Basic " + encoding)); // FN
 
     java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
     conn.setRequestMethod("POST");

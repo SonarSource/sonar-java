@@ -6,10 +6,6 @@ import javax.validation.constraints.Pattern.Flag;
 
 public class CanonEqFlagInRegexCheckWithoutSemantic {
 
-  @Email(regexp = "éeéc") // FN
-
-
-
   String email1;
 
   @Email(regexp = "éeéc", flags = Flag.CANON_EQ) // Compliant
@@ -66,7 +62,6 @@ public class CanonEqFlagInRegexCheckWithoutSemantic {
     Pattern.compile("\\d̀"); // Compliant
 
     Pattern.compile("e\u20DD̀"); // Compliant
-
 
     Pattern.compile("[ée]"); // Compliant, CANON_EQ will not solve the problem, S5868 will target it.
     Pattern.compile("é", Pattern.CANON_EQ); // Compliant, flag is set

@@ -69,15 +69,9 @@ public abstract class AbstractRegexCheckSampleWithoutSemantic {
     // org.apache.commons.lang3.RegExUtils
     Pattern pattern = Pattern.compile(regex);
     f(RegExUtils.removeAll("text", pattern));
-    f(RegExUtils.removeAll("text", "regex")); // FN
     f(RegExUtils.removeFirst("text", pattern));
-    f(RegExUtils.removeFirst("text", "regex")); // FN
     f(RegExUtils.replaceAll("text", pattern, "text"));
-    f(RegExUtils.replaceAll("text", "regex", "text")); // FN
     f(RegExUtils.replaceFirst("text", pattern, "text"));
-    f(RegExUtils.replaceFirst("text", "regex", "text")); // FN
-    f(RegExUtils.removePattern("text", "regex")); // FN
-    f(RegExUtils.replacePattern("text", "regex", "text")); // FN
   }
 
   abstract void f(boolean x);

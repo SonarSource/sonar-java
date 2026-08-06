@@ -1,11 +1,8 @@
 package checks.regex;
 
-import javax.validation.constraints.Email;
 import java.util.regex.Pattern;
 
 public class ImpossibleBoundariesCheckSampleWithoutSemantic {
-
-  @Email(regexp = "$USER") // FN
 
   String email;
 
