@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.DependencyVersionAware;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -51,6 +53,11 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
+
+    // @Transactional has no effect on non-public methods (Spring proxy-based AOP only intercepts public methods)
+    if (isNonPublicMethod(method)) {
+      return;
+    }
 
     List<TypeTree> throwsClauses = method.throwsClauses();
     if (throwsClauses.isEmpty()) {
@@ -211,6 +218,19 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
         }
         return false;
       });
+  }
+
+  private static boolean isNonPublicMethod(MethodTree method) {
+    if (ModifiersUtils.hasModifier(method.modifiers(), Modifier.PRIVATE)
+      || ModifiersUtils.hasModifier(method.modifiers(), Modifier.PROTECTED)) {
+      return true;
+    }
+    // Methods without an explicit access modifier are package-private in classes but implicitly public in interfaces
+    if (!ModifiersUtils.hasModifier(method.modifiers(), Modifier.PUBLIC)) {
+      Tree parent = method.parent();
+      return parent == null || !parent.is(Tree.Kind.INTERFACE);
+    }
+    return false;
   }
 
   @Override
