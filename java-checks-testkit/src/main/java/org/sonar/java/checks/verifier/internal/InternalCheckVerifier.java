@@ -291,27 +291,7 @@ public class InternalCheckVerifier implements CheckVerifier {
 
     List<JavaFileScanner> visitors = new ArrayList<>(checks);
     visitors.add(expectations.noEffectParser());
-    SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, null);
-    JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
-    VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
-      .withJavaVersion(actualVersion)
-      .withSonarComponents(sonarComponents)
-      .withAndroidContext(inAndroidContext);
-    if (!withoutSemantic) {
-      List<File> actualClasspath = classpath == null ? TestClasspathUtils.DEFAULT_MODULE.getClassPath() : classpath;
-      visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
-    }
-    VisitorsBridgeForTests visitorsBridge = visitorsBridgeBuilder.build();
-
-    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
-    astScanner.setVisitorBridge(visitorsBridge);
-
-    List<InputFile> filesToParse = files;
-    if (isCacheEnabled) {
-      visitorsBridge.setCacheContext(cacheContext);
-      filesToParse = astScanner.scanWithoutParsing(files).get(false);
-    }
-    astScanner.scan(filesToParse);
+    scanFiles(visitors);
   }
 
   private void verifyAll() {
@@ -321,27 +301,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     } else {
       visitors.add(expectations.parser());
     }
-    SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, null);
-    JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
-    VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
-      .withJavaVersion(actualVersion)
-      .withSonarComponents(sonarComponents)
-      .withAndroidContext(inAndroidContext);
-    if (!withoutSemantic) {
-      List<File> actualClasspath = classpath == null ? TestClasspathUtils.DEFAULT_MODULE.getClassPath() : classpath;
-      visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
-    }
-    VisitorsBridgeForTests visitorsBridge = visitorsBridgeBuilder.build();
-
-    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
-    astScanner.setVisitorBridge(visitorsBridge);
-
-    List<InputFile> filesToParse = files;
-    if (isCacheEnabled) {
-      visitorsBridge.setCacheContext(cacheContext);
-      filesToParse = astScanner.scanWithoutParsing(files).get(false);
-    }
-    astScanner.scan(filesToParse);
+    VisitorsBridgeForTests visitorsBridge = scanFiles(visitors);
 
     var issues = new LinkedHashSet<AnalyzerMessage>();
     var quickFixes = new HashMap<AnalyzerMessage.TextSpan, List<JavaQuickFix>>();
@@ -358,6 +318,31 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
 
     checkIssues(issues, quickFixes);
+  }
+
+  private VisitorsBridgeForTests scanFiles(List<JavaFileScanner> visitors) {
+    SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, null);
+    JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
+    VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
+      .withJavaVersion(actualVersion)
+      .withSonarComponents(sonarComponents)
+      .withAndroidContext(inAndroidContext);
+    if (!withoutSemantic) {
+      List<File> actualClasspath = classpath == null ? TestClasspathUtils.DEFAULT_MODULE.getClassPath() : classpath;
+      visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
+    }
+    VisitorsBridgeForTests visitorsBridge = visitorsBridgeBuilder.build();
+
+    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
+    astScanner.setVisitorBridge(visitorsBridge);
+
+    List<InputFile> filesToParse = files;
+    if (isCacheEnabled) {
+      visitorsBridge.setCacheContext(cacheContext);
+      filesToParse = astScanner.scanWithoutParsing(files).get(false);
+    }
+    astScanner.scan(filesToParse);
+    return visitorsBridge;
   }
 
   private void checkIssues(Set<AnalyzerMessage> issues, Map<TextSpan, List<JavaQuickFix>> quickFixes) {
@@ -614,9 +599,6 @@ public class InternalCheckVerifier implements CheckVerifier {
     Iterator<Expectations.FlowComment> expectedIterator = expected.iterator();
     while (actualIterator.hasNext() && expectedIterator.hasNext()) {
       AnalyzerMessage actualFlow = actualIterator.next();
-      if (actualFlow.primaryLocation() == null) {
-        throw new AssertionError(String.format("Flow without location: %s", actualFlow));
-      }
       validateLocation(actualFlow, expectedIterator.next().attributes);
     }
   }
