@@ -12,8 +12,8 @@ public class ReuseRandomCheckSampleWithoutSemantic {
   IntStream fieldChain = new Random().ints(100); // Compliant
 
   ReuseRandomCheckSampleWithoutSemantic() {
-    Random localVar = new Random(); // Noncompliant
-    new Random(); // Noncompliant
+    Random localVar = new Random(); // Compliant - in constructor
+    new Random(); // Compliant - in constructor
   }
 
   void func(long seed, Random param) {

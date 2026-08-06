@@ -105,7 +105,7 @@ public class PresuperLogicShoudntBloatConstructorSampleWithoutSemantic {
 
     public EdgeCaseSecureFile(String path, float f) {
       // Compliant: There are 4 statements before super() : if, if, try-catch block, if
-
+      if (true) {
         if (true) {
           try {
             if (true) {}
