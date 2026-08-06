@@ -29,4 +29,13 @@ class SynchronizedOverrideCheckTest {
       .withCheck(new SynchronizedOverrideCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SynchronizedOverrideCheckSample.java"))
+      .withCheck(new SynchronizedOverrideCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

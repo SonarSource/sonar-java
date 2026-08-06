@@ -31,4 +31,12 @@ class ExpectedExceptionCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/ExpectedExceptionCheckSample.java"))
+      .withCheck(new ExpectedExceptionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

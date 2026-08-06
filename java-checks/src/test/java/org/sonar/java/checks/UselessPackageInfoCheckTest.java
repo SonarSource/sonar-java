@@ -200,4 +200,13 @@ class UselessPackageInfoCheckTest {
       .filter(msg -> msg.matches("Cache miss for key '[^']+'")))
       .hasSize(1);
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UselessPackageInfoCheck/packageWithNoOtherFiles/package-info.java"))
+      .withCheck(new UselessPackageInfoCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

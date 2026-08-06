@@ -52,4 +52,13 @@ class MutableMembersUsageCheckTest {
         new MutableMembersUsageCheck.ArgumentParameterMapping(0, 2)));
     assertThat(callSite.toString()).isNotEmpty();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MutableMembersUsageCheckSample.java"))
+      .withCheck(new MutableMembersUsageCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

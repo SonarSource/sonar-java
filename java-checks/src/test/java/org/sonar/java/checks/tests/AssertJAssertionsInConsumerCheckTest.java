@@ -40,4 +40,12 @@ class AssertJAssertionsInConsumerCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertJAssertionsInConsumerCheckSample.java"))
+      .withCheck(new AssertJAssertionsInConsumerCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

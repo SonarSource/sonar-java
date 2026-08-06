@@ -31,4 +31,12 @@ class WebViewJavaScriptSupportCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/WebViewJavaScriptSupportCheck.java"))
+      .withCheck(new WebViewJavaScriptSupportCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

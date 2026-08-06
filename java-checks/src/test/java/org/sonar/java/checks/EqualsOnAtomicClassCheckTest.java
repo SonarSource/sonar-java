@@ -31,4 +31,12 @@ class EqualsOnAtomicClassCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/EqualsOnAtomicClassCheckSample.java"))
+      .withCheck(new EqualsOnAtomicClassCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

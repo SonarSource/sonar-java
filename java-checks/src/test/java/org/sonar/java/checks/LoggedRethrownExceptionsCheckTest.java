@@ -29,4 +29,13 @@ class LoggedRethrownExceptionsCheckTest {
       .withCheck(new LoggedRethrownExceptionsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/LoggedRethrownExceptionsCheckSampleWithoutSemantic.java"))
+      .withCheck(new LoggedRethrownExceptionsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

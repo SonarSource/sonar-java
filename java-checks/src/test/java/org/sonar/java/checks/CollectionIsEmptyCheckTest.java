@@ -30,4 +30,13 @@ class CollectionIsEmptyCheckTest {
       .withCheck(new CollectionIsEmptyCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CollectionIsEmptyCheck.java"))
+      .withCheck(new CollectionIsEmptyCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

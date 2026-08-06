@@ -29,4 +29,13 @@ class BatchSQLStatementsCheckTest {
       .withCheck(new BatchSQLStatementsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/BatchSQLStatementsCheckSample.java"))
+      .withCheck(new BatchSQLStatementsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

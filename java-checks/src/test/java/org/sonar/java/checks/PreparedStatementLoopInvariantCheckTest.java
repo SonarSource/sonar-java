@@ -30,4 +30,13 @@ class PreparedStatementLoopInvariantCheckTest {
       .withCheck(new PreparedStatementLoopInvariantCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PreparedStatementLoopInvariantCheckSample.java"))
+      .withCheck(new PreparedStatementLoopInvariantCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

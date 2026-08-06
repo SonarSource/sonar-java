@@ -30,4 +30,13 @@ class StreamPeekCheckTest {
       .withCheck(new StreamPeekCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StreamPeekCheckSample.java"))
+      .withCheck(new StreamPeekCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

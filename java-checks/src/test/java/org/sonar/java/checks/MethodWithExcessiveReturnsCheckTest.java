@@ -50,4 +50,12 @@ class MethodWithExcessiveReturnsCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MethodWithExcessiveReturnsCheckSample.java"))
+      .withCheck(new MethodWithExcessiveReturnsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

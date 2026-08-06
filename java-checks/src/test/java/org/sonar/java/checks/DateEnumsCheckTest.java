@@ -209,4 +209,13 @@ class DateEnumsCheckTest {
       msg -> msg.matches("Cache miss for key '[^']+'")
     )).hasSize(1);
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DateEnumsCheckSample.java"))
+      .withCheck(new DateEnumsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

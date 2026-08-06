@@ -50,4 +50,13 @@ class JdbcDriverExplicitLoadingCheckTest {
       .withCheck(new JdbcDriverExplicitLoadingCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/JdbcDriverExplicitLoadingCheck_no_version.java"))
+      .withCheck(new JdbcDriverExplicitLoadingCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

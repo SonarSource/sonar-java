@@ -29,4 +29,12 @@ class SerializableComparatorCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/SerializableComparatorCheck.java")
+      .withCheck(new SerializableComparatorCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

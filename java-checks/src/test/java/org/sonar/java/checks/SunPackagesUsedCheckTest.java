@@ -40,4 +40,12 @@ class SunPackagesUsedCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/SunPackagesUsedCheckSample.java"))
+      .withCheck(new SunPackagesUsedCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

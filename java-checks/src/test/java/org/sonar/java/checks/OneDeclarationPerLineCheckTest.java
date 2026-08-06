@@ -29,4 +29,13 @@ class OneDeclarationPerLineCheckTest {
       .withCheck(new OneDeclarationPerLineCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/OneDeclarationPerLineCheckSample.java"))
+      .withCheck(new OneDeclarationPerLineCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

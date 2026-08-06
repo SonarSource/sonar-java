@@ -39,4 +39,12 @@ class BadFieldNameStaticNonFinalCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/BadFieldNameStaticNonFinal.java")
+      .withCheck(new BadFieldNameStaticNonFinalCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

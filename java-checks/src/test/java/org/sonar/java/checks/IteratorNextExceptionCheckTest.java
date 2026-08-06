@@ -38,4 +38,12 @@ class IteratorNextExceptionCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/IteratorNextExceptionCheckSample.java"))
+      .withCheck(new IteratorNextExceptionCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

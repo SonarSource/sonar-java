@@ -29,4 +29,13 @@ class ObjectFinalizeCheckTest {
       .withCheck(new ObjectFinalizeCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeCheckSample.java"))
+      .withCheck(new ObjectFinalizeCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

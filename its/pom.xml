@@ -15,7 +15,6 @@
   <description>Code Analyzer for Java :: Integration Tests :: Parent POM</description>
 
   <modules>
-    <module>autoscan</module>
     <module>plugin</module>
     <module>ruling</module>
   </modules>

@@ -30,4 +30,13 @@ class HasNextCallingNextCheckTest {
       .withCheck(new HasNextCallingNextCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/HasNextCallingNextCheckSample.java"))
+      .withCheck(new HasNextCallingNextCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

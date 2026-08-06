@@ -31,4 +31,12 @@ class TypeParametersShadowingCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/TypeParametersShadowingCheckSample.java"))
+      .withCheck(new TypeParametersShadowingCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

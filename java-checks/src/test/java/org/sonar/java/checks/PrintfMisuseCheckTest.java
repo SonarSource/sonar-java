@@ -56,4 +56,13 @@ class PrintfMisuseCheckTest {
       .withCheck(new PrintfMisuseCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PrintfMisuseCheckSampleWithoutSemantic.java"))
+      .withCheck(new PrintfMisuseCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -252,4 +252,13 @@ class ImportDeclarationOrderCheckTest {
       .toList();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ImportDeclarationsOrderCheck/ImportDeclarationOrderCheckWithModulesNoIssues.java"))
+      .withCheck(new ImportDeclarationOrderCheck())
+      .withJavaVersion(25)
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

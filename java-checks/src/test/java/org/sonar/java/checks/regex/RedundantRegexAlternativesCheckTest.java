@@ -31,4 +31,12 @@ class RedundantRegexAlternativesCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/regex/RedundantRegexAlternativesCheckSample.java"))
+      .withCheck(new RedundantRegexAlternativesCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

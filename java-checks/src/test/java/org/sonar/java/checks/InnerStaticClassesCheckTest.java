@@ -38,4 +38,13 @@ class InnerStaticClassesCheckTest {
       .withCheck(new InnerStaticClassesCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/InnerStaticClassesCheck/InnerStaticClassesCheckSample.java"))
+      .withCheck(new InnerStaticClassesCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -71,4 +71,13 @@ class TooLongLineCheckTest {
       .withCheck(check)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(BASEDIR + "/LineLength.java"))
+      .withCheck(new TooLongLineCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

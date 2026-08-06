@@ -28,4 +28,13 @@ class VariableDeclarationScopeCheckTest {
       .withCheck(new VariableDeclarationScopeCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/VariableDeclarationScopeCheck.java")
+      .withCheck(new VariableDeclarationScopeCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

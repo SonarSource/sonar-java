@@ -30,4 +30,12 @@ class RedundantJumpCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.nonCompilingTestSourcesPath("checks/RedundantJumpCheck.java"))
+      .withCheck(new RedundantJumpCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

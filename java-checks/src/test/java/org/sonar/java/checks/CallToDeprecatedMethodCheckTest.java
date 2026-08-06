@@ -51,4 +51,13 @@ class CallToDeprecatedMethodCheckTest {
       .withCheck(new CallToDeprecatedMethodCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/S1874_CallToDeprecatedMethod.java"))
+      .withCheck(new CallToDeprecatedMethodCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

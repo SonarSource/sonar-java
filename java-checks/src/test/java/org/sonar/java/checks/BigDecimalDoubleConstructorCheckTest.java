@@ -30,4 +30,13 @@ class BigDecimalDoubleConstructorCheckTest {
       .withCheck(new BigDecimalDoubleConstructorCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/BigDecimalDoubleConstructorCheckSample.java"))
+      .withCheck(new BigDecimalDoubleConstructorCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

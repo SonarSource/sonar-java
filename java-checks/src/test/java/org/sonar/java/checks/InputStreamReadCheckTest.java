@@ -30,4 +30,13 @@ class InputStreamReadCheckTest {
       .withCheck(new InputStreamReadCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/InputStreamReadCheckSample.java"))
+      .withCheck(new InputStreamReadCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

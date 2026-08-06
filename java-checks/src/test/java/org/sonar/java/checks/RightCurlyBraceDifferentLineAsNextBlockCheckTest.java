@@ -29,4 +29,12 @@ class RightCurlyBraceDifferentLineAsNextBlockCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RightCurlyBraceDifferentLineAsNextBlockCheck.java")
+      .withCheck(new RightCurlyBraceDifferentLineAsNextBlockCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

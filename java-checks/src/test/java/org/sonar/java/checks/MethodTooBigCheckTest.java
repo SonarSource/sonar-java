@@ -49,4 +49,12 @@ class MethodTooBigCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MethodTooBigCheckCustom4.java"))
+      .withCheck(new MethodTooBigCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

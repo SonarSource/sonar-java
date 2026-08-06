@@ -30,4 +30,13 @@ class BooleanLiteralCheckTest {
       .withCheck(new BooleanLiteralCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/BooleanLiteralCheckSample.java"))
+      .withCheck(new BooleanLiteralCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

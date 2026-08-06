@@ -30,4 +30,13 @@ class ParameterReassignedToCheckTest {
       .withCheck(new ParameterReassignedToCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/ParameterReassignedToCheckSample.java"))
+      .withCheck(new ParameterReassignedToCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

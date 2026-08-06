@@ -39,4 +39,12 @@ class NestedSwitchCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/NestedSwitchStatementCheckSample.java"))
+      .withCheck(new NestedSwitchCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

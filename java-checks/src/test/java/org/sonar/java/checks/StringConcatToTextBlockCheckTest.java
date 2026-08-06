@@ -48,4 +48,14 @@ class StringConcatToTextBlockCheckTest {
       .withCheck(new StringConcatToTextBlockCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringConcatToTextBlockCheckSample.java"))
+      .withCheck(new StringConcatToTextBlockCheck())
+      .withJavaVersion(15)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

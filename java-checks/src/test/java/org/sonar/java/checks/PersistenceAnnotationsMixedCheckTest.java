@@ -30,4 +30,13 @@ class PersistenceAnnotationsMixedCheckTest {
       .withCheck(new PersistenceAnnotationsMixedCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/PersistenceAnnotationsMixedCheckSampleWithoutSemantic.java"))
+      .withCheck(new PersistenceAnnotationsMixedCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

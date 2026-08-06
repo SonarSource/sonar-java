@@ -31,4 +31,12 @@ class AssertJApplyConfigurationCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertJApplyConfigurationCheckSample.java"))
+      .withCheck(new AssertJApplyConfigurationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

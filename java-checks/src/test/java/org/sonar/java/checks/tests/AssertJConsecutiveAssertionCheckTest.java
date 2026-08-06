@@ -31,4 +31,12 @@ class AssertJConsecutiveAssertionCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertJConsecutiveAssertionCheckSample.java"))
+      .withCheck(new AssertJConsecutiveAssertionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

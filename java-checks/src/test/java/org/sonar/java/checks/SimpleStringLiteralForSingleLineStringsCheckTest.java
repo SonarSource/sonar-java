@@ -31,4 +31,13 @@ class SimpleStringLiteralForSingleLineStringsCheckTest {
       .withCheck(new SimpleStringLiteralForSingleLineStringsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SimpleStringLiteralForSingleLineStringsCheckSample.java"))
+      .withCheck(new SimpleStringLiteralForSingleLineStringsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

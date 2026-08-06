@@ -39,4 +39,12 @@ class TabCharacterCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/TabCharacter.java"))
+      .withCheck(new TabCharacterCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

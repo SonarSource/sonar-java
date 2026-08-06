@@ -38,4 +38,13 @@ class OneToManyMappingCheckTest {
       .withCheck(new OneToManyMappingCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/OneToManyMappingCheckSample.java"))
+      .withCheck(new OneToManyMappingCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

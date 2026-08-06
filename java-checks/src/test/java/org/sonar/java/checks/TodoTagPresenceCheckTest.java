@@ -31,4 +31,12 @@ class TodoTagPresenceCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/TodoTagPresenceCheckSample.java"))
+      .withCheck(new TodoTagPresenceCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

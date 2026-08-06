@@ -28,4 +28,13 @@ class NullableInjectedFieldsHaveDefaultValueCheckTest {
       .withCheck(new NullableInjectedFieldsHaveDefaultValueCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/NullableInjectedFieldsHaveDefaultValueSample.java"))
+      .withCheck(new NullableInjectedFieldsHaveDefaultValueCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

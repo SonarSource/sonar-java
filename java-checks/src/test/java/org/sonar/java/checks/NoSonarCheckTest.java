@@ -29,4 +29,12 @@ class NoSonarCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/NoSonar.java")
+      .withCheck(new NoSonarCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

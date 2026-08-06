@@ -41,4 +41,14 @@ class FlexibleConstructorBodyValidationCheckTest {
       .withJavaVersion(24)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/FlexibleConstructorBodyValidationCheckSampleWithoutSemantic.java"))
+      .withCheck(new FlexibleConstructorBodyValidationCheck())
+      .withJavaVersion(25)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

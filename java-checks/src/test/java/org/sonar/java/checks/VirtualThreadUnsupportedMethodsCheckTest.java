@@ -41,4 +41,13 @@ class VirtualThreadUnsupportedMethodsCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/VirtualThreadUnsupportedMethodsSample.java"))
+      .withCheck(new VirtualThreadUnsupportedMethodsCheck())
+      .withJavaVersion(21)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

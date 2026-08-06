@@ -30,4 +30,13 @@ class DoubleCheckedLockingAssignmentCheckTest {
       .withCheck(new DoubleCheckedLockingAssignmentCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DoubleCheckedLockingAssignment.java"))
+      .withCheck(new DoubleCheckedLockingAssignmentCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

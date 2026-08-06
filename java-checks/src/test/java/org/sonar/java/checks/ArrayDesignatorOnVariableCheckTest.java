@@ -31,4 +31,12 @@ class ArrayDesignatorOnVariableCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ArrayDesignatorOnVariableCheckSample.java"))
+      .withCheck(new ArrayDesignatorOnVariableCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

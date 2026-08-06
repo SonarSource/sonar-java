@@ -29,4 +29,12 @@ class ThrowsSeveralCheckedExceptionCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ThrowsSeveralCheckedException.java")
+      .withCheck(new ThrowsSeveralCheckedExceptionCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

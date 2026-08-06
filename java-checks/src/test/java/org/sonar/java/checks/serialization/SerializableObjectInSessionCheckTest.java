@@ -47,4 +47,13 @@ class SerializableObjectInSessionCheckTest {
       .withCheck(new SerializableObjectInSessionCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/serialization/SerializableObjectInSessionCheckSample.java"))
+      .withCheck(new SerializableObjectInSessionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

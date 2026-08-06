@@ -31,4 +31,12 @@ class SpringAssertionsSimplificationCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/SpringAssertionsSimplificationCheckSample.java"))
+      .withCheck(new SpringAssertionsSimplificationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

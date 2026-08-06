@@ -42,4 +42,12 @@ class AllBranchesAreIdenticalCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/AllBranchesAreIdentical.java"))
+      .withCheck(new AllBranchesAreIdenticalCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

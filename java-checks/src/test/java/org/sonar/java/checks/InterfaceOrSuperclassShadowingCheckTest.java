@@ -39,4 +39,13 @@ class InterfaceOrSuperclassShadowingCheckTest {
       .withCheck(new InterfaceOrSuperclassShadowingCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/InterfaceOrSuperclassShadowingCheckSample.java"))
+      .withCheck(new InterfaceOrSuperclassShadowingCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

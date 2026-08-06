@@ -27,4 +27,13 @@ class EqualsNotOverriddenWithCompareToCheckTest {
       .withCheck(new EqualsNotOverriddenWithCompareToCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/EqualsNotOverriddenWithCompareToCheck.java")
+      .withCheck(new EqualsNotOverriddenWithCompareToCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

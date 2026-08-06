@@ -31,4 +31,12 @@ class AndroidBiometricAuthWithoutCryptoCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/AndroidBiometricAuthWithoutCryptoCheckSample.java"))
+      .withCheck(new AndroidBiometricAuthWithoutCryptoCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

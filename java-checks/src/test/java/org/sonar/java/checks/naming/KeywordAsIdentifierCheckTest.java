@@ -39,4 +39,13 @@ class KeywordAsIdentifierCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/KeywordAsIdentifierCheck.java")
+      .withCheck(new KeywordAsIdentifierCheck())
+      .withJavaVersion(8)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

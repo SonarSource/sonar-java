@@ -86,4 +86,14 @@ class MainMethodSignatureCheckTest {
       .withCheck(CHECK)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/mainSignature/Sample.java"))
+      .withCheck(CHECK)
+      .withJavaVersion(25)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

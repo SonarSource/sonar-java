@@ -28,4 +28,13 @@ class BlindSerialVersionUidCheckTest {
       .withCheck(new BlindSerialVersionUidCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/serialization/BlindSerialVersionUidCheck.java")
+      .withCheck(new BlindSerialVersionUidCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

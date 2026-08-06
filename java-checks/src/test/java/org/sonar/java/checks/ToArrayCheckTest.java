@@ -30,4 +30,13 @@ class ToArrayCheckTest {
       .withCheck(new ToArrayCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ToArrayCheckSample.java"))
+      .withCheck(new ToArrayCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -38,4 +38,13 @@ class ReflectionOnNonRuntimeAnnotationCheckTest {
       .withCheck(new ReflectionOnNonRuntimeAnnotationCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ReflectionOnNonRuntimeAnnotationCheckSample.java"))
+      .withCheck(new ReflectionOnNonRuntimeAnnotationCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -41,4 +41,13 @@ class CORSCheckTest {
       .withClassPath(SPRING_32_MODULE.getClassPath())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CORSCheck.java"))
+      .withCheck(new CORSCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

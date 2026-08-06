@@ -31,4 +31,12 @@ class ParameterizedTestCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/ParameterizedTestCheckSample.java"))
+      .withCheck(new ParameterizedTestCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

@@ -31,4 +31,12 @@ class ImplementsEnumerationCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ImplementsEnumerationCheckSample.java"))
+      .withCheck(new ImplementsEnumerationCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

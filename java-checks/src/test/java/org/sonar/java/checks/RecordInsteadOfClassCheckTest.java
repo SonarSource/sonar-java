@@ -50,4 +50,14 @@ class RecordInsteadOfClassCheckTest {
       .withJavaVersion(16)
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/RecordInsteadOfClassCheckSample.java"))
+      .withCheck(new RecordInsteadOfClassCheck())
+      .withJavaVersion(16)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

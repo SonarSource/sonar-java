@@ -30,4 +30,13 @@ class MembersDifferOnlyByCapitalizationCheckTest {
       .withCheck(new MembersDifferOnlyByCapitalizationCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MembersDifferOnlyByCapitalizationCheckSample.java"))
+      .withCheck(new MembersDifferOnlyByCapitalizationCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

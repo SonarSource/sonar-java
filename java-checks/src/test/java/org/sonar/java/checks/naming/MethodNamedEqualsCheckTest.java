@@ -28,4 +28,13 @@ class MethodNamedEqualsCheckTest {
       .withCheck(new MethodNamedEqualsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/MethodNamedEqualsCheck.java")
+      .withCheck(new MethodNamedEqualsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

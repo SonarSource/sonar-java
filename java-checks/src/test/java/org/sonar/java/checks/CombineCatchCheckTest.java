@@ -48,4 +48,13 @@ class CombineCatchCheckTest {
       .withJavaVersion(7)
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CombineCatchCheck_no_version.java"))
+      .withCheck(new CombineCatchCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

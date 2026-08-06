@@ -31,4 +31,12 @@ class SystemClockCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/SystemClockCheckSample.java"))
+      .withCheck(new SystemClockCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -28,4 +28,13 @@ class InputStreamOverrideReadCheckTest {
       .withCheck(new InputStreamOverrideReadCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/InputStreamOverrideReadCheck.java")
+      .withCheck(new InputStreamOverrideReadCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -29,4 +29,12 @@ class MultilineBlocksCurlyBracesCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/MultilineBlocksCurlyBracesCheck.java")
+      .withCheck(new MultilineBlocksCurlyBracesCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

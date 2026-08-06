@@ -30,4 +30,13 @@ class SuspiciousListRemoveCheckTest {
       .withCheck(new SuspiciousListRemoveCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SuspiciousListRemove.java"))
+      .withCheck(new SuspiciousListRemoveCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

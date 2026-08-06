@@ -42,4 +42,12 @@ class MockitoEqSimplificationCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/MockitoEqSimplificationCheckSample.java"))
+      .withCheck(new MockitoEqSimplificationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

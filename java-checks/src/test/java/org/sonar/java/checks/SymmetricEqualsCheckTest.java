@@ -29,4 +29,12 @@ class SymmetricEqualsCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SymmetricEqualsCheck.java")
+      .withCheck(new SymmetricEqualsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

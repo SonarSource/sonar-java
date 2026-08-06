@@ -29,4 +29,13 @@ class TextBlockTabsAndSpacesCheckTest {
       .withCheck(new TextBlockTabsAndSpacesCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/TextBlockTabsAndSpaces.java"))
+      .withCheck(new TextBlockTabsAndSpacesCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

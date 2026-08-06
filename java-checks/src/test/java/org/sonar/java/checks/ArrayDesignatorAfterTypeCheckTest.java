@@ -31,4 +31,12 @@ class ArrayDesignatorAfterTypeCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ArrayDesignatorAfterTypeCheckSample.java"))
+      .withCheck(new ArrayDesignatorAfterTypeCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

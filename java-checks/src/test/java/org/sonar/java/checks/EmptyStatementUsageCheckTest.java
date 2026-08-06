@@ -38,4 +38,13 @@ class EmptyStatementUsageCheckTest {
       .withCheck(new EmptyStatementUsageCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/EmptyStatementUsageCheckSample.java"))
+      .withCheck(new EmptyStatementUsageCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

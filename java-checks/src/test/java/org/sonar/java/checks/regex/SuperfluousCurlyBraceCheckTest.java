@@ -31,4 +31,12 @@ class SuperfluousCurlyBraceCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/regex/SuperfluousCurlyBraceCheckSample.java"))
+      .withCheck(new SuperfluousCurlyBraceCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

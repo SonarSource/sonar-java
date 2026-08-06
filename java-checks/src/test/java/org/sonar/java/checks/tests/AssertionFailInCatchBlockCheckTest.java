@@ -28,4 +28,13 @@ class AssertionFailInCatchBlockCheckTest {
       .withCheck(new AssertionFailInCatchBlockCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/AssertionFailInCatchBlockCheck.java")
+      .withCheck(new AssertionFailInCatchBlockCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

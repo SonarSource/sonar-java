@@ -30,4 +30,13 @@ class AssertsOnParametersOfPublicMethodCheckTest {
       .withCheck(new AssertsOnParametersOfPublicMethodCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/AssertsOnParametersOfPublicMethodCheckSample.java"))
+      .withCheck(new AssertsOnParametersOfPublicMethodCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

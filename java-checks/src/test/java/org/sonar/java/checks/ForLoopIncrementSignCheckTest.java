@@ -29,4 +29,12 @@ class ForLoopIncrementSignCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ForLoopIncrementSignCheck.java")
+      .withCheck(new ForLoopIncrementSignCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -40,9 +40,12 @@ import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
 
@@ -393,6 +396,22 @@ class InternalCheckVerifierTest {
       assertThat(e)
         .isInstanceOf(AssertionError.class)
         .hasMessage("A cost should be provided for a rule with linear remediation function");
+    }
+
+    @Test
+    void rule_with_linear_remediation_function_and_cost_should_pass() {
+      @Rule(key = "LinearJSON")
+      class LinearWithCostCheck implements JavaFileScanner {
+        @Override
+        public void scanFile(JavaFileScannerContext context) {
+          context.addIssue(1, this, "message", 42);
+        }
+      }
+
+      InternalCheckVerifier.newInstance()
+        .onFile("src/test/files/testing/NoncompliantWithEffort.java")
+        .withCheck(new LinearWithCostCheck())
+        .verifyIssues();
     }
 
     @Test
@@ -982,6 +1001,57 @@ class InternalCheckVerifierTest {
   }
 
   @Test
+  void verifyAnalysisSucceeds_should_work() {
+    InternalCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withCheck(NO_EFFECT_CHECK)
+      .verifyAnalysisSucceeds();
+  }
+
+  @Test
+  void verifyAnalysisSucceeds_should_work_without_semantic() {
+    InternalCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withCheck(NO_EFFECT_CHECK)
+      .withoutSemantic()
+      .verifyAnalysisSucceeds();
+  }
+
+  @Test
+  void verifyAnalysisSucceeds_requires_check() {
+    Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .verifyAnalysisSucceeds());
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Set check(s) before calling any verification method!");
+  }
+
+  @Test
+  void verifyAnalysisSucceeds_requires_file() {
+    Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+      .withCheck(NO_EFFECT_CHECK)
+      .verifyAnalysisSucceeds());
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Set file(s) before calling any verification method!");
+  }
+
+  @Test
+  void verifyAnalysisSucceeds_should_fail_on_failing_check() {
+    Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withCheck(FAILING_CHECK)
+      .verifyAnalysisSucceeds());
+
+    assertThat(e)
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage("Failing check");
+  }
+
+  @Test
   void addFiles_registers_file_to_be_analyzed() {
     InternalCheckVerifier.newInstance()
       .addFiles(InputFile.Status.ADDED, TEST_FILE)
@@ -1025,6 +1095,23 @@ class InternalCheckVerifierTest {
 
     verify(check, times(1)).scanWithoutParsing(argThat(context -> CheckVerifierTestUtils.equivalent(cacheContext, context.getCacheContext())));
     verify(check, times(1)).endOfAnalysis(argThat(context -> CheckVerifierTestUtils.equivalent(cacheContext, context.getCacheContext())));
+  }
+
+  @Test
+  void withCache_and_verifyAnalysisSucceeds() throws IOException, NoSuchAlgorithmException {
+    InputFile inputFile = InternalInputFile.inputFile("", new File(TEST_FILE), InputFile.Status.SAME);
+    ReadCache readCache = new InternalReadCache().put("java:contentHash:MD5::" + TEST_FILE, FileHashingUtils.inputFileContentHash(inputFile));
+    WriteCache writeCache = new InternalWriteCache().bind(readCache);
+
+    var check = spy(new NoEffectEndOfAnalysisCheck());
+
+    InternalCheckVerifier.newInstance()
+      .withCache(readCache, writeCache)
+      .onFile(TEST_FILE)
+      .withCheck(check)
+      .verifyAnalysisSucceeds();
+
+    verify(check, times(1)).scanWithoutParsing(argThat(context -> context.getCacheContext().isCacheEnabled()));
   }
 
   @Test
@@ -1093,6 +1180,77 @@ class InternalCheckVerifierTest {
     assertThat(e)
       .isInstanceOf(UnsupportedOperationException.class)
       .hasMessage("Not implemented!");
+  }
+
+  @Test
+  void sole_flow_discrepancy_reports_line_differences() {
+    @Rule(key = "FlowCheck")
+    class FlowOnWrongLineCheck extends IssuableSubscriptionVisitor {
+      @Override
+      public List<Tree.Kind> nodesToVisit() {
+        return Collections.singletonList(Tree.Kind.METHOD);
+      }
+
+      @Override
+      public void visitNode(Tree tree) {
+        MethodTree methodTree = (MethodTree) tree;
+        var statements = methodTree.block().body();
+        if (statements.size() >= 2) {
+          // Report issue on line 4 (second statement) with flow on line 2 (method name)
+          // Expected flow is on line 3 so this creates a sole flow discrepancy
+          List<JavaFileScannerContext.Location> flow = Collections.singletonList(
+            new JavaFileScannerContext.Location("flow message", methodTree.simpleName()));
+          context.reportIssueWithFlow(this, statements.get(1),
+            "issue", Collections.singletonList(flow), null);
+        }
+      }
+    }
+
+    Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+      .onFile("src/test/files/testing/NoncompliantWithFlow.java")
+      .withCheck(new FlowOnWrongLineCheck())
+      .verifyIssues());
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessageContaining("Flow f1 has line differences");
+  }
+
+  @Test
+  void flow_with_wrong_location_attributes_reports_mismatch() {
+    @Rule(key = "FlowCheck")
+    class FlowWithLocationCheck extends IssuableSubscriptionVisitor {
+      @Override
+      public List<Tree.Kind> nodesToVisit() {
+        return Collections.singletonList(Tree.Kind.METHOD);
+      }
+
+      @Override
+      public void visitNode(Tree tree) {
+        MethodTree methodTree = (MethodTree) tree;
+        var statements = methodTree.block().body();
+        if (statements.size() >= 2) {
+          // Report issue with a flow on the first statement (line 3).
+          // The flow location attributes in the test file specify wrong positions
+          // which exercises validateFlowAttributes -> validateLocation (line 618).
+          List<JavaFileScannerContext.Location> flow = Collections.singletonList(
+            new JavaFileScannerContext.Location("null", statements.get(0)));
+          context.reportIssueWithFlow(this, statements.get(1),
+            "issue", Collections.singletonList(flow), null);
+        }
+      }
+    }
+
+    // The location attributes in the test file are intentionally wrong (ec=99)
+    // to trigger the location mismatch error in validateFlowAttributes
+    Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+      .onFile("src/test/files/testing/NoncompliantWithFlowLocation.java")
+      .withCheck(new FlowWithLocationCheck())
+      .verifyIssues());
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessageContaining("attribute mismatch for 'END_COLUMN'");
   }
 
 }

@@ -29,4 +29,12 @@ class MethodNameSameAsClassCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/naming/MethodNameSameAsClassCheck.java")
+      .withCheck(new MethodNameSameAsClassCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

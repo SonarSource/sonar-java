@@ -30,4 +30,13 @@ class DateFormatWeekYearCheckTest {
       .withCheck(new DateFormatWeekYearCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("/checks/DateFormatWeekYearCheckSample.java"))
+      .withCheck(new DateFormatWeekYearCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

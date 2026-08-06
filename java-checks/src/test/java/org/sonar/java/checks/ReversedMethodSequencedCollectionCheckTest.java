@@ -40,4 +40,13 @@ class ReversedMethodSequencedCollectionCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/ReversedMethodSequencedCollectionCheckSample.java"))
+      .withCheck(new ReversedMethodSequencedCollectionCheck())
+      .withJavaVersion(21)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -247,6 +247,57 @@ class JavaCheckVerifierTest {
   }
 
   @Test
+  void verifyAnalysisSucceeds_should_work() {
+    JavaCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withCheck(NO_EFFECT_CHECK)
+      .verifyAnalysisSucceeds();
+  }
+
+  @Test
+  void verifyAnalysisSucceeds_should_work_without_semantic() {
+    JavaCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withCheck(NO_EFFECT_CHECK)
+      .withoutSemantic()
+      .verifyAnalysisSucceeds();
+  }
+
+  @Test
+  void verifyAnalysisSucceeds_requires_check() {
+    Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .verifyAnalysisSucceeds());
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Set check(s) before calling any verification method!");
+  }
+
+  @Test
+  void verifyAnalysisSucceeds_requires_file() {
+    Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
+      .withCheck(NO_EFFECT_CHECK)
+      .verifyAnalysisSucceeds());
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Set file(s) before calling any verification method!");
+  }
+
+  @Test
+  void verifyAnalysisSucceeds_should_fail_on_failing_check() {
+    Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withCheck(FAILING_CHECK)
+      .verifyAnalysisSucceeds());
+
+    assertThat(e)
+      .isInstanceOf(AnalysisException.class)
+      .hasMessage("Failing check");
+  }
+
+  @Test
   void addFiles_registers_file_to_be_analyzed() {
     JavaCheckVerifier.newInstance()
       .addFiles(InputFile.Status.ADDED, TEST_FILE)

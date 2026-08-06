@@ -29,4 +29,13 @@ class CompareToNotOverloadedCheckTest {
       .withCheck(new CompareToNotOverloadedCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CompareToNotOverloadedCheck.java"))
+      .withCheck(new CompareToNotOverloadedCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

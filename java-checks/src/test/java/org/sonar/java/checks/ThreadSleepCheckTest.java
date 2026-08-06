@@ -30,4 +30,13 @@ class ThreadSleepCheckTest {
       .withCheck(new ThreadSleepCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ThreadSleepCheckSample.java"))
+      .withCheck(new ThreadSleepCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

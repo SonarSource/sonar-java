@@ -29,4 +29,13 @@ class ObjectFinalizeOverriddenCallsSuperFinalizeCheckTest {
       .withCheck(new ObjectFinalizeOverriddenCallsSuperFinalizeCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ObjectFinalizeOverriddenCallsSuperFinalizeCheckSample.java"))
+      .withCheck(new ObjectFinalizeOverriddenCallsSuperFinalizeCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -37,4 +37,13 @@ class SpringIncompatibleTransactionalCheckTest {
       .withCheck(new SpringIncompatibleTransactionalCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/spring/SpringIncompatibleTransactionalCheckSample.java"))
+      .withCheck(new SpringIncompatibleTransactionalCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

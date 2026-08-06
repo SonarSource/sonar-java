@@ -50,4 +50,12 @@ class HardCodedPasswordCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/HardCodedPasswordCheckSample.java"))
+      .withCheck(new HardCodedPasswordCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

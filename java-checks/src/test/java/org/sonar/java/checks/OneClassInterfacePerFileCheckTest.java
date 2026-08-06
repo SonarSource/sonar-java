@@ -39,4 +39,12 @@ class OneClassInterfacePerFileCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/OneClassInterfacePerFileCheckNoncompliant.java"))
+      .withCheck(new OneClassInterfacePerFileCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

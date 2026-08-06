@@ -40,4 +40,12 @@ class GarbageCollectorCalledCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/GarbageCollectorCalledCheckSample.java"))
+      .withCheck(new GarbageCollectorCalledCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

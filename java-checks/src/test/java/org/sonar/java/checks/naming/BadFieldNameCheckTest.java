@@ -41,4 +41,12 @@ class BadFieldNameCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/naming/BadFieldName.java"))
+      .withCheck(new BadFieldNameCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }
