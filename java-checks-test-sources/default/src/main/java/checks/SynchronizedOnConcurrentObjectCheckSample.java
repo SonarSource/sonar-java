@@ -8,8 +8,10 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -28,6 +30,7 @@ class SynchronizedOnConcurrentObjectCheckSample {
   private final AtomicBoolean atomicBoolean = new AtomicBoolean();
   private final AtomicInteger atomicInteger = new AtomicInteger();
   private final CustomLock customLock = new CustomLock();
+  private final CustomLockImpl customLockImpl = new CustomLockImpl();
 
   private final Object objectLock = new Object();
   private final ConcurrentHashMap<String, String> concurrentMap = new ConcurrentHashMap<>();
@@ -81,36 +84,51 @@ class SynchronizedOnConcurrentObjectCheckSample {
     synchronized (customLock) { // Noncompliant {{Use the "CustomLock" API for synchronization instead of a "synchronized" block.}}
     //            ^^^^^^^^^^
     }
+
+    synchronized (customLockImpl) { // Noncompliant {{Use the "CustomLockImpl" API for synchronization instead of a "synchronized" block.}}
+    //            ^^^^^^^^^^^^^^
+    }
   }
 
   void compliant() {
     synchronized (objectLock) {
-      // ...
     }
 
     synchronized (concurrentMap) {
-      // ...
     }
 
     synchronized (future) {
-      // ...
     }
 
     reentrantLock.lock();
     try {
-      // ...
     } finally {
       reentrantLock.unlock();
     }
 
     rwLock.writeLock().lock();
     try {
-      // ...
     } finally {
       rwLock.writeLock().unlock();
     }
   }
 
+  void example() {
+    var lock2 = new ReentrantLock();
+    synchronized (lock2) { // Noncompliant
+    }
+  }
+
   static class CustomLock extends ReentrantLock {
+  }
+
+  // Custom Lock implementation outside java.util.concurrent.locks — caught via isSubtypeOf(Lock)
+  static class CustomLockImpl implements Lock {
+    @Override public void lock() {}
+    @Override public void lockInterruptibly() throws InterruptedException {}
+    @Override public boolean tryLock() { return false; }
+    @Override public boolean tryLock(long time, TimeUnit unit) throws InterruptedException { return false; }
+    @Override public void unlock() {}
+    @Override public Condition newCondition() { return null; }
   }
 }

@@ -25,8 +25,9 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 
-@Rule(key = "S9141")
+@Rule(key = "S2442")
 public class SynchronizedOnConcurrentObjectCheck extends IssuableSubscriptionVisitor {
 
   private static final String CONCURRENT_LOCKS_PREFIX = "java.util.concurrent.locks.";
@@ -42,22 +43,24 @@ public class SynchronizedOnConcurrentObjectCheck extends IssuableSubscriptionVis
     "java.util.concurrent.TransferQueue");
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Collections.singletonList(Tree.Kind.SYNCHRONIZED_STATEMENT);
+  public List<Kind> nodesToVisit() {
+    return Collections.singletonList(Kind.SYNCHRONIZED_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
     ExpressionTree expression = ((SynchronizedStatementTree) tree).expression();
-    Type expressionType = expression.symbolType();
-    if (isConcurrentSyncPrimitive(expressionType)) {
+    Type type = expression.symbolType();
+    if (isSynchronizationPrimitive(type)) {
       reportIssue(expression, String.format(
-        "Use the \"%s\" API for synchronization instead of a \"synchronized\" block.", expressionType.name()));
+        "Use the \"%s\" API for synchronization instead of a \"synchronized\" block.", type.name()));
     }
   }
 
-  private static boolean isConcurrentSyncPrimitive(Type type) {
-    return isKnownSyncPrimitive(type) || type.symbol().superTypes().stream().anyMatch(SynchronizedOnConcurrentObjectCheck::isKnownSyncPrimitive);
+  private static boolean isSynchronizationPrimitive(Type type) {
+    return type.isSubtypeOf("java.util.concurrent.locks.Lock")
+      || isKnownSyncPrimitive(type)
+      || type.symbol().superTypes().stream().anyMatch(SynchronizedOnConcurrentObjectCheck::isKnownSyncPrimitive);
   }
 
   private static boolean isKnownSyncPrimitive(Type type) {
