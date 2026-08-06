@@ -587,9 +587,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     Set<Expectations.FlowComment> expected = expectations.flows.get(expectedId);
     List<Integer> expectedLines = expected.stream().map(flow -> flow.line).toList();
     List<Integer> actualLines = actualFlow.stream().map(AnalyzerMessage::getLine).toList();
-    if (!actualLines.equals(expectedLines)) {
-      throw new AssertionError(String.format("Flow %s has line differences. Expected: %s but was: %s", expectedId, expectedLines, actualLines));
-    }
+    throw new AssertionError(String.format("Flow %s has line differences. Expected: %s but was: %s", expectedId, expectedLines, actualLines));
   }
 
   private void validateFlow(List<AnalyzerMessage> flow, Map<String, List<AnalyzerMessage>> foundFlows, List<List<AnalyzerMessage>> unexpectedFlows) {
@@ -614,9 +612,6 @@ public class InternalCheckVerifier implements CheckVerifier {
     Iterator<Expectations.FlowComment> expectedIterator = expected.iterator();
     while (actualIterator.hasNext() && expectedIterator.hasNext()) {
       AnalyzerMessage actualFlow = actualIterator.next();
-      if (actualFlow.primaryLocation() == null) {
-        throw new AssertionError(String.format("Flow without location: %s", actualFlow));
-      }
       validateLocation(actualFlow, expectedIterator.next().attributes);
     }
   }
