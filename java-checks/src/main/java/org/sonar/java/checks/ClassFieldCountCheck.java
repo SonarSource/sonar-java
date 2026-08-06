@@ -41,7 +41,7 @@ public class ClassFieldCountCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Tree.Kind.CLASS_KINDS;
+    return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM);
   }
 
   @Override

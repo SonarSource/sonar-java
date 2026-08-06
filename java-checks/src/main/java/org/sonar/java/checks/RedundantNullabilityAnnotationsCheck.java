@@ -78,7 +78,7 @@ public class RedundantNullabilityAnnotationsCheck extends IssuableSubscriptionVi
       } else if (member.is(Tree.Kind.METHOD)) {
         // check method
         checkMethod(classNullabilityData, (MethodTree) member, scope);
-      } else if (member.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE)) {
+      } else if (Tree.Kind.CLASS_KINDS.contains(member.kind())) {
         // check inner class
         checkInnerClass(classNullabilityData, (ClassTree) member, scope);
       }

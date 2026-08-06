@@ -33,7 +33,7 @@ public class CallSuperMethodFromInnerClassCheck extends IssuableSubscriptionVisi
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Tree.Kind.CLASS_KINDS;
+    return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE);
   }
 
   @Override

@@ -44,7 +44,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 @Rule(key = "S2386")
 public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor {
@@ -116,7 +115,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ListUtils.concat(Tree.Kind.CLASS_KINDS, List.of(Tree.Kind.ASSIGNMENT));
+    return List.of(Tree.Kind.INTERFACE, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.ASSIGNMENT);
   }
 
   @Override

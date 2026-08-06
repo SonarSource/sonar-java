@@ -43,7 +43,7 @@ public class CallOuterPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Tree.Kind.CLASS_KINDS;
+    return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.RECORD);
   }
 
   @Override
