@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 @Rule(key = "S8924")
 public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
@@ -53,14 +54,14 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.RECORD, Tree.Kind.METHOD_INVOCATION);
+    return ListUtils.concat(Tree.Kind.CLASS_KINDS, List.of(Tree.Kind.COMPILATION_UNIT, Tree.Kind.METHOD_INVOCATION));
   }
 
   @Override
   public void visitNode(Tree tree) {
     switch (tree.kind()) {
       case COMPILATION_UNIT -> collectConflictingImports((CompilationUnitTree) tree);
-      case CLASS, ENUM, INTERFACE, RECORD -> pushClassMethods((ClassTree) tree);
+      case CLASS, ENUM, INTERFACE, RECORD, ANNOTATION_TYPE, IMPLICIT_CLASS -> pushClassMethods((ClassTree) tree);
       case METHOD_INVOCATION -> checkMethodInvocation((MethodInvocationTree) tree);
       default -> { /* not visited */ }
     }
@@ -69,7 +70,7 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
   @Override
   public void leaveNode(Tree tree) {
     switch (tree.kind()) {
-      case CLASS, ENUM, INTERFACE, RECORD -> classMethodsStack.pop();
+      case CLASS, ENUM, INTERFACE, RECORD, ANNOTATION_TYPE, IMPLICIT_CLASS -> classMethodsStack.pop();
       default -> { /* nothing */ }
     }
   }

@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class MultipleMainInstancesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.RECORD, Tree.Kind.IMPLICIT_CLASS);
+    return Tree.Kind.CLASS_KINDS;
   }
 
   @Override

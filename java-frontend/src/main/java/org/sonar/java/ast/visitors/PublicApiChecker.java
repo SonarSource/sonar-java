@@ -21,16 +21,16 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
-import org.sonarsource.analyzer.commons.collections.ListUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 public class PublicApiChecker {
 
@@ -38,14 +38,7 @@ public class PublicApiChecker {
     // Utility class
   }
 
-  private static final Tree.Kind[] CLASS_KINDS = {
-    Tree.Kind.CLASS,
-    Tree.Kind.INTERFACE,
-    Tree.Kind.ENUM,
-    Tree.Kind.ANNOTATION_TYPE,
-    Tree.Kind.RECORD,
-    Tree.Kind.IMPLICIT_CLASS
-  };
+  private static final Tree.Kind[] CLASS_KINDS = Tree.Kind.CLASS_KINDS.toArray(new Tree.Kind[0]);
 
   private static final Tree.Kind[] METHOD_KINDS = {
     Tree.Kind.METHOD,

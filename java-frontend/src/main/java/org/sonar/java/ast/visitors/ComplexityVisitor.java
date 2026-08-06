@@ -57,14 +57,14 @@ public class ComplexityVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitClass(ClassTree tree) {
-    if(root.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.COMPILATION_UNIT)) {
+    if (Tree.Kind.CLASS_KINDS.contains(root.kind()) || root.is(Tree.Kind.COMPILATION_UNIT)) {
       super.visitClass(tree);
     }
   }
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-    if(root.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.COMPILATION_UNIT) || lambdaExpressionTree.equals(root)) {
+    if (Tree.Kind.CLASS_KINDS.contains(root.kind()) || root.is(Tree.Kind.COMPILATION_UNIT) || lambdaExpressionTree.equals(root)) {
       blame.add(lambdaExpressionTree.arrowToken());
       super.visitLambdaExpression(lambdaExpressionTree);
     }

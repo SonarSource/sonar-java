@@ -16,24 +16,22 @@
  */
 package org.sonar.java.checks;
 
+import java.util.List;
+import java.util.Locale;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import javax.annotation.Nullable;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 
 @Rule(key = "S2176")
 public class InterfaceOrSuperclassShadowingCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.RECORD, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE);
   }
 
   @Override
@@ -48,7 +46,8 @@ public class InterfaceOrSuperclassShadowingCheck extends IssuableSubscriptionVis
 
   private void checkSuperType(ClassTree tree, @Nullable Type superType) {
     if (superType != null && hasSameName(tree, superType) && !isInnerClass(tree)) {
-      reportIssue(tree.simpleName(), "Rename this " + tree.kind().name().toLowerCase(Locale.ROOT) + ".");
+      String classKind = tree.kind().equals(Tree.Kind.ANNOTATION_TYPE) ? "annotation type" : tree.kind().name().toLowerCase(Locale.ROOT);
+      reportIssue(tree.simpleName(), "Rename this " + classKind + ".");
     }
   }
 
