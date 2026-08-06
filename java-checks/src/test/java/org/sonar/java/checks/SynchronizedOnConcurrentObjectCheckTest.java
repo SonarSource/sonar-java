@@ -31,4 +31,13 @@ class SynchronizedOnConcurrentObjectCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SynchronizedOnConcurrentObjectCheckSample.java"))
+      .withCheck(new SynchronizedOnConcurrentObjectCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
 }
