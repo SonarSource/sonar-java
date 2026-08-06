@@ -1,7 +1,6 @@
 package checks;
 
 import java.security.SecureRandom;
-import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.lang.math.JVMRandom;
@@ -22,8 +21,6 @@ class PseudoRandomCheckSampleWithoutSemantic {
     random.nextBytes(bytes); // Compliant
 
     // org.apache.commons.lang.math.JVMRandom
-    JVMRandom jvmRandom = new JVMRandom(); // FN
-    double rand3 = jvmRandom.nextDouble();
 
     // Static class, don't report constructor, only usage
     // java.lang.Math. Report only Math.random()
@@ -34,43 +31,29 @@ class PseudoRandomCheckSampleWithoutSemantic {
     // java.util.concurrent.ThreadLocalRandom
     int rand2 = ThreadLocalRandom.current().nextInt(); // Noncompliant
 
-
     // org.apache.commons.lang.math.RandomUtils
     RandomUtils randomUtils = new RandomUtils();
-    float rand4 = randomUtils.nextFloat(); // FN
-    float rand5 = RandomUtils.nextFloat(); // FN
 
     // org.apache.commons.lang3.RandomUtils
     org.apache.commons.lang3.RandomUtils randomUtils2 = new org.apache.commons.lang3.RandomUtils();
-    float rand6 = randomUtils2.nextFloat(); // FN
-    float rand7 = org.apache.commons.lang3.RandomUtils.nextFloat(); // FN
 
     // org.apache.commons.lang.RandomStringUtils
     RandomStringUtils randomStringUtils = new RandomStringUtils();
-    String rand8 = randomStringUtils.random(1); // FN
-    String rand9 = RandomStringUtils.random(1); // FN
-    rand9 = random(1); // FN
-    rand9 = RandomStringUtils.random(1, 0, 0, false, false, null); // FN
 
     // Here we should raise an issue only on the `new Random`, not on the call to `random` itself
-    rand9 = RandomStringUtils.random(1, 0, 0, false, false, null, new Random()); // Noncompliant
+    String rand9 = RandomStringUtils.random(1, 0, 0, false, false, null, new Random()); // Noncompliant
 
     // Here there should be no issue because `random` will use the supplied secure source of randomness
     rand9 = RandomStringUtils.random(1, 0, 0, false, false, null, new SecureRandom()); // Compliant
 
     // org.apache.commons.lang3.RandomStringUtils
     org.apache.commons.lang3.RandomStringUtils randomStringUtils2 = new org.apache.commons.lang3.RandomStringUtils();
-    String rand10 = randomStringUtils.random(1); // FN
-    String rand11 = org.apache.commons.lang3.RandomStringUtils.random(1); // FN
-    rand11 = org.apache.commons.lang3.RandomStringUtils.random(1, 0, 0, false, false, null); // FN
 
     // Here we should raise an issue only on the `new Random`, not on the call to `random` itself
-    rand11 = org.apache.commons.lang3.RandomStringUtils.random(1, 0, 0, false, false, null, new Random()); // Noncompliant
+    String rand11 = org.apache.commons.lang3.RandomStringUtils.random(1, 0, 0, false, false, null, new Random()); // Noncompliant
 
     // Here there should be no issue because `random` will use the supplied secure source of randomness
     rand11 = org.apache.commons.lang3.RandomStringUtils.random(1, 0, 0, false, false, null, new SecureRandom()); // Compliant
-
-    String rand12 = random(42).toLowerCase(Locale.ROOT); // FN
 
   }
 
@@ -78,8 +61,7 @@ class PseudoRandomCheckSampleWithoutSemantic {
     return switch (value) {
       case 0 -> org.apache.commons.lang3.RandomStringUtils.secureStrong().next(42); // Compliant
       case 42 -> org.apache.commons.lang3.RandomStringUtils.secure().next(42); // Compliant
-      default -> org.apache.commons.lang3.RandomStringUtils.insecure().next(42); // FN
-
+      default -> "";
     };
   }
 

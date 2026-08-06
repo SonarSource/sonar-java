@@ -51,15 +51,6 @@ class CatchOfThrowableOrErrorCheckWithoutSemantic {
         throw closer.rethrow(e);
       }
       try {
-      } catch (Throwable e) { // FN
-        throw closer.rethrow(new Exception(e));
-      }
-      try {
-      } catch (Throwable e) { // FN
-        Throwable myThrowable = new Throwable(e);
-        throw closer.rethrow(myThrowable);
-      }
-      try {
       } catch (Throwable e) {           // Compliant
         throw closer.rethrow(e, A.class);
       }

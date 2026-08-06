@@ -27,21 +27,17 @@ public class CollectorsToListCheckSampleWithoutSemantic {
     List<String> list1 = Stream.of("A", "B", "C")
       .collect(Collectors.toList()); // Noncompliant
 
-
     // Not modifying the list
     list1.contains("B");
 
     List<String> list2 = Stream.of("A", "B", "C")
       .collect(Collectors.toUnmodifiableList()); // Noncompliant
 
-
     Stream.of("A", "B", "C")
       .collect(Collectors.toList()); // Noncompliant
 
-
     Stream.of("A", "B", "C")
       .collect(Collectors.toUnmodifiableList()); // Noncompliant
-
 
     List<List<String>> listOfLists = new ArrayList<>();
     // list1 appears in a call to List.add, but it is not the receiver, so it should not be interpreted as mutable:
@@ -87,7 +83,6 @@ public class CollectorsToListCheckSampleWithoutSemantic {
   private List<String> memberListAccessedWithThis;
   List<String>[] arr;
   ListWrapper listWrapper2 = new ListWrapper();
-
 
   void compliant() {
     List<String> list1 = Stream.of("A", "B", "C").toList(); // Compliant
@@ -150,7 +145,6 @@ public class CollectorsToListCheckSampleWithoutSemantic {
 
   void FNs() {
     Collector<String, ?, List<String>> collector = Collectors.toUnmodifiableList();
-    List<String> list1 = Stream.of("A", "B", "C").collect(collector); // FN because we don't track the collector through variables
   }
 
   private List<String> memberList2;

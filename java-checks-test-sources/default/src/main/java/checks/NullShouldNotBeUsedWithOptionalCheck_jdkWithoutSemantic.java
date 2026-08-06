@@ -3,26 +3,19 @@ package checks;
 
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import javax.annotation.meta.When;
 
-interface NullShouldNotBeUsedWithOptionalCheck_jdk {
-
-  @Nullable // FN
+interface NullShouldNotBeUsedWithOptionalCheck_jdkWS {
 
   public Optional<String> getOptionalKo();
 
-
-  @org.jspecify.annotations.Nullable // FN
   Optional<String> getOptional();
 }
 
-class NullShouldNotBeUsedWithOptionalCheck_jdkClassA {
+class NullShouldNotBeUsedWithOptionalCheck_jdkClassAWS {
 
-  public NullShouldNotBeUsedWithOptionalCheck_jdkClassA() {
+  public NullShouldNotBeUsedWithOptionalCheck_jdkClassAWS() {
   }
-
-  @Nullable // FN
 
   public Optional<String> getOptionalKo() {
     return null; // Noncompliant
@@ -95,43 +88,28 @@ class NullShouldNotBeUsedWithOptionalCheck_jdkClassA {
 
   }
 
-  @Nullable // FN
-
   private Optional<String> field = null; // Noncompliant
 
-
-  public void doSomething6(@Nullable Optional<String> arg) { // FN
-
-  }
-
-  public void doSomething6_Jspecify(@org.jspecify.annotations.Nullable Optional<String> arg) { // FN
-  }
-
   public void doSomething7() {
-    @Nullable // FN
 
     Optional<String> var;
   }
 
   public void doSomething7_jspecify() {
-    @org.jspecify.annotations.Nullable // FN
     Optional<String> var;
   }
 
   public void NonnullWithArgument1() {
-    @javax.annotation.Nonnull(when= When.MAYBE) // FN
 
     Optional<String> var;
   }
 
   public void NonnullWithArgument2() {
-    @javax.annotation.Nonnull(when= When.NEVER) // FN
 
     Optional<String> var;
   }
 
   public void NonnullWithArgument3() {
-    @javax.annotation.Nonnull(when= When.UNKNOWN) // FN
 
     Optional<String> var;
   }

@@ -1,7 +1,5 @@
 package checks;
 
-import org.apache.commons.lang.math.JVMRandom;
-
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -13,7 +11,7 @@ public class ReuseRandomCheckSampleWithoutSemantic {
   Random field = new Random(); // Compliant for field
   IntStream fieldChain = new Random().ints(100); // Compliant
 
-  ReuseRandomCheckSample() {
+  ReuseRandomCheckSampleWithoutSemantic() {
     Random localVar = new Random(); // Noncompliant
     new Random(); // Noncompliant
   }
@@ -25,7 +23,6 @@ public class ReuseRandomCheckSampleWithoutSemantic {
     Object localVar3 = new Object();
 
     SecureRandom secureRandom = new SecureRandom(); // Noncompliant
-    JVMRandom jvmRandom = new JVMRandom(); // FN
 
     staticField = new Random();
     field = new Random();
@@ -62,10 +59,10 @@ public class ReuseRandomCheckSampleWithoutSemantic {
 
 }
 
-class StaticFieldInitializerRandomInts {
+class StaticFieldInitializerRandomIntsWS {
   static IntStream randomInts = new Random().ints(100); // Compliant
 }
 
-class InstanceFieldInitializerRandomInts {
+class InstanceFieldInitializerRandomIntsWS {
   IntStream randomInts = new Random().ints(100); // Compliant
 }

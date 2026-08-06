@@ -6,7 +6,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.enterprise.event.Observes;
 import javax.servlet.http.HttpServletRequest;
@@ -16,12 +15,10 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.actions.BaseAction;
 
-class UnusedMethodParameterCheck extends B {
+class UnusedMethodParameterCheckWS extends BWS {
   void doSomething() { }
 
   void doSomething(int a, int b) { // Noncompliant
-
-
 
     compute(a);
   }
@@ -36,7 +33,7 @@ class UnusedMethodParameterCheck extends B {
   }
 }
 
-class B {
+class BWS {
   void doSomethingElse(int a, int b) {
     compute(a);
     compute(b);
@@ -46,7 +43,7 @@ class B {
   }
 }
 
-class C extends B {
+class CWS extends BWS {
   int bar;
   void doSomethingElse(int a, int b) {     // no issue reported on b
     compute(a);
@@ -56,43 +53,30 @@ class C extends B {
   }
 }
 
-class D extends C {
+class DWS extends CWS {
   void foo(int a, // Noncompliant
            @Nullable Object b,
            int c,
            int d,
            @Nullable Object e) {
 
-
-
-
-
-
-
-
-
-
-
-
     System.out.println(c);
   }
 }
-class E extends C {
+class EWS extends CWS {
   void bar(int a){ // Noncompliant
-
-
 
     System.out.println("");
   }
 }
-interface inter {
+interface interWS {
   default void foo(int a) {
     System.out.println(a);
   }
   default void bar(int a) { System.out.println("");} // Compliant - designed for extension
   void qix(int a);
 }
-class F {
+class FWS {
   public static void main(String[] args) { }
   public static int main(boolean[] args) { System.out.println(""); return 0; } // Noncompliant
   public static void main(int[] args) { System.out.println("");} // Noncompliant
@@ -101,7 +85,7 @@ class F {
   public static void main(Double[] args) { System.out.println("");} // Noncompliant
 }
 
-class G implements inter {
+class GWS implements interWS {
   public void foo(int a) {
     System.out.println("plop");
   }
@@ -120,7 +104,7 @@ class G implements inter {
   public void qix(int a) {}
 }
 
-class OpenForExtension {
+class OpenForExtensionWS {
   public void foo(int arg) {
 
   }
@@ -145,7 +129,7 @@ class OpenForExtension {
   }
 }
 
-class MethodFromSerialization {
+class MethodFromSerializationWS {
   private void writeObject(ObjectOutputStream out) throws MyException { // Compliant
     throw new MyException();
   }
@@ -157,17 +141,12 @@ class MethodFromSerialization {
   private static class MyException extends Exception {}
 }
 
-class Annotations {
+class AnnotationsWS {
   public void foo(@Observes Object event, int arg2) { // Compliant
     System.out.println(arg2);
   }
 
-  public void bar(@Nonnull Object event, int arg2) { // FN
-
-    System.out.println(arg2);
-  }
-
-  @MyAnnotation
+  @MyAnnotationWS
   void qix(int a, int b) { // Compliant
     System.out.println(a);
   }
@@ -194,13 +173,9 @@ class Annotations {
   }
 }
 
-class StrutsAction extends Action {
+class StrutsActionWS extends Action {
   void foo(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, String s) { // Compliant
     System.out.println(s);
-  }
-
-  void bar(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, String unused) { // FN
-    System.out.println("");
   }
 
   void qix(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) { // Compliant
@@ -212,21 +187,14 @@ class StrutsAction extends Action {
   }
 }
 
-class StrutsAction2 extends BaseAction {
-  void foo(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response, String unused) { // FN
-    System.out.println("");
-  }
+class StrutsAction2WS extends BaseAction {
 
   void bar(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) { // Compliant
     System.out.println("");
   }
-
-  void qiz(ActionMapping mapping, ActionForm form, HttpServletRequest request, Object unusedResponse) { // FN
-    System.out.println("");
-  }
 }
 
-class NotStrutsAction {
+class NotStrutsActionWS {
   void bar(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) { // Noncompliant
     System.out.println(mapping);
     System.out.println(form);
@@ -235,7 +203,7 @@ class NotStrutsAction {
   }
 }
 
-class DocumentedMethod {
+class DocumentedMethodWS {
   /**
    * @param firstArg proper javadoc description
    * @param secondArg proper javadoc description
@@ -282,7 +250,7 @@ class DocumentedMethod {
   }
 }
 
-final class FinalDocumentedMethod {
+final class FinalDocumentedMethodWS {
   /**
    * @param firstArg proper javadoc description
    */
@@ -291,12 +259,12 @@ final class FinalDocumentedMethod {
   }
 }
 
-class Parent {
+class ParentWS {
   public void foo(Object param) {
     throw new RuntimeException();
   }
 }
-final class FinalClass extends Parent {
+final class FinalClassWS extends ParentWS {
 
   @Override
   public void foo(Object param) { // Compliant
@@ -320,9 +288,9 @@ final class FinalClass extends Parent {
   }
 }
 
-@interface MyAnnotation {}
+@interface MyAnnotationWS {}
 
-class UnknownUsage {
+class UnknownUsageWS {
   static class Member {
     private Member(String firstName, String lastName, String memberID) { } // Noncompliant
 
@@ -342,7 +310,7 @@ class UnknownUsage {
   }
 }
 
-class UsingMethodReference {
+class UsingMethodReferenceWS {
 
   void foo() {
     java.util.function.Predicate<Object> bar = bar("hello", "world")::equals; // uses 'bar', but not as targeted method reference
@@ -356,7 +324,7 @@ class UsingMethodReference {
   }
 }
 
-class JakartaAnnotations {
+class JakartaAnnotationsWS {
   void fooBar(int a, // Noncompliant
 
     @jakarta.annotation.Nullable Boolean b,
@@ -371,21 +339,11 @@ class JakartaAnnotations {
   public void foo(@jakarta.enterprise.event.Observes Object event, int arg2) { // Compliant
     System.out.println(arg2);
   }
-
-  public void bar(@jakarta.annotation.Nonnull Object event, int arg2) { // FN
-
-    System.out.println(arg2);
-  }
 }
 
-
-class JakartaStrutsAction extends Action {
+class JakartaStrutsActionWS extends Action {
   void foo(ActionMapping mapping, ActionForm form, jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, String s) { // Compliant
     System.out.println(s);
-  }
-
-  void bar(ActionMapping mapping, ActionForm form, jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, String unused) { // FN
-    System.out.println("");
   }
 
   void qix(ActionMapping mapping, ActionForm form, jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) { // Compliant
@@ -393,17 +351,14 @@ class JakartaStrutsAction extends Action {
   }
 }
 
-class JakartaStrutsAction2 extends BaseAction {
-  void foo(ActionMapping mapping, ActionForm form, jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response, String unused) { // FN
-    System.out.println("");
-  }
+class JakartaStrutsAction2WS extends BaseAction {
 
   void bar(ActionMapping mapping, ActionForm form, jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) { // Compliant
     System.out.println("");
   }
 }
 
-class JakartaNotStrutsAction {
+class JakartaNotStrutsActionWS {
   void bar(ActionMapping mapping, ActionForm form, jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) { // Noncompliant
     System.out.println(mapping);
     System.out.println(form);

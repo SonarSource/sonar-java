@@ -9,26 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 
 @Entity
-class PersistenceAnnotationsMixedCheckSampleWithoutSemantic { // FN
-
-  @Id
-  private Long id;
-
-  private String name;
-
-  public Long getId() {
-    return id;
-  }
-
-  @Column(name = "name")
-  public String getName() {
-
-    return name;
-  }
-}
-
-@Entity
-class AllFieldAnnotations { // Compliant - all annotations on fields
+class AllFieldAnnotationsWS { // Compliant - all annotations on fields
   @Id
   private Long id;
   @Column(name = "name")
@@ -44,7 +25,7 @@ class AllFieldAnnotations { // Compliant - all annotations on fields
 }
 
 @Entity
-class AllGetterAnnotations { // Compliant - all annotations on getters
+class AllGetterAnnotationsWS { // Compliant - all annotations on getters
   private Long id;
   private String name;
 
@@ -56,33 +37,11 @@ class AllGetterAnnotations { // Compliant - all annotations on getters
   @Column(name = "name")
   public String getName() {
     return name;
-  }
-}
-
-@Embeddable
-class NoncompliantEmbeddable { // FN
-  @Column(name = "street")
-  private String street;
-
-  @Column(name = "city")
-  public String getCity() {
-    return null;
-  }
-}
-
-@MappedSuperclass
-class NoncompliantMappedSuperclass { // FN
-  @Id
-  private Long id;
-
-  @Column(name = "type")
-  public String getType() {
-    return null;
   }
 }
 
 // Not a persistence entity - mixed annotations should not be flagged
-class NotAnEntity {
+class NotAnEntityWS {
   @Id
   private Long id;
 
@@ -93,7 +52,7 @@ class NotAnEntity {
 }
 
 @Entity
-class NoAnnotations { // Compliant - no persistence annotations on members
+class NoAnnotationsWS { // Compliant - no persistence annotations on members
   private Long id;
   private String name;
 
@@ -107,7 +66,7 @@ class NoAnnotations { // Compliant - no persistence annotations on members
 }
 
 @Entity
-class OnlyFieldAnnotation { // Compliant - only field annotated, no getter annotated
+class OnlyFieldAnnotationWS { // Compliant - only field annotated, no getter annotated
   @Id
   private Long id;
 
@@ -117,7 +76,7 @@ class OnlyFieldAnnotation { // Compliant - only field annotated, no getter annot
 }
 
 @Entity
-class OnlyGetterAnnotation { // Compliant - only getter annotated, no field annotated
+class OnlyGetterAnnotationWS { // Compliant - only getter annotated, no field annotated
   private Long id;
 
   @Id
@@ -126,9 +85,8 @@ class OnlyGetterAnnotation { // Compliant - only getter annotated, no field anno
   }
 }
 
-
 @javax.persistence.Entity
-class NoncompliantJavaxEntity { // Noncompliant
+class NoncompliantJavaxEntityWS { // Noncompliant
   @javax.persistence.Id
   private Long id;
 
@@ -139,7 +97,7 @@ class NoncompliantJavaxEntity { // Noncompliant
 }
 
 @javax.persistence.Entity
-class CompliantJavaxEntity { // Compliant - all annotations on fields
+class CompliantJavaxEntityWS { // Compliant - all annotations on fields
   @javax.persistence.Id
   private Long id;
   @javax.persistence.Column(name = "name")
@@ -156,7 +114,7 @@ class CompliantJavaxEntity { // Compliant - all annotations on fields
 
 // @Access on the only mixed member: the overriding member is excluded, no remaining mix - compliant
 @Entity
-class AllMixedMembersHaveAccess { // Compliant - only the @Access-annotated getter is mixed
+class AllMixedMembersHaveAccessWS { // Compliant - only the @Access-annotated getter is mixed
   @Id
   private Long id;
 
@@ -168,7 +126,7 @@ class AllMixedMembersHaveAccess { // Compliant - only the @Access-annotated gett
 }
 
 @Entity
-class FieldOverrideWithAccess { // Compliant - only the @Access-annotated field is mixed
+class FieldOverrideWithAccessWS { // Compliant - only the @Access-annotated field is mixed
   @Access(AccessType.FIELD)
   @Id
   private Long id;
@@ -179,20 +137,3 @@ class FieldOverrideWithAccess { // Compliant - only the @Access-annotated field 
   }
 }
 
-// @Access only covers one member but another non-overridden member still mixes - noncompliant
-@Entity
-class PartialAccessOverride { // FN
-  @Id
-  private Long id;
-
-  @Access(AccessType.PROPERTY)
-  @Column(name = "name")
-  public String getName() {
-    return null;
-  }
-
-  @Column(name = "email")
-  public String getEmail() { // wrong: no @Access, should be a field annotation
-    return null;
-  }
-}

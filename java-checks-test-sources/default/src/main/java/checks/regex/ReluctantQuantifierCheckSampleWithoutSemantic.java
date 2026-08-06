@@ -1,10 +1,6 @@
 package checks.regex;
 
-import org.hibernate.validator.constraints.URL;
-
 public class ReluctantQuantifierCheckSampleWithoutSemantic {
-
-  @URL(regexp = "<.+?>") // FN
 
   String url;
 
@@ -24,7 +20,6 @@ public class ReluctantQuantifierCheckSampleWithoutSemantic {
     str.matches("<\\D{2,5}?>"); // Noncompliant
 
     str.matches("<\\W{2,5}?>"); // Noncompliant
-
 
     str.matches("<.{2,}?>"); // Noncompliant
 
@@ -51,8 +46,6 @@ public class ReluctantQuantifierCheckSampleWithoutSemantic {
     str.matches("\\S*?(?U:\\s)"); // Noncompliant
 
     str.matches("\\S*?(?U)\\s"); // Noncompliant
-
-
 
     str.matches("(?:(?m))*?a");
     str.matches("(?:(?m:.))*?(?:(?m))");

@@ -21,9 +21,6 @@ public class ReluctantQuantifierWithEmptyContinuationCheckSampleWithoutSemantic 
     str.split(".*?x?^"); // Noncompliant
     Matcher mPartial = Pattern.compile(".*?").matcher(str); // Noncompliant
     mPartial.find();
-    RegExUtils.removeAll(str, ".*?"); // FN
-    Pattern p = Pattern.compile(".*?"); // FN
-    RegExUtils.removeAll(str, p);
 
     // ====== Unnecessarily reluctant quantifier ======
     // Full match (implicitly end with end anchor "$")
@@ -48,7 +45,6 @@ public class ReluctantQuantifierWithEmptyContinuationCheckSampleWithoutSemantic 
     Pattern.compile(".*?()$").matcher(str); // Noncompliant
   }
   // Full match
-  @Email(regexp = ".*?") // FN
   void fullMatch() { }
 
   @jakarta.validation.constraints.Email(regexp = ".*?") // Noncompliant

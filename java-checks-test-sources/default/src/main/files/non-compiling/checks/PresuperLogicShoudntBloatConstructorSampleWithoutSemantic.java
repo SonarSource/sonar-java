@@ -83,7 +83,6 @@ public class PresuperLogicShoudntBloatConstructorSampleWithoutSemantic {
 
     public EdgeCaseSecureFile(String path, boolean b) {
       // Non-compliant: There are 4 statements before super() : if, throw, var declaration, method call
-      validatePathSecurity(path); // FN
 
       if (path.length() > 255 || !path.matches("^[a-zA-Z0-9/._-]+$")) {
         throw new IllegalArgumentException("Path format or length is invalid");
@@ -104,10 +103,8 @@ public class PresuperLogicShoudntBloatConstructorSampleWithoutSemantic {
       super(sanitizedPath);
     }
 
-
     public EdgeCaseSecureFile(String path, float f) {
       // Compliant: There are 4 statements before super() : if, if, try-catch block, if
-      if (true) { // FN
 
         if (true) {
           try {
@@ -120,7 +117,6 @@ public class PresuperLogicShoudntBloatConstructorSampleWithoutSemantic {
       super(sanitizedPath);
     }
   }
-
 
   private static void validatePathSecurity(String path) {
     if (path == null || path.contains("..")) {

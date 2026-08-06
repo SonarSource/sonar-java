@@ -1,7 +1,6 @@
 package checks.regex;
 
 import java.util.regex.Pattern;
-import javax.validation.constraints.Email;
 
 public class EscapeSequenceControlCharacterCheckSampleWithoutSemantic {
 
@@ -31,8 +30,6 @@ public class EscapeSequenceControlCharacterCheckSampleWithoutSemantic {
     Pattern.compile("\\da");
     Pattern.compile("\\\\ca");
   }
-
-  @Email(regexp = "\\ca") // FN
 
   String email;
 

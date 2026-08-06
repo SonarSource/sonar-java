@@ -4,8 +4,6 @@ import javax.validation.constraints.Email;
 
 public class AnchorPrecedenceCheckSampleWithoutSemantic {
 
-  @Email(regexp = "^a|b|c$") // FN
-
   String email;
 
   @jakarta.validation.constraints.Email(regexp = "^a|b|c$") // Noncompliant

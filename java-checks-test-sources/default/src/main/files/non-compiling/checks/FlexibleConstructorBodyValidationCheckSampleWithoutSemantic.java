@@ -108,7 +108,6 @@ class FlexibleConstructorBodyValidationCheckSampleWithoutSemantic {
   static class GuavaCoffee extends Coffee {
     public GuavaCoffee(String name) {
       super(100, 50);
-      com.google.common.base.Preconditions.checkNotNull(name); // FN
     }
 
     public GuavaCoffee(String name) {
@@ -120,7 +119,6 @@ class FlexibleConstructorBodyValidationCheckSampleWithoutSemantic {
   static class SpringCoffee extends Coffee {
     public SpringCoffee(String name) {
       super(100, 50);
-      org.springframework.util.Assert.notNull(name, "Name must not be null"); // FN
     }
 
     public SpringCoffee(String name) {

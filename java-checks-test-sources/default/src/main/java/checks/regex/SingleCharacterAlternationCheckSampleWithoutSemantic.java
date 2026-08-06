@@ -4,8 +4,6 @@ import javax.validation.constraints.Pattern;
 
 public class SingleCharacterAlternationCheckSampleWithoutSemantic {
 
-  @Pattern(regexp = "x|y|z") // FN
-
   String pattern;
 
   @jakarta.validation.constraints.Pattern(regexp = "x|y|z") // Noncompliant

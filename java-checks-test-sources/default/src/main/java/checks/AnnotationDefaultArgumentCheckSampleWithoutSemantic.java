@@ -2,39 +2,35 @@ package checks;
 
 import checks.annotations.CustomAnnotation;
 
-@interface MyAnnotationDefaultCheck {
+@interface MyAnnotationDefaultCheckWS {
   String myName() default "myName";
   int myInteger() default 0;
 }
-@interface MyAnnotationDefaultCheck2 {
+@interface MyAnnotationDefaultCheck2WS {
   String value() default "defaultValue";
 }
-@interface MyAnnotationDefaultCheck3 {
+@interface MyAnnotationDefaultCheck3WS {
   int myHexaInteger() default 0x000;
 }
 class AnnotationDefaultArgumentCheckSampleWithoutSemantic {
   private static final String FIELD_VALUE = "field1Default";
   private static final int FIELD_VALUE_INT = 0;
 
-  @CustomAnnotation(field1="field1Default", field2="", field3="") // FN
-  @MyAnnotationDefaultCheck(myName="myName", myInteger=2) // Noncompliant
+  @MyAnnotationDefaultCheckWS(myName="myName", myInteger=2) // Noncompliant
 
-  @MyAnnotationDefaultCheck2("defaultValue") // Noncompliant
-  @MyAnnotationDefaultCheck3(myHexaInteger = 0x000) // Noncompliant
+  @MyAnnotationDefaultCheck2WS("defaultValue") // Noncompliant
+  @MyAnnotationDefaultCheck3WS(myHexaInteger = 0x000) // Noncompliant
   void m1() { }
 
-  @MyAnnotationDefaultCheck(myName="foo", myInteger=0) // Noncompliant
+  @MyAnnotationDefaultCheckWS(myName="foo", myInteger=0) // Noncompliant
 
-  @MyAnnotationDefaultCheck2("someValue")
-  @CustomAnnotation(field1="", field2="field2Default", field3="") // FN
+  @MyAnnotationDefaultCheck2WS("someValue")
   void m2() { }
 
-  @MyAnnotationDefaultCheck(myName="foo", myInteger=2)
-  @CustomAnnotation(field1="", field2="field2"+"Default", field3="") // FN
+  @MyAnnotationDefaultCheckWS(myName="foo", myInteger=2)
   void m3() { }
 
-  @CustomAnnotation(field1=FIELD_VALUE, field2="", field3="") // FN
-  @MyAnnotationDefaultCheck(myName="foo", myInteger=FIELD_VALUE_INT) // Noncompliant
+  @MyAnnotationDefaultCheckWS(myName="foo", myInteger=FIELD_VALUE_INT) // Noncompliant
   void m4() { }
 
   @CustomAnnotation(field1="", field2="field2", field3="") // compliant

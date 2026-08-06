@@ -143,7 +143,6 @@ public abstract class InstanceOfPatternMatchingWithoutSemantic {
     return 0;
   }
 
-
   int ifElse1(Object o) {
     if (!(o instanceof String)) { // Noncompliant
 
@@ -207,7 +206,6 @@ public abstract class InstanceOfPatternMatchingWithoutSemantic {
   boolean and1(Object o) {
     return (o instanceof String && ((String) o).length() > 0); // Noncompliant
 
-
   }
 
   boolean and1Compliant(Object o) {
@@ -216,7 +214,6 @@ public abstract class InstanceOfPatternMatchingWithoutSemantic {
 
   boolean and2(Object o) {
     return (1 < 4 && o instanceof String && ((String) o).length() > 0 && 23 < 42); // Noncompliant
-
 
   }
 
@@ -227,17 +224,14 @@ public abstract class InstanceOfPatternMatchingWithoutSemantic {
   boolean or1(Object o) {
     return (!(o instanceof String) || ((String) o).length() > 0); // Noncompliant
 
-
   }
 
   boolean or2(Object o) {
     return (o instanceof String || ((String) o).length() > 0); // Compliant because the instanceof isn't in effect for the right operand
   }
 
-
   int ternary(Object o) {
     return (o instanceof String) ? ((String) o).length() : 0; // Noncompliant
-
 
   }
 
@@ -267,9 +261,6 @@ public abstract class InstanceOfPatternMatchingWithoutSemantic {
 
   void whileLoop3() {
     Object o = getNext();
-    while (!(o instanceof String)) { // FN because we don't detect casts that come after the loop
-      o = getNext();
-    }
     String str = (String) o;
   }
 
@@ -292,6 +283,5 @@ public abstract class InstanceOfPatternMatchingWithoutSemantic {
       String str = (String) getNext();
     }
   }
-
 
 }

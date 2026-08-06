@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
 
-class UnusedPrivateMethodCheck {
+class UnusedPrivateMethodCheckWS {
 
   @MethodSource
   private void unusedMethodWithWrongAnnotation(){} // Compilant - FN
@@ -32,13 +32,13 @@ class UnusedPrivateMethodCheck {
   }
 
 
-  private UnusedPrivateMethodCheck() {}
-  private UnusedPrivateMethodCheck(int a) {} // Noncompliant
+  private UnusedPrivateMethodCheckWS() {}
+  private UnusedPrivateMethodCheckWS(int a) {} // Noncompliant
 
 
 
 
-  public UnusedPrivateMethodCheck(String s) {
+  public UnusedPrivateMethodCheckWS(String s) {
     init();
   }
 
@@ -128,7 +128,7 @@ class UnusedPrivateMethodCheck {
 
 }
 
-class OuterClass {
+class OuterClassWS {
 
   private static <T> void genericMethod(T argument) {
     new Object() {
@@ -165,7 +165,7 @@ class OuterClass {
 
 }
 
-class UnusedPrivateMethodCheckLambdas {
+class UnusedPrivateMethodCheckLambdasWS {
   void method(){
     IntStream.range(1, 5)
       .map((x)-> x*x )
@@ -176,14 +176,14 @@ class UnusedPrivateMethodCheckLambdas {
   }
 }
 
-class UnusedPrivateMethodCheckReturnTypeInference {
+class UnusedPrivateMethodCheckReturnTypeInferenceWS {
   private void foo(java.util.List<String> l) {}
   void test() {
     java.util.List<String> l = new ArrayList<>();
     foo(l.stream().sorted().collect(Collectors.toList()));
   }
 }
-class UnusedPrivateMethodCheckBar {
+class UnusedPrivateMethodCheckBarWS {
   public void print() {
     java.util.List<String> list = java.util.Arrays.asList("x", "y", "z");
     java.util.List<Foo> foos = list.stream().map(Foo::new).collect(Collectors.toList());
@@ -198,7 +198,7 @@ class UnusedPrivateMethodCheckBar {
   }
 }
 
-class UnusedPrivateMethodCheckNestedTypeInference1 {
+class UnusedPrivateMethodCheckNestedTypeInference1WS {
   public <D, L extends List<D>> void foo(Callback2<L> cb2) {
     qix(rs -> bar(cb2.doStuff(rs)));
   }
@@ -218,7 +218,7 @@ class UnusedPrivateMethodCheckNestedTypeInference1 {
   }
 }
 
-class UnusedPrivateMethodCheckNestedTypeInference2 {
+class UnusedPrivateMethodCheckNestedTypeInference2WS {
   public Supplier<Map<Boolean, BigDecimal>> branch() {
     return turnover(calculateTurnover(this::extractSourceBranches));
   }
@@ -236,20 +236,20 @@ class UnusedPrivateMethodCheckNestedTypeInference2 {
   }
 }
 
-class UnusedPrivateMethodCheckMyClass<A extends Serializable> {
+class UnusedPrivateMethodCheckMyClassWS<A extends Serializable> {
 
-  private UnusedPrivateMethodCheckMyClass(MyClassBuilder<A> builder) { // Compliant: used in MyClassBuilder
+  private UnusedPrivateMethodCheckMyClassWS(MyClassBuilder<A> builder) { // Compliant: used in MyClassBuilder
     builder.build();
   }
 
   public static final class MyClassBuilder<B extends Serializable> {
-    public UnusedPrivateMethodCheckMyClass<B> build() {
-      return new UnusedPrivateMethodCheckMyClass<>(this); // constructor is correctly resolved when using diamond
+    public UnusedPrivateMethodCheckMyClassWS<B> build() {
+      return new UnusedPrivateMethodCheckMyClassWS<>(this); // constructor is correctly resolved when using diamond
     }
   }
 }
 
-class CheckAnnotations {
+class CheckAnnotationsWS {
   @interface ProxyMethod {
     public String value();
   }
