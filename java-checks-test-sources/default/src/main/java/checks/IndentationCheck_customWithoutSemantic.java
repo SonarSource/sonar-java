@@ -31,7 +31,7 @@ if (true) {                       // Compliant
 }
 }
 
-        int a;                    // Noncompliant
+        int a;
 }
 
 enum BarIdentationWS {
@@ -64,7 +64,7 @@ class BazIdentationWS {
   static List<Integer> list = List.of(1,2,3);
   static {
        while (list.isEmpty()) { // Noncompliant
-        String k = "hello";
+        String k = "hello"; // Noncompliant
       }
   }
 }
