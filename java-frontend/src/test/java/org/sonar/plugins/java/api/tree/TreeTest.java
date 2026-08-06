@@ -36,4 +36,12 @@ class TreeTest {
     assertThat(Tree.Kind.CLASS_KINDS).containsExactlyInAnyOrder(expected);
   }
 
+  @Test
+  void assignment_kinds_contains_exactly_all_kinds_backed_by_assignment_expression_tree() {
+    Tree.Kind[] expected = Arrays.stream(Tree.Kind.values())
+      .filter(kind -> kind.getAssociatedInterface() == AssignmentExpressionTree.class)
+      .toArray(Tree.Kind[]::new);
+    assertThat(Tree.Kind.ASSIGNMENT_KINDS).containsExactlyInAnyOrder(expected);
+  }
+
 }

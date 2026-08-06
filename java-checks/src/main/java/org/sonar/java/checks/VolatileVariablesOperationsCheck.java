@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonarsource.analyzer.commons.collections.ListUtils;
 
 @Rule(key = "S3078")
 public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisitor {
@@ -45,24 +46,12 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(
+    return ListUtils.concat(Tree.Kind.ASSIGNMENT_KINDS, List.of(
       Tree.Kind.PREFIX_DECREMENT,
       Tree.Kind.PREFIX_INCREMENT,
       Tree.Kind.POSTFIX_DECREMENT,
-      Tree.Kind.POSTFIX_INCREMENT,
-      Tree.Kind.ASSIGNMENT,
-      Tree.Kind.PLUS_ASSIGNMENT,
-      Tree.Kind.MINUS_ASSIGNMENT,
-      Tree.Kind.MULTIPLY_ASSIGNMENT,
-      Tree.Kind.DIVIDE_ASSIGNMENT,
-      Tree.Kind.REMAINDER_ASSIGNMENT,
-      Tree.Kind.LEFT_SHIFT_ASSIGNMENT,
-      Tree.Kind.RIGHT_SHIFT_ASSIGNMENT,
-      Tree.Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
-      Tree.Kind.AND_ASSIGNMENT,
-      Tree.Kind.XOR_ASSIGNMENT,
-      Tree.Kind.OR_ASSIGNMENT
-    );
+      Tree.Kind.POSTFIX_INCREMENT
+    ));
   }
 
   @Override

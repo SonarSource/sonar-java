@@ -72,20 +72,6 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     "lombok.AllArgsConstructor"
   );
 
-  private static final Tree.Kind[] ASSIGNMENT_KINDS = {
-    Tree.Kind.ASSIGNMENT,
-    Tree.Kind.MULTIPLY_ASSIGNMENT,
-    Tree.Kind.DIVIDE_ASSIGNMENT,
-    Tree.Kind.REMAINDER_ASSIGNMENT,
-    Tree.Kind.PLUS_ASSIGNMENT,
-    Tree.Kind.MINUS_ASSIGNMENT,
-    Tree.Kind.LEFT_SHIFT_ASSIGNMENT,
-    Tree.Kind.RIGHT_SHIFT_ASSIGNMENT,
-    Tree.Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
-    Tree.Kind.AND_ASSIGNMENT,
-    Tree.Kind.XOR_ASSIGNMENT,
-    Tree.Kind.OR_ASSIGNMENT};
-
   private final List<ClassTree> classes = new ArrayList<>();
   private final Map<Symbol, List<AssignmentExpressionTree>> assignments = new HashMap<>();
   private final Set<String> unknownIdentifiers = new HashSet<>();
@@ -248,9 +234,8 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private void collectAssignment(ExpressionTree expressionTree) {
-    if (expressionTree.is(ASSIGNMENT_KINDS)) {
-      AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) expressionTree;
-      ExpressionTree variable = (assignmentExpressionTree).variable();
+    if (expressionTree instanceof AssignmentExpressionTree assignmentExpressionTree) {
+      ExpressionTree variable = assignmentExpressionTree.variable();
       IdentifierTree identifier = null;
       if (variable.is(Tree.Kind.IDENTIFIER)) {
         identifier = (IdentifierTree) variable;

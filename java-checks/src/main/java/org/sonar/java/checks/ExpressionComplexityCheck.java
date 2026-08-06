@@ -55,7 +55,7 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ListUtils.concat(Tree.Kind.CLASS_KINDS, List.of(
+    return ListUtils.concat(Tree.Kind.CLASS_KINDS, Tree.Kind.ASSIGNMENT_KINDS, List.of(
       Tree.Kind.POSTFIX_INCREMENT,
       Tree.Kind.POSTFIX_DECREMENT,
       Tree.Kind.PREFIX_INCREMENT,
@@ -92,18 +92,6 @@ public class ExpressionComplexityCheck extends IssuableSubscriptionVisitor {
       Tree.Kind.TYPE_CAST,
       Tree.Kind.INSTANCE_OF,
       Tree.Kind.PARENTHESIZED_EXPRESSION,
-      Tree.Kind.ASSIGNMENT,
-      Tree.Kind.MULTIPLY_ASSIGNMENT,
-      Tree.Kind.DIVIDE_ASSIGNMENT,
-      Tree.Kind.REMAINDER_ASSIGNMENT,
-      Tree.Kind.PLUS_ASSIGNMENT,
-      Tree.Kind.MINUS_ASSIGNMENT,
-      Tree.Kind.LEFT_SHIFT_ASSIGNMENT,
-      Tree.Kind.RIGHT_SHIFT_ASSIGNMENT,
-      Tree.Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
-      Tree.Kind.AND_ASSIGNMENT,
-      Tree.Kind.XOR_ASSIGNMENT,
-      Tree.Kind.OR_ASSIGNMENT,
       Tree.Kind.INT_LITERAL,
       Tree.Kind.LONG_LITERAL,
       Tree.Kind.FLOAT_LITERAL,
