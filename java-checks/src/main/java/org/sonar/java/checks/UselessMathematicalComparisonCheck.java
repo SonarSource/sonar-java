@@ -129,6 +129,13 @@ public class UselessMathematicalComparisonCheck extends IssuableSubscriptionVisi
 
   @Nullable
   private static Number resolveConstantValue(ExpressionTree expression) {
+    // Try int literal first: intLiteralValue correctly handles hex/octal/binary int literals with the sign bit set
+    // (e.g. 0xCAFEBABE = -889275714), while longLiteralValue would interpret them as large positive longs, causing
+    // false positives when compared against int variable bounds.
+    Integer intLiteral = LiteralUtils.intLiteralValue(expression);
+    if (intLiteral != null) {
+      return intLiteral.longValue();
+    }
     Long longLiteral = LiteralUtils.longLiteralValue(expression);
     if (longLiteral != null) {
       return longLiteral;
