@@ -1,21 +1,25 @@
 {
   "title": "\"ScheduledThreadPoolExecutor.setMaximumPoolSize\" should not be called",
   "type": "CODE_SMELL",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "MEDIUM"
-    },
-    "attribute": "LOGICAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5min"
+    "constantCost": "5 min"
   },
-  "tags": [],
+  "tags": [
+    "concurrency",
+    "multi-threading",
+    "api"
+  ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-9132",
   "sqKey": "S9132",
   "scope": "All",
-  "quickfix": "unknown"
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  }
 }

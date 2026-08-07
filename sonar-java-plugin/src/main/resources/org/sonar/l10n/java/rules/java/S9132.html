@@ -1,27 +1,53 @@
+<p>This issue is raised when <code>setMaximumPoolSize()</code> is called on a <code>ScheduledThreadPoolExecutor</code> instance.</p>
 <h2>Why is this an issue?</h2>
-<p>Scheduled thread pool executors are designed with a fixed-size thread pool architecture. Unlike standard thread pool implementations, they use an
-unbounded work queue and maintain a fixed number of threads equal to the core pool size configuration.</p>
-<p>When you call <code>setMaximumPoolSize()</code> on a <code>ScheduledThreadPoolExecutor</code>, the call completes without error, but it has no effect
-on the executor's behavior. The pool will never create threads beyond the core pool size, regardless of how high you set the maximum pool size.</p>
-<p>This happens because scheduled thread pool executors override the task queuing behavior. All tasks go into an unbounded queue, and the executor
-never needs to create additional threads beyond the core pool size to handle the workload.</p>
-<p>Attempting to adjust the maximum pool size suggests a misunderstanding of how this executor works, and indicates that the code may not behave as
-intended.</p>
+<p>The <code>ScheduledThreadPoolExecutor</code> class in Java extends <code>ThreadPoolExecutor</code> but has different pool sizing behavior. Unlike
+the standard <code>ThreadPoolExecutor</code>, which can scale between core and maximum pool sizes based on workload,
+<code>ScheduledThreadPoolExecutor</code> maintains a fixed number of threads.</p>
+<p>Calling <code>setMaximumPoolSize()</code> on a <code>ScheduledThreadPoolExecutor</code> has no effect because this executor type ignores the
+maximum pool size setting entirely. The pool size is determined solely by the core pool size, which can be set via the constructor or the
+<code>setCorePoolSize()</code> method.</p>
+<p>This behavior exists because scheduled tasks require predictable thread allocation. The executor needs to maintain a consistent number of threads
+to handle recurring and delayed tasks reliably.</p>
+<p>Since <code>setMaximumPoolSize()</code> is always silently ignored by <code>ScheduledThreadPoolExecutor</code>, this call is never intentional and
+can safely be removed or replaced.</p>
+<h3>What is the potential impact?</h3>
+<p>Calling <code>setMaximumPoolSize()</code> on a <code>ScheduledThreadPoolExecutor</code> creates misleading code that suggests dynamic scaling
+behavior that doesn’t actually occur. This can lead to:</p>
+<ul>
+  <li><strong>Performance issues</strong>: Developers may assume the pool will scale up under load, but it won’t, potentially causing task queuing and
+  delays.</li>
+  <li><strong>Resource misallocation</strong>: The actual thread count differs from what the code suggests, making capacity planning difficult.</li>
+  <li><strong>Maintenance problems</strong>: Future developers may be confused by the ineffective method call and waste time debugging.</li>
+</ul>
 <h2>How to fix it</h2>
-<p>Remove the call to <code>setMaximumPoolSize()</code> and use <code>setCorePoolSize()</code> instead to control the number of threads in the pool.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>Remove the call to <code>setMaximumPoolSize()</code> and use <code>setCorePoolSize()</code> instead to control the number of threads in the
+pool.</p>
+<p>Note that <code>ScheduledThreadPoolExecutor</code> does not scale dynamically like <code>ThreadPoolExecutor</code>. The pool maintains a fixed
+number of threads equal to the core pool size. You must determine the required number of threads upfront based on your expected concurrent task
+load.</p>
+<p>If you originally intended the pool to scale from 5 to 10 threads under load, you now need to choose a fixed size (such as 10) that can handle your
+peak workload.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+executor.scheduleAtFixedRate(task1, 0, 1, TimeUnit.SECONDS);
+executor.scheduleAtFixedRate(task2, 0, 5, TimeUnit.SECONDS);
+// Try to allow more concurrent threads
 executor.setMaximumPoolSize(10); // Noncompliant
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+executor.scheduleAtFixedRate(task1, 0, 1, TimeUnit.SECONDS);
+executor.scheduleAtFixedRate(task2, 0, 5, TimeUnit.SECONDS);
+// Allow more concurrent threads
 executor.setCorePoolSize(10); // Pool now maintains exactly 10 threads
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledThreadPoolExecutor.html">Oracle Java SE -
-  ScheduledThreadPoolExecutor (Java SE 17)</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledThreadPoolExecutor.html">ScheduledThreadPoolExecutor (Java SE 17)</a></li>
 </ul>
+

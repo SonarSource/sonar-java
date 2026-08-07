@@ -121,7 +121,6 @@ class JavaAgenticWayProfileTest {
         "S6244",
         "S6246",
         "S1108",
-        "S6541",
         "S6548",
         "S6804",
         "S6813",
