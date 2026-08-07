@@ -10,7 +10,7 @@
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-9130",
   "sqKey": "S9130",
-  "scope": "All",
+  "scope": "Main",
   "quickfix": "unknown",
   "code": {
     "impacts": {
