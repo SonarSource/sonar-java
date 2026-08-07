@@ -25,7 +25,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S9133")
 public class HardcodedMathConstantCheck extends IssuableSubscriptionVisitor {
 
-  private static final int MIN_SIGNIFICANT_DIGITS = 4;
+  private static final int MIN_SIGNIFICANT_DIGITS = 3;
 
   private enum MathConstant {
     PI(Math.PI, "Math.PI", "pi"),
@@ -93,7 +93,7 @@ public class HardcodedMathConstantCheck extends IssuableSubscriptionVisitor {
     String value = rawValue.replace("_", "");
     // Strip type suffix
     char last = value.charAt(value.length() - 1);
-    if (last == 'f' || last == 'F' || last == 'd' || last == 'D') {
+    if ("fd".indexOf(Character.toLowerCase(last)) >= 0) {
       value = value.substring(0, value.length() - 1);
     }
     // Skip hex float literals
@@ -108,20 +108,7 @@ public class HardcodedMathConstantCheck extends IssuableSubscriptionVisitor {
   }
 
   private static int countSignificantDigits(String normalized) {
-    boolean foundNonZero = false;
-    int count = 0;
-    for (int i = 0; i < normalized.length(); i++) {
-      char c = normalized.charAt(i);
-      if (c == '.') {
-        continue;
-      }
-      if (c != '0') {
-        foundNonZero = true;
-      }
-      if (foundNonZero) {
-        count++;
-      }
-    }
-    return count;
+    String sig = normalized.replace("-", "").replace(".", "").replaceFirst("^0+", "");
+    return sig.isEmpty() ? 1 : sig.length();
   }
 }
