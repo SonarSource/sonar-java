@@ -143,6 +143,56 @@ class EqualsNotOverriddenInSubclassCheckSample {
     private String field2 = "";
   }
 
+  class ReflectionEqualsParentLang3 {
+    String name;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj instanceof ReflectionEqualsParentLang3 that) {
+        return org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals(this, that);
+      }
+      return false;
+    }
+  }
+
+  class ReflectionEqualsChildLang3 extends ReflectionEqualsParentLang3 { // Compliant - parent uses reflectionEquals
+    String name2;
+  }
+
+  class ReflectionEqualsParentLang {
+    String name;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj instanceof ReflectionEqualsParentLang that) {
+        return org.apache.commons.lang.builder.EqualsBuilder.reflectionEquals(this, that);
+      }
+      return false;
+    }
+  }
+
+  class ReflectionEqualsChildLang extends ReflectionEqualsParentLang { // Compliant - parent uses reflectionEquals
+    String name2;
+  }
+
+  class AppendEqualsParent {
+    String name;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof AppendEqualsParent that)) {
+        return false;
+      }
+      return new org.apache.commons.lang3.builder.EqualsBuilder()
+        .append(name, that.name)
+        .isEquals();
+    }
+  }
+
+  class AppendEqualsChild extends AppendEqualsParent { // Noncompliant
+    String name2;
+  }
+
 }
 
 
