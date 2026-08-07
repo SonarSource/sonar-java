@@ -21,13 +21,23 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-class SynchronizedLockCheckTest {
+class SynchronizedOnConcurrentObjectCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/SynchronizedLockCheckSample.java"))
-      .withCheck(new SynchronizedLockCheck())
+      .onFile(mainCodeSourcesPath("checks/SynchronizedOnConcurrentObjectCheckSample.java"))
+      .withCheck(new SynchronizedOnConcurrentObjectCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SynchronizedOnConcurrentObjectCheckSample.java"))
+      .withCheck(new SynchronizedOnConcurrentObjectCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
 }
