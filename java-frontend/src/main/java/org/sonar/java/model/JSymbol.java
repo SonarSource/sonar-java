@@ -386,12 +386,18 @@ abstract class JSymbol implements Symbol {
         }
         return convertMetadata(type);
       case IBinding.METHOD:
-        ITypeBinding returnType = ((IMethodBinding) binding).getReturnType();
+        IMethodBinding methodBinding = (IMethodBinding) binding;
+        ITypeBinding returnType = methodBinding.getReturnType();
         // In rare circumstances, when the semantic information is incomplete, returnType can be null.
         if (returnType == null) {
           return Symbols.EMPTY_METADATA;
         }
-        return convertMetadata(returnType);
+        // Annotations are read from the declared return type, so that annotations inferred for a type variable at the call site
+        // (e.g. "Optional.of(x).map(A::nonNullMethod)" infers "Optional<@NonNull String>", making "orElse" look like it never returns null)
+        // are not mistaken for annotations of the method itself.
+        IMethodBinding methodDeclaration = methodBinding.getMethodDeclaration();
+        ITypeBinding declaredReturnType = methodDeclaration == null ? null : methodDeclaration.getReturnType();
+        return convertMetadata(declaredReturnType == null ? returnType : declaredReturnType);
       default:
         return new JSymbolMetadata(sema, this, binding.getAnnotations());
     }

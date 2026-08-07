@@ -89,11 +89,16 @@ final class JVariableSymbol extends JSymbol implements Symbol.VariableSymbol {
     private final Type type;
     private final SymbolMetadata metadata;
 
-    ParameterPlaceholderSymbol(int index, JSema sema, IMethodBinding owner, ITypeBinding typeBinding) {
+    /**
+     * @param typeBinding the type of the parameter at the call site, after type substitution
+     * @param declaredTypeBinding the type of the parameter as declared, before type substitution. Annotations are read from it, so that
+     *   annotations inferred for a type variable are not mistaken for annotations of the parameter itself.
+     */
+    ParameterPlaceholderSymbol(int index, JSema sema, IMethodBinding owner, ITypeBinding typeBinding, ITypeBinding declaredTypeBinding) {
       this.name = "arg" + index;
       this.owner = sema.methodSymbol(owner);
       this.type = sema.type(typeBinding);
-      this.metadata = JSymbolMetadata.of(sema, this, typeBinding, owner.getParameterAnnotations(index));
+      this.metadata = JSymbolMetadata.of(sema, this, declaredTypeBinding, owner.getParameterAnnotations(index));
     }
 
     @Override
