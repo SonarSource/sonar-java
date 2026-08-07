@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -235,6 +236,34 @@ class JSymbolMetadataTest {
     assertThat(declarationData)
       .isSameAs(invocation1ParamData)
       .isSameAs(invocation2ParamData);
+  }
+
+  @Test
+  void nullability_is_not_inferred_from_type_arguments() throws IOException {
+    Path sourceFile = NULLABILITY_SOURCE_DIR.resolve(Paths.get("no_default", "NullabilityWithInferredTypeArgument.java"));
+    CompilationUnitTree cut = JParserTestUtils.parse(sourceFile.toRealPath().toFile(), JParserTestUtils.checksTestClassPath());
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+    MethodTree callOrElse = (MethodTree) classTree.members().get(2);
+
+    MethodInvocationTree orElseInvocation = (MethodInvocationTree) ((ReturnStatementTree) callOrElse.block().body().get(0)).expression();
+    Symbol orElseParameter = orElseInvocation.methodSymbol().declarationParameters().get(0);
+
+    assertThat(orElseParameter.metadata().annotations()).isEmpty();
+    assertThat(orElseParameter.metadata().nullabilityData().type()).isEqualTo(NullabilityType.NO_ANNOTATION);
+  }
+
+  @Test
+  void method_nullability_is_not_inferred_from_type_arguments() throws IOException {
+    Path sourceFile = NULLABILITY_SOURCE_DIR.resolve(Paths.get("no_default", "NullabilityWithInferredTypeArgument.java"));
+    CompilationUnitTree cut = JParserTestUtils.parse(sourceFile.toRealPath().toFile(), JParserTestUtils.checksTestClassPath());
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+    MethodTree callOrElse = (MethodTree) classTree.members().get(2);
+
+    MethodInvocationTree orElseInvocation = (MethodInvocationTree) ((ReturnStatementTree) callOrElse.block().body().get(0)).expression();
+    SymbolMetadata orElseMetadata = orElseInvocation.methodSymbol().metadata();
+
+    assertThat(orElseMetadata.symbolAnnotations()).isEmpty();
+    assertThat(orElseMetadata.nullabilityData().type()).isEqualTo(NullabilityType.NO_ANNOTATION);
   }
 
   @Nested
