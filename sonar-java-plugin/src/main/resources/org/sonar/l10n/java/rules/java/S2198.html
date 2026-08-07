@@ -8,8 +8,6 @@ range, resulting in a comparison that always evaluates to <code>true</code> or a
   <li>16-bit unsigned integers: 0 to 65,535</li>
   <li>32-bit signed integers: -2,147,483,648 to 2,147,483,647</li>
   <li>64-bit signed integers: -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807</li>
-  <li>Single-precision floating-point: approximately ±3.4 × 10<sup>38</sup> (limited by IEEE 754 single precision)</li>
-  <li>Double-precision floating-point: approximately ±1.7 × 10<sup>308</sup> (limited by IEEE 754 double precision)</li>
 </ul>
 <p>When you compare a variable of one of these types against a constant that is outside its range, the type system guarantees the result before the
 program even runs. For example, an 8-bit signed integer variable can never be greater than 127, so a comparison checking if it exceeds 200 will always
@@ -25,8 +23,10 @@ be <code>false</code>.</p>
 <p>Such comparisons make the code confusing and harder to maintain. They may also hide genuine bugs where the developer’s intent does not match the
 actual behavior.</p>
 <p>In Java, these types are named: <code>byte</code> (8-bit signed), <code>short</code> (16-bit signed), <code>char</code> (16-bit unsigned),
-<code>int</code> (32-bit signed), <code>long</code> (64-bit signed), <code>float</code> (single-precision), and <code>double</code>
-(double-precision).</p>
+<code>int</code> (32-bit signed), and <code>long</code> (64-bit signed). Equality tests on <code>float</code> and <code>double</code> variables are
+covered by rule {rule:java:S1244} instead.</p>
+<p>The constant does not have to be an integer: a floating-point constant compared against an integral variable is decided the same way, so <code>l
+&gt; 1e30</code> is always <code>false</code> for a <code>long</code> variable.</p>
 <h3>What is the potential impact?</h3>
 <p>Impossible comparisons create several problems:</p>
 <ul>
@@ -40,8 +40,10 @@ actual behavior.</p>
   assumptions about data safety.</li>
 </ul>
 <h2>How to fix it</h2>
-<p>When comparing a <code>byte</code> variable against a constant, ensure the constant is within the <code>byte</code> range (-128 to 127). If you
-need to compare against larger values, declare the variable as a wider type like <code>short</code> or <code>int</code>.</p>
+<p>Ensure the constant is within the variable’s value range. If the constant is intentional, declare the variable as a wider type. For
+<code>long</code>, there is no wider integral type, so the fix is to correct the constant or reconsider the logic.</p>
+<h3>Exceptions</h3>
+<p>This rule applies to primitive types only. Comparisons on boxed types such as <code>Byte</code> or <code>Long</code> are not reported.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -63,8 +65,11 @@ if (b &gt; 200) {
 <h3>Documentation</h3>
 <ul>
   <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html">Primitive Data Types</a></li>
-  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html#jls-4.2">Integral Types and Values</a></li>
-  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html#jls-4.2.3">Floating-Point Types and
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html#jls-4.2">Primitive Types and
   Values</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S1244} - Floating point numbers should not be tested for equality</li>
 </ul>
 

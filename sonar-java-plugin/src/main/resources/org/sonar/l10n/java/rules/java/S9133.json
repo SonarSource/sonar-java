@@ -4,10 +4,12 @@
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "2min"
+    "constantCost": "5 min"
   },
   "tags": [
-    "cwe"
+    "cwe",
+    "readability",
+    "pitfall"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-9133",
@@ -18,7 +20,7 @@
     "impacts": {
       "MAINTAINABILITY": "MEDIUM"
     },
-    "attribute": "IDENTIFIABLE"
+    "attribute": "CLEAR"
   },
   "securityStandards": {
     "CWE": [

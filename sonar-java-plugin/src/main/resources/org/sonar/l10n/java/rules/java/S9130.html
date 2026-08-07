@@ -1,10 +1,37 @@
+<p>This is an issue when the return value of read operations from file or stream input classes is cast to a narrower data type (such as a single byte
+or character type) before being compared to <code>-1</code> to detect end-of-stream.</p>
 <h2>Why is this an issue?</h2>
-<p>Stream reading methods like <code>InputStream.read()</code> and <code>Reader.read()</code> return an <code>int</code> that can represent all
-possible data values (0-255 for byte-oriented streams) plus a special sentinel value (<code>-1</code>) to indicate end-of-stream.</p>
-<p>When the return value is cast to a narrower type (<code>byte</code> or <code>char</code>) before checking for <code>-1</code>, the maximum
-unsigned value (such as 255 or 0xFF) wraps around to <code>-1</code> due to signed integer representation. This makes it impossible to distinguish
-between a legitimate data value and end-of-stream, leading to premature termination or data corruption.</p>
-<h3>Noncompliant code example</h3>
+<p>Stream reading methods in many languages return a wider integer type that can represent all possible data values (typically 0-255 for byte-oriented
+streams) plus a special sentinel value (typically -1) to indicate end-of-stream. This design allows distinguishing between all valid data values and
+the end-of-stream condition.</p>
+<p>When you cast the return value to the narrower data type (such as a signed byte or character type) before checking for the sentinel value, you
+introduce a critical bug due to type narrowing:</p>
+<ul>
+  <li>The narrower data type is typically a signed type with a limited range (e.g., -128 to 127 for an 8-bit signed type)</li>
+  <li>The maximum value in the unsigned range (such as 255 or 0xFF) is a valid data value returned as a wider integer</li>
+  <li>When cast to the narrower signed type, this maximum value wraps around to -1 due to signed integer representation</li>
+  <li>Your code cannot distinguish between this legitimate data value and the end-of-stream sentinel</li>
+</ul>
+<p>This causes two types of failures:</p>
+<ul>
+  <li><strong>False end-of-stream detection</strong>: When the stream contains the maximum byte value (0xFF/decimal 255), your loop terminates
+  prematurely, losing data</li>
+  <li><strong>Missed end-of-stream</strong>: In some scenarios, depending on the cast and comparison, the actual end-of-stream condition may not be
+  detected, causing infinite loops or exceptions</li>
+</ul>
+<p>The same issue applies to character-based streams where certain character values can be misinterpreted as end-of-stream.</p>
+<p>This pattern is always a latent bug even if the current data does not contain 0xFF, because input sources can change and any byte stream may
+eventually carry that value.</p>
+<p>In Java, this applies specifically to the <code>read()</code> method in <code>InputStream</code> and <code>Reader</code> classes.</p>
+<h3>What is the potential impact?</h3>
+<p>This bug can lead to data corruption when input sources are read incompletely, or to infinite loops when termination conditions are never detected.
+In data processing applications, this can cause silent data loss that is difficult to diagnose. In server applications, it may lead to resource
+exhaustion or application hangs.</p>
+<h2>How to fix it</h2>
+<p>Store the return value of <code>read()</code> in an <code>int</code> variable first. Check if it equals <code>-1</code> to detect end-of-stream.
+Only after confirming it’s not <code>-1</code> should you cast it to <code>byte</code> or <code>char</code> for processing.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 FileInputStream fis = new FileInputStream("data.bin");
 byte b;
@@ -12,7 +39,7 @@ while ((b = (byte) fis.read()) != -1) {  // Noncompliant
     process(b);
 }
 </pre>
-<h3>Compliant solution</h3>
+<h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 FileInputStream fis = new FileInputStream("data.bin");
 int data;
@@ -22,7 +49,15 @@ while ((data = fis.read()) != -1) {
 }
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html#read()">InputStream.read() (Java SE 17 &amp; JDK 17)</a></li>
-  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Reader.html#read()">Reader.read() (Java SE 17 &amp; JDK 17)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html#read()">InputStream (Java SE
+  17 &amp; JDK 17)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Reader.html#read()">Reader (Java SE 17 &amp;
+  JDK 17)</a></li>
 </ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S2674} - Stream "read" methods should be used correctly</li>
+</ul>
+

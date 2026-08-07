@@ -6,7 +6,9 @@
     "func": "Constant\/Issue",
     "constantCost": "5 min"
   },
-  "tags": [],
+  "tags": [
+    "pitfall"
+  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-9130",
   "sqKey": "S9130",
@@ -14,7 +16,8 @@
   "quickfix": "unknown",
   "code": {
     "impacts": {
-      "RELIABILITY": "HIGH"
+      "RELIABILITY": "HIGH",
+      "MAINTAINABILITY": "MEDIUM"
     },
     "attribute": "LOGICAL"
   }

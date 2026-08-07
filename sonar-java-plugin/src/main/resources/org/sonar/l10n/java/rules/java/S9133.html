@@ -1,20 +1,44 @@
+<p>An issue is raised when a literal numeric value in the code closely matches a well-known mathematical constant (such as π or e), but differs
+slightly in precision.</p>
 <h2>Why is this an issue?</h2>
 <p>Hard-coding approximate values of well-known mathematical constants creates several problems in your codebase.</p>
-<p>First, these hard-coded values often lack the full precision available in predefined library constants. For example, writing <code>3.14</code> instead of
-using a library-provided constant for &pi; loses significant decimal places, potentially leading to calculation errors in scientific or engineering
-applications.</p>
-<p>Second, hard-coded values make your code less readable. When other developers see <code>3.14159</code>, they must recognize it as &pi; themselves.
+<p>First, these hard-coded values often lack the full precision available in predefined library constants. For example, writing <code>3.14</code>
+instead of using a library-provided constant for π loses significant decimal places, potentially leading to calculation errors in scientific or
+engineering applications.</p>
+<p>Second, hard-coded values make your code less readable. When other developers see <code>3.14159</code>, they must recognize it as π themselves.
 Using named constants from standard libraries makes the intent immediately clear.</p>
 <p>Third, maintenance becomes harder. If you need to change the precision or update the value across your codebase, you must find and modify multiple
 literal values. With named constants, the meaning is centralized and clear.</p>
+<p>Finally, hard-coded approximations suggest a lack of awareness of standard library features, which can undermine confidence in the code
+quality.</p>
+<p>Common constants that are frequently approximated include:</p>
+<ul>
+  <li>π (pi): approximately 3.14159…​ - available as a predefined constant in standard mathematical libraries</li>
+  <li>e (Euler’s number): approximately 2.71828…​ - available as a predefined constant in standard mathematical libraries</li>
+  <li>√2: approximately 1.41421…​ - can be computed using library functions that calculate square roots of literal values</li>
+  <li>ln(2): approximately 0.69314…​ - can be computed using library functions that calculate natural logarithms of literal values</li>
+</ul>
+<p>If a literal value happens to be close to one of these constants but represents something else entirely, such as a version number or a
+domain-specific threshold, mark the issue as won’t-fix.</p>
 <p>In Java, these constants and functions are available in the <code>Math</code> class: <code>Math.PI</code>, <code>Math.E</code>,
 <code>Math.sqrt(2)</code>, and <code>Math.log(2)</code>.</p>
+<h3>What is the potential impact?</h3>
+<p>Using hard-coded approximations instead of predefined constants reduces code quality in three main ways:</p>
+<ul>
+  <li><strong>Precision loss</strong>: Hard-coded values typically have fewer decimal places than library constants, leading to accumulating rounding
+  errors in complex calculations.</li>
+  <li><strong>Reduced readability</strong>: Other developers must mentally map numeric literals to their mathematical meaning, slowing down code
+  comprehension.</li>
+  <li><strong>Increased maintenance burden</strong>: Updating precision or correcting values requires finding all occurrences, increasing the risk of
+  inconsistencies.</li>
+</ul>
 <h2>How to fix it</h2>
-<p>Replace hard-coded numeric approximations with the appropriate predefined constant from the <code>Math</code> class. For &pi;, use
-<code>Math.PI</code>. For Euler's number, use <code>Math.E</code>. For other common constants that don't have direct equivalents, use mathematical
+<p>Replace hard-coded numeric approximations with the appropriate predefined constant from the <code>Math</code> class. For π, use
+<code>Math.PI</code>. For Euler’s number, use <code>Math.E</code>. For other common constants that don’t have direct equivalents, use mathematical
 expressions like <code>Math.sqrt(2)</code> or <code>Math.log(2)</code>.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 public class CircleCalculator {
     public double calculateArea(double radius) {
         return 3.14 * radius * radius; // Noncompliant
@@ -25,8 +49,8 @@ public class CircleCalculator {
     }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 public class CircleCalculator {
     public double calculateArea(double radius) {
         return Math.PI * radius * radius;
@@ -47,5 +71,6 @@ public class CircleCalculator {
 </ul>
 <h3>Standards</h3>
 <ul>
-  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/1106.html">CWE-1106: Insufficient Use of Symbolic Constants</a></li>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/1106">CWE-1106 - Insufficient Use of Symbolic Constants</a></li>
 </ul>
+
