@@ -149,6 +149,8 @@ class EqualsNotOverriddenInSubclassCheckSample {
     @Override
     public boolean equals(Object obj) {
       if (obj instanceof ReflectionEqualsParentLang3 that) {
+        // second call exercises the early-return path once reflectionEquals was already found
+        org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals(this, that);
         return org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals(this, that);
       }
       return false;
@@ -156,6 +158,10 @@ class EqualsNotOverriddenInSubclassCheckSample {
   }
 
   class ReflectionEqualsChildLang3 extends ReflectionEqualsParentLang3 { // Compliant - parent uses reflectionEquals
+    String name2;
+  }
+
+  class ChildOfExternalParent extends EqualsNotOverriddenExternalParent { // Noncompliant
     String name2;
   }
 
