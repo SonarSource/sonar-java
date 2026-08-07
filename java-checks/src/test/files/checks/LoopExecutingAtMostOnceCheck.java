@@ -243,6 +243,10 @@ abstract class C {
   }
 
   void m5() {
+    for (;;){
+      break;  // Noncompliant
+    }
+
     for(;;) {
       if (isItTrue()) {
         // ...
@@ -295,6 +299,92 @@ abstract class C {
     } while ((((true))));
   }
 
+  void m5_extra() {
+    // for(;;) with nested loop — goto-idiom → Compliant
+    for(;;) {
+      while (isItTrue()) {
+        break; // Noncompliant
+      }
+      break; // Compliant
+    }
+
+    // for(;;) with switch — goto-idiom → Compliant
+    for(;;) {
+      switch (getInt()) {
+        case 1: break;
+      }
+      break; // Compliant
+    }
+
+    // for(;;) with try — goto-idiom → Compliant
+    for(;;) {
+      try {
+        doSomething();
+      } catch (Exception e) {
+        break;
+      }
+      break; // Compliant
+    }
+
+    // for(;;) with only a method call (no conditional) → Noncompliant
+    for(;;) {
+      foo();
+      break; // Noncompliant
+    }
+
+    // for(;;) with conditional inside lambda — lambda is a scope boundary → Noncompliant
+    for(;;) {
+      Runnable r = () -> { if (isItTrue()) return; };
+      break; // Noncompliant
+    }
+
+    // for(;;) with switch expression — goto-idiom → Compliant
+    for(;;) {
+      int x = switch (getInt()) {
+        case 1 -> 10;
+        default -> 20;
+      };
+      break; // Compliant
+    }
+
+    // for(;;) with for-each — goto-idiom → Compliant
+    for(;;) {
+      for (Object o : getList()) {
+        foo();
+      }
+      break; // Compliant
+    }
+
+    // for(;;) with nested for — goto-idiom → Compliant
+    for(;;) {
+      for (int i = 0; i < 10; i++) {
+        foo();
+      }
+      break; // Compliant
+    }
+
+    // for(;;) with do-while — goto-idiom → Compliant
+    for(;;) {
+      do {
+        foo();
+      } while (isItTrue());
+      break; // Compliant
+    }
+
+    // for(;;) with anonymous class — scope boundary does NOT make it goto-idiom → Noncompliant
+    for(;;) {
+      Runnable r = new Runnable() {
+        @Override
+        public void run() { if (isItTrue()) foo(); }
+      };
+      break; // Noncompliant
+    }
+  }
+
+  abstract int getInt();
+  abstract java.util.List<Object> getList();
+  abstract void doSomething() throws Exception;
+  abstract void foo();
   abstract boolean isItTrue();
 }
 
