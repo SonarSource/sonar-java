@@ -1,0 +1,89 @@
+<p>This is an issue when compilation or preparation methods are called inside loop bodies with constant or loop-invariant arguments. This includes
+pattern compilation methods for regular expressions, string methods that accept regular expression patterns (such as match, replace, and split
+operations), and database statement preparation methods.</p>
+<p>In Java, this specifically refers to <code>Pattern.compile()</code>, String regex methods (<code>matches()</code>, <code>replaceAll()</code>,
+<code>replaceFirst()</code>, <code>split()</code>), and <code>Connection.prepareStatement()</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>Compilation and preparation operations are expensive because they involve parsing, validation, and internal representation building. When these
+operations are performed inside loops with constant or loop-invariant arguments, the same work is repeated unnecessarily on every iteration.</p>
+<h2>Regular expression compilation</h2>
+<p>When you call functions that compile regular expressions from strings or use string methods that accept regex patterns, the language runtime
+must:</p>
+<ul>
+  <li>Parse the regular expression syntax</li>
+  <li>Validate the pattern</li>
+  <li>Build an internal finite automaton (state machine)</li>
+  <li>Allocate memory for the compiled pattern</li>
+</ul>
+<p>These steps happen every time, even when the pattern string is identical. For example, calling a string matching method with a pattern like
+<code>"\d+"</code> inside a loop that processes 1,000 items means compiling the same pattern 1,000 times.</p>
+<h2>Database prepared statement preparation</h2>
+<p>When you call methods that create prepared statements from SQL strings, the database driver must:</p>
+<ul>
+  <li>Send the SQL string to the database server</li>
+  <li>Parse and validate the SQL syntax</li>
+  <li>Create an execution plan</li>
+  <li>Allocate server-side resources (cursors, statement handles)</li>
+  <li>Return a client-side prepared statement object</li>
+</ul>
+<p>Prepared statements exist specifically to avoid this overhead by allowing you to compile once and execute many times with different parameters.
+Calling statement preparation methods inside a loop with the same SQL string defeats this purpose entirely.</p>
+<h2>The performance cost</h2>
+<p>The repeated compilation/preparation causes:</p>
+<ul>
+  <li><strong>CPU waste</strong>: Parsing and compilation happen repeatedly instead of once</li>
+  <li><strong>Memory churn</strong>: Temporary objects are created and discarded on each iteration</li>
+  <li><strong>Network overhead</strong>: For database operations, each preparation call may involve network round-trips</li>
+  <li><strong>Slower execution</strong>: A loop that should take milliseconds might take seconds when processing large datasets</li>
+</ul>
+<h3>What is the potential impact?</h3>
+<p>The application may experience:</p>
+<ul>
+  <li><strong>Degraded performance</strong>: Operations that should be fast become noticeably slow, especially when processing large collections or
+  datasets</li>
+  <li><strong>Resource exhaustion</strong>: For database operations, repeatedly creating parameterized query objects can exhaust server-side cursor or
+  statement handle limits, causing connection failures</li>
+  <li><strong>Poor scalability</strong>: The performance penalty multiplies as data volume increases, making the application unable to handle
+  production workloads efficiently</li>
+  <li><strong>Increased costs</strong>: Higher CPU usage and longer execution times can lead to increased infrastructure costs in cloud
+  environments</li>
+</ul>
+<h2>How to fix it</h2>
+<p>For regular expression operations, compile the <code>Pattern</code> once before the loop and reuse it inside the loop. Use the
+<code>Pattern.matcher()</code> method to apply the pattern to different input strings.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+// Direct Pattern.compile in loop
+for (String input : inputs) {
+    Pattern p = Pattern.compile("[a-z]+");  // Noncompliant
+    Matcher m = p.matcher(input);
+    if (m.find()) {
+        handle(m.group());
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+// Compile once, reuse Pattern
+Pattern LOWER = Pattern.compile("[a-z]+");
+for (String input : inputs) {
+    Matcher m = LOWER.matcher(input);
+    if (m.find()) {
+        handle(m.group());
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/regex/Pattern.html">Pattern (Java SE
+  17 &amp; JDK 17)</a></li>
+  <li>Oracle Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/PreparedStatement.html">PreparedStatement (Java SE 17 &amp; JDK
+  17)</a></li>
+  <li>Baeldung - <a href="https://www.baeldung.com/regular-expressions-java">Guide to Java Regular Expressions API</a></li>
+  <li>SpotBugs Documentation - <a href="https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IIL_PATTERN_COMPILE_IN_LOOP">Bug Descriptions -
+  Pattern compile in loop</a></li>
+</ul>
+
