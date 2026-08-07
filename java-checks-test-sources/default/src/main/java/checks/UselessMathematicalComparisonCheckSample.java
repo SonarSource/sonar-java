@@ -170,6 +170,37 @@ class UselessMathematicalComparisonCheckSample {
     if (b > 100 + 1) {} // Compliant - 101 within byte range
   }
 
+  void hexConstantsWithSignBit(int i, long l) {
+    // Hex int literals with the sign bit set represent valid negative int values.
+    // 0xCAFEBABE = -889275714, 0xffffffff = -1, 0x80000000 = Integer.MIN_VALUE
+    if (i == 0xCAFEBABE) {} // Compliant - 0xCAFEBABE is -889275714, within int range
+    if (i == 0xffffffff) {} // Compliant - 0xffffffff is -1, within int range
+    if (i > 0x80000000) {} // Compliant - 0x80000000 is Integer.MIN_VALUE, within int range
+    if (i != 0xDEADBEEF) {} // Compliant - 0xDEADBEEF is -559038737, within int range
+    if (i < 0xFF000000) {} // Compliant - 0xFF000000 is -16777216, within int range
+    if (i >= 0xFFFFFFFF) {} // Compliant - 0xFFFFFFFF is -1, within int range
+    if (0xCAFEBABE > i) {} // Compliant - reversed operands
+
+    // Hex long literals compared to int - truly out of range (0xCAFEBABEL = 3405691582, 0xFFFFFFFFL = 4294967295)
+    if (i > 0xCAFEBABEL) {} // Noncompliant {{Remove this comparison; it will always return false.}}
+    if (i == 0xFFFFFFFFL) {} // Noncompliant {{Remove this comparison; it will always return false.}}
+
+    // Hex int literals without sign bit - regular compliant cases
+    if (i == 0x7FFFFFFF) {} // Compliant - 0x7FFFFFFF is Integer.MAX_VALUE
+    if (i > 0x0CAFEBAB) {} // Compliant - within int range
+
+    // Hex long literals compared to long variable
+    if (l == 0xCAFEBABEL) {} // Compliant - long can hold 3405691582
+    if (l > 0x7FFFFFFFL) {} // Compliant - long can hold values larger than Integer.MAX_VALUE
+  }
+
+  void octalAndBinaryConstantsWithSignBit(int i) {
+    // Binary int literals with sign bit set
+    if (i == 0b10000000_00000000_00000000_00000000) {} // Compliant - Integer.MIN_VALUE
+    // Octal int literals with sign bit set
+    if (i == 037777777777) {} // Compliant - 0xFFFFFFFF = -1
+  }
+
   void twoVariables(byte a, byte b) {
     if (a > b) {} // Compliant - comparing two variables
   }
