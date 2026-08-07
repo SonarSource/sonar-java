@@ -47,7 +47,7 @@ jobs:
 
       # Use the action from the branch we just pushed
       - name: Post ruling diff comment
-        uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@master
+        uses: SonarSource/core-languages-tooling-public/ruling-diff-comment@romain/fix-sonar-server-source-override
         with:
           pr-number: ${{ inputs.pr-number || github.event.pull_request.number }}
           repository: ${{ github.repository }}
