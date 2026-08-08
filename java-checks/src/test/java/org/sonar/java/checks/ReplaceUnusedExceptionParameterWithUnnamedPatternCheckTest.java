@@ -48,7 +48,7 @@ class ReplaceUnusedExceptionParameterWithUnnamedPatternCheckTest {
       .withCheck(new ReplaceUnusedExceptionParameterWithUnnamedPatternCheck())
       .withoutSemantic()
       .withJavaVersion(22)
-      .verifyIssues();
+      .verifyNoIssues();
   }
 
 }
