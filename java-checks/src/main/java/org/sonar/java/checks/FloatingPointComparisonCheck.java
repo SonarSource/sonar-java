@@ -45,7 +45,8 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
-      if (isCompareToMethod(methodTree) || isCompareMethod(methodTree)) {
+      if ((isCompareToMethod(methodTree) || isCompareMethod(methodTree))
+        && methodTree.block() != null) {
         methodTree.block().accept(new FloatingPointComparisonVisitor());
       }
     } else {
@@ -65,7 +66,8 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
   private static boolean isCompareMethod(MethodTree tree) {
     return "compare".equals(tree.simpleName().name())
       && returnsInt(tree)
-      && tree.parameters().size() == 2;
+      && tree.parameters().size() == 2
+      && tree.symbol().owner().type().isSubtypeOf("java.util.Comparator");
   }
 
   private static boolean returnsInt(MethodTree tree) {

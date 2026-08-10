@@ -14,7 +14,7 @@ class FloatingPointComparisonCheckSample {
     @Override
     public int compareTo(PositionBySubtraction other) {
       int latComparison = (int) (this.latitude - other.latitude); // Noncompliant {{Use "Double.compare" or "Float.compare" to compare floating-point values.}}
-//                                              ^
+//                                             ^
       if (latComparison != 0) {
         return latComparison;
       }
@@ -191,6 +191,27 @@ class FloatingPointComparisonCheckSample {
     @Override
     public int compare(long[] a, long[] b) {
       return (int) (a[0] - b[0]); // Compliant - not floating-point
+    }
+  }
+
+  // === Compliant: abstract compareTo method (no body) ===
+
+  interface CustomComparable<T> {
+    int compareTo(T other); // Compliant - abstract method, no body
+  }
+
+  // === Compliant: abstract compare method in Comparator (no body) ===
+
+  abstract static class AbstractDoubleComparator implements Comparator<Double> {
+    @Override
+    public abstract int compare(Double a, Double b); // Compliant - abstract method, no body
+  }
+
+  // === Compliant: compare method not in a Comparator ===
+
+  static class DoubleUtils {
+    int compare(double a, double b) {
+      return (int) (a - b); // Compliant - not in a Comparator
     }
   }
 }
