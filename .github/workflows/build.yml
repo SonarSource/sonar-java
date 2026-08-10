@@ -360,14 +360,6 @@ jobs:
             -DuseMissingFile \
             "-Dlicense.overrideUrl=file://${PWD}/override-dep-licenses.properties"
 
-  # TODO: Remove this no-op job once an admin removes "Autoscan Tests" from the required checks.
-  # The autoscan integration tests have been replaced by withoutSemantic() unit tests.
-  autoscan:
-    name: Autoscan Tests
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Autoscan tests have been removed. This job is a no-op until the required check is removed by an admin."
-
   qa-os-win:
     name: Build and Unit Test on Windows
     # No dependency on build step, because we do not need the build number.
