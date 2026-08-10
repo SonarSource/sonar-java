@@ -25,7 +25,10 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -36,6 +39,14 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
 
   private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
     .ofAnyType().names("equals").addParametersMatcher("java.lang.Object").build();
+
+  private static final MethodMatchers REFLECTION_EQUALS_MATCHER = MethodMatchers.create()
+    .ofTypes(
+      "org.apache.commons.lang3.builder.EqualsBuilder",
+      "org.apache.commons.lang.builder.EqualsBuilder")
+    .names("reflectionEquals")
+    .withAnyParameters()
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -71,12 +82,24 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
         Optional<Symbol> equalsMethod = equalsMethod(superClassSymbol);
         if (equalsMethod.isPresent()) {
           Symbol equalsMethodSymbol = equalsMethod.get();
-          return !equalsMethodSymbol.isFinal() && !equalsMethodSymbol.isAbstract();
+          return !equalsMethodSymbol.isFinal()
+            && !equalsMethodSymbol.isAbstract()
+            && !usesReflectionEquals(equalsMethodSymbol);
         }
         superClassType = superClassSymbol.superClass();
       }
     }
     return false;
+  }
+
+  private static boolean usesReflectionEquals(Symbol equalsMethodSymbol) {
+    Tree declaration = equalsMethodSymbol.declaration();
+    if (!(declaration instanceof MethodTree methodTree) || methodTree.block() == null) {
+      return false;
+    }
+    ReflectionEqualsFinder finder = new ReflectionEqualsFinder();
+    methodTree.block().accept(finder);
+    return finder.found;
   }
 
   private static boolean hasEqualsMethod(Symbol.TypeSymbol type) {
@@ -85,5 +108,21 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
 
   private static Optional<Symbol> equalsMethod(Symbol.TypeSymbol type) {
     return type.lookupSymbols("equals").stream().filter(EQUALS_MATCHER::matches).findFirst();
+  }
+
+  private static class ReflectionEqualsFinder extends BaseTreeVisitor {
+    private boolean found;
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (found) {
+        return;
+      }
+      if (REFLECTION_EQUALS_MATCHER.matches(tree)) {
+        found = true;
+        return;
+      }
+      super.visitMethodInvocation(tree);
+    }
   }
 }
