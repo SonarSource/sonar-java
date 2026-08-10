@@ -29,7 +29,7 @@ public class XmlRpcExtensionsCheck extends AbstractMethodDetection {
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
     return MethodMatchers.create()
-      .ofSubTypes("org.apache.xmlrpc.common.XmlRpcHttpRequestConfigImpl")
+      .ofSubTypes("org.apache.xmlrpc.XmlRpcConfigImpl")
       .names("setEnabledForExtensions")
       .addParametersMatcher("boolean")
       .build();

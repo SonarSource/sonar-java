@@ -1,7 +1,7 @@
 package checks.security;
 
+import org.apache.xmlrpc.XmlRpcConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
-import org.apache.xmlrpc.common.XmlRpcHttpRequestConfigImpl;
 import org.apache.xmlrpc.server.XmlRpcServerConfigImpl;
 
 class XmlRpcExtensionsCheckSample {
@@ -36,7 +36,7 @@ class XmlRpcExtensionsCheckSample {
   }
 
   void parentType() {
-    XmlRpcHttpRequestConfigImpl config = new XmlRpcServerConfigImpl();
+    XmlRpcConfigImpl config = new XmlRpcServerConfigImpl();
     config.setEnabledForExtensions(true); // Noncompliant
   }
 

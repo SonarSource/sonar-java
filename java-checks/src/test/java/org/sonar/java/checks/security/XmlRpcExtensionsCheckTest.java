@@ -19,14 +19,14 @@ package org.sonar.java.checks.security;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class XmlRpcExtensionsCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/security/XmlRpcExtensionsCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/security/XmlRpcExtensionsCheckSample.java"))
       .withCheck(new XmlRpcExtensionsCheck())
       .verifyIssues();
   }
@@ -34,7 +34,7 @@ class XmlRpcExtensionsCheckTest {
   @Test
   void testWithoutSemantic() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/security/XmlRpcExtensionsCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/security/XmlRpcExtensionsCheckSample.java"))
       .withCheck(new XmlRpcExtensionsCheck())
       .withoutSemantic()
       .verifyNoIssues();
