@@ -1,0 +1,41 @@
+<h2>Why is this an issue?</h2>
+<p>In most programming languages, floating-point numbers follow the IEEE 754 standard for arithmetic. This standard defines <code>NaN</code> (Not a
+Number) as a special value that represents undefined or unrepresentable results, such as dividing zero by zero or taking the square root of a negative
+number.</p>
+<p>A critical aspect of IEEE 754 is that <code>NaN</code> is defined as never being equal to anything—not even to itself. This means:</p>
+<ul>
+  <li><code>NaN == NaN</code> evaluates to <code>false</code></li>
+  <li>Any comparison <code>x == NaN</code> will always be <code>false</code>, regardless of the value of <code>x</code></li>
+</ul>
+<p>Similarly, inequality comparisons are also unreliable:</p>
+<ul>
+  <li><code>x != NaN</code> will always be <code>true</code>, even when <code>x</code> is actually <code>NaN</code></li>
+</ul>
+<p>This behavior makes equality tests for <code>NaN</code> fundamentally broken. Code that attempts to check whether a variable is <code>NaN</code>
+using <code>==</code> or <code>!=</code> will never work as intended, leading to incorrect program logic.</p>
+<p>The correct approach is to use <code>Double.isNaN()</code> or <code>Float.isNaN()</code> methods, which return accurate results.</p>
+<h2>How to fix it</h2>
+<p>Replace equality comparisons with <code>NaN</code> constants using the appropriate <code>isNaN()</code> method for the floating-point type you're
+working with.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+double result = Math.sqrt(-1);
+if (result == Double.NaN) {  // Noncompliant
+    System.out.println("Invalid result");
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre>
+double result = Math.sqrt(-1);
+if (Double.isNaN(result)) {
+    System.out.println("Invalid result");
+}
+</pre>
+<h2>Resources</h2>
+<ul>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html#isNaN(double)">Oracle Java Documentation -
+  Double.isNaN()</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Float.html#isNaN(float)">Oracle Java Documentation -
+  Float.isNaN()</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/IEEE_754#NaN">Wikipedia - IEEE 754 - NaN</a></li>
+</ul>
