@@ -2,6 +2,7 @@ package checks;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
 class FloatingPointComparisonCheckSample {
 
@@ -212,6 +213,72 @@ class FloatingPointComparisonCheckSample {
   static class DoubleUtils {
     int compare(double a, double b) {
       return (int) (a - b); // Compliant - not in a Comparator
+    }
+  }
+
+  // === Noncompliant: only one operand is floating-point ===
+
+  static class MixedOperands implements Comparable<MixedOperands> {
+    private double value;
+
+    @Override
+    public int compareTo(MixedOperands other) {
+      if (0 < other.value) { // Noncompliant
+        return -1;
+      }
+      return Double.compare(this.value, other.value); // Compliant
+    }
+  }
+
+  // === Compliant: lambda which is not a Comparator, nested in compareTo ===
+
+  static class NonComparatorLambda implements Comparable<NonComparatorLambda> {
+    private double value;
+
+    @Override
+    public int compareTo(NonComparatorLambda other) {
+      DoubleSupplier difference = () -> this.value - other.value; // Compliant - not a Comparator
+      return Double.compare(difference.getAsDouble(), 0.0); // Compliant
+    }
+  }
+
+  // === Compliant: local class nested in compareTo is checked independently ===
+
+  static class LocalClassInCompareTo implements Comparable<LocalClassInCompareTo> {
+    private double value;
+
+    @Override
+    public int compareTo(LocalClassInCompareTo other) {
+      class Difference {
+        double between(double a, double b) {
+          return a - b; // Compliant - not in a comparison method
+        }
+      }
+      return Double.compare(new Difference().between(this.value, other.value), 0.0); // Compliant
+    }
+  }
+
+  // === Compliant: methods which only look like comparison methods ===
+
+  static class LookAlikeMethods {
+    double compareTo(Object other) {
+      return other.hashCode() - 1.0; // Compliant - does not return an int
+    }
+
+    int compareTo(Object a, Object b) {
+      return (int) (a.hashCode() - b.hashCode() - 0.5); // Compliant - compareTo takes exactly one parameter
+    }
+
+    int compareTo(double a) {
+      return (int) (a - 1.0); // Compliant - the parameter is primitive
+    }
+
+    int compare(Double a) {
+      return (int) (a - 1.0); // Compliant - compare takes exactly two parameters
+    }
+
+    double compare(Double a, Double b) {
+      return a - b; // Compliant - does not return an int
     }
   }
 }

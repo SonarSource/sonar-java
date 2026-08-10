@@ -89,9 +89,7 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitBinaryExpression(BinaryExpressionTree tree) {
-      if (tree.is(Tree.Kind.MINUS) && hasFloatingOperand(tree)) {
-        reportIssue(tree.operatorToken(), MESSAGE);
-      } else if (tree.is(Tree.Kind.LESS_THAN, Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN_OR_EQUAL_TO, Tree.Kind.GREATER_THAN_OR_EQUAL_TO)
+      if (tree.is(Tree.Kind.MINUS, Tree.Kind.LESS_THAN, Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN_OR_EQUAL_TO, Tree.Kind.GREATER_THAN_OR_EQUAL_TO)
         && hasFloatingOperand(tree)) {
         reportIssue(tree.operatorToken(), MESSAGE);
       }
