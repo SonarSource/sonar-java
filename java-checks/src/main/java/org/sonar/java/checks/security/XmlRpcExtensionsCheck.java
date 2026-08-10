@@ -38,7 +38,7 @@ public class XmlRpcExtensionsCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree argument = mit.arguments().get(0);
-    if (!Boolean.FALSE.equals(ExpressionUtils.resolveAsConstant(argument))) {
+    if (Boolean.TRUE.equals(ExpressionUtils.resolveAsConstant(argument))) {
       reportIssue(mit, "Disable extensions on this Apache XML RPC configuration.");
     }
   }

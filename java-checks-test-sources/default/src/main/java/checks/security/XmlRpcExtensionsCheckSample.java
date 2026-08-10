@@ -32,7 +32,7 @@ class XmlRpcExtensionsCheckSample {
 
   void unknownVariable(boolean enable) {
     XmlRpcServerConfigImpl config = new XmlRpcServerConfigImpl();
-    config.setEnabledForExtensions(enable); // Noncompliant
+    config.setEnabledForExtensions(enable); // Compliant - unknown value, not provably true
   }
 
   void parentType() {
