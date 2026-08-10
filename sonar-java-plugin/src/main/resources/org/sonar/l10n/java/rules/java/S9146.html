@@ -1,0 +1,36 @@
+<p>Enabling extensions on Apache XML RPC configuration objects activates support for serializable Java objects, which can lead to remote code execution through deserialization attacks.</p>
+<h2>Why is this an issue?</h2>
+<p>The Apache XML RPC library implements the XML-RPC protocol. By default, the library supports a standard set of data types defined in the protocol specification. However, the library also provides optional extension types that are disabled by default for security reasons.</p>
+<p>When you enable extensions by calling <code>setEnabledForExtensions(true)</code>, you activate the <code>&lt;ex:serializable&gt;</code> type that allows Java object serialization. This means an attacker who can send requests to your endpoint can craft a malicious serialized object and trigger arbitrary code execution when the server deserializes it.</p>
+<h3>What is the potential impact?</h3>
+<p>An attacker who can send requests to your XML RPC endpoint can achieve remote code execution on the server. This allows them to:</p>
+<ul>
+  <li>Execute arbitrary system commands</li>
+  <li>Read or modify sensitive data</li>
+  <li>Install backdoors or malware</li>
+  <li>Compromise the entire server and potentially pivot to other systems</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Do not enable extensions on your Apache XML RPC configuration. The default behavior (extensions disabled) is secure and sufficient for most use cases.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+XmlRpcServerConfigImpl config = new XmlRpcServerConfigImpl();
+config.setEnabledForExtensions(true); // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+XmlRpcServerConfigImpl config = new XmlRpcServerConfigImpl();
+// Extensions are disabled by default - no action needed
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://ws.apache.org/xmlrpc/extensions.html">Apache XML-RPC - Extensions</a></li>
+  <li>OWASP - <a href="https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data">Deserialization of untrusted data</a></li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li>CWE - <a href="https://cwe.mitre.org/data/definitions/502">CWE-502 - Deserialization of Untrusted Data</a></li>
+  <li>OWASP - <a href="https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/">Top 10 2021 Category A8 - Software and Data Integrity Failures</a></li>
+</ul>
