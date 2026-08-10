@@ -1,0 +1,23 @@
+{
+  "title": "Static methods should not hide methods from superclasses",
+  "type": "CODE_SMELL",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9149",
+  "sqKey": "S9149",
+  "scope": "All",
+  "quickfix": "unknown"
+}

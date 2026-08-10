@@ -1,0 +1,44 @@
+<h2>Why is this an issue?</h2>
+<p>Method hiding occurs when a subclass defines a static method with the same signature as a static method in its superclass. Unlike instance
+method overriding, static methods are resolved at compile time based on the declared type of the reference, not the actual runtime type of the
+object. This behavior is counterintuitive and can lead to subtle bugs.</p>
+<p>When a variable is declared as the parent type but holds a child instance, calling a hidden static method through that variable invokes the
+parent's version, not the child's. This contradicts the polymorphic behavior developers expect from instance methods.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+class Parent {
+    static void calculate() {
+        // Parent implementation
+    }
+}
+
+class Child extends Parent {
+    static void calculate() {  // Noncompliant
+        // Child implementation
+    }
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre>
+class Parent {
+    static void calculate() {
+        // Parent implementation
+    }
+}
+
+class Child extends Parent {
+    static void calculateExtended() {
+        // Child implementation
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/IandI/hidevariables.html">Hiding Fields and Methods</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4.8.2">Method Declarations - Hiding</a></li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li>CERT - <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface">CERT-MET07-J.: Never declare a class method that hides a method declared in a superclass or superinterface</a></li>
+</ul>
