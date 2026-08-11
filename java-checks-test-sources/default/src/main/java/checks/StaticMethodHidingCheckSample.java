@@ -172,6 +172,14 @@ class StaticMethodHidingCheckSample {
     }
   }
 
+  // --- Hiding a method from a binary dependency (JDK class) ---
+  // Covers the branch where declaration() returns null
+
+  static class MyThread extends Thread {
+    static void sleep(long millis) throws InterruptedException { // Noncompliant {{Rename this method; it hides "sleep" in "Thread".}}
+    }
+  }
+
   // --- Multiple methods hiding from the same parent ---
 
   static class MultiParent {
