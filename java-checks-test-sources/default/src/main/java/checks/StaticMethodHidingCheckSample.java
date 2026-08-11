@@ -153,29 +153,8 @@ class StaticMethodHidingCheckSample {
     }
   }
 
-  // --- Compliant: static method in child, instance in parent ---
-
-  static class ParentF {
-    void action() {
-    }
-  }
-
-  static class ChildF extends ParentF {
-    static void action() { // Compliant - parent method is not static
-    }
-  }
-
-  // --- Compliant: instance method in child, static in parent (covered by S2177) ---
-
-  static class ParentG {
-    static void action() {
-    }
-  }
-
-  static class ChildG extends ParentG {
-    void action() { // Compliant for this rule - covered by S2177
-    }
-  }
+  // Note: static-in-child/instance-in-parent and instance-in-child/static-in-parent
+  // cases are not tested here because they are compilation errors in Java.
 
   // --- Hiding through intermediate class that doesn't define the method ---
 
