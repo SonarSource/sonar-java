@@ -31,7 +31,6 @@ class SerialVersionUidInRecordCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()

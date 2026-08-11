@@ -93,7 +93,6 @@ class AbstractClassNoFieldShouldBeInterfaceCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_with_java_9_without_semantics() {
     CheckVerifier.newVerifier()
