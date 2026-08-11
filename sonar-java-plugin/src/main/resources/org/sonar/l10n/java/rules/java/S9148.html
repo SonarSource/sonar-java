@@ -1,0 +1,65 @@
+<h2>Why is this an issue?</h2>
+<p>Comparing floating-point values (single or double precision) using subtraction or simple comparison operators does not correctly handle special
+IEEE 754 values such as <code>NaN</code> (Not a Number) and negative zero (<code>-0.0</code>).</p>
+<p>When you implement comparison using subtraction (e.g., converting the difference between two floating-point values to an integer result), several
+problems occur:</p>
+<ul>
+  <li><strong>Precision loss</strong>: Casting the result to an integer loses information and can produce incorrect results for values that are close
+  but not equal.</li>
+  <li><strong>NaN handling</strong>: Subtraction involving <code>NaN</code> produces <code>NaN</code>, which when cast to an integer becomes
+  <code>0</code>, incorrectly suggesting the values are equal.</li>
+  <li><strong>Overflow</strong>: For values near the maximum range, subtraction can overflow.</li>
+</ul>
+<p>Using simple comparison operators like <code>&lt;</code> or <code>&gt;</code> also fails:</p>
+<ul>
+  <li>Any comparison with <code>NaN</code> (except inequality) returns false, breaking the transitivity requirement of comparison interface
+  contracts.</li>
+  <li>The operators don't provide a consistent three-way comparison result needed for comparison methods that must return negative, zero, or positive
+  values.</li>
+</ul>
+<p>Use <code>Float.compare()</code> and <code>Double.compare()</code> instead. These methods correctly implement a total ordering that handles all IEEE
+754 special cases and satisfies the contracts of <code>Comparable</code> and <code>Comparator</code>.</p>
+<h2>How to fix it</h2>
+<p>Replace subtraction-based or relational-operator-based comparison with <code>Double.compare()</code> or <code>Float.compare()</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class Position implements Comparable&lt;Position&gt; {
+    private double latitude;
+    private double longitude;
+
+    @Override
+    public int compareTo(Position other) {
+        int latComparison = (int)(this.latitude - other.latitude); // Noncompliant
+        if (latComparison != 0) {
+            return latComparison;
+        }
+        return (int)(this.longitude - other.longitude); // Noncompliant
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Position implements Comparable&lt;Position&gt; {
+    private double latitude;
+    private double longitude;
+
+    @Override
+    public int compareTo(Position other) {
+        int latComparison = Double.compare(this.latitude, other.latitude);
+        if (latComparison != 0) {
+            return latComparison;
+        }
+        return Double.compare(this.longitude, other.longitude);
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html#compare(double,double)">Double.compare(double,
+  double)</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Float.html#compare(float,float)">Float.compare(float,
+  float)</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Comparable.html">Comparable Interface</a></li>
+</ul>
