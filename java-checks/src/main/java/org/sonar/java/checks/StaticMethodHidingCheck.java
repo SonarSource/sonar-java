@@ -60,11 +60,11 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
         Symbol.MethodSymbol hiddenMethod = (Symbol.MethodSymbol) symbol;
         String message = String.format("Rename this method; it hides \"%s\" in \"%s\".",
           methodSymbol.name(), symbol.owner().name());
-        Tree declaration = hiddenMethod.declaration();
+        MethodTree declaration = hiddenMethod.declaration();
         if (declaration != null) {
           reportIssue(methodTree.simpleName(), message,
             Collections.singletonList(new JavaFileScannerContext.Location("Hidden method",
-              ((MethodTree) declaration).simpleName())),
+              declaration.simpleName())),
             null);
         } else {
           reportIssue(methodTree.simpleName(), message);
