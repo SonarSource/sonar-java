@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -28,13 +29,23 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9148")
 public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Use \"Double.compare\" or \"Float.compare\" to compare floating-point values.";
+
+  private static final MethodMatchers COMPARE_METHODS = MethodMatchers.or(
+    MethodMatchers.create()
+      .ofSubTypes("java.lang.Comparable")
+      .names("compareTo")
+      .addParametersMatcher(MethodMatchers.ANY)
+      .build(),
+    MethodMatchers.create()
+      .ofSubTypes("java.util.Comparator")
+      .names("compare")
+      .addParametersMatcher(MethodMatchers.ANY, MethodMatchers.ANY)
+      .build());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -43,10 +54,12 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (context.getSemanticModel() == null) {
+      return;
+    }
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
-      if ((isCompareToMethod(methodTree) || isCompareMethod(methodTree))
-        && methodTree.block() != null) {
+      if (COMPARE_METHODS.matches(methodTree) && methodTree.block() != null) {
         methodTree.block().accept(new FloatingPointComparisonVisitor());
       }
     } else {
@@ -55,29 +68,6 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
         lambda.body().accept(new FloatingPointComparisonVisitor());
       }
     }
-  }
-
-  private static boolean isCompareToMethod(MethodTree tree) {
-    return "compareTo".equals(tree.simpleName().name())
-      && returnsInt(tree)
-      && hasOneNonPrimitiveParameter(tree);
-  }
-
-  private static boolean isCompareMethod(MethodTree tree) {
-    return "compare".equals(tree.simpleName().name())
-      && returnsInt(tree)
-      && tree.parameters().size() == 2
-      && tree.symbol().owner().type().isSubtypeOf("java.util.Comparator");
-  }
-
-  private static boolean returnsInt(MethodTree tree) {
-    TypeTree returnType = tree.returnType();
-    return returnType != null && returnType.symbolType().isPrimitive(Type.Primitives.INT);
-  }
-
-  private static boolean hasOneNonPrimitiveParameter(MethodTree tree) {
-    List<VariableTree> parameters = tree.parameters();
-    return parameters.size() == 1 && !parameters.get(0).type().symbolType().isPrimitive();
   }
 
   private static boolean hasFloatingType(ExpressionTree tree) {
@@ -89,7 +79,8 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitBinaryExpression(BinaryExpressionTree tree) {
-      if (tree.is(Tree.Kind.MINUS, Tree.Kind.LESS_THAN, Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN_OR_EQUAL_TO, Tree.Kind.GREATER_THAN_OR_EQUAL_TO)
+      if (tree.is(Tree.Kind.MINUS, Tree.Kind.LESS_THAN, Tree.Kind.GREATER_THAN,
+        Tree.Kind.LESS_THAN_OR_EQUAL_TO, Tree.Kind.GREATER_THAN_OR_EQUAL_TO)
         && hasFloatingOperand(tree)) {
         reportIssue(tree.operatorToken(), MESSAGE);
       }
