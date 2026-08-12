@@ -21,8 +21,10 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -53,14 +55,32 @@ public class NanEqualityCheck extends IssuableSubscriptionVisitor {
     if (expr.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expr;
       if ("NaN".equals(memberSelect.identifier().name())) {
-        String ownerType = memberSelect.identifier().symbol().owner().type().fullyQualifiedName();
-        if ("java.lang.Double".equals(ownerType)) {
-          return "Double";
-        }
-        if ("java.lang.Float".equals(ownerType)) {
-          return "Float";
-        }
+        return resolveNanOwnerType(memberSelect.identifier().symbol());
       }
+    } else if (expr.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) expr;
+      if ("NaN".equals(identifier.name())) {
+        return resolveNanOwnerType(identifier.symbol());
+      }
+    }
+    return null;
+  }
+
+  @Nullable
+  private static String resolveNanOwnerType(Symbol symbol) {
+    if (symbol.isUnknown()) {
+      return null;
+    }
+    Symbol owner = symbol.owner();
+    if (owner == null || owner.type() == null) {
+      return null;
+    }
+    String ownerType = owner.type().fullyQualifiedName();
+    if ("java.lang.Double".equals(ownerType)) {
+      return "Double";
+    }
+    if ("java.lang.Float".equals(ownerType)) {
+      return "Float";
     }
     return null;
   }

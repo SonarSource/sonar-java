@@ -1,5 +1,7 @@
 package checks;
 
+import static java.lang.Double.NaN;
+
 class NanEqualityCheckSample {
 
   void noncompliantDoubleNaN() {
@@ -76,6 +78,16 @@ class NanEqualityCheckSample {
   void compliantInstanceIsNaN() {
     Double d = Double.valueOf(1.0);
     if (d.isNaN()) { } // Compliant - instance method usage
+  }
+
+  void noncompliantStaticImportNaN() {
+    double x = 1.0;
+    if (x == NaN) { } // Noncompliant {{Use "Double.isNaN()" instead of comparison with "Double.NaN".}}
+//        ^^
+    if (NaN == x) { } // Noncompliant {{Use "Double.isNaN()" instead of comparison with "Double.NaN".}}
+//          ^^
+    if (x != NaN) { } // Noncompliant {{Use "Double.isNaN()" instead of comparison with "Double.NaN".}}
+//        ^^
   }
 
 }
