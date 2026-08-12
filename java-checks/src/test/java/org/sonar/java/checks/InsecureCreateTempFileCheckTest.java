@@ -40,4 +40,12 @@ class InsecureCreateTempFileCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/InsecureCreateTempFileCheck_no_version.java"))
+      .withCheck(new InsecureCreateTempFileCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

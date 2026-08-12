@@ -36,4 +36,13 @@ class EqualsNotOverriddenInSubclassCheckTest {
       .withCheck(new EqualsNotOverriddenInSubclassCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/EqualsNotOverriddenInSubclassCheckSampleWithoutSemantic.java"))
+      .withCheck(new EqualsNotOverriddenInSubclassCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -49,4 +49,14 @@ class VirtualThreadNotSynchronizedCheckTest {
       .withJavaVersion(24)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/VirtualThreadNotSynchronizedCheckSample.java"))
+      .withCheck(new VirtualThreadNotSynchronizedCheck())
+      .withJavaVersion(21)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

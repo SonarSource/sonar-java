@@ -30,4 +30,13 @@ class ObjectCreatedOnlyToCallGetClassCheckTest {
       .withCheck(new ObjectCreatedOnlyToCallGetClassCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ObjectCreatedOnlyToCallGetClassCheckSample.java"))
+      .withCheck(new ObjectCreatedOnlyToCallGetClassCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

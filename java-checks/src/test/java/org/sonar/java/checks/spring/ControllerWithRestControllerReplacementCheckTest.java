@@ -30,4 +30,13 @@ class ControllerWithRestControllerReplacementCheckTest {
       .withCheck(new ControllerWithRestControllerReplacementCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/ControllerWithRestControllerReplacementCheckSample.java"))
+      .withCheck(new ControllerWithRestControllerReplacementCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

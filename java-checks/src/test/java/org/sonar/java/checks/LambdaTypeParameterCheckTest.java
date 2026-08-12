@@ -29,4 +29,12 @@ class LambdaTypeParameterCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/LambdaTypeParameterCheck.java")
+      .withCheck(new LambdaTypeParameterCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

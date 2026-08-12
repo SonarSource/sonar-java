@@ -30,4 +30,12 @@ class StringMethodsWithLocaleCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StringMethodsWithLocaleCheckSample.java"))
+      .withCheck(new StringMethodsWithLocaleCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

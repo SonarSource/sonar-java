@@ -39,4 +39,13 @@ class DoubleCheckedLockingCheckTest {
       .withCheck(new DoubleCheckedLockingCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DoubleCheckedLockingCheckSample.java"))
+      .withCheck(new DoubleCheckedLockingCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

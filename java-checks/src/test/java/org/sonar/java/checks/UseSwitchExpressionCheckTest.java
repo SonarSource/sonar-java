@@ -50,4 +50,14 @@ class UseSwitchExpressionCheckTest {
       .withJavaVersion(13)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UseSwitchExpressionCheck_java11.java"))
+      .withCheck(new UseSwitchExpressionCheck())
+      .withJavaVersion(11)
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

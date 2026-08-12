@@ -39,4 +39,13 @@ class ThreadOverridesRunCheckTest {
       .withCheck(new ThreadOverridesRunCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ThreadOverridesRunCheckSample.java"))
+      .withCheck(new ThreadOverridesRunCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

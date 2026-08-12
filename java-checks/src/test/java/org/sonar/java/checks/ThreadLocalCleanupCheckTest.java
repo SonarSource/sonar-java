@@ -40,4 +40,12 @@ class ThreadLocalCleanupCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ThreadLocalCleanup.java"))
+      .withCheck(new ThreadLocalCleanupCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

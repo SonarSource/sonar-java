@@ -30,4 +30,13 @@ class BooleanMethodNameCheckTest {
       .withCheck(new BooleanMethodNameCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/naming/BooleanMethodNameCheckSample.java"))
+      .withCheck(new BooleanMethodNameCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

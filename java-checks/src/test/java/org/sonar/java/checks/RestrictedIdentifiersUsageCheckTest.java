@@ -49,4 +49,14 @@ class RestrictedIdentifiersUsageCheckTest {
       .withCheck(new RestrictedIdentifiersUsageCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/RestrictedIdentifiersUsageCheckSample.java"))
+      .withCheck(new RestrictedIdentifiersUsageCheck())
+      .withJavaVersion(14)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

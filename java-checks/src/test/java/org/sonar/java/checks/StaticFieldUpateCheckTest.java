@@ -45,4 +45,13 @@ class StaticFieldUpateCheckTest {
   void should_not_have_any_method_invocation_matchers() {
     assertThat(new StaticFieldUpateCheck().getMethodInvocationMatchers()).isSameAs(MethodMatchers.none());
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/StaticFieldUpateCheckSample.java"))
+      .withCheck(new StaticFieldUpateCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

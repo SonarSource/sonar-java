@@ -30,4 +30,13 @@ class ConfusingVarargCheckTest {
       .withCheck(new ConfusingVarargCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ConfusingVarargCheck.java"))
+      .withCheck(new ConfusingVarargCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

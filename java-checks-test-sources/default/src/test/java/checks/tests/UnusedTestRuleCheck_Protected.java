@@ -15,7 +15,6 @@ abstract class AbstractTestCase {
 
   @TempDir
   private Path tempDir; // Noncompliant {{Remove this unused "TempDir".}}
-  // increases AutoScan FNs
 
   void test() {
   }
@@ -23,11 +22,10 @@ abstract class AbstractTestCase {
 }
 
 // Test non-abstract private
-class ClassTestCase { // increases AutoScan FNs
+class ClassTestCase {
 
   @TempDir
   private Path tempDir; // Noncompliant {{Remove this unused "TempDir".}}
-  // increases AutoScan FNs
 
   void test() {
   }
@@ -39,7 +37,6 @@ class ClassTestCase2 {
 
   @TempDir
   protected Path tempDir; // Noncompliant {{Remove this unused "TempDir".}}
-  // increases AutoScan FNs
 
   void test() {
   }

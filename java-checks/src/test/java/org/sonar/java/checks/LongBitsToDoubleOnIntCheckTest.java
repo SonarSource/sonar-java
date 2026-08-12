@@ -39,4 +39,13 @@ class LongBitsToDoubleOnIntCheckTest {
       .withCheck(new LongBitsToDoubleOnIntCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/LongBitsToDoubleOnIntCheckSample.java"))
+      .withCheck(new LongBitsToDoubleOnIntCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

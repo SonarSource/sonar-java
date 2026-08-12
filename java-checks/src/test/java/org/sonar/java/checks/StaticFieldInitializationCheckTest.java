@@ -27,4 +27,13 @@ class StaticFieldInitializationCheckTest {
       .withCheck(new StaticFieldInitializationCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/StaticFieldInitializationCheck.java")
+      .withCheck(new StaticFieldInitializationCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -29,4 +29,13 @@ class ReuseRandomCheckTest {
       .withCheck(new ReuseRandomCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ReuseRandomCheckSampleWithoutSemantic.java"))
+      .withCheck(new ReuseRandomCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

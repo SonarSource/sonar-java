@@ -40,4 +40,12 @@ class EscapedUnicodeCharactersCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/EscapedUnicodeCharactersCheckSample.java"))
+      .withCheck(new EscapedUnicodeCharactersCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -30,4 +30,13 @@ class ExternalizableClassConstructorCheckTest {
       .withCheck(new ExternalizableClassConstructorCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/serialization/ExternalizableClassConstructorCheckSample.java"))
+      .withCheck(new ExternalizableClassConstructorCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

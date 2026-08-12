@@ -73,4 +73,14 @@ class MathClampRangeCheckTest {
     assertThat(isLessThan(9_223_372_036_854_775_807L, 9_223_372_036_854_775_806d)).isFalse();
     assertThat(isLessThan(9_223_372_036_854_775_806d, 9_223_372_036_854_775_807L)).isFalse(); // a == b because of double low precision
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MathClampRangeCheckSample.java"))
+      .withCheck(new MathClampRangeCheck())
+      .withJavaVersion(21)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

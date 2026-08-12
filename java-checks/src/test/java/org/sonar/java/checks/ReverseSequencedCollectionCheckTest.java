@@ -41,4 +41,13 @@ class ReverseSequencedCollectionCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ReverseSequencedCollectionCheckSample.java"))
+      .withCheck(new ReverseSequencedCollectionCheck())
+      .withJavaVersion(21)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -29,4 +29,12 @@ class UnnecessarySemicolonCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/UnnecessarySemicolonCheck.java")
+      .withCheck(new UnnecessarySemicolonCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

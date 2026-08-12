@@ -39,4 +39,14 @@ class UnderscoreMisplacedOnNumberCheckTest {
       .withJavaVersion(6)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UnderscoreMisplacedOnNumberCheck_java6.java"))
+      .withCheck(new UnderscoreMisplacedOnNumberCheck())
+      .withJavaVersion(6)
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

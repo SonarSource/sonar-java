@@ -31,12 +31,20 @@ class SerialVersionUidInRecordCheckTest {
       .verifyIssues();
   }
 
-
   @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/serialization/SerialVersionUidInRecordCheckSample.java"))
       .withCheck(new SerialVersionUidInRecordCheck())
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/serialization/SerialVersionUidInRecordCheckSample.java"))
+      .withCheck(new SerialVersionUidInRecordCheck())
+      .withoutSemantic()
+      .verifyIssues();
   }
 }

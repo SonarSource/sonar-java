@@ -31,4 +31,12 @@ class EqualsArgumentTypeCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/EqualsArgumentType.java"))
+      .withCheck(new EqualsArgumentTypeCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

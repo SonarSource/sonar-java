@@ -31,4 +31,12 @@ class AssertThatThrownByAloneCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertThatThrownByAloneCheckSample.java"))
+      .withCheck(new AssertThatThrownByAloneCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

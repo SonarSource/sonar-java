@@ -54,4 +54,13 @@ class DefaultPackageCheckTest {
       .withCheck(new DefaultPackageCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/EmptyFile.java"))
+      .withCheck(new DefaultPackageCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

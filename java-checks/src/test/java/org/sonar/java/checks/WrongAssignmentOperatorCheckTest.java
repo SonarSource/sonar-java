@@ -31,4 +31,12 @@ class WrongAssignmentOperatorCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/WrongAssignmentOperatorCheck.java"))
+      .withCheck(new WrongAssignmentOperatorCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

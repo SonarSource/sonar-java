@@ -29,4 +29,13 @@ class IgnoredStreamReturnValueCheckTest {
       .withCheck(new IgnoredStreamReturnValueCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/IgnoredStreamReturnValueCheckSample.java"))
+      .withCheck(new IgnoredStreamReturnValueCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

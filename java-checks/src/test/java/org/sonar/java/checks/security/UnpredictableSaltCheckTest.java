@@ -40,4 +40,12 @@ class UnpredictableSaltCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/UnpredictableSaltCheck.java"))
+      .withCheck(new UnpredictableSaltCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

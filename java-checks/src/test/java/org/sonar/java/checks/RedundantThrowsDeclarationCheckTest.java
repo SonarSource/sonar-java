@@ -40,4 +40,12 @@ class RedundantThrowsDeclarationCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/RedundantThrowsDeclarationCheckSample.java"))
+      .withCheck(new RedundantThrowsDeclarationCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

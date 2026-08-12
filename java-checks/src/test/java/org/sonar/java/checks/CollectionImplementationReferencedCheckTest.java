@@ -31,4 +31,12 @@ class CollectionImplementationReferencedCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CollectionImplementationReferencedCheck.java"))
+      .withCheck(new CollectionImplementationReferencedCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

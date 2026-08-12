@@ -31,4 +31,12 @@ class AndroidMobileDatabaseEncryptionKeysCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/AndroidMobileDatabaseEncryptionKeysCheckSample.java"))
+      .withCheck(new AndroidMobileDatabaseEncryptionKeysCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

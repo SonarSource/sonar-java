@@ -39,4 +39,12 @@ class ModifiersOrderCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ModifiersOrderCheckSample.java"))
+      .withCheck(new ModifiersOrderCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -30,4 +30,13 @@ class EmptyDatabasePasswordCheckTest {
       .withCheck(new EmptyDatabasePasswordCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/EmptyDatabasePasswordCheckSampleWithoutSemantic.java"))
+      .withCheck(new EmptyDatabasePasswordCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

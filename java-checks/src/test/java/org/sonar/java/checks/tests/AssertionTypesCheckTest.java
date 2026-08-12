@@ -118,4 +118,12 @@ class AssertionTypesCheckTest {
     assertThat(type).isSameAs(invalidPrimitive);
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertionTypesCheck_JUnit4.java"))
+      .withCheck(new AssertionTypesCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

@@ -28,4 +28,13 @@ class OperatorPrecedenceCheckTest {
       .withCheck(new OperatorPrecedenceCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/OperatorPrecedence.java")
+      .withCheck(new OperatorPrecedenceCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

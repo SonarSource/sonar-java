@@ -41,4 +41,12 @@ class BadLocalVariableNameCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/BadLocalVariableNameCheckSampleWithoutSemantic.java"))
+      .withCheck(new BadLocalVariableNameCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

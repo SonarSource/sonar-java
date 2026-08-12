@@ -48,4 +48,12 @@ class StaticMethodCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StaticMethodCheckSample.java"))
+      .withCheck(new StaticMethodCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

@@ -31,4 +31,12 @@ class DataHashingCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/DataHashingCheckSampleWithoutSemantic.java"))
+      .withCheck(new DataHashingCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

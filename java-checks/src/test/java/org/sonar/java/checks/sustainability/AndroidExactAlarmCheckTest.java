@@ -40,4 +40,13 @@ class AndroidExactAlarmCheckTest {
       .withinAndroidContext(false)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/sustainability/AndroidExactAlarmCheckSample.java"))
+      .withCheck(new AndroidExactAlarmCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

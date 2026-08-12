@@ -30,4 +30,13 @@ class ThreadAsRunnableArgumentCheckTest {
       .withCheck(new ThreadAsRunnableArgumentCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ThreadAsRunnableArgumentCheckSample.java"))
+      .withCheck(new ThreadAsRunnableArgumentCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

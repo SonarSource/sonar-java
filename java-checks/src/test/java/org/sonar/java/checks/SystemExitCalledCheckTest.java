@@ -29,4 +29,12 @@ class SystemExitCalledCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/SystemExitCalledCheck.java")
+      .withCheck(new SystemExitCalledCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

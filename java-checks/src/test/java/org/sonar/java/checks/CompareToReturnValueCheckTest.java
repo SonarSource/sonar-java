@@ -31,4 +31,12 @@ class CompareToReturnValueCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CompareToReturnValueCheck.java"))
+      .withCheck(new CompareToReturnValueCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

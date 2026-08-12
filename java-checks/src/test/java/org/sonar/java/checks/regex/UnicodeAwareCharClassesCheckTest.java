@@ -29,4 +29,13 @@ class UnicodeAwareCharClassesCheckTest {
       .withCheck(new UnicodeAwareCharClassesCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/regex/UnicodeAwareCharClassesCheckTestWithoutSemantic.java"))
+      .withCheck(new UnicodeAwareCharClassesCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

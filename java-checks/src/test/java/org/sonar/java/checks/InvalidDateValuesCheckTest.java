@@ -31,4 +31,12 @@ class InvalidDateValuesCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/InvalidDateValuesCheckSample.java"))
+      .withCheck(new InvalidDateValuesCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

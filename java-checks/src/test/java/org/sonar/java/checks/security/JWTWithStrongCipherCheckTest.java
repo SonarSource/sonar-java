@@ -39,4 +39,12 @@ class JWTWithStrongCipherCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/JWTWithStrongCipherCheck/JWTWithStrongCipherCheckJwtkTest.java"))
+      .withCheck(new JWTWithStrongCipherCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

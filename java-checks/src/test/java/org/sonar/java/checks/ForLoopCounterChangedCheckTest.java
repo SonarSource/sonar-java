@@ -29,4 +29,12 @@ class ForLoopCounterChangedCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/ForLoopCounterChangedCheck.java")
+      .withCheck(new ForLoopCounterChangedCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

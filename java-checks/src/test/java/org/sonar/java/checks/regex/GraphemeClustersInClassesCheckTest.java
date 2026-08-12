@@ -31,4 +31,12 @@ class GraphemeClustersInClassesCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/regex/GraphemeClustersInClassesCheckSample.java"))
+      .withCheck(new GraphemeClustersInClassesCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -40,4 +40,12 @@ class CatchIllegalMonitorStateExceptionCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CatchIllegalMonitorStateExceptionCheck.java"))
+      .withCheck(new CatchIllegalMonitorStateExceptionCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

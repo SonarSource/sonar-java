@@ -29,4 +29,13 @@ class RawByteBitwiseOperationsCheckTest {
       .withCheck(new RawByteBitwiseOperationsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/RawByteBitwiseOperationsCheckSample.java"))
+      .withCheck(new RawByteBitwiseOperationsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

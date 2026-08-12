@@ -31,4 +31,12 @@ class ReceivingIntentsCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/ReceivingIntentsCheckSample.java"))
+      .withCheck(new ReceivingIntentsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

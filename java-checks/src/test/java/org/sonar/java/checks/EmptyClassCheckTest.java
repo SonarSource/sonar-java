@@ -30,4 +30,13 @@ class EmptyClassCheckTest {
       .withCheck(new EmptyClassCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/emptyclass/EmptyClass.java"))
+      .withCheck(new EmptyClassCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

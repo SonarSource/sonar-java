@@ -50,4 +50,13 @@ class DateUtilsTruncateCheckTest {
       .withCheck(new DateUtilsTruncateCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DateUtilsTruncateCheck_no_version.java"))
+      .withCheck(new DateUtilsTruncateCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

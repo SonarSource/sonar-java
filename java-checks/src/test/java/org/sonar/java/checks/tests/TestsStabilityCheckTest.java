@@ -30,4 +30,13 @@ class TestsStabilityCheckTest {
       .withCheck(new TestsStabilityCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/TestStabilityCheckSample.java"))
+      .withCheck(new TestsStabilityCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

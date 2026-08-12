@@ -29,4 +29,12 @@ class CustomCryptographicAlgorithmCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/CustomCryptographicAlgorithmCheck.java")
+      .withCheck(new CustomCryptographicAlgorithmCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

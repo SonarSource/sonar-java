@@ -41,4 +41,13 @@ class BufferedReaderBoilerplateCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/BufferedReaderBoilerplateCheckSample.java"))
+      .withCheck(new BufferedReaderBoilerplateCheck())
+      .withJavaVersion(25)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

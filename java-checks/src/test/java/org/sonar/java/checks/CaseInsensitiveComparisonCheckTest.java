@@ -30,4 +30,13 @@ class CaseInsensitiveComparisonCheckTest {
       .withCheck(new CaseInsensitiveComparisonCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CaseInsensitiveComparisonCheck.java"))
+      .withCheck(new CaseInsensitiveComparisonCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

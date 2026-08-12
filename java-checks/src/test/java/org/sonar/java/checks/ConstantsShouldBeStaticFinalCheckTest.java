@@ -39,4 +39,13 @@ class ConstantsShouldBeStaticFinalCheckTest {
       .withCheck(new ConstantsShouldBeStaticFinalCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ConstantsShouldBeStaticFinalCheck.java"))
+      .withCheck(new ConstantsShouldBeStaticFinalCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

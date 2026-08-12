@@ -39,4 +39,13 @@ class UselessExtendsCheckTest {
       .withCheck(new UselessExtendsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/UselessExtendsCheck.java"))
+      .withCheck(new UselessExtendsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -55,4 +55,12 @@ class CommentRegularExpressionCheckTest {
     assertThrows(AnalysisException.class, verifier::verifyIssues);
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CommentRegularExpressionCheck2.java"))
+      .withCheck(new CommentRegularExpressionCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

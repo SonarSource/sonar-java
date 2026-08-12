@@ -39,4 +39,13 @@ class MapKeyNotComparableCheckTest {
       .withCheck(new MapKeyNotComparableCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MapKeyNotComparableCheckSample.java"))
+      .withCheck(new MapKeyNotComparableCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

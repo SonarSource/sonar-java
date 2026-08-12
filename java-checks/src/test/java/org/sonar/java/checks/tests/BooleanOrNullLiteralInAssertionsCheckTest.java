@@ -29,4 +29,13 @@ class BooleanOrNullLiteralInAssertionsCheckTest {
       .withCheck(new BooleanOrNullLiteralInAssertionsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/BooleanOrNullLiteralInAssertionsCheckSample.java"))
+      .withCheck(new BooleanOrNullLiteralInAssertionsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

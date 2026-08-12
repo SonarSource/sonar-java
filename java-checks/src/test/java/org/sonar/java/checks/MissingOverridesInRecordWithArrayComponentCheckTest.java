@@ -28,4 +28,13 @@ class MissingOverridesInRecordWithArrayComponentCheckTest {
       .withChecks(new MissingOverridesInRecordWithArrayComponentCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/MissingOverridesInRecordWithArrayComponentCheckSample.java"))
+      .withChecks(new MissingOverridesInRecordWithArrayComponentCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

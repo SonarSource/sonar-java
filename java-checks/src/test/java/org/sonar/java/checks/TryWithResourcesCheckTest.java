@@ -65,4 +65,14 @@ class TryWithResourcesCheckTest {
       .withJavaVersion(26)
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/TryWithResourcesCheckSample.java"))
+      .withCheck(new TryWithResourcesCheck())
+      .withJavaVersion(7)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

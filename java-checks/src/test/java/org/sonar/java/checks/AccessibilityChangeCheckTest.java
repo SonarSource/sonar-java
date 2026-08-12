@@ -51,4 +51,13 @@ class AccessibilityChangeCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/AccessibilityChangeCheckSampleWithoutSemantic.java"))
+      .withCheck(new AccessibilityChangeCheck())
+      .withJavaVersion(15)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

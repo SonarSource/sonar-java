@@ -40,4 +40,12 @@ class ForLoopFalseConditionCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ForLoopFalseConditionCheckSample.java"))
+      .withCheck(new ForLoopFalseConditionCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

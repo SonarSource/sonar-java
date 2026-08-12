@@ -29,4 +29,13 @@ class DateTimeFormatterMismatchCheckTest {
       .withCheck(new DateTimeFormatterMismatchCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DateTimeFormatterMismatch.java"))
+      .withCheck(new DateTimeFormatterMismatchCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -29,4 +29,13 @@ class NullCheckWithInstanceofCheckTest {
       .withCheck(new NullCheckWithInstanceofCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/NullCheckWithInstanceofCheckSample.java"))
+      .withCheck(new NullCheckWithInstanceofCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

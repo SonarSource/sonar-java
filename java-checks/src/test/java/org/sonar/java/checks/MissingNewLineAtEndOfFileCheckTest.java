@@ -57,4 +57,12 @@ class MissingNewLineAtEndOfFileCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MissingNewLineAtEndOfFile.java"))
+      .withCheck(new MissingNewLineAtEndOfFileCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

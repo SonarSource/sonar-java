@@ -29,4 +29,12 @@ class UnusedLabelCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/unused/UnusedLabelCheck.java")
+      .withCheck(new UnusedLabelCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

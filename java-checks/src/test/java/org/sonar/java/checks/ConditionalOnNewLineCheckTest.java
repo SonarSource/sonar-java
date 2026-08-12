@@ -31,4 +31,12 @@ class ConditionalOnNewLineCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ConditionalOnNewLineCheck.java"))
+      .withCheck(new ConditionalOnNewLineCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

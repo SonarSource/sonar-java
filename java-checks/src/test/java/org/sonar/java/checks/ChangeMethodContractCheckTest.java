@@ -68,4 +68,12 @@ class ChangeMethodContractCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/S2638_ChangeMethodContractCheck/noPackageInfo/ChangeMethodContractCheck.java"))
+      .withCheck(new ChangeMethodContractCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

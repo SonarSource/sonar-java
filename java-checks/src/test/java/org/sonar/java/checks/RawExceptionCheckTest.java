@@ -40,4 +40,14 @@ class RawExceptionCheckTest {
       .withCheck(new RawExceptionCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/RawExceptionCheckSample.java"))
+      .withCheck(new RawExceptionCheck())
+      .withJavaVersion(25)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

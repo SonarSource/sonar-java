@@ -40,4 +40,13 @@ class AndroidFusedLocationProviderClientCheckTest {
       .withinAndroidContext(false)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/sustainability/AndroidFusedLocationProviderClientCheckSample.java"))
+      .withCheck(new AndroidFusedLocationProviderClientCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

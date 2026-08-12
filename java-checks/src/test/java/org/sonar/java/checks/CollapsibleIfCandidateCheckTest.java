@@ -39,4 +39,13 @@ class CollapsibleIfCandidateCheckTest {
       .withCheck(new CollapsibleIfCandidateCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CollapsibleIfCandidateCheck.java"))
+      .withCheck(new CollapsibleIfCandidateCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

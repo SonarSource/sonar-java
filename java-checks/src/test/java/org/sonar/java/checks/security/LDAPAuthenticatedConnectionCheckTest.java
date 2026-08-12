@@ -36,4 +36,13 @@ class LDAPAuthenticatedConnectionCheckTest {
       .withClassPath(Collections.emptyList())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/LDAPAuthenticatedConnectionCheckSample.java"))
+      .withCheck(new LDAPAuthenticatedConnectionCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

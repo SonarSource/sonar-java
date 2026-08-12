@@ -29,4 +29,13 @@ class IdenticalOperandOnBinaryExpressionCheckTest {
       .withCheck(new IdenticalOperandOnBinaryExpressionCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(TestUtils.mainCodeSourcesPath("checks/IdenticalOperandOnBinaryExpression.java"))
+      .withCheck(new IdenticalOperandOnBinaryExpressionCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

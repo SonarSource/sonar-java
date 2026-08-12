@@ -31,4 +31,12 @@ class ConstantMathCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ConstantMathCheck.java"))
+      .withCheck(new ConstantMathCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -31,4 +31,12 @@ class DefaultInitializedFieldCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/DefaultInitializedFieldCheckSample.java"))
+      .withCheck(new DefaultInitializedFieldCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

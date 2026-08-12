@@ -17,6 +17,7 @@
 package org.sonar.java.checks;
 
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.checks.verifier.CheckVerifier;
@@ -51,5 +52,15 @@ class MultipleMainInstancesCheckTest {
       .withCheck(new MultipleMainInstancesCheck())
       .withJavaVersion(24)
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/MultipleMainInstancesSample.java"))
+      .withCheck(new MultipleMainInstancesCheck())
+      .withJavaVersion(25)
+      .withoutSemantic()
+      .verifyIssues();
   }
 }

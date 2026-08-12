@@ -38,4 +38,14 @@ class ThreadLocalWithInitialCheckTest {
       .withJavaVersion(7)
       .verifyNoIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ThreadLocalWithInitialCheck_java7.java"))
+      .withCheck(new ThreadLocalWithInitialCheck())
+      .withJavaVersion(7)
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

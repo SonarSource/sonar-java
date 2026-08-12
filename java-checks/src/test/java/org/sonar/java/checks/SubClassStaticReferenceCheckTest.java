@@ -32,4 +32,13 @@ class SubClassStaticReferenceCheckTest {
       .withCheck(new SubClassStaticReferenceCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/SubClassStaticReferenceCheckSample.java"))
+      .withCheck(new SubClassStaticReferenceCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

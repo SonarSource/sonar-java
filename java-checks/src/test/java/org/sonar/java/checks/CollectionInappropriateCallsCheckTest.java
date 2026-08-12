@@ -38,4 +38,13 @@ class CollectionInappropriateCallsCheckTest {
       .withCheck(new CollectionInappropriateCallsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CollectionInappropriateCallsCheck.java"))
+      .withCheck(new CollectionInappropriateCallsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

@@ -30,4 +30,13 @@ class ModulusEqualityCheckTest {
       .withCheck(new ModulusEqualityCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ModulusEqualityCheckSample.java"))
+      .withCheck(new ModulusEqualityCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

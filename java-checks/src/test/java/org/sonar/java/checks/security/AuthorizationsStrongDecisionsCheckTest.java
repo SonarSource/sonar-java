@@ -31,4 +31,12 @@ class AuthorizationsStrongDecisionsCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/AuthorizationsStrongDecisionsCheckSample.java"))
+      .withCheck(new AuthorizationsStrongDecisionsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

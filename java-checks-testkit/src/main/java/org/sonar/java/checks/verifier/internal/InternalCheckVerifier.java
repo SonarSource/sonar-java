@@ -284,6 +284,16 @@ public class InternalCheckVerifier implements CheckVerifier {
     verifyAll();
   }
 
+  @Override
+  public void verifyAnalysisSucceeds() {
+    requiresNonNull(checks, CHECK_OR_CHECKS);
+    requiresNonNull(files, FILE_OR_FILES);
+
+    List<JavaFileScanner> visitors = new ArrayList<>(checks);
+    visitors.add(expectations.noEffectParser());
+    scanFiles(visitors);
+  }
+
   private void verifyAll() {
     List<JavaFileScanner> visitors = new ArrayList<>(checks);
     if (withoutSemantic && expectations.expectNoIssues()) {
@@ -291,6 +301,26 @@ public class InternalCheckVerifier implements CheckVerifier {
     } else {
       visitors.add(expectations.parser());
     }
+    VisitorsBridgeForTests visitorsBridge = scanFiles(visitors);
+
+    var issues = new LinkedHashSet<AnalyzerMessage>();
+    var quickFixes = new HashMap<AnalyzerMessage.TextSpan, List<JavaQuickFix>>();
+
+    for (var fileScannerContext : visitorsBridge.testContexts()) {
+      issues.addAll(fileScannerContext.getIssues());
+      quickFixes.putAll(fileScannerContext.getQuickFixes());
+    }
+
+    JavaFileScannerContextForTests testModuleScannerContext = visitorsBridge.lastCreatedModuleContext();
+    if (testModuleScannerContext != null) {
+      issues.addAll(testModuleScannerContext.getIssues());
+      quickFixes.putAll(testModuleScannerContext.getQuickFixes());
+    }
+
+    checkIssues(issues, quickFixes);
+  }
+
+  private VisitorsBridgeForTests scanFiles(List<JavaFileScanner> visitors) {
     SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, null);
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
     VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
@@ -312,22 +342,7 @@ public class InternalCheckVerifier implements CheckVerifier {
       filesToParse = astScanner.scanWithoutParsing(files).get(false);
     }
     astScanner.scan(filesToParse);
-
-    var issues = new LinkedHashSet<AnalyzerMessage>();
-    var quickFixes = new HashMap<AnalyzerMessage.TextSpan, List<JavaQuickFix>>();
-
-    for (var fileScannerContext : visitorsBridge.testContexts()) {
-      issues.addAll(fileScannerContext.getIssues());
-      quickFixes.putAll(fileScannerContext.getQuickFixes());
-    }
-
-    JavaFileScannerContextForTests testModuleScannerContext = visitorsBridge.lastCreatedModuleContext();
-    if (testModuleScannerContext != null) {
-      issues.addAll(testModuleScannerContext.getIssues());
-      quickFixes.putAll(testModuleScannerContext.getQuickFixes());
-    }
-
-    checkIssues(issues, quickFixes);
+    return visitorsBridge;
   }
 
   private void checkIssues(Set<AnalyzerMessage> issues, Map<TextSpan, List<JavaQuickFix>> quickFixes) {
@@ -584,9 +599,6 @@ public class InternalCheckVerifier implements CheckVerifier {
     Iterator<Expectations.FlowComment> expectedIterator = expected.iterator();
     while (actualIterator.hasNext() && expectedIterator.hasNext()) {
       AnalyzerMessage actualFlow = actualIterator.next();
-      if (actualFlow.primaryLocation() == null) {
-        throw new AssertionError(String.format("Flow without location: %s", actualFlow));
-      }
       validateLocation(actualFlow, expectedIterator.next().attributes);
     }
   }

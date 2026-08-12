@@ -48,4 +48,14 @@ class RepeatAnnotationCheckTest {
       .withCheck(new RepeatAnnotationCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile("src/test/files/checks/RepeatAnnotationCheck.java")
+      .withCheck(new RepeatAnnotationCheck())
+      .withJavaVersion(8)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

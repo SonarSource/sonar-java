@@ -55,4 +55,12 @@ class AssertJChainSimplificationCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/AssertJChainSimplificationCheckTest.java"))
+      .withCheck(new AssertJChainSimplificationCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

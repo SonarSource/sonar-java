@@ -30,4 +30,13 @@ class OpenSAML2AuthenticationBypassCheckTest {
       .withCheck(new OpenSAML2AuthenticationBypassCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/OpenSAML2AuthenticationBypassCheckSample.java"))
+      .withCheck(new OpenSAML2AuthenticationBypassCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

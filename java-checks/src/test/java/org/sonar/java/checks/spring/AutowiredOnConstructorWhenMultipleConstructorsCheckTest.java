@@ -31,4 +31,12 @@ class AutowiredOnConstructorWhenMultipleConstructorsCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/spring/AutowiredOnConstructorWhenMultipleConstructorsCheckSample.java"))
+      .withCheck(new AutowiredOnConstructorWhenMultipleConstructorsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }

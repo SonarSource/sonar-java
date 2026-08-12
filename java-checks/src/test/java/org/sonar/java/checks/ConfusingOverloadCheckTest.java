@@ -39,4 +39,13 @@ class ConfusingOverloadCheckTest {
       .withCheck(new ConfusingOverloadCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/ConfusingOverloadCheck.java"))
+      .withCheck(new ConfusingOverloadCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

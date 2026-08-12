@@ -41,4 +41,13 @@ class KnownCapacityHashBasedCollectionCheckTest {
       .verifyNoIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/KnownCapacityHashBasedCollectionCheckSample.java"))
+      .withCheck(new KnownCapacityHashBasedCollectionCheck())
+      .withJavaVersion(19)
+      .withoutSemantic()
+      .verifyIssues();
+  }
 }

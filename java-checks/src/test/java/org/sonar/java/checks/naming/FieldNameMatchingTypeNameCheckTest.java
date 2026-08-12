@@ -31,4 +31,12 @@ class FieldNameMatchingTypeNameCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/naming/FieldNameMatchingTypeNameCheckSample.java"))
+      .withCheck(new FieldNameMatchingTypeNameCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }
