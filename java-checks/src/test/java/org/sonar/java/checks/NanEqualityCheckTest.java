@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class NanEqualityCheckTest {
 
@@ -29,5 +30,13 @@ class NanEqualityCheckTest {
       .onFile(mainCodeSourcesPath("checks/NanEqualityCheckSample.java"))
       .withCheck(new NanEqualityCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/NanEqualityCheckSample.java"))
+      .withCheck(new NanEqualityCheck())
+      .verifyNoIssues();
   }
 }

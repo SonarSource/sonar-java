@@ -90,4 +90,20 @@ class NanEqualityCheckSample {
 //        ^^
   }
 
+  void compliantCustomNaN() {
+    CustomClass c = new CustomClass();
+    if (c.value == CustomClass.NaN) { } // Compliant - NaN is not from Double or Float
+  }
+
+  void compliantLocalVariableNaN() {
+    double NaN = -1.0;
+    double x = 1.0;
+    if (x == NaN) { } // Compliant - NaN is a local variable, not Double.NaN or Float.NaN
+  }
+
+  static class CustomClass {
+    static final double NaN = -1.0;
+    double value;
+  }
+
 }
