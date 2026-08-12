@@ -33,6 +33,15 @@ class NanEqualityCheckTest {
   }
 
   @Test
+  void no_issue_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/NanEqualityCheckSample.java"))
+      .withCheck(new NanEqualityCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/NanEqualityCheckSample.java"))
