@@ -101,6 +101,42 @@ class NanEqualityCheckSample {
     if (x == NaN) { } // Compliant - NaN is a local variable, not Double.NaN or Float.NaN
   }
 
+  void compliantEqualsOnDoubles() {
+    Double a = 1.0;
+    Double b = Double.NaN;
+    if (a.equals(b)) { } // Compliant - using .equals() method
+    if (a.equals(Double.NaN)) { } // Compliant
+    if (Double.valueOf(1.0).equals(Double.NaN)) { } // Compliant
+    if (a.equals(0.0)) { } // Compliant
+  }
+
+  void compliantEqualsOnFloats() {
+    Float a = 1.0f;
+    Float b = Float.NaN;
+    if (a.equals(b)) { } // Compliant - using .equals() method
+    if (a.equals(Float.NaN)) { } // Compliant
+  }
+
+  void compliantComparisonOperatorsWithNaN() {
+    double x = 1.0;
+    if (x > Double.NaN) { } // Compliant - rule only covers == and !=
+    if (x >= Double.NaN) { } // Compliant
+    if (x < Double.NaN) { } // Compliant
+    if (x <= Double.NaN) { } // Compliant
+    if (Double.NaN > x) { } // Compliant
+    if (Double.NaN >= x) { } // Compliant
+    if (Double.NaN < x) { } // Compliant
+    if (Double.NaN <= x) { } // Compliant
+  }
+
+  void compliantComparisonOperatorsWithFloatNaN() {
+    float x = 1.0f;
+    if (x > Float.NaN) { } // Compliant
+    if (x >= Float.NaN) { } // Compliant
+    if (x < Float.NaN) { } // Compliant
+    if (x <= Float.NaN) { } // Compliant
+  }
+
   static class CustomClass {
     static final double NaN = -1.0;
     double value;

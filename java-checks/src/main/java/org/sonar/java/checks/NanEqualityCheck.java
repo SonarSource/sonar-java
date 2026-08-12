@@ -22,6 +22,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -75,12 +76,9 @@ public class NanEqualityCheck extends IssuableSubscriptionVisitor {
     if (owner == null || owner.type() == null) {
       return null;
     }
-    String ownerType = owner.type().fullyQualifiedName();
-    if ("java.lang.Double".equals(ownerType)) {
-      return "Double";
-    }
-    if ("java.lang.Float".equals(ownerType)) {
-      return "Float";
+    Type ownerType = owner.type();
+    if (ownerType.is("java.lang.Double") || ownerType.is("java.lang.Float")) {
+      return ownerType.name();
     }
     return null;
   }
