@@ -53,24 +53,25 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
 
   private boolean checkHiding(MethodTree methodTree, Symbol.MethodSymbol methodSymbol, Type superClass) {
     for (Symbol symbol : superClass.symbol().lookupSymbols(methodSymbol.name())) {
-      if (symbol.isMethodSymbol()
-        && symbol.isStatic()
-        && !symbol.isPrivate()
-        && hasSameParameterTypes(methodSymbol, (Symbol.MethodSymbol) symbol)) {
-        Symbol.MethodSymbol hiddenMethod = (Symbol.MethodSymbol) symbol;
-        String message = String.format("Rename this method; it hides \"%s\" in \"%s\".",
-          methodSymbol.name(), symbol.owner().name());
-        MethodTree declaration = hiddenMethod.declaration();
-        if (declaration != null) {
-          reportIssue(methodTree.simpleName(), message,
-            Collections.singletonList(new JavaFileScannerContext.Location("Hidden method",
-              declaration.simpleName())),
-            null);
-        } else {
-          reportIssue(methodTree.simpleName(), message);
-        }
-        return true;
+      if (!symbol.isMethodSymbol() || !symbol.isStatic() || symbol.isPrivate()) {
+        continue;
       }
+      Symbol.MethodSymbol hiddenMethod = (Symbol.MethodSymbol) symbol;
+      if (!hasSameParameterTypes(methodSymbol, hiddenMethod)) {
+        continue;
+      }
+      String message = String.format("Rename this method; it hides \"%s\" in \"%s\".",
+        methodSymbol.name(), hiddenMethod.owner().name());
+      MethodTree declaration = hiddenMethod.declaration();
+      if (declaration != null) {
+        reportIssue(methodTree.simpleName(), message,
+          Collections.singletonList(new JavaFileScannerContext.Location("Hidden method",
+            declaration.simpleName())),
+          null);
+      } else {
+        reportIssue(methodTree.simpleName(), message);
+      }
+      return true;
     }
     return false;
   }

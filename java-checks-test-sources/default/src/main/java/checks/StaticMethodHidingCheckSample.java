@@ -176,7 +176,33 @@ class StaticMethodHidingCheckSample {
   // Covers the branch where declaration() returns null
 
   static class MyThread extends Thread {
-    static void sleep(long millis) throws InterruptedException { // Noncompliant {{Rename this method; it hides "sleep" in "Thread".}}
+    public static void sleep(long millis) throws InterruptedException { // Noncompliant {{Rename this method; it hides "sleep" in "Thread".}}
+    }
+  }
+
+  // --- Compliant: parent has a field with same name as child's static method ---
+
+  static class ParentWithField {
+    static int action = 0;
+  }
+
+  static class ChildWithMethodSameNameAsField extends ParentWithField {
+    static void action() { // Compliant - parent has a field, not a method
+    }
+  }
+
+  // --- Compliant: parent has non-static non-private method, child has static method with different params ---
+  // (Same name + same params + static child + non-static parent is a compile error)
+
+  static class ParentWithInstanceMethod {
+    void doWork(int x) {
+    }
+    static void doWork(String s) {
+    }
+  }
+
+  static class ChildWithStaticMethod extends ParentWithInstanceMethod {
+    static void doWork(String s) { // Noncompliant {{Rename this method; it hides "doWork" in "ParentWithInstanceMethod".}}
     }
   }
 
