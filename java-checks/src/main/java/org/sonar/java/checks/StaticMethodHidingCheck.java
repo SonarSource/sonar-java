@@ -34,8 +34,19 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
     return Collections.singletonList(Tree.Kind.METHOD);
   }
 
+  private boolean hasSemantic;
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    hasSemantic = context.getSemanticModel() != null;
+    super.setContext(context);
+  }
+
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic) {
+      return;
+    }
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     if (!methodSymbol.isStatic()) {

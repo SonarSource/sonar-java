@@ -33,6 +33,15 @@ class StaticMethodHidingCheckTest {
   }
 
   @Test
+  void withoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/StaticMethodHidingCheckSample.java"))
+      .withCheck(new StaticMethodHidingCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/StaticMethodHidingCheckSample.java"))
