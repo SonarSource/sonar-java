@@ -46,7 +46,7 @@ class StaticMethodHidingCheckTest {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/StaticMethodHidingCheckSample.java"))
       .withCheck(new StaticMethodHidingCheck())
-      .verifyNoIssues();
+      .verifyIssues();
   }
 
 }
