@@ -1,23 +1,30 @@
 {
   "title": "Static methods should not hide methods from superclasses",
   "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "tags": [
+    "pitfall",
+    "confusing",
+    "inheritance"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9149",
+  "sqKey": "S9149",
+  "scope": "All",
+  "quickfix": "unknown",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "MEDIUM"
     },
     "attribute": "CLEAR"
   },
-  "status": "ready",
-  "remediation": {
-    "func": "Constant\/Issue",
-    "constantCost": "10min"
-  },
-  "tags": [
-    "pitfall"
-  ],
-  "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-9149",
-  "sqKey": "S9149",
-  "scope": "All",
-  "quickfix": "unknown"
+  "securityStandards": {
+    "CERT": [
+      "MET07-J."
+    ]
+  }
 }

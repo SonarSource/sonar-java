@@ -1,21 +1,24 @@
 {
-  "title": "\"NaN\" should not be tested for equality using \"==\" or \"!=\"",
+  "title": "\"NaN\" should not be tested for equality using \"\u003d\u003d\" or \"!\u003d\"",
   "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "pitfall",
+    "floating-point"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-9147",
+  "sqKey": "S9147",
+  "scope": "All",
+  "quickfix": "unknown",
   "code": {
     "impacts": {
       "RELIABILITY": "HIGH"
     },
     "attribute": "LOGICAL"
-  },
-  "status": "ready",
-  "remediation": {
-    "func": "Constant/Issue",
-    "constantCost": "5min"
-  },
-  "tags": [],
-  "defaultSeverity": "Critical",
-  "ruleSpecification": "RSPEC-9147",
-  "sqKey": "S9147",
-  "scope": "All",
-  "quickfix": "unknown"
+  }
 }

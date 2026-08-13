@@ -1,6 +1,19 @@
+<p>This rule raises an issue when methods that compare values for sorting or ordering purposes compare floating-point values using subtraction or
+simple relational operators (<code>&lt;</code>, <code>&gt;</code>, <code>⇐</code>, <code>&gt;=</code>) instead of dedicated comparison utilities
+designed for floating-point numbers.</p>
+<p>In Java, this specifically applies to <code>compareTo()</code> methods (from the <code>Comparable</code> interface) and <code>compare()</code>
+methods (from the <code>Comparator</code> interface).</p>
 <h2>Why is this an issue?</h2>
 <p>Comparing floating-point values (single or double precision) using subtraction or simple comparison operators does not correctly handle special
 IEEE 754 values such as <code>NaN</code> (Not a Number) and negative zero (<code>-0.0</code>).</p>
+<p>The IEEE 754 floating-point standard defines specific rules for these edge cases:</p>
+<ul>
+  <li><code>NaN</code> is not equal to any value, including itself. Any comparison with <code>NaN</code> (except inequality checks) should return
+  false.</li>
+  <li>Negative zero (<code>-0.0</code>) and positive zero (<code>+0.0</code>) are considered equal when using equality operators, but they should be
+  distinguished in ordering operations.</li>
+  <li><code>NaN</code> should be considered greater than all other values (including positive infinity) in a total ordering.</li>
+</ul>
 <p>When you implement comparison using subtraction (e.g., converting the difference between two floating-point values to an integer result), several
 problems occur:</p>
 <ul>
@@ -8,19 +21,52 @@ problems occur:</p>
   but not equal.</li>
   <li><strong>NaN handling</strong>: Subtraction involving <code>NaN</code> produces <code>NaN</code>, which when cast to an integer becomes
   <code>0</code>, incorrectly suggesting the values are equal.</li>
+  <li><strong>Negative zero</strong>: The subtraction <code>(-0.0) - (+0.0)</code> produces <code>-0.0</code>, which becomes <code>0</code> when cast,
+  making the values appear equal in both directions, which is correct. However, the general approach is still flawed for other cases.</li>
   <li><strong>Overflow</strong>: For values near the maximum range, subtraction can overflow.</li>
 </ul>
 <p>Using simple comparison operators like <code>&lt;</code> or <code>&gt;</code> also fails:</p>
 <ul>
   <li>Any comparison with <code>NaN</code> (except inequality) returns false, breaking the transitivity requirement of comparison interface
   contracts.</li>
-  <li>The operators don't provide a consistent three-way comparison result needed for comparison methods that must return negative, zero, or positive
+  <li>The operators don’t provide a consistent three-way comparison result needed for comparison methods that must return negative, zero, or positive
   values.</li>
 </ul>
-<p>Use <code>Float.compare()</code> and <code>Double.compare()</code> instead. These methods correctly implement a total ordering that handles all IEEE
-754 special cases and satisfies the contracts of <code>Comparable</code> and <code>Comparator</code>.</p>
+<p>Standard library functions designed for floating-point comparison handle all these edge cases correctly. They impose a total ordering that
+treats:</p>
+<ul>
+  <li><code>NaN</code> as equal to itself and greater than all other values (including positive infinity)</li>
+  <li><code>-0.0</code> as less than <code>+0.0</code></li>
+  <li>All other values according to their natural numeric ordering</li>
+</ul>
+<p>This ensures that comparison methods satisfy the general contract required by comparison interfaces and comparator implementations.</p>
+<p>In Java, use the <code>Float.compare()</code> and <code>Double.compare()</code> methods for proper floating-point comparison. These methods
+correctly implement the total ordering described above and satisfy the contracts of the <code>Comparable</code> interface and <code>Comparator</code>
+implementations.</p>
+<h3>What is the potential impact?</h3>
+<p>Using incorrect floating-point comparison can lead to several serious issues:</p>
+<ul>
+  <li><strong>Broken sorting</strong>: Collections of objects with floating-point fields may not sort correctly, leading to unexpected ordering in
+  lists, priority queues, or tree-based data structures.</li>
+  <li><strong>Contract violations</strong>: Comparison operations require consistency between comparison methods and equality checks, as well as
+  transitivity (if A &lt; B and B &lt; C, then A &lt; C). Incorrect handling of <code>NaN</code> and special values breaks these guarantees.</li>
+  <li><strong>Unpredictable behavior</strong>: Programs may exhibit inconsistent behavior when encountering <code>NaN</code> values, making bugs
+  difficult to reproduce and diagnose.</li>
+  <li><strong>Data integrity</strong>: In applications that rely on proper ordering (such as financial calculations, scientific computations, or
+  database operations), incorrect comparisons can lead to wrong results or data corruption.</li>
+</ul>
+<p>In Java, these requirements are formalized in the <code>Comparable</code> and <code>Comparator</code> contracts.</p>
 <h2>How to fix it</h2>
-<p>Replace subtraction-based or relational-operator-based comparison with <code>Double.compare()</code> or <code>Float.compare()</code>.</p>
+<p>Replace subtraction-based comparison with <code>Double.compare()</code> or <code>Float.compare()</code>. These methods return a negative integer,
+zero, or positive integer as the first argument is less than, equal to, or greater than the second, while correctly handling all IEEE 754 special
+cases.</p>
+<p>This fix always applies when floating-point values are compared in ordering methods. There is no scenario where subtraction-based comparison of
+<code>float</code> or <code>double</code> values in a <code>compareTo()</code> or <code>compare()</code> method is correct, because it silently
+mishandles <code>NaN</code>, negative zero, and values whose difference is smaller than 1.</p>
+<p>This rule does not flag subtraction of integer types or floating-point comparisons outside of ordering methods.</p>
+<p>If you believe the finding is a false positive, verify that the flagged expression genuinely involves <code>float</code> or <code>double</code>
+operands in a <code>compareTo()</code> or <code>compare()</code> method. If it does, the finding is not a false positive — the subtraction approach is
+always incorrect for these types in ordering contexts, even when the values happen to be well-bounded in practice.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -57,9 +103,13 @@ class Position implements Comparable&lt;Position&gt; {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html#compare(double,double)">Double.compare(double,
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html#compare(double,double)">Double.compare(double,
   double)</a></li>
-  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Float.html#compare(float,float)">Float.compare(float,
-  float)</a></li>
-  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Comparable.html">Comparable Interface</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Float.html#compare(float,float)">Float.compare(float, float)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Comparable.html">Comparable
+  Interface</a></li>
+  <li>IEEE Standards Association - <a href="https://standards.ieee.org/standard/754-2019.html">IEEE 754 Floating-Point Arithmetic</a></li>
 </ul>
+
