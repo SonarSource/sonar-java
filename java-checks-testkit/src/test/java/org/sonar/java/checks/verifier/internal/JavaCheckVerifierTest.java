@@ -147,15 +147,11 @@ class JavaCheckVerifierTest {
   }
 
   @Test
-  void verify_on_project_is_not_implemented() {
-    Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
+  void verify_issue_on_project() {
+    JavaCheckVerifier.newInstance()
       .onFile(TEST_FILE)
       .withCheck(PROJECT_ISSUE_CHECK)
-      .verifyIssueOnProject("issueOnProject"));
-
-    assertThat(e)
-      .isInstanceOf(UnsupportedOperationException.class)
-      .hasMessage("Not implemented!");
+      .verifyIssueOnProject("issueOnProject");
   }
 
   @Test

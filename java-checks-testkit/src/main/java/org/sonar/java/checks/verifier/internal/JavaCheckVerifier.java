@@ -139,6 +139,34 @@ public class JavaCheckVerifier implements CheckVerifier {
     return verifier;
   }
 
+  private VisitorsBridgeForTests scanFilesForProjectIssues() {
+    JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
+
+    List<JavaFileScanner> visitors = new ArrayList<>(checks);
+    SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, rootDirectory);
+    VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
+      .withJavaVersion(actualVersion)
+      .withSonarComponents(sonarComponents)
+      .withAndroidContext(inAndroidContext);
+    if (!withoutSemantic) {
+      setActualClasspath();
+      visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
+    }
+
+    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
+    VisitorsBridgeForTests visitorsBridge = visitorsBridgeBuilder.build();
+    astScanner.setVisitorBridge(visitorsBridge);
+
+    List<InputFile> filesToParse = files;
+    if (isCacheEnabled) {
+      visitorsBridge.setCacheContext(cacheContext);
+      filesToParse = astScanner.scanWithoutParsing(files).get(false);
+    }
+    astScanner.scanForTesting(filesToParse, compilationUnitModifier);
+
+    return visitorsBridge;
+  }
+
   private void setActualClasspath() {
     List<File> newClasspath = classpath == null ? new ArrayList<>(TestClasspathUtils.DEFAULT_MODULE.getClassPath()) : classpath;
     jarsToRemove.forEach(f -> newClasspath.removeIf(file -> file.getName().contains(f)));
@@ -377,7 +405,34 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   @Override
   public void verifyIssueOnProject(String expectedIssueMessage) {
-    throw new UnsupportedOperationException("Not implemented!");
+    requiresNonNull(checks, CHECK_OR_CHECKS);
+    requiresNonNull(files, FILE_OR_FILES);
+
+    VisitorsBridgeForTests visitorsBridge = scanFilesForProjectIssues();
+
+    var issues = new ArrayList<AnalyzerMessage>();
+    for (var fileScannerContext : visitorsBridge.testContexts()) {
+      issues.addAll(fileScannerContext.getIssues());
+    }
+    JavaFileScannerContextForTests testModuleScannerContext = visitorsBridge.lastCreatedModuleContext();
+    if (testModuleScannerContext != null) {
+      issues.addAll(testModuleScannerContext.getIssues());
+    }
+
+    if (issues.size() != 1) {
+      String issueNumberMessage = issues.isEmpty() ? "none has been raised" : String.format("%d issues have been raised", issues.size());
+      throw new AssertionError(String.format("A single issue is expected on the project, but %s", issueNumberMessage));
+    }
+    AnalyzerMessage issue = issues.get(0);
+    if (issue.getLine() != null) {
+      throw new AssertionError(String.format("Expected an issue directly on project but was raised on line %d", issue.getLine()));
+    }
+    if (issue.getInputComponent().isFile()) {
+      throw new AssertionError("Expected the issue to be raised at project level, not at file level");
+    }
+    if (!expectedIssueMessage.equals(issue.getMessage())) {
+      throw new AssertionError(String.format("Expected the issue message to be:%n\t\"%s\"%nbut was:%n\t\"%s\"", expectedIssueMessage, issue.getMessage()));
+    }
   }
 
   @Override
