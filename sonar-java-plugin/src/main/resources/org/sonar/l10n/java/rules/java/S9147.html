@@ -1,3 +1,4 @@
+<p>This is an issue when comparing a floating-point value to NaN using equality or inequality operators.</p>
 <h2>Why is this an issue?</h2>
 <p>In most programming languages, floating-point numbers follow the IEEE 754 standard for arithmetic. This standard defines <code>NaN</code> (Not a
 Number) as a special value that represents undefined or unrepresentable results, such as dividing zero by zero or taking the square root of a negative
@@ -5,7 +6,8 @@ number.</p>
 <p>A critical aspect of IEEE 754 is that <code>NaN</code> is defined as never being equal to anything—not even to itself. This means:</p>
 <ul>
   <li><code>NaN == NaN</code> evaluates to <code>false</code></li>
-  <li>Any comparison <code>x == NaN</code> will always be <code>false</code>, regardless of the value of <code>x</code></li>
+  <li>Any comparison <code>x == NaN</code> will always be <code>false</code>, regardless of the value of <code>x</code>, for both single-precision and
+  double-precision floating-point types</li>
 </ul>
 <p>Similarly, inequality comparisons are also unreliable:</p>
 <ul>
@@ -13,29 +15,49 @@ number.</p>
 </ul>
 <p>This behavior makes equality tests for <code>NaN</code> fundamentally broken. Code that attempts to check whether a variable is <code>NaN</code>
 using <code>==</code> or <code>!=</code> will never work as intended, leading to incorrect program logic.</p>
-<p>The correct approach is to use <code>Double.isNaN()</code> or <code>Float.isNaN()</code> methods, which return accurate results.</p>
+<p>The correct approach is to use dedicated functions or methods specifically designed to test for <code>NaN</code> values (such as those typically
+named <code>isNaN</code> or similar), which return accurate results.</p>
+<h3>What is the potential impact?</h3>
+<p>When a program incorrectly tests for NaN (Not a Number) values using equality operators, the condition will never evaluate as expected. This leads
+to:</p>
+<ul>
+  <li>Control flow that never executes the intended branch</li>
+  <li>NaN values propagating undetected through calculations</li>
+  <li>Incorrect results or unexpected program behavior</li>
+  <li>Bugs that are difficult to diagnose because the comparison silently fails</li>
+</ul>
+<p>This affects the reliability and correctness of numerical computations.</p>
 <h2>How to fix it</h2>
-<p>Replace equality comparisons with <code>NaN</code> constants using the appropriate <code>isNaN()</code> method for the floating-point type you're
+<p>Replace equality comparisons with <code>NaN</code> constants using the appropriate <code>isNaN()</code> method for the floating-point type you’re
 working with.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 double result = Math.sqrt(-1);
 if (result == Double.NaN) {  // Noncompliant
     System.out.println("Invalid result");
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 double result = Math.sqrt(-1);
 if (Double.isNaN(result)) {
     System.out.println("Invalid result");
 }
 </pre>
 <h2>Resources</h2>
+<h3>Documentation</h3>
 <ul>
-  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html#isNaN(double)">Oracle Java Documentation -
-  Double.isNaN()</a></li>
-  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Float.html#isNaN(float)">Oracle Java Documentation -
-  Float.isNaN()</a></li>
-  <li><a href="https://en.wikipedia.org/wiki/IEEE_754#NaN">Wikipedia - IEEE 754 - NaN</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Double.html#isNaN(double)">Double.isNaN()</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Float.html#isNaN(float)">Float.isNaN()</a></li>
+  <li>Wikipedia - <a href="https://en.wikipedia.org/wiki/IEEE_754#NaN">IEEE 754 - NaN</a></li>
 </ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S6725} - Python equivalent: NaN should not be tested for equality</li>
+  <li>{rule:java:S6679} - JavaScript equivalent: NaN should not be tested for equality</li>
+  <li>{rule:java:S2688} - JavaScript: NaN should not be used in comparisons</li>
+</ul>
+

@@ -1,21 +1,25 @@
 {
   "title": "\"Float.compare\" or \"Double.compare\" should be used for floating-point comparisons",
   "type": "BUG",
-  "code": {
-    "impacts": {
-      "RELIABILITY": "HIGH"
-    },
-    "attribute": "LOGICAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5min"
+    "constantCost": "5 min"
   },
-  "tags": [],
+  "tags": [
+    "pitfall",
+    "floating-point"
+  ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-9148",
   "sqKey": "S9148",
   "scope": "All",
-  "quickfix": "infeasible"
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH",
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  }
 }

@@ -1,11 +1,55 @@
+<p>This rule flags cases where a derived class defines a static method with the same signature (name and parameters) as a static method in its base
+class.</p>
 <h2>Why is this an issue?</h2>
-<p>Method hiding occurs when a subclass defines a static method with the same signature as a static method in its superclass. Unlike instance
-method overriding, static methods are resolved at compile time based on the declared type of the reference, not the actual runtime type of the
-object. This behavior is counterintuitive and can lead to subtle bugs.</p>
-<p>When a variable is declared as the parent type but holds a child instance, calling a hidden static method through that variable invokes the
-parent's version, not the child's. This contradicts the polymorphic behavior developers expect from instance methods.</p>
-<h3>Noncompliant code example</h3>
+<p>Method hiding occurs when a subclass defines a class-level method that has the same signature as a class-level method in its superclass. This is
+fundamentally different from method overriding, which applies to instance-level methods.</p>
+<p>With instance-level methods, languages typically use polymorphism: the method called is determined by the actual runtime type of the object. This
+allows for dynamic behavior based on the object’s true type.</p>
+<p>With class-level methods, however, languages use static binding: the method called is determined by the declared type of the reference at compile
+time, not the actual type of the object. This means that even if you have a superclass reference pointing to a subclass object, calling a class-level
+method will invoke the superclass version, not the subclass version.</p>
+<p>This behavior is counterintuitive and contradicts developers' expectations based on how instance-level methods work. When reading code, developers
+naturally expect polymorphic behavior, but method hiding violates this expectation.</p>
+<p>Consider this example pattern:</p>
+<p>A parent class defines a class-level method that prints "Parent". A child class defines a class-level method with the same signature that prints
+"Child". When a variable is declared as the parent type but holds a child instance, calling the method through that variable prints "Parent", not
+"Child".</p>
+<p>Even though the variable refers to a child instance, the parent’s method is called because the variable is declared as the parent type. This is
+confusing because instance-level methods would exhibit polymorphic behavior in the same situation.</p>
+<p>The confusion is amplified when:</p>
+<ul>
+  <li>Code is refactored and the declared type of a variable changes</li>
+  <li>Methods are called through different reference types in different parts of the codebase</li>
+  <li>New developers join the team and aren’t aware of the hidden class-level methods</li>
+</ul>
+<p>In Java, this looks like:</p>
 <pre>
+class Parent {
+    static void display() {
+        System.out.println("Parent");
+    }
+}
+
+class Child extends Parent {
+    static void display() {  // Hides Parent.display()
+        System.out.println("Child");
+    }
+}
+
+Parent obj = new Child();
+obj.display();  // Prints "Parent", not "Child"!
+</pre>
+<h3>What is the potential impact?</h3>
+<p>Method hiding makes code harder to understand and maintain. Developers might incorrectly assume that method calls will be resolved at runtime based
+on the actual object type (dynamic dispatch), leading to logic errors that are difficult to diagnose. During refactoring, changing variable types can
+silently change which method is called, introducing subtle bugs. The code becomes less intuitive and requires deeper knowledge of compile-time method
+binding rules to understand correctly.</p>
+<h2>How to fix it</h2>
+<p>The simplest solution is to rename the static method in the subclass to avoid hiding. This makes the code’s intent clear and eliminates confusion
+about which method will be called.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 class Parent {
     static void calculate() {
         // Parent implementation
@@ -18,8 +62,8 @@ class Child extends Parent {
     }
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 class Parent {
     static void calculate() {
         // Parent implementation
@@ -36,9 +80,17 @@ class Child extends Parent {
 <h3>Documentation</h3>
 <ul>
   <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/IandI/hidevariables.html">Hiding Fields and Methods</a></li>
-  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4.8.2">Method Declarations - Hiding</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4.8.2">Method Declarations -
+  Hiding</a></li>
 </ul>
 <h3>Standards</h3>
 <ul>
-  <li>CERT - <a href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface">CERT-MET07-J.: Never declare a class method that hides a method declared in a superclass or superinterface</a></li>
+  <li>CERT - <a
+  href="https://wiki.sei.cmu.edu/confluence/display/java/MET07-J.+Never+declare+a+class+method+that+hides+a+method+declared+in+a+superclass+or+superinterface">CERT-MET07-J.: Never declare a class method that hides a method declared in a superclass or superinterface</a></li>
 </ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S4019} - C# rule: Base class methods should not be hidden</li>
+  <li>{rule:java:S1242} - C/C++ rule: Methods should not hide methods from base classes</li>
+</ul>
+

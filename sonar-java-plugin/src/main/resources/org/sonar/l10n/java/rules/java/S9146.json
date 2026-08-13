@@ -1,34 +1,33 @@
 {
   "title": "Apache XML RPC extensions should not be enabled",
   "type": "VULNERABILITY",
-  "code": {
-    "impacts": {
-      "SECURITY": "HIGH"
-    },
-    "attribute": "CONVENTIONAL"
-  },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "2min"
+    "constantCost": "5 min"
   },
   "tags": [
-    "cwe"
+    "cwe",
+    "owasp",
+    "serialization"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-9146",
   "sqKey": "S9146",
   "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "SECURITY": "HIGH"
+    },
+    "attribute": "TRUSTWORTHY"
+  },
   "securityStandards": {
     "CWE": [
       502
     ],
-    "OWASP": [
-      "A8"
-    ],
     "OWASP Top 10 2021": [
       "A8"
     ]
-  },
-  "quickfix": "unknown"
+  }
 }
