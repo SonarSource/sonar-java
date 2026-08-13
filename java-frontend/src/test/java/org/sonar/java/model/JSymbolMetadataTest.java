@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -264,6 +265,84 @@ class JSymbolMetadataTest {
 
     assertThat(orElseMetadata.symbolAnnotations()).isEmpty();
     assertThat(orElseMetadata.nullabilityData().type()).isEqualTo(NullabilityType.NO_ANNOTATION);
+  }
+
+  @Test
+  void generic_external_method_metadata_comes_from_declaration() throws IOException {
+    MethodTree calls = externalGenericCalls();
+    MethodInvocationTree declaredNonNull = invocationAt(calls, 0);
+    MethodInvocationTree declaredNullable = invocationAt(calls, 1);
+    MethodInvocationTree inherited = invocationAt(calls, 3);
+
+    assertThat(declaredNonNull.methodSymbol().parameterTypes().get(0).name()).isEqualTo("String");
+    assertThat(declaredNonNull.methodSymbol().returnType().name()).isEqualTo("String");
+    assertThat(declaredNonNull.methodSymbol().declarationParameters().get(0).metadata().nullabilityData().type()).isEqualTo(NON_NULL);
+    assertThat(declaredNonNull.methodSymbol().metadata().nullabilityData().type()).isEqualTo(NON_NULL);
+
+    assertThat(declaredNullable.methodSymbol().parameterTypes().get(0).name()).isEqualTo("String");
+    assertThat(declaredNullable.methodSymbol().returnType().name()).isEqualTo("String");
+    assertThat(declaredNullable.methodSymbol().declarationParameters().get(0).metadata().nullabilityData().type()).isEqualTo(STRONG_NULLABLE);
+    assertThat(declaredNullable.methodSymbol().metadata().nullabilityData().type()).isEqualTo(STRONG_NULLABLE);
+
+    assertThat(inherited.methodSymbol().parameterTypes().get(0).name()).isEqualTo("String");
+    assertThat(inherited.methodSymbol().returnType().name()).isEqualTo("String");
+    assertThat(inherited.methodSymbol().declarationParameters().get(0).metadata().nullabilityData().type()).isEqualTo(NullabilityType.NO_ANNOTATION);
+    assertThat(inherited.methodSymbol().metadata().nullabilityData().type()).isEqualTo(NullabilityType.NO_ANNOTATION);
+  }
+
+  @Test
+  void generic_external_constructor_and_nested_type_metadata_come_from_declaration() throws IOException {
+    MethodTree calls = externalGenericCalls();
+    MethodInvocationTree nestedNullable = invocationAt(calls, 2);
+    NewClassTree constructor = (NewClassTree) ((ExpressionStatementTree) calls.block().body().get(4)).expression();
+
+    assertThat(nestedNullable.methodSymbol().parameterTypes().get(0).name()).isEqualTo("List");
+    assertThat(nestedNullable.methodSymbol().returnType().name()).isEqualTo("List");
+    assertThat(nestedNullable.methodSymbol().metadata().nullabilityData().type()).isEqualTo(NullabilityType.NO_ANNOTATION);
+    assertThat(nestedNullable.methodSymbol().metadata().parametersMetadata()).singleElement()
+      .extracting(metadata -> metadata.nullabilityData().type())
+      .isEqualTo(STRONG_NULLABLE);
+
+    assertThat(constructor.methodSymbol().parameterTypes().get(0).name()).isEqualTo("String");
+    assertThat(constructor.methodSymbol().declarationParameters().get(0).metadata().nullabilityData().type()).isEqualTo(NullabilityType.NO_ANNOTATION);
+  }
+
+  @Test
+  void generic_external_method_type_parameter_metadata_comes_from_declaration() throws IOException {
+    MethodTree calls = externalGenericCalls();
+    MethodInvocationTree genericMethod = invocationAt(calls, 5);
+    MethodInvocationTree genericVarargs = invocationAt(calls, 6);
+
+    assertThat(genericMethod.methodSymbol().parameterTypes().get(0).name()).isEqualTo("String");
+    assertThat(genericMethod.methodSymbol().returnType().name()).isEqualTo("String");
+    assertThat(genericMethod.methodSymbol().declarationParameters().get(0).metadata().nullabilityData().type()).isEqualTo(NullabilityType.NO_ANNOTATION);
+    assertThat(genericMethod.methodSymbol().metadata().nullabilityData().type()).isEqualTo(NullabilityType.NO_ANNOTATION);
+
+    assertThat(genericVarargs.methodSymbol().parameterTypes().get(0).name()).isEqualTo("String[]");
+    assertThat(genericVarargs.methodSymbol().returnType().name()).isEqualTo("String");
+    assertThat(genericVarargs.methodSymbol().declarationParameters().get(0).metadata().nullabilityData().type()).isEqualTo(NullabilityType.NO_ANNOTATION);
+    assertThat(genericVarargs.methodSymbol().metadata().nullabilityData().type()).isEqualTo(NullabilityType.NO_ANNOTATION);
+  }
+
+  @Test
+  void generic_external_method_default_nullability_is_preserved() throws IOException {
+    MethodInvocationTree defaulted = invocationAt(externalGenericCalls(), 7);
+
+    assertThat(defaulted.methodSymbol().parameterTypes().get(0).name()).isEqualTo("String");
+    assertThat(defaulted.methodSymbol().returnType().name()).isEqualTo("String");
+    assertThat(defaulted.methodSymbol().declarationParameters().get(0).metadata().nullabilityData().type()).isEqualTo(NON_NULL);
+    assertThat(defaulted.methodSymbol().metadata().nullabilityData().type()).isEqualTo(NON_NULL);
+  }
+
+  private static MethodTree externalGenericCalls() throws IOException {
+    Path sourceFile = NULLABILITY_SOURCE_DIR.resolve(Paths.get("no_default", "ExternalGenericNullabilityUsage.java"));
+    CompilationUnitTree cut = JParserTestUtils.parse(sourceFile.toRealPath().toFile(), JParserTestUtils.checksTestClassPath());
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+    return (MethodTree) classTree.members().get(0);
+  }
+
+  private static MethodInvocationTree invocationAt(MethodTree method, int index) {
+    return (MethodInvocationTree) ((ExpressionStatementTree) method.block().body().get(index)).expression();
   }
 
   @Nested
