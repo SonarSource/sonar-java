@@ -96,53 +96,9 @@ public class JavaCheckVerifier implements CheckVerifier {
   private WriteCache writeCache;
   private File rootDirectory;
 
-  private MultiFileVerifier createVerifier() {
-    MultiFileVerifier verifier = MultiFileVerifier.create(Paths.get(files.get(0).uri()), UTF_8);
-
+  private VisitorsBridgeForTests scanFiles(List<JavaFileScanner> visitors) {
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
 
-    List<JavaFileScanner> visitors = new ArrayList<>(checks);
-    CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
-    visitors.add(commentLinesVisitor);
-    SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, rootDirectory);
-    VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
-      .withJavaVersion(actualVersion)
-      .withSonarComponents(sonarComponents)
-      .withAndroidContext(inAndroidContext);
-    if (!withoutSemantic) {
-      setActualClasspath();
-      visitorsBridgeBuilder.enableSemanticWithProjectClasspath(actualClasspath);
-    }
-
-    JavaAstScanner astScanner = new JavaAstScanner(sonarComponents, new NoOpTelemetry(), TelemetryKey.JAVA_ANALYSIS_MAIN);
-    VisitorsBridgeForTests visitorsBridge = visitorsBridgeBuilder.build();
-    astScanner.setVisitorBridge(visitorsBridge);
-
-    List<InputFile> filesToParse = files;
-    if (isCacheEnabled) {
-      visitorsBridge.setCacheContext(cacheContext);
-      filesToParse = astScanner.scanWithoutParsing(files).get(false);
-    }
-    astScanner.scanForTesting(filesToParse, compilationUnitModifier);
-
-    addComments(verifier, commentLinesVisitor);
-
-    for (var fileScannerContext : visitorsBridge.testContexts()) {
-      addIssues(fileScannerContext, verifier);
-    }
-
-    JavaFileScannerContextForTests testModuleScannerContext = visitorsBridge.lastCreatedModuleContext();
-    if (testModuleScannerContext != null) {
-      addIssues(testModuleScannerContext, verifier);
-    }
-
-    return verifier;
-  }
-
-  private VisitorsBridgeForTests scanFilesForProjectIssues() {
-    JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
-
-    List<JavaFileScanner> visitors = new ArrayList<>(checks);
     SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, rootDirectory);
     VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
       .withJavaVersion(actualVersion)
@@ -165,6 +121,29 @@ public class JavaCheckVerifier implements CheckVerifier {
     astScanner.scanForTesting(filesToParse, compilationUnitModifier);
 
     return visitorsBridge;
+  }
+
+  private MultiFileVerifier createVerifier() {
+    MultiFileVerifier verifier = MultiFileVerifier.create(Paths.get(files.get(0).uri()), UTF_8);
+
+    List<JavaFileScanner> visitors = new ArrayList<>(checks);
+    CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
+    visitors.add(commentLinesVisitor);
+
+    VisitorsBridgeForTests visitorsBridge = scanFiles(visitors);
+
+    addComments(verifier, commentLinesVisitor);
+
+    for (var fileScannerContext : visitorsBridge.testContexts()) {
+      addIssues(fileScannerContext, verifier);
+    }
+
+    JavaFileScannerContextForTests testModuleScannerContext = visitorsBridge.lastCreatedModuleContext();
+    if (testModuleScannerContext != null) {
+      addIssues(testModuleScannerContext, verifier);
+    }
+
+    return verifier;
   }
 
   private void setActualClasspath() {
@@ -408,7 +387,7 @@ public class JavaCheckVerifier implements CheckVerifier {
     requiresNonNull(checks, CHECK_OR_CHECKS);
     requiresNonNull(files, FILE_OR_FILES);
 
-    VisitorsBridgeForTests visitorsBridge = scanFilesForProjectIssues();
+    VisitorsBridgeForTests visitorsBridge = scanFiles(new ArrayList<>(checks));
 
     var issues = new ArrayList<AnalyzerMessage>();
     for (var fileScannerContext : visitorsBridge.testContexts()) {

@@ -155,6 +155,68 @@ class JavaCheckVerifierTest {
   }
 
   @Test
+  void verify_issue_on_project_fails_when_no_issue() {
+    Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withCheck(NO_EFFECT_CHECK)
+      .verifyIssueOnProject("issueOnProject"));
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("A single issue is expected on the project, but none has been raised");
+  }
+
+  @Test
+  void verify_issue_on_project_fails_when_multiple_issues() {
+    Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withChecks(PROJECT_ISSUE_CHECK, FILE_ISSUE_CHECK)
+      .verifyIssueOnProject("issueOnProject"));
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("A single issue is expected on the project, but 2 issues have been raised");
+  }
+
+  @Test
+  void verify_issue_on_project_fails_when_issue_on_line() {
+    Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withCheck(CheckVerifierTestUtils.fileLineIssueCheck())
+      .verifyIssueOnProject("Noncompliant"));
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessageContaining("Expected an issue directly on project but was raised on line");
+  }
+
+  @Test
+  void verify_issue_on_project_fails_when_issue_on_file() {
+    Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withCheck(FILE_ISSUE_CHECK)
+      .verifyIssueOnProject("issueOnFile"));
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Expected the issue to be raised at project level, not at file level");
+  }
+
+  @Test
+  void verify_issue_on_project_fails_when_wrong_message() {
+    Throwable e = catchThrowable(() -> JavaCheckVerifier.newInstance()
+      .onFile(TEST_FILE)
+      .withCheck(PROJECT_ISSUE_CHECK)
+      .verifyIssueOnProject("wrongMessage"));
+
+    assertThat(e)
+      .isInstanceOf(AssertionError.class)
+      .hasMessageContaining("Expected the issue message to be:")
+      .hasMessageContaining("wrongMessage")
+      .hasMessageContaining("issueOnProject");
+  }
+
+  @Test
   void no_issue_if_not_in_android_context() {
     JavaCheckVerifier.newInstance()
       .onFile(TEST_FILE)
