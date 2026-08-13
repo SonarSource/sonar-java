@@ -96,14 +96,9 @@ public class JavaCheckVerifier implements CheckVerifier {
   private WriteCache writeCache;
   private File rootDirectory;
 
-  private MultiFileVerifier createVerifier() {
-    MultiFileVerifier verifier = MultiFileVerifier.create(Paths.get(files.get(0).uri()), UTF_8);
-
+  private VisitorsBridgeForTests scanFiles(List<JavaFileScanner> visitors) {
     JavaVersion actualVersion = javaVersion == null ? DEFAULT_JAVA_VERSION : javaVersion;
 
-    List<JavaFileScanner> visitors = new ArrayList<>(checks);
-    CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
-    visitors.add(commentLinesVisitor);
     SonarComponents sonarComponents = CheckVerifierUtils.sonarComponents(isCacheEnabled, readCache, writeCache, rootDirectory);
     VisitorsBridgeForTests.Builder visitorsBridgeBuilder = new VisitorsBridgeForTests.Builder(visitors)
       .withJavaVersion(actualVersion)
@@ -124,6 +119,18 @@ public class JavaCheckVerifier implements CheckVerifier {
       filesToParse = astScanner.scanWithoutParsing(files).get(false);
     }
     astScanner.scanForTesting(filesToParse, compilationUnitModifier);
+
+    return visitorsBridge;
+  }
+
+  private MultiFileVerifier createVerifier() {
+    MultiFileVerifier verifier = MultiFileVerifier.create(Paths.get(files.get(0).uri()), UTF_8);
+
+    List<JavaFileScanner> visitors = new ArrayList<>(checks);
+    CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
+    visitors.add(commentLinesVisitor);
+
+    VisitorsBridgeForTests visitorsBridge = scanFiles(visitors);
 
     addComments(verifier, commentLinesVisitor);
 
@@ -377,7 +384,34 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   @Override
   public void verifyIssueOnProject(String expectedIssueMessage) {
-    throw new UnsupportedOperationException("Not implemented!");
+    requiresNonNull(checks, CHECK_OR_CHECKS);
+    requiresNonNull(files, FILE_OR_FILES);
+
+    VisitorsBridgeForTests visitorsBridge = scanFiles(new ArrayList<>(checks));
+
+    var issues = new ArrayList<AnalyzerMessage>();
+    for (var fileScannerContext : visitorsBridge.testContexts()) {
+      issues.addAll(fileScannerContext.getIssues());
+    }
+    JavaFileScannerContextForTests testModuleScannerContext = visitorsBridge.lastCreatedModuleContext();
+    if (testModuleScannerContext != null) {
+      issues.addAll(testModuleScannerContext.getIssues());
+    }
+
+    if (issues.size() != 1) {
+      String issueNumberMessage = issues.isEmpty() ? "none has been raised" : String.format("%d issues have been raised", issues.size());
+      throw new AssertionError(String.format("A single issue is expected on the project, but %s", issueNumberMessage));
+    }
+    AnalyzerMessage issue = issues.get(0);
+    if (issue.getLine() != null) {
+      throw new AssertionError(String.format("Expected an issue directly on project but was raised on line %d", issue.getLine()));
+    }
+    if (issue.getInputComponent().isFile()) {
+      throw new AssertionError("Expected the issue to be raised at project level, not at file level");
+    }
+    if (!expectedIssueMessage.equals(issue.getMessage())) {
+      throw new AssertionError(String.format("Expected the issue message to be:%n\t\"%s\"%nbut was:%n\t\"%s\"", expectedIssueMessage, issue.getMessage()));
+    }
   }
 
   @Override
