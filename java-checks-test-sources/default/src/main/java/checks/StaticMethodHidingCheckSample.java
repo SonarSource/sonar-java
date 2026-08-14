@@ -1,5 +1,6 @@
 package checks;
 
+import com.google.errorprone.annotations.DoNotCall;
 import java.util.List;
 
 class StaticMethodHidingCheckSample {
@@ -221,6 +222,70 @@ class StaticMethodHidingCheckSample {
     }
 
     static void second() { // Noncompliant {{Rename this method; it hides "second" in "MultiParent".}}
+    }
+  }
+
+  // --- Compliant: intentional hiding with @Deprecated annotation ---
+
+  static class DeprecatingParent {
+    static void oldMethod() {
+    }
+
+    static String convert(String input) {
+      return input;
+    }
+  }
+
+  static class DeprecatingChild extends DeprecatingParent {
+    @Deprecated
+    static void oldMethod() { // Compliant - intentional hiding with @Deprecated
+      throw new UnsupportedOperationException();
+    }
+
+    @Deprecated
+    static String convert(String input) { // Compliant - intentional hiding with @Deprecated
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  // --- Compliant: intentional hiding with @DoNotCall annotation ---
+
+  static class DoNotCallParent {
+    static void unsafeMethod() {
+    }
+  }
+
+  static class DoNotCallChild extends DoNotCallParent {
+    @DoNotCall("Use alternative method")
+    static void unsafeMethod() { // Compliant - intentional hiding with @DoNotCall
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  // --- Compliant: intentional hiding with both @Deprecated and @DoNotCall ---
+
+  static class CombinedParent {
+    static void legacyApi() {
+    }
+  }
+
+  static class CombinedChild extends CombinedParent {
+    @Deprecated
+    @DoNotCall("Use newApi instead")
+    static void legacyApi() { // Compliant - intentional hiding with @Deprecated and @DoNotCall
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  // --- Noncompliant: hiding without any deprecation annotation ---
+
+  static class PlainParent {
+    static void compute() {
+    }
+  }
+
+  static class PlainChild extends PlainParent {
+    static void compute() { // Noncompliant {{Rename this method; it hides "compute" in "PlainParent".}}
     }
   }
 }
