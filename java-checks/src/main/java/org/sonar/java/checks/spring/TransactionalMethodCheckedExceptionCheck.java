@@ -35,7 +35,12 @@ import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -80,6 +85,16 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
 
     // Check if the annotation tree itself has rollback configuration
     if (hasRollbackConfiguration(transactionalAnnotation)) {
+      return;
+    }
+
+    // No transaction is created with NOT_SUPPORTED or NEVER propagation, so rollback configuration is inapplicable
+    if (hasNonTransactionalPropagation(transactionalAnnotation)) {
+      return;
+    }
+
+    // Read-only transactions perform no write operations, making rollback policies irrelevant
+    if (hasReadOnly(transactionalAnnotation)) {
       return;
     }
 
@@ -193,6 +208,45 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
         .addTextEdit(JavaTextEdit.insertBeforeTree(closeParenToken, ", " + attribute))
         .build();
     }
+  }
+
+  private static boolean hasNonTransactionalPropagation(AnnotationTree annotation) {
+    return annotation.arguments().stream()
+      .anyMatch(arg -> {
+        if (arg.is(Tree.Kind.ASSIGNMENT)) {
+          var assignment = (AssignmentExpressionTree) arg;
+          String name = ((IdentifierTree) assignment.variable()).name();
+          if ("propagation".equals(name)) {
+            String enumName = resolveEnumConstantName(assignment.expression());
+            return "NOT_SUPPORTED".equals(enumName) || "NEVER".equals(enumName);
+          }
+        }
+        return false;
+      });
+  }
+
+  private static boolean hasReadOnly(AnnotationTree annotation) {
+    return annotation.arguments().stream()
+      .anyMatch(arg -> {
+        if (arg.is(Tree.Kind.ASSIGNMENT)) {
+          var assignment = (AssignmentExpressionTree) arg;
+          String name = ((IdentifierTree) assignment.variable()).name();
+          if ("readOnly".equals(name)) {
+            ExpressionTree expression = assignment.expression();
+            return expression.is(Tree.Kind.BOOLEAN_LITERAL) && "true".equals(((LiteralTree) expression).value());
+          }
+        }
+        return false;
+      });
+  }
+
+  private static String resolveEnumConstantName(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+      return ((MemberSelectExpressionTree) expression).identifier().name();
+    } else if (expression.is(Tree.Kind.IDENTIFIER)) {
+      return ((IdentifierTree) expression).name();
+    }
+    return "";
   }
 
   private static boolean isCheckedException(Type type) {

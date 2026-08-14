@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 // Composed/meta-annotation for testing
@@ -19,7 +20,7 @@ class CustomCheckedException extends Exception {}
 public class TransactionalMethodCheckedExceptionCheckSample {
 
   @Transactional
-  public void processOrder(Order order) throws IOException, SQLException { // Noncompliant [[secondary=21;quickfixes=qf1,qf2]]
+  public void processOrder(Order order) throws IOException, SQLException { // Noncompliant [[secondary=22;quickfixes=qf1,qf2]]
 //            ^^^^^^^^^^^^
   // fix@qf1 {{Add rollbackFor attribute}}
   // edit@qf1 [[sl=-1;sc=3;el=-1;ec=17]] {{@Transactional(rollbackFor = {java.io.IOException.class, java.sql.SQLException.class})}}
@@ -28,19 +29,19 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   }
 
   @Transactional
-  public void importData() throws Exception { // Noncompliant [[secondary=30;quickfixes=qf3]]
+  public void importData() throws Exception { // Noncompliant [[secondary=31;quickfixes=qf3]]
 //            ^^^^^^^^^^
   // fix@qf3 {{Add rollbackFor = Exception.class}}
   // edit@qf3 [[sl=-1;sc=3;el=-1;ec=17]] {{@Transactional(rollbackFor = java.lang.Exception.class)}}
   }
 
   @Transactional(timeout = 30)
-  public void withOtherAttributes() throws SQLException { // Noncompliant [[secondary=37]]
+  public void withOtherAttributes() throws SQLException { // Noncompliant [[secondary=38]]
 //            ^^^^^^^^^^^^^^^^^^^
   }
 
   @Transactional
-  public void customException() throws CustomCheckedException { // Noncompliant [[secondary=42;quickfixes=qf7,qf8]]
+  public void customException() throws CustomCheckedException { // Noncompliant [[secondary=43;quickfixes=qf7,qf8]]
 //            ^^^^^^^^^^^^^^^
   // fix@qf7 {{Add rollbackFor attribute}}
   // edit@qf7 [[sl=-1;sc=3;el=-1;ec=17]] {{@Transactional(rollbackFor = checks.spring.CustomCheckedException.class)}}
@@ -49,7 +50,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   }
 
   @Transactional
-  public void mixedExceptions() throws IOException, RuntimeException { // Noncompliant [[secondary=51;quickfixes=qf9,qf10]]
+  public void mixedExceptions() throws IOException, RuntimeException { // Noncompliant [[secondary=52;quickfixes=qf9,qf10]]
 //            ^^^^^^^^^^^^^^^
   // fix@qf9 {{Add rollbackFor attribute}}
   // edit@qf9 [[sl=-1;sc=3;el=-1;ec=17]] {{@Transactional(rollbackFor = java.io.IOException.class)}}
@@ -104,7 +105,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
 
   @Transactional
   static class ClassLevelNoConfig {
-    public void noConfig() throws IOException { // Noncompliant [[secondary=105]]
+    public void noConfig() throws IOException { // Noncompliant [[secondary=106]]
 //              ^^^^^^^^ {{Specify rollback behavior for checked exceptions using "rollbackFor" or "noRollbackFor" attributes on the class-level @Transactional.}}
     }
 
@@ -118,7 +119,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   }
 
   @org.springframework.transaction.annotation.Transactional
-  public void fullyQualified() throws IOException { // Noncompliant [[secondary=120;quickfixes=qf13,qf14]]
+  public void fullyQualified() throws IOException { // Noncompliant [[secondary=121;quickfixes=qf13,qf14]]
 //            ^^^^^^^^^^^^^^
   // fix@qf13 {{Add rollbackFor attribute}}
   // edit@qf13 [[sl=-1;sc=3;el=-1;ec=60]] {{@org.springframework.transaction.annotation.Transactional(rollbackFor = java.io.IOException.class)}}
@@ -131,7 +132,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   }
 
   @Transactional(value = "txManager")
-  public void withValueAttribute() throws IOException { // Noncompliant [[secondary=133]]
+  public void withValueAttribute() throws IOException { // Noncompliant [[secondary=134]]
 //            ^^^^^^^^^^^^^^^^^^
   }
 
@@ -139,7 +140,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   static class OuterClass {
     @Transactional
     static class InnerClassWithAnnotation {
-      public void nestedMethod() throws IOException { // Noncompliant [[secondary=140]]
+      public void nestedMethod() throws IOException { // Noncompliant [[secondary=141]]
 //                ^^^^^^^^^^^^ {{Specify rollback behavior for checked exceptions using "rollbackFor" or "noRollbackFor" attributes on the class-level @Transactional.}}
       }
     }
@@ -153,19 +154,19 @@ public class TransactionalMethodCheckedExceptionCheckSample {
 
   @Transactional
   interface TransactionalInterface {
-    void interfaceMethod() throws IOException; // Noncompliant [[secondary=154]]
+    void interfaceMethod() throws IOException; // Noncompliant [[secondary=155]]
 //       ^^^^^^^^^^^^^^^ {{Specify rollback behavior for checked exceptions using "rollbackFor" or "noRollbackFor" attributes on the class-level @Transactional.}}
   }
 
   // Test meta-annotated (composed) annotation
   @MyTransactional
-  public void metaAnnotated() throws IOException { // Noncompliant [[secondary=161]]
+  public void metaAnnotated() throws IOException { // Noncompliant [[secondary=162]]
 //            ^^^^^^^^^^^^^
   }
 
   // Test annotation with value attribute (transaction manager name)
   @Transactional("txManager")
-  public void valueShorthand() throws IOException { // Noncompliant [[secondary=167]]
+  public void valueShorthand() throws IOException { // Noncompliant [[secondary=168]]
 //            ^^^^^^^^^^^^^^
     // Has value attribute but no rollback configuration
   }
@@ -198,8 +199,62 @@ public class TransactionalMethodCheckedExceptionCheckSample {
     void packagePrivateInClassLevel() throws IOException { // Compliant - package-private methods are not proxied
     }
 
-    public void publicInClassLevel() throws IOException { // Noncompliant [[secondary=190]]
+    public void publicInClassLevel() throws IOException { // Noncompliant [[secondary=191]]
 //              ^^^^^^^^^^^^^^^^^^
+    }
+  }
+
+  // Compliant: propagation = NOT_SUPPORTED means no transaction is created
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
+  public void notSupported() throws IOException { // Compliant
+  }
+
+  // Compliant: propagation = NEVER means no transaction is created
+  @Transactional(propagation = Propagation.NEVER)
+  public void neverPropagation() throws IOException { // Compliant
+  }
+
+  // Compliant: readOnly = true means no writes can occur
+  @Transactional(readOnly = true)
+  public void readOnlyTransaction() throws IOException { // Compliant
+  }
+
+  // Compliant: combination of readOnly and NOT_SUPPORTED
+  @Transactional(readOnly = true, propagation = Propagation.NOT_SUPPORTED)
+  public void readOnlyAndNotSupported() throws IOException { // Compliant
+  }
+
+  // readOnly = false with default propagation is still noncompliant
+  @Transactional(readOnly = false)
+  public void readOnlyFalse() throws IOException { // Noncompliant [[secondary=228]]
+//            ^^^^^^^^^^^^^
+  }
+
+  // Explicit REQUIRED propagation still needs rollback config
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void requiredPropagation() throws IOException { // Noncompliant [[secondary=234]]
+//            ^^^^^^^^^^^^^^^^^^^
+  }
+
+  // Compliant: NOT_SUPPORTED with other attributes
+  @Transactional(propagation = Propagation.NOT_SUPPORTED, timeout = 30)
+  public void notSupportedWithTimeout() throws IOException { // Compliant
+  }
+
+  // Compliant: readOnly with other attributes
+  @Transactional(readOnly = true, timeout = 30)
+  public void readOnlyWithTimeout() throws IOException { // Compliant
+  }
+
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
+  static class ClassLevelNotSupported {
+    public void methodInNotSupportedClass() throws IOException { // Compliant
+    }
+  }
+
+  @Transactional(readOnly = true)
+  static class ClassLevelReadOnly {
+    public void methodInReadOnlyClass() throws IOException { // Compliant
     }
   }
 }
