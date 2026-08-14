@@ -13,4 +13,10 @@ class TransactionalMethodCheckedExceptionCheckSampleNonCompiling {
   public void knownException() throws java.io.IOException { // Noncompliant [[secondary=12]]
 //            ^^^^^^^^^^^^^^
   }
+
+  // Propagation set to an unresolvable expression (not an identifier or member select)
+  @Transactional(propagation = getPropagation())
+  public void propagationFromMethodCall() throws java.io.IOException { // Noncompliant [[secondary=18]]
+//            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  }
 }

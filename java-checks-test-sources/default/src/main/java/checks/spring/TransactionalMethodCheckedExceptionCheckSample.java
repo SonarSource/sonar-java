@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -246,6 +248,11 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   public void readOnlyWithTimeout() throws IOException { // Compliant
   }
 
+  // Compliant: static-imported NOT_SUPPORTED propagation (identifier without member select)
+  @Transactional(propagation = NOT_SUPPORTED)
+  public void notSupportedStaticImport() throws IOException { // Compliant
+  }
+
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   static class ClassLevelNotSupported {
     public void methodInNotSupportedClass() throws IOException { // Compliant
@@ -255,6 +262,17 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   @Transactional(readOnly = true)
   static class ClassLevelReadOnly {
     public void methodInReadOnlyClass() throws IOException { // Compliant
+    }
+  }
+
+  // Method with non-Transactional annotations, class-level @Transactional found after iterating class annotations
+  @Deprecated
+  @Transactional
+  static class ClassWithMultipleAnnotations {
+    @Deprecated
+    @SuppressWarnings("unused")
+    public void methodWithOtherAnnotations() throws IOException { // Noncompliant [[secondary=270]]
+//              ^^^^^^^^^^^^^^^^^^^^^^^^^^
     }
   }
 }
