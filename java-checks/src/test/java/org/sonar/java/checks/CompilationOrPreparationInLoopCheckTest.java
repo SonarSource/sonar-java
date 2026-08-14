@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class CompilationOrPreparationInLoopCheckTest {
 
@@ -29,6 +30,14 @@ class CompilationOrPreparationInLoopCheckTest {
       .onFile(mainCodeSourcesPath("checks/CompilationOrPreparationInLoopCheckSample.java"))
       .withCheck(new CompilationOrPreparationInLoopCheck())
       .verifyIssues();
+  }
+
+  @Test
+  void testNonCompiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/CompilationOrPreparationInLoopCheckSample.java"))
+      .withCheck(new CompilationOrPreparationInLoopCheck())
+      .verifyNoIssues();
   }
 
   @Test

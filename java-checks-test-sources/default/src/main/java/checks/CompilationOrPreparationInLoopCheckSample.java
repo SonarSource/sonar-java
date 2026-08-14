@@ -128,4 +128,13 @@ class CompilationOrPreparationInLoopCheckSample {
       }
     }
   }
+
+  void nonIdentifierMutationsInLoop(List<String> inputs) {
+    int[] counters = new int[2];
+    for (String input : inputs) {
+      counters[0] = input.length(); // assignment to non-identifier target
+      counters[1]++;                // increment on non-identifier target
+      Pattern.compile("[a-z]+").matcher(input).find(); // Noncompliant
+    }
+  }
 }
