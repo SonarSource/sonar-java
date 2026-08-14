@@ -6,7 +6,7 @@ operations), and database statement preparation methods.</p>
 <h2>Why is this an issue?</h2>
 <p>Compilation and preparation operations are expensive because they involve parsing, validation, and internal representation building. When these
 operations are performed inside loops with constant or loop-invariant arguments, the same work is repeated unnecessarily on every iteration.</p>
-<h2>Regular expression compilation</h2>
+<h3>Regular expression compilation</h3>
 <p>When you call functions that compile regular expressions from strings or use string methods that accept regex patterns, the language runtime
 must:</p>
 <ul>
@@ -17,7 +17,7 @@ must:</p>
 </ul>
 <p>These steps happen every time, even when the pattern string is identical. For example, calling a string matching method with a pattern like
 <code>"\d+"</code> inside a loop that processes 1,000 items means compiling the same pattern 1,000 times.</p>
-<h2>Database prepared statement preparation</h2>
+<h3>Database prepared statement preparation</h3>
 <p>When you call methods that create prepared statements from SQL strings, the database driver must:</p>
 <ul>
   <li>Send the SQL string to the database server</li>
@@ -28,7 +28,7 @@ must:</p>
 </ul>
 <p>Prepared statements exist specifically to avoid this overhead by allowing you to compile once and execute many times with different parameters.
 Calling statement preparation methods inside a loop with the same SQL string defeats this purpose entirely.</p>
-<h2>The performance cost</h2>
+<h3>The performance cost</h3>
 <p>The repeated compilation/preparation causes:</p>
 <ul>
   <li><strong>CPU waste</strong>: Parsing and compilation happen repeatedly instead of once</li>
@@ -48,13 +48,21 @@ Calling statement preparation methods inside a loop with the same SQL string def
   <li><strong>Increased costs</strong>: Higher CPU usage and longer execution times can lead to increased infrastructure costs in cloud
   environments</li>
 </ul>
+<h3>Exceptions</h3>
+<p><code>String.split</code> does not compile a regular expression when the argument meets either of these conditions:</p>
+<ul>
+  <li>It is a one-char String and this character is not one of the regex metacharacters ".$|()[{^?*+\"</li>
+  <li>It is a two-char String and the first char is the backslash and the second is not an ASCII digit or letter.</li>
+</ul>
+<p>In these cases, no issue is raised.</p>
 <h2>How to fix it</h2>
-<p>For regular expression operations, compile the <code>Pattern</code> once before the loop and reuse it inside the loop. Use the
-<code>Pattern.matcher()</code> method to apply the pattern to different input strings.</p>
+<p>For regular expression operations, compile the <code>Pattern</code> once before the loop and reuse it inside the loop. Do not move
+<code>String.matches()</code>, <code>replaceAll()</code>, <code>replaceFirst()</code>, or <code>split()</code> outside the loop: the receiver still
+changes on each iteration. Replace those calls with <code>Pattern.matcher()</code> or <code>Pattern.split()</code> applied to each input.</p>
+<p>For database operations, prepare the statement once before the loop and reuse it with different parameters.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
-// Direct Pattern.compile in loop
 for (String input : inputs) {
     Pattern p = Pattern.compile("[a-z]+");  // Noncompliant
     Matcher m = p.matcher(input);
@@ -65,7 +73,6 @@ for (String input : inputs) {
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
-// Compile once, reuse Pattern
 Pattern LOWER = Pattern.compile("[a-z]+");
 for (String input : inputs) {
     Matcher m = LOWER.matcher(input);
@@ -74,16 +81,54 @@ for (String input : inputs) {
     }
 }
 </pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+for (String input : inputs) {
+    if (input.matches("[a-z]+")) {  // Noncompliant
+        handle(input);
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+Pattern LOWER = Pattern.compile("[a-z]+");
+for (String input : inputs) {
+    if (LOWER.matcher(input).matches()) {
+        handle(input);
+    }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+for (int id : ids) {
+    PreparedStatement ps = connection.prepareStatement("SELECT * FROM t WHERE id = ?");  // Noncompliant
+    ps.setInt(1, id);
+    ps.execute();
+    ps.close();
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+PreparedStatement ps = connection.prepareStatement("SELECT * FROM t WHERE id = ?");
+for (int id : ids) {
+    ps.setInt(1, id);
+    ps.execute();
+}
+</pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/regex/Pattern.html">Pattern (Java SE
-  17 &amp; JDK 17)</a></li>
-  <li>Oracle Java Documentation - <a
-  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/PreparedStatement.html">PreparedStatement (Java SE 17 &amp; JDK
-  17)</a></li>
-  <li>Baeldung - <a href="https://www.baeldung.com/regular-expressions-java">Guide to Java Regular Expressions API</a></li>
-  <li>SpotBugs Documentation - <a href="https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html#IIL_PATTERN_COMPILE_IN_LOOP">Bug Descriptions -
-  Pattern compile in loop</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/regex/Pattern.html">Pattern (Java SE 17
+  &amp; JDK 17)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/PreparedStatement.html">PreparedStatement
+  (Java SE 17 &amp; JDK 17)</a></li>
 </ul>
-
+<h3>Articles &amp; blog posts</h3>
+<ul>
+  <li>Baeldung - <a href="https://www.baeldung.com/regular-expressions-java">Guide to Java Regular Expressions API</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S4248} - Regex patterns should not be created needlessly</li>
+  <li>{rule:java:S6909} - Constant parameters in a "PreparedStatement" should not be set more than once</li>
+</ul>

@@ -29,14 +29,22 @@ class CompilationOrPreparationInLoopCheckSample {
     for (String input : inputs) {
       Pattern.compile(invariantPattern).matcher(input).find(); // Noncompliant
     }
+
+    for (String input : inputs) {
+      Pattern.compile("[a-z]+", Pattern.CASE_INSENSITIVE); // Noncompliant
+      int flags = input.isEmpty() ? 0 : Pattern.CASE_INSENSITIVE;
+      Pattern.compile("[a-z]+", flags); // Compliant: flags vary
+    }
   }
 
   void stringMethodsNoncompliant(List<String> inputs) {
     for (String input : inputs) {
-      input.matches("[a-z]+"); // Noncompliant
+      input.matches("[a-z]+"); // Noncompliant {{Extract this regular expression to a Pattern compiled outside the loop.}}
       input.replaceAll("[a-z]+", "X"); // Noncompliant
       input.replaceFirst("[a-z]+", "X"); // Noncompliant
       input.split("[,;]"); // Noncompliant
+      input.split(","); // Compliant: split fast path
+      input.split("."); // Noncompliant
     }
   }
 
@@ -46,6 +54,15 @@ class CompilationOrPreparationInLoopCheckSample {
       ps.setInt(1, id);
       ps.execute();
       ps.close();
+    }
+  }
+
+  void forInitializer(String s) {
+    for (Pattern p = Pattern.compile("[a-z]+"); p.matcher(s).find(); ) { // Compliant: initializer runs once
+      break;
+    }
+    for (; Pattern.compile("[a-z]+").matcher(s).find(); ) { // Noncompliant
+      break;
     }
   }
 

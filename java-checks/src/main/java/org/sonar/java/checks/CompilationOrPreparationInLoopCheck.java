@@ -21,6 +21,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.TreeHelper;
 import org.sonar.java.model.ExpressionUtils;
@@ -30,6 +31,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -39,22 +41,35 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S9142")
 public class CompilationOrPreparationInLoopCheck extends IssuableSubscriptionVisitor {
 
+  private static final String STRING_REGEX_MESSAGE =
+    "Extract this regular expression to a Pattern compiled outside the loop.";
+
   private static final Set<Tree.Kind> LOOP_KINDS = EnumSet.of(
     Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT,
     Tree.Kind.WHILE_STATEMENT, Tree.Kind.DO_STATEMENT
   );
 
+  private static final MethodMatchers PATTERN_COMPILE = MethodMatchers.create()
+    .ofTypes("java.util.regex.Pattern")
+    .names("compile")
+    .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers STRING_REGEX_METHODS = MethodMatchers.create()
+    .ofTypes("java.lang.String")
+    .names("matches", "replaceAll", "replaceFirst", "split")
+    .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers SPLIT = MethodMatchers.create()
+    .ofTypes("java.lang.String")
+    .names("split")
+    .withAnyParameters()
+    .build();
+
   private static final MethodMatchers MATCHERS = MethodMatchers.or(
-    MethodMatchers.create()
-      .ofTypes("java.util.regex.Pattern")
-      .names("compile")
-      .withAnyParameters()
-      .build(),
-    MethodMatchers.create()
-      .ofTypes("java.lang.String")
-      .names("matches", "replaceAll", "replaceFirst", "split")
-      .withAnyParameters()
-      .build(),
+    PATTERN_COMPILE,
+    STRING_REGEX_METHODS,
     MethodMatchers.create()
       .ofSubTypes("java.sql.Connection")
       .names("prepareStatement")
@@ -74,23 +89,67 @@ public class CompilationOrPreparationInLoopCheck extends IssuableSubscriptionVis
       return;
     }
     Tree loop = TreeHelper.findClosestParentOfKind(mit, LOOP_KINDS);
-    if (loop == null) {
+    if (loop == null || isInForInitializer(mit, loop)) {
       return;
     }
-    ExpressionTree patternArg = mit.arguments().get(0);
-    if (isLoopInvariant(patternArg, loop)) {
-      reportIssue(mit, String.format(
-        "Move this \"%s\" call outside the loop.", ExpressionUtils.methodName(mit).name()));
+    if (SPLIT.matches(mit) && isSplitFastPath(mit.arguments().get(0))) {
+      return;
+    }
+    List<ExpressionTree> argsToCheck = PATTERN_COMPILE.matches(mit) ? mit.arguments() : List.of(mit.arguments().get(0));
+    if (argsToCheck.stream().allMatch(arg -> isLoopInvariant(arg, loop))) {
+      reportIssue(mit, message(mit));
     }
   }
 
+  private static String message(MethodInvocationTree mit) {
+    if (STRING_REGEX_METHODS.matches(mit)) {
+      return STRING_REGEX_MESSAGE;
+    }
+    return String.format("Move this \"%s\" call outside the loop.", ExpressionUtils.methodName(mit).name());
+  }
+
+  private static boolean isInForInitializer(Tree tree, Tree loop) {
+    if (!loop.is(Tree.Kind.FOR_STATEMENT)) {
+      return false;
+    }
+    Tree initializer = ((ForStatementTree) loop).initializer();
+    for (Tree current = tree; current != null && current != loop; current = current.parent()) {
+      if (current == initializer) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean isSplitFastPath(ExpressionTree arg) {
+    return ExpressionUtils.skipParentheses(arg).asConstant(String.class)
+      .filter(CompilationOrPreparationInLoopCheck::exceptionSplitMethod)
+      .isPresent();
+  }
+
+  /**
+   * Copy of {@link java.lang.String#split(String, int)} fast-path, matching {@link RegexPatternsNeedlesslyCheck}.
+   */
+  private static boolean exceptionSplitMethod(String argValue) {
+    String regex = StringEscapeUtils.unescapeJava(argValue);
+    char ch;
+    return ((regex.length() == 1 && ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) ||
+      (regex.length() == 2 &&
+        regex.charAt(0) == '\\' &&
+        (((ch = regex.charAt(1)) - '0') | ('9' - ch)) < 0 &&
+        ((ch - 'a') | ('z' - ch)) < 0 &&
+        ((ch - 'A') | ('Z' - ch)) < 0)) &&
+      (ch < Character.MIN_HIGH_SURROGATE || ch > Character.MAX_LOW_SURROGATE);
+  }
+
   private static boolean isLoopInvariant(ExpressionTree arg, Tree loop) {
-    if (arg.is(Tree.Kind.IDENTIFIER)) {
+    ExpressionTree expression = ExpressionUtils.skipParentheses(arg);
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
       var collector = new DeclaredOrAssignedLocalsCollector();
       loop.accept(collector);
-      return !collector.names.contains(((IdentifierTree) arg).name());
+      return !collector.names.contains(((IdentifierTree) expression).name());
     }
-    return ExpressionUtils.resolveAsConstant(arg) != null;
+    return ExpressionUtils.resolveAsConstant(expression) != null;
   }
 
   private static class DeclaredOrAssignedLocalsCollector extends BaseTreeVisitor {
