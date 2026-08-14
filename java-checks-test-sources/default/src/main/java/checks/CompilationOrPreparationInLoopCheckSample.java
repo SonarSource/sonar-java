@@ -44,8 +44,10 @@ class CompilationOrPreparationInLoopCheckSample {
       input.replaceAll("[a-z]+", "X"); // Noncompliant
       input.replaceFirst("[a-z]+", "X"); // Noncompliant
       input.split("[,;]"); // Noncompliant
-      input.split(","); // Compliant: split fast path
       input.split("."); // Noncompliant
+      input.split("\\a"); // Noncompliant
+      input.split(","); // Compliant: single non-metacharacter fast path
+      input.split("\\."); // Compliant: escaped non-alphanumeric fast path
     }
   }
 
@@ -94,6 +96,36 @@ class CompilationOrPreparationInLoopCheckSample {
   void mutableFieldPattern(List<String> inputs) {
     for (String input : inputs) {
       Pattern.compile(mutablePattern).matcher(input).find(); // Compliant - non-final field may be mutated via member select or method call
+    }
+  }
+
+  void localReassignedInLoop(List<String> inputs) {
+    String pattern = "[a-z]+";
+    for (String input : inputs) {
+      pattern = input; // reassigned each iteration
+      Pattern.compile(pattern).matcher(input).find(); // Compliant - pattern changes per iteration
+    }
+  }
+
+  void doWhileLoop(List<String> inputs) {
+    int i = 0;
+    do {
+      Pattern.compile("[a-z]+").matcher(inputs.get(i)).find(); // Noncompliant
+    } while (i++ < inputs.size());
+  }
+
+  void nonConstantArg(List<String> inputs) {
+    for (String input : inputs) {
+      Pattern.compile(input.trim()).matcher(input).find(); // Compliant - method call result is not a constant
+    }
+  }
+
+  void nonIncrementUnaryInLoop(List<String> inputs) {
+    boolean inverse = false;
+    for (String input : inputs) {
+      if (!inverse) { // non-increment unary expression
+        Pattern.compile("[a-z]+").matcher(input).find(); // Noncompliant
+      }
     }
   }
 }
