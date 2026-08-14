@@ -99,6 +99,9 @@ final class JMethodSymbol extends JSymbol implements Symbol.MethodSymbol {
           // Annotations must come from the declared type: type annotations of the substituted type can be inferred from the call site
           // (e.g. "Optional.of(x).map(A::nonNullMethod).orElse(null)" infers "Optional<@NonNull String>", making "orElse" look like it takes
           // a @NonNull argument), which does not tell anything about the parameter of the declared method.
+          // When semantic recovery does not provide the corresponding declared parameter, keep the previous behavior instead of
+          // treating its nullability as unknown. This preserves existing detections and avoids introducing false negatives while
+          // refining the common case to remove false positives.
           ITypeBinding declaredParameterType = i < declaredParameterTypeBindings.length ? declaredParameterTypeBindings[i] : parameterTypeBindings[i];
           parameters.add(new JVariableSymbol.ParameterPlaceholderSymbol(i, sema, methodDeclaration, parameterTypeBindings[i], declaredParameterType));
         }

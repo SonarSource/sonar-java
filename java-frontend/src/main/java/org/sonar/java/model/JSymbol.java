@@ -397,6 +397,9 @@ abstract class JSymbol implements Symbol {
         // are not mistaken for annotations of the method itself.
         IMethodBinding methodDeclaration = methodBinding.getMethodDeclaration();
         ITypeBinding declaredReturnType = methodDeclaration == null ? null : methodDeclaration.getReturnType();
+        // When semantic recovery does not provide a declared return type, keep the previous behavior instead of treating its
+        // nullability as unknown. This preserves existing detections and avoids introducing false negatives while refining the
+        // common case to remove false positives.
         return convertMetadata(declaredReturnType == null ? returnType : declaredReturnType);
       default:
         return new JSymbolMetadata(sema, this, binding.getAnnotations());
