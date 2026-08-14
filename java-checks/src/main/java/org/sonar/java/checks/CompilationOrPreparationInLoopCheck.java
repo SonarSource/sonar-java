@@ -27,6 +27,7 @@ import org.sonar.java.checks.helpers.TreeHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -133,18 +134,31 @@ public class CompilationOrPreparationInLoopCheck extends IssuableSubscriptionVis
   private static boolean exceptionSplitMethod(String argValue) {
     String regex = StringEscapeUtils.unescapeJava(argValue);
     char ch;
-    return ((regex.length() == 1 && ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) ||
-      (regex.length() == 2 &&
-        regex.charAt(0) == '\\' &&
-        (((ch = regex.charAt(1)) - '0') | ('9' - ch)) < 0 &&
+    if (regex.length() == 1) {
+      ch = regex.charAt(0);
+      return ".$|()[{^?*+\\".indexOf(ch) == -1 &&
+        (ch < Character.MIN_HIGH_SURROGATE || ch > Character.MAX_LOW_SURROGATE);
+    }
+    if (regex.length() == 2 && regex.charAt(0) == '\\') {
+      ch = regex.charAt(1);
+      return (((ch - '0') | ('9' - ch)) < 0 &&
         ((ch - 'a') | ('z' - ch)) < 0 &&
-        ((ch - 'A') | ('Z' - ch)) < 0)) &&
-      (ch < Character.MIN_HIGH_SURROGATE || ch > Character.MAX_LOW_SURROGATE);
+        ((ch - 'A') | ('Z' - ch)) < 0) &&
+        (ch < Character.MIN_HIGH_SURROGATE || ch > Character.MAX_LOW_SURROGATE);
+    }
+    return false;
   }
 
   private static boolean isLoopInvariant(ExpressionTree arg, Tree loop) {
     ExpressionTree expression = ExpressionUtils.skipParentheses(arg);
     if (expression.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = ((IdentifierTree) expression).symbol();
+      if (!symbol.isVariableSymbol()) {
+        return false;
+      }
+      if (symbol.owner().isTypeSymbol()) {
+        return symbol.isFinal();
+      }
       var collector = new DeclaredOrAssignedLocalsCollector();
       loop.accept(collector);
       return !collector.names.contains(((IdentifierTree) expression).name());

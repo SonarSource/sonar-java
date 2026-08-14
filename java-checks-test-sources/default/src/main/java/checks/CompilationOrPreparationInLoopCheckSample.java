@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 class CompilationOrPreparationInLoopCheckSample {
 
   private static final String CONSTANT_PATTERN = "[a-z]+";
+  private String mutablePattern = "[a-z]+";
 
   void patternCompileNoncompliant(List<String> inputs) {
     for (String input : inputs) {
@@ -87,6 +88,12 @@ class CompilationOrPreparationInLoopCheckSample {
     for (int i = 0; i < inputs.size(); i++) {
       String pattern = patterns.get(i);
       Pattern.compile(pattern).matcher(inputs.get(i)).find(); // Compliant - pattern changes per iteration
+    }
+  }
+
+  void mutableFieldPattern(List<String> inputs) {
+    for (String input : inputs) {
+      Pattern.compile(mutablePattern).matcher(input).find(); // Compliant - non-final field may be mutated via member select or method call
     }
   }
 }

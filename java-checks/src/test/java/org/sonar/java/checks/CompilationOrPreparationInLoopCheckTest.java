@@ -31,4 +31,13 @@ class CompilationOrPreparationInLoopCheckTest {
       .verifyIssues();
   }
 
+  @Test
+  void testWithoutSemantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CompilationOrPreparationInLoopCheckSample.java"))
+      .withCheck(new CompilationOrPreparationInLoopCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
 }
