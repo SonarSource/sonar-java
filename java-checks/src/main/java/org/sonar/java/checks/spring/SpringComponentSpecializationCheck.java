@@ -52,6 +52,9 @@ public class SpringComponentSpecializationCheck extends IssuableSubscriptionVisi
     "org.springframework.boot.actuate.health.HealthIndicator",
     "org.springframework.boot.actuate.health.ReactiveHealthIndicator");
 
+  private static final String CONTROLLER = "Controller";
+  private static final String REST_CONTROLLER = "RestController";
+
   private static final List<String> NON_WEB_FRAMEWORK_ANNOTATIONS = List.of(
     "org.springframework.boot.actuate.endpoint.annotation.Endpoint",
     "org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint",
@@ -92,7 +95,7 @@ public class SpringComponentSpecializationCheck extends IssuableSubscriptionVisi
   }
 
   private static boolean shouldRaise(String suggestedAnnotation, ClassTree classTree) {
-    if ("Controller".equals(suggestedAnnotation) || "RestController".equals(suggestedAnnotation)) {
+    if (CONTROLLER.equals(suggestedAnnotation) || REST_CONTROLLER.equals(suggestedAnnotation)) {
       return hasRequestMappingMethod(classTree) && !implementsNonWebFrameworkInterface(classTree) && !hasNonWebFrameworkAnnotation(classTree);
     }
     return true;
@@ -132,12 +135,12 @@ public class SpringComponentSpecializationCheck extends IssuableSubscriptionVisi
   @CheckForNull
   private static String getSuggestedAnnotation(String className) {
     // Check RestController first to avoid false matches with Controller
-    if (endsWithIgnoreCase(className, "RestController") || endsWithIgnoreCase(className, "RestControllerImpl")) {
-      return "RestController";
+    if (endsWithIgnoreCase(className, REST_CONTROLLER) || endsWithIgnoreCase(className, REST_CONTROLLER + "Impl")) {
+      return REST_CONTROLLER;
     }
 
-    if (endsWithIgnoreCase(className, "Controller") || endsWithIgnoreCase(className, "ControllerImpl")) {
-      return "Controller";
+    if (endsWithIgnoreCase(className, CONTROLLER) || endsWithIgnoreCase(className, CONTROLLER + "Impl")) {
+      return CONTROLLER;
     }
 
     if (endsWithIgnoreCase(className, "Service") ||

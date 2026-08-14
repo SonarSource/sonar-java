@@ -2,6 +2,9 @@ package checks.spring;
 
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Repository;
@@ -107,6 +110,34 @@ public class SpringComponentSpecializationCheckSample {
   public class InitController implements CommandLineRunner {
     @Override
     public void run(String... args) { }
+  }
+
+  // Compliant - Controllers with request mappings but implementing HealthIndicator
+  @Component
+  public class HealthCheckController implements HealthIndicator {
+    @GetMapping("/health")
+    public String healthStatus() { return "UP"; }
+
+    @Override
+    public org.springframework.boot.actuate.health.Health health() { return null; }
+  }
+
+  // Compliant - Controllers with request mappings but implementing ReactiveHealthIndicator
+  @Component
+  public class ReactiveHealthCheckController implements ReactiveHealthIndicator {
+    @GetMapping("/health/reactive")
+    public String reactiveHealthStatus() { return "UP"; }
+
+    @Override
+    public reactor.core.publisher.Mono<org.springframework.boot.actuate.health.Health> health() { return null; }
+  }
+
+  // Compliant - Controllers with request mappings but annotated with @Endpoint
+  @Component
+  @Endpoint(id = "custom")
+  public class CustomEndpointController {
+    @GetMapping("/custom")
+    public String custom() { return "custom"; }
   }
 
   // Compliant - Redundant annotation: @Component alongside a specialized stereotype
