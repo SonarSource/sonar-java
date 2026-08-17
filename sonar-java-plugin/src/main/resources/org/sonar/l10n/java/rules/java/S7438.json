@@ -1,0 +1,23 @@
+{
+  "title": "Incompatible bit masks should not be used in comparisons",
+  "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "suspicious"
+  ],
+  "defaultSeverity": "Blocker",
+  "ruleSpecification": "RSPEC-7438",
+  "sqKey": "S7438",
+  "scope": "All",
+  "quickfix": "unknown"
+}
