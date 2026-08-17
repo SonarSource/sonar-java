@@ -48,12 +48,12 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
   static Stream<Arguments> stereotypeAnnotationArguments() {
     return Stream.of(
-      Arguments.of("src/test/files/springcontext/SimpleComponent.java",          "simpleComponent",      "checks.spring.context.SimpleComponent"),
-      Arguments.of("src/test/files/springcontext/SimpleService.java",            "simpleService",        "checks.spring.context.SimpleService"),
-      Arguments.of("src/test/files/springcontext/SimpleRepository.java",         "simpleRepository",     "checks.spring.context.SimpleRepository"),
-      Arguments.of("src/test/files/springcontext/SimpleController.java",         "simpleController",     "checks.spring.context.SimpleController"),
-      Arguments.of("src/test/files/springcontext/SimpleRestController.java",     "simpleRestController", "checks.spring.context.SimpleRestController"),
-      Arguments.of("src/test/files/springcontext/SimpleConfiguration.java",      "simpleConfiguration",  "checks.spring.context.SimpleConfiguration"),
+      Arguments.of("src/test/files/springcontext/SimpleComponent.java", "simpleComponent", "checks.spring.context.SimpleComponent"),
+      Arguments.of("src/test/files/springcontext/SimpleService.java", "simpleService", "checks.spring.context.SimpleService"),
+      Arguments.of("src/test/files/springcontext/SimpleRepository.java", "simpleRepository", "checks.spring.context.SimpleRepository"),
+      Arguments.of("src/test/files/springcontext/SimpleController.java", "simpleController", "checks.spring.context.SimpleController"),
+      Arguments.of("src/test/files/springcontext/SimpleRestController.java", "simpleRestController", "checks.spring.context.SimpleRestController"),
+      Arguments.of("src/test/files/springcontext/SimpleConfiguration.java", "simpleConfiguration", "checks.spring.context.SimpleConfiguration"),
       Arguments.of("src/test/files/springcontext/ConfigurationWithBeanMethods.java", "simpleServiceBean", "org.springframework.context.ApplicationContext")
     );
   }
@@ -180,9 +180,9 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
   static Stream<Arguments> dependencyCollectionArguments() {
     return Stream.of(
-      Arguments.of("src/test/files/springcontext/AutowiredDependencies.java",            "autowiredDependencies"),
+      Arguments.of("src/test/files/springcontext/AutowiredDependencies.java", "autowiredDependencies"),
       Arguments.of("src/test/files/springcontext/AutowiredConstructorDependencies.java", "autowiredConstructorDependencies"),
-      Arguments.of("src/test/files/springcontext/BeanMethodWithDependencies.java",       "myBean")
+      Arguments.of("src/test/files/springcontext/BeanMethodWithDependencies.java", "myBean")
     );
   }
 
