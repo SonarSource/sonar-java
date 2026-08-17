@@ -9,7 +9,7 @@ This skill provides sonar-java-specific guidelines for implementing new rules.
 
 ## What to Do
 
-### 1. Metadata Files
+### Metadata Files
 - **DO** generate rule metadata using rule-api tool from the RSPEC repository:
   - Ensure your local rspec repository is up-to-date with the rule branch
   - Use rule-api jar (check Maven local repository for available versions)
@@ -18,20 +18,30 @@ This skill provides sonar-java-specific guidelines for implementing new rules.
 - Generated files will be placed in:
   - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S{RULE_ID}.html`
   - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S{RULE_ID}.json`
-  - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/Sonar_way_profile.json` (updated)
+  - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/profiles/<profile_name>/${RULE_ID}`
 
-### 2. Tests
-- Run JavaAgenticWayProfileTest before creating a PR
-- Update ruling tests in `its/ruling/` and autoscan tests in `its/autoscan` after implementing the rule.
-  - These tests verify the rule against real-world Java projects.
-  - Note that running this tests locally is difficult, so they are usually after the corresponding CI actions failed, either by:
-    - downloading the actual_ruling, diff_ruling, actual_autoscan, diff_autoscan artifacts
-    - or looking through the logs of the failing action
-  - The files to update are in:
-    - `its/ruling/src/test/resources` for ruling tests
-    - `its/autoscan/src/test/resources/autoscan/diffs/` for autoscan tests
+### Tests
+Ruling test expectation files, located in `its/ruling/src/test/resources`, are updated by merging an automatically
+generated PR into the branch when CI checks fail.
 
-### 3. External Dependencies in Tests
+### MethodMatchers
+
+Use `MethodMatchers` to match method calls by type, name, and signature:
+
+```java
+private static final MethodMatchers MY_MATCHER = MethodMatchers.create()
+  .ofTypes("java.util.List")
+  .names("add")
+  .withAnyParameters()
+  .build();
+
+// In visitNode:
+if (MY_MATCHER.matches(methodInvocationTree)) {
+  reportIssue(methodInvocationTree, "Message.");
+}
+```
+
+### External Dependencies in Tests
 - **DO NOT** add external library dependencies for test samples
 - **DO** create mock-ups or use non-compiling tests when external libraries are needed
 - **SEE** Spring examples in `java-checks-test-sources/*/src/main/files/non-compiling/checks/`
