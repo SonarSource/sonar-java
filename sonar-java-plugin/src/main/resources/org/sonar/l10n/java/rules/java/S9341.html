@@ -1,0 +1,82 @@
+<h2>Why is this an issue?</h2>
+<p>Some Spring annotations are composed from other annotations through meta-annotation. When you use an annotation that already includes another
+annotation's behavior, explicitly adding the parent annotation is redundant. It creates visual noise and may indicate a misunderstanding of the
+framework's annotation composition model.</p>
+<p>Common examples include:</p>
+<ul>
+  <li><code>@RestController</code> is meta-annotated with <code>@Controller</code> and <code>@ResponseBody</code></li>
+  <li><code>@Service</code>, <code>@Repository</code>, <code>@Controller</code>, and <code>@Configuration</code> are meta-annotated with
+  <code>@Component</code></li>
+  <li><code>@SpringBootApplication</code> is meta-annotated with <code>@Configuration</code>, <code>@EnableAutoConfiguration</code>, and
+  <code>@ComponentScan</code></li>
+  <li>Spring test annotations like <code>@SpringBootTest</code> already include <code>@ExtendWith(SpringExtension.class)</code></li>
+</ul>
+<h2>How to fix it in Spring</h2>
+<p>Remove the redundant parent annotation. Keep only the most specific annotation that provides the functionality you need.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Component // Noncompliant, @Service already implies @Component
+@Service
+public class UserService {
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Service
+public class UserService {
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@Controller // Noncompliant, @RestController already implies @Controller
+@RestController
+public class UserController {
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@RestController
+public class UserController {
+}
+</pre>
+<h2>How to fix it in Spring Boot</h2>
+<p>Remove <code>@Configuration</code>, <code>@EnableAutoConfiguration</code>, and <code>@ComponentScan</code> (when used without custom
+attributes) since <code>@SpringBootApplication</code> already includes all of these.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+@Configuration // Noncompliant
+@SpringBootApplication
+public class MyApplication {
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+@SpringBootApplication
+public class MyApplication {
+}
+</pre>
+<h2>How to fix it in Spring Test</h2>
+<p>Remove <code>@ExtendWith(SpringExtension.class)</code> when using specialized test annotations like <code>@SpringBootTest</code>,
+<code>@WebMvcTest</code>, <code>@DataJpaTest</code>, or <code>@WebFluxTest</code> since they already include this extension.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="4" data-diff-type="noncompliant">
+@ExtendWith(SpringExtension.class) // Noncompliant
+@SpringBootTest
+class UserServiceIntegrationTest {
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="4" data-diff-type="compliant">
+@SpringBootTest
+class UserServiceIntegrationTest {
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Spring Framework Documentation - <a href="https://docs.spring.io/spring-framework/reference/core/beans/classpath-scanning.html#beans-meta-annotations">Meta-Annotations and Composed Annotations</a></li>
+  <li>Spring Boot Documentation - <a href="https://docs.spring.io/spring-boot/reference/using/using-the-springbootapplication-annotation.html">Using the @SpringBootApplication Annotation</a></li>
+</ul>
