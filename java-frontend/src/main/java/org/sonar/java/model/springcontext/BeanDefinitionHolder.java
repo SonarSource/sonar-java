@@ -51,8 +51,8 @@ public class BeanDefinitionHolder {
   /** Source location where the bean definition appears. */
   private final BeanLocation location;
 
-  /** Names of other beans this bean depends on. */
-  private List<String> dependingBeans;
+  /** Dependencies this bean requires, each capturing the required type and an optional {@code @Qualifier} name. */
+  private List<BeanDependency> dependingBeans;
 
   /** Comma-separated Spring profile expressions under which this bean is active, or {@code null} if unconditional. */
   @Nullable
@@ -68,7 +68,7 @@ public class BeanDefinitionHolder {
     this.location = location;
   }
 
-  private void setDependingBeans(List<String> beansList) {
+  private void setDependingBeans(List<BeanDependency> beansList) {
     this.dependingBeans = beansList;
   }
 
@@ -96,7 +96,7 @@ public class BeanDefinitionHolder {
     return location;
   }
 
-  public List<String> getDependingBeans() {
+  public List<BeanDependency> getDependingBeans() {
     return dependingBeans;
   }
 
@@ -114,7 +114,7 @@ public class BeanDefinitionHolder {
     private final String module;
     private final String beanPackage;
     private final BeanLocation location;
-    private List<String> dependingBeans = new ArrayList<>();
+    private List<BeanDependency> dependingBeans = new ArrayList<>();
     @Nullable
     private String profiles;
     private boolean isPrimary = false;
@@ -126,7 +126,7 @@ public class BeanDefinitionHolder {
       this.location = location;
     }
 
-    public Builder dependingBeans(List<String> beansList) {
+    public Builder dependingBeans(List<BeanDependency> beansList) {
       this.dependingBeans = beansList;
       return this;
     }

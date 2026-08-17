@@ -20,6 +20,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import org.sonar.java.model.springcontext.BeanDependency;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -192,6 +193,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     var beans = model.getBeanDefinitionRegistry().getByName(expectedBeanName);
     assertThat(beans).hasSize(1);
     assertThat(beans.get(0).getDependingBeans())
+      .extracting(BeanDependency::typeFqn)
       .containsExactlyInAnyOrder(
         "org.springframework.context.ApplicationContext",
         "org.springframework.core.env.Environment"
@@ -204,6 +206,39 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
       Arguments.of("src/test/files/springcontext/AutowiredConstructorDependencies.java", "autowiredConstructorDependencies"),
       Arguments.of("src/test/files/springcontext/BeanMethodWithDependencies.java", "myBean")
     );
+  }
+
+  // ---- @Qualifier handling --------------------------------------------------
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("qualifiedDependencyArguments")
+  void qualifier_is_captured_on_qualified_dependency(String filePath, String expectedBeanName) {
+    scan(filePath);
+
+    var beans = model.getBeanDefinitionRegistry().getByName(expectedBeanName);
+    assertThat(beans).hasSize(1);
+    assertThat(beans.get(0).getDependingBeans())
+      .extracting(BeanDependency::qualifier)
+      .containsExactlyInAnyOrder("primaryContext", null);
+  }
+
+  static Stream<Arguments> qualifiedDependencyArguments() {
+    return Stream.of(
+      Arguments.of("src/test/files/springcontext/QualifiedFieldDependencies.java",       "qualifiedFieldDependencies"),
+      Arguments.of("src/test/files/springcontext/QualifiedConstructorDependencies.java", "qualifiedConstructorDependencies"),
+      Arguments.of("src/test/files/springcontext/QualifiedBeanMethodDependencies.java",  "myBean")
+    );
+  }
+
+  @Test
+  void no_qualifier_results_in_null_qualifier() {
+    scan("src/test/files/springcontext/AutowiredDependencies.java");
+
+    var beans = model.getBeanDefinitionRegistry().getByName("autowiredDependencies");
+    assertThat(beans).hasSize(1);
+    assertThat(beans.get(0).getDependingBeans())
+      .extracting(BeanDependency::qualifier)
+      .containsOnly((String) null);
   }
 
   // ---- Bean location --------------------------------------------------------

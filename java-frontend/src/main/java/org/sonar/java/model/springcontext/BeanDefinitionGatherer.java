@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.utils.PackageUtils;
@@ -66,6 +67,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   private static final String DEP_SEPARATOR = ",";
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
+  private static final String VALUE_ATTRIBUTE = "value";
 
   private final List<BeanData> collectedBeans = new ArrayList<>();
 
@@ -79,7 +81,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     InputFile inputFile,
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
-    List<String> dependingBeans) {
+    List<BeanDependency> dependingBeans) {
   }
 
   @Override
@@ -107,7 +109,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     if (SpringUtils.STEREOTYPE_ANNOTATIONS.stream().anyMatch(meta::isAnnotatedWith)) {
       String beanName = extractBeanName(meta)
         .orElseGet(() -> defaultBeanName(classTree.simpleName().name()));
-      List<String> deps = collectAutowiredDependencies(classTree);
+      List<BeanDependency> deps = collectAutowiredDependencies(classTree);
       // Class-level bean (stereotype annotations)
       collectedBeans.add(new BeanData(
         beanName, fqn, pkg,
@@ -234,7 +236,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       List<SymbolMetadata.AnnotationValue> attrs = meta.valuesForAnnotation(annotation);
       if (attrs != null) {
         Optional<String> name = attrs.stream()
-          .filter(v -> "value".equals(v.name()) || "name".equals(v.name()))
+          .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
           .map(v -> (String) v.value())
           .filter(s -> !s.isBlank())
           .findFirst();
@@ -255,7 +257,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     List<SymbolMetadata.AnnotationValue> attrs = beanMeta.valuesForAnnotation(SpringUtils.BEAN_ANNOTATION);
     String beanName = Optional.ofNullable(attrs)
       .flatMap(list -> list.stream()
-        .filter(v -> "value".equals(v.name()) || "name".equals(v.name()))
+        .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
         .map(v -> {
           Object val = v.value();
           if (val instanceof Object[] arr && arr.length > 0) {
@@ -271,8 +273,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       ? method.returnType().symbolType().fullyQualifiedName()
       : "";
 
-    List<String> paramDeps = method.parameters().stream()
-      .map(p -> p.symbol().type().fullyQualifiedName())
+    List<BeanDependency> paramDeps = method.parameters().stream()
+      .map(p -> new BeanDependency(p.symbol().type().fullyQualifiedName(), extractQualifier(p.symbol().metadata())))
       .toList();
 
     collectedBeans.add(new BeanData(
@@ -289,24 +291,38 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       paramDeps));
   }
 
-  private static List<String> collectAutowiredDependencies(ClassTree classTree) {
-    List<String> deps = new ArrayList<>();
+  private static List<BeanDependency> collectAutowiredDependencies(ClassTree classTree) {
+    List<BeanDependency> deps = new ArrayList<>();
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree field = (VariableTree) member;
         if (field.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
-          deps.add(field.symbol().type().fullyQualifiedName());
+          deps.add(new BeanDependency(field.symbol().type().fullyQualifiedName(), extractQualifier(field.symbol().metadata())));
         }
       } else if (member.is(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD)) {
         MethodTree method = (MethodTree) member;
         if (method.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
           method.parameters().stream()
-            .map(p -> p.symbol().type().fullyQualifiedName())
+            .map(p -> new BeanDependency(p.symbol().type().fullyQualifiedName(), extractQualifier(p.symbol().metadata())))
             .forEach(deps::add);
         }
       }
     }
     return deps;
+  }
+
+  @Nullable
+  private static String extractQualifier(SymbolMetadata metadata) {
+    List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(SpringUtils.QUALIFIER_ANNOTATION);
+    if (attrs == null) {
+      return null;
+    }
+    return attrs.stream()
+      .filter(v -> VALUE_ATTRIBUTE.equals(v.name()))
+      .map(v -> (String) v.value())
+      .filter(s -> !s.isBlank())
+      .findFirst()
+      .orElse(null);
   }
 
 }
