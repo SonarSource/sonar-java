@@ -137,4 +137,20 @@ class CompilationOrPreparationInLoopCheckSample {
       Pattern.compile("[a-z]+").matcher(input).find(); // Noncompliant
     }
   }
+
+  void expressionInEnhancedForLoopWithSplit(String text) {
+    for (String s : text.split(";")) { // Compliant; text.split(";") evaluated only once
+      if (s.isEmpty()) {
+        return;
+      }
+    }
+  }
+
+  void expressionInEnhancedForLoopWithCompile(String text) {
+    for (String s : Pattern.compile(";").split(text)) { // Compliant; Pattern.compile(";").split(text) evaluated only once
+      if (s.isEmpty()) {
+        return;
+      }
+    }
+  }
 }

@@ -90,7 +90,7 @@ public class CompilationOrPreparationInLoopCheck extends IssuableSubscriptionVis
       return;
     }
     Tree loop = TreeHelper.findClosestParentOfKind(mit, LOOP_KINDS);
-    if (loop == null || isInForInitializer(mit, loop)) {
+    if (loop == null || isExecutedOncePerLoop(mit, loop)) {
       return;
     }
     if (SPLIT.matches(mit) && isSplitFastPath(mit.arguments().get(0))) {
@@ -109,13 +109,18 @@ public class CompilationOrPreparationInLoopCheck extends IssuableSubscriptionVis
     return String.format("Move this \"%s\" call outside the loop.", ExpressionUtils.methodName(mit).name());
   }
 
-  private static boolean isInForInitializer(Tree tree, Tree loop) {
-    if (!loop.is(Tree.Kind.FOR_STATEMENT)) {
+  private static boolean isExecutedOncePerLoop(Tree tree, Tree loop) {
+    Tree anchor = null;
+    if (loop instanceof ForStatementTree forStatementTree) {
+      anchor = forStatementTree.initializer();
+    } else if (loop instanceof ForEachStatement forEachStatement) {
+      anchor = forEachStatement.expression();
+    }
+    if (anchor == null) {
       return false;
     }
-    Tree initializer = ((ForStatementTree) loop).initializer();
     for (Tree current = tree; current != null && current != loop; current = current.parent()) {
-      if (current == initializer) {
+      if (current == anchor) {
         return true;
       }
     }
