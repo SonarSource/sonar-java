@@ -1,0 +1,25 @@
+{
+  "title": "Expensive compilation or preparation operations should not be performed inside loops",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "performance",
+    "regex",
+    "sql"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9142",
+  "sqKey": "S9142",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "EFFICIENT"
+  }
+}
