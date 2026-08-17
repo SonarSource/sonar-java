@@ -19,6 +19,7 @@ package org.sonar.java.model.springcontext;
 import java.beans.Introspector;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -156,8 +157,9 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   private static String serializeBean(BeanData bean) {
     var deps = String.join(DEP_SEPARATOR, bean.dependingBeans());
     var span = bean.textSpan();
+    var encodedName = Base64.getEncoder().encodeToString(bean.beanName().getBytes(StandardCharsets.UTF_8));
     return String.join(FIELD_SEPARATOR,
-      bean.beanName(),
+      encodedName,
       bean.type(),
       bean.beanPackage(),
       span.startLine + ":" + span.startCharacter + ":" + span.endLine + ":" + span.endCharacter,
@@ -199,15 +201,20 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     if (content.isEmpty()) {
       return Optional.of(List.of());
     }
-    var beans = content.lines()
-      .map(line -> deserializeBean(line, ctx.getInputFile()))
-      .toList();
-    return Optional.of(beans);
+    try {
+      var beans = content.lines()
+        .map(line -> deserializeBean(line, ctx.getInputFile()))
+        .toList();
+      return Optional.of(beans);
+    } catch (RuntimeException e) {
+      LOG.trace("Failed to deserialize cached beans for '{}', will re-parse.", cacheKey);
+      return Optional.empty();
+    }
   }
 
   private static BeanData deserializeBean(String line, InputFile inputFile) {
     String[] fields = line.split("\\" + FIELD_SEPARATOR, -1);
-    String beanName = fields[0];
+    String beanName = new String(Base64.getDecoder().decode(fields[0]), StandardCharsets.UTF_8);
     String type = fields[1];
     String beanPackage = fields[2];
     String[] spanParts = fields[3].split(":");

@@ -18,6 +18,7 @@ package org.sonar.java.model.springcontext;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -246,8 +247,9 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
       anyString(),
       dataCaptor.capture());
     String serialized = new String(dataCaptor.getValue(), StandardCharsets.UTF_8);
+    String encodedName = Base64.getEncoder().encodeToString("simpleComponent".getBytes(StandardCharsets.UTF_8));
     assertThat(serialized)
-      .contains("simpleComponent")
+      .contains(encodedName)
       .contains("checks.spring.context.SimpleComponent")
       .contains("checks.spring.context")
       .contains("false");
@@ -257,7 +259,8 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
   void scanWithoutParsing_returns_true_and_restores_beans_on_cache_hit() {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
-    String serialized = "simpleComponent|checks.spring.context.SimpleComponent|checks.spring.context|6:6:6:21|false|";
+    String encodedName = Base64.getEncoder().encodeToString("simpleComponent".getBytes(StandardCharsets.UTF_8));
+    String serialized = encodedName + "|checks.spring.context.SimpleComponent|checks.spring.context|6:6:6:21|false|";
 
     JavaReadCache readCache = mock(JavaReadCache.class);
     when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
@@ -326,6 +329,22 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     assertThatCode(() -> scan(ctx, "src/test/files/springcontext/SimpleComponent.java"))
       .doesNotThrowAnyException();
+  }
+
+  @Test
+  void scanWithoutParsing_returns_false_on_corrupted_cache_entry() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
+    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn("not|valid|cache|content".getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isFalse();
   }
 
   private static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
