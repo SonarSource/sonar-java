@@ -17,7 +17,7 @@
 package org.sonar.plugins.java;
 
 import org.junit.jupiter.api.Test;
-import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
+import org.sonar.scanner.plugin.api.impl.sensor.DefaultSensorDescriptor;
 import org.sonar.java.model.springcontext.SpringContextModel;
 
 import static org.assertj.core.api.Assertions.assertThat;
