@@ -1,11 +1,9 @@
 package checks;
 
 import io.restassured.exception.PathException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.List;
-import java.util.concurrent.*;
+
 import java.util.function.Supplier;
 
 public class ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample {
@@ -126,21 +124,12 @@ public class ReplaceUnusedExceptionParameterWithUnnamedPatternCheckSample {
 
   public void e(){}
 
-  private final Logger log = LogManager.getLogger();
-
-  private void executor_run_compliant() {
-    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-    executor.scheduleAtFixedRate(
-      () -> {
-        try {
-          Integer.parseInt("1.2");
-        } catch (Exception e) {
-          log.error("SonarQube Cloud reports 'e' should be replaced by _ while it's used", e);
-        }
-      },
-      0,
-      100_000,
-      TimeUnit.MILLISECONDS
-    );
+  public void raiseWhenInsideLambdaInUnresolvedMethod() {
+    MyTask task = new MyTask();
+    try {
+      Integer.parseInt("x");
+    } catch (NumberFormatException e) {
+      task.run(() -> System.out.println(e.getMessage()));
+    }
   }
 }

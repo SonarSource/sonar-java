@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.checks.helpers.UnresolvedIdentifiersVisitor;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -32,6 +33,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 @Rule(key = "S7467")
 public class ReplaceUnusedExceptionParameterWithUnnamedPatternCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
+  private static final UnresolvedIdentifiersVisitor UNRESOLVED_IDENTIFIERS_VISITOR = new UnresolvedIdentifiersVisitor();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.CATCH);
@@ -44,7 +47,10 @@ public class ReplaceUnusedExceptionParameterWithUnnamedPatternCheck extends Issu
     IdentifierTree ident = v.simpleName();
 
     // completely ignored for an absent semantic model
-    if (!ident.isUnnamedVariable() && context.getSemanticModel() != null && v.symbol().usages().isEmpty()) {
+    // also skip when the parameter name appears as an unresolved identifier in the block: broken semantics
+    // (e.g. unresolved types) can cause usages inside lambdas to go untracked
+    if (!ident.isUnnamedVariable() && context.getSemanticModel() != null && v.symbol().usages().isEmpty()
+      && !UNRESOLVED_IDENTIFIERS_VISITOR.check(catchTree.block()).contains(ident.name())) {
       QuickFixHelper.newIssue(context)
         .forRule(this)
         .onTree(ident)
