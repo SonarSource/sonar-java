@@ -90,14 +90,21 @@ public class CompilationOrPreparationInLoopCheck extends IssuableSubscriptionVis
       return;
     }
     Tree loop = TreeHelper.findClosestParentOfKind(mit, LOOP_KINDS);
-    if (loop == null || isExecutedOncePerLoop(mit, loop)) {
+    if (loop == null) {
       return;
+    }
+    if (isExecutedOncePerLoop(mit, loop)) {
+      loop = TreeHelper.findClosestParentOfKind(loop.parent(), LOOP_KINDS);
+      if (loop == null) {
+        return;
+      }
     }
     if (SPLIT.matches(mit) && isSplitFastPath(mit.arguments().get(0))) {
       return;
     }
+    Tree effectiveLoop = loop;
     List<ExpressionTree> argsToCheck = PATTERN_COMPILE.matches(mit) ? mit.arguments() : List.of(mit.arguments().get(0));
-    if (argsToCheck.stream().allMatch(arg -> isLoopInvariant(arg, loop))) {
+    if (argsToCheck.stream().allMatch(arg -> isLoopInvariant(arg, effectiveLoop))) {
       reportIssue(mit, message(mit));
     }
   }

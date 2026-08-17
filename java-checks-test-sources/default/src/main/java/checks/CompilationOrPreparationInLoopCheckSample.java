@@ -153,4 +153,14 @@ class CompilationOrPreparationInLoopCheckSample {
       }
     }
   }
+
+  void forEachIterableInsideOuterLoop(List<String> texts) {
+    for (String text : texts) {
+      for (String s : Pattern.compile(";").split(text)) { // Noncompliant
+        if (s.isEmpty()) {
+          return;
+        }
+      }
+    }
+  }
 }
