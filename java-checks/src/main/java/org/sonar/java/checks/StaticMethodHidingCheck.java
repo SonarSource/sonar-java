@@ -41,7 +41,7 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
     }
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
-    if (!methodSymbol.isStatic()) {
+    if (!methodSymbol.isStatic() || isIntentionalHiding(methodSymbol)) {
       return;
     }
     Symbol.TypeSymbol owner = (Symbol.TypeSymbol) methodSymbol.owner();
@@ -77,6 +77,15 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
     } else {
       reportIssue(methodTree.simpleName(), message);
     }
+  }
+
+  private static boolean isIntentionalHiding(Symbol.MethodSymbol methodSymbol) {
+    return methodSymbol.metadata().isAnnotatedWith("java.lang.Deprecated")
+      || methodSymbol.metadata().isAnnotatedWith("kotlin.Deprecated")
+      || methodSymbol.metadata().isAnnotatedWith("com.google.errorprone.annotations.DoNotCall")
+      || methodSymbol.metadata().isAnnotatedWith("com.google.errorprone.annotations.InlineMe")
+      || methodSymbol.metadata().isAnnotatedWith("org.jetbrains.annotations.ApiStatus$Obsolete")
+      || methodSymbol.metadata().isAnnotatedWith("org.jetbrains.annotations.ApiStatus$ScheduledForRemoval");
   }
 
   private static boolean hasSameParameterTypes(Symbol.MethodSymbol method, Symbol.MethodSymbol candidate) {

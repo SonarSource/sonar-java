@@ -1,7 +1,4 @@
 {
-"com.google.guava:guava:src/com/google/common/collect/ContiguousSet.java": [
-193
-],
 "com.google.guava:guava:src/com/google/common/collect/ImmutableBiMap.java": [
 41,
 48,
@@ -40,43 +37,15 @@
 180,
 218
 ],
-"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMapFauxverideShim.java": [
-37,
-51,
-65,
-80,
-95,
-110
-],
 "com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMultiset.java": [
 63,
 171,
 189
-],
-"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMultisetFauxverideShim.java": [
-44,
-58,
-72,
-86,
-100,
-115,
-130,
-145
 ],
 "com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java": [
 78,
 200,
 237,
 256
-],
-"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSetFauxverideShim.java": [
-46,
-60,
-74,
-88,
-103,
-118,
-133,
-147
 ]
 }
