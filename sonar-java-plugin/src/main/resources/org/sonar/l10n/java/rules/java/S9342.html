@@ -1,0 +1,48 @@
+<p>An issue is raised when an operation that closes an archive entry is called immediately after an operation that opens or begins a new
+entry in an archive output stream, without writing any content in between.</p>
+<h2>Why is this an issue?</h2>
+<p>When creating archive files (ZIP or JAR), entries are added using a three-step process:</p>
+<ol>
+  <li>Call an API method to declare the start of a new entry</li>
+  <li>Write the entry's content using output stream methods</li>
+  <li>Call an API method to finalize the entry</li>
+</ol>
+<p>Skipping the second step creates an empty entry in the archive. This is almost always a mistake.</p>
+<p>Empty archive entries serve no useful purpose. In ZIP files, they waste space by storing metadata for entries with no content. In JAR files,
+empty entries can cause runtime errors when the application expects to load classes or resources that don't exist.</p>
+<p>In Java, this specifically refers to calling <code>closeEntry()</code> immediately after <code>putNextEntry()</code> on a
+<code>ZipOutputStream</code> or <code>JarOutputStream</code>.</p>
+<h3>What is the potential impact?</h3>
+<ul>
+  <li><strong>Build failures</strong>: Archive files with empty code file entries will fail when the runtime attempts to load those code
+  modules</li>
+  <li><strong>Missing resources</strong>: Applications expecting configuration files, images, or other resources will fail when these entries are
+  empty</li>
+  <li><strong>Confusion and debugging time</strong>: Developers may spend time investigating why expected files aren't working, not realizing they
+  exist but are empty</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Write content to the archive entry between <code>putNextEntry()</code> and <code>closeEntry()</code> using the <code>write()</code> method.
+The content can come from a byte array, file, or any other source.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+zos.putNextEntry(new ZipEntry("empty.txt"));
+zos.closeEntry(); // Noncompliant - no content written
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+zos.putNextEntry(new ZipEntry("file.txt"));
+zos.write("Hello, World!".getBytes());
+zos.closeEntry();
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Platform SE 8 Documentation - <a
+  href="https://docs.oracle.com/javase/8/docs/api/java/util/zip/ZipOutputStream.html">ZipOutputStream (Java Platform SE 8)</a></li>
+  <li>Java Platform SE 8 Documentation - <a
+  href="https://docs.oracle.com/javase/8/docs/api/java/util/jar/JarOutputStream.html">JarOutputStream (Java Platform SE 8)</a></li>
+</ul>
