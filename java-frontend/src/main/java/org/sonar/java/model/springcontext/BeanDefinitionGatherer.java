@@ -29,6 +29,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
