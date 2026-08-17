@@ -23,6 +23,7 @@ import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -111,7 +112,18 @@ public class SpringComponentSpecializationCheck extends IssuableSubscriptionVisi
         }
       }
     }
+    for (Type superType : classTree.symbol().superTypes()) {
+      if (hasRequestMappingMethodInSymbol(superType.symbol())) {
+        return true;
+      }
+    }
     return false;
+  }
+
+  private static boolean hasRequestMappingMethodInSymbol(Symbol.TypeSymbol typeSymbol) {
+    return typeSymbol.memberSymbols().stream()
+      .filter(Symbol::isMethodSymbol)
+      .anyMatch(method -> REQUEST_MAPPING_ANNOTATIONS.stream().anyMatch(method.metadata()::isAnnotatedWith));
   }
 
   private static boolean implementsNonWebFrameworkInterface(ClassTree classTree) {

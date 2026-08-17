@@ -3,6 +3,8 @@ package checks.spring;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
+import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.stereotype.Component;
@@ -138,6 +140,52 @@ public class SpringComponentSpecializationCheckSample {
   public class CustomEndpointController {
     @GetMapping("/custom")
     public String custom() { return "custom"; }
+  }
+
+  // Compliant - Controllers with request mappings but annotated with @RestControllerEndpoint
+  @Component
+  @RestControllerEndpoint(id = "restEndpoint")
+  public class ActuatorRestController {
+    @GetMapping("/actuator/rest")
+    public String restEndpoint() { return "rest"; }
+  }
+
+  // Compliant - Controllers with request mappings but annotated with @ControllerEndpoint
+  @Component
+  @ControllerEndpoint(id = "controllerEndpoint")
+  public class ActuatorController {
+    @GetMapping("/actuator/controller")
+    public String controllerEndpoint() { return "controller"; }
+  }
+
+  // Controllers with inherited request mapping methods
+
+  public abstract class BaseRestController {
+    @GetMapping("/status")
+    public String status() { return "ok"; }
+  }
+
+  @Component // Noncompliant {{Use @RestController instead of @Component, or rename this type if the @Component annotation is intentional}}
+  public class StatusRestController extends BaseRestController {
+  }
+
+  public abstract class BaseController {
+    @PostMapping("/submit")
+    public String submit() { return "submitted"; }
+  }
+
+  @Component // Noncompliant {{Use @Controller instead of @Component, or rename this type if the @Component annotation is intentional}}
+  public class FormController extends BaseController {
+  }
+
+  // Compliant - Controller subclass without inherited mapping methods
+
+  public abstract class BaseProcessController {
+    public void process() { }
+  }
+
+  @Component
+  public class TaskController extends BaseProcessController {
   }
 
   // Compliant - Redundant annotation: @Component alongside a specialized stereotype
