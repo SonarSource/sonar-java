@@ -172,10 +172,8 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
       Symbol receiver = getReceiverSymbol(mit);
-      if (receiver != null && pendingEntries.containsKey(receiver)) {
-        if (WRITE.matches(mit)) {
-          usedSymbols.add(receiver);
-        }
+      if (receiver != null && pendingEntries.containsKey(receiver) && WRITE.matches(mit)) {
+        usedSymbols.add(receiver);
       }
       // Check if any tracked symbol is passed as argument
       for (ExpressionTree arg : mit.arguments()) {
