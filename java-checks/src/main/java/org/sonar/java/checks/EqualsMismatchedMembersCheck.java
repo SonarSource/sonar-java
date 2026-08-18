@@ -41,6 +41,10 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+/**
+ * Flags {@code equals} implementations that compare a field or getter of {@code this}
+ * with a different field or getter of the other instance.
+ */
 @Rule(key = "S9350")
 public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
 
@@ -93,6 +97,7 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
     ComparisonCollector collector = new ComparisonCollector(owner);
     methodTree.block().accept(collector);
     for (ComparisonSite comparison : collector.comparisons) {
+      // Order-independent equality: (a, b) || (b, a) in the same statement is not a mismatch.
       if (collector.pairsByStatement.get(comparison.statement).contains(comparison.pair().reversed())) {
         continue;
       }
@@ -134,6 +139,7 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
       if (isTwoArgEqualityHelper(tree)) {
         addIfDubious(tree, arguments.get(0), arguments.get(1));
       } else if (ARRAYS_EQUALS.matches(tree) && arguments.size() >= 2) {
+        // 2-arg compares the two arrays; 6-arg subrange overloads compare arguments 0 and 3.
         addIfDubious(tree, arguments.get(0), arguments.get(arguments.size() / 2));
       } else if (INSTANCE_EQUALS.matches(tree) && arguments.size() == 1) {
         ExpressionTree receiver = receiver(tree);
@@ -144,6 +150,10 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
       super.visitMethodInvocation(tree);
     }
 
+    /**
+     * Records a candidate when one operand is a member of {@code this} and the other is a
+     * differently named member of the same kind on a local or parameter (the other instance).
+     */
     private void addIfDubious(Tree comparisonTree, ExpressionTree lhs, ExpressionTree rhs) {
       Optional<MemberRef> left = member(lhs);
       Optional<MemberRef> right = member(rhs);
@@ -152,6 +162,7 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
       }
       MemberRef leftMember = left.get();
       MemberRef rightMember = right.get();
+      // Skip field-vs-getter, same member names, and same-object or two-foreign-object pairings.
       if (leftMember.kind != rightMember.kind
         || leftMember.displayName.equals(rightMember.displayName)
         || leftMember.onThis == rightMember.onThis) {
@@ -168,6 +179,7 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
       ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
       Optional<Boolean> onThis = receiverIsThis(expr);
       if (onThis.isEmpty()) {
+        // Not reached through this or a local/parameter (for example a static or a nested selection).
         return Optional.empty();
       }
       if (expr instanceof IdentifierTree identifierTree) {
@@ -203,10 +215,15 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
 
     private boolean ownedByEnclosing(Symbol symbol) {
       Symbol owner = symbol.owner();
+      // Compare erasures so a field of Holder<?> still belongs to Holder<T>.
       return owner != null && !owner.isUnknown() && owner.isTypeSymbol()
         && enclosingClass.type().erasure().equals(owner.type().erasure());
     }
 
+    /**
+     * {@code Optional.of(true)} for {@code this} (implicit or explicit), {@code Optional.of(false)}
+     * for a local or parameter, empty when the receiver is neither.
+     */
     private static Optional<Boolean> receiverIsThis(ExpressionTree access) {
       if (access instanceof IdentifierTree) {
         return Optional.of(true);
@@ -239,6 +256,7 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
       }
       Symbol owner = symbol.owner();
       if (owner == null || !owner.isMethodSymbol()) {
+        // A field of this type used as receiver is not the other instance.
         return Optional.empty();
       }
       return Optional.of(false);
@@ -252,6 +270,7 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
         return true;
       }
       Symbol.MethodSymbol method = tree.methodSymbol();
+      // Fallback when Guava is absent from the classpath: a static or unresolved method named equal.
       return (method.isUnknown() || method.isStatic())
         && "equal".equals(ExpressionUtils.methodName(tree).name());
     }
