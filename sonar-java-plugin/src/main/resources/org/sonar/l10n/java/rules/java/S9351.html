@@ -28,6 +28,9 @@ if (priceA.compareTo(priceB) == 0) {
 <h2>Exceptions</h2>
 <p>This rule ignores <code>BigDecimal.equals()</code> calls inside <code>equals(Object)</code> method declarations. Classes implementing
 <code>equals(Object)</code> and <code>hashCode()</code> often require scale-sensitive comparison to satisfy the <code>hashCode</code> contract.</p>
+<p>If scale-sensitive equality is intentionally desired in other contexts, suppress the issue with an inline <code>// NOSONAR</code> comment and
+provide a short rationale explaining why scale sensitivity is necessary (e.g., <code>// NOSONAR: scale-sensitive comparison is
+intentional</code>).</p>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
