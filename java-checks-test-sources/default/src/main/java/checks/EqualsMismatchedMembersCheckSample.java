@@ -525,4 +525,35 @@ class EqualsMismatchedMembersCheckSample {
       return getA() == that.b && a == that.a;
     }
   }
+
+  static class FieldReceiver {
+    int a;
+    int b;
+    FieldReceiver other;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof FieldReceiver that)) {
+        return false;
+      }
+      return this.a == other.b && this.a == that.a;
+    }
+  }
+
+  static class GetterWithArgument {
+    int a;
+    int b;
+
+    int value(int ignored) {
+      return a;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof GetterWithArgument that)) {
+        return false;
+      }
+      return value(0) == that.b && a == that.a;
+    }
+  }
 }
