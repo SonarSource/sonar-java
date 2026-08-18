@@ -18,18 +18,14 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -93,36 +89,8 @@ public class FloatEqualityCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isNanTest(BinaryExpressionTree binaryExpressionTree) {
     return SyntacticEquivalence.areEquivalent(binaryExpressionTree.leftOperand(), binaryExpressionTree.rightOperand())
-      || isNanExpression(binaryExpressionTree.leftOperand())
-      || isNanExpression(binaryExpressionTree.rightOperand());
-  }
-
-  private static boolean isNanExpression(ExpressionTree expression) {
-    ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
-    if (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expr;
-      if ("NaN".equals(memberSelect.identifier().name())) {
-        return isFloatingPointNan(memberSelect.identifier().symbol());
-      }
-    } else if (expr.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifier = (IdentifierTree) expr;
-      if ("NaN".equals(identifier.name())) {
-        return isFloatingPointNan(identifier.symbol());
-      }
-    }
-    return false;
-  }
-
-  private static boolean isFloatingPointNan(@Nullable Symbol symbol) {
-    if (symbol == null || symbol.isUnknown()) {
-      return false;
-    }
-    Symbol owner = symbol.owner();
-    if (owner == null || owner.type() == null) {
-      return false;
-    }
-    Type ownerType = owner.type();
-    return ownerType.is("java.lang.Double") || ownerType.is("java.lang.Float");
+      || ExpressionUtils.getNanOwnerTypeName(binaryExpressionTree.leftOperand()) != null
+      || ExpressionUtils.getNanOwnerTypeName(binaryExpressionTree.rightOperand()) != null;
   }
 
   private static boolean hasFloatingType(ExpressionTree expressionTree) {

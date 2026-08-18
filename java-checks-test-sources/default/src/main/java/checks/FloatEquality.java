@@ -64,6 +64,9 @@ class FloatEquality {
     if (f != Float.NaN) {} // Compliant - covered by S9147
     if (Float.NaN == f) {} // Compliant - covered by S9147
     if (d == (Double.NaN)) {} // Compliant - covered by S9147
+    if (f == (Float.NaN)) {} // Compliant - covered by S9147
     if (d == NaN) {} // Compliant - covered by S9147 (static import)
+    if (Double.NaN == Double.NaN) {} // Compliant - covered by S9147 (NaN on both sides)
+    if (f == f) {} // Compliant - NaN self-test pattern
   }
 }

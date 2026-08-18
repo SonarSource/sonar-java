@@ -17,16 +17,10 @@
 package org.sonar.java.checks;
 
 import java.util.List;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S9147")
@@ -40,47 +34,14 @@ public class NanEqualityCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryExpression = (BinaryExpressionTree) tree;
-    String typeName = getNanTypeName(binaryExpression.leftOperand());
+    String typeName = ExpressionUtils.getNanOwnerTypeName(binaryExpression.leftOperand());
     if (typeName == null) {
-      typeName = getNanTypeName(binaryExpression.rightOperand());
+      typeName = ExpressionUtils.getNanOwnerTypeName(binaryExpression.rightOperand());
     }
     if (typeName != null) {
       reportIssue(binaryExpression.operatorToken(),
         String.format("Use \"%s.isNaN()\" instead of comparison with \"%s.NaN\".", typeName, typeName));
     }
-  }
-
-  @Nullable
-  private static String getNanTypeName(ExpressionTree expression) {
-    ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
-    if (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expr;
-      if ("NaN".equals(memberSelect.identifier().name())) {
-        return resolveNanOwnerType(memberSelect.identifier().symbol());
-      }
-    } else if (expr.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifier = (IdentifierTree) expr;
-      if ("NaN".equals(identifier.name())) {
-        return resolveNanOwnerType(identifier.symbol());
-      }
-    }
-    return null;
-  }
-
-  @Nullable
-  private static String resolveNanOwnerType(Symbol symbol) {
-    if (symbol.isUnknown()) {
-      return null;
-    }
-    Symbol owner = symbol.owner();
-    if (owner == null || owner.type() == null) {
-      return null;
-    }
-    Type ownerType = owner.type();
-    if (ownerType.is("java.lang.Double") || ownerType.is("java.lang.Float")) {
-      return ownerType.name();
-    }
-    return null;
   }
 
 }

@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -401,6 +402,39 @@ public final class ExpressionUtils {
       return ((IdentifierTree) assignment.variable()).name();
     }
     return "value";
+  }
+
+  @Nullable
+  public static String getNanOwnerTypeName(ExpressionTree expression) {
+    ExpressionTree expr = skipParentheses(expression);
+    if (expr.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) expr;
+      if ("NaN".equals(memberSelect.identifier().name())) {
+        return resolveNanOwnerType(memberSelect.identifier().symbol());
+      }
+    } else if (expr.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) expr;
+      if ("NaN".equals(identifier.name())) {
+        return resolveNanOwnerType(identifier.symbol());
+      }
+    }
+    return null;
+  }
+
+  @Nullable
+  private static String resolveNanOwnerType(Symbol symbol) {
+    if (symbol.isUnknown()) {
+      return null;
+    }
+    Symbol owner = symbol.owner();
+    if (owner == null || owner.type() == null) {
+      return null;
+    }
+    Type ownerType = owner.type();
+    if (ownerType.is("java.lang.Double") || ownerType.is("java.lang.Float")) {
+      return ownerType.name();
+    }
+    return null;
   }
 
 }
