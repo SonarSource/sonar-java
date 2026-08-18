@@ -41,11 +41,17 @@ import org.sonar.plugins.java.api.tree.StaticInitializerTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
 import static org.sonar.java.model.ExpressionUtils.skipParenthesesUpwards;
 import static org.sonar.java.model.assertions.TreeAssert.assertThat;
@@ -533,6 +539,65 @@ class ExpressionUtilsTest {
     } else {
       assertThat(actual).isEqualTo(expected);
     }
+  }
+
+  @Test
+  void getNanOwnerTypeName_identifier_not_nan() {
+    // An identifier that is not named "NaN" should return null (line 417 false branch)
+    assertNanOwnerTypeName("someVariable", null);
+  }
+
+  @Test
+  void getNanOwnerTypeName_custom_class_nan_field() {
+    // A NaN field on a custom class (not Double/Float) should return null (line 437)
+    CompilationUnitTree unit = JParserTestUtils.parse("""
+      class MyClass {
+        static double NaN = 0.0;
+      }
+      class A { Object f = MyClass.NaN; }
+      """);
+    ExpressionTree expr = ((VariableTree) ((ClassTree) unit.types().get(1)).members().get(0)).initializer();
+    assertThat(ExpressionUtils.getNanOwnerTypeName(expr)).isNull();
+  }
+
+  @Test
+  void getNanOwnerTypeName_member_select_not_nan() {
+    // A member select where the identifier is not "NaN" should return null (line 412 false branch)
+    assertNanOwnerTypeName("Double.MAX_VALUE", null);
+  }
+
+  @Test
+  void getNanOwnerTypeName_null_owner_type_via_mock() {
+    // Test resolveNanOwnerType returns null when owner.type() is null (line 431)
+    Symbol nanSymbol = mock(Symbol.class);
+    when(nanSymbol.isUnknown()).thenReturn(false);
+    Symbol ownerSymbol = mock(Symbol.class);
+    when(ownerSymbol.type()).thenReturn(null);
+    when(nanSymbol.owner()).thenReturn(ownerSymbol);
+
+    IdentifierTree identifier = mock(IdentifierTree.class);
+    when(identifier.name()).thenReturn("NaN");
+    when(identifier.symbol()).thenReturn(nanSymbol);
+    when(identifier.is(Tree.Kind.MEMBER_SELECT)).thenReturn(false);
+    when(identifier.is(Tree.Kind.IDENTIFIER)).thenReturn(true);
+
+    assertThat(ExpressionUtils.getNanOwnerTypeName(identifier)).isNull();
+  }
+
+  @Test
+  void getNanOwnerTypeName_null_owner_via_mock() {
+    // Test resolveNanOwnerType returns null when owner is null (line 431)
+    Symbol nanSymbol = mock(Symbol.class);
+    when(nanSymbol.isUnknown()).thenReturn(false);
+    when(nanSymbol.owner()).thenReturn(null);
+
+    IdentifierTree identifier = mock(IdentifierTree.class);
+    when(identifier.name()).thenReturn("NaN");
+    when(identifier.symbol()).thenReturn(nanSymbol);
+    when(identifier.is(Tree.Kind.MEMBER_SELECT)).thenReturn(false);
+    when(identifier.is(Tree.Kind.IDENTIFIER)).thenReturn(true);
+
+    assertThat(ExpressionUtils.getNanOwnerTypeName(identifier)).isNull();
   }
 
   @Test
