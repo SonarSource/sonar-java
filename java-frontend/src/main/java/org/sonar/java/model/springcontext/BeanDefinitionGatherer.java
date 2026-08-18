@@ -19,6 +19,7 @@ package org.sonar.java.model.springcontext;
 import java.beans.Introspector;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +66,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   private static final String BEAN_SEPARATOR = "\n";
   private static final String FIELD_SEPARATOR = "|";
   private static final String DEP_SEPARATOR = ",";
+  private static final String DEP_QUALIFIER_SEPARATOR = "=";
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
   private static final String VALUE_ATTRIBUTE = "value";
@@ -157,7 +159,9 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   }
 
   private static String serializeBean(BeanData bean) {
-    var deps = String.join(DEP_SEPARATOR, bean.dependingBeans());
+    var deps = bean.dependingBeans().stream()
+      .map(BeanDefinitionGatherer::serializeDependency)
+      .collect(Collectors.joining(DEP_SEPARATOR));
     var span = bean.textSpan();
     var encodedName = Base64.getEncoder().encodeToString(bean.beanName().getBytes(StandardCharsets.UTF_8));
     return String.join(FIELD_SEPARATOR,
@@ -167,6 +171,23 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       span.startLine + ":" + span.startCharacter + ":" + span.endLine + ":" + span.endCharacter,
       Boolean.toString(bean.isPrimary()),
       deps);
+  }
+
+  private static BeanDependency deserializeDependency(String serialized) {
+    int idx = serialized.indexOf(DEP_QUALIFIER_SEPARATOR);
+    String typeFqn = serialized.substring(0, idx);
+    String encodedQualifier = serialized.substring(idx + 1);
+    String qualifier = encodedQualifier.isEmpty()
+      ? null
+      : new String(Base64.getDecoder().decode(encodedQualifier), StandardCharsets.UTF_8);
+    return new BeanDependency(typeFqn, qualifier);
+  }
+
+  private static String serializeDependency(BeanDependency dep) {
+    String encodedQualifier = dep.qualifier() != null
+      ? Base64.getEncoder().encodeToString(dep.qualifier().getBytes(StandardCharsets.UTF_8))
+      : "";
+    return dep.typeFqn() + DEP_QUALIFIER_SEPARATOR + encodedQualifier;
   }
 
   @Override
@@ -227,7 +248,10 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       Integer.parseInt(spanParts[2]),
       Integer.parseInt(spanParts[3]));
     boolean isPrimary = Boolean.parseBoolean(fields[4]);
-    List<String> deps = fields[5].isEmpty() ? List.of() : List.of(fields[5].split(DEP_SEPARATOR));
+    List<BeanDependency> deps = fields[5].isEmpty() ? List.of() :
+      Arrays.stream(fields[5].split(DEP_SEPARATOR))
+        .map(BeanDefinitionGatherer::deserializeDependency)
+        .toList();
     return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, deps);
   }
 
