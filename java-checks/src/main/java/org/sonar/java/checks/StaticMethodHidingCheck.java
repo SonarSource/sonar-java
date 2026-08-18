@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -57,7 +58,7 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
   private boolean checkHiding(MethodTree methodTree, Symbol.MethodSymbol methodSymbol, Type superClass) {
     for (Symbol symbol : superClass.symbol().lookupSymbols(methodSymbol.name())) {
       if (symbol.isMethodSymbol() && symbol.isStatic() && !symbol.isPrivate()
-        && hasSameParameterTypes(methodSymbol, (Symbol.MethodSymbol) symbol)) {
+        && MethodTreeUtils.hasSameParameterTypes(methodSymbol, (Symbol.MethodSymbol) symbol)) {
         reportHidingIssue(methodTree, methodSymbol, (Symbol.MethodSymbol) symbol);
         return true;
       }
@@ -86,25 +87,6 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
       || methodSymbol.metadata().isAnnotatedWith("com.google.errorprone.annotations.InlineMe")
       || methodSymbol.metadata().isAnnotatedWith("org.jetbrains.annotations.ApiStatus$Obsolete")
       || methodSymbol.metadata().isAnnotatedWith("org.jetbrains.annotations.ApiStatus$ScheduledForRemoval");
-  }
-
-  private static boolean hasSameParameterTypes(Symbol.MethodSymbol method, Symbol.MethodSymbol candidate) {
-    List<Type> methodParams = method.parameterTypes();
-    List<Type> candidateParams = candidate.parameterTypes();
-    if (methodParams.size() != candidateParams.size()) {
-      return false;
-    }
-    for (int i = 0; i < methodParams.size(); i++) {
-      Type methodParam = methodParams.get(i);
-      Type candidateParam = candidateParams.get(i);
-      if (methodParam.isUnknown() || candidateParam.isUnknown()) {
-        return false;
-      }
-      if (!methodParam.erasure().equals(candidateParam.erasure())) {
-        return false;
-      }
-    }
-    return true;
   }
 
 }

@@ -23,4 +23,17 @@ class MethodOverrideAccessibilityCheckSample {
     public static void compute(int x) {} // Noncompliant {{Increase of accessibility from "protected" to "public" when hiding method.}}
   }
 
+  // --- Compliant: override from unknown parent type ---
+
+  static class ChildOfUnknownParent extends UnknownParent {
+    @Override
+    public void doSomething() {} // Compliant - parent is unknown, no overridden symbols resolved
+  }
+
+  // --- Compliant: static method in class extending unknown parent ---
+
+  static class StaticChildOfUnknownParent extends UnknownParent {
+    public static void staticMethod() {} // Compliant - unknown superclass, no hiding detected
+  }
+
 }

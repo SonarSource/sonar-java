@@ -27,6 +27,7 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -257,6 +258,25 @@ public final class MethodTreeUtils {
     public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
       // Skip lambdas
     }
+  }
+
+  public static boolean hasSameParameterTypes(Symbol.MethodSymbol method, Symbol.MethodSymbol candidate) {
+    List<Type> methodParams = method.parameterTypes();
+    List<Type> candidateParams = candidate.parameterTypes();
+    if (methodParams.size() != candidateParams.size()) {
+      return false;
+    }
+    for (int i = 0; i < methodParams.size(); i++) {
+      Type methodParam = methodParams.get(i);
+      Type candidateParam = candidateParams.get(i);
+      if (methodParam.isUnknown() || candidateParam.isUnknown()) {
+        return false;
+      }
+      if (!methodParam.erasure().equals(candidateParam.erasure())) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public static Optional<String> isGetterLike(Symbol.MethodSymbol methodSymbol) {

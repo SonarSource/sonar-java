@@ -19,6 +19,8 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -64,7 +66,7 @@ public class MethodOverrideAccessibilityCheck extends IssuableSubscriptionVisito
         if (symbol.isMethodSymbol() && symbol.isStatic() && !symbol.isPrivate()
           && !(symbol.isPackageVisibility() && !samePackage(methodSymbol, symbol))) {
           Symbol.MethodSymbol candidate = (Symbol.MethodSymbol) symbol;
-          if (hasSameParameterTypes(methodSymbol, candidate)) {
+          if (MethodTreeUtils.hasSameParameterTypes(methodSymbol, candidate)) {
             reportIfAccessIncreased(methodTree, methodSymbol, candidate, "hiding");
             return;
           }
@@ -75,23 +77,7 @@ public class MethodOverrideAccessibilityCheck extends IssuableSubscriptionVisito
   }
 
   private static boolean samePackage(Symbol s1, Symbol s2) {
-    Symbol p1 = getPackage(s1);
-    Symbol p2 = getPackage(s2);
-    if (p1 == null || p2 == null) {
-      return false;
-    }
-    return p1.equals(p2);
-  }
-
-  private static Symbol getPackage(Symbol symbol) {
-    Symbol owner = symbol.owner();
-    while (owner != null) {
-      if (owner.isPackageSymbol()) {
-        return owner;
-      }
-      owner = owner.owner();
-    }
-    return null;
+    return JUtils.getPackage(s1).equals(JUtils.getPackage(s2));
   }
 
   private void reportIfAccessIncreased(MethodTree methodTree, Symbol childMethod, Symbol.MethodSymbol parentMethod, String verb) {
@@ -128,25 +114,6 @@ public class MethodOverrideAccessibilityCheck extends IssuableSubscriptionVisito
       case 3 -> "public";
       default -> "unknown";
     };
-  }
-
-  private static boolean hasSameParameterTypes(Symbol.MethodSymbol method, Symbol.MethodSymbol candidate) {
-    List<Type> methodParams = method.parameterTypes();
-    List<Type> candidateParams = candidate.parameterTypes();
-    if (methodParams.size() != candidateParams.size()) {
-      return false;
-    }
-    for (int i = 0; i < methodParams.size(); i++) {
-      Type methodParam = methodParams.get(i);
-      Type candidateParam = candidateParams.get(i);
-      if (methodParam.isUnknown() || candidateParam.isUnknown()) {
-        return false;
-      }
-      if (!methodParam.erasure().equals(candidateParam.erasure())) {
-        return false;
-      }
-    }
-    return true;
   }
 
 }

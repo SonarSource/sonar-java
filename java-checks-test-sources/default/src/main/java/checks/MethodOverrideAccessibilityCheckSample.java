@@ -287,4 +287,51 @@ class MethodOverrideAccessibilityCheckSample {
       return super.findClass(name);
     }
   }
+
+  // --- Compliant: static method with same name as a field in superclass ---
+
+  static class ParentWithField {
+    protected int compute;
+  }
+
+  static class ChildStaticSameAsField extends ParentWithField {
+    public static void compute() {} // Compliant - parent has a field, not a method
+  }
+
+  // --- Compliant: static method with same name as instance method in superclass ---
+
+  static class ParentWithInstanceMethod {
+    protected void process() {}
+  }
+
+  static class ChildStaticSameAsInstance extends ParentWithInstanceMethod {
+    public static void process() {} // Compliant - parent method is not static
+  }
+
+  // --- Compliant: static method with no-arg hiding parent with params ---
+
+  static class ParentStaticWithParams {
+    protected static void action(int x, String y) {}
+  }
+
+  static class ChildStaticNoParams extends ParentStaticWithParams {
+    public static void action() {} // Compliant - different parameter count
+  }
+
+  // --- Instance override: protected -> public through interface + class hierarchy ---
+
+  interface Doer {
+    void doIt();
+  }
+
+  static class AbstractDoer {
+    protected void doIt() {}
+//                 ^^^^>
+  }
+
+  static class ConcreteDoer extends AbstractDoer implements Doer {
+    @Override
+    public void doIt() {} // Noncompliant {{Increase of accessibility from "protected" to "public" when overriding method.}}
+//              ^^^^
+  }
 }
