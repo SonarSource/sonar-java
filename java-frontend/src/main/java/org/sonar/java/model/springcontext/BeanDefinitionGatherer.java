@@ -113,18 +113,14 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         .orElseGet(() -> defaultBeanName(classTree.simpleName().name()));
       List<BeanDependency> deps = collectAutowiredDependencies(classTree);
       // Class-level bean (stereotype annotations)
-      collectedBeans.add(new BeanData(
+      var beanData = new BeanData(
         beanName, fqn, pkg,
         context.getInputFile(),
         AnalyzerMessage.textSpanFor(classTree.simpleName()),
         meta.isAnnotatedWith(PRIMARY_ANNOTATION),
-        deps));
-      beansCollectedAtFileLevel.add(new BeanData(
-        beanName, fqn, pkg,
-        context.getInputFile(),
-        AnalyzerMessage.textSpanFor(classTree.simpleName()),
-        meta.isAnnotatedWith(PRIMARY_ANNOTATION),
-        deps));
+        deps);
+      collectedBeans.add(beanData);
+      beansCollectedAtFileLevel.add(beanData);
 
       // @Bean methods — only if class is a configuration/component class
       for (MethodTree method : SpringUtils.getBeanMethods(classTree)) {
@@ -301,18 +297,14 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       .map(p -> new BeanDependency(p.symbol().type().fullyQualifiedName(), extractQualifier(p.symbol().metadata())))
       .toList();
 
-    collectedBeans.add(new BeanData(
+    var beanData = new BeanData(
       beanName, returnTypeFqn, pkg,
       context.getInputFile(),
       AnalyzerMessage.textSpanFor(method.simpleName()),
       beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION),
-      paramDeps));
-    beansCollectedAtFileLevel.add(new BeanData(
-      beanName, returnTypeFqn, pkg,
-      context.getInputFile(),
-      AnalyzerMessage.textSpanFor(method.simpleName()),
-      beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION),
-      paramDeps));
+      paramDeps);
+    collectedBeans.add(beanData);
+    beansCollectedAtFileLevel.add(beanData);
   }
 
   private static List<BeanDependency> collectAutowiredDependencies(ClassTree classTree) {
