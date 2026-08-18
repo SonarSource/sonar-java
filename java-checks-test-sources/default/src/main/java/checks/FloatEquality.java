@@ -68,5 +68,7 @@ class FloatEquality {
     if (d == NaN) {} // Compliant - covered by S9147 (static import)
     if (Double.NaN == Double.NaN) {} // Compliant - covered by S9147 (NaN on both sides)
     if (f == f) {} // Compliant - NaN self-test pattern
+    if (d == Double.MAX_VALUE) {} // Noncompliant {{Equality tests should not be made with floating point values.}}
+    if (Double.NaN == Float.NaN) {} // Compliant - covered by S9147
   }
 }

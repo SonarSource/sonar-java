@@ -471,6 +471,71 @@ class ExpressionUtilsTest {
   }
 
   @Test
+  void getNanOwnerTypeName_member_select() {
+    // Double.NaN -> "Double"
+    assertNanOwnerTypeName("Double.NaN", "Double");
+    // Float.NaN -> "Float"
+    assertNanOwnerTypeName("Float.NaN", "Float");
+    // Non-NaN member select -> null
+    assertNanOwnerTypeName("Double.MAX_VALUE", null);
+    // Parenthesized expression (Double.NaN) -> "Double"
+    assertNanOwnerTypeName("(Double.NaN)", "Double");
+    // Parenthesized expression (Float.NaN) -> "Float"
+    assertNanOwnerTypeName("(Float.NaN)", "Float");
+  }
+
+  @Test
+  void getNanOwnerTypeName_identifier_static_import() {
+    // Statically imported NaN from Double -> "Double"
+    CompilationUnitTree unit = JParserTestUtils.parse("""
+      import static java.lang.Double.NaN;
+      class A { Object f = NaN; }
+      """);
+    ExpressionTree expr = ((VariableTree) ((ClassTree) unit.types().get(0)).members().get(0)).initializer();
+    assertThat(ExpressionUtils.getNanOwnerTypeName(expr)).isEqualTo("Double");
+  }
+
+  @Test
+  void getNanOwnerTypeName_identifier_static_import_float() {
+    // Statically imported NaN from Float -> "Float"
+    CompilationUnitTree unit = JParserTestUtils.parse("""
+      import static java.lang.Float.NaN;
+      class A { Object f = NaN; }
+      """);
+    ExpressionTree expr = ((VariableTree) ((ClassTree) unit.types().get(0)).members().get(0)).initializer();
+    assertThat(ExpressionUtils.getNanOwnerTypeName(expr)).isEqualTo("Float");
+  }
+
+  @Test
+  void getNanOwnerTypeName_other_expression_types() {
+    // Literal -> null
+    assertNanOwnerTypeName("42.0", null);
+    // Method call -> null
+    assertNanOwnerTypeName("Double.valueOf(0.0)", null);
+  }
+
+  @Test
+  void getNanOwnerTypeName_unknown_nan() {
+    // Unknown class NaN field -> null (symbol is unknown)
+    CompilationUnitTree unit = JParserTestUtils.parse("""
+      class A { Object f = UnknownClass.NaN; }
+      """);
+    ExpressionTree expr = ((VariableTree) ((ClassTree) unit.types().get(0)).members().get(0)).initializer();
+    assertThat(ExpressionUtils.getNanOwnerTypeName(expr)).isNull();
+  }
+
+  private void assertNanOwnerTypeName(String code, @Nullable String expected) {
+    CompilationUnitTree unit = JParserTestUtils.parse("class A { Object f = " + code + "; }");
+    ExpressionTree expression = ((VariableTree) ((ClassTree) unit.types().get(0)).members().get(0)).initializer();
+    String actual = ExpressionUtils.getNanOwnerTypeName(expression);
+    if (expected == null) {
+      assertThat(actual).isNull();
+    } else {
+      assertThat(actual).isEqualTo(expected);
+    }
+  }
+
+  @Test
   void testAnnotationAttributeName(){
     var unit = JParserTestUtils.parse("""
       interface A {
