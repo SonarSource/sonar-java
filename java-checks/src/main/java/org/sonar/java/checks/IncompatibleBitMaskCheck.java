@@ -25,6 +25,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
 @Rule(key = "S7438")
@@ -51,11 +52,11 @@ public class IncompatibleBitMaskCheck extends IssuableSubscriptionVisitor {
     }
     BinaryExpressionTree bitwiseOp = (BinaryExpressionTree) unwrapped;
     Long mask = extractMask(bitwiseOp);
-    Long value = LiteralUtils.longLiteralValue(possibleConstant);
+    Long value = signExtendedLongValue(possibleConstant);
     if (mask == null || value == null) {
       return;
     }
-    if (isIntOperation(bitwiseOp)) {
+    if (isIntOperation(bitwiseOp, possibleConstant)) {
       mask = (long) mask.intValue();
       value = (long) value.intValue();
     }
@@ -68,16 +69,60 @@ public class IncompatibleBitMaskCheck extends IssuableSubscriptionVisitor {
   }
 
   @Nullable
+  private static Long signExtendedLongValue(ExpressionTree operand) {
+    Long value = LiteralUtils.longLiteralValue(operand);
+    if (value != null && isIntLiteral(operand)) {
+      value = (long) value.intValue();
+    }
+    return value;
+  }
+
+  @Nullable
   private static Long extractMask(BinaryExpressionTree bitwiseOp) {
-    Long leftValue = LiteralUtils.longLiteralValue(bitwiseOp.leftOperand());
+    Long leftValue = maskOperandValue(bitwiseOp.leftOperand());
     if (leftValue != null) {
       return leftValue;
     }
-    return LiteralUtils.longLiteralValue(bitwiseOp.rightOperand());
+    return maskOperandValue(bitwiseOp.rightOperand());
   }
 
-  private static boolean isIntOperation(BinaryExpressionTree bitwiseOp) {
-    return !bitwiseOp.symbolType().is("long");
+  @Nullable
+  private static Long maskOperandValue(ExpressionTree operand) {
+    Long value = LiteralUtils.longLiteralValue(operand);
+    if (value != null && isIntLiteral(operand)) {
+      value = (long) value.intValue();
+    }
+    return value;
+  }
+
+  private static boolean isIntLiteral(ExpressionTree tree) {
+    ExpressionTree expr = ExpressionUtils.skipParentheses(tree);
+    if (expr.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
+      expr = ((UnaryExpressionTree) expr).expression();
+    }
+    return expr.is(Kind.INT_LITERAL);
+  }
+
+  private static boolean isIntOperation(BinaryExpressionTree bitwiseOp, ExpressionTree comparisonValue) {
+    String typeName = bitwiseOp.symbolType().fullyQualifiedName();
+    if ("long".equals(typeName)) {
+      return false;
+    }
+    if ("int".equals(typeName)) {
+      return true;
+    }
+    // No semantic information: use heuristic based on literal kinds
+    return !hasLongLiteral(bitwiseOp.leftOperand())
+      && !hasLongLiteral(bitwiseOp.rightOperand())
+      && !hasLongLiteral(comparisonValue);
+  }
+
+  private static boolean hasLongLiteral(ExpressionTree tree) {
+    ExpressionTree expr = ExpressionUtils.skipParentheses(tree);
+    if (expr.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
+      expr = ((UnaryExpressionTree) expr).expression();
+    }
+    return expr.is(Kind.LONG_LITERAL);
   }
 
   private static boolean isIncompatible(Kind bitwiseKind, long mask, long value) {

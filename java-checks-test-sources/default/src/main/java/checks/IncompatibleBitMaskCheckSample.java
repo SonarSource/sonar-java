@@ -195,4 +195,30 @@ class IncompatibleBitMaskCheckSample {
 
     if (0x80L == (x & 0xFFL)) {} // Compliant
   }
+
+  void intHexMaskSignExtensionInLongContext(long longX) {
+    // Int literal 0xFFFFFFFF sign-extends to -1L in long context, so (longX & -1L) == longX
+    // This comparison is valid when longX == -1
+    if ((longX & 0xFFFFFFFF) == -1L) {} // Compliant
+
+    // 0xFFFFFFFF sign-extends to -1L, AND with -1L is identity, so any value is reachable
+    if ((longX & 0xFFFFFFFF) == 4294967295L) {} // Compliant
+
+    // 0x80000000 as int is MIN_VALUE, sign-extends to 0xFFFFFFFF_80000000L
+    // AND with that mask can produce 0x80000000L (the low 32 bits match)
+    if ((longX & 0x80000000) == 0x80000000L) {} // Compliant
+
+    // Int mask 0x0F does not sign-extend (no high bit set), stays 0x0F
+    // AND with 0x0F cannot produce 0x100L
+    if ((longX & 0x0F) == 0x100L) {} // Noncompliant {{This comparison is always false.}}
+  }
+
+  void longBitwiseOpsWithLongLiterals(long x) {
+    // OR with 0xFFL always sets low 8 bits; result must include those bits
+    // 0x10000000000L does not include any of the low 8 bits
+    if ((x | 0xFFL) == 0x10000000000L) {} // Noncompliant {{This comparison is always false.}}
+
+    // Long AND mask: 0xFFL cannot produce value beyond 0xFF
+    if ((x & 0xFFL) == 0x10000000000L) {} // Noncompliant {{This comparison is always false.}}
+  }
 }
