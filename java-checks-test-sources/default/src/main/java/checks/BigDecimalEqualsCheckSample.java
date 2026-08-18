@@ -18,9 +18,6 @@ class BigDecimalEqualsCheckSample {
 //                ^^^^^^
     res = Objects.equals(a, o); // Noncompliant
     res = Objects.equals(o, a); // Noncompliant
-    res = com.google.common.base.Objects.equal(a, b); // Noncompliant
-//                                       ^^^^^
-    res = com.google.common.base.Objects.equal(a, o); // Noncompliant
 
     // Compliant
     res = a.compareTo(b) == 0;
@@ -29,7 +26,6 @@ class BigDecimalEqualsCheckSample {
     res = s.equals(a);
     res = s.equals("hello");
     res = Objects.equals(s, "hello");
-    res = com.google.common.base.Objects.equal(s, "hello");
   }
 
   static class Account {

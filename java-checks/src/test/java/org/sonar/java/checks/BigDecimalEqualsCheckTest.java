@@ -30,4 +30,30 @@ class BigDecimalEqualsCheckTest {
       .withCheck(new BigDecimalEqualsCheck())
       .verifyIssues();
   }
+
+  @Test
+  void test_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/BigDecimalEqualsCheckSample.java"))
+      .withCheck(new BigDecimalEqualsCheck())
+      .withoutSemantic()
+      .verifyIssues();
+  }
+
+  @Test
+  void test_guava() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/BigDecimalEqualsCheckGuavaSample.java"))
+      .withCheck(new BigDecimalEqualsCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_guava_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/BigDecimalEqualsCheckGuavaSample.java"))
+      .withCheck(new BigDecimalEqualsCheck())
+      .withoutSemantic()
+      .verifyNoIssues();
+  }
 }
