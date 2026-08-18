@@ -1,0 +1,121 @@
+{
+"com.google.guava:guava:src/com/google/common/base/Converter.java": [
+263,
+342,
+342,
+434,
+435
+],
+"com.google.guava:guava:src/com/google/common/base/Enums.java": [
+146
+],
+"com.google.guava:guava:src/com/google/common/base/Equivalence.java": [
+202,
+286,
+286
+],
+"com.google.guava:guava:src/com/google/common/base/FunctionalEquivalence.java": [
+65,
+65
+],
+"com.google.guava:guava:src/com/google/common/base/Functions.java": [
+133,
+184,
+184,
+234,
+234,
+280,
+324,
+371
+],
+"com.google.guava:guava:src/com/google/common/base/PairwiseEquivalence.java": [
+62
+],
+"com.google.guava:guava:src/com/google/common/base/Predicates.java": [
+347,
+391,
+433,
+468,
+576,
+613,
+613
+],
+"com.google.guava:guava:src/com/google/common/base/Present.java": [
+89
+],
+"com.google.guava:guava:src/com/google/common/base/Suppliers.java": [
+75,
+75,
+245
+],
+"com.google.guava:guava:src/com/google/common/collect/ByFunctionOrdering.java": [
+55,
+55
+],
+"com.google.guava:guava:src/com/google/common/collect/ComparatorOrdering.java": [
+49
+],
+"com.google.guava:guava:src/com/google/common/collect/CompoundOrdering.java": [
+57
+],
+"com.google.guava:guava:src/com/google/common/collect/ExplicitOrdering.java": [
+56
+],
+"com.google.guava:guava:src/com/google/common/collect/GeneralRange.java": [
+232,
+233,
+234,
+235,
+236,
+237,
+238
+],
+"com.google.guava:guava:src/com/google/common/collect/Interners.java": [
+138
+],
+"com.google.guava:guava:src/com/google/common/collect/LexicographicalOrdering.java": [
+64
+],
+"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
+1399
+],
+"com.google.guava:guava:src/com/google/common/collect/NullsFirstOrdering.java": [
+67
+],
+"com.google.guava:guava:src/com/google/common/collect/NullsLastOrdering.java": [
+67
+],
+"com.google.guava:guava:src/com/google/common/collect/Range.java": [
+631,
+632
+],
+"com.google.guava:guava:src/com/google/common/collect/RegularContiguousSet.java": [
+166,
+167
+],
+"com.google.guava:guava:src/com/google/common/collect/ReverseOrdering.java": [
+90
+],
+"com.google.guava:guava:src/com/google/common/collect/Sets.java": [
+1207,
+1349
+],
+"com.google.guava:guava:src/com/google/common/hash/BloomFilter.java": [
+263,
+264,
+265,
+266
+],
+"com.google.guava:guava:src/com/google/common/hash/Funnels.java": [
+195
+],
+"com.google.guava:guava:src/com/google/common/reflect/TypeParameter.java": [
+59
+],
+"com.google.guava:guava:src/com/google/common/reflect/TypeToken.java": [
+782
+],
+"com.google.guava:guava:src/com/google/common/reflect/Types.java": [
+441
+]
+}
