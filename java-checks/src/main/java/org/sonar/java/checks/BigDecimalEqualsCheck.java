@@ -25,7 +25,6 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -38,7 +37,7 @@ public class BigDecimalEqualsCheck extends IssuableSubscriptionVisitor {
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
   private static final MethodMatchers INSTANCE_EQUALS = MethodMatchers.create()
-    .ofAnyType()
+    .ofSubTypes(BIG_DECIMAL)
     .names("equals")
     .addParametersMatcher(JAVA_LANG_OBJECT)
     .build();
@@ -61,12 +60,7 @@ public class BigDecimalEqualsCheck extends IssuableSubscriptionVisitor {
       return;
     }
     if (INSTANCE_EQUALS.matches(mit)) {
-      Type ownerType = getMethodOwnerType(mit);
-      Arguments arguments = mit.arguments();
-      Type argumentType = arguments.get(0).symbolType();
-      if (isBigDecimal(ownerType) || isBigDecimal(argumentType)) {
-        reportIssue(ExpressionUtils.methodName(mit), MESSAGE);
-      }
+      reportIssue(ExpressionUtils.methodName(mit), MESSAGE);
     } else if (STATIC_EQUALS.matches(mit)) {
       Arguments arguments = mit.arguments();
       Type firstType = arguments.get(0).symbolType();
@@ -79,13 +73,6 @@ public class BigDecimalEqualsCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isBigDecimal(Type type) {
     return !type.isUnknown() && type.isSubtypeOf(BIG_DECIMAL);
-  }
-
-  private static Type getMethodOwnerType(MethodInvocationTree mit) {
-    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      return ((MemberSelectExpressionTree) mit.methodSelect()).expression().symbolType();
-    }
-    return mit.methodSymbol().owner().type();
   }
 
   private static boolean isInsideEqualsMethod(Tree tree) {

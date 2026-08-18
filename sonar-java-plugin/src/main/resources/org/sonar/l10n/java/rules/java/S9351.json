@@ -14,7 +14,7 @@
   "ruleSpecification": "RSPEC-9351",
   "sqKey": "S9351",
   "scope": "Main",
-  "quickfix": "targeted",
+  "quickfix": "infeasible",
   "code": {
     "impacts": {
       "RELIABILITY": "HIGH"
