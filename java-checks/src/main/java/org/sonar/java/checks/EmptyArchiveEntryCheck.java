@@ -33,8 +33,10 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -66,6 +68,9 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (context.getSemanticModel() == null) {
+      return;
+    }
     Map<Symbol, MethodInvocationTree> pendingEntries = new HashMap<>();
     for (StatementTree statement : ((BlockTree) tree).body()) {
       MethodInvocationTree mit = extractMethodInvocation(statement);
@@ -80,10 +85,13 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
   private void handleMethodInvocation(MethodInvocationTree mit, Map<Symbol, MethodInvocationTree> pendingEntries) {
     Symbol receiver = getReceiverSymbol(mit);
     if (receiver == null) {
+      clearTrackedSymbolsUsedAsArguments(mit, pendingEntries);
       return;
     }
     if (PUT_NEXT_ENTRY.matches(mit)) {
-      pendingEntries.put(receiver, mit);
+      if (!isDirectoryEntry(mit)) {
+        pendingEntries.put(receiver, mit);
+      }
     } else if (CLOSE_ENTRY.matches(mit)) {
       MethodInvocationTree putNextEntry = pendingEntries.remove(receiver);
       if (putNextEntry != null) {
@@ -115,6 +123,27 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
       }
     }
     return null;
+  }
+
+  private static boolean isDirectoryEntry(MethodInvocationTree putNextEntry) {
+    if (putNextEntry.arguments().size() == 1 && putNextEntry.arguments().get(0).is(Tree.Kind.NEW_CLASS)) {
+      NewClassTree newClass = (NewClassTree) putNextEntry.arguments().get(0);
+      if (newClass.arguments().size() == 1 && newClass.arguments().get(0).is(Tree.Kind.STRING_LITERAL)) {
+        String value = ((LiteralTree) newClass.arguments().get(0)).value();
+        // value includes quotes, e.g. "\"dir/\""
+        return value.endsWith("/\"");
+      }
+    }
+    return false;
+  }
+
+  private static void clearTrackedSymbolsUsedAsArguments(MethodInvocationTree mit, Map<Symbol, MethodInvocationTree> pendingEntries) {
+    for (ExpressionTree arg : mit.arguments()) {
+      if (arg.is(Tree.Kind.IDENTIFIER)) {
+        Symbol argSymbol = ((IdentifierTree) arg).symbol();
+        pendingEntries.remove(argSymbol);
+      }
+    }
   }
 
   @CheckForNull
@@ -158,6 +187,19 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
         }
       }
       super.visitMethodInvocation(mit);
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      for (ExpressionTree arg : tree.arguments()) {
+        if (arg.is(Tree.Kind.IDENTIFIER)) {
+          Symbol argSymbol = ((IdentifierTree) arg).symbol();
+          if (pendingEntries.containsKey(argSymbol)) {
+            usedSymbols.add(argSymbol);
+          }
+        }
+      }
+      super.visitNewClass(tree);
     }
 
     @Override

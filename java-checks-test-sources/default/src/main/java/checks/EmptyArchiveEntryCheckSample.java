@@ -172,4 +172,21 @@ class EmptyArchiveEntryCheckSample {
     zos.closeEntry(); // Compliant - no preceding putNextEntry tracked
     zos.close();
   }
+
+  void zipDirectoryEntry() throws IOException {
+    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+    zos.putNextEntry(new ZipEntry("dir/"));
+    zos.closeEntry(); // Compliant - directory entry
+    zos.close();
+  }
+
+  void writeViaWrapper() throws IOException {
+    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+    zos.putNextEntry(new ZipEntry("wrapped.txt"));
+    java.io.PrintWriter pw = new java.io.PrintWriter(zos);
+    pw.println("content via wrapper");
+    pw.flush();
+    zos.closeEntry(); // Compliant - written through wrapper
+    zos.close();
+  }
 }
