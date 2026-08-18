@@ -1,0 +1,77 @@
+{
+"com.google.guava:guava:src/com/google/common/base/Splitter.java": [
+184,
+200,
+236,
+241,
+299,
+305
+],
+"com.google.guava:guava:src/com/google/common/collect/AbstractMapBasedMultimap.java": [
+1270
+],
+"com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
+491
+],
+"com.google.guava:guava:src/com/google/common/collect/ConsumingQueueIterator.java": [
+43
+],
+"com.google.guava:guava:src/com/google/common/collect/ForwardingNavigableMap.java": [
+284
+],
+"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
+776,
+823,
+2724,
+2756
+],
+"com.google.guava:guava:src/com/google/common/collect/Multimaps.java": [
+128,
+210,
+288,
+368,
+599,
+620,
+1687
+],
+"com.google.guava:guava:src/com/google/common/collect/Sets.java": [
+723
+],
+"com.google.guava:guava:src/com/google/common/collect/SortedLists.java": [
+115,
+126,
+156,
+174
+],
+"com.google.guava:guava:src/com/google/common/collect/StandardTable.java": [
+714,
+779
+],
+"com.google.guava:guava:src/com/google/common/hash/Crc32cHashFunction.java": [
+112
+],
+"com.google.guava:guava:src/com/google/common/hash/Murmur3_128HashFunction.java": [
+163
+],
+"com.google.guava:guava:src/com/google/common/hash/Murmur3_32HashFunction.java": [
+184
+],
+"com.google.guava:guava:src/com/google/common/hash/SipHashFunction.java": [
+146
+],
+"com.google.guava:guava:src/com/google/common/reflect/TypeResolver.java": [
+241
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractScheduledService.java": [
+128,
+149
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java": [
+2085
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/SettableFuture.java": [
+48,
+52,
+58
+]
+}

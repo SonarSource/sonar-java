@@ -1,0 +1,157 @@
+{
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java": [
+209
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java": [
+102,
+161
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanComparatorTestCase.java": [
+63,
+83
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsBenchCase.java": [
+84,
+159
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
+128,
+168
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java": [
+68,
+87
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConstructorUtilsTestCase.java": [
+55,
+71
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
+67,
+86
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanMapDecoratorTestCase.java": [
+91,
+113
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
+106,
+176
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
+104,
+173
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaResultSetTestCase.java": [
+83,
+104
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaRowSetTestCase.java": [
+86,
+107
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaBeanTestCase.java": [
+77,
+87
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaClassTestCase.java": [
+56,
+71
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java": [
+82,
+89
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaMapTestCase.java": [
+78,
+87
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MappedPropertyTestCase.java": [
+53,
+67
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MethodUtilsTestCase.java": [
+56,
+71
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsBenchCase.java": [
+82,
+148
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
+204,
+239
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ArrayConverterTestCase.java": [
+52,
+57
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/BigDecimalConverterTestCase.java": [
+45,
+58
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/BigIntegerConverterTestCase.java": [
+44,
+57
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ByteConverterTestCase.java": [
+43,
+56
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/CharacterConverterTestCase.java": [
+51,
+56
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ClassConverterTestCase.java": [
+51,
+56
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DateConverterTestCase.java": [
+50,
+55
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DoubleConverterTestCase.java": [
+43,
+56
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/FileConverterTestCase.java": [
+47,
+56
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/FloatConverterTestCase.java": [
+43,
+56
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/IntegerConverterTestCase.java": [
+44,
+57
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/LongConverterTestCase.java": [
+43,
+56
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ShortConverterTestCase.java": [
+43,
+56
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/URLConverterTestCase.java": [
+47,
+56
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsTestCase.java": [
+52,
+69
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java": [
+77,
+96
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java": [
+68,
+94
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/BaseLocaleConverterTestCase.java": [
+77,
+120
+]
+}
