@@ -298,16 +298,6 @@ class MethodOverrideAccessibilityCheckSample {
     public static void compute() {} // Compliant - parent has a field, not a method
   }
 
-  // --- Compliant: static method with same name as instance method in superclass ---
-
-  static class ParentWithInstanceMethod {
-    protected void process() {}
-  }
-
-  static class ChildStaticSameAsInstance extends ParentWithInstanceMethod {
-    public static void process() {} // Compliant - parent method is not static
-  }
-
   // --- Compliant: static method with no-arg hiding parent with params ---
 
   static class ParentStaticWithParams {
@@ -333,5 +323,49 @@ class MethodOverrideAccessibilityCheckSample {
     @Override
     public void doIt() {} // Noncompliant {{Increase of accessibility from "protected" to "public" when overriding method.}}
 //              ^^^^
+  }
+
+  // --- Compliant: static method hiding same access level (protected -> protected) ---
+
+  static class StaticParentSameAccess {
+    protected static void safeMethod(int x) {}
+  }
+
+  static class StaticChildSameAccess extends StaticParentSameAccess {
+    protected static void safeMethod(int x) {} // Compliant - same access level
+  }
+
+  // --- Compliant: static method hiding with reduced access (public -> protected, compiler error normally) ---
+  // Note: this case would normally be a compiler error, but covered as non-compiling test
+
+  // --- Noncompliant: static hiding package-private -> public through multiple levels ---
+
+  static class DeepStaticBase {
+    static void deepMethod() {}
+//              ^^^^^^^^^^>
+  }
+
+  static class DeepStaticMiddle extends DeepStaticBase {
+    // does not redefine deepMethod
+  }
+
+  static class DeepStaticChild extends DeepStaticMiddle {
+    public static void deepMethod() {} // Noncompliant {{Increase of accessibility from "package-private" to "public" when hiding method.}}
+//                     ^^^^^^^^^^
+  }
+
+  // --- Compliant: instance method override with same access through multiple interfaces ---
+
+  interface InterfaceA {
+    void doAction();
+  }
+
+  interface InterfaceB {
+    void doAction();
+  }
+
+  static class ImplBothInterfaces implements InterfaceA, InterfaceB {
+    @Override
+    public void doAction() {} // Compliant - implementing interface methods
   }
 }

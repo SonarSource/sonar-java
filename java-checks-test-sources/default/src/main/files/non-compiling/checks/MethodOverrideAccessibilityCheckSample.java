@@ -30,6 +30,16 @@ class MethodOverrideAccessibilityCheckSample {
     public void doSomething() {} // Compliant - parent is unknown, no overridden symbols resolved
   }
 
+  // --- Compliant: static method with same name as instance method in superclass (compile error in Java) ---
+
+  static class ParentWithInstanceMethod {
+    protected void process() {}
+  }
+
+  static class ChildStaticSameAsInstance extends ParentWithInstanceMethod {
+    public static void process() {} // Compliant - parent method is not static
+  }
+
   // --- Compliant: static method in class extending unknown parent ---
 
   static class StaticChildOfUnknownParent extends UnknownParent {

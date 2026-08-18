@@ -23,7 +23,6 @@ import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -45,25 +44,8 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
     if (!methodSymbol.isStatic() || isIntentionalHiding(methodSymbol)) {
       return;
     }
-    Symbol.TypeSymbol owner = (Symbol.TypeSymbol) methodSymbol.owner();
-    Type superClass = owner.superClass();
-    while (superClass != null) {
-      if (checkHiding(methodTree, methodSymbol, superClass)) {
-        return;
-      }
-      superClass = superClass.symbol().superClass();
-    }
-  }
-
-  private boolean checkHiding(MethodTree methodTree, Symbol.MethodSymbol methodSymbol, Type superClass) {
-    for (Symbol symbol : superClass.symbol().lookupSymbols(methodSymbol.name())) {
-      if (symbol.isMethodSymbol() && symbol.isStatic() && !symbol.isPrivate()
-        && MethodTreeUtils.hasSameParameterTypes(methodSymbol, (Symbol.MethodSymbol) symbol)) {
-        reportHidingIssue(methodTree, methodSymbol, (Symbol.MethodSymbol) symbol);
-        return true;
-      }
-    }
-    return false;
+    MethodTreeUtils.findHiddenStaticMethod(methodSymbol, symbol -> true)
+      .ifPresent(hidden -> reportHidingIssue(methodTree, methodSymbol, hidden));
   }
 
   private void reportHidingIssue(MethodTree methodTree, Symbol.MethodSymbol methodSymbol, Symbol.MethodSymbol hiddenMethod) {

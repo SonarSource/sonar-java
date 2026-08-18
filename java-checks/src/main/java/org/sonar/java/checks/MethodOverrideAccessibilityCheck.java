@@ -24,7 +24,6 @@ import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -59,21 +58,9 @@ public class MethodOverrideAccessibilityCheck extends IssuableSubscriptionVisito
   }
 
   private void checkStaticMethodHiding(MethodTree methodTree, Symbol.MethodSymbol methodSymbol) {
-    Symbol.TypeSymbol owner = (Symbol.TypeSymbol) methodSymbol.owner();
-    Type superClass = owner.superClass();
-    while (superClass != null) {
-      for (Symbol symbol : superClass.symbol().lookupSymbols(methodSymbol.name())) {
-        if (symbol.isMethodSymbol() && symbol.isStatic() && !symbol.isPrivate()
-          && !(symbol.isPackageVisibility() && !samePackage(methodSymbol, symbol))) {
-          Symbol.MethodSymbol candidate = (Symbol.MethodSymbol) symbol;
-          if (MethodTreeUtils.hasSameParameterTypes(methodSymbol, candidate)) {
-            reportIfAccessIncreased(methodTree, methodSymbol, candidate, "hiding");
-            return;
-          }
-        }
-      }
-      superClass = superClass.symbol().superClass();
-    }
+    MethodTreeUtils.findHiddenStaticMethod(methodSymbol,
+      symbol -> !(symbol.isPackageVisibility() && !samePackage(methodSymbol, symbol)))
+      .ifPresent(hidden -> reportIfAccessIncreased(methodTree, methodSymbol, hidden, "hiding"));
   }
 
   private static boolean samePackage(Symbol s1, Symbol s2) {

@@ -260,6 +260,23 @@ public final class MethodTreeUtils {
     }
   }
 
+  public static Optional<Symbol.MethodSymbol> findHiddenStaticMethod(Symbol.MethodSymbol methodSymbol,
+    Predicate<Symbol> additionalFilter) {
+    Symbol.TypeSymbol owner = (Symbol.TypeSymbol) methodSymbol.owner();
+    Type superClass = owner.superClass();
+    while (superClass != null) {
+      for (Symbol symbol : superClass.symbol().lookupSymbols(methodSymbol.name())) {
+        if (symbol.isMethodSymbol() && symbol.isStatic() && !symbol.isPrivate()
+          && additionalFilter.test(symbol)
+          && hasSameParameterTypes(methodSymbol, (Symbol.MethodSymbol) symbol)) {
+          return Optional.of((Symbol.MethodSymbol) symbol);
+        }
+      }
+      superClass = superClass.symbol().superClass();
+    }
+    return Optional.empty();
+  }
+
   public static boolean hasSameParameterTypes(Symbol.MethodSymbol method, Symbol.MethodSymbol candidate) {
     List<Type> methodParams = method.parameterTypes();
     List<Type> candidateParams = candidate.parameterTypes();
