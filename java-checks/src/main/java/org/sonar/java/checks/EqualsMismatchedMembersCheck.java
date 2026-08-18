@@ -154,7 +154,9 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
       }
       MemberRef leftMember = left.get();
       MemberRef rightMember = right.get();
-      if (leftMember.kind != rightMember.kind || leftMember.symbol.equals(rightMember.symbol) || leftMember.onThis == rightMember.onThis) {
+      if (leftMember.kind != rightMember.kind
+        || leftMember.displayName.equals(rightMember.displayName)
+        || leftMember.onThis == rightMember.onThis) {
         return;
       }
       MemberRef thisMember = leftMember.onThis ? leftMember : rightMember;
@@ -285,13 +287,13 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
 
   private record ComparisonSite(Tree tree, Tree statement, MemberRef thisMember, MemberRef otherMember) {
     private MemberPair pair() {
-      return new MemberPair(thisMember.symbol, otherMember.symbol);
+      return new MemberPair(thisMember.displayName, otherMember.displayName);
     }
   }
 
-  private record MemberPair(Symbol lhs, Symbol rhs) {
+  private record MemberPair(String thisName, String otherName) {
     private MemberPair reversed() {
-      return new MemberPair(rhs, lhs);
+      return new MemberPair(otherName, thisName);
     }
   }
 }

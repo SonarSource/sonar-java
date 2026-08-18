@@ -376,6 +376,34 @@ class EqualsMismatchedMembersCheckSample {
     }
   }
 
+  static class GenericSameMember<T> {
+    private T left;
+    private T right;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof GenericSameMember<?> that)) {
+        return false;
+      }
+      return java.util.Objects.equals(this.left, that.left)
+        && java.util.Objects.equals(this.right, that.right);
+    }
+  }
+
+  static class GenericUnordered<T> {
+    private T a;
+    private T b;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof GenericUnordered<?> that)) {
+        return false;
+      }
+      return (java.util.Objects.equals(a, that.a) && java.util.Objects.equals(b, that.b))
+        || (java.util.Objects.equals(a, that.b) && java.util.Objects.equals(b, that.a));
+    }
+  }
+
   static class StaticSingleton {
     static final StaticSingleton EMPTY = new StaticSingleton();
     int a;
