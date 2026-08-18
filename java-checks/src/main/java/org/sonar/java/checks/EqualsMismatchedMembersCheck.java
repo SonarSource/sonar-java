@@ -49,10 +49,11 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
   private static final String SECONDARY_THIS = "Compared member on this";
   private static final String SECONDARY_OTHER = "Compared member on the other instance";
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
+  private static final String EQUALS_METHOD_NAME = "equals";
 
   private static final MethodMatchers OBJECTS_EQUALS = MethodMatchers.create()
     .ofTypes("java.util.Objects")
-    .names("equals")
+    .names(EQUALS_METHOD_NAME)
     .addParametersMatcher(JAVA_LANG_OBJECT, JAVA_LANG_OBJECT)
     .build();
 
@@ -64,13 +65,13 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatchers ARRAYS_EQUALS = MethodMatchers.create()
     .ofTypes("java.util.Arrays")
-    .names("equals")
+    .names(EQUALS_METHOD_NAME)
     .withAnyParameters()
     .build();
 
   private static final MethodMatchers INSTANCE_EQUALS = MethodMatchers.create()
     .ofAnyType()
-    .names("equals")
+    .names(EQUALS_METHOD_NAME)
     .addParametersMatcher(JAVA_LANG_OBJECT)
     .build();
 
@@ -91,12 +92,8 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
     }
     ComparisonCollector collector = new ComparisonCollector(owner);
     methodTree.block().accept(collector);
-    Map<Tree, Set<MemberPair>> pairsByStatement = new HashMap<>();
     for (ComparisonSite comparison : collector.comparisons) {
-      pairsByStatement.computeIfAbsent(comparison.statement, key -> new HashSet<>()).add(comparison.pair());
-    }
-    for (ComparisonSite comparison : collector.comparisons) {
-      if (pairsByStatement.get(comparison.statement).contains(comparison.pair().reversed())) {
+      if (collector.pairsByStatement.get(comparison.statement).contains(comparison.pair().reversed())) {
         continue;
       }
       reportIssue(
@@ -112,6 +109,7 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
   private static final class ComparisonCollector extends BaseTreeVisitor {
     private final Symbol enclosingClass;
     private final List<ComparisonSite> comparisons = new ArrayList<>();
+    private final Map<Tree, Set<MemberPair>> pairsByStatement = new HashMap<>();
 
     private ComparisonCollector(Symbol enclosingClass) {
       this.enclosingClass = enclosingClass;
@@ -161,7 +159,9 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
       }
       MemberRef thisMember = leftMember.onThis ? leftMember : rightMember;
       MemberRef otherMember = leftMember.onThis ? rightMember : leftMember;
-      comparisons.add(new ComparisonSite(comparisonTree, enclosingStatement(comparisonTree), thisMember, otherMember));
+      ComparisonSite comparison = new ComparisonSite(comparisonTree, enclosingStatement(comparisonTree), thisMember, otherMember);
+      comparisons.add(comparison);
+      pairsByStatement.computeIfAbsent(comparison.statement, key -> new HashSet<>()).add(comparison.pair());
     }
 
     private Optional<MemberRef> member(ExpressionTree expression) {
@@ -186,7 +186,7 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
       if (symbol.isUnknown() || !symbol.isVariableSymbol() || symbol.isStatic() || !ownedByEnclosing(symbol)) {
         return Optional.empty();
       }
-      return Optional.of(new MemberRef(symbol, MemberKind.FIELD, symbol.name(), tree, onThis));
+      return Optional.of(new MemberRef(MemberKind.FIELD, symbol.name(), tree, onThis));
     }
 
     private Optional<MemberRef> getter(MethodInvocationTree invocation, boolean onThis) {
@@ -198,7 +198,7 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
       if (returnType == null || returnType.isUnknown() || returnType.type().isVoid() || !method.parameterTypes().isEmpty()) {
         return Optional.empty();
       }
-      return Optional.of(new MemberRef(method, MemberKind.METHOD, method.name() + "()", invocation, onThis));
+      return Optional.of(new MemberRef(MemberKind.METHOD, method.name() + "()", invocation, onThis));
     }
 
     private boolean ownedByEnclosing(Symbol symbol) {
@@ -282,7 +282,7 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
     METHOD
   }
 
-  private record MemberRef(Symbol symbol, MemberKind kind, String displayName, ExpressionTree tree, boolean onThis) {
+  private record MemberRef(MemberKind kind, String displayName, ExpressionTree tree, boolean onThis) {
   }
 
   private record ComparisonSite(Tree tree, Tree statement, MemberRef thisMember, MemberRef otherMember) {

@@ -433,4 +433,96 @@ class EqualsMismatchedMembersCheckSample {
       return b == that.a; // Noncompliant {{This equals() implementation compares mismatched members; pairing "b" with "a" breaks the equality contract.}}
     }
   }
+
+  static class NestedTypeInEquals {
+    int a;
+    int b;
+
+    @Override
+    public boolean equals(Object obj) {
+      class Local {
+      }
+      if (!(obj instanceof NestedTypeInEquals that)) {
+        return false;
+      }
+      return a == that.a && b == that.b;
+    }
+  }
+
+  static class NonMemberOperand {
+    int a;
+    int b;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof NonMemberOperand that)) {
+        return false;
+      }
+      return a == (that.b + 0) && a == that.a;
+    }
+  }
+
+  static class UnqualifiedEquals {
+    Object a;
+    Object b;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof UnqualifiedEquals that)) {
+        return false;
+      }
+      return equals(that.a) && a.equals(that.a);
+    }
+  }
+
+  static class NestedReceiver {
+    int a;
+    NestedReceiver child;
+
+    NestedReceiver child() {
+      return child;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof NestedReceiver that)) {
+        return false;
+      }
+      return this.a == that.child().a && this.a == that.a;
+    }
+  }
+
+  static class CustomEqualHelper {
+    Object a;
+    Object b;
+
+    static boolean equal(Object x, Object y) {
+      return x == y;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof CustomEqualHelper that)) {
+        return false;
+      }
+      return equal(a, that.b); // Noncompliant {{This equals() implementation compares mismatched members; pairing "a" with "b" breaks the equality contract.}}
+    }
+  }
+
+  static class StaticGetter {
+    int a;
+    int b;
+
+    static int getA() {
+      return 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof StaticGetter that)) {
+        return false;
+      }
+      return getA() == that.b && a == that.a;
+    }
+  }
 }

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class EqualsMismatchedMembersCheckTest {
 
@@ -27,6 +28,14 @@ class EqualsMismatchedMembersCheckTest {
   void test() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/EqualsMismatchedMembersCheckSample.java"))
+      .withCheck(new EqualsMismatchedMembersCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/EqualsMismatchedMembersCheckSample.java"))
       .withCheck(new EqualsMismatchedMembersCheck())
       .verifyIssues();
   }
