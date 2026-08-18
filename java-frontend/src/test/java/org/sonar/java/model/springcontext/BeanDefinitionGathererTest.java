@@ -16,6 +16,9 @@
  */
 package org.sonar.java.model.springcontext;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,8 +26,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.cache.WriteCache;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.java.TestUtils;
+import org.sonar.plugins.java.api.InputFileScannerContext;
+import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.caching.JavaReadCache;
+import org.sonar.plugins.java.api.caching.JavaWriteCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
@@ -48,12 +68,12 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
   static Stream<Arguments> stereotypeAnnotationArguments() {
     return Stream.of(
-      Arguments.of("src/test/files/springcontext/SimpleComponent.java",          "simpleComponent",      "checks.spring.context.SimpleComponent"),
-      Arguments.of("src/test/files/springcontext/SimpleService.java",            "simpleService",        "checks.spring.context.SimpleService"),
-      Arguments.of("src/test/files/springcontext/SimpleRepository.java",         "simpleRepository",     "checks.spring.context.SimpleRepository"),
-      Arguments.of("src/test/files/springcontext/SimpleController.java",         "simpleController",     "checks.spring.context.SimpleController"),
-      Arguments.of("src/test/files/springcontext/SimpleRestController.java",     "simpleRestController", "checks.spring.context.SimpleRestController"),
-      Arguments.of("src/test/files/springcontext/SimpleConfiguration.java",      "simpleConfiguration",  "checks.spring.context.SimpleConfiguration"),
+      Arguments.of("src/test/files/springcontext/SimpleComponent.java", "simpleComponent", "checks.spring.context.SimpleComponent"),
+      Arguments.of("src/test/files/springcontext/SimpleService.java", "simpleService", "checks.spring.context.SimpleService"),
+      Arguments.of("src/test/files/springcontext/SimpleRepository.java", "simpleRepository", "checks.spring.context.SimpleRepository"),
+      Arguments.of("src/test/files/springcontext/SimpleController.java", "simpleController", "checks.spring.context.SimpleController"),
+      Arguments.of("src/test/files/springcontext/SimpleRestController.java", "simpleRestController", "checks.spring.context.SimpleRestController"),
+      Arguments.of("src/test/files/springcontext/SimpleConfiguration.java", "simpleConfiguration", "checks.spring.context.SimpleConfiguration"),
       Arguments.of("src/test/files/springcontext/ConfigurationWithBeanMethods.java", "simpleServiceBean", "org.springframework.context.ApplicationContext")
     );
   }
@@ -180,9 +200,9 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
   static Stream<Arguments> dependencyCollectionArguments() {
     return Stream.of(
-      Arguments.of("src/test/files/springcontext/AutowiredDependencies.java",            "autowiredDependencies"),
+      Arguments.of("src/test/files/springcontext/AutowiredDependencies.java", "autowiredDependencies"),
       Arguments.of("src/test/files/springcontext/AutowiredConstructorDependencies.java", "autowiredConstructorDependencies"),
-      Arguments.of("src/test/files/springcontext/BeanMethodWithDependencies.java",       "myBean")
+      Arguments.of("src/test/files/springcontext/BeanMethodWithDependencies.java", "myBean")
     );
   }
 
@@ -209,5 +229,129 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     var beans = model.getBeanDefinitionRegistry().getByName("simpleComponent");
     assertThat(beans).hasSize(1);
     assertThat(beans.get(0).getBeanPackage()).isEqualTo("checks.spring.context");
+  }
+
+  // ---- Caching --------------------------------------------------------------
+
+  @Test
+  void leaveFile_writes_beans_to_cache() {
+    WriteCache writeCache = mock(WriteCache.class);
+    SensorContextTester ctx = SensorContextTester.create(new File(""));
+    ctx.setCacheEnabled(true);
+    ctx.setNextCache(writeCache);
+
+    scan(ctx, "src/test/files/springcontext/SimpleComponent.java");
+
+    var dataCaptor = ArgumentCaptor.forClass(byte[].class);
+    verify(writeCache).write(
+      anyString(),
+      dataCaptor.capture());
+    String serialized = new String(dataCaptor.getValue(), StandardCharsets.UTF_8);
+    String encodedName = Base64.getEncoder().encodeToString("simpleComponent".getBytes(StandardCharsets.UTF_8));
+    assertThat(serialized)
+      .contains(encodedName)
+      .contains("checks.spring.context.SimpleComponent")
+      .contains("checks.spring.context")
+      .contains("false");
+  }
+
+  @Test
+  void scanWithoutParsing_returns_true_and_restores_beans_on_cache_hit() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
+    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
+    String encodedName = Base64.getEncoder().encodeToString("simpleComponent".getBytes(StandardCharsets.UTF_8));
+    String serialized = encodedName + "|checks.spring.context.SimpleComponent|checks.spring.context|6:6:6:21|false|";
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+
+    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
+    when(moduleScannerContext.getModuleKey()).thenReturn("");
+    gatherer.gatherSpringContextData(moduleScannerContext, model);
+
+    var beans = model.getBeanDefinitionRegistry().getByName("simpleComponent");
+    assertThat(beans).hasSize(1);
+    assertThat(beans.get(0).getType()).isEqualTo("checks.spring.context.SimpleComponent");
+    assertThat(beans.get(0).isPrimary()).isFalse();
+  }
+
+  @Test
+  void scanWithoutParsing_returns_false_on_cache_miss() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(anyString())).thenReturn(null);
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isFalse();
+  }
+
+  @Test
+  void scanWithoutParsing_restores_empty_bean_list_from_cache() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/NoScanAnnotations.java"));
+    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn("".getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+
+    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
+    when(moduleScannerContext.getModuleKey()).thenReturn("");
+    gatherer.gatherSpringContextData(moduleScannerContext, model);
+
+    assertThat(model.getBeanDefinitionRegistry().getByName("noScanAnnotations")).isEmpty();
+  }
+
+  @Test
+  void duplicate_cache_write_is_silently_ignored() {
+    WriteCache writeCache = mock(WriteCache.class);
+    doThrow(new IllegalArgumentException("duplicate key")).when(writeCache).write(anyString(), any(byte[].class));
+    SensorContextTester ctx = SensorContextTester.create(new File(""));
+    ctx.setCacheEnabled(true);
+    ctx.setNextCache(writeCache);
+
+    assertThatCode(() -> scan(ctx, "src/test/files/springcontext/SimpleComponent.java"))
+      .doesNotThrowAnyException();
+  }
+
+  @Test
+  void scanWithoutParsing_returns_false_on_corrupted_cache_entry() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
+    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn("not|valid|cache|content".getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isFalse();
+  }
+
+  private static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
+    CacheContext cacheContext = mock(CacheContext.class);
+    when(cacheContext.isCacheEnabled()).thenReturn(true);
+    when(cacheContext.getReadCache()).thenReturn(readCache);
+    when(cacheContext.getWriteCache()).thenReturn(writeCache);
+    return cacheContext;
   }
 }
