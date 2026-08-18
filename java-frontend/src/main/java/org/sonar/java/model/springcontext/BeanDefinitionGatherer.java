@@ -196,15 +196,16 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     if (bytes == null) {
       return Optional.empty();
     }
-    ctx.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
     String content = new String(bytes, StandardCharsets.UTF_8);
     if (content.isEmpty()) {
+      ctx.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
       return Optional.of(List.of());
     }
     try {
       var beans = content.lines()
         .map(line -> deserializeBean(line, ctx.getInputFile()))
         .toList();
+      ctx.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
       return Optional.of(beans);
     } catch (RuntimeException e) {
       LOG.trace("Failed to deserialize cached beans for '{}', will re-parse.", cacheKey);
