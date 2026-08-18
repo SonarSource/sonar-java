@@ -1,5 +1,7 @@
 package checks;
 
+import static java.lang.Double.NaN;
+
 class FloatEquality {
   void foo() {
     float f1 = 0.1f;
@@ -50,5 +52,18 @@ class FloatEquality {
     if (d1.equals(d2)) { } // Noncompliant
     if (f1.equals(f2)) { } // Noncompliant
     if (new Object().equals(f2)) { } //compliant
+  }
+
+  void nanComparisons() {
+    double d = 0.1d;
+    float f = 0.1f;
+    if (d == Double.NaN) {} // Compliant - covered by S9147
+    if (d != Double.NaN) {} // Compliant - covered by S9147
+    if (Double.NaN == d) {} // Compliant - covered by S9147
+    if (f == Float.NaN) {} // Compliant - covered by S9147
+    if (f != Float.NaN) {} // Compliant - covered by S9147
+    if (Float.NaN == f) {} // Compliant - covered by S9147
+    if (d == (Double.NaN)) {} // Compliant - covered by S9147
+    if (d == NaN) {} // Compliant - covered by S9147 (static import)
   }
 }
