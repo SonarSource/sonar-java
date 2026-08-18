@@ -63,7 +63,7 @@ public class RedundantSpringAnnotationCheck extends IssuableSubscriptionVisitor 
       List.of(SpringUtils.SPRING_BOOT_TEST_ANNOTATION, WEB_MVC_TEST, DATA_JPA_TEST, WEB_FLUX_TEST),
       RedundantSpringAnnotationCheck::isExtendWithSpringExtension),
     new RedundancyRule(SpringUtils.TRANSACTIONAL_ANNOTATION,
-      List.of(DATA_JPA_TEST), null)
+      List.of(DATA_JPA_TEST), RedundantSpringAnnotationCheck::isTransactionalWithoutCustomAttributes)
   );
 
   @Override
@@ -126,16 +126,13 @@ public class RedundantSpringAnnotationCheck extends IssuableSubscriptionVisitor 
   private static boolean isComponentScanWithoutCustomAttributes(ClassTree classTree, String impliedByFqn) {
     SymbolMetadata metadata = classTree.symbol().metadata();
     List<SymbolMetadata.AnnotationValue> values = metadata.valuesForAnnotation(COMPONENT_SCAN);
-    if (values == null || values.isEmpty()) {
-      return true;
-    }
-    for (SymbolMetadata.AnnotationValue av : values) {
-      String name = av.name();
-      if ("value".equals(name) || "basePackages".equals(name) || "basePackageClasses".equals(name)) {
-        return false;
-      }
-    }
-    return true;
+    return values == null || values.isEmpty();
+  }
+
+  private static boolean isTransactionalWithoutCustomAttributes(ClassTree classTree, String impliedByFqn) {
+    SymbolMetadata metadata = classTree.symbol().metadata();
+    List<SymbolMetadata.AnnotationValue> values = metadata.valuesForAnnotation(SpringUtils.TRANSACTIONAL_ANNOTATION);
+    return values == null || values.isEmpty();
   }
 
   private static boolean isExtendWithSpringExtension(ClassTree classTree, String impliedByFqn) {

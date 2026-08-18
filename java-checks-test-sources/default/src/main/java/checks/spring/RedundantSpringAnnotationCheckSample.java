@@ -11,11 +11,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -181,4 +183,33 @@ class DataJpaTestAlone {
 @ExtendWith({SpringExtension.class, org.mockito.junit.jupiter.MockitoExtension.class})
 @SpringBootTest
 class MixedExtensionsWithSpringBootTest {
+}
+
+// === Compliant: @Transactional with custom attributes + @DataJpaTest ===
+
+@Transactional(readOnly = true)
+@DataJpaTest
+class TransactionalReadOnlyWithDataJpaTest {
+}
+
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
+@DataJpaTest
+class TransactionalNotSupportedWithDataJpaTest {
+}
+
+// === Compliant: @ComponentScan with filters/other attributes + @SpringBootApplication ===
+
+@ComponentScan(excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "com.example.excluded"))
+@SpringBootApplication
+class ComponentScanWithExcludeFiltersAndSpringBootApp {
+}
+
+@ComponentScan(lazyInit = true)
+@SpringBootApplication
+class ComponentScanWithLazyInitAndSpringBootApp {
+}
+
+@ComponentScan(useDefaultFilters = false)
+@SpringBootApplication
+class ComponentScanWithUseDefaultFiltersAndSpringBootApp {
 }
