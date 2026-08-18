@@ -263,8 +263,8 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     return annotation.arguments().stream()
       .anyMatch(arg -> {
         if (arg.is(Tree.Kind.ASSIGNMENT)) {
-          var assignment = (org.sonar.plugins.java.api.tree.AssignmentExpressionTree) arg;
-          String name = ((org.sonar.plugins.java.api.tree.IdentifierTree) assignment.variable()).name();
+          var assignment = (AssignmentExpressionTree) arg;
+          String name = ((IdentifierTree) assignment.variable()).name();
           return "rollbackFor".equals(name)
             || "rollbackForClassName".equals(name)
             || "noRollbackFor".equals(name)
