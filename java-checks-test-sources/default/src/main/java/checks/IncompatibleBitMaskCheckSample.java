@@ -133,6 +133,42 @@ class IncompatibleBitMaskCheckSample {
     if (((x & 2)) == 2) {} // Compliant
   }
 
+  void bitwiseOrNotEqual(int x, long data) {
+    // != with OR where mask bits are not all present in value: always true
+    if ((x | 3) != 0) {} // Noncompliant {{This comparison is always true.}}
+
+    // Long variant: OR with != always true when mask bits missing
+    if ((data | 0xFFL) != 0L) {} // Noncompliant {{This comparison is always true.}}
+
+    // Constant on left side with != and OR
+    if (0 != (x | 1)) {} // Noncompliant {{This comparison is always true.}}
+
+    // Compliant: value includes mask bits
+    if ((x | 1) != 1) {} // Compliant
+  }
+
+  void longLiteralMaskOnLeft(long x) {
+    // Long literal as left operand of bitwise AND
+    if ((0xFFL & x) == 0x100L) {} // Noncompliant {{This comparison is always false.}}
+
+    // Long literal as left operand of bitwise OR
+    if ((0xFFL | x) == 0L) {} // Noncompliant {{This comparison is always false.}}
+
+    // != with long literal mask on left
+    if ((0xFFL & x) != 0x100L) {} // Noncompliant {{This comparison is always true.}}
+
+    // Compliant long literal mask on left
+    if ((0xFFL & x) == 0x80L) {} // Compliant
+  }
+
+  void longLiteralOnRightOfBitwiseOp(long x) {
+    // Long literal on right side of bitwise AND
+    if ((x & 0xFFL) == 0x100L) {} // Noncompliant {{This comparison is always false.}}
+
+    // Long literal on left side of bitwise AND (exercises left-operand path in hasLongLiteral)
+    if ((0xFFL & x) == 0x80L) {} // Compliant
+  }
+
   void intWidthHighBitMasks(int x) {
     // 0xFFFFFFFF as int is -1, so (x & 0xFFFFFFFF) == -1 is valid when x == -1
     if ((x & 0xFFFFFFFF) == -1) {} // Compliant
@@ -148,5 +184,15 @@ class IncompatibleBitMaskCheckSample {
 
     // AND with 3 cannot produce -1 (only bits 0 and 1 can be set)
     if ((x & 3) == -1) {} // Noncompliant {{This comparison is always false.}}
+
+    // != with int-width high-bit mask
+    if ((x & 3) != -1) {} // Noncompliant {{This comparison is always true.}}
+  }
+
+  void comparisonValueOnLeftWithLong(long x) {
+    // Long constant on left side of comparison, bitwise on right
+    if (0x100L == (x & 0xFFL)) {} // Noncompliant {{This comparison is always false.}}
+
+    if (0x80L == (x & 0xFFL)) {} // Compliant
   }
 }
