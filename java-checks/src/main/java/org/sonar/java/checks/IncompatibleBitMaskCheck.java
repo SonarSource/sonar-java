@@ -22,6 +22,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -55,6 +56,10 @@ public class IncompatibleBitMaskCheck extends IssuableSubscriptionVisitor {
     if (mask == null || value == null) {
       return;
     }
+    if (isIntOperation(bitwiseOp, possibleConstant)) {
+      mask = (long) mask.intValue();
+      value = (long) value.intValue();
+    }
     if (isIncompatible(unwrapped.kind(), mask, value)) {
       String message = comparison.is(Kind.EQUAL_TO)
         ? "This comparison is always false."
@@ -70,6 +75,22 @@ public class IncompatibleBitMaskCheck extends IssuableSubscriptionVisitor {
       return leftValue;
     }
     return LiteralUtils.longLiteralValue(bitwiseOp.rightOperand());
+  }
+
+  private static boolean isIntOperation(BinaryExpressionTree bitwiseOp, ExpressionTree comparisonValue) {
+    Type type = bitwiseOp.symbolType();
+    if (type.is("int")) {
+      return true;
+    }
+    if (type.is("long")) {
+      return false;
+    }
+    // Type is unknown (no-semantic mode): assume int if no long literals are involved
+    return !hasLongLiteral(bitwiseOp) && !comparisonValue.is(Kind.LONG_LITERAL);
+  }
+
+  private static boolean hasLongLiteral(BinaryExpressionTree bitwiseOp) {
+    return bitwiseOp.leftOperand().is(Kind.LONG_LITERAL) || bitwiseOp.rightOperand().is(Kind.LONG_LITERAL);
   }
 
   private static boolean isIncompatible(Kind bitwiseKind, long mask, long value) {

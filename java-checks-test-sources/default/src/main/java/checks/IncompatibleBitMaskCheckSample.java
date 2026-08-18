@@ -5,7 +5,7 @@ class IncompatibleBitMaskCheckSample {
   void bitwiseAndNoncompliant(int x, long status) {
     // AND mask 1 (0b01) cannot produce 2 (0b10)
     if ((x & 1) == 2) {} // Noncompliant {{This comparison is always false.}}
-    //         ^^
+    //          ^^
 
     // AND mask 0x0F cannot produce 0x10
     if ((x & 0x0F) == 0x10) {} // Noncompliant {{This comparison is always false.}}
@@ -131,5 +131,22 @@ class IncompatibleBitMaskCheckSample {
     if (((x & 1)) == 2) {} // Noncompliant {{This comparison is always false.}}
 
     if (((x & 2)) == 2) {} // Compliant
+  }
+
+  void intWidthHighBitMasks(int x) {
+    // 0xFFFFFFFF as int is -1, so (x & 0xFFFFFFFF) == -1 is valid when x == -1
+    if ((x & 0xFFFFFFFF) == -1) {} // Compliant
+
+    // 0xFFFFFFFF as int is -1, AND with -1 is identity, so comparing to 0 is valid
+    if ((x & 0xFFFFFFFF) == 0) {} // Compliant
+
+    // 0x80000000 as int is Integer.MIN_VALUE (-2147483648), valid comparison
+    if ((x & 0x80000000) == -2147483648) {} // Compliant
+
+    // High-bit hex mask with matching hex value
+    if ((x & 0xF0000000) == 0xF0000000) {} // Compliant
+
+    // AND with 3 cannot produce -1 (only bits 0 and 1 can be set)
+    if ((x & 3) == -1) {} // Noncompliant {{This comparison is always false.}}
   }
 }
