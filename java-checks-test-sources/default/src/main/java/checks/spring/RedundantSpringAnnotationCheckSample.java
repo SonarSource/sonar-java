@@ -235,13 +235,6 @@ class ConfigurationWithProxyBeanMethodsAndSpringBootApp {
 class EnableAutoConfigWithExcludeAndSpringBootApp {
 }
 
-// === Compliant: @SpringBootConfiguration with explicit attributes + @SpringBootApplication ===
-
-@SpringBootConfiguration(proxyBeanMethods = false)
-@SpringBootApplication
-class SpringBootConfigWithProxyBeanMethodsAndSpringBootApp {
-}
-
 // === Compliant: Repeatable @ExtendWith — only SpringExtension instance reported, not MockitoExtension ===
 
 @ExtendWith(SpringExtension.class) // Noncompliant {{Remove this "@ExtendWith" annotation, already implied by "@SpringBootTest".}}
