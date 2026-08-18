@@ -1,0 +1,39 @@
+<p><code>BigDecimal.equals(Object)</code> compares both the numerical value and the scale of the <code>BigDecimal</code> objects.</p>
+<h2>Why is this an issue?</h2>
+<p>In Java, <code>BigDecimal.equals(Object)</code> returns <code>true</code> only if two <code>BigDecimal</code> objects have the same numerical value
+and the same scale (number of digits to the right of the decimal point). Consequently, <code>new BigDecimal("2.0").equals(new
+BigDecimal("2.00"))</code> evaluates to <code>false</code> even though both instances represent the same numerical value.</p>
+<p>In financial, commerce, and scientific applications, comparisons usually intend to verify numerical equivalence regardless of representation
+differences. Using <code>equals()</code> or <code>Objects.equals()</code> can introduce subtle bugs when values are formatted, serialized, or computed
+with different scale factors. To compare <code>BigDecimal</code> values for numerical equality, use <code>compareTo(other) == 0</code> instead.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+BigDecimal priceA = new BigDecimal("10.0");
+BigDecimal priceB = new BigDecimal("10.00");
+
+if (priceA.equals(priceB)) { // Noncompliant: "BigDecimal.equals()" compares scale as well as value; use "compareTo() == 0" for numerical comparison
+  applyDiscount();
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+BigDecimal priceA = new BigDecimal("10.0");
+BigDecimal priceB = new BigDecimal("10.00");
+
+if (priceA.compareTo(priceB) == 0) {
+  applyDiscount();
+}
+</pre>
+<h2>Exceptions</h2>
+<p>This rule ignores <code>BigDecimal.equals()</code> calls inside <code>equals(Object)</code> method declarations. Classes implementing
+<code>equals(Object)</code> and <code>hashCode()</code> often require scale-sensitive comparison to satisfy the <code>hashCode</code> contract.</p>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/BigDecimal.html#equals(java.lang.Object)">BigDecimal.equals(Object)</a></li>
+  <li>Oracle Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/BigDecimal.html#compareTo(java.math.BigDecimal)">BigDecimal.compareTo(BigDecimal)</a></li>
+</ul>
+

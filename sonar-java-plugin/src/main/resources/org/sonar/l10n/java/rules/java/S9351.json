@@ -1,0 +1,24 @@
+{
+  "title": "\"BigDecimal.compareTo()\" should be used instead of \"equals()\" for numerical comparison",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "unpredictable",
+    "bad-practice"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9351",
+  "sqKey": "S9351",
+  "scope": "Main",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  }
+}
