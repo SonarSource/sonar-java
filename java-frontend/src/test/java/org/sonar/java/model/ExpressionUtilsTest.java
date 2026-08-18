@@ -41,9 +41,7 @@ import org.sonar.plugins.java.api.tree.StaticInitializerTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 
 import static java.lang.reflect.Modifier.isFinal;
 import static java.lang.reflect.Modifier.isPrivate;
