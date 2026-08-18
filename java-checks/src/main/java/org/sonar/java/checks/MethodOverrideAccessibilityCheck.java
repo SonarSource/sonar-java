@@ -50,18 +50,10 @@ public class MethodOverrideAccessibilityCheck extends IssuableSubscriptionVisito
 
   private void checkInstanceMethodOverride(MethodTree methodTree, Symbol.MethodSymbol methodSymbol) {
     List<Symbol.MethodSymbol> overriddenSymbols = methodSymbol.overriddenSymbols();
-    if (overriddenSymbols.isEmpty()) {
-      return;
-    }
-    Symbol.MethodSymbol overriddenSymbol = overriddenSymbols.get(0);
-    if (overriddenSymbol.owner().isInterface()) {
-      return;
-    }
-    int childLevel = accessLevel(methodSymbol);
-    int parentLevel = accessLevel(overriddenSymbol);
-    if (childLevel > parentLevel) {
-      reportAccessibilityIssue(methodTree, overriddenSymbol, parentLevel, childLevel, "overriding");
-    }
+    overriddenSymbols.stream()
+      .filter(s -> !s.owner().isInterface())
+      .findFirst()
+      .ifPresent(overriddenSymbol -> reportIfAccessIncreased(methodTree, methodSymbol, overriddenSymbol, "overriding"));
   }
 
   private void checkStaticMethodHiding(MethodTree methodTree, Symbol.MethodSymbol methodSymbol) {
@@ -70,12 +62,9 @@ public class MethodOverrideAccessibilityCheck extends IssuableSubscriptionVisito
     while (superClass != null) {
       for (Symbol symbol : superClass.symbol().lookupSymbols(methodSymbol.name())) {
         if (symbol.isMethodSymbol() && symbol.isStatic() && !symbol.isPrivate()
+          && !(symbol.isPackageVisibility() && !samePackage(methodSymbol, symbol))
           && hasSameParameterTypes(methodSymbol, (Symbol.MethodSymbol) symbol)) {
-          int childLevel = accessLevel(methodSymbol);
-          int parentLevel = accessLevel((Symbol.MethodSymbol) symbol);
-          if (childLevel > parentLevel) {
-            reportAccessibilityIssue(methodTree, (Symbol.MethodSymbol) symbol, parentLevel, childLevel, "hiding");
-          }
+          reportIfAccessIncreased(methodTree, methodSymbol, (Symbol.MethodSymbol) symbol, "hiding");
           return;
         }
       }
@@ -83,8 +72,32 @@ public class MethodOverrideAccessibilityCheck extends IssuableSubscriptionVisito
     }
   }
 
-  private void reportAccessibilityIssue(MethodTree methodTree, Symbol.MethodSymbol parentMethod,
-    int parentLevel, int childLevel, String verb) {
+  private static boolean samePackage(Symbol s1, Symbol s2) {
+    Symbol p1 = getPackage(s1);
+    Symbol p2 = getPackage(s2);
+    if (p1 == null || p2 == null) {
+      return false;
+    }
+    return p1.equals(p2);
+  }
+
+  private static Symbol getPackage(Symbol symbol) {
+    Symbol owner = symbol.owner();
+    while (owner != null) {
+      if (owner.isPackageSymbol()) {
+        return owner;
+      }
+      owner = owner.owner();
+    }
+    return null;
+  }
+
+  private void reportIfAccessIncreased(MethodTree methodTree, Symbol childMethod, Symbol.MethodSymbol parentMethod, String verb) {
+    int childLevel = accessLevel(childMethod);
+    int parentLevel = accessLevel(parentMethod);
+    if (childLevel <= parentLevel) {
+      return;
+    }
     String message = String.format("Increase of accessibility from \"%s\" to \"%s\" when %s method.",
       accessLevelName(parentLevel), accessLevelName(childLevel), verb);
     MethodTree declaration = parentMethod.declaration();
@@ -98,31 +111,21 @@ public class MethodOverrideAccessibilityCheck extends IssuableSubscriptionVisito
   }
 
   private static int accessLevel(Symbol symbol) {
-    if (symbol.isPrivate()) {
-      return 0;
-    } else if (symbol.isPackageVisibility()) {
-      return 1;
-    } else if (symbol.isProtected()) {
-      return 2;
-    } else if (symbol.isPublic()) {
-      return 3;
-    }
+    if (symbol.isPrivate()) return 0;
+    if (symbol.isPackageVisibility()) return 1;
+    if (symbol.isProtected()) return 2;
+    if (symbol.isPublic()) return 3;
     return -1;
   }
 
   private static String accessLevelName(int level) {
-    switch (level) {
-      case 0:
-        return "private";
-      case 1:
-        return "package-private";
-      case 2:
-        return "protected";
-      case 3:
-        return "public";
-      default:
-        return "unknown";
-    }
+    return switch (level) {
+      case 0 -> "private";
+      case 1 -> "package-private";
+      case 2 -> "protected";
+      case 3 -> "public";
+      default -> "unknown";
+    };
   }
 
   private static boolean hasSameParameterTypes(Symbol.MethodSymbol method, Symbol.MethodSymbol candidate) {

@@ -219,4 +219,57 @@ class MethodOverrideAccessibilityCheckSample {
   static class ChildOfPrivate extends BaseWithPrivate {
     public void secret() {} // Compliant - not overriding, private methods are not visible
   }
+
+  // --- Interface + superclass override: should still detect when interface comes first ---
+
+  interface Runnable2 {
+    void execute2();
+  }
+
+  static class SuperWithProtected implements Runnable2 {
+    protected void execute2() {}
+//                 ^^^^^^^^>
+  }
+
+  static class ChildImplementsAndOverrides extends SuperWithProtected {
+    @Override
+    public void execute2() {} // Noncompliant {{Increase of accessibility from "protected" to "public" when overriding method.}}
+//              ^^^^^^^^
+  }
+
+  // --- Compliant: static method with different parameter types (no hiding match) ---
+
+  static class ParentStaticDiffParams {
+    static void process(int x) {}
+  }
+
+  static class ChildStaticDiffParams extends ParentStaticDiffParams {
+    public static void process(String x) {} // Compliant - different parameter types, not hiding
+  }
+
+  // --- Compliant: static method with private parent (not inherited) ---
+
+  static class ParentStaticPrivate {
+    private static void hidden() {}
+  }
+
+  static class ChildStaticPrivate extends ParentStaticPrivate {
+    public static void hidden() {} // Compliant - private parent method not inherited
+  }
+
+  // --- Static hiding: protected -> public in multi-level hierarchy ---
+
+  static class StaticGrandParent {
+    protected static void calc(int x) {}
+//                        ^^^^>
+  }
+
+  static class StaticMiddle extends StaticGrandParent {
+    protected static void calc(int x) {} // Compliant - same access
+  }
+
+  static class StaticGrandChild extends StaticGrandParent {
+    public static void calc(int x) {} // Noncompliant {{Increase of accessibility from "protected" to "public" when hiding method.}}
+//                     ^^^^
+  }
 }
