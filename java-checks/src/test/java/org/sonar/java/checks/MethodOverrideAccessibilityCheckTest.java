@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class MethodOverrideAccessibilityCheckTest {
 
@@ -38,6 +39,14 @@ class MethodOverrideAccessibilityCheckTest {
       .withCheck(new MethodOverrideAccessibilityCheck())
       .withoutSemantic()
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/MethodOverrideAccessibilityCheckSample.java"))
+      .withCheck(new MethodOverrideAccessibilityCheck())
+      .verifyIssues();
   }
 
 }

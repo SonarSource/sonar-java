@@ -1,0 +1,26 @@
+package checks;
+
+class MethodOverrideAccessibilityCheckSample {
+
+  // --- Compliant: unknown parameter types should not trigger hiding detection ---
+
+  static class ParentWithUnknownParam {
+    static void process(Unknown param) {}
+  }
+
+  static class ChildWithUnknownParam extends ParentWithUnknownParam {
+    public static void process(Unknown param) {} // Compliant - parameter type is unknown
+  }
+
+  // --- Noncompliant: hiding still detected when class has partial semantics ---
+
+  static class ParentWithKnownStatic {
+    protected static void compute(int x) {}
+  }
+
+  static class ChildHidingWithUnknownField extends ParentWithKnownStatic {
+    Unknown field;
+    public static void compute(int x) {} // Noncompliant {{Increase of accessibility from "protected" to "public" when hiding method.}}
+  }
+
+}

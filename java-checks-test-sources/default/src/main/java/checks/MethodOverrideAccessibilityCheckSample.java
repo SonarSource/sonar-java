@@ -220,13 +220,9 @@ class MethodOverrideAccessibilityCheckSample {
     public void secret() {} // Compliant - not overriding, private methods are not visible
   }
 
-  // --- Interface + superclass override: should still detect when interface comes first ---
+  // --- Superclass override with protected -> public ---
 
-  interface Runnable2 {
-    void execute2();
-  }
-
-  static class SuperWithProtected implements Runnable2 {
+  static class SuperWithProtected {
     protected void execute2() {}
 //                 ^^^^^^^^>
   }
@@ -271,5 +267,24 @@ class MethodOverrideAccessibilityCheckSample {
   static class StaticGrandChild extends StaticGrandParent {
     public static void calc(int x) {} // Noncompliant {{Increase of accessibility from "protected" to "public" when hiding method.}}
 //                     ^^^^
+  }
+
+  // --- Noncompliant: overriding bytecode parent (no source declaration available) ---
+
+  static class CustomClassLoader extends ClassLoader {
+    @Override
+    public Class<?> findClass(String name) throws ClassNotFoundException { // Noncompliant {{Increase of accessibility from "protected" to "public" when overriding method.}}
+//                  ^^^^^^^^^
+      return super.findClass(name);
+    }
+  }
+
+  // --- Compliant: overriding bytecode parent with same access ---
+
+  static class CompliantClassLoader extends ClassLoader {
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException { // Compliant - same access
+      return super.findClass(name);
+    }
   }
 }

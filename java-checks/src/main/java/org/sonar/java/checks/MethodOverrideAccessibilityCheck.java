@@ -62,10 +62,12 @@ public class MethodOverrideAccessibilityCheck extends IssuableSubscriptionVisito
     while (superClass != null) {
       for (Symbol symbol : superClass.symbol().lookupSymbols(methodSymbol.name())) {
         if (symbol.isMethodSymbol() && symbol.isStatic() && !symbol.isPrivate()
-          && !(symbol.isPackageVisibility() && !samePackage(methodSymbol, symbol))
-          && hasSameParameterTypes(methodSymbol, (Symbol.MethodSymbol) symbol)) {
-          reportIfAccessIncreased(methodTree, methodSymbol, (Symbol.MethodSymbol) symbol, "hiding");
-          return;
+          && !(symbol.isPackageVisibility() && !samePackage(methodSymbol, symbol))) {
+          Symbol.MethodSymbol candidate = (Symbol.MethodSymbol) symbol;
+          if (hasSameParameterTypes(methodSymbol, candidate)) {
+            reportIfAccessIncreased(methodTree, methodSymbol, candidate, "hiding");
+            return;
+          }
         }
       }
       superClass = superClass.symbol().superClass();
@@ -95,7 +97,7 @@ public class MethodOverrideAccessibilityCheck extends IssuableSubscriptionVisito
   private void reportIfAccessIncreased(MethodTree methodTree, Symbol childMethod, Symbol.MethodSymbol parentMethod, String verb) {
     int childLevel = accessLevel(childMethod);
     int parentLevel = accessLevel(parentMethod);
-    if (childLevel <= parentLevel) {
+    if (parentLevel < 0 || childLevel < 0 || childLevel <= parentLevel) {
       return;
     }
     String message = String.format("Increase of accessibility from \"%s\" to \"%s\" when %s method.",
