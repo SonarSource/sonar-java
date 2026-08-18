@@ -17,14 +17,20 @@
 package org.sonar.java.model.springcontext;
 
 import java.beans.Introspector;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -52,9 +58,19 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  */
 public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
+  private static final Logger LOG = LoggerFactory.getLogger(BeanDefinitionGatherer.class);
+
+  private static final String CACHE_KEY_PREFIX = "java:spring:bean-definitions:";
+  private static final String BEAN_SEPARATOR = "\n";
+  private static final String FIELD_SEPARATOR = "|";
+  private static final String DEP_SEPARATOR = ",";
+
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
 
   private final List<BeanData> collectedBeans = new ArrayList<>();
+
+  /** Beans found in the file currently being scanned, used for per-file cache writes. */
+  private final List<BeanData> beansCollectedAtFileLevel = new ArrayList<>();
 
   private record BeanData(
     String beanName,
@@ -64,6 +80,12 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
     List<String> dependingBeans) {
+  }
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    beansCollectedAtFileLevel.clear();
+    super.setContext(context);
   }
 
   @Override
@@ -93,12 +115,56 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         AnalyzerMessage.textSpanFor(classTree.simpleName()),
         meta.isAnnotatedWith(PRIMARY_ANNOTATION),
         deps));
+      beansCollectedAtFileLevel.add(new BeanData(
+        beanName, fqn, pkg,
+        context.getInputFile(),
+        AnalyzerMessage.textSpanFor(classTree.simpleName()),
+        meta.isAnnotatedWith(PRIMARY_ANNOTATION),
+        deps));
 
       // @Bean methods — only if class is a configuration/component class
       for (MethodTree method : SpringUtils.getBeanMethods(classTree)) {
         collectBeanMethod(method, pkg);
       }
     }
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    if (context.getCacheContext().isCacheEnabled()) {
+      writeToCache(context, beansCollectedAtFileLevel);
+    }
+    beansCollectedAtFileLevel.clear();
+  }
+
+  private static String cacheKey(InputFile inputFile) {
+    return CACHE_KEY_PREFIX + inputFile.key();
+  }
+
+  private static void writeToCache(JavaFileScannerContext context, List<BeanData> beans) {
+    var cacheKey = cacheKey(context.getInputFile());
+    var data = beans.stream()
+      .map(BeanDefinitionGatherer::serializeBean)
+      .collect(Collectors.joining(BEAN_SEPARATOR))
+      .getBytes(StandardCharsets.UTF_8);
+    try {
+      context.getCacheContext().getWriteCache().write(cacheKey, data);
+    } catch (IllegalArgumentException e) {
+      LOG.trace("Tried to write multiple times to cache key '{}'. Ignoring writes after the first.", cacheKey);
+    }
+  }
+
+  private static String serializeBean(BeanData bean) {
+    var deps = String.join(DEP_SEPARATOR, bean.dependingBeans());
+    var span = bean.textSpan();
+    var encodedName = Base64.getEncoder().encodeToString(bean.beanName().getBytes(StandardCharsets.UTF_8));
+    return String.join(FIELD_SEPARATOR,
+      encodedName,
+      bean.type(),
+      bean.beanPackage(),
+      span.startLine + ":" + span.startCharacter + ":" + span.endLine + ":" + span.endCharacter,
+      Boolean.toString(bean.isPrimary()),
+      deps);
   }
 
   @Override
@@ -118,9 +184,49 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext ctx) {
-    // Bean data is not cached yet; force parsing so beans are
-    // always collected even for unchanged files in incremental runs.
-    return false;
+    return readFromCache(ctx).map(beans -> {
+      collectedBeans.addAll(beans);
+      return true;
+    }).orElse(false);
+  }
+
+  private static Optional<List<BeanData>> readFromCache(InputFileScannerContext ctx) {
+    var cacheKey = cacheKey(ctx.getInputFile());
+    var bytes = ctx.getCacheContext().getReadCache().readBytes(cacheKey);
+    if (bytes == null) {
+      return Optional.empty();
+    }
+    String content = new String(bytes, StandardCharsets.UTF_8);
+    if (content.isEmpty()) {
+      ctx.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
+      return Optional.of(List.of());
+    }
+    try {
+      var beans = content.lines()
+        .map(line -> deserializeBean(line, ctx.getInputFile()))
+        .toList();
+      ctx.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
+      return Optional.of(beans);
+    } catch (RuntimeException e) {
+      LOG.trace("Failed to deserialize cached beans for '{}', will re-parse.", cacheKey);
+      return Optional.empty();
+    }
+  }
+
+  private static BeanData deserializeBean(String line, InputFile inputFile) {
+    String[] fields = line.split("\\" + FIELD_SEPARATOR, -1);
+    String beanName = new String(Base64.getDecoder().decode(fields[0]), StandardCharsets.UTF_8);
+    String type = fields[1];
+    String beanPackage = fields[2];
+    String[] spanParts = fields[3].split(":");
+    var textSpan = new AnalyzerMessage.TextSpan(
+      Integer.parseInt(spanParts[0]),
+      Integer.parseInt(spanParts[1]),
+      Integer.parseInt(spanParts[2]),
+      Integer.parseInt(spanParts[3]));
+    boolean isPrimary = Boolean.parseBoolean(fields[4]);
+    List<String> deps = fields[5].isEmpty() ? List.of() : List.of(fields[5].split(DEP_SEPARATOR));
+    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, deps);
   }
 
   private static Optional<String> extractBeanName(SymbolMetadata meta) {
@@ -170,6 +276,12 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       .toList();
 
     collectedBeans.add(new BeanData(
+      beanName, returnTypeFqn, pkg,
+      context.getInputFile(),
+      AnalyzerMessage.textSpanFor(method.simpleName()),
+      beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION),
+      paramDeps));
+    beansCollectedAtFileLevel.add(new BeanData(
       beanName, returnTypeFqn, pkg,
       context.getInputFile(),
       AnalyzerMessage.textSpanFor(method.simpleName()),
