@@ -35,17 +35,18 @@ public class BigDecimalEqualsCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "\"BigDecimal.equals()\" compares scale as well as value; use \"compareTo() == 0\" for numerical comparison.";
   private static final String BIG_DECIMAL = "java.math.BigDecimal";
+  private static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
   private static final MethodMatchers INSTANCE_EQUALS = MethodMatchers.create()
     .ofAnyType()
     .names("equals")
-    .addParametersMatcher("java.lang.Object")
+    .addParametersMatcher(JAVA_LANG_OBJECT)
     .build();
 
   private static final MethodMatchers STATIC_EQUALS = MethodMatchers.create()
     .ofTypes("java.util.Objects", "com.google.common.base.Objects")
     .names("equals", "equal")
-    .addParametersMatcher("java.lang.Object", "java.lang.Object")
+    .addParametersMatcher(JAVA_LANG_OBJECT, JAVA_LANG_OBJECT)
     .build();
 
   @Override
