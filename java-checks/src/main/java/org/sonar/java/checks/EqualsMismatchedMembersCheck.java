@@ -17,10 +17,12 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.ExpressionUtils;
@@ -36,6 +38,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S9350")
@@ -88,19 +91,20 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
     }
     ComparisonCollector collector = new ComparisonCollector(owner);
     methodTree.block().accept(collector);
-    Set<MemberPair> suspiciousPairs = collector.comparisons.stream()
-      .map(ComparisonSite::pair)
-      .collect(Collectors.toSet());
+    Map<Tree, Set<MemberPair>> pairsByStatement = new HashMap<>();
     for (ComparisonSite comparison : collector.comparisons) {
-      if (suspiciousPairs.contains(comparison.pair().reversed())) {
+      pairsByStatement.computeIfAbsent(comparison.statement, key -> new HashSet<>()).add(comparison.pair());
+    }
+    for (ComparisonSite comparison : collector.comparisons) {
+      if (pairsByStatement.get(comparison.statement).contains(comparison.pair().reversed())) {
         continue;
       }
       reportIssue(
         comparison.tree,
-        String.format(ISSUE_MESSAGE, comparison.lhs.displayName, comparison.rhs.displayName),
+        String.format(ISSUE_MESSAGE, comparison.thisMember.displayName, comparison.otherMember.displayName),
         List.of(
-          new JavaFileScannerContext.Location(SECONDARY_THIS, comparison.lhs.tree),
-          new JavaFileScannerContext.Location(SECONDARY_OTHER, comparison.rhs.tree)),
+          new JavaFileScannerContext.Location(SECONDARY_THIS, comparison.thisMember.tree),
+          new JavaFileScannerContext.Location(SECONDARY_OTHER, comparison.otherMember.tree)),
         null);
     }
   }
@@ -150,43 +154,92 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
       }
       MemberRef leftMember = left.get();
       MemberRef rightMember = right.get();
-      if (leftMember.kind != rightMember.kind || leftMember.symbol.equals(rightMember.symbol)) {
+      if (leftMember.kind != rightMember.kind || leftMember.symbol.equals(rightMember.symbol) || leftMember.onThis == rightMember.onThis) {
         return;
       }
-      comparisons.add(new ComparisonSite(comparisonTree, leftMember, rightMember));
+      MemberRef thisMember = leftMember.onThis ? leftMember : rightMember;
+      MemberRef otherMember = leftMember.onThis ? rightMember : leftMember;
+      comparisons.add(new ComparisonSite(comparisonTree, enclosingStatement(comparisonTree), thisMember, otherMember));
     }
 
     private Optional<MemberRef> member(ExpressionTree expression) {
       ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
+      Optional<Boolean> onThis = receiverIsThis(expr);
+      if (onThis.isEmpty()) {
+        return Optional.empty();
+      }
       if (expr instanceof IdentifierTree identifierTree) {
-        return field(identifierTree.symbol(), expr);
+        return field(identifierTree.symbol(), expr, onThis.get());
       }
       if (expr instanceof MemberSelectExpressionTree memberSelect) {
-        return field(memberSelect.identifier().symbol(), expr);
+        return field(memberSelect.identifier().symbol(), expr, onThis.get());
       }
       if (expr instanceof MethodInvocationTree invocation && invocation.arguments().isEmpty()) {
-        return getter(invocation);
+        return getter(invocation, onThis.get());
       }
       return Optional.empty();
     }
 
-    private Optional<MemberRef> field(Symbol symbol, ExpressionTree tree) {
-      if (symbol.isUnknown() || !symbol.isVariableSymbol() || symbol.isStatic() || !enclosingClass.equals(symbol.owner())) {
+    private Optional<MemberRef> field(Symbol symbol, ExpressionTree tree, boolean onThis) {
+      if (symbol.isUnknown() || !symbol.isVariableSymbol() || symbol.isStatic() || !ownedByEnclosing(symbol)) {
         return Optional.empty();
       }
-      return Optional.of(new MemberRef(symbol, MemberKind.FIELD, symbol.name(), tree));
+      return Optional.of(new MemberRef(symbol, MemberKind.FIELD, symbol.name(), tree, onThis));
     }
 
-    private Optional<MemberRef> getter(MethodInvocationTree invocation) {
+    private Optional<MemberRef> getter(MethodInvocationTree invocation, boolean onThis) {
       Symbol.MethodSymbol method = invocation.methodSymbol();
-      if (method.isUnknown() || method.isStatic() || !enclosingClass.equals(method.owner())) {
+      if (method.isUnknown() || method.isStatic() || !ownedByEnclosing(method)) {
         return Optional.empty();
       }
       Symbol.TypeSymbol returnType = method.returnType();
       if (returnType == null || returnType.isUnknown() || returnType.type().isVoid() || !method.parameterTypes().isEmpty()) {
         return Optional.empty();
       }
-      return Optional.of(new MemberRef(method, MemberKind.METHOD, method.name() + "()", invocation));
+      return Optional.of(new MemberRef(method, MemberKind.METHOD, method.name() + "()", invocation, onThis));
+    }
+
+    private boolean ownedByEnclosing(Symbol symbol) {
+      Symbol owner = symbol.owner();
+      return owner != null && !owner.isUnknown() && owner.isTypeSymbol()
+        && enclosingClass.type().erasure().equals(owner.type().erasure());
+    }
+
+    private static Optional<Boolean> receiverIsThis(ExpressionTree access) {
+      if (access instanceof IdentifierTree) {
+        return Optional.of(true);
+      }
+      if (access instanceof MemberSelectExpressionTree memberSelect) {
+        return classifyReceiver(memberSelect.expression());
+      }
+      if (access instanceof MethodInvocationTree invocation) {
+        if (invocation.methodSelect() instanceof IdentifierTree) {
+          return Optional.of(true);
+        }
+        if (invocation.methodSelect() instanceof MemberSelectExpressionTree memberSelect) {
+          return classifyReceiver(memberSelect.expression());
+        }
+      }
+      return Optional.empty();
+    }
+
+    private static Optional<Boolean> classifyReceiver(ExpressionTree receiverExpr) {
+      ExpressionTree expr = ExpressionUtils.skipParentheses(receiverExpr);
+      if (!(expr instanceof IdentifierTree identifierTree)) {
+        return Optional.empty();
+      }
+      if ("this".equals(identifierTree.name())) {
+        return Optional.of(true);
+      }
+      Symbol symbol = identifierTree.symbol();
+      if (symbol.isUnknown() || !symbol.isVariableSymbol() || symbol.isStatic()) {
+        return Optional.empty();
+      }
+      Symbol owner = symbol.owner();
+      if (owner == null || !owner.isMethodSymbol()) {
+        return Optional.empty();
+      }
+      return Optional.of(false);
     }
 
     private static boolean isTwoArgEqualityHelper(MethodInvocationTree tree) {
@@ -212,6 +265,14 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
       ExpressionTree expr = ExpressionUtils.skipParentheses(expression);
       return expr instanceof IdentifierTree identifierTree && "super".equals(identifierTree.name());
     }
+
+    private static Tree enclosingStatement(Tree tree) {
+      Tree current = tree;
+      while (current != null && !(current instanceof StatementTree)) {
+        current = current.parent();
+      }
+      return current != null ? current : tree;
+    }
   }
 
   private enum MemberKind {
@@ -219,12 +280,12 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
     METHOD
   }
 
-  private record MemberRef(Symbol symbol, MemberKind kind, String displayName, ExpressionTree tree) {
+  private record MemberRef(Symbol symbol, MemberKind kind, String displayName, ExpressionTree tree, boolean onThis) {
   }
 
-  private record ComparisonSite(Tree tree, MemberRef lhs, MemberRef rhs) {
+  private record ComparisonSite(Tree tree, Tree statement, MemberRef thisMember, MemberRef otherMember) {
     private MemberPair pair() {
-      return new MemberPair(lhs.symbol, rhs.symbol);
+      return new MemberPair(thisMember.symbol, otherMember.symbol);
     }
   }
 

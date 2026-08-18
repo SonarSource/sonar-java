@@ -333,4 +333,76 @@ class EqualsMismatchedMembersCheckSample {
       return (a) == (that.b); // Noncompliant {{This equals() implementation compares mismatched members; pairing "a" with "b" breaks the equality contract.}}
     }
   }
+
+  static class SameObjectFields {
+    int start;
+    int end;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof SameObjectFields that)) {
+        return false;
+      }
+      if (this.start == this.end && that.start == that.end) {
+        return true;
+      }
+      return this.start == that.start && this.end == that.end;
+    }
+  }
+
+  static class OtherFirst {
+    int a;
+    int b;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof OtherFirst that)) {
+        return false;
+      }
+      return that.a == this.b; // Noncompliant {{This equals() implementation compares mismatched members; pairing "b" with "a" breaks the equality contract.}}
+    }
+  }
+
+  static class Holder<T> {
+    private T left;
+    private T right;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof Holder<?> that)) {
+        return false;
+      }
+      return java.util.Objects.equals(this.left, that.right); // Noncompliant {{This equals() implementation compares mismatched members; pairing "left" with "right" breaks the equality contract.}}
+    }
+  }
+
+  static class StaticSingleton {
+    static final StaticSingleton EMPTY = new StaticSingleton();
+    int a;
+    int b;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof StaticSingleton that)) {
+        return false;
+      }
+      return this.a == EMPTY.b && this.a == that.a && this.b == that.b;
+    }
+  }
+
+  static class DistinctStatements {
+    int a;
+    int b;
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof DistinctStatements that)) {
+        return false;
+      }
+      if (a == that.b) { // Noncompliant {{This equals() implementation compares mismatched members; pairing "a" with "b" breaks the equality contract.}}
+        return true;
+      }
+      return b == that.a; // Noncompliant {{This equals() implementation compares mismatched members; pairing "b" with "a" breaks the equality contract.}}
+    }
+  }
 }
