@@ -149,18 +149,20 @@ class Person {
 }
 </pre>
 <h3>Exceptions</h3>
-<p>The rule does not raise an issue when both swapped pairings appear, because that pattern can express order-independent equality:</p>
+<p>The rule does not raise an issue when both swapped pairings appear in the same statement, because that pattern can express order-independent
+equality. An undirected connection is the same in either direction:</p>
 <pre>
-class Pair {
-  private int a;
-  private int b;
+class UndirectedEdge {
+  private String from;
+  private String to;
 
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof Pair that)) {
+    if (!(obj instanceof UndirectedEdge that)) {
       return false;
     }
-    return (a == that.a &amp;&amp; b == that.b) || (a == that.b &amp;&amp; b == that.a);
+    return (from.equals(that.from) &amp;&amp; to.equals(that.to))
+      || (from.equals(that.to) &amp;&amp; to.equals(that.from));
   }
 }
 </pre>
@@ -179,6 +181,26 @@ class Named {
       return false;
     }
     return this.name.equals(that.getName());
+  }
+}
+</pre>
+<p>When a mismatched comparison is intentional and those automatic exceptions do not apply, suppress the issue with a <code>NOSONAR</code> comment and
+a short rationale on that line. Keep both swapped pairings in one statement when you can; use <code>NOSONAR</code> when the reverse pairing lives in
+another statement, or when the domain truly requires a one-sided comparison:</p>
+<pre>
+class UndirectedEdge {
+  private String from;
+  private String to;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof UndirectedEdge that)) {
+      return false;
+    }
+    if (from.equals(that.from) &amp;&amp; to.equals(that.to)) {
+      return true;
+    }
+    return from.equals(that.to) &amp;&amp; to.equals(that.from); // NOSONAR: undirected edge, reverse pairing is on the previous return
   }
 }
 </pre>
