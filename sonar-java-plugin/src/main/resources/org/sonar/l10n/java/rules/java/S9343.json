@@ -1,0 +1,24 @@
+{
+  "title": "Methods should not increase accessibility when overriding or hiding",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "design",
+    "inheritance"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9343",
+  "sqKey": "S9343",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  }
+}

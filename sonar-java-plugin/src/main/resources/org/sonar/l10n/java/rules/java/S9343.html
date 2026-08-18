@@ -1,0 +1,59 @@
+<p>This rule raises an issue when a method in a subclass has broader accessibility than the method it overrides in the parent class.</p>
+<h2>Why is this an issue?</h2>
+<p>In object-oriented languages, access modifiers control the visibility of methods, typically ranging from most restrictive (accessible only within the
+defining class) through intermediate levels (accessible within packages or to subclasses) to most accessible (publicly available to all code).</p>
+<p>When a subclass overrides or redefines a method from a parent class, it should not make the method more accessible than it was in the parent class.
+Doing so breaks the encapsulation principle and can lead to several problems:</p>
+<ul>
+  <li><strong>Exposes internal implementation</strong>: A method that was intentionally kept at a restricted visibility level in the parent class may
+  have been designed for internal use only. Making it more broadly accessible in a subclass exposes internal details that clients shouldn't depend
+  on.</li>
+  <li><strong>Violates the Liskov Substitution Principle</strong>: This principle states that objects of a subclass should be substitutable for objects
+  of the parent class without breaking the application. When you increase accessibility, you're adding new capabilities to the subclass's public API
+  that weren't part of the parent class's contract.</li>
+  <li><strong>Creates maintenance issues</strong>: If the parent class's method accessibility was intentionally limited, increasing it in a subclass
+  makes it harder to maintain and evolve the class hierarchy.</li>
+</ul>
+<p>In Java, this applies both to instance methods (which are overridden) and static methods (which are hidden).</p>
+<h2>How to fix it</h2>
+<p>Keep the same access modifier as the parent class method. If the method needs to be more accessible, reconsider whether the parent class design
+should be changed instead.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class Parent {
+    protected void process() {
+        // Internal processing logic
+    }
+}
+
+class Child extends Parent {
+    @Override
+    public void process() { // Noncompliant - increased from protected to public
+        super.process();
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Parent {
+    protected void process() {
+        // Internal processing logic
+    }
+}
+
+class Child extends Parent {
+    @Override
+    protected void process() { // Compliant - same access level
+        super.process();
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/IandI/override.html">Overriding and Hiding Methods</a></li>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/accesscontrol.html">Controlling Access to Members of a
+  Class</a></li>
+  <li>Wikipedia - <a href="https://en.wikipedia.org/wiki/Liskov_substitution_principle">Liskov Substitution Principle</a></li>
+</ul>
