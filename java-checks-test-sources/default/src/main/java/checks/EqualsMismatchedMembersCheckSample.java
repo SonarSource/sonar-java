@@ -509,6 +509,23 @@ class EqualsMismatchedMembersCheckSample {
     }
   }
 
+  static class NonBooleanEqualHelper {
+    int a;
+    int b;
+
+    static void equal(Object x, Object y) {
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (!(obj instanceof NonBooleanEqualHelper that)) {
+        return false;
+      }
+      equal(a, that.b);
+      return a == that.a;
+    }
+  }
+
   static class StaticGetter {
     int a;
     int b;

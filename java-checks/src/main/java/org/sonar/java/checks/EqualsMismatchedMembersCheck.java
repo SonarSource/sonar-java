@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -269,10 +270,20 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
       if (OBJECTS_EQUALS.matches(tree) || GUAVA_OBJECTS_EQUAL.matches(tree)) {
         return true;
       }
+      if (!"equal".equals(ExpressionUtils.methodName(tree).name())) {
+        return false;
+      }
       Symbol.MethodSymbol method = tree.methodSymbol();
-      // Fallback when Guava is absent from the classpath: a static or unresolved method named equal.
-      return (method.isUnknown() || method.isStatic())
-        && "equal".equals(ExpressionUtils.methodName(tree).name());
+      // Unresolved `equal` covers Guava when it is absent from the classpath.
+      if (method.isUnknown()) {
+        return true;
+      }
+      Symbol.TypeSymbol returnType = method.returnType();
+      // Resolved user helpers are equality comparisons only when they return boolean.
+      return method.isStatic()
+        && returnType != null
+        && !returnType.isUnknown()
+        && returnType.type().isPrimitive(Type.Primitives.BOOLEAN);
     }
 
     private static ExpressionTree receiver(MethodInvocationTree invocation) {
