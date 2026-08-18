@@ -16,19 +16,20 @@
  */
 package org.sonar.java.checks.spring;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiPredicate;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S9341")
@@ -46,65 +47,70 @@ public class RedundantSpringAnnotationCheck extends IssuableSubscriptionVisitor 
 
   private static final List<RedundancyRule> REDUNDANCY_RULES = List.of(
     new RedundancyRule(SpringUtils.COMPONENT_ANNOTATION,
-      List.of(SpringUtils.SERVICE_ANNOTATION, SpringUtils.REPOSITORY_ANNOTATION, SpringUtils.CONTROLLER_ANNOTATION, SpringUtils.CONFIGURATION_ANNOTATION), null),
+      List.of(SpringUtils.SERVICE_ANNOTATION, SpringUtils.REPOSITORY_ANNOTATION, SpringUtils.CONTROLLER_ANNOTATION, SpringUtils.CONFIGURATION_ANNOTATION),
+      RedundantSpringAnnotationCheck::hasNoExplicitAttributes),
     new RedundancyRule(SpringUtils.CONTROLLER_ANNOTATION,
       List.of(SpringUtils.REST_CONTROLLER_ANNOTATION), null),
+    // Class-level @ResponseBody only; method-level @ResponseBody in @RestController is handled by S6837
     new RedundancyRule(RESPONSE_BODY,
       List.of(SpringUtils.REST_CONTROLLER_ANNOTATION), null),
     new RedundancyRule(SpringUtils.CONFIGURATION_ANNOTATION,
-      List.of(SpringUtils.SPRING_BOOT_APP_ANNOTATION), null),
+      List.of(SpringUtils.SPRING_BOOT_APP_ANNOTATION), RedundantSpringAnnotationCheck::hasNoExplicitAttributes),
     new RedundancyRule(ENABLE_AUTO_CONFIGURATION,
-      List.of(SpringUtils.SPRING_BOOT_APP_ANNOTATION), null),
+      List.of(SpringUtils.SPRING_BOOT_APP_ANNOTATION), RedundantSpringAnnotationCheck::hasNoExplicitAttributes),
     new RedundancyRule(COMPONENT_SCAN,
-      List.of(SpringUtils.SPRING_BOOT_APP_ANNOTATION), RedundantSpringAnnotationCheck::isComponentScanWithoutCustomAttributes),
+      List.of(SpringUtils.SPRING_BOOT_APP_ANNOTATION), RedundantSpringAnnotationCheck::hasNoExplicitAttributes),
     new RedundancyRule(SPRING_BOOT_CONFIGURATION,
-      List.of(SpringUtils.SPRING_BOOT_APP_ANNOTATION), null),
+      List.of(SpringUtils.SPRING_BOOT_APP_ANNOTATION), RedundantSpringAnnotationCheck::hasNoExplicitAttributes),
     new RedundancyRule(EXTEND_WITH,
       List.of(SpringUtils.SPRING_BOOT_TEST_ANNOTATION, WEB_MVC_TEST, DATA_JPA_TEST, WEB_FLUX_TEST),
-      RedundantSpringAnnotationCheck::isExtendWithSpringExtension),
+      RedundantSpringAnnotationCheck::isExtendWithSpringExtensionOnly),
     new RedundancyRule(SpringUtils.TRANSACTIONAL_ANNOTATION,
-      List.of(DATA_JPA_TEST), RedundantSpringAnnotationCheck::isTransactionalWithoutCustomAttributes)
+      List.of(DATA_JPA_TEST), RedundantSpringAnnotationCheck::hasNoExplicitAttributes)
   );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CLASS);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.RECORD);
   }
 
   @Override
   public void visitNode(Tree tree) {
     var classTree = (ClassTree) tree;
-    Map<String, AnnotationTree> annotationsByFqn = collectAnnotations(classTree);
+    Map<String, List<AnnotationTree>> annotationsByFqn = collectAnnotations(classTree);
 
     for (RedundancyRule rule : REDUNDANCY_RULES) {
-      AnnotationTree redundantAnnotation = annotationsByFqn.get(rule.redundantFqn);
-      if (redundantAnnotation == null) {
+      List<AnnotationTree> redundantAnnotations = annotationsByFqn.get(rule.redundantFqn);
+      if (redundantAnnotations == null) {
         continue;
       }
-      for (String impliedByFqn : rule.impliedByFqns) {
-        AnnotationTree impliedByAnnotation = annotationsByFqn.get(impliedByFqn);
-        if (impliedByAnnotation != null && passesSpecialCondition(rule, classTree, impliedByFqn)) {
-          reportRedundancy(redundantAnnotation, impliedByAnnotation);
-          break;
+      for (AnnotationTree redundantAnnotation : redundantAnnotations) {
+        for (String impliedByFqn : rule.impliedByFqns) {
+          List<AnnotationTree> impliedByAnnotations = annotationsByFqn.get(impliedByFqn);
+          if (impliedByAnnotations != null && !impliedByAnnotations.isEmpty()
+            && passesSpecialCondition(rule, redundantAnnotation)) {
+            reportRedundancy(redundantAnnotation, impliedByAnnotations.get(0));
+            break;
+          }
         }
       }
     }
   }
 
-  private static Map<String, AnnotationTree> collectAnnotations(ClassTree classTree) {
-    Map<String, AnnotationTree> map = new HashMap<>();
+  private static Map<String, List<AnnotationTree>> collectAnnotations(ClassTree classTree) {
+    Map<String, List<AnnotationTree>> map = new HashMap<>();
     for (AnnotationTree annotation : classTree.modifiers().annotations()) {
       String fqn = annotation.annotationType().symbolType().fullyQualifiedName();
-      map.put(fqn, annotation);
+      map.computeIfAbsent(fqn, k -> new ArrayList<>()).add(annotation);
     }
     return map;
   }
 
-  private static boolean passesSpecialCondition(RedundancyRule rule, ClassTree classTree, String impliedByFqn) {
+  private static boolean passesSpecialCondition(RedundancyRule rule, AnnotationTree redundantAnnotation) {
     if (rule.specialCondition == null) {
       return true;
     }
-    return rule.specialCondition.test(classTree, impliedByFqn);
+    return rule.specialCondition.test(redundantAnnotation);
   }
 
   private void reportRedundancy(AnnotationTree redundantAnnotation, AnnotationTree impliedByAnnotation) {
@@ -123,45 +129,38 @@ public class RedundantSpringAnnotationCheck extends IssuableSubscriptionVisitor 
     return annotation.annotationType().symbolType().name();
   }
 
-  private static boolean isComponentScanWithoutCustomAttributes(ClassTree classTree, String impliedByFqn) {
-    SymbolMetadata metadata = classTree.symbol().metadata();
-    List<SymbolMetadata.AnnotationValue> values = metadata.valuesForAnnotation(COMPONENT_SCAN);
-    return values == null || values.isEmpty();
+  private static boolean hasNoExplicitAttributes(AnnotationTree annotation) {
+    return annotation.arguments().isEmpty();
   }
 
-  private static boolean isTransactionalWithoutCustomAttributes(ClassTree classTree, String impliedByFqn) {
-    SymbolMetadata metadata = classTree.symbol().metadata();
-    List<SymbolMetadata.AnnotationValue> values = metadata.valuesForAnnotation(SpringUtils.TRANSACTIONAL_ANNOTATION);
-    return values == null || values.isEmpty();
-  }
-
-  private static boolean isExtendWithSpringExtension(ClassTree classTree, String impliedByFqn) {
-    SymbolMetadata metadata = classTree.symbol().metadata();
-    List<SymbolMetadata.AnnotationValue> values = metadata.valuesForAnnotation(EXTEND_WITH);
-    if (values == null) {
+  private static boolean isExtendWithSpringExtensionOnly(AnnotationTree annotation) {
+    var arguments = annotation.arguments();
+    if (arguments.size() != 1) {
       return false;
     }
-    for (SymbolMetadata.AnnotationValue av : values) {
-      if (isOnlySpringExtensionClass(av.value())) {
-        return true;
-      }
+    ExpressionTree arg = arguments.get(0);
+    if (arg.is(Tree.Kind.MEMBER_SELECT)) {
+      return isSpringExtensionClassRef((MemberSelectExpressionTree) arg);
+    }
+    if (arg.is(Tree.Kind.NEW_ARRAY)) {
+      var initializers = ((NewArrayTree) arg).initializers();
+      return initializers.size() == 1
+        && initializers.get(0).is(Tree.Kind.MEMBER_SELECT)
+        && isSpringExtensionClassRef((MemberSelectExpressionTree) initializers.get(0));
     }
     return false;
   }
 
-  private static boolean isOnlySpringExtensionClass(Object value) {
-    if (value instanceof Symbol symbol) {
-      return symbol.type().is(SPRING_EXTENSION);
-    }
-    if (value instanceof Object[] values) {
-      // Skip mixed arrays like @ExtendWith({SpringExtension.class, MockitoExtension.class})
-      // since the annotation cannot simply be removed
-      return values.length == 1 && values[0] instanceof Symbol symbol && symbol.type().is(SPRING_EXTENSION);
-    }
-    return false;
+  private static boolean isSpringExtensionClassRef(MemberSelectExpressionTree memberSelect) {
+    return memberSelect.expression().symbolType().is(SPRING_EXTENSION);
+  }
+
+  @FunctionalInterface
+  private interface AnnotationPredicate {
+    boolean test(AnnotationTree annotation);
   }
 
   private record RedundancyRule(String redundantFqn, List<String> impliedByFqns,
-    BiPredicate<ClassTree, String> specialCondition) {
+    AnnotationPredicate specialCondition) {
   }
 }

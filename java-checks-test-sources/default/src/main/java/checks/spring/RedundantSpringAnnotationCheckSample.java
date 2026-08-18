@@ -213,3 +213,54 @@ class ComponentScanWithLazyInitAndSpringBootApp {
 @SpringBootApplication
 class ComponentScanWithUseDefaultFiltersAndSpringBootApp {
 }
+
+// === Compliant: @Component with explicit attributes (bean name) ===
+
+@Component("orders")
+@Service
+class ComponentWithBeanNameAndService {
+}
+
+// === Compliant: @Configuration with explicit attributes + @SpringBootApplication ===
+
+@Configuration(proxyBeanMethods = false)
+@SpringBootApplication
+class ConfigurationWithProxyBeanMethodsAndSpringBootApp {
+}
+
+// === Compliant: @EnableAutoConfiguration with explicit attributes + @SpringBootApplication ===
+
+@EnableAutoConfiguration(exclude = Configuration.class)
+@SpringBootApplication
+class EnableAutoConfigWithExcludeAndSpringBootApp {
+}
+
+// === Compliant: @SpringBootConfiguration with explicit attributes + @SpringBootApplication ===
+
+@SpringBootConfiguration(proxyBeanMethods = false)
+@SpringBootApplication
+class SpringBootConfigWithProxyBeanMethodsAndSpringBootApp {
+}
+
+// === Compliant: Repeatable @ExtendWith — only SpringExtension instance reported, not MockitoExtension ===
+
+@ExtendWith(SpringExtension.class) // Noncompliant {{Remove this "@ExtendWith" annotation, already implied by "@SpringBootTest".}}
+@ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
+@SpringBootTest
+class RepeatableExtendWithSpringBootTest {
+}
+
+// === Compliant: Repeatable @ComponentScan with custom attributes — neither reported ===
+
+@ComponentScan("com.example.pkg1")
+@ComponentScan("com.example.pkg2")
+@SpringBootApplication
+class RepeatableComponentScanWithSpringBootApp {
+}
+
+// === Records with redundant annotations ===
+
+@Component // Noncompliant {{Remove this "@Component" annotation, already implied by "@Service".}}
+@Service
+record OrderServiceRecord(String name) {
+}
