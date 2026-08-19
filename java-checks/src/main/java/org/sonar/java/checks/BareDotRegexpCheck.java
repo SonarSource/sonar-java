@@ -29,6 +29,7 @@ public class BareDotRegexpCheck extends AbstractMethodDetection {
   private static final String MESSAGE = "This regex \".\" matches any character, not a literal dot; escape it as \"\\\\.\" if a period was intended.";
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String JAVA_UTIL_REGEX_PATTERN = "java.util.regex.Pattern";
+  private static final String COMPILE_METHOD_NAME = "compile";
 
   private static final MethodMatchers REGEX_METHODS = MethodMatchers.or(
     MethodMatchers.create()
@@ -53,12 +54,12 @@ public class BareDotRegexpCheck extends AbstractMethodDetection {
       .build(),
     MethodMatchers.create()
       .ofTypes(JAVA_UTIL_REGEX_PATTERN)
-      .names("compile")
+      .names(COMPILE_METHOD_NAME)
       .addParametersMatcher(JAVA_LANG_STRING)
       .build(),
     MethodMatchers.create()
       .ofTypes(JAVA_UTIL_REGEX_PATTERN)
-      .names("compile")
+      .names(COMPILE_METHOD_NAME)
       .addParametersMatcher(JAVA_LANG_STRING, "int")
       .build());
 
@@ -80,7 +81,7 @@ public class BareDotRegexpCheck extends AbstractMethodDetection {
   }
 
   private static boolean isLiteralPattern(MethodInvocationTree mit) {
-    if (mit.arguments().size() < 2 || !"compile".equals(mit.methodSymbol().name())) {
+    if (mit.arguments().size() < 2 || !COMPILE_METHOD_NAME.equals(mit.methodSymbol().name())) {
       return false;
     }
     return mit.arguments().get(1).asConstant(Integer.class)
