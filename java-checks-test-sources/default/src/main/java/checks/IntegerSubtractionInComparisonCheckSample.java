@@ -13,6 +13,7 @@ class IntegerSubtractionInComparisonCheckSample {
     @Override
     public int compareTo(TimestampedEvent other) {
       return (int) (this.timestamp - other.timestamp); // Noncompliant {{Subtracting numeric values in compareTo can overflow; use Long.compare instead.}}
+//                                 ^
     }
   }
 
@@ -53,14 +54,29 @@ class IntegerSubtractionInComparisonCheckSample {
     }
   }
 
+  static class IndexArithmetic implements Comparable<IndexArithmetic> {
+    private int[] parts;
+
+    @Override
+    public int compareTo(IndexArithmetic other) {
+      for (int i = 0; i < parts.length - 1; i++) { // Compliant - subtraction is not the comparison result
+        int cmp = Integer.compare(this.parts[i], other.parts[i]);
+        if (cmp != 0) {
+          return cmp;
+        }
+      }
+      return 0;
+    }
+  }
+
   static class IntermediateDiff implements Comparable<IntermediateDiff> {
     private int age;
 
     @Override
     public int compareTo(IntermediateDiff other) {
-      int diff = this.age - other.age; // Noncompliant {{Subtracting numeric values in compareTo can overflow; use Integer.compare instead.}}
+      int diff = this.age - other.age; // Compliant - only a returned subtraction is reported
       if (diff != 0) {
-        return diff;
+        return Integer.compare(this.age, other.age);
       }
       return 0;
     }

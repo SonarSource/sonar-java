@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -28,7 +29,9 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 @Rule(key = "S9354")
 public class IntegerSubtractionInComparisonCheck extends IssuableSubscriptionVisitor {
@@ -60,33 +63,47 @@ public class IntegerSubtractionInComparisonCheck extends IssuableSubscriptionVis
     if (tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
       if (COMPARE_METHODS.matches(methodTree) && methodTree.block() != null) {
-        methodTree.block().accept(new SubtractionInComparisonVisitor(methodTree.simpleName().name()));
+        methodTree.block().accept(new ComparisonResultVisitor(methodTree.simpleName().name()));
       }
     } else {
       LambdaExpressionTree lambda = (LambdaExpressionTree) tree;
       if (lambda.symbolType().isSubtypeOf("java.util.Comparator")) {
-        lambda.body().accept(new SubtractionInComparisonVisitor("compare"));
+        Tree body = lambda.body();
+        ComparisonResultVisitor visitor = new ComparisonResultVisitor("compare");
+        if (body.is(Tree.Kind.BLOCK)) {
+          body.accept(visitor);
+        } else {
+          visitor.checkComparisonResult((ExpressionTree) body);
+        }
       }
     }
   }
 
-  private class SubtractionInComparisonVisitor extends BaseTreeVisitor {
+  private class ComparisonResultVisitor extends BaseTreeVisitor {
 
     private final String enclosingMethodName;
 
-    private SubtractionInComparisonVisitor(String enclosingMethodName) {
+    private ComparisonResultVisitor(String enclosingMethodName) {
       this.enclosingMethodName = enclosingMethodName;
     }
 
     @Override
-    public void visitBinaryExpression(BinaryExpressionTree tree) {
-      if (tree.is(Tree.Kind.MINUS)) {
-        String replacement = replacementFor(tree);
-        if (replacement != null) {
-          reportIssue(tree.operatorToken(), String.format(MESSAGE, enclosingMethodName, replacement));
-        }
+    public void visitReturnStatement(ReturnStatementTree tree) {
+      ExpressionTree expression = tree.expression();
+      if (expression != null) {
+        checkComparisonResult(expression);
       }
-      super.visitBinaryExpression(tree);
+    }
+
+    private void checkComparisonResult(ExpressionTree expression) {
+      ExpressionTree unwrapped = skipParenthesesAndIntCasts(expression);
+      if (!unwrapped.is(Tree.Kind.MINUS)) {
+        return;
+      }
+      String replacement = replacementFor((BinaryExpressionTree) unwrapped);
+      if (replacement != null) {
+        reportIssue(((BinaryExpressionTree) unwrapped).operatorToken(), String.format(MESSAGE, enclosingMethodName, replacement));
+      }
     }
 
     @Override
@@ -98,6 +115,18 @@ public class IntegerSubtractionInComparisonCheck extends IssuableSubscriptionVis
     public void visitLambdaExpression(LambdaExpressionTree tree) {
       // Do not visit nested lambdas
     }
+  }
+
+  private static ExpressionTree skipParenthesesAndIntCasts(ExpressionTree expression) {
+    ExpressionTree current = ExpressionUtils.skipParentheses(expression);
+    while (current.is(Tree.Kind.TYPE_CAST)) {
+      TypeCastTree cast = (TypeCastTree) current;
+      if (!cast.type().symbolType().isPrimitive(Type.Primitives.INT)) {
+        return current;
+      }
+      current = ExpressionUtils.skipParentheses(cast.expression());
+    }
+    return current;
   }
 
   private static String replacementFor(BinaryExpressionTree tree) {
