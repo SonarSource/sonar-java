@@ -47,6 +47,10 @@ class AlmostJavadocCheckSample {
 
     /** Loads the entity. {@link Entity} */
     Entity documentedLoad(String id);
+
+    // Noncompliant@+1
+    // Loads with trailing space. {@link Entity} */ 
+    Entity loadWithTrailingSpace(String id);
   }
 
   // Noncompliant@+1
@@ -121,6 +125,22 @@ class AlmostJavadocCheckSample {
     // Noncompliant@+1
     /* @param x the x coordinate */
     Point {
+    }
+  }
+
+  // Noncompliant@+1
+  /* @since 1.0 */
+  int a, b, c;
+
+  int trailingField; // trailing note: see @param x */
+  void methodAfterTrailingComment(int x) {
+  }
+
+  void localClassIsNotDocumentable() {
+    /* @param q */
+    class Local {
+      /* @return r */
+      int r;
     }
   }
 

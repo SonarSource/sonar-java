@@ -28,10 +28,13 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.location.Position;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9355")
 public class AlmostJavadocCheck extends IssuableSubscriptionVisitor {
@@ -64,27 +67,66 @@ public class AlmostJavadocCheck extends IssuableSubscriptionVisitor {
       return;
     }
     for (SyntaxTrivia trivia : trivias) {
-      if (isAlmostJavadoc(trivia)) {
+      if (!belongsToPreviousMember(tree, trivia) && isAlmostJavadoc(trivia)) {
         reportAlmostJavadoc(trivia);
       }
     }
   }
 
   private static boolean isDocumentableDeclaration(Tree tree) {
+    if (isInsideMethodOrConstructor(tree)) {
+      return false;
+    }
     if (tree.is(Tree.Kind.VARIABLE)) {
       Tree parent = tree.parent();
-      return parent != null && parent.is(PublicApiChecker.classKinds());
+      return parent != null
+        && parent.is(PublicApiChecker.classKinds())
+        && QuickFixHelper.previousVariable((VariableTree) tree).isEmpty();
     }
     return true;
   }
 
+  private static boolean isInsideMethodOrConstructor(Tree tree) {
+    for (Tree current = tree.parent(); current != null; current = current.parent()) {
+      if (current.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.LAMBDA_EXPRESSION)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean belongsToPreviousMember(Tree tree, SyntaxTrivia trivia) {
+    Tree previous = previousSibling(tree);
+    if (previous == null) {
+      return false;
+    }
+    SyntaxToken previousEnd = previous.lastToken();
+    return previousEnd != null && trivia.range().start().line() == previousEnd.range().end().line();
+  }
+
+  private static Tree previousSibling(Tree tree) {
+    Tree parent = tree.parent();
+    if (parent instanceof ClassTree classTree) {
+      List<Tree> members = classTree.members();
+      int index = members.indexOf(tree);
+      return index > 0 ? members.get(index - 1) : null;
+    }
+    if (parent instanceof CompilationUnitTree compilationUnit) {
+      List<Tree> types = compilationUnit.types();
+      int index = types.indexOf(tree);
+      return index > 0 ? types.get(index - 1) : null;
+    }
+    return null;
+  }
+
   private static boolean isAlmostJavadoc(SyntaxTrivia trivia) {
+    String text = trivia.comment().stripTrailing();
     if (trivia.isComment(CommentKind.BLOCK)) {
-      return HAS_TAG.matcher(trivia.comment()).find();
+      return HAS_TAG.matcher(text).find();
     }
     return trivia.isComment(CommentKind.LINE)
-      && trivia.comment().endsWith("*/")
-      && HAS_TAG.matcher(trivia.comment()).find();
+      && text.endsWith("*/")
+      && HAS_TAG.matcher(text).find();
   }
 
   private void reportAlmostJavadoc(SyntaxTrivia trivia) {

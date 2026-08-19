@@ -14,7 +14,7 @@
   "ruleSpecification": "RSPEC-9355",
   "sqKey": "S9355",
   "scope": "All",
-  "quickfix": "targeted",
+  "quickfix": "covered",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "MEDIUM"
