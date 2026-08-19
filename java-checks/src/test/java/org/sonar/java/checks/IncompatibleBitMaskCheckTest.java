@@ -16,10 +16,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class IncompatibleBitMaskCheckTest {
 
@@ -37,6 +39,15 @@ class IncompatibleBitMaskCheckTest {
       .onFile(mainCodeSourcesPath("checks/IncompatibleBitMaskCheckSample.java"))
       .withCheck(new IncompatibleBitMaskCheck())
       .withoutSemantic()
+      .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling_without_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/IncompatibleBitMaskCheckSample.java"))
+      .withCheck(new IncompatibleBitMaskCheck())
+      .withClassPath(Collections.emptyList())
       .verifyIssues();
   }
 }
