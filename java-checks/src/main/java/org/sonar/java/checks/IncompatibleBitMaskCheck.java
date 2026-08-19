@@ -59,13 +59,11 @@ public class IncompatibleBitMaskCheck extends IssuableSubscriptionVisitor {
     }
     if (isIntOperation(bitwiseOp, possibleConstant)) {
       mask = (long) mask.intValue();
-      if (hasLongLiteral(possibleConstant)) {
-        // int bitwise result is sign-extended to long for comparison;
-        // if the long value is outside int range, the comparison is always incompatible
-        if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
-          reportIncompatible(comparison);
-          return;
-        }
+      // When comparing an int bitwise result against a long literal outside int range, the comparison is always incompatible
+      // because the int result is sign-extended to long and can never match a value outside the int range.
+      if (hasLongLiteral(possibleConstant) && (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE)) {
+        reportIncompatible(comparison);
+        return;
       }
       value = (long) value.intValue();
     }
