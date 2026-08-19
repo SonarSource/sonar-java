@@ -19,6 +19,8 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.PublicApiChecker;
@@ -41,10 +43,12 @@ public class AlmostJavadocCheck extends IssuableSubscriptionVisitor {
 
   static final String MESSAGE = "This comment contains Javadoc or HTML tags, but isn't started with a double asterisk (/**); is it meant to be Javadoc?";
 
-  private static final Pattern HAS_TAG = Pattern.compile(
-    "</(?:em|b|a|strong|i|pre|code)>"
-      + "|(?<!\\w)@(?:author|code|deprecated|docRoot|exception|inheritDoc|link|linkplain|literal"
-      + "|param|return|see|serial|serialData|serialField|since|snippet|throws|value|version)\\b");
+  private static final Pattern CLOSING_HTML = Pattern.compile("</(?:em|b|a|strong|i|pre|code)>");
+  private static final Pattern AT_TAG = Pattern.compile("(?<!\\w)@[a-zA-Z]+\\b");
+  private static final Set<String> JAVADOC_TAGS = Set.of(
+    "@author", "@code", "@deprecated", "@docRoot", "@exception", "@inheritDoc",
+    "@link", "@linkplain", "@literal", "@param", "@return", "@see", "@serial",
+    "@serialData", "@serialField", "@since", "@snippet", "@throws", "@value", "@version");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -129,11 +133,24 @@ public class AlmostJavadocCheck extends IssuableSubscriptionVisitor {
   private static boolean isAlmostJavadoc(SyntaxTrivia trivia) {
     String text = trivia.comment().stripTrailing();
     if (trivia.isComment(CommentKind.BLOCK)) {
-      return HAS_TAG.matcher(text).find();
+      return hasTag(text);
     }
     return trivia.isComment(CommentKind.LINE)
       && text.endsWith("*/")
-      && HAS_TAG.matcher(text).find();
+      && hasTag(text);
+  }
+
+  private static boolean hasTag(String text) {
+    if (CLOSING_HTML.matcher(text).find()) {
+      return true;
+    }
+    Matcher matcher = AT_TAG.matcher(text);
+    while (matcher.find()) {
+      if (JAVADOC_TAGS.contains(matcher.group())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void reportAlmostJavadoc(SyntaxTrivia trivia) {
