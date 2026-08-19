@@ -79,20 +79,8 @@ public class IncompatibleBitMaskCheck extends IssuableSubscriptionVisitor {
 
   @Nullable
   private static Long extractMask(BinaryExpressionTree bitwiseOp) {
-    Long leftValue = maskOperandValue(bitwiseOp.leftOperand());
-    if (leftValue != null) {
-      return leftValue;
-    }
-    return maskOperandValue(bitwiseOp.rightOperand());
-  }
-
-  @Nullable
-  private static Long maskOperandValue(ExpressionTree operand) {
-    Long value = LiteralUtils.longLiteralValue(operand);
-    if (value != null && isIntLiteral(operand)) {
-      value = (long) value.intValue();
-    }
-    return value;
+    Long leftValue = signExtendedLongValue(bitwiseOp.leftOperand());
+    return leftValue != null ? leftValue : signExtendedLongValue(bitwiseOp.rightOperand());
   }
 
   private static boolean isIntLiteral(ExpressionTree tree) {
