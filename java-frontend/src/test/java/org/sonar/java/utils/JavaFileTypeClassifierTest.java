@@ -131,12 +131,6 @@ class JavaFileTypeClassifierTest {
   }
 
   @Test
-  void isTestFile_recognizes_TestPrefix() {
-    assertIsTestFile(true, "TestFoo.java");
-    assertIsTestFile(true, "TestBar.java");
-  }
-
-  @Test
   void isTestFile_returnsFalse_forProductionNames() {
     assertIsTestFile(false, "Foo.java");
     assertIsTestFile(false, "FooService.java");

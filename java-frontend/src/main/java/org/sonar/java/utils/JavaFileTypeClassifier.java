@@ -98,7 +98,6 @@ public final class JavaFileTypeClassifier {
    *   <li>Maven integration-test source trees: {@code src/it/java}, {@code src/its/java}</li>
    *   <li>Filename suffixes: {@code Test}, {@code Tests}, {@code TestCase}, {@code IT},
    *       {@code ITCase}, {@code Spec}, {@code Specs}</li>
-   *   <li>Filename prefix: {@code Test}</li>
    * </ul>
    */
   private static final String[] JAVA_TEST_PATTERNS = {
@@ -119,9 +118,7 @@ public final class JavaFileTypeClassifier {
     "**/*IT.java",
     "**/*ITCase.java",
     "**/*Spec.java",
-    "**/*Specs.java",
-    // Filename prefix pattern
-    "**/Test*.java"
+    "**/*Specs.java"
   };
 
   /**
