@@ -174,11 +174,8 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-      if (expression.is(Tree.Kind.IDENTIFIER)) {
-        Symbol symbol = ((IdentifierTree) expression).symbol();
-        if (!symbol.isUnknown()) {
-          return symbol;
-        }
+      if (expression.is(Tree.Kind.IDENTIFIER) && !((IdentifierTree) expression).symbol().isUnknown()) {
+        return ((IdentifierTree) expression).symbol();
       }
     }
     return null;
