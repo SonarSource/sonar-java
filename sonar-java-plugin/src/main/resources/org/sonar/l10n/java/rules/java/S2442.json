@@ -1,5 +1,5 @@
 {
-  "title": "Synchronizing on a \"Lock\" object should be avoided",
+  "title": "Synchronizing on a \"java.util.concurrent\" object should be avoided",
   "type": "CODE_SMELL",
   "code": {
     "impacts": {
