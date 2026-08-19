@@ -409,15 +409,12 @@ public static Optional<VariableTree> nextVariable(VariableTree variable)
 
 **Usage:** Navigate between siblings in multi-variable declarations, find adjacent tokens for quick fixes.
 
-#### Type and Symbol Helpers (from MethodTreeUtils)
+#### Main Method Detection (from MethodTreeUtils)
 ```java
 public static boolean isMainMethod(MethodTree m, JavaVersion javaVersion)
-public static boolean isPublic(MethodTree m)
-public static boolean isStatic(MethodTree m)
-public static boolean returnsPrimitive(MethodTree m, String primitiveType)
 ```
 
-**Usage:** Common method pattern detection across multiple rules.
+**Usage:** Detect Java main method entry points.
 
 #### Unit Test Detection (from UnitTestUtils)
 ```java

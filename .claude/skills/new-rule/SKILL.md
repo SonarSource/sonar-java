@@ -18,7 +18,7 @@ This skill provides sonar-java-specific guidelines for implementing new rules.
 - Generated files will be placed in:
   - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S{RULE_ID}.html`
   - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S{RULE_ID}.json`
-  - `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/profiles/<profile_name>/${RULE_ID}`
+  - `sonar-java-plugin/src/main/resources/profiles/{Sonar_way|Sonar_agentic_AI}/S{RULE_ID}`
 
 ### Tests
 Ruling test expectation files, located in `its/ruling/src/test/resources`, are updated by merging an automatically
@@ -66,7 +66,6 @@ if (MY_MATCHER.matches(methodInvocationTree)) {
 - **DO NOT** add real external dependencies to test projects
 - Use mocks, stubs, or non-compiling tests instead
 - Keep test projects lightweight and self-contained
-- **DO NOT** modify the setup part of AutoScanTest (only the assert part if needed)
 
 ## File Structure Reference
 
@@ -78,7 +77,7 @@ if (MY_MATCHER.matches(methodInvocationTree)) {
 ### Metadata
 - HTML description: `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/{RULE_ID}.html`
 - JSON metadata: `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/{RULE_ID}.json`
-- Profile: `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/Sonar_way_profile.json`
+- Profile: `sonar-java-plugin/src/main/resources/profiles/{Sonar_way|Sonar_agentic_AI}/S{RULE_ID}`
 
 ### Non-Compiling Tests (when needed)
 - Location: `java-checks-test-sources/default/src/main/files/non-compiling/checks/`
