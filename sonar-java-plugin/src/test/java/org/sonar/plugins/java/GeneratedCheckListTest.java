@@ -50,7 +50,8 @@ class GeneratedCheckListTest {
     "AbstractXPathBasedCheck.java",
     "AbstractWebXmlXPathBasedCheck.java",
     "AbstractRedosCheck.java",
-    "AbstractRegexCheck.java");
+    "AbstractRegexCheck.java",
+    "AbstractComparisonMethodCheck.java");
 
   /**
    * Enforces that each check declared in list.
