@@ -1,0 +1,32 @@
+<h2>Why is this an issue?</h2>
+<p>When performing bitwise operations in comparisons, the relationship between the bit mask and the compared value determines what results are
+possible. If this relationship makes certain outcomes impossible, the comparison becomes a constant expression.</p>
+<p>For bitwise AND operations (<code>&amp;</code>), the result can only have bits set where the mask has bits set. For example, <code>x &amp; 1</code>
+can only produce values 0 or 1, never 2. Comparing this result to an impossible value like 2 creates dead code.</p>
+<p>For bitwise OR operations (<code>|</code>), the result always includes all bits set in the mask. If the compared value doesn't include all mask
+bits, the comparison can never be equal.</p>
+<p>These constant comparisons indicate logical errors in the code.</p>
+<h2>How to fix it</h2>
+<p>Review the bit mask and comparison value to ensure they are logically compatible. For AND operations, verify that the compared value only has bits
+that exist in the mask. For OR operations, verify that the compared value includes all bits from the mask.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+int x = getUserPermissions();
+if ((x &amp; 1) == 2) { // Noncompliant
+    grantAccess();
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+int x = getUserPermissions();
+if ((x &amp; 2) == 2) {
+    grantAccess();
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/op3.html">Bitwise and Bit Shift
+  Operators</a></li>
+</ul>
