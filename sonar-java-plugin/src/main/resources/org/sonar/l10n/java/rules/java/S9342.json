@@ -1,0 +1,23 @@
+{
+  "title": "Archive entries should not be empty",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "suspicious"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-9342",
+  "sqKey": "S9342",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "CLEAR"
+  }
+}
