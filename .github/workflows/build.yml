@@ -108,7 +108,8 @@ jobs:
       - name: Run ruling tests
         shell: bash # Set explicitly so Bash is used on Windows runners too.
         env:
-          MAVEN_OPTS: "-Xmx3g"
+          MAVEN_OPTS: "-Xmx3g -Dfile.encoding=UTF-8"
+          JAVA_TOOL_OPTIONS: ""
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
         run: |
           cd its/ruling
