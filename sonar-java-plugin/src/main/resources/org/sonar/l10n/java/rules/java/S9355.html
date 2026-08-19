@@ -1,0 +1,89 @@
+<p>A documentation comment must start with <code>/**</code>. A regular comment that contains Javadoc tags or HTML documentation tags, and that sits
+immediately above a declaration, is ignored by the Javadoc tool, so the following declaration stays undocumented.</p>
+<h2>Why is this an issue?</h2>
+<p>The Javadoc tool recognizes documentation comments that start with <code>/**</code> and that are placed immediately before a class, interface,
+constructor, method, field, or enum constant. A comment that starts with <code>/*</code> or <code>//</code> in that position is ordinary
+commentary.</p>
+<p>When such a comment contains Javadoc tags such as <code>@param</code>, <code>@return</code>, or <code>{@link}</code>, or HTML documentation tags
+such as <code>&lt;/code&gt;</code> or <code>&lt;/em&gt;</code>, it is almost always intended to be Javadoc. Because it is not a documentation comment,
+those tags never attach to the following declaration. Readers and generated API docs then miss the contract that the author already wrote.</p>
+<p>Start the comment with <code>/**</code> so the tags document the following declaration.</p>
+<h3>Exceptions</h3>
+<p>This rule does not raise an issue when:</p>
+<ul>
+  <li>The comment does not contain a Javadoc tag or one of the HTML documentation tags <code>&lt;/em&gt;</code>, <code>&lt;/b&gt;</code>,
+  <code>&lt;/a&gt;</code>, <code>&lt;/strong&gt;</code>, <code>&lt;/i&gt;</code>, <code>&lt;/pre&gt;</code>, or <code>&lt;/code&gt;</code>.</li>
+  <li>The comment does not immediately precede a documentable declaration.</li>
+  <li>The declaration already has a documentation comment.</li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class MathUtils {
+  /* // Noncompliant: not a documentation comment, so these tags are ignored
+   * Computes the factorial of a positive integer.
+   * @param n the number to compute factorial for
+   * @return the factorial of n
+   */
+  public long factorial(int n) {
+    return (n &lt;= 1) ? 1 : n * factorial(n - 1);
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class MathUtils {
+  /**
+   * Computes the factorial of a positive integer.
+   * @param n the number to compute factorial for
+   * @return the factorial of n
+   */
+  public long factorial(int n) {
+    return (n &lt;= 1) ? 1 : n * factorial(n - 1);
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+public class Names {
+  /* Returns the display name as &lt;code&gt;String&lt;/code&gt;. */ // Noncompliant: HTML documentation tags in a regular block comment
+  public String displayName() {
+    return name;
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+public class Names {
+  /** Returns the display name as &lt;code&gt;String&lt;/code&gt;. */
+  public String displayName() {
+    return name;
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+interface Repository {
+  // Loads the entity. {@link Entity} */ // Noncompliant: line comment is not started with /**
+  Entity load(String id);
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+interface Repository {
+  /** Loads the entity. {@link Entity} */
+  Entity load(String id);
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/21/docs/specs/javadoc/doc-comment-spec.html">Documentation Comment
+  Specification for the Standard Doclet</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S1176} - Public types, methods and fields (API) should be documented with Javadoc</li>
+  <li>{rule:java:S8491} - Dangling Javadoc comments should be removed</li>
+</ul>
+
