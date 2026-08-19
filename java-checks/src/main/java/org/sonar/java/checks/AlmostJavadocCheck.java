@@ -1,0 +1,120 @@
+/*
+ * SonarQube Java
+ * Copyright (C) SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * You can redistribute and/or modify this program under the terms of
+ * the Sonar Source-Available License Version 1, as published by SonarSource Sàrl.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+package org.sonar.java.checks;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+import org.sonar.check.Rule;
+import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.location.Position;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia.CommentKind;
+import org.sonar.plugins.java.api.tree.Tree;
+
+@Rule(key = "S9355")
+public class AlmostJavadocCheck extends IssuableSubscriptionVisitor {
+
+  static final String MESSAGE = "This comment contains Javadoc or HTML tags, but isn't started with a double asterisk (/**); is it meant to be Javadoc?";
+
+  private static final Pattern HAS_TAG = Pattern.compile(
+    "</(?:em|b|a|strong|i|pre|code)>"
+      + "|(?<!\\w)@(?:author|code|deprecated|docRoot|exception|inheritDoc|link|linkplain|literal"
+      + "|param|return|see|serial|serialData|serialField|since|snippet|throws|value|version)\\b");
+
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    List<Tree.Kind> kinds = new ArrayList<>(Arrays.asList(PublicApiChecker.apiKinds()));
+    kinds.add(Tree.Kind.ENUM_CONSTANT);
+    return kinds;
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (!isDocumentableDeclaration(tree)) {
+      return;
+    }
+    SyntaxToken firstToken = tree.firstToken();
+    if (firstToken == null) {
+      return;
+    }
+    List<SyntaxTrivia> trivias = firstToken.trivias();
+    if (trivias.stream().anyMatch(trivia -> trivia.isComment(CommentKind.JAVADOC, CommentKind.MARKDOWN))) {
+      return;
+    }
+    for (SyntaxTrivia trivia : trivias) {
+      if (isAlmostJavadoc(trivia)) {
+        reportAlmostJavadoc(trivia);
+      }
+    }
+  }
+
+  private static boolean isDocumentableDeclaration(Tree tree) {
+    if (tree.is(Tree.Kind.VARIABLE)) {
+      Tree parent = tree.parent();
+      return parent != null && parent.is(PublicApiChecker.classKinds());
+    }
+    return true;
+  }
+
+  private static boolean isAlmostJavadoc(SyntaxTrivia trivia) {
+    if (trivia.isComment(CommentKind.BLOCK)) {
+      return HAS_TAG.matcher(trivia.comment()).find();
+    }
+    return trivia.isComment(CommentKind.LINE)
+      && trivia.comment().endsWith("*/")
+      && HAS_TAG.matcher(trivia.comment()).find();
+  }
+
+  private void reportAlmostJavadoc(SyntaxTrivia trivia) {
+    Position start = trivia.range().start();
+    Position end = trivia.range().end();
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onRange(start.line(), start.columnOffset(), end.line(), end.columnOffset())
+      .withMessage(MESSAGE)
+      .withQuickFix(() -> convertToJavadoc(trivia))
+      .report();
+  }
+
+  private static JavaQuickFix convertToJavadoc(SyntaxTrivia trivia) {
+    Position start = trivia.range().start();
+    String text = trivia.comment();
+    JavaTextEdit edit;
+    if (trivia.isComment(CommentKind.LINE) && text.startsWith("// /**")) {
+      edit = JavaTextEdit.replaceTextSpan(firstCharacters(start, 2), "");
+    } else if (trivia.isComment(CommentKind.BLOCK)) {
+      edit = JavaTextEdit.insertAtPosition(start.line(), start.columnOffset() + 1, "*");
+    } else {
+      edit = JavaTextEdit.replaceTextSpan(firstCharacters(start, 2), "/**");
+    }
+    return JavaQuickFix.newQuickFix("Convert to Javadoc comment")
+      .addTextEdit(edit)
+      .build();
+  }
+
+  private static AnalyzerMessage.TextSpan firstCharacters(Position start, int length) {
+    return new AnalyzerMessage.TextSpan(start.line(), start.columnOffset(), start.line(), start.columnOffset() + length);
+  }
+}
