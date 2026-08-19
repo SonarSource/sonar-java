@@ -1,0 +1,23 @@
+{
+  "title": "equals() implementations should not compare mismatched members",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "suspicious"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9350",
+  "sqKey": "S9350",
+  "scope": "Main",
+  "quickfix": "targeted",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  }
+}

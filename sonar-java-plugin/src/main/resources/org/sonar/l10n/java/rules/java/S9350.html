@@ -1,0 +1,222 @@
+<p>Comparing a field or getter of <code>this</code> with a different field or getter of the other instance inside <code>equals</code> is almost always
+a copy-paste error. Replace the mismatched member with the corresponding one on the other instance.</p>
+<h2>Why is this an issue?</h2>
+<p>An <code>equals</code> implementation usually compares each piece of state on <code>this</code> with the same piece of state on the other object.
+When the two operands name different members of the enclosing type, objects that represent the same value can compare as unequal, and objects that
+differ can compare as equal. That defect is easy to miss in review because the surrounding method still looks like a normal field-by-field
+comparison.</p>
+<p>This rule raises an issue when <code>equals</code> compares two different instance fields, or two different instance getters, of the enclosing
+type. The comparison may use operators such as <code>==</code> or helpers such as <code>Objects.equals</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class User {
+  private String firstName;
+  private String lastName;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof User other) {
+      return Objects.equals(this.firstName, other.firstName)
+        &amp;&amp; Objects.equals(this.lastName, other.firstName); // Noncompliant: compares "lastName" with "firstName"
+    }
+    return false;
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class User {
+  private String firstName;
+  private String lastName;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof User other) {
+      return Objects.equals(this.firstName, other.firstName)
+        &amp;&amp; Objects.equals(this.lastName, other.lastName);
+    }
+    return false;
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+class Point {
+  private int x;
+  private int y;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Point that)) {
+      return false;
+    }
+    return x == that.x &amp;&amp; y == that.x; // Noncompliant: compares "y" with "x"
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+class Point {
+  private int x;
+  private int y;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Point that)) {
+      return false;
+    }
+    return x == that.x &amp;&amp; y == that.y;
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+class Box {
+  private Object key;
+  private Object value;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Box that)) {
+      return false;
+    }
+    return key.equals(that.key) &amp;&amp; value.equals(that.key); // Noncompliant: compares "value" with "key"
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+class Box {
+  private Object key;
+  private Object value;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Box that)) {
+      return false;
+    }
+    return key.equals(that.key) &amp;&amp; value.equals(that.value);
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="4" data-diff-type="noncompliant">
+class Person {
+  private String firstName;
+  private String lastName;
+
+  String getFirstName() {
+    return firstName;
+  }
+
+  String getLastName() {
+    return lastName;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Person that)) {
+      return false;
+    }
+    return getFirstName().equals(that.getFirstName())
+      &amp;&amp; getLastName().equals(that.getFirstName()); // Noncompliant: compares "getLastName()" with "getFirstName()"
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="4" data-diff-type="compliant">
+class Person {
+  private String firstName;
+  private String lastName;
+
+  String getFirstName() {
+    return firstName;
+  }
+
+  String getLastName() {
+    return lastName;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Person that)) {
+      return false;
+    }
+    return getFirstName().equals(that.getFirstName())
+      &amp;&amp; getLastName().equals(that.getLastName());
+  }
+}
+</pre>
+<h3>Exceptions</h3>
+<p>The rule does not raise an issue when both swapped pairings appear in the same statement, because that pattern can express order-independent
+equality. An undirected connection is the same in either direction:</p>
+<pre>
+class UndirectedEdge {
+  private String from;
+  private String to;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof UndirectedEdge that)) {
+      return false;
+    }
+    return (from.equals(that.from) &amp;&amp; to.equals(that.to))
+      || (from.equals(that.to) &amp;&amp; to.equals(that.from));
+  }
+}
+</pre>
+<p>The rule also does not raise an issue when a field is compared with a getter, because the two operands are different kinds of members:</p>
+<pre>
+class Named {
+  private String name;
+
+  String getName() {
+    return name;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Named that)) {
+      return false;
+    }
+    return this.name.equals(that.getName());
+  }
+}
+</pre>
+<p>When a mismatched comparison is intentional and those automatic exceptions do not apply, suppress the issue with a <code>NOSONAR</code> comment and
+a short rationale on that line. Keep both swapped pairings in one statement when you can; use <code>NOSONAR</code> when the reverse pairing lives in
+another statement, or when the domain truly requires a one-sided comparison:</p>
+<pre>
+class UndirectedEdge {
+  private String from;
+  private String to;
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof UndirectedEdge that)) {
+      return false;
+    }
+    if (from.equals(that.from) &amp;&amp; to.equals(that.to)) {
+      return true;
+    }
+    return from.equals(that.to) &amp;&amp; to.equals(that.from); // NOSONAR: undirected edge, reverse pairing is on the previous return
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)"><code>Object.equals</code>
+  Method</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Objects.html#equals(java.lang.Object,java.lang.Object)"><code>Objects.equals</code> Method</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S2162} - "equals" methods should be symmetric and work for subclasses</li>
+  <li>{rule:java:S1206} - "equals(Object)" and "hashCode()" should be overridden in pairs</li>
+  <li>{rule:java:S2160} - Subclasses that add fields to classes that override "equals" should also override "equals"</li>
+</ul>
+
