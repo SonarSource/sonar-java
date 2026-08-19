@@ -1,0 +1,33 @@
+<p>Using 32-bit signed integer types for timestamps can lead to serious reliability issues such as incorrect time representation,
+system failures, and the Year 2038 problem.</p>
+<h2>Why is this an issue?</h2>
+<p>A 32-bit signed integer can hold values from -2,147,483,648 to 2,147,483,647. While this might seem like a large range, it's insufficient for
+representing timestamps:</p>
+<ul>
+  <li><strong>Milliseconds since epoch</strong>: A 32-bit integer can only represent approximately 24.8 days of milliseconds. Any timestamp beyond
+  this range will overflow.</li>
+  <li><strong>Seconds since epoch</strong>: A 32-bit integer can represent about 68 years, covering dates from 1970 to 2038.</li>
+</ul>
+<p>When you cast a 32-bit integer to a 64-bit integer for use as a timestamp, you're not fixing the underlying problem &mdash; the value is already
+corrupted or limited by the 32-bit constraint before the cast happens.</p>
+<h3>Noncompliant code example</h3>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+int timestamp = 1234567890;
+long epochMillis = (long) timestamp; // Noncompliant
+Date date = new Date(epochMillis);
+</pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+long timestamp = 1234567890L;
+long epochMillis = timestamp;
+Date date = new Date(epochMillis);
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li><a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html">Oracle Java Documentation - Primitive Data Types</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.html#currentTimeMillis()">Oracle Java Documentation -
+  System.currentTimeMillis()</a></li>
+  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Instant.html">Oracle Java Documentation - Class Instant</a>
+  </li>
+</ul>

@@ -1,0 +1,21 @@
+{
+  "title": "Integer values should not be cast to long for use as timestamps",
+  "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-9346",
+  "sqKey": "S9346",
+  "scope": "All",
+  "quickfix": "unknown"
+}
