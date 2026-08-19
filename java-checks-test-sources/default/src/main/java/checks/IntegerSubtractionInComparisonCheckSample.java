@@ -89,6 +89,15 @@ class IntegerSubtractionInComparisonCheckSample {
     }
   }
 
+  static class NonIntCastCompareTo implements Comparable<NonIntCastCompareTo> {
+    private int value;
+
+    @Override
+    public int compareTo(NonIntCastCompareTo other) {
+      return (int) (short) (this.value - other.value); // Compliant - the subtraction is wrapped in a non-int cast
+    }
+  }
+
   static class AgeComparator implements Comparator<IntHolder> {
     @Override
     public int compare(IntHolder left, IntHolder right) {
@@ -127,6 +136,9 @@ class IntegerSubtractionInComparisonCheckSample {
   void lambdaSubtraction(List<IntHolder> list, List<TimestampedEvent> events) {
     list.sort((a, b) -> a.value - b.value); // Noncompliant {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
     events.sort((left, right) -> (int) (left.timestamp - right.timestamp)); // Noncompliant {{Subtracting numeric values in compare can overflow; use Long.compare instead.}}
+    list.sort((a, b) -> {
+      return a.value - b.value; // Noncompliant {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+    });
   }
 
   static class CorrectLongCompareTo implements Comparable<CorrectLongCompareTo> {
