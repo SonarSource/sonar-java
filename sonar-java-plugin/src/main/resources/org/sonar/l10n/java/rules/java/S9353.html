@@ -1,0 +1,69 @@
+<p>In Java regular expressions, <code>.</code> is a metacharacter that matches any single character, not a literal period.</p>
+<p>Passing <code>"."</code> to regex APIs such as <code>String.split</code>, <code>String.replaceAll</code>, <code>String.replaceFirst</code>,
+<code>String.matches</code>, <code>Pattern.compile</code>, or <code>Pattern.matches</code> therefore does not treat the argument as a dot separator.
+Developers almost always intended a literal <code>'.'</code>.</p>
+<h2>Why is this an issue?</h2>
+<p><code>String.split</code> and <code>Pattern.compile</code> interpret their pattern argument as a regular expression. A pattern that is exactly
+<code>"."</code> matches every character.</p>
+<p>This is especially surprising with <code>String.split</code>: <code>"archive.tar.gz".split(".")</code> matches each character as a delimiter.
+Trailing empty strings are discarded, so the result is an empty array rather than <code>["archive", "tar", "gz"]</code>.</p>
+<p>The same pattern is just as wrong with replacement APIs. <code>"report.2026.pdf".replaceAll(".", "x")</code> replaces every character with
+<code>x</code>, instead of replacing only the dots.</p>
+<p>To match a literal period, escape the metacharacter (<code>"\\."</code>), quote it (<code>Pattern.quote(".")</code>), or use a non-regex API such
+as <code>String.replace</code>.</p>
+<h3>Exceptions</h3>
+<p>This rule does not raise an issue when <code>Pattern.compile</code> is called with the <code>Pattern.LITERAL</code> flag, because that flag treats
+the pattern as a literal string.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+String filename = "archive.tar.gz";
+String[] parts = filename.split("."); // Noncompliant: matches every character instead of a literal '.'
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+String filename = "archive.tar.gz";
+String[] parts = filename.split("\\.");
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+String filename = "report.2026.pdf";
+String sanitized = filename.replaceAll(".", "_"); // Noncompliant: replaces every character
+String first = filename.replaceFirst(".", "_"); // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+String filename = "report.2026.pdf";
+String sanitized = filename.replace(".", "_");
+String first = filename.replaceFirst("\\.", "_");
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+Pattern dots = Pattern.compile("."); // Noncompliant: compiles a match-any-character pattern
+boolean dotted = Pattern.matches(".", "a"); // Noncompliant
+boolean oneChar = "a".matches("."); // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+Pattern dots = Pattern.compile("\\.");
+boolean dotted = Pattern.matches("\\.", "a");
+boolean oneChar = "a".matches("\\.");
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html#sum">Summary of
+  regular-expression constructs</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html#split(java.lang.String)"><code>String.split</code>
+  method</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/regex/Pattern.html#quote(java.lang.String)"><code>Pattern.quote</code>
+  method</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S2639} - Inappropriate regular expressions should not be used</li>
+  <li>{rule:java:S5361} - "String#replace" should be preferred to "String#replaceAll"</li>
+</ul>
+
