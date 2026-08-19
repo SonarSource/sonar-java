@@ -24,6 +24,7 @@ import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -58,23 +59,62 @@ public class IncompatibleBitMaskCheck extends IssuableSubscriptionVisitor {
     }
     if (isIntOperation(bitwiseOp, possibleConstant)) {
       mask = (long) mask.intValue();
+      if (hasLongLiteral(possibleConstant)) {
+        // int bitwise result is sign-extended to long for comparison;
+        // if the long value is outside int range, the comparison is always incompatible
+        if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+          reportIncompatible(comparison);
+          return;
+        }
+      }
       value = (long) value.intValue();
     }
     if (isIncompatible(unwrapped.kind(), mask, value)) {
-      String message = comparison.is(Kind.EQUAL_TO)
-        ? "This comparison is always false."
-        : "This comparison is always true.";
-      reportIssue(comparison.operatorToken(), message);
+      reportIncompatible(comparison);
     }
+  }
+
+  private void reportIncompatible(BinaryExpressionTree comparison) {
+    String message = comparison.is(Kind.EQUAL_TO)
+      ? "This comparison is always false."
+      : "This comparison is always true.";
+    reportIssue(comparison.operatorToken(), message);
   }
 
   @Nullable
   private static Long signExtendedLongValue(ExpressionTree operand) {
-    Long value = LiteralUtils.longLiteralValue(operand);
+    Long value = parseLongLiteral(operand);
     if (value != null && isIntLiteral(operand)) {
       value = (long) value.intValue();
     }
     return value;
+  }
+
+  @Nullable
+  private static Long parseLongLiteral(ExpressionTree expr) {
+    ExpressionTree unwrapped = ExpressionUtils.skipParentheses(expr);
+    Long value = LiteralUtils.longLiteralValue(unwrapped);
+    if (value != null) {
+      return value;
+    }
+    // Handle unsigned hex long literals above Long.MAX_VALUE (e.g. 0xFFFF_FFFF_FFFF_FFFEL)
+    ExpressionTree literal = unwrapped;
+    if (literal.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
+      literal = ((UnaryExpressionTree) literal).expression();
+    }
+    if (literal.is(Kind.LONG_LITERAL)) {
+      String text = ((LiteralTree) literal).value();
+      text = text.substring(0, text.length() - 1).replace("_", "");
+      if (text.startsWith("0x") || text.startsWith("0X")) {
+        try {
+          long parsed = Long.parseUnsignedLong(text.substring(2), 16);
+          return unwrapped.is(Kind.UNARY_MINUS) ? -parsed : parsed;
+        } catch (NumberFormatException e) {
+          return null;
+        }
+      }
+    }
+    return null;
   }
 
   @Nullable

@@ -221,4 +221,36 @@ class IncompatibleBitMaskCheckSample {
     // Long AND mask: 0xFFL cannot produce value beyond 0xFF
     if ((x & 0xFFL) == 0x10000000000L) {} // Noncompliant {{This comparison is always false.}}
   }
+
+  void parenthesizedLiterals(int x) {
+    // Parenthesized mask literal
+    if ((x & (1)) == 2) {} // Noncompliant {{This comparison is always false.}}
+
+    // Parenthesized comparison value
+    if ((x & 1) == (2)) {} // Noncompliant {{This comparison is always false.}}
+
+    // Parenthesized hex mask and value
+    if ((x & (0xFF)) == (0x1FF)) {} // Noncompliant {{This comparison is always false.}}
+
+    // Compliant with parenthesized literals
+    if ((x & (3)) == (2)) {} // Compliant
+  }
+
+  void intOperationWithLongComparisonValue(int intVar) {
+    // int bitwise result is promoted to long for comparison with long literal
+    // (intVar & 0xFFFFFFFF) is int -1, promoted to long -1L, which != 0xFFFFFFFFL (4294967295)
+    if ((intVar & 0xFFFFFFFF) == 0xFFFFFFFFL) {} // Noncompliant {{This comparison is always false.}}
+
+    // != variant
+    if ((intVar & 0xFFFFFFFF) != 0xFFFFFFFFL) {} // Noncompliant {{This comparison is always true.}}
+  }
+
+  void unsignedHighBitLongMasks(long flags) {
+    // 0xFFFF_FFFF_FFFF_FFFEL has all bits set except LSB
+    // AND with that mask clears bit 0 only, so result can never be -1L (all bits set)
+    if ((flags & 0xFFFF_FFFF_FFFF_FFFEL) == -1L) {} // Noncompliant {{This comparison is always false.}}
+
+    // 0x8000_0000_0000_0000L is Long.MIN_VALUE, AND with it can produce 0L
+    if ((flags & 0x8000_0000_0000_0000L) == 0L) {} // Compliant
+  }
 }
