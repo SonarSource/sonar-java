@@ -1,0 +1,10 @@
+{
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/AbstractPathSpec.java": [
+29,
+34
+],
+"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+119,
+119
+]
+}
