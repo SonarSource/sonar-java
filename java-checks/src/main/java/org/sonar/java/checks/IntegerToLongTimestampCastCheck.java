@@ -82,6 +82,9 @@ public class IntegerToLongTimestampCastCheck extends AbstractMethodDetection {
     if (arg.is(Tree.Kind.TYPE_CAST)) {
       arg = ((TypeCastTree) arg).expression();
     }
+    if (arg.is(Tree.Kind.INT_LITERAL)) {
+      return;
+    }
     Type type = arg.symbolType();
     if (type.isUnknown()) {
       return;

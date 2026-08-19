@@ -13,14 +13,14 @@ corrupted or limited by the 32-bit constraint before the cast happens.</p>
 <h3>Noncompliant code example</h3>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 int timestamp = 1234567890;
-long epochMillis = (long) timestamp; // Noncompliant
-Date date = new Date(epochMillis);
+Date date = new Date(timestamp);          // Noncompliant — int implicitly widened
+Date date2 = new Date((long) timestamp);  // Noncompliant — cast doesn't fix overflow
 </pre>
 <h3>Compliant solution</h3>
 <pre data-diff-id="1" data-diff-type="compliant">
 long timestamp = 1234567890L;
-long epochMillis = timestamp;
-Date date = new Date(epochMillis);
+Date date = new Date(timestamp);
+Date date2 = new Date(timestamp);
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>

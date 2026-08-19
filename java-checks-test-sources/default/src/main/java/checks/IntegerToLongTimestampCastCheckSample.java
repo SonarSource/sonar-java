@@ -13,7 +13,7 @@ class IntegerToLongTimestampCastCheckSample {
   void noncompliantImplicitWidening() {
     int intVar = 1000;
     new Date(intVar); // Noncompliant {{Use a "long" value to represent this timestamp.}}
-//          ^^^^^^
+//           ^^^^^^
     Instant.ofEpochSecond(intVar); // Noncompliant
     Instant.ofEpochMilli(intVar); // Noncompliant
     new Timestamp(intVar); // Noncompliant
@@ -72,8 +72,8 @@ class IntegerToLongTimestampCastCheckSample {
     new Date((intVar)); // Noncompliant
   }
 
-  void noncompliantIntLiteral() {
-    new Date(0); // Noncompliant
+  void compliantIntLiteral() {
+    new Date(0);
   }
 
   void compliantLongVariable() {
