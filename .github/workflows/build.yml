@@ -112,7 +112,12 @@ jobs:
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
         run: |
           cd its/ruling
-          mvn package ${MAVEN_OUTPUT_ARGS} "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -Dparallel=methods -DuseUnlimitedThreads=true
+          extra_args=()
+          # Nested Maven builds share ~/.m2; Windows denies concurrent writes to *.lastUpdated.
+          if [[ "${RUNNER_OS}" != "Windows" ]]; then
+            extra_args+=(-Dparallel=methods -DuseUnlimitedThreads=true)
+          fi
+          mvn package ${MAVEN_OUTPUT_ARGS} "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dmaven.test.redirectTestOutputToFile=false "${extra_args[@]}"
       - name: Upload Actual Results On Failure
         if: failure()
         uses: ./.github/actions/upload-actual
