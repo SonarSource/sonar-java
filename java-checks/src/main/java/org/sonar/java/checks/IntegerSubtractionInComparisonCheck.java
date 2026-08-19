@@ -16,10 +16,16 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ComparisonMethodUtils;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -28,27 +34,40 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 @Rule(key = "S9354")
-public class IntegerSubtractionInComparisonCheck extends AbstractComparisonMethodCheck {
+public class IntegerSubtractionInComparisonCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Subtracting numeric values in %s can overflow; use %s instead.";
 
   @Override
-  void visitComparisonMethod(MethodTree methodTree) {
-    methodTree.block().accept(new ComparisonResultVisitor(methodTree.simpleName().name()));
+  public List<Tree.Kind> nodesToVisit() {
+    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
-  void visitComparatorLambda(LambdaExpressionTree lambda) {
-    Tree body = lambda.body();
-    ComparisonResultVisitor visitor = new ComparisonResultVisitor("compare");
-    if (body.is(Tree.Kind.BLOCK)) {
-      body.accept(visitor);
+  public void visitNode(Tree tree) {
+    if (context.getSemanticModel() == null) {
+      return;
+    }
+    if (tree.is(Tree.Kind.METHOD)) {
+      MethodTree methodTree = (MethodTree) tree;
+      if (ComparisonMethodUtils.isCompareMethod(methodTree)) {
+        methodTree.block().accept(new ComparisonResultVisitor(methodTree.simpleName().name()));
+      }
     } else {
-      visitor.checkComparisonResult((ExpressionTree) body);
+      LambdaExpressionTree lambda = (LambdaExpressionTree) tree;
+      if (ComparisonMethodUtils.isComparatorLambda(lambda)) {
+        Tree body = lambda.body();
+        ComparisonResultVisitor visitor = new ComparisonResultVisitor("compare");
+        if (body.is(Tree.Kind.BLOCK)) {
+          body.accept(visitor);
+        } else {
+          visitor.checkComparisonResult((ExpressionTree) body);
+        }
+      }
     }
   }
 
-  private class ComparisonResultVisitor extends IgnoreNestedTypesVisitor {
+  private class ComparisonResultVisitor extends BaseTreeVisitor {
 
     private final String enclosingMethodName;
 
@@ -73,6 +92,16 @@ public class IntegerSubtractionInComparisonCheck extends AbstractComparisonMetho
       if (replacement != null) {
         reportIssue(((BinaryExpressionTree) unwrapped).operatorToken(), String.format(MESSAGE, enclosingMethodName, replacement));
       }
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // Do not visit inner classes
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree tree) {
+      // Do not visit nested lambdas
     }
   }
 
