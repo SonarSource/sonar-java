@@ -95,7 +95,8 @@ public final class JavaFileTypeClassifier {
    * <ul>
    *   <li>Directory segments: {@code test}, {@code tests}, {@code testing}, {@code Test},
    *       {@code Tests}, {@code __tests__}</li>
-   *   <li>Maven integration-test source trees: {@code src/it/java}, {@code src/its/java}</li>
+   *   <li>Maven integration-test source trees: {@code src/it/java}, {@code src/its/java},
+   *       {@code src/IT/java}, {@code src/ITS/java}</li>
    *   <li>Filename suffixes: {@code Test}, {@code Tests}, {@code TestCase}, {@code IT},
    *       {@code ITCase}, {@code Spec}, {@code Specs}</li>
    * </ul>
@@ -111,6 +112,8 @@ public final class JavaFileTypeClassifier {
     // Maven integration test source trees
     "**/it/java/**",
     "**/its/java/**",
+    "**/IT/java/**",
+    "**/ITS/java/**",
     // Filename suffix patterns
     "**/*Test.java",
     "**/*Tests.java",

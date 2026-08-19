@@ -135,6 +135,8 @@ class JavaFileTypeClassifierTest {
     assertIsTestFile(false, "Foo.java");
     assertIsTestFile(false, "FooService.java");
     assertIsTestFile(false, "FooController.java");
+    assertIsTestFile(false, "TestUtils.java");
+    assertIsTestFile(false, "TestHelper.java");
   }
 
   // -------------------------------------------------------------------------
@@ -147,28 +149,18 @@ class JavaFileTypeClassifierTest {
   }
 
   @Test
-  void isTestFile_recognizes_mavenItPath() {
+  void isTestFile_recognizes_mavenITPaths() {
     assertIsTestFile(true, "src/it/java/Foo.java");
-  }
-
-  @Test
-  void isTestFile_recognizes_mavenItsPath() {
     assertIsTestFile(true, "src/its/java/Foo.java");
+    assertIsTestFile(true, "src/IT/java/Foo.java");
+    assertIsTestFile(true, "src/ITS/java/Foo.java");
   }
 
   @Test
-  void isTestFile_recognizes_testDirectorySegment() {
+  void isTestFile_recognizes_testDirectorySegments() {
     assertIsTestFile(true, "src/test/Foo.java");
     assertIsTestFile(true, "modules/core/test/Foo.java");
-  }
-
-  @Test
-  void isTestFile_recognizes_testsDirectorySegment() {
     assertIsTestFile(true, "src/tests/Foo.java");
-  }
-
-  @Test
-  void isTestFile_recognizes_testingDirectorySegment() {
     assertIsTestFile(true, "src/testing/Foo.java");
   }
 
