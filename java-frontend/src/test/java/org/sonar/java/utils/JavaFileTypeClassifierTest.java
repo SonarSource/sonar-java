@@ -19,17 +19,25 @@ package org.sonar.java.utils;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.config.Configuration;
 import org.sonar.java.TestUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.java.testing.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.scanner.plugin.api.impl.config.MapSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class JavaFileTypeClassifierTest {
+
+  /**
+   * A {@link Configuration} that does not declare {@code sonar.tests}, so the path/naming
+   * heuristic in {@link org.sonarsource.analyzer.commons.appsec.TestFileClassifier} is active.
+   */
+  private static final Configuration NO_SONAR_TESTS_CONFIG = new MapSettings().asConfig();
 
   // -------------------------------------------------------------------------
   // isPlatformTestFile
@@ -45,80 +53,6 @@ class JavaFileTypeClassifierTest {
   void isPlatformTestFile_returnsFalse_forMainType() {
     JavaFileScannerContext context = contextWithInputFile(TestUtils.emptyInputFile("Foo.java", InputFile.Type.MAIN));
     assertThat(JavaFileTypeClassifier.isPlatformTestFile(context)).isFalse();
-  }
-
-  // -------------------------------------------------------------------------
-  // hasTestNamingConvention
-  // -------------------------------------------------------------------------
-
-  @Test
-  void hasTestNamingConvention_recognizesSuffixes() {
-    assertNamingConvention(true, "FooTest.java");
-    assertNamingConvention(true, "FooTests.java");
-    assertNamingConvention(true, "FooTestCase.java");
-    assertNamingConvention(true, "FooIT.java");
-    assertNamingConvention(true, "FooITCase.java");
-    assertNamingConvention(true, "FooSpec.java");
-    assertNamingConvention(true, "FooSpecs.java");
-  }
-
-  @Test
-  void hasTestNamingConvention_returnsFalse_forProductionNames() {
-    assertNamingConvention(false, "Foo.java");
-    assertNamingConvention(false, "FooService.java");
-    assertNamingConvention(false, "FooController.java");
-    // Lower-case 'test' in the middle is not a match
-    assertNamingConvention(false, "MyTestedCode.java");
-    // Prefix-only conventions are not recognized
-    assertNamingConvention(false, "TestFoo.java");
-    assertNamingConvention(false, "ITFoo.java");
-  }
-
-  private void assertNamingConvention(boolean expected, String filename) {
-    JavaFileScannerContext context = contextWithInputFile(TestUtils.emptyInputFile(filename, InputFile.Type.MAIN));
-    assertThat(JavaFileTypeClassifier.hasTestNamingConvention(context))
-      .as("Expected hasTestNamingConvention=%s for '%s'", expected, filename)
-      .isEqualTo(expected);
-  }
-
-  // -------------------------------------------------------------------------
-  // hasTestPathSegment
-  // -------------------------------------------------------------------------
-
-  @Test
-  void hasTestPathSegment_returnsTrue_forItSegment() {
-    assertPathSegment(true, "src/it/java/Foo.java");
-  }
-
-  @Test
-  void hasTestPathSegment_returnsTrue_forItsSegment() {
-    assertPathSegment(true, "src/its/java/Foo.java");
-  }
-
-  @Test
-  void hasTestPathSegment_isCaseInsensitive() {
-    assertPathSegment(true, "src/IT/java/Foo.java");
-    assertPathSegment(true, "src/ITS/java/Foo.java");
-  }
-
-  @Test
-  void hasTestPathSegment_returnsFalse_forMainPath() {
-    assertPathSegment(false, "src/main/java/Foo.java");
-    assertPathSegment(false, "src/test/java/Foo.java");
-  }
-
-  @Test
-  void hasTestPathSegment_returnsFalse_whenSegmentIsSubstring() {
-    // "itself" or "iteration" should not match — only exact segment
-    assertPathSegment(false, "src/itself/java/Foo.java");
-    assertPathSegment(false, "src/iteration/java/Foo.java");
-  }
-
-  private void assertPathSegment(boolean expected, String relativePath) {
-    JavaFileScannerContext context = contextWithInputFile(TestUtils.emptyInputFile(relativePath, InputFile.Type.MAIN));
-    assertThat(JavaFileTypeClassifier.hasTestPathSegment(context))
-      .as("Expected hasTestPathSegment=%s for '%s'", expected, relativePath)
-      .isEqualTo(expected);
   }
 
   // -------------------------------------------------------------------------
@@ -171,43 +105,144 @@ class JavaFileTypeClassifierTest {
   }
 
   // -------------------------------------------------------------------------
-  // isTestFile (combined signal)
+  // isTestFile — platform signal
   // -------------------------------------------------------------------------
 
   @Test
   void isTestFile_returnsTrue_whenPlatformSaysTest() {
-    JavaFileScannerContext context = contextWithInputFile(TestUtils.emptyInputFile("Foo.java", InputFile.Type.TEST));
+    JavaFileScannerContext context = contextWithInputFileAndConfig(
+      TestUtils.emptyInputFile("Foo.java", InputFile.Type.TEST), NO_SONAR_TESTS_CONFIG);
+    assertThat(JavaFileTypeClassifier.isTestFile(context)).isTrue();
+  }
+
+  // -------------------------------------------------------------------------
+  // isTestFile — filename suffix conventions
+  // -------------------------------------------------------------------------
+
+  @Test
+  void isTestFile_recognizes_testFileSuffixes() {
+    assertIsTestFile(true, "FooTest.java");
+    assertIsTestFile(true, "FooTests.java");
+    assertIsTestFile(true, "FooTestCase.java");
+    assertIsTestFile(true, "FooIT.java");
+    assertIsTestFile(true, "FooITCase.java");
+    assertIsTestFile(true, "FooSpec.java");
+    assertIsTestFile(true, "FooSpecs.java");
+  }
+
+  @Test
+  void isTestFile_returnsFalse_forProductionNames() {
+    assertIsTestFile(false, "Foo.java");
+    assertIsTestFile(false, "FooService.java");
+    assertIsTestFile(false, "FooController.java");
+    assertIsTestFile(false, "TestUtils.java");
+    assertIsTestFile(false, "TestHelper.java");
+  }
+
+  // -------------------------------------------------------------------------
+  // isTestFile — path/directory segment conventions
+  // -------------------------------------------------------------------------
+
+  @Test
+  void isTestFile_recognizes_mavenTestPath() {
+    assertIsTestFile(true, "src/test/java/Foo.java");
+  }
+
+  @Test
+  void isTestFile_recognizes_mavenITPaths() {
+    assertIsTestFile(true, "src/it/java/Foo.java");
+    assertIsTestFile(true, "src/its/java/Foo.java");
+    assertIsTestFile(true, "src/IT/java/Foo.java");
+    assertIsTestFile(true, "src/ITS/java/Foo.java");
+  }
+
+  @Test
+  void isTestFile_recognizes_testDirectorySegments() {
+    assertIsTestFile(true, "src/test/Foo.java");
+    assertIsTestFile(true, "modules/core/test/Foo.java");
+    assertIsTestFile(true, "src/tests/Foo.java");
+    assertIsTestFile(true, "src/testing/Foo.java");
+  }
+
+  @Test
+  void isTestFile_returnsFalse_forProductionPath() {
+    assertIsTestFile(false, "src/main/java/Foo.java");
+  }
+
+  // -------------------------------------------------------------------------
+  // isTestFile — sonar.tests configured: path/naming heuristic disabled
+  // -------------------------------------------------------------------------
+
+  @Test
+  void isTestFile_withSonarTestsConfigured_ignoresNamingAndPathSignals() {
+    // When sonar.tests is set, TestFileClassifier suppresses the heuristic because
+    // the platform already classifies test files as InputFile.Type.TEST.
+    // Names and paths that would otherwise trigger the heuristic must return false.
+    var config = new MapSettings().setProperty("sonar.tests", "src/test/java").asConfig();
+
+    assertIsTestFileWithConfig(false, "FooTest.java", config);
+    assertIsTestFileWithConfig(false, "src/test/java/Foo.java", config);
+    assertIsTestFileWithConfig(false, "src/it/java/Foo.java", config);
+  }
+
+  @Test
+  void isTestFile_withSonarTestsConfigured_platformTypeStillApplies() {
+    var config = new MapSettings().setProperty("sonar.tests", "src/test/java").asConfig();
+
+    // InputFile.Type.TEST is checked before the heuristic and is always authoritative.
+    var context = contextWithInputFileAndConfig(
+      TestUtils.emptyInputFile("Foo.java", InputFile.Type.TEST), config);
     assertThat(JavaFileTypeClassifier.isTestFile(context)).isTrue();
   }
 
   @Test
-  void isTestFile_returnsTrue_whenPathSegmentMatches_evenIfPlatformSaysMain() {
-    JavaFileScannerContext context = contextWithInputFile(TestUtils.emptyInputFile("src/it/java/Foo.java", InputFile.Type.MAIN));
-    assertThat(JavaFileTypeClassifier.isTestFile(context)).isTrue();
+  void isTestFile_withSonarTestsConfigured_annotationSignalStillApplies() {
+    // hasTestFrameworkAnnotation() reads the AST, not the configuration —
+    // it must keep working regardless of whether sonar.tests is set.
+    assertAnnotationSignal(true, "src/test/files/utils/SampleWithRunWith.java");
   }
 
-  @Test
-  void isTestFile_returnsTrue_whenNamingMatches_evenIfPlatformSaysMain() {
-    JavaFileScannerContext context = contextWithInputFile(TestUtils.emptyInputFile("FooTest.java", InputFile.Type.MAIN));
-    // fileParsed() not set → defaults to false (Mockito default for boolean), no AST signal
-    assertThat(JavaFileTypeClassifier.isTestFile(context)).isTrue();
-  }
+  // -------------------------------------------------------------------------
+  // isTestFile — no signal
+  // -------------------------------------------------------------------------
 
   @Test
   void isTestFile_returnsFalse_whenNoSignal() {
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getInputFile()).thenReturn(TestUtils.emptyInputFile("Foo.java", InputFile.Type.MAIN));
+    when(context.getConfiguration()).thenReturn(NO_SONAR_TESTS_CONFIG);
     when(context.fileParsed()).thenReturn(false);
     assertThat(JavaFileTypeClassifier.isTestFile(context)).isFalse();
   }
 
   // -------------------------------------------------------------------------
-  // Helper
+  // Helpers
   // -------------------------------------------------------------------------
 
+  private static void assertIsTestFileWithConfig(boolean expected, String filename, Configuration config) {
+    JavaFileScannerContext context = contextWithInputFileAndConfig(
+      TestUtils.emptyInputFile(filename, InputFile.Type.MAIN), config);
+    assertThat(JavaFileTypeClassifier.isTestFile(context))
+      .as("Expected isTestFile=%s for '%s' with sonar.tests config", expected, filename)
+      .isEqualTo(expected);
+  }
+
+  private static void assertIsTestFile(boolean expected, String filename) {
+    JavaFileScannerContext context = contextWithInputFileAndConfig(
+      TestUtils.emptyInputFile(filename, InputFile.Type.MAIN), NO_SONAR_TESTS_CONFIG);
+    assertThat(JavaFileTypeClassifier.isTestFile(context))
+      .as("Expected isTestFile=%s for '%s'", expected, filename)
+      .isEqualTo(expected);
+  }
+
   private static JavaFileScannerContext contextWithInputFile(InputFile inputFile) {
+    return contextWithInputFileAndConfig(inputFile, NO_SONAR_TESTS_CONFIG);
+  }
+
+  private static JavaFileScannerContext contextWithInputFileAndConfig(InputFile inputFile, Configuration config) {
     JavaFileScannerContext context = mock(JavaFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getConfiguration()).thenReturn(config);
     return context;
   }
 }

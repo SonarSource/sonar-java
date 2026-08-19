@@ -17,14 +17,16 @@
 package org.sonar.java.utils;
 
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
+import java.util.concurrent.atomic.AtomicReference;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.config.Configuration;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonarsource.analyzer.commons.appsec.TestFileClassifier;
 
 /**
  * Enriches test scope determination beyond the platform's {@link InputFile.Type}.
@@ -36,13 +38,18 @@ import org.sonar.plugins.java.api.tree.Tree;
  * <p>This classifier combines three signals:
  * <ol>
  *   <li>Platform truth: {@link InputFile#type()} from the Sonar scanner</li>
- *   <li>Naming conventions: file name patterns like {@code FooTest}, {@code FooIT}, {@code FooSpec}</li>
- *   <li>AST annotations: class-level test framework annotations ({@code @RunWith}, {@code @SpringBootTest}, etc.)</li>
+ *   <li>Path and naming heuristics: delegated to {@link TestFileClassifier} from
+ *       sonar-analyzer-commons, extended with Java-specific path conventions</li>
+ *   <li>AST annotations: class-level test framework annotations ({@code @RunWith},
+ *       {@code @SpringBootTest}, etc.)</li>
  * </ol>
  *
- * <p>A file is considered a test file if <em>any</em> signal indicates it — the platform type
+ * <p>A file is considered a test file if <em>any</em> signal indicates it. The platform type
  * takes priority when {@code TEST}, but a {@code MAIN}-typed file can be upgraded to test scope
- * by the naming or annotation signals.
+ * by the path, naming, or annotation signals.
+ *
+ * <p>The path/naming heuristic is only applied when {@code sonar.tests} is not configured; if it
+ * is configured the platform already classifies test files as {@link InputFile.Type#TEST}.
  *
  * <p>Usage example in a check's {@code scanFile} method:
  * <pre>{@code
@@ -81,19 +88,52 @@ public final class JavaFileTypeClassifier {
   );
 
   /**
-   * Path substrings that indicate a file lives in an integration-test source tree,
-   * following the Maven convention of {@code src/it/java} or {@code src/its/java}.
+   * {@link org.sonar.api.utils.WildcardPattern}-compatible path patterns for test file detection,
+   * passed to {@link TestFileClassifier#of(Configuration, String...)}.
+   *
+   * <p>Covers:
+   * <ul>
+   *   <li>Directory segments: {@code test}, {@code tests}, {@code testing}, {@code Test},
+   *       {@code Tests}, {@code __tests__}</li>
+   *   <li>Maven integration-test source trees: {@code src/it/java}, {@code src/its/java},
+   *       {@code src/IT/java}, {@code src/ITS/java}</li>
+   *   <li>Filename suffixes: {@code Test}, {@code Tests}, {@code TestCase}, {@code IT},
+   *       {@code ITCase}, {@code Spec}, {@code Specs}</li>
+   * </ul>
    */
-  private static final List<String> TEST_PATH_SUBPATHS = List.of("src/it/java", "src/its/java");
+  private static final String[] JAVA_TEST_PATTERNS = {
+    // Directory segment patterns (superset of commons defaults + testing + Java-specific)
+    "**/Test/**",
+    "**/Tests/**",
+    "**/test/**",
+    "**/tests/**",
+    "**/testing/**",
+    "**/__tests__/**",
+    // Maven integration test source trees
+    "**/it/java/**",
+    "**/its/java/**",
+    "**/IT/java/**",
+    "**/ITS/java/**",
+    // Filename suffix patterns
+    "**/*Test.java",
+    "**/*Tests.java",
+    "**/*TestCase.java",
+    "**/*IT.java",
+    "**/*ITCase.java",
+    "**/*Spec.java",
+    "**/*Specs.java"
+  };
 
   /**
-   * Matches file names (without {@code .java} extension) that follow standard test naming conventions
-   * by suffix: {@code Test}, {@code Tests}, {@code TestCase}, {@code IT}, {@code ITCase}, {@code Spec}, {@code Specs}
-   * (e.g. {@code FooTest}, {@code FooSpec}, {@code FooIT}).
+   * Cached {@link TestFileClassifier} for the most recently seen {@link Configuration}.
+   * In practice there is exactly one {@link Configuration} per analysis run, so a single
+   * cached entry avoids recompiling WildcardPatterns for every analyzed file.
+   * The {@link AtomicReference} ensures the config+classifier pair is always observed
+   * consistently. A race on simultaneous updates is benign: both threads produce an
+   * identical classifier for the same config.
    */
-  private static final Pattern TEST_NAME_PATTERN = Pattern.compile(
-    "^[A-Z]\\w*(Test|Tests|TestCase|IT|ITCase|Spec|Specs)$"
-  );
+  private static final AtomicReference<Map.Entry<Configuration, TestFileClassifier>> CLASSIFIER_REF =
+    new AtomicReference<>();
 
   private JavaFileTypeClassifier() {
     // utility class
@@ -101,14 +141,13 @@ public final class JavaFileTypeClassifier {
 
   /**
    * Returns {@code true} if the file should be treated as test code.
-   * Combines all three signals (platform type, naming, AST annotations) with OR semantics.
+   * Combines all signals (platform type, path/naming heuristics, AST annotations) with OR semantics.
    *
    * @param context the current file scanner context
    */
   public static boolean isTestFile(JavaFileScannerContext context) {
     return isPlatformTestFile(context)
-      || hasTestNamingConvention(context)
-      || hasTestPathSegment(context)
+      || getClassifier(context.getConfiguration()).looksLikeTestFile(context.getInputFile())
       || hasTestFrameworkAnnotation(context);
   }
 
@@ -120,32 +159,6 @@ public final class JavaFileTypeClassifier {
    */
   static boolean isPlatformTestFile(JavaFileScannerContext context) {
     return context.getInputFile().type() == InputFile.Type.TEST;
-  }
-
-  /**
-   * Returns {@code true} if the file name (without {@code .java} extension) matches
-   * {@link #TEST_NAME_PATTERN}.
-   *
-   * @param context the current file scanner context
-   */
-  static boolean hasTestNamingConvention(JavaFileScannerContext context) {
-    String filename = context.getInputFile().filename();
-    String baseName = filename.endsWith(".java") ? filename.substring(0, filename.length() - 5) : filename;
-    return TEST_NAME_PATTERN.matcher(baseName).matches();
-  }
-
-  /**
-   * Returns {@code true} if the file's URI path contains a known integration-test source tree
-   * substring: {@code src/it/java} or {@code src/its/java}.
-   *
-   * <p>This covers the Maven convention of placing integration tests under
-   * {@code src/it/java} or {@code src/its/java}.
-   *
-   * @param context the current file scanner context
-   */
-  static boolean hasTestPathSegment(JavaFileScannerContext context) {
-    String path = context.getInputFile().uri().getPath().toLowerCase(Locale.ROOT);
-    return TEST_PATH_SUBPATHS.stream().anyMatch(path::contains);
   }
 
   /**
@@ -175,5 +188,15 @@ public final class JavaFileTypeClassifier {
     return metadata.annotations().stream()
       .map(ann -> ann.symbol().type().fullyQualifiedName())
       .anyMatch(fqn -> TEST_ANNOTATION_PACKAGE_PREFIXES.stream().anyMatch(fqn::startsWith));
+  }
+
+  private static TestFileClassifier getClassifier(Configuration config) {
+    var entry = CLASSIFIER_REF.get();
+    if (entry == null || entry.getKey() != config) {
+      var fresh = Map.entry(config, TestFileClassifier.of(config, JAVA_TEST_PATTERNS));
+      CLASSIFIER_REF.compareAndSet(entry, fresh);
+      entry = CLASSIFIER_REF.get();
+    }
+    return entry.getValue();
   }
 }
