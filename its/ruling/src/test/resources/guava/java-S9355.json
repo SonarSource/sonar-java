@@ -1,0 +1,15 @@
+{
+"com.google.guava:guava:src/com/google/common/collect/ImmutableEnumSet.java": [
+46
+],
+"com.google.guava:guava:src/com/google/common/collect/LinkedListMultimap.java": [
+105
+],
+"com.google.guava:guava:src/com/google/common/net/PercentEscaper.java": [
+136,
+153
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractIdleService.java": [
+39
+]
+}
