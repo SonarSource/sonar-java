@@ -391,6 +391,8 @@ jobs:
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
       - name: Run Maven
+        env:
+          JAVA_TOOL_OPTIONS: ""
         run: mvn clean verify --batch-mode
 
   promote:
