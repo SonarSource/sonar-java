@@ -58,8 +58,8 @@ jobs:
         item:
           - { runner: sonar-m-public, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
           - { runner: sonar-m-public, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
-          - { runner: github-windows-latest-m, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
-          - { runner: github-windows-latest-m, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
+          - { runner: warp-custom-windows-2022-m, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
+          - { runner: warp-custom-windows-2022-m, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
     name: Ruling QA
     needs:
       - build
@@ -363,7 +363,7 @@ jobs:
   qa-os-win:
     name: Build and Unit Test on Windows
     # No dependency on build step, because we do not need the build number.
-    runs-on: github-windows-latest-m
+    runs-on: warp-custom-windows-2022-m
     permissions:
       id-token: write  # Required for Vault OIDC authentication
       contents: write  # Required for repository access and tagging
