@@ -390,9 +390,11 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     verify(writeCache).write(anyString(), dataCaptor.capture());
     String serialized = new String(dataCaptor.getValue(), StandardCharsets.UTF_8);
 
+    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
     assertThat(serialized)
-      .contains("primaryContext:org.springframework.context.ApplicationContext")
-      .contains("environment:org.springframework.core.env.Environment");
+      .contains(encodedPrimaryContext + ":org.springframework.context.ApplicationContext")
+      .contains(encodedEnvironment + ":org.springframework.core.env.Environment");
   }
 
   @Test
@@ -400,9 +402,11 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/QualifiedFieldDependencies.java"));
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
     String encodedName = Base64.getEncoder().encodeToString("qualifiedFieldDependencies".getBytes(StandardCharsets.UTF_8));
+    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
     String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
-      + "primaryContext:org.springframework.context.ApplicationContext"
-      + ",environment:org.springframework.core.env.Environment";
+      + encodedPrimaryContext + ":org.springframework.context.ApplicationContext"
+      + "," + encodedEnvironment + ":org.springframework.core.env.Environment";
 
     JavaReadCache readCache = mock(JavaReadCache.class);
     when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));

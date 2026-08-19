@@ -157,7 +157,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   private static String serializeBean(BeanData bean) {
     var deps = bean.dependingBeans().entrySet().stream()
-      .map(e -> e.getKey() + DEP_KEY_VALUE_SEPARATOR + e.getValue())
+      .map(e -> Base64.getEncoder().encodeToString(e.getKey().getBytes(StandardCharsets.UTF_8))
+        + DEP_KEY_VALUE_SEPARATOR + e.getValue())
       .collect(Collectors.joining(DEP_SEPARATOR));
     var span = bean.textSpan();
     var encodedName = Base64.getEncoder().encodeToString(bean.beanName().getBytes(StandardCharsets.UTF_8));
@@ -232,7 +233,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     if (!fields[5].isEmpty()) {
       for (String entry : fields[5].split(DEP_SEPARATOR)) {
         int idx = entry.indexOf(DEP_KEY_VALUE_SEPARATOR);
-        deps.put(entry.substring(0, idx), entry.substring(idx + 1));
+        String key = new String(Base64.getDecoder().decode(entry.substring(0, idx)), StandardCharsets.UTF_8);
+        deps.put(key, entry.substring(idx + 1));
       }
     }
     return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, deps);

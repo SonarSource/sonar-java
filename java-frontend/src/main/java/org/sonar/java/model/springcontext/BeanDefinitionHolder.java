@@ -53,8 +53,8 @@ public class BeanDefinitionHolder {
 
   /**
    * Dependencies this bean requires.
-   * Key: the qualifier name if {@code @Qualifier} is present, otherwise the default Spring bean name
-   * (simple class name, decapitalized). Value: the fully-qualified type name.
+   * Key: the {@code @Qualifier} value if present, otherwise the field or parameter name at the injection point.
+   * Value: the fully-qualified type name.
    */
   private Map<String, String> dependingBeans;
 
