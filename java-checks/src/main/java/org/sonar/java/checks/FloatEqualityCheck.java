@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -87,7 +88,9 @@ public class FloatEqualityCheck extends IssuableSubscriptionVisitor {
 
 
   private static boolean isNanTest(BinaryExpressionTree binaryExpressionTree) {
-    return SyntacticEquivalence.areEquivalent(binaryExpressionTree.leftOperand(), binaryExpressionTree.rightOperand());
+    return SyntacticEquivalence.areEquivalent(binaryExpressionTree.leftOperand(), binaryExpressionTree.rightOperand())
+      || ExpressionUtils.getNanOwnerTypeName(binaryExpressionTree.leftOperand()) != null
+      || ExpressionUtils.getNanOwnerTypeName(binaryExpressionTree.rightOperand()) != null;
   }
 
   private static boolean hasFloatingType(ExpressionTree expressionTree) {
