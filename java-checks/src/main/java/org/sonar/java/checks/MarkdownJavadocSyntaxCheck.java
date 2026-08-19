@@ -117,6 +117,7 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
   static String replaceQuotedCodeWithBlanks(String javadoc) {
     StringBuilder result = new StringBuilder();
     int currentPosition = 0;
+    Pattern printablePattern = Pattern.compile("\\p{Print}");
     while (currentPosition != -1) {
       int nextQuote = javadoc.indexOf("`", currentPosition);
       if (nextQuote != -1) {
@@ -125,8 +126,7 @@ public class MarkdownJavadocSyntaxCheck extends IssuableSubscriptionVisitor {
         int endOfQuote = currentPosition == -1 ? javadoc.length() : currentPosition;
         // Replace all printable characters by spaces, so that they can't be interpreted as tags.
         // Don't replace non-printable characters, as this could interfere with line counting.
-        result.append(javadoc.substring(nextQuote, endOfQuote)
-          .replaceAll("\\p{Print}", " "));
+        result.append(printablePattern.matcher(javadoc.substring(nextQuote, endOfQuote)).replaceAll(" "));
       } else {
         result.append(javadoc, currentPosition, javadoc.length());
         currentPosition = -1;

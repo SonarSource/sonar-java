@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
@@ -191,6 +192,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
   // when all-uppercase, or split further on capital-letter boundaries.
   static List<String> tokenizeIdentifier(String identifier) {
     List<String> words = new ArrayList<>();
+    Pattern splitPattern = Pattern.compile("(?=[A-Z])");
     for (String part : identifier.split("_")) {
       if (part.isEmpty()) {
         continue;
@@ -198,7 +200,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
       if (isAllUppercaseWithLetter(part)) {
         words.add(part.toLowerCase(Locale.ROOT));
       } else {
-        for (String sub : part.split("(?=[A-Z])")) {
+        for (String sub : splitPattern.split(part)) {
           if (!sub.isEmpty()) {
             words.add(sub.toLowerCase(Locale.ROOT));
           }
