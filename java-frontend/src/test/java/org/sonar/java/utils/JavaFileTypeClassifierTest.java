@@ -178,6 +178,39 @@ class JavaFileTypeClassifierTest {
   }
 
   // -------------------------------------------------------------------------
+  // isTestFile — sonar.tests configured: path/naming heuristic disabled
+  // -------------------------------------------------------------------------
+
+  @Test
+  void isTestFile_withSonarTestsConfigured_ignoresNamingAndPathSignals() {
+    // When sonar.tests is set, TestFileClassifier suppresses the heuristic because
+    // the platform already classifies test files as InputFile.Type.TEST.
+    // Names and paths that would otherwise trigger the heuristic must return false.
+    var config = new MapSettings().setProperty("sonar.tests", "src/test/java").asConfig();
+
+    assertIsTestFileWithConfig(false, "FooTest.java", config);
+    assertIsTestFileWithConfig(false, "src/test/java/Foo.java", config);
+    assertIsTestFileWithConfig(false, "src/it/java/Foo.java", config);
+  }
+
+  @Test
+  void isTestFile_withSonarTestsConfigured_platformTypeStillApplies() {
+    var config = new MapSettings().setProperty("sonar.tests", "src/test/java").asConfig();
+
+    // InputFile.Type.TEST is checked before the heuristic and is always authoritative.
+    var context = contextWithInputFileAndConfig(
+      TestUtils.emptyInputFile("Foo.java", InputFile.Type.TEST), config);
+    assertThat(JavaFileTypeClassifier.isTestFile(context)).isTrue();
+  }
+
+  @Test
+  void isTestFile_withSonarTestsConfigured_annotationSignalStillApplies() {
+    // hasTestFrameworkAnnotation() reads the AST, not the configuration —
+    // it must keep working regardless of whether sonar.tests is set.
+    assertAnnotationSignal(true, "src/test/files/utils/SampleWithRunWith.java");
+  }
+
+  // -------------------------------------------------------------------------
   // isTestFile — no signal
   // -------------------------------------------------------------------------
 
@@ -193,6 +226,14 @@ class JavaFileTypeClassifierTest {
   // -------------------------------------------------------------------------
   // Helpers
   // -------------------------------------------------------------------------
+
+  private static void assertIsTestFileWithConfig(boolean expected, String filename, Configuration config) {
+    JavaFileScannerContext context = contextWithInputFileAndConfig(
+      TestUtils.emptyInputFile(filename, InputFile.Type.MAIN), config);
+    assertThat(JavaFileTypeClassifier.isTestFile(context))
+      .as("Expected isTestFile=%s for '%s' with sonar.tests config", expected, filename)
+      .isEqualTo(expected);
+  }
 
   private static void assertIsTestFile(boolean expected, String filename) {
     JavaFileScannerContext context = contextWithInputFileAndConfig(
