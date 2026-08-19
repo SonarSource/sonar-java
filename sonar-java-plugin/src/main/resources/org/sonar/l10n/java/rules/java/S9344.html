@@ -1,0 +1,20 @@
+<h2>Why is this an issue?</h2>
+<p>A bitwise AND operation combines two values bit by bit. When one of the operands is <code>0</code>, every bit in the result will be <code>0</code>
+because <code>0 AND anything</code> is always <code>0</code>. This makes the operation meaningless and any subsequent comparison trivial.</p>
+<p>This pattern almost always indicates a programming error, such as using the wrong constant, the wrong operator, or a copy-paste mistake.</p>
+<h2>How to fix it</h2>
+<p>Replace the <code>0</code> with the intended bitmask constant.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+int flags = getFlags();
+if ((flags &amp; 0) == 0) { // Noncompliant - always true
+    doSomething();
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre>
+int flags = getFlags();
+if ((flags &amp; 0x01) == 0) { // Compliant - checks if the least significant bit is not set
+    doSomething();
+}
+</pre>
