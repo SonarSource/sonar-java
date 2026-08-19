@@ -16,19 +16,14 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ComparisonMethodUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
@@ -40,22 +35,14 @@ public class IntegerSubtractionInComparisonCheck extends IssuableSubscriptionVis
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
+    return ComparisonMethodUtils.nodesToVisit();
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (context.getSemanticModel() == null) {
-      return;
-    }
-    if (tree.is(Tree.Kind.METHOD)) {
-      MethodTree methodTree = (MethodTree) tree;
-      if (ComparisonMethodUtils.isCompareMethod(methodTree)) {
-        methodTree.block().accept(new ComparisonResultVisitor(methodTree.simpleName().name()));
-      }
-    } else {
-      LambdaExpressionTree lambda = (LambdaExpressionTree) tree;
-      if (ComparisonMethodUtils.isComparatorLambda(lambda)) {
+    ComparisonMethodUtils.visitComparisonNode(context, tree,
+      methodTree -> methodTree.block().accept(new ComparisonResultVisitor(methodTree.simpleName().name())),
+      lambda -> {
         Tree body = lambda.body();
         ComparisonResultVisitor visitor = new ComparisonResultVisitor("compare");
         if (body.is(Tree.Kind.BLOCK)) {
@@ -63,11 +50,10 @@ public class IntegerSubtractionInComparisonCheck extends IssuableSubscriptionVis
         } else {
           visitor.checkComparisonResult((ExpressionTree) body);
         }
-      }
-    }
+      });
   }
 
-  private class ComparisonResultVisitor extends BaseTreeVisitor {
+  private class ComparisonResultVisitor extends ComparisonMethodUtils.SkipNestedTypesVisitor {
 
     private final String enclosingMethodName;
 
@@ -92,16 +78,6 @@ public class IntegerSubtractionInComparisonCheck extends IssuableSubscriptionVis
       if (replacement != null) {
         reportIssue(((BinaryExpressionTree) unwrapped).operatorToken(), String.format(MESSAGE, enclosingMethodName, replacement));
       }
-    }
-
-    @Override
-    public void visitClass(ClassTree tree) {
-      // Do not visit inner classes
-    }
-
-    @Override
-    public void visitLambdaExpression(LambdaExpressionTree tree) {
-      // Do not visit nested lambdas
     }
   }
 
