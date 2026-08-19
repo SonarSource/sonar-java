@@ -251,6 +251,32 @@ class RepeatableExtendWithSpringBootTest {
 class RepeatableComponentScanWithSpringBootApp {
 }
 
+// === @ExtendWith with single-element array syntax ===
+
+@ExtendWith({SpringExtension.class}) // Noncompliant {{Remove this "@ExtendWith" annotation, already implied by "@SpringBootTest".}}
+@SpringBootTest
+class ExtendWithArraySingleSpringExtension {
+}
+
+@ExtendWith({SpringExtension.class}) // Noncompliant {{Remove this "@ExtendWith" annotation, already implied by "@WebMvcTest".}}
+@WebMvcTest
+class ExtendWithArraySingleSpringExtensionWebMvc {
+}
+
+// === Compliant: @ExtendWith with explicit value= attribute (named parameter) ===
+
+@ExtendWith(value = SpringExtension.class)
+@SpringBootTest
+class ExtendWithNamedValueSpringExtension {
+}
+
+// === Compliant: @ExtendWith with single-element array containing non-SpringExtension ===
+
+@ExtendWith({org.mockito.junit.jupiter.MockitoExtension.class})
+@SpringBootTest
+class ExtendWithArraySingleMockitoExtension {
+}
+
 // === Records with redundant annotations ===
 
 @Component // Noncompliant {{Remove this "@Component" annotation, already implied by "@Service".}}
