@@ -37,6 +37,11 @@ class BitwiseAndWithZeroCheckSample {
     flags &= 0x0; // Noncompliant {{Remove this bitwise AND with zero; the result is always zero.}}
     flags &= 0L; // Noncompliant {{Remove this bitwise AND with zero; the result is always zero.}}
 
+    // Parenthesized zero
+    result = flags & (0); // Noncompliant {{Remove this bitwise AND with zero; the result is always zero.}}
+    result = (0) & flags; // Noncompliant {{Remove this bitwise AND with zero; the result is always zero.}}
+    flags &= (0); // Noncompliant {{Remove this bitwise AND with zero; the result is always zero.}}
+
     // Nested in comparison (issue on the & expression)
     if ((flags & 0) == 0) { } // Noncompliant {{Remove this bitwise AND with zero; the result is always zero.}}
     if ((flags & 0) != 0) { } // Noncompliant {{Remove this bitwise AND with zero; the result is always zero.}}
@@ -66,6 +71,9 @@ class BitwiseAndWithZeroCheckSample {
     // Different operators (covered by S2437)
     result = flags | 0;
     result = flags ^ 0;
+
+    // Parenthesized non-zero
+    result = flags & (0x0F);
 
     // Long non-zero bitmask
     long longResult = flags & 0xFFL;

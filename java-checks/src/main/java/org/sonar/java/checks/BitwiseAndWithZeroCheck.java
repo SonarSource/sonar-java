@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -42,7 +43,7 @@ public class BitwiseAndWithZeroCheck extends IssuableSubscriptionVisitor {
     if (tree.is(Kind.AND)) {
       BinaryExpressionTree binary = (BinaryExpressionTree) tree;
       if (isZero(binary.leftOperand()) || isZero(binary.rightOperand())) {
-        reportIssue(tree, MESSAGE);
+        reportIssue(binary.operatorToken(), MESSAGE);
       }
     } else {
       AssignmentExpressionTree assignment = (AssignmentExpressionTree) tree;
@@ -53,7 +54,7 @@ public class BitwiseAndWithZeroCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isZero(ExpressionTree expression) {
-    Long value = LiteralUtils.longLiteralValue(expression);
+    Long value = LiteralUtils.longLiteralValue(ExpressionUtils.skipParentheses(expression));
     return value != null && value == 0L;
   }
 
