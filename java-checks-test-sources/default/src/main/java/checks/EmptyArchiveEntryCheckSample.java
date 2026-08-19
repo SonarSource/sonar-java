@@ -1,8 +1,10 @@
 package checks;
 
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
@@ -187,6 +189,31 @@ class EmptyArchiveEntryCheckSample {
     pw.println("content via wrapper");
     pw.flush();
     zos.closeEntry(); // Compliant - written through wrapper
+    zos.close();
+  }
+
+  void qualifiedHelperMethodCall() throws IOException {
+    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+    zos.putNextEntry(new ZipEntry("helper.txt"));
+    this.writeContent(zos);
+    zos.closeEntry(); // Compliant - stream passed to qualified helper method
+    zos.close();
+  }
+
+  void directoryEntryViaVariable() throws IOException {
+    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+    ZipEntry directory = new ZipEntry("dir/");
+    zos.putNextEntry(directory);
+    zos.closeEntry(); // Compliant - directory entry via variable
+    zos.close();
+  }
+
+  void writeViaBufferedOutputStream() throws IOException {
+    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+    zos.putNextEntry(new ZipEntry("file.txt"));
+    OutputStream writer = new BufferedOutputStream(zos);
+    writer.write("data".getBytes());
+    zos.closeEntry(); // Compliant - written through BufferedOutputStream wrapper
     zos.close();
   }
 }

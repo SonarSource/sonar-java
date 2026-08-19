@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9342")
 public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
@@ -100,6 +101,8 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
       }
     } else if (WRITE.matches(mit)) {
       pendingEntries.remove(receiver);
+    } else {
+      clearTrackedSymbolsUsedAsArguments(mit, pendingEntries);
     }
   }
 
@@ -126,15 +129,35 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDirectoryEntry(MethodInvocationTree putNextEntry) {
-    if (putNextEntry.arguments().size() == 1 && putNextEntry.arguments().get(0).is(Tree.Kind.NEW_CLASS)) {
-      NewClassTree newClass = (NewClassTree) putNextEntry.arguments().get(0);
-      if (newClass.arguments().size() == 1 && newClass.arguments().get(0).is(Tree.Kind.STRING_LITERAL)) {
-        String value = ((LiteralTree) newClass.arguments().get(0)).value();
-        // value includes quotes, e.g. "\"dir/\""
-        return value.endsWith("/\"");
-      }
+    if (putNextEntry.arguments().size() != 1) {
+      return false;
+    }
+    ExpressionTree argument = putNextEntry.arguments().get(0);
+    NewClassTree newClass = resolveNewClass(argument);
+    if (newClass != null && newClass.arguments().size() == 1 && newClass.arguments().get(0).is(Tree.Kind.STRING_LITERAL)) {
+      String value = ((LiteralTree) newClass.arguments().get(0)).value();
+      // value includes quotes, e.g. "\"dir/\""
+      return value.endsWith("/\"");
     }
     return false;
+  }
+
+  @CheckForNull
+  private static NewClassTree resolveNewClass(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.NEW_CLASS)) {
+      return (NewClassTree) expression;
+    }
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = ((IdentifierTree) expression).symbol();
+      Tree declaration = symbol.declaration();
+      if (declaration != null && declaration.is(Tree.Kind.VARIABLE)) {
+        ExpressionTree initializer = ((VariableTree) declaration).initializer();
+        if (initializer != null && initializer.is(Tree.Kind.NEW_CLASS)) {
+          return (NewClassTree) initializer;
+        }
+      }
+    }
+    return null;
   }
 
   private static void clearTrackedSymbolsUsedAsArguments(MethodInvocationTree mit, Map<Symbol, MethodInvocationTree> pendingEntries) {
