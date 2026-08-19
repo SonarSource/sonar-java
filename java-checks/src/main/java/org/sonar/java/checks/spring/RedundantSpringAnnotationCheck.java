@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.SpringUtils;
@@ -155,12 +156,7 @@ public class RedundantSpringAnnotationCheck extends IssuableSubscriptionVisitor 
     return memberSelect.expression().symbolType().is(SPRING_EXTENSION);
   }
 
-  @FunctionalInterface
-  private interface AnnotationPredicate {
-    boolean test(AnnotationTree annotation);
-  }
-
   private record RedundancyRule(String redundantFqn, List<String> impliedByFqns,
-    AnnotationPredicate specialCondition) {
+    Predicate<AnnotationTree> specialCondition) {
   }
 }
