@@ -47,4 +47,13 @@ class AlmostJavadocCheckTest {
       .withoutSemantic()
       .verifyIssues();
   }
+
+  @Test
+  void compact_source() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/AlmostJavadocCheck_compactSource.java"))
+      .withCheck(new AlmostJavadocCheck())
+      .withJavaVersion(25)
+      .verifyIssues();
+  }
 }

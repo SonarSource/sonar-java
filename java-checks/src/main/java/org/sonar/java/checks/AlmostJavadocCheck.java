@@ -74,16 +74,23 @@ public class AlmostJavadocCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDocumentableDeclaration(Tree tree) {
-    if (isInsideMethodOrConstructor(tree)) {
+    if (tree.is(Tree.Kind.IMPLICIT_CLASS) || isInsideMethodOrConstructor(tree)) {
       return false;
     }
     if (tree.is(Tree.Kind.VARIABLE)) {
-      Tree parent = tree.parent();
-      return parent != null
-        && parent.is(PublicApiChecker.classKinds())
-        && QuickFixHelper.previousVariable((VariableTree) tree).isEmpty();
+      return tree.parent() instanceof ClassTree classTree && isFirstDeclarator(classTree, (VariableTree) tree);
     }
     return true;
+  }
+
+  private static boolean isFirstDeclarator(ClassTree classTree, VariableTree variable) {
+    List<Tree> members = classTree.members();
+    int index = members.indexOf(variable);
+    if (index <= 0) {
+      return true;
+    }
+    Tree preceding = members.get(index - 1);
+    return !(preceding.is(Tree.Kind.VARIABLE) && preceding.firstToken().equals(variable.firstToken()));
   }
 
   private static boolean isInsideMethodOrConstructor(Tree tree) {
