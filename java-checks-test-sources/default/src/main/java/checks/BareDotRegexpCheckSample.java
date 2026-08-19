@@ -38,10 +38,6 @@ class BareDotRegexpCheckSample {
     Pattern.compile(regex);
     Pattern.compile(".", flags);
     Pattern.matches("\\.", filename);
-    filename.matches("[\\s\\S]");
-    Pattern.compile("[\\s\\S]");
-    boolean oneChar = filename.length() == 1;
-    String masked = "*".repeat(filename.length());
   }
 
 }

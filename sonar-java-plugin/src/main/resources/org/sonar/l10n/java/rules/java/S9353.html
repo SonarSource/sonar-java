@@ -14,10 +14,8 @@ as <code>String.replace</code>.</p>
 <h3>Exceptions</h3>
 <p>This rule does not raise an issue when <code>Pattern.compile</code> is called with the <code>Pattern.LITERAL</code> flag, because that flag treats
 the pattern as a literal string.</p>
-<p>If matching any character is intentional, prefer a more explicit alternative: <code>input.length() == 1</code> instead of
-<code>input.matches(".")</code>, <code>"*".repeat(input.length())</code> instead of <code>input.replaceAll(".", "*")</code>, or the character class
-<code>"[\\s\\S]"</code> when a regular expression is required. If you must keep <code>"."</code>, add an inline <code>// NOSONAR: "." intentionally
-matches any character</code> comment so the intent is explicit.</p>
+<p>If matching any character is intentional, add an inline <code>// NOSONAR: "." intentionally matches any character</code> comment so the intent is
+explicit.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -55,24 +53,10 @@ boolean oneChar = "a".matches("\\.");
 </pre>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="4" data-diff-type="noncompliant">
-boolean oneChar = input.matches("."); // Noncompliant: "." matches any character, not a literal period
-String masked = secret.replaceAll(".", "*"); // Noncompliant
 Pattern anyChar = Pattern.compile("."); // Noncompliant
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="4" data-diff-type="compliant">
-boolean oneChar = input.length() == 1;
-String masked = "*".repeat(secret.length());
-Pattern anyChar = Pattern.compile("[\\s\\S]");
-</pre>
-<h4>Noncompliant code example</h4>
-<pre data-diff-id="5" data-diff-type="noncompliant">
-Pattern anyChar = Pattern.compile("."); // Noncompliant
-</pre>
-<p>If keeping <code>"."</code> is intentional, add an inline <code>// NOSONAR: "." intentionally matches any character</code> comment so the intent is
-explicit.</p>
-<h4>Compliant solution</h4>
-<pre data-diff-id="5" data-diff-type="compliant">
 Pattern anyChar = Pattern.compile("."); // NOSONAR: "." intentionally matches any character
 </pre>
 <h2>Resources</h2>
