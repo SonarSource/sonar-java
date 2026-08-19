@@ -36,7 +36,6 @@ import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
@@ -191,8 +190,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var beans = model.getBeanDefinitionRegistry().getByName(expectedBeanName);
     assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getDependingBeans())
-      .extracting(BeanDependency::typeFqn)
+    assertThat(beans.get(0).getDependingBeans().values())
       .containsExactlyInAnyOrder(
         "org.springframework.context.ApplicationContext",
         "org.springframework.core.env.Environment"
@@ -216,28 +214,26 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var beans = model.getBeanDefinitionRegistry().getByName(expectedBeanName);
     assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getDependingBeans())
-      .extracting(BeanDependency::qualifier)
-      .containsExactlyInAnyOrder("primaryContext", null);
+    assertThat(beans.get(0).getDependingBeans().keySet())
+      .containsExactlyInAnyOrder("primaryContext", "environment");
   }
 
   static Stream<Arguments> qualifiedDependencyArguments() {
     return Stream.of(
-      Arguments.of("src/test/files/springcontext/QualifiedFieldDependencies.java",       "qualifiedFieldDependencies"),
+      Arguments.of("src/test/files/springcontext/QualifiedFieldDependencies.java", "qualifiedFieldDependencies"),
       Arguments.of("src/test/files/springcontext/QualifiedConstructorDependencies.java", "qualifiedConstructorDependencies"),
-      Arguments.of("src/test/files/springcontext/QualifiedBeanMethodDependencies.java",  "myBean")
+      Arguments.of("src/test/files/springcontext/QualifiedBeanMethodDependencies.java", "myBean")
     );
   }
 
   @Test
-  void no_qualifier_results_in_null_qualifier() {
+  void unqualified_dependency_uses_default_spring_bean_name_as_key() {
     scan("src/test/files/springcontext/AutowiredDependencies.java");
 
     var beans = model.getBeanDefinitionRegistry().getByName("autowiredDependencies");
     assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getDependingBeans())
-      .extracting(BeanDependency::qualifier)
-      .containsOnly((String) null);
+    assertThat(beans.get(0).getDependingBeans().keySet())
+      .containsExactlyInAnyOrder("applicationContext", "environment");
   }
 
   // ---- Bean location --------------------------------------------------------
@@ -394,10 +390,9 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     verify(writeCache).write(anyString(), dataCaptor.capture());
     String serialized = new String(dataCaptor.getValue(), StandardCharsets.UTF_8);
 
-    String encodedQualifier = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
     assertThat(serialized)
-      .contains("org.springframework.context.ApplicationContext=" + encodedQualifier)
-      .contains("org.springframework.core.env.Environment=");
+      .contains("primaryContext:org.springframework.context.ApplicationContext")
+      .contains("environment:org.springframework.core.env.Environment");
   }
 
   @Test
@@ -405,11 +400,9 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/QualifiedFieldDependencies.java"));
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
     String encodedName = Base64.getEncoder().encodeToString("qualifiedFieldDependencies".getBytes(StandardCharsets.UTF_8));
-    String encodedQualifier = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
-    String depWithQualifier = "org.springframework.context.ApplicationContext=" + encodedQualifier;
-    String depWithoutQualifier = "org.springframework.core.env.Environment=";
     String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
-      + depWithQualifier + "," + depWithoutQualifier;
+      + "primaryContext:org.springframework.context.ApplicationContext"
+      + ",environment:org.springframework.core.env.Environment";
 
     JavaReadCache readCache = mock(JavaReadCache.class);
     when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
@@ -427,9 +420,8 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var beans = model.getBeanDefinitionRegistry().getByName("qualifiedFieldDependencies");
     assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getDependingBeans())
-      .extracting(BeanDependency::qualifier)
-      .containsExactlyInAnyOrder("primaryContext", null);
+    assertThat(beans.get(0).getDependingBeans().keySet())
+      .containsExactlyInAnyOrder("primaryContext", "environment");
   }
 
   @Test
@@ -439,8 +431,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     var beans = model.getBeanDefinitionRegistry().getByName("blankQualifierDependency");
     assertThat(beans).hasSize(1);
     assertThat(beans.get(0).getDependingBeans())
-      .extracting(BeanDependency::qualifier)
-      .containsOnly((String) null);
+      .containsOnlyKeys("applicationContext");
   }
 
   private static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {

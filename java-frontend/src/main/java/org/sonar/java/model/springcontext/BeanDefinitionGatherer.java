@@ -19,9 +19,10 @@ package org.sonar.java.model.springcontext;
 import java.beans.Introspector;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -66,7 +67,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   private static final String BEAN_SEPARATOR = "\n";
   private static final String FIELD_SEPARATOR = "|";
   private static final String DEP_SEPARATOR = ",";
-  private static final String DEP_QUALIFIER_SEPARATOR = "=";
+  private static final String DEP_KEY_VALUE_SEPARATOR = ":";
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
   private static final String VALUE_ATTRIBUTE = "value";
@@ -83,7 +84,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     InputFile inputFile,
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
-    List<BeanDependency> dependingBeans) {
+    Map<String, String> dependingBeans) {
   }
 
   @Override
@@ -111,7 +112,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     if (SpringUtils.STEREOTYPE_ANNOTATIONS.stream().anyMatch(meta::isAnnotatedWith)) {
       String beanName = extractBeanName(meta)
         .orElseGet(() -> defaultBeanName(classTree.simpleName().name()));
-      List<BeanDependency> deps = collectAutowiredDependencies(classTree);
+      Map<String, String> deps = collectAutowiredDependencies(classTree);
       // Class-level bean (stereotype annotations)
       var beanData = new BeanData(
         beanName, fqn, pkg,
@@ -155,8 +156,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   }
 
   private static String serializeBean(BeanData bean) {
-    var deps = bean.dependingBeans().stream()
-      .map(BeanDefinitionGatherer::serializeDependency)
+    var deps = bean.dependingBeans().entrySet().stream()
+      .map(e -> e.getKey() + DEP_KEY_VALUE_SEPARATOR + e.getValue())
       .collect(Collectors.joining(DEP_SEPARATOR));
     var span = bean.textSpan();
     var encodedName = Base64.getEncoder().encodeToString(bean.beanName().getBytes(StandardCharsets.UTF_8));
@@ -167,23 +168,6 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       span.startLine + ":" + span.startCharacter + ":" + span.endLine + ":" + span.endCharacter,
       Boolean.toString(bean.isPrimary()),
       deps);
-  }
-
-  private static BeanDependency deserializeDependency(String serialized) {
-    int idx = serialized.indexOf(DEP_QUALIFIER_SEPARATOR);
-    String typeFqn = serialized.substring(0, idx);
-    String encodedQualifier = serialized.substring(idx + 1);
-    String qualifier = encodedQualifier.isEmpty()
-      ? null
-      : new String(Base64.getDecoder().decode(encodedQualifier), StandardCharsets.UTF_8);
-    return new BeanDependency(typeFqn, qualifier);
-  }
-
-  private static String serializeDependency(BeanDependency dep) {
-    String encodedQualifier = dep.qualifier() != null
-      ? Base64.getEncoder().encodeToString(dep.qualifier().getBytes(StandardCharsets.UTF_8))
-      : "";
-    return dep.typeFqn() + DEP_QUALIFIER_SEPARATOR + encodedQualifier;
   }
 
   @Override
@@ -244,10 +228,13 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       Integer.parseInt(spanParts[2]),
       Integer.parseInt(spanParts[3]));
     boolean isPrimary = Boolean.parseBoolean(fields[4]);
-    List<BeanDependency> deps = fields[5].isEmpty() ? List.of() :
-      Arrays.stream(fields[5].split(DEP_SEPARATOR))
-        .map(BeanDefinitionGatherer::deserializeDependency)
-        .toList();
+    Map<String, String> deps = new LinkedHashMap<>();
+    if (!fields[5].isEmpty()) {
+      for (String entry : fields[5].split(DEP_SEPARATOR)) {
+        int idx = entry.indexOf(DEP_KEY_VALUE_SEPARATOR);
+        deps.put(entry.substring(0, idx), entry.substring(idx + 1));
+      }
+    }
     return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, deps);
   }
 
@@ -293,9 +280,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       ? method.returnType().symbolType().fullyQualifiedName()
       : "";
 
-    List<BeanDependency> paramDeps = method.parameters().stream()
-      .map(p -> new BeanDependency(p.symbol().type().fullyQualifiedName(), extractQualifier(p.symbol().metadata())))
-      .toList();
+    Map<String, String> paramDeps = parameterDependencies(method);
 
     var beanData = new BeanData(
       beanName, returnTypeFqn, pkg,
@@ -307,24 +292,35 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     beansCollectedAtFileLevel.add(beanData);
   }
 
-  private static List<BeanDependency> collectAutowiredDependencies(ClassTree classTree) {
-    List<BeanDependency> deps = new ArrayList<>();
+  private static Map<String, String> collectAutowiredDependencies(ClassTree classTree) {
+    Map<String, String> deps = new LinkedHashMap<>();
     for (Tree member : classTree.members()) {
-      if (member.is(Tree.Kind.VARIABLE)) {
-        VariableTree field = (VariableTree) member;
+      if (member instanceof VariableTree field) {
         if (field.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
-          deps.add(new BeanDependency(field.symbol().type().fullyQualifiedName(), extractQualifier(field.symbol().metadata())));
+          String typeFqn = field.symbol().type().fullyQualifiedName();
+          deps.put(dependencyKey(field.simpleName().name(), extractQualifier(field.symbol().metadata())), typeFqn);
         }
       } else if (member.is(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD)) {
         MethodTree method = (MethodTree) member;
         if (method.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
-          method.parameters().stream()
-            .map(p -> new BeanDependency(p.symbol().type().fullyQualifiedName(), extractQualifier(p.symbol().metadata())))
-            .forEach(deps::add);
+          deps.putAll(parameterDependencies(method));
         }
       }
     }
     return deps;
+  }
+
+  private static Map<String, String> parameterDependencies(MethodTree method) {
+    Map<String, String> deps = new LinkedHashMap<>();
+    for (var p : method.parameters()) {
+      String typeFqn = p.symbol().type().fullyQualifiedName();
+      deps.put(dependencyKey(p.simpleName().name(), extractQualifier(p.symbol().metadata())), typeFqn);
+    }
+    return deps;
+  }
+
+  private static String dependencyKey(String fieldOrParamName, @Nullable String qualifier) {
+    return qualifier != null ? qualifier : fieldOrParamName;
   }
 
   @Nullable
