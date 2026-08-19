@@ -221,6 +221,13 @@ class ComponentScanWithUseDefaultFiltersAndSpringBootApp {
 class ComponentWithBeanNameAndService {
 }
 
+// === Compliant: @Controller with explicit attributes (bean name) + @RestController ===
+
+@Controller("myCustomBeanName")
+@RestController
+class ControllerWithBeanNameAndRestController {
+}
+
 // === Compliant: @Configuration with explicit attributes + @SpringBootApplication ===
 
 @Configuration(proxyBeanMethods = false)

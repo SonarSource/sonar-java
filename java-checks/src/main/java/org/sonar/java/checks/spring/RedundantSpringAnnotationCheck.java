@@ -51,7 +51,7 @@ public class RedundantSpringAnnotationCheck extends IssuableSubscriptionVisitor 
       List.of(SpringUtils.SERVICE_ANNOTATION, SpringUtils.REPOSITORY_ANNOTATION, SpringUtils.CONTROLLER_ANNOTATION, SpringUtils.CONFIGURATION_ANNOTATION),
       RedundantSpringAnnotationCheck::hasNoExplicitAttributes),
     new RedundancyRule(SpringUtils.CONTROLLER_ANNOTATION,
-      List.of(SpringUtils.REST_CONTROLLER_ANNOTATION), null),
+      List.of(SpringUtils.REST_CONTROLLER_ANNOTATION), RedundantSpringAnnotationCheck::hasNoExplicitAttributes),
     // Class-level @ResponseBody only; method-level @ResponseBody in @RestController is handled by S6837
     new RedundancyRule(RESPONSE_BODY,
       List.of(SpringUtils.REST_CONTROLLER_ANNOTATION), null),
