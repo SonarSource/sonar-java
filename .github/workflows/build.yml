@@ -21,7 +21,7 @@ env:
 
 jobs:
   build:
-    runs-on: sonar-m-public
+    runs-on: warp-custom-ubuntu-24-04
     name: Build
     permissions:
       id-token: write  # Required for Vault OIDC authentication
@@ -56,8 +56,8 @@ jobs:
       fail-fast: false
       matrix:
         item:
-          - { runner: sonar-m-public, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
-          - { runner: sonar-m-public, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
+          - { runner: warp-custom-ubuntu-24-04, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
+          - { runner: warp-custom-ubuntu-24-04, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
           - { runner: github-windows-latest-m, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
           - { runner: github-windows-latest-m, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
     name: Ruling QA
@@ -126,7 +126,7 @@ jobs:
     name: Ruling Update and Notify
     needs: ruling-qa
     if: always() && github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: warp-custom-ubuntu-24-04
     permissions:
       contents: write
       pull-requests: write
@@ -178,7 +178,7 @@ jobs:
     needs:
       - build
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: sonar-m-public
+    runs-on: warp-custom-ubuntu-24-04
     permissions:
       id-token: write
       contents: write
@@ -231,7 +231,7 @@ jobs:
     needs:
       - build
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: sonar-m-public
+    runs-on: warp-custom-ubuntu-24-04
     permissions:
       id-token: write
       contents: write
@@ -278,7 +278,7 @@ jobs:
     needs:
       - build
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: sonar-l-public
+    runs-on: warp-custom-ubuntu-24-04-l
     permissions:
       id-token: write
       contents: write
@@ -313,7 +313,7 @@ jobs:
     needs:
       - build
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: sonar-m-public
+    runs-on: warp-custom-ubuntu-24-04
     permissions:
       id-token: write
       contents: write
@@ -398,7 +398,7 @@ jobs:
       - custom-rules-license-check
       - qa-os-win
     if: ${{ needs.build.outputs.deployed }}
-    runs-on: sonar-s-public
+    runs-on: warp-custom-ubuntu-24-04
     name: Promote
     permissions:
       id-token: write

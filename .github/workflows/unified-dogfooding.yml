@@ -6,7 +6,7 @@ on:
 
 jobs:
   unified-platform-dogfooding:
-    runs-on: sonar-l-public
+    runs-on: warp-custom-ubuntu-24-04-l
     name: Unified Platform Dogfooding
     permissions:
       id-token: write
