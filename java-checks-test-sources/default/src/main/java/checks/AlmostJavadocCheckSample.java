@@ -147,3 +147,10 @@ class AlmostJavadocCheckSample {
   static class Entity {
   }
 }
+
+// Noncompliant@+1 [[quickfixes=qf4]]
+// /** Extra documentation. {@link AlmostJavadocCheckSample.Entity} */
+// fix@qf4 {{Convert to Javadoc comment}}
+// edit@qf4 [[sc=1;ec=3]] {{}}
+class AlmostJavadocCheckSampleSecondType {
+}
