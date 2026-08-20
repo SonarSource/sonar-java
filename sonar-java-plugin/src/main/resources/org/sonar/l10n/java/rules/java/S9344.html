@@ -1,20 +1,64 @@
+<p>This raises an issue when code performs a bitwise AND operation with the literal value <code>0</code>, as the result is always <code>0</code>
+regardless of the other operand.</p>
 <h2>Why is this an issue?</h2>
-<p>A bitwise AND operation combines two values bit by bit. When one of the operands is <code>0</code>, every bit in the result will be <code>0</code>
-because <code>0 AND anything</code> is always <code>0</code>. This makes the operation meaningless and any subsequent comparison trivial.</p>
-<p>This pattern almost always indicates a programming error, such as using the wrong constant, the wrong operator, or a copy-paste mistake.</p>
+<p>A bitwise AND operation combines two values bit by bit. When one of the operands is 0, every bit in the result will be 0 because 0 AND anything is
+always 0. This makes the operation meaningless and any subsequent comparison trivial.</p>
+<p>For example, an expression that checks whether the result of ANDing a value with 0 equals 0 will always evaluate to true, and an expression
+checking whether that result differs from 0 will always evaluate to false, regardless of what the value contains.</p>
+<p>This pattern almost always indicates a programming error. Common mistakes include:</p>
+<ul>
+  <li><strong>Wrong constant</strong>: The developer intended to use a bitmask (like hexadecimal values representing specific bit positions) but
+  accidentally used 0 instead.</li>
+  <li><strong>Wrong operation</strong>: The developer meant to use a different operator, such as equality comparison, modulo division, or a different
+  bitwise operation.</li>
+  <li><strong>Copy-paste error</strong>: The code was copied from another location and not properly updated.</li>
+</ul>
+<p>Since the operation produces a predictable result that doesn’t depend on the actual value being tested, it serves no useful purpose and should be
+corrected.</p>
+<h3>What is the potential impact?</h3>
+<p>This bug can lead to incorrect program behavior because conditions that should vary based on runtime values become constant:</p>
+<ul>
+  <li><strong>Logic errors</strong>: Conditions that should sometimes be true and sometimes false will always have the same outcome, causing the
+  program to take incorrect code paths.</li>
+  <li><strong>Security vulnerabilities</strong>: If the check was meant to verify permissions, validate input, or check security flags, the constant
+  result means these checks are ineffective.</li>
+  <li><strong>Unreachable code</strong>: Code branches that depend on the result being different may never execute or may always execute, making parts
+  of the program effectively dead code.</li>
+</ul>
 <h2>How to fix it</h2>
-<p>Replace the <code>0</code> with the intended bitmask constant.</p>
-<h3>Noncompliant code example</h3>
-<pre>
+<p>The appropriate fix depends on the root cause:</p>
+<ul>
+  <li><strong>Wrong constant</strong>: Replace <code>0</code> with the intended bitmask value. For example, use a hexadecimal constant like
+  <code>0x01</code> or a named constant that represents the bit positions you meant to test.</li>
+  <li><strong>Wrong operator</strong>: Replace the <code>&amp;</code> operator with the operator you actually intended, such as <code>==</code> for
+  equality comparison, <code>%</code> for modulo, or <code>|</code> for bitwise OR.</li>
+  <li><strong>Copy-paste error</strong>: Review the duplicated expression and correct it to reference the intended variable or constant.</li>
+</ul>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
 int flags = getFlags();
-if ((flags &amp; 0) == 0) { // Noncompliant - always true
+if ((flags &amp; 0) == 0) { // Noncompliant
+    // This block always executes
     doSomething();
 }
 </pre>
-<h3>Compliant solution</h3>
-<pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
 int flags = getFlags();
-if ((flags &amp; 0x01) == 0) { // Compliant - checks if the least significant bit is not set
+if ((flags &amp; 0x01) == 0) {
+    // Now this checks if the least significant bit is not set
     doSomething();
 }
 </pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/op3.html">Bitwise and Bit Shift Operators</a></li>
+  <li>Wikipedia - <a href="https://en.wikipedia.org/wiki/Bitwise_operation">Bitwise operation</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S7438} - Bitwise AND with zero (Rust)</li>
+</ul>
+

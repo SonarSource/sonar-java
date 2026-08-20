@@ -1,11 +1,24 @@
+<p>This rule raises an issue when a bitwise operation (<code>&amp;</code> or <code>|</code>) is used in a comparison where the bit mask and compared
+value are incompatible, making the comparison always true or always false regardless of the input.</p>
 <h2>Why is this an issue?</h2>
 <p>When performing bitwise operations in comparisons, the relationship between the bit mask and the compared value determines what results are
 possible. If this relationship makes certain outcomes impossible, the comparison becomes a constant expression.</p>
 <p>For bitwise AND operations (<code>&amp;</code>), the result can only have bits set where the mask has bits set. For example, <code>x &amp; 1</code>
 can only produce values 0 or 1, never 2. Comparing this result to an impossible value like 2 creates dead code.</p>
-<p>For bitwise OR operations (<code>|</code>), the result always includes all bits set in the mask. If the compared value doesn't include all mask
+<p>For bitwise OR operations (<code>|</code>), the result always includes all bits set in the mask. If the compared value doesn’t include all mask
 bits, the comparison can never be equal.</p>
-<p>These constant comparisons indicate logical errors in the code.</p>
+<p>These constant comparisons indicate logical errors in the code. They waste processing time on checks that always have the same outcome, create
+confusion for developers reading the code, and may indicate incomplete or incorrect implementation of bit flag checking logic. In security-sensitive
+contexts, such errors might bypass intended validation checks.</p>
+<h3>What is the potential impact?</h3>
+<p>The impact depends on the context where the faulty comparison appears:</p>
+<ul>
+  <li><strong>Reliability</strong>: Dead code branches may indicate incomplete feature implementation or incorrect flag validation logic.</li>
+  <li><strong>Maintainability</strong>: Developers reading the code may waste time trying to understand why certain branches never execute, or may
+  incorrectly assume the comparison serves a purpose.</li>
+  <li><strong>Security</strong>: In permission checks or validation logic, a comparison that always evaluates to false might inadvertently bypass
+  security controls.</li>
+</ul>
 <h2>How to fix it</h2>
 <p>Review the bit mask and comparison value to ensure they are logically compatible. For AND operations, verify that the compared value only has bits
 that exist in the mask. For OR operations, verify that the compared value includes all bits from the mask.</p>
@@ -29,4 +42,7 @@ if ((x &amp; 2) == 2) {
 <ul>
   <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/op3.html">Bitwise and Bit Shift
   Operators</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.22.1">Integer Bitwise Operators
+  &amp;, ^, and |</a></li>
 </ul>
+

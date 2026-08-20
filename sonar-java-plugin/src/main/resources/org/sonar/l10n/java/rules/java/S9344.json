@@ -7,7 +7,7 @@
     "constantCost": "5min"
   },
   "tags": [
-    "suspicious"
+    "pitfall"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-9344",
@@ -16,6 +16,7 @@
   "quickfix": "unknown",
   "code": {
     "impacts": {
+      "SECURITY": "MEDIUM",
       "RELIABILITY": "HIGH"
     },
     "attribute": "LOGICAL"

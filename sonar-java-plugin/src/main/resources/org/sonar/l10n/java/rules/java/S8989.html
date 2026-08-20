@@ -46,6 +46,14 @@ such as:</p>
 <h3>Difficult Debugging</h3>
 <p>Because the transaction commits silently, these bugs are hard to diagnose. The code appears to handle errors correctly (it throws and catches
 exceptions), but the database state doesn’t match expectations.</p>
+<h2>Exceptions</h2>
+<p>The rule does not raise an issue in the following cases:</p>
+<ul>
+  <li><code>@Transactional(propagation = Propagation.NOT_SUPPORTED)</code> - This propagation setting suspends the current transaction and executes
+  the method without any transaction context, so there is no transaction to roll back.</li>
+  <li><code>@Transactional(readOnly = true)</code> - Read-only transactions do not perform write operations, so there is no risk of committing partial
+  or inconsistent data.</li>
+</ul>
 <h2>How to fix it in Spring</h2>
 <p>Explicitly specify <code>rollbackFor</code> to include the checked exceptions that should trigger a rollback. This is the most common fix, as most
 checked exceptions represent error conditions that should prevent the transaction from committing.</p>

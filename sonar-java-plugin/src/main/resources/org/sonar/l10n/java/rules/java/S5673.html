@@ -1,6 +1,17 @@
 <h2>Why is this an issue?</h2>
-<p>The Spring Framework provides several specializations of the generic <code>@Component</code> stereotype annotation which better express the
-programmer’s intent. Using them should be preferred.</p>
+<p>The Spring Framework provides several specializations of the generic <code>@Component</code> stereotype annotation: <code>@Service</code>,
+<code>@Repository</code>, <code>@Controller</code>, and <code>@RestController</code>. Using the appropriate specialization instead of the generic
+<code>@Component</code> has concrete benefits:</p>
+<ul>
+  <li><code>@Repository</code> enables Spring’s persistence exception translation, which converts database-specific exceptions into Spring’s
+  <code>DataAccessException</code> hierarchy.</li>
+  <li>Specialized annotations make the application’s layered architecture visible at a glance, helping developers navigate and understand the
+  codebase.</li>
+  <li>Frameworks and tools may apply different behavior based on the stereotype, such as AOP pointcuts that target only <code>@Service</code> or
+  <code>@Repository</code> beans.</li>
+</ul>
+<p>This rule raises an issue when a class is annotated with <code>@Component</code> and its name ends with a suffix that suggests a more specific
+stereotype: <code>Service</code>, <code>ServiceImpl</code>, <code>Repository</code>, <code>Controller</code>, or <code>RestController</code>.</p>
 <h3>Noncompliant code example</h3>
 <pre>
 @Component // Noncompliant; class name suggests it's a @Service
@@ -40,9 +51,30 @@ public class SomeOtherComponent {
    // ...
 }
 </pre>
-<h2>Resources</h2>
+<h2>Exceptions</h2>
+<p>This rule does not raise an issue when the class name does not end with one of the recognized suffixes (<code>Service</code>,
+<code>ServiceImpl</code>, <code>Repository</code>, <code>Controller</code>, <code>RestController</code>). For example, a class named
+<code>EventProcessor</code> annotated with <code>@Component</code> does not trigger this rule, even if it could arguably be a
+<code>@Service</code>.</p>
+<p>The rule does not suggest <code>@Controller</code> or <code>@RestController</code> unless the class contains at least one method annotated with a
+request mapping annotation (<code>@RequestMapping</code>, <code>@GetMapping</code>, <code>@PostMapping</code>, <code>@PutMapping</code>,
+<code>@DeleteMapping</code>, <code>@PatchMapping</code>). Classes named "Controller" that do not handle HTTP requests are not flagged.</p>
+<p>The rule does not suggest <code>@Controller</code> or <code>@RestController</code> for classes that belong to non-web Spring infrastructure:</p>
 <ul>
-  <li><a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-stereotype-annotations">Spring
-  documentation - @Component and Further Stereotype Annotations</a></li>
+  <li>Classes implementing <code>ApplicationRunner</code>, <code>CommandLineRunner</code>, <code>HealthIndicator</code>, or
+  <code>ReactiveHealthIndicator</code></li>
+  <li>Classes annotated with <code>@Endpoint</code>, <code>@RestControllerEndpoint</code>, or <code>@ControllerEndpoint</code></li>
+</ul>
+<p>The rule does not raise an issue when the class already carries a specialized stereotype annotation (<code>@Controller</code>,
+<code>@RestController</code>, <code>@Service</code>, <code>@Repository</code>) alongside <code>@Component</code>.</p>
+<p>If your class intentionally uses <code>@Component</code> despite its name (for example, a multi-role bean or a class whose name coincidentally
+contains a suffix), mark the issue as "Won’t Fix". A genuine false positive would be a case where the rule suggests a stereotype that does not match
+the class’s actual role.</p>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Spring Framework Documentation - <a
+  href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#beans-stereotype-annotations">@Component and Further
+  Stereotype Annotations</a></li>
 </ul>
 

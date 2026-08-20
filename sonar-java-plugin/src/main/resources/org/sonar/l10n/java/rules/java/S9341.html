@@ -1,82 +1,156 @@
+<p>This is an issue when a framework annotation or metadata marker is used alongside another annotation that already includes it through annotation
+inheritance or composition mechanisms.</p>
 <h2>Why is this an issue?</h2>
-<p>Some Spring annotations are composed from other annotations through meta-annotation. When you use an annotation that already includes another
-annotation's behavior, explicitly adding the parent annotation is redundant. It creates visual noise and may indicate a misunderstanding of the
-framework's annotation composition model.</p>
-<p>Common examples include:</p>
+<p>Some frameworks use composed annotations or attribute inheritance to build functionality. A composed annotation is one that is declared to include
+another annotation’s behavior. When you use an annotation that composes other annotations, you automatically get all the functionality of those
+included annotations.</p>
+<p>For example, a framework might provide a combined controller annotation that is composed from a basic controller marker and a response formatting
+marker. This means when you add the combined annotation to a class, the framework automatically treats it as if it also has both the basic controller
+marker and the response formatting marker.</p>
+<p>When developers explicitly add both annotations, the parent annotation becomes redundant. It has no effect on how the framework processes the
+class, but it creates several problems:</p>
 <ul>
-  <li><code>@RestController</code> is meta-annotated with <code>@Controller</code> and <code>@ResponseBody</code></li>
-  <li><code>@Service</code>, <code>@Repository</code>, <code>@Controller</code>, and <code>@Configuration</code> are meta-annotated with
-  <code>@Component</code></li>
-  <li><code>@SpringBootApplication</code> is meta-annotated with <code>@Configuration</code>, <code>@EnableAutoConfiguration</code>, and
-  <code>@ComponentScan</code></li>
-  <li>Spring test annotations like <code>@SpringBootTest</code> already include <code>@ExtendWith(SpringExtension.class)</code></li>
+  <li><strong>Code clutter</strong>: Extra annotations make the code harder to read</li>
+  <li><strong>Confusion</strong>: It suggests the developer doesn’t understand the framework’s annotation composition model</li>
+  <li><strong>Maintenance burden</strong>: More annotations mean more to maintain and keep consistent</li>
+  <li><strong>False precision</strong>: It may mislead other developers into thinking both annotations are necessary</li>
+</ul>
+<p>The most common cases involve framework stereotype annotations. A base component marker is often the foundation, with the framework providing
+specialized versions like service markers, data access markers, controller markers, and configuration markers. Each of these specialized annotations
+is composed from the base component marker, so adding the base marker explicitly is redundant.</p>
+<p>Similar redundancies occur with combined controller annotations (which include both basic controller and response formatting markers), application
+bootstrap annotations (which include configuration, auto-configuration, and component scanning markers), and various framework test annotations.</p>
+<p>In Spring Framework, this specifically applies to meta-annotations. Common examples include:</p>
+<ul>
+  <li><strong>@RestController</strong> is meta-annotated with @Controller and @ResponseBody</li>
+  <li><strong>@Component</strong> is the base stereotype annotation, with specialized versions including @Service, @Repository, @Controller, and
+  @Configuration</li>
+  <li><strong>@SpringBootApplication</strong> is meta-annotated with @Configuration, @EnableAutoConfiguration, and @ComponentScan</li>
+</ul>
+<h3>What is the potential impact?</h3>
+<p>This impacts:</p>
+<ul>
+  <li><strong>Readability</strong>: Redundant declarative markers create visual noise that distracts from the class’s actual purpose</li>
+  <li><strong>Maintainability</strong>: Developers waste time trying to understand why both markers are present</li>
+  <li><strong>Team knowledge</strong>: The code may propagate misunderstandings about how framework conventions work</li>
 </ul>
 <h2>How to fix it in Spring</h2>
 <p>Remove the redundant parent annotation. Keep only the most specific annotation that provides the functionality you need.</p>
+<p>For stereotype annotations (<code>@Service</code>, <code>@Repository</code>, <code>@Controller</code>, <code>@Configuration</code>), remove
+<code>@Component</code> since it’s already included in these specialized annotations.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
-@Component // Noncompliant, @Service already implies @Component
+@Component  // Noncompliant
 @Service
 public class UserService {
+    public User findById(Long id) {
+        // service logic
+    }
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 @Service
 public class UserService {
+    public User findById(Long id) {
+        // service logic
+    }
 }
 </pre>
+<p>For REST controllers, remove <code>@Controller</code> and class-level <code>@ResponseBody</code> since <code>@RestController</code> already
+includes both. Also remove method-level <code>@ResponseBody</code> within <code>@RestController</code> classes since it’s already applied to all
+methods.</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="2" data-diff-type="noncompliant">
-@Controller // Noncompliant, @RestController already implies @Controller
+@Controller  // Noncompliant
 @RestController
 public class UserController {
+
+    @ResponseBody  // Noncompliant
+    @GetMapping("/users")
+    public List&lt;User&gt; getUsers() {
+        return userService.findAll();
+    }
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="2" data-diff-type="compliant">
 @RestController
 public class UserController {
+
+    @GetMapping("/users")
+    public List&lt;User&gt; getUsers() {
+        return userService.findAll();
+    }
 }
 </pre>
 <h2>How to fix it in Spring Boot</h2>
-<p>Remove <code>@Configuration</code>, <code>@EnableAutoConfiguration</code>, and <code>@ComponentScan</code> (when used without custom
-attributes) since <code>@SpringBootApplication</code> already includes all of these.</p>
+<p>For Spring Boot applications, remove <code>@Configuration</code>, <code>@SpringBootConfiguration</code>, <code>@EnableAutoConfiguration</code>, and
+<code>@ComponentScan</code> (when used without custom attributes) since <code>@SpringBootApplication</code> already includes all of these.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="3" data-diff-type="noncompliant">
-@Configuration // Noncompliant
+@Configuration  // Noncompliant
+@EnableAutoConfiguration  // Noncompliant
+@ComponentScan  // Noncompliant
 @SpringBootApplication
 public class MyApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="3" data-diff-type="compliant">
 @SpringBootApplication
 public class MyApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
 }
 </pre>
 <h2>How to fix it in Spring Test</h2>
-<p>Remove <code>@ExtendWith(SpringExtension.class)</code> when using specialized test annotations like <code>@SpringBootTest</code>,
-<code>@WebMvcTest</code>, <code>@DataJpaTest</code>, or <code>@WebFluxTest</code> since they already include this extension.</p>
+<p>For Spring test classes, remove <code>@ExtendWith(SpringExtension.class)</code> when using specialized test annotations like
+<code>@SpringBootTest</code>, <code>@WebMvcTest</code>, <code>@DataJpaTest</code>, or <code>@WebFluxTest</code> since they already include this
+extension. Also remove <code>@Transactional</code> when using <code>@DataJpaTest</code> since it’s already included.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="4" data-diff-type="noncompliant">
-@ExtendWith(SpringExtension.class) // Noncompliant
+@ExtendWith(SpringExtension.class)  // Noncompliant
 @SpringBootTest
 class UserServiceIntegrationTest {
+
+    @Test
+    void testUserCreation() {
+        // test logic
+    }
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="4" data-diff-type="compliant">
 @SpringBootTest
 class UserServiceIntegrationTest {
+
+    @Test
+    void testUserCreation() {
+        // test logic
+    }
 }
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>Spring Framework Documentation - <a href="https://docs.spring.io/spring-framework/reference/core/beans/classpath-scanning.html#beans-meta-annotations">Meta-Annotations and Composed Annotations</a></li>
-  <li>Spring Boot Documentation - <a href="https://docs.spring.io/spring-boot/reference/using/using-the-springbootapplication-annotation.html">Using the @SpringBootApplication Annotation</a></li>
+  <li>Spring Framework Documentation - <a
+  href="https://docs.spring.io/spring-framework/reference/core/beans/java/composing-configuration-classes.html">Composing Java-based
+  Configurations</a></li>
+  <li>Spring Framework Documentation - <a
+  href="https://docs.spring.io/spring-framework/reference/core/beans/classpath-scanning.html#beans-stereotype-annotations">Stereotype
+  Annotations</a></li>
+  <li>Spring Boot Documentation - <a href="https://docs.spring.io/spring-boot/reference/using/using-the-springbootapplication-annotation.html">Using
+  the @SpringBootApplication Annotation</a></li>
+  <li>Spring Framework Documentation - <a
+  href="https://docs.spring.io/spring-framework/reference/core/beans/classpath-scanning.html#beans-meta-annotations">Meta-Annotations and Composed
+  Annotations</a></li>
 </ul>
+
