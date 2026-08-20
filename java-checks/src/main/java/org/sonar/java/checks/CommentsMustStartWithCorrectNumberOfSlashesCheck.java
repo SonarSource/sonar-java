@@ -102,7 +102,7 @@ public class CommentsMustStartWithCorrectNumberOfSlashesCheck extends IssuableSu
     return new AnalyzerMessage(this, context.getInputFile(), textSpan, message, 0);
   }
 
-  /*
+  /**
    * Represents a span of text within a single line, defined by its line number and start/end positions.
    *
    * @param line The line number where the span is located (1-based index).
