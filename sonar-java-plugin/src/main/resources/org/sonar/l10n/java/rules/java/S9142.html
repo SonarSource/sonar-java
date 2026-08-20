@@ -49,7 +49,7 @@ Calling statement preparation methods inside a loop with the same SQL string def
   environments</li>
 </ul>
 <h3>Exceptions</h3>
-<p><code>String.split</code> does not compile a regular expression when the argument meets either of these conditions:</p>
+<p><code>String.split()</code> does not compile a regular expression when the argument meets either of these conditions:</p>
 <ul>
   <li>It is a one-char String and this character is not one of the regex metacharacters ".$|()[{^?*+\"</li>
   <li>It is a two-char String and the first char is the backslash and the second is not an ASCII digit or letter.</li>
@@ -132,3 +132,4 @@ for (int id : ids) {
   <li>{rule:java:S4248} - Regex patterns should not be created needlessly</li>
   <li>{rule:java:S6909} - Constant parameters in a "PreparedStatement" should not be set more than once</li>
 </ul>
+

@@ -4,20 +4,20 @@
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5min"
+    "constantCost": "5 min"
   },
   "tags": [
-    "suspicious"
+    "pitfall"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-9342",
   "sqKey": "S9342",
-  "scope": "All",
+  "scope": "Main",
   "quickfix": "unknown",
   "code": {
     "impacts": {
       "RELIABILITY": "HIGH"
     },
-    "attribute": "CLEAR"
+    "attribute": "COMPLETE"
   }
 }
