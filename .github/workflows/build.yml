@@ -58,8 +58,8 @@ jobs:
         item:
           - { runner: warp-custom-ubuntu-24-04, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
           - { runner: warp-custom-ubuntu-24-04, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
-          - { runner: github-windows-latest-m, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
-          - { runner: github-windows-latest-m, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
+          - { runner: warp-custom-windows-2022-l, profile: without-sonarqube-project, sq_version: LATEST_RELEASE }
+          - { runner: warp-custom-windows-2022-m, profile: only-sonarqube-project, sq_version: LATEST_RELEASE }
     name: Ruling QA
     needs:
       - build
@@ -71,6 +71,9 @@ jobs:
     env:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
+      - name: Config Git
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf input
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
@@ -108,11 +111,17 @@ jobs:
       - name: Run ruling tests
         shell: bash # Set explicitly so Bash is used on Windows runners too.
         env:
-          MAVEN_OPTS: "-Xmx3g"
+          MAVEN_OPTS: "-Xmx3g -Dfile.encoding=UTF-8"
+          JAVA_TOOL_OPTIONS: ""
           GITHUB_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).GITHUB_TOKEN }}
         run: |
           cd its/ruling
-          mvn package ${MAVEN_OUTPUT_ARGS} "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dmaven.test.redirectTestOutputToFile=false -Dparallel=methods -DuseUnlimitedThreads=true
+          extra_args=()
+          # Nested Maven builds share ~/.m2; Windows denies concurrent writes to *.lastUpdated.
+          if [[ "${RUNNER_OS}" != "Windows" ]]; then
+            extra_args+=(-Dparallel=methods -DuseUnlimitedThreads=true)
+          fi
+          mvn package ${MAVEN_OUTPUT_ARGS} "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dmaven.test.redirectTestOutputToFile=false "${extra_args[@]}"
       - name: Upload Actual Results On Failure
         if: failure()
         uses: ./.github/actions/upload-actual
@@ -364,7 +373,7 @@ jobs:
   qa-os-win:
     name: Build and Unit Test on Windows
     # No dependency on build step, because we do not need the build number.
-    runs-on: github-windows-latest-m
+    runs-on: warp-custom-windows-2022-m
     permissions:
       id-token: write  # Required for Vault OIDC authentication
       contents: write  # Required for repository access and tagging
@@ -387,6 +396,9 @@ jobs:
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
       - name: Run Maven
+        env:
+          JAVA_TOOL_OPTIONS: ""
+          MAVEN_OPTS: "-Xmx8g"
         run: mvn clean verify --batch-mode
 
   promote:

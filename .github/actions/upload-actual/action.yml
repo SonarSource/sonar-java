@@ -33,6 +33,7 @@ runs:
       if: runner.os != 'Windows'
 
     - name: Generate Diff Report
+      if: runner.os != 'Windows'
       shell: bash
       env:
         IT_DIR: ${{ inputs.it-dir }}
@@ -46,6 +47,7 @@ runs:
         npx diff2html-cli --input file --style side --file "target/diff_${NAME}.html" -- "target/test.diff"
 
     - name: Upload Diff Report
+      if: runner.os != 'Windows'
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: diff_${{ inputs.name }}
