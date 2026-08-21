@@ -306,6 +306,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   private static Map<String, Set<String>> collectAutowiredDependencies(ClassTree classTree) {
     Map<String, Set<String>> deps = new LinkedHashMap<>();
+    List<MethodTree> unannotatedConstructors = new ArrayList<>();
     for (Tree member : classTree.members()) {
       if (member instanceof VariableTree field) {
         if (field.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
@@ -313,13 +314,18 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
           String name = dependencyKey(field.simpleName().name(), extractQualifier(field.symbol().metadata()));
           deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(name);
         }
-      } else if (member.is(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD)) {
-        MethodTree method = (MethodTree) member;
+      } else if (member instanceof MethodTree method) {
         if (method.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
           parameterDependencies(method).forEach((type, names) ->
             deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(names));
+        } else if (method.is(Tree.Kind.CONSTRUCTOR)) {
+          unannotatedConstructors.add(method);
         }
       }
+    }
+    if (deps.isEmpty() && unannotatedConstructors.size() == 1) {
+      parameterDependencies(unannotatedConstructors.get(0)).forEach((type, names) ->
+        deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(names));
     }
     return deps;
   }
