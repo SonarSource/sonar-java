@@ -76,29 +76,6 @@ interface Repository {
   Entity load(String id);
 }
 </pre>
-<h4>Noncompliant code example</h4>
-<pre data-diff-id="4" data-diff-type="noncompliant">
-class Value {
-  /* @see java.lang.Object#hashCode() */ // Noncompliant: @see tag in a regular comment
-  @Override
-  public int hashCode() {
-    return 0;
-  }
-}
-</pre>
-<h4>Compliant solution</h4>
-<pre data-diff-id="4" data-diff-type="compliant">
-class Value {
-  /*
-   * (non-Javadoc)
-   * @see java.lang.Object#hashCode()
-   */
-  @Override
-  public int hashCode() {
-    return 0;
-  }
-}
-</pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
