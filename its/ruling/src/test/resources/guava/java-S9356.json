@@ -1,0 +1,82 @@
+{
+"com.google.guava:guava:src/com/google/common/base/Ascii.java": [
+647,
+653
+],
+"com.google.guava:guava:src/com/google/common/base/Splitter.java": [
+191,
+606,
+619
+],
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+2713,
+2719,
+2819
+],
+"com.google.guava:guava:src/com/google/common/cache/Striped64.java": [
+224,
+249
+],
+"com.google.guava:guava:src/com/google/common/collect/Collections2.java": [
+644,
+652
+],
+"com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
+165
+],
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+2406,
+2412,
+2484
+],
+"com.google.guava:guava:src/com/google/common/collect/Ordering.java": [
+738
+],
+"com.google.guava:guava:src/com/google/common/escape/CharEscaper.java": [
+98
+],
+"com.google.guava:guava:src/com/google/common/io/Files.java": [
+742
+],
+"com.google.guava:guava:src/com/google/common/primitives/Booleans.java": [
+156
+],
+"com.google.guava:guava:src/com/google/common/primitives/Bytes.java": [
+132
+],
+"com.google.guava:guava:src/com/google/common/primitives/Chars.java": [
+189
+],
+"com.google.guava:guava:src/com/google/common/primitives/Doubles.java": [
+181
+],
+"com.google.guava:guava:src/com/google/common/primitives/Floats.java": [
+177
+],
+"com.google.guava:guava:src/com/google/common/primitives/Ints.java": [
+196
+],
+"com.google.guava:guava:src/com/google/common/primitives/Longs.java": [
+165
+],
+"com.google.guava:guava:src/com/google/common/primitives/Shorts.java": [
+195
+],
+"com.google.guava:guava:src/com/google/common/reflect/ClassPath.java": [
+372,
+433
+],
+"com.google.guava:guava:src/com/google/common/reflect/TypeVisitor.java": [
+73
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+202,
+205
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/AtomicLongMap.java": [
+124,
+173,
+208,
+385
+]
+}
