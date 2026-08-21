@@ -16,7 +16,6 @@
  */
 package org.sonar.java.model.springcontext;
 
-import java.beans.Introspector;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -105,8 +104,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     String pkg = PackageUtils.packageNameOf(classTree.symbol());
 
     if (SpringUtils.STEREOTYPE_ANNOTATIONS.stream().anyMatch(meta::isAnnotatedWith)) {
-      String beanName = extractBeanName(meta)
-        .orElseGet(() -> defaultBeanName(classTree.simpleName().name()));
+      String beanName = SpringUtils.resolveStereotypeBeanName(meta, classTree.simpleName().name());
       List<String> deps = collectAutowiredDependencies(classTree);
       // Class-level bean (stereotype annotations)
       collectedBeans.add(new BeanData(
@@ -229,43 +227,9 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, deps);
   }
 
-  private static Optional<String> extractBeanName(SymbolMetadata meta) {
-    for (String annotation : SpringUtils.STEREOTYPE_ANNOTATIONS) {
-      List<SymbolMetadata.AnnotationValue> attrs = meta.valuesForAnnotation(annotation);
-      if (attrs != null) {
-        Optional<String> name = attrs.stream()
-          .filter(v -> "value".equals(v.name()) || "name".equals(v.name()))
-          .map(v -> (String) v.value())
-          .filter(s -> !s.isBlank())
-          .findFirst();
-        if (name.isPresent()) {
-          return name;
-        }
-      }
-    }
-    return Optional.empty();
-  }
-
-  private static String defaultBeanName(String simpleName) {
-    return Introspector.decapitalize(simpleName);
-  }
-
   private void collectBeanMethod(MethodTree method, String pkg) {
     SymbolMetadata beanMeta = method.symbol().metadata();
-    List<SymbolMetadata.AnnotationValue> attrs = beanMeta.valuesForAnnotation(SpringUtils.BEAN_ANNOTATION);
-    String beanName = Optional.ofNullable(attrs)
-      .flatMap(list -> list.stream()
-        .filter(v -> "value".equals(v.name()) || "name".equals(v.name()))
-        .map(v -> {
-          Object val = v.value();
-          if (val instanceof Object[] arr && arr.length > 0) {
-            return (String) arr[0];
-          }
-          return val instanceof String s ? s : null;
-        })
-        .filter(s -> s != null && !s.isBlank())
-        .findFirst())
-      .orElseGet(() -> method.simpleName().name());
+    String beanName = SpringUtils.resolveBeanMethodName(method);
 
     String returnTypeFqn = method.returnType() != null
       ? method.returnType().symbolType().fullyQualifiedName()
