@@ -196,7 +196,8 @@ public class JavaRulingTest {
       .setProperty("docker.skip", "true")
       .setProperty("java.version", "21")
       .setProperty("maven-bundle-plugin.version", "5.1.4")
-      .setProperty("maven.javadoc.skip", "true");
+      .setProperty("maven.javadoc.skip", "true")
+      .setProperty("sonar.java.experimental.batchModeSizeInKB", "420");
     executeBuildWithCommonProperties(build, projectName);
   }
 

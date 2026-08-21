@@ -12,6 +12,20 @@
   ],
   "packageRules": [
     {
+      "description": "Do not update intra-repository Maven parent POMs to released versions",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchDepTypes": [
+        "parent",
+        "parent-root"
+      ],
+      "matchPackageNames": [
+        "org.sonarsource.java:*"
+      ],
+      "enabled": false
+    },
+    {
       "description": "External projects used as stable Java analyzer test corpora",
       "matchManagers": [
         "maven"
