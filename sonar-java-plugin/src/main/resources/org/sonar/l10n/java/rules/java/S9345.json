@@ -1,0 +1,32 @@
+{
+  "title": "Classes with throwing constructors should be protected against Finalizer attacks",
+  "type": "VULNERABILITY",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cert",
+    "cwe",
+    "serialization"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-9345",
+  "sqKey": "S9345",
+  "scope": "Main",
+  "defaultQualityProfiles": [
+    "Sonar way"
+  ],
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "SECURITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  },
+  "securityStandards": {
+    "CWE": [586],
+    "CERT": ["OBJ11-J."]
+  }
+}
