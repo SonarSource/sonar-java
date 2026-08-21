@@ -1,0 +1,104 @@
+<p>This rule raises an issue when <code>compareTo()</code> or <code>compare()</code> orders values by subtracting integers. Integer subtraction can
+overflow and reverse the comparison result.</p>
+<h2>Why is this an issue?</h2>
+<p><code>Comparable.compareTo()</code> and <code>Comparator.compare()</code> must return a negative integer, zero, or a positive integer as the first
+value is less than, equal to, or greater than the second. The magnitude of that result does not matter, only its sign.</p>
+<p>A common shortcut is to return the difference of two numeric fields:</p>
+<pre>
+return this.value - other.value;
+</pre>
+<p>Java integer operators wrap on overflow instead of throwing. When the true difference is larger than <code>Integer.MAX_VALUE</code> or smaller than
+<code>Integer.MIN_VALUE</code>, the wrapped result can have the wrong sign. For example, <code>(int) (1_000_000_000L - (-1_500_000_000L))</code> is
+negative even though the first value is greater.</p>
+<p>The same problem appears when a <code>long</code> difference is narrowed to <code>int</code>:</p>
+<pre>
+return (int) (this.timestamp - other.timestamp);
+</pre>
+<p>That broken ordering violates the comparison contract. Sorting with <code>Arrays.sort()</code> or <code>Collections.sort()</code> can throw
+<code>IllegalArgumentException: Comparison method violates its general contract!</code>. Ordered collections such as <code>TreeSet</code> and
+<code>TreeMap</code> can become corrupted.</p>
+<p>Use <code>Integer.compare()</code> for <code>int</code> values and <code>Long.compare()</code> for <code>long</code> values. Those methods compare
+without computing a difference that can overflow.</p>
+<p>This rule does not flag floating-point subtraction in ordering methods. See {rule:java:S9148}.</p>
+<h2>How to fix it</h2>
+<p>Replace the subtraction with <code>Integer.compare()</code> or <code>Long.compare()</code>, matching the operand type.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class TimestampedEvent implements Comparable&lt;TimestampedEvent&gt; {
+  private long timestamp;
+
+  @Override
+  public int compareTo(TimestampedEvent other) {
+    return (int) (this.timestamp - other.timestamp); // Noncompliant
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class TimestampedEvent implements Comparable&lt;TimestampedEvent&gt; {
+  private long timestamp;
+
+  @Override
+  public int compareTo(TimestampedEvent other) {
+    return Long.compare(this.timestamp, other.timestamp);
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+import java.util.Comparator;
+
+class AgeComparator implements Comparator&lt;Person&gt; {
+  @Override
+  public int compare(Person left, Person right) {
+    return left.age - right.age; // Noncompliant
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+import java.util.Comparator;
+
+class AgeComparator implements Comparator&lt;Person&gt; {
+  @Override
+  public int compare(Person left, Person right) {
+    return Integer.compare(left.age, right.age);
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+import java.util.List;
+
+void sortById(List&lt;Event&gt; events) {
+  events.sort((left, right) -&gt; (int) (left.id - right.id)); // Noncompliant
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+import java.util.List;
+
+void sortById(List&lt;Event&gt; events) {
+  events.sort((left, right) -&gt; Long.compare(left.id, right.id));
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html#compare(int,int)">Integer.compare(int, int)</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html#compare(long,long)">Long.compare(long, long)</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Comparable.html#compareTo(T)">Comparable.compareTo</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Comparator.html#compare(T,T)">Comparator.compare</a></li>
+  <li>CERT - <a
+  href="https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/numeric-types-and-operations-num/num00-j">NUM00-J. Detect or prevent integer overflow</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S9148} - "Float.compare" or "Double.compare" should be used for floating-point comparisons</li>
+</ul>
+
