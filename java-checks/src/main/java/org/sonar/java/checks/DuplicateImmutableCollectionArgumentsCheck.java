@@ -19,15 +19,18 @@ package org.sonar.java.checks;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -140,8 +143,14 @@ public class DuplicateImmutableCollectionArgumentsCheck extends IssuableSubscrip
   }
 
   private static boolean areEquivalent(ExpressionTree expr1, ExpressionTree expr2) {
-    ExpressionTree e1 = ExpressionUtils.skipParentheses(expr1);
-    ExpressionTree e2 = ExpressionUtils.skipParentheses(expr2);
+    ExpressionTree e1 = resolveExpression(expr1);
+    ExpressionTree e2 = resolveExpression(expr2);
+
+    Optional<Object> const1 = e1.asConstant();
+    Optional<Object> const2 = e2.asConstant();
+    if (const1.isPresent() && const2.isPresent()) {
+      return const1.get().equals(const2.get());
+    }
 
     String str1 = ExpressionsHelper.getConstantValueAsString(e1).value();
     String str2 = ExpressionsHelper.getConstantValueAsString(e2).value();
@@ -155,6 +164,22 @@ public class DuplicateImmutableCollectionArgumentsCheck extends IssuableSubscrip
       return bool1.equals(bool2);
     }
 
-    return SyntacticEquivalence.areEquivalentIncludingSameVariables(e1, e2);
+    return ExpressionsHelper.alwaysReturnSameValue(e1)
+      && ExpressionsHelper.alwaysReturnSameValue(e2)
+      && SyntacticEquivalence.areEquivalentIncludingSameVariables(e1, e2);
+  }
+
+  private static ExpressionTree resolveExpression(ExpressionTree expression) {
+    ExpressionTree current = ExpressionUtils.skipParentheses(expression);
+    if (current.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = ((IdentifierTree) current).symbol();
+      if (!symbol.isUnknown()) {
+        ExpressionTree singleWrite = ExpressionsHelper.getSingleWriteUsage(symbol);
+        if (singleWrite != null) {
+          return resolveExpression(singleWrite);
+        }
+      }
+    }
+    return current;
   }
 }

@@ -8,9 +8,12 @@ an <code>IllegalArgumentException</code> is thrown at runtime during collection 
 contract. Because the factory methods validate their arguments at initialization time, duplicate entries cause an immediate runtime crash when the
 collection is constructed.</p>
 <h2>How to fix it</h2>
-<p>Review the arguments passed to the factory method: * For <code>Map.of()</code> and <code>Map.ofEntries()</code>, remove the redundant key-value
-pair or replace the duplicate key with the intended distinct key. * For <code>Set.of()</code>, remove the duplicated element or replace it with the
-intended distinct element.</p>
+<p>Review the arguments passed to the factory method:</p>
+<ul>
+  <li>For <code>Map.of()</code> and <code>Map.ofEntries()</code>, remove the redundant key-value pair or replace the duplicate key with the intended
+  distinct key.</li>
+  <li>For <code>Set.of()</code>, remove the duplicated element or replace it with the intended distinct element.</li>
+</ul>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
