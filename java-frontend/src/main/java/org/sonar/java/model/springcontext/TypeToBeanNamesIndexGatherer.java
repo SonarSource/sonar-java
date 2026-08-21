@@ -56,9 +56,6 @@ public class TypeToBeanNamesIndexGatherer extends SpringContextModelGatherer {
       collectedEntries.add(new BeanTypeEntry(beanName, collectTypeHierarchy(classTree.symbol())));
 
       for (MethodTree method : SpringUtils.getBeanMethods(classTree)) {
-        if (method.returnType() == null) {
-          continue;
-        }
         Set<String> typeHierarchy = collectTypeHierarchy(method.returnType().symbolType().symbol());
         for (String methodBeanName : SpringUtils.resolveBeanMethodNames(method)) {
           collectedEntries.add(new BeanTypeEntry(methodBeanName, typeHierarchy));

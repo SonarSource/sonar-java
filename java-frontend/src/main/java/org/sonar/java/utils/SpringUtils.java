@@ -105,7 +105,7 @@ public final class SpringUtils {
       List<SymbolMetadata.AnnotationValue> attrs = meta.valuesForAnnotation(annotation);
       if (attrs != null) {
         Optional<String> name = attrs.stream()
-          .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
+          .filter(v -> VALUE_ATTRIBUTE.equals(v.name()))
           .map(v -> (String) v.value())
           .filter(s -> s != null && !s.isBlank())
           .findFirst();
@@ -133,7 +133,7 @@ public final class SpringUtils {
         if (val instanceof Object[] arr) {
           return Arrays.stream(arr).filter(String.class::isInstance).map(String.class::cast);
         }
-        return val instanceof String s ? Stream.of(s) : Stream.empty();
+        return Stream.empty();
       })
       .filter(s -> !s.isBlank())
       .toList();
