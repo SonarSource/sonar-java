@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
@@ -28,12 +29,21 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 import static org.sonar.java.reporting.AnalyzerMessage.textSpanBetween;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.METHOD;
 
 @Rule(key = "S4682")
 public final class PrimitivesMarkedNullableCheck extends IssuableSubscriptionVisitor {
+
+  // Bean Validation @NotNull is a runtime constraint, not a nullability annotation.
+  // Primitives can never be null, so this constraint is meaningless on a primitive return type,
+  // but it is a different concern from what this rule targets (nullable annotations on primitives).
+  private static final Set<String> CONSTRAINT_ANNOTATIONS_NOT_FLAGGED = SetUtils.immutableSetOf(
+    "javax.validation.constraints.NotNull",
+    "jakarta.validation.constraints.NotNull"
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -50,7 +60,8 @@ public final class PrimitivesMarkedNullableCheck extends IssuableSubscriptionVis
         SymbolMetadata.AnnotationInstance annotation = nullabilityData.annotation();
         Tree annotationTree = nullabilityData.declaration();
         // Both "annotation" and "declaration" should never be null, as we only target directly annotated methods. We keep the check for defensive programming.
-        if (annotation != null && annotationTree != null) {
+        if (annotation != null && annotationTree != null
+          && !CONSTRAINT_ANNOTATIONS_NOT_FLAGGED.contains(annotation.symbol().type().fullyQualifiedName())) {
           String annotationName = annotation.symbol().name();
           QuickFixHelper.newIssue(context)
             .forRule(this)

@@ -1,5 +1,6 @@
 package checks;
 
+import jakarta.validation.constraints.NotNull;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,6 +51,12 @@ abstract class PrimitivesMarkedNullableCheckSample {
 
   @Nonnull
   public double getDouble2_2() { return 0.0; } // Compliant, Nonnull is useless, but is accepted as it can be added for consistency
+
+  @javax.validation.constraints.NotNull
+  public int getIntWithJavaxNotNull() { return 0; } // Compliant, Bean Validation @NotNull is a runtime constraint, not a nullable annotation
+
+  @NotNull
+  public int getIntWithJakartaNotNull() { return 0; } // Compliant, Bean Validation @NotNull is a runtime constraint, not a nullable annotation
 
   @javax.annotation.Nullable
   public Double getDouble3() { return 0.0; }
