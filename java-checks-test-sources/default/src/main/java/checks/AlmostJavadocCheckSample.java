@@ -150,6 +150,20 @@ class AlmostJavadocCheckSample {
     return this;
   }
 
+  // Noncompliant@+1
+  /* (non-javadoc) @see java.lang.Object#wait() */
+  public void lowercaseMarkerLookalike() {
+  }
+
+  // (non-Javadoc) {@link Object} */
+  public void eclipseMarkerLineComment() {
+  }
+
+  /* (non-Javadoc) returns </code> */
+  public String eclipseMarkerWithHtml() {
+    return name;
+  }
+
   record Point(int x, int y) {
     // Noncompliant@+1
     /* @param x the x coordinate */
