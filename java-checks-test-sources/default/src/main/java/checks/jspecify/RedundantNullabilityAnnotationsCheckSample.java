@@ -20,7 +20,7 @@ class RedundantNullabilityAnnotationsCheckSampleB {
     // ...
   }
 
-  @NotNull // Noncompliant {{Remove redundant annotation @NotNull as inside scope annotation @NullMarked at class level.}}
+  @NotNull // Compliant
   public Integer methodJXNonNullReturn(Object o) {
     return 0;
   }

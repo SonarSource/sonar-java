@@ -91,6 +91,11 @@ public class JSymbolMetadataNullabilityHelper {
     "io.reactivex.rxjava3.annotations.Nullable",
     "javax.annotation.Nullable",
     "jakarta.annotation.Nullable",
+    // Bean Validation @NotNull is a runtime constraint, not a static nullability guarantee.
+    // It is placed here rather than NONNULL_ANNOTATIONS because it cannot serve as a reliable
+    // static analysis signal (especially when groups= is used), so it is treated conservatively.
+    "javax.validation.constraints.NotNull",
+    "jakarta.validation.constraints.NotNull",
     "org.checkerframework.checker.nullness.compatqual.NullableDecl",
     "org.checkerframework.checker.nullness.compatqual.NullableType",
     "org.checkerframework.checker.nullness.qual.Nullable",
@@ -119,8 +124,6 @@ public class JSymbolMetadataNullabilityHelper {
     "edu.umd.cs.findbugs.annotations.NonNull",
     "io.reactivex.annotations.NonNull",
     "io.reactivex.rxjava3.annotations.NonNull",
-    "javax.validation.constraints.NotNull",
-    "jakarta.validation.constraints.NotNull",
     "lombok.NonNull",
     "org.checkerframework.checker.nullness.compatqual.NonNullDecl",
     "org.checkerframework.checker.nullness.compatqual.NonNullType",
