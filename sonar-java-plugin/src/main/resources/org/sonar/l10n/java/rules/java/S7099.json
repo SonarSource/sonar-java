@@ -1,0 +1,28 @@
+{
+  "title": "Archive entry names should be validated before being used in file paths",
+  "type": "VULNERABILITY",
+  "code": {
+    "impacts": {
+      "SECURITY": "HIGH"
+    },
+    "attribute": "TRUSTWORTHY"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "10min"
+  },
+  "tags": [
+    "cwe",
+    "zip-slip",
+    "path-traversal"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-7099",
+  "sqKey": "S7099",
+  "scope": "Main",
+  "quickfix": "unknown",
+  "securityStandards": {
+    "CWE": [22, 23]
+  }
+}
