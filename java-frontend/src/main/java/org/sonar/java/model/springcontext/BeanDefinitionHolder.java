@@ -18,6 +18,8 @@ package org.sonar.java.model.springcontext;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
@@ -52,11 +54,10 @@ public class BeanDefinitionHolder {
   private final BeanLocation location;
 
   /**
-   * Dependencies this bean requires.
-   * Key: the {@code @Qualifier} value if present, otherwise the field or parameter name at the injection point.
-   * Value: the fully-qualified type name.
+   * Dependencies this bean requires, keyed by required type FQN.
+   * Each value is the set of qualifier values or field/parameter names at each injection point of that type.
    */
-  private Map<String, String> dependingBeans;
+  private Map<String, Set<String>> dependingBeans;
 
   /** Comma-separated Spring profile expressions under which this bean is active, or {@code null} if unconditional. */
   @Nullable
@@ -72,7 +73,7 @@ public class BeanDefinitionHolder {
     this.location = location;
   }
 
-  private void setDependingBeans(Map<String, String> beans) {
+  private void setDependingBeans(Map<String, Set<String>> beans) {
     this.dependingBeans = beans;
   }
 
@@ -100,7 +101,7 @@ public class BeanDefinitionHolder {
     return location;
   }
 
-  public Map<String, String> getDependingBeans() {
+  public Map<String, Set<String>> getDependingBeans() {
     return dependingBeans;
   }
 
@@ -118,7 +119,7 @@ public class BeanDefinitionHolder {
     private final String module;
     private final String beanPackage;
     private final BeanLocation location;
-    private Map<String, String> dependingBeans = new LinkedHashMap<>();
+    private Map<String, Set<String>> dependingBeans = new LinkedHashMap<>();
     @Nullable
     private String profiles;
     private boolean isPrimary = false;
@@ -130,7 +131,7 @@ public class BeanDefinitionHolder {
       this.location = location;
     }
 
-    public Builder dependingBeans(Map<String, String> beans) {
+    public Builder dependingBeans(Map<String, Set<String>> beans) {
       this.dependingBeans = beans;
       return this;
     }
@@ -147,7 +148,8 @@ public class BeanDefinitionHolder {
 
     public BeanDefinitionHolder build() {
       BeanDefinitionHolder holder = new BeanDefinitionHolder(type, module, beanPackage, location);
-      holder.setDependingBeans(Map.copyOf(dependingBeans));
+      holder.setDependingBeans(dependingBeans.entrySet().stream()
+        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, e -> Set.copyOf(e.getValue()))));
       holder.setProfiles(profiles);
       if (isPrimary) {
         holder.setPrimary();
