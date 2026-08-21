@@ -18,8 +18,10 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
@@ -37,9 +39,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S9361")
 public class DuplicateImmutableCollectionArgumentsCheck extends IssuableSubscriptionVisitor {
 
-  private static final String MAP_OF_MESSAGE = "Remove or rename this duplicate key; \"Map.of\" throws an \"IllegalArgumentException\" at runtime when keys are duplicated.";
-  private static final String MAP_OF_ENTRIES_MESSAGE = "Remove or rename this duplicate key; \"Map.ofEntries\" throws an \"IllegalArgumentException\" at runtime when keys are duplicated.";
-  private static final String SET_OF_MESSAGE = "Remove or replace this duplicate element; \"Set.of\" throws an \"IllegalArgumentException\" at runtime when elements are duplicated.";
+  private static final String MESSAGE_TEMPLATE = "Remove or %s this duplicate %s; \"%s\" throws an \"IllegalArgumentException\" at runtime when %s are duplicated.";
+  private static final String MAP_OF_MESSAGE = String.format(MESSAGE_TEMPLATE, "rename", "key", "Map.of", "keys");
+  private static final String MAP_OF_ENTRIES_MESSAGE = String.format(MESSAGE_TEMPLATE, "rename", "key", "Map.ofEntries", "keys");
+  private static final String SET_OF_MESSAGE = String.format(MESSAGE_TEMPLATE, "replace", "element", "Set.of", "elements");
 
   private static final String FIRST_KEY_SECONDARY_MESSAGE = "First occurrence of this key.";
   private static final String FIRST_ELEMENT_SECONDARY_MESSAGE = "First occurrence of this element.";
@@ -170,13 +173,17 @@ public class DuplicateImmutableCollectionArgumentsCheck extends IssuableSubscrip
   }
 
   private static ExpressionTree resolveExpression(ExpressionTree expression) {
+    return resolveExpression(expression, new HashSet<>());
+  }
+
+  private static ExpressionTree resolveExpression(ExpressionTree expression, Set<Symbol> visited) {
     ExpressionTree current = ExpressionUtils.skipParentheses(expression);
     if (current.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) current).symbol();
-      if (!symbol.isUnknown()) {
+      if (!symbol.isUnknown() && visited.add(symbol)) {
         ExpressionTree singleWrite = ExpressionsHelper.getSingleWriteUsage(symbol);
         if (singleWrite != null) {
-          return resolveExpression(singleWrite);
+          return resolveExpression(singleWrite, visited);
         }
       }
     }

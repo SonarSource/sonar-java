@@ -184,6 +184,17 @@ class DuplicateImmutableCollectionArgumentsCheckSample {
     List<String> list = List.of("dup", "dup", "dup"); // Compliant: List.of allows duplicates
   }
 
+  static class CyclicDeclarations {
+    static int a = b;
+    static int b = a;
+    int selfRef = selfRef;
+
+    void testCyclic() {
+      Map<Integer, String> map = Map.of(a, "a", b, "b"); // Compliant
+      Set<Integer> set = Set.of(selfRef, 1); // Compliant
+    }
+  }
+
   private String generateId() {
     return UUID.randomUUID().toString();
   }
