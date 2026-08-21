@@ -1,0 +1,32 @@
+{
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueChangeClosure.java": [
+79
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicate.java": [
+110
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanToPropertyValueTransformer.java": [
+71
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/FluentPropertyBeanIntrospector.java": [
+78
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java": [
+44
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java": [
+1304
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ResultSetDynaClass.java": [
+82
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/RowSetDynaClass.java": [
+66
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/SuppressPropertiesBeanIntrospector.java": [
+38
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/ArrayConverter.java": [
+129
+]
+}
