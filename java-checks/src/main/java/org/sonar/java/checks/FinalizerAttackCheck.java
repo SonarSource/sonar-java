@@ -21,6 +21,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -46,10 +47,14 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
       ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
       return;
     }
+    List<JavaFileScannerContext.Location> secondaryLocations = Collections.singletonList(
+      new JavaFileScannerContext.Location("Non-final class", classTree.simpleName()));
     for (Tree member : classTree.members()) {
       if (member.is(Kind.CONSTRUCTOR) && isVulnerableConstructor((MethodTree) member)) {
-        reportIssue(classTree.simpleName(), "Make this class \"final\" or make the throwing constructors \"private\".");
-        return;
+        MethodTree constructor = (MethodTree) member;
+        reportIssue(constructor.simpleName(),
+          "Make this class \"final\" or make this throwing constructor \"private\".",
+          secondaryLocations, null);
       }
     }
   }

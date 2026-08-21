@@ -4,10 +4,10 @@ class FinalizerAttackCheckSample {
 
   // --- Noncompliant: non-final class with throwing constructor ---
 
-  static class SecurityService { // Noncompliant {{Make this class "final" or make the throwing constructors "private".}}
+  static class SecurityService { // Secondary {{Non-final class}}
     private final String token;
 
-    public SecurityService(String token) throws IllegalArgumentException {
+    public SecurityService(String token) throws IllegalArgumentException { // Noncompliant {{Make this class "final" or make this throwing constructor "private".}}
       if (token == null) {
         throw new IllegalArgumentException("Invalid token");
       }
@@ -15,24 +15,24 @@ class FinalizerAttackCheckSample {
     }
   }
 
-  static class AuthProvider { // Noncompliant
-    public AuthProvider(String credentials) throws Exception {
+  static class AuthProvider { // Secondary {{Non-final class}}
+    public AuthProvider(String credentials) throws Exception { // Noncompliant
       if (credentials.isEmpty()) {
         throw new Exception("Bad credentials");
       }
     }
   }
 
-  static class ResourceLoader { // Noncompliant
-    ResourceLoader(String path) {
+  static class ResourceLoader { // Secondary {{Non-final class}}
+    ResourceLoader(String path) { // Noncompliant
       if (path == null) {
         throw new NullPointerException();
       }
     }
   }
 
-  static class MultiConstructorService { // Noncompliant
-    MultiConstructorService(int id) throws Exception {
+  static class MultiConstructorService { // Secondary {{Non-final class}}
+    MultiConstructorService(int id) throws Exception { // Noncompliant
       if (id < 0) {
         throw new Exception("Negative id");
       }
@@ -42,16 +42,16 @@ class FinalizerAttackCheckSample {
     }
   }
 
-  static class ProtectedConstructorService { // Noncompliant
-    protected ProtectedConstructorService(String data) throws Exception {
+  static class ProtectedConstructorService { // Secondary {{Non-final class}}
+    protected ProtectedConstructorService(String data) throws Exception { // Noncompliant
       if (data == null) {
         throw new Exception("Null data");
       }
     }
   }
 
-  static class ThrowsClauseOnly { // Noncompliant
-    public ThrowsClauseOnly() throws Exception {
+  static class ThrowsClauseOnly { // Secondary {{Non-final class}}
+    public ThrowsClauseOnly() throws Exception { // Noncompliant
     }
   }
 
@@ -142,8 +142,8 @@ class FinalizerAttackCheckSample {
 
   // --- Noncompliant: throw in constructor body without throws clause ---
 
-  static class ConfigLoader { // Noncompliant
-    public ConfigLoader(String config) {
+  static class ConfigLoader { // Secondary {{Non-final class}}
+    public ConfigLoader(String config) { // Noncompliant
       if (config == null) {
         throw new IllegalStateException("Missing config");
       }
@@ -163,8 +163,8 @@ class FinalizerAttackCheckSample {
 
   // --- Noncompliant: nested throw in try block within constructor ---
 
-  static class DatabaseConnection { // Noncompliant
-    public DatabaseConnection(String url) {
+  static class DatabaseConnection { // Secondary {{Non-final class}}
+    public DatabaseConnection(String url) { // Noncompliant
       try {
         if (url == null) {
           throw new RuntimeException("Null URL");
