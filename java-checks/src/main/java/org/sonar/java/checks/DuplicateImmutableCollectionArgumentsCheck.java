@@ -47,20 +47,22 @@ public class DuplicateImmutableCollectionArgumentsCheck extends IssuableSubscrip
   private static final String FIRST_KEY_SECONDARY_MESSAGE = "First occurrence of this key.";
   private static final String FIRST_ELEMENT_SECONDARY_MESSAGE = "First occurrence of this element.";
 
+  private static final String JAVA_UTIL_MAP = "java.util.Map";
+
   private static final MethodMatchers MAP_OF = MethodMatchers.create()
-    .ofTypes("java.util.Map")
+    .ofTypes(JAVA_UTIL_MAP)
     .names("of")
     .withAnyParameters()
     .build();
 
   private static final MethodMatchers MAP_OF_ENTRIES = MethodMatchers.create()
-    .ofTypes("java.util.Map")
+    .ofTypes(JAVA_UTIL_MAP)
     .names("ofEntries")
     .withAnyParameters()
     .build();
 
   private static final MethodMatchers MAP_ENTRY = MethodMatchers.create()
-    .ofTypes("java.util.Map")
+    .ofTypes(JAVA_UTIL_MAP)
     .names("entry")
     .addParametersMatcher(MethodMatchers.ANY, MethodMatchers.ANY)
     .build();

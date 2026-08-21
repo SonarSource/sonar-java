@@ -185,13 +185,25 @@ class DuplicateImmutableCollectionArgumentsCheckSample {
   }
 
   static class CyclicDeclarations {
-    static int a = b;
-    static int b = a;
-    int selfRef = selfRef;
+    int a;
+    int b;
+    int self;
+
+    void setA() {
+      a = b;
+    }
+
+    void setB() {
+      b = a;
+    }
+
+    void setSelf() {
+      self = self;
+    }
 
     void testCyclic() {
       Map<Integer, String> map = Map.of(a, "a", b, "b"); // Compliant
-      Set<Integer> set = Set.of(selfRef, 1); // Compliant
+      Set<Integer> set = Set.of(self, 1); // Compliant
     }
   }
 
