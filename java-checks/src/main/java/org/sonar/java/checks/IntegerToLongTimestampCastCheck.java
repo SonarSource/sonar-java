@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 @Rule(key = "S9346")
 public class IntegerToLongTimestampCastCheck extends AbstractMethodDetection {
@@ -80,9 +81,13 @@ public class IntegerToLongTimestampCastCheck extends AbstractMethodDetection {
   private void checkArgument(ExpressionTree argument) {
     ExpressionTree arg = ExpressionUtils.skipParentheses(argument);
     if (arg.is(Tree.Kind.TYPE_CAST)) {
-      arg = ((TypeCastTree) arg).expression();
+      TypeCastTree cast = (TypeCastTree) arg;
+      Type castType = cast.type().symbolType();
+      if (castType.isPrimitive(Type.Primitives.LONG)) {
+        arg = ExpressionUtils.skipParentheses(cast.expression());
+      }
     }
-    if (arg.is(Tree.Kind.INT_LITERAL)) {
+    if (isIntegerLiteral(arg)) {
       return;
     }
     Type type = arg.symbolType();
@@ -92,6 +97,16 @@ public class IntegerToLongTimestampCastCheck extends AbstractMethodDetection {
     if (isNarrowIntegerType(type)) {
       reportIssue(argument, MESSAGE);
     }
+  }
+
+  private static boolean isIntegerLiteral(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.INT_LITERAL)) {
+      return true;
+    }
+    if (expression.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
+      return ((UnaryExpressionTree) expression).expression().is(Tree.Kind.INT_LITERAL);
+    }
+    return false;
   }
 
   private static boolean isNarrowIntegerType(Type type) {

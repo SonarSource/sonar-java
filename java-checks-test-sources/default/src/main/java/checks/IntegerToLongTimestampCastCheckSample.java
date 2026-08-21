@@ -45,6 +45,11 @@ class IntegerToLongTimestampCastCheckSample {
     cal.setTimeInMillis(intVar); // Noncompliant
   }
 
+  void noncompliantNarrowingCast() {
+    long longVar = 1234567890L;
+    new Date((int) longVar); // Noncompliant
+  }
+
   void noncompliantOtherNarrowTypes() {
     short shortVar = 100;
     byte byteVar = 10;
@@ -74,6 +79,9 @@ class IntegerToLongTimestampCastCheckSample {
 
   void compliantIntLiteral() {
     new Date(0);
+    new Date(-1);
+    new Date(+1);
+    new Date((long) (0));
   }
 
   void compliantLongVariable() {

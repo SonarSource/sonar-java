@@ -5,14 +5,14 @@
     "impacts": {
       "RELIABILITY": "HIGH"
     },
-    "attribute": "COMPLETE"
+    "attribute": "LOGICAL"
   },
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "tags": [],
+  "tags": ["pitfall", "datetime"],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-9346",
   "sqKey": "S9346",
