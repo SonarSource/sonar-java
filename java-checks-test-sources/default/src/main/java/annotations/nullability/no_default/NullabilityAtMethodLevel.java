@@ -71,6 +71,7 @@ public class NullabilityAtMethodLevel {
     return new Object();
   }
 
+
 }
 
 abstract class NullabilityAtMethodLevelParent {

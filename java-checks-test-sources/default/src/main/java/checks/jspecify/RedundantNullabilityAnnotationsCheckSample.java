@@ -2,7 +2,6 @@ package checks.jspecify;
 
 import java.util.List;
 import javax.annotation.meta.When;
-import javax.validation.constraints.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.NullUnmarked;
@@ -18,11 +17,6 @@ class RedundantNullabilityAnnotationsCheckSampleB {
 
   public void methodNonNullParam(@javax.annotation.Nonnull(when= When.ALWAYS) Object o) { // Noncompliant {{Remove redundant annotation @Nonnull(when=ALWAYS) as inside scope annotation @NullMarked at class level.}}
     // ...
-  }
-
-  @NotNull // Noncompliant {{Remove redundant annotation @NotNull as inside scope annotation @NullMarked at class level.}}
-  public Integer methodJXNonNullReturn(Object o) {
-    return 0;
   }
 
   @javax.annotation.Nonnull(when= When.ALWAYS) // Noncompliant {{Remove redundant annotation @Nonnull(when=ALWAYS) as inside scope annotation @NullMarked at class level.}}

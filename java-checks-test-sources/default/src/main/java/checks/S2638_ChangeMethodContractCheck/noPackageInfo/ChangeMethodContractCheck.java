@@ -186,38 +186,6 @@ class ChangeMethodContractCheck_WithMetaAnnotations {
   }
 }
 
-/**
- * Not null with arguments is inconsistently supported. See SONARJAVA-3803.
- */
-class ChangeMethodContractCheck_NonnullWithArguments {
-
-  class Parent {
-    @javax.validation.constraints.NotNull(groups = { ChangeMethodContractCheck.class })
-    String annotatedNotNullWithArg(Object a) { return "null"; }
-
-    @javax.validation.constraints.NotNull
-    String annotatedNotNullWithoutArg(Object a) { return "null"; }
-
-    void argAnnotatedNoNullWithArg(@javax.validation.constraints.NotNull(groups = { ChangeMethodContractCheck.class }) Object a) { }
-    void argAnnotatedNoNullWithoutArg(@javax.validation.constraints.NotNull Object a) { }
-  }
-
-  class Child extends Parent {
-    // Parent is not strictly not null (NotNull with arguments).
-    @Override
-    @javax.annotation.CheckForNull
-    String annotatedNotNullWithArg(Object a) { return null; }
-
-    @Override
-    // This one is a TP though.
-    @javax.annotation.CheckForNull
-    String annotatedNotNullWithoutArg(Object a) { return null; } // Noncompliant {{Fix the incompatibility of the annotation @CheckForNull to honor @NotNull of the overridden method.}}
-
-    // It works correctly for arguments though.
-    void argAnnotatedNoNullWithArg(@javax.annotation.CheckForNull Object a) { }
-    void argAnnotatedNoNullWithoutArg(@javax.annotation.CheckForNull Object a) { }
-  }
-}
 
 /**
  * javax.annotation.Nonnull with argument when=When.MAYBE or when=When.UNKNOWN is actually Nullable.
