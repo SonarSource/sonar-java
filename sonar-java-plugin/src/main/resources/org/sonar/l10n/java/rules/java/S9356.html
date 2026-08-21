@@ -1,0 +1,67 @@
+<p>This rule raises an issue when a statement that skips the rest of the current loop iteration and proceeds to the next iteration is used in a loop,
+including both simple and labeled forms.</p>
+<p>In Java, this specifically refers to the <code>continue</code> statement.</p>
+<h2>Why is this an issue?</h2>
+<p>Loop continuation statements transfer control to the next iteration of a loop, skipping the remaining code in the current iteration. While this is
+a valid control flow mechanism in many languages, it can make loop logic harder to understand and maintain.</p>
+<p>When a developer encounters a loop continuation statement, they must mentally trace backwards to understand which loop will be affected and
+forwards to understand which code will be skipped. This cognitive overhead increases with labeled continuation statements, which can jump to any
+enclosing loop rather than just the innermost one.</p>
+<p>The presence of loop continuation statements often indicates that the loop body could be restructured for better clarity. In most cases, the same
+logic can be expressed using positive conditional logic (if-then) instead of negative conditional logic (if-continue), making the code’s intent more
+explicit.</p>
+<p>Labeled continuation statements are particularly problematic because they:</p>
+<ul>
+  <li>Create non-local control flow that is difficult to trace</li>
+  <li>Often indicate overly complex nested loops that should be decomposed</li>
+  <li>Can be easily confused with labeled early exit statements</li>
+  <li>Make it harder to reason about loop invariants and termination conditions</li>
+</ul>
+<p>In Java, this refers to the <code>continue</code> statement.</p>
+<h3>What is the potential impact?</h3>
+<p>Using statements that skip the remainder of the current loop iteration and jump to the next iteration reduces code readability and maintainability.
+The impact includes:</p>
+<ul>
+  <li><strong>Increased cognitive load</strong>: Developers must mentally trace control flow to understand which code executes and when</li>
+  <li><strong>Higher maintenance cost</strong>: Future modifications become more error-prone when control flow is non-obvious</li>
+  <li><strong>Reduced testability</strong>: Complex control flow with iteration-skipping statements is harder to test comprehensively</li>
+  <li><strong>Team comprehension</strong>: Code reviews and knowledge transfer become more difficult</li>
+</ul>
+<p>For statements that skip to outer loop iterations (non-local jumps), these impacts are amplified because the control flow becomes even less local
+and more difficult to follow.</p>
+<h2>How to fix it</h2>
+<p>Replace the <code>continue</code> statement with inverted conditional logic. Instead of using <code>continue</code> to skip certain iterations, use
+a positive <code>if</code> statement to explicitly process the desired iterations. This makes the loop’s intent clearer by showing what should happen
+rather than what should be skipped.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+for (int i = 0; i &lt; items.length; i++) {
+    if (items[i] == null) {
+        continue; // Noncompliant
+    }
+    processItem(items[i]);
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+for (int i = 0; i &lt; items.length; i++) {
+    if (items[i] != null) {
+        processItem(items[i]);
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/branch.html">Branching Statements</a></li>
+  <li>Refactoring Guru - <a href="https://refactoring.guru/replace-nested-conditional-with-guard-clauses">Replace Nested Conditional with Guard
+  Clauses</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S135} - Loops should not contain more than a single 'break' or 'continue' statement</li>
+  <li>{rule:java:S1119} - Labels should not be used</li>
+  <li>{rule:java:S3626} - Jump statements should not be redundant</li>
+</ul>
+

@@ -1,0 +1,25 @@
+{
+  "title": "\"continue\" should not be used in loops",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "loop",
+    "confusing",
+    "brain-overload"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9356",
+  "sqKey": "S9356",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  }
+}
