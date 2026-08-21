@@ -82,6 +82,16 @@ class TypeToBeanNamesIndexGathererTest extends SpringContextGathererTest {
       .contains("simpleServiceBean", "namedBean", "arrayNamedBean", "emptyNameArrayMethod");
   }
 
+  @Test
+  void bean_method_aliases_are_all_registered() {
+    scan("src/test/files/springcontext/ConfigurationWithBeanMethods.java");
+
+    // @Bean(name = {"arrayNamedBean", "alias"}) — both names must appear in the index
+    var index = model.getTypeToBeanNamesIndex();
+    assertThat(index.getNamesForType("org.springframework.context.ApplicationContext"))
+      .contains("arrayNamedBean", "alias");
+  }
+
   // ---- Multiple beans ---------------------------------------------------------
 
   @Test

@@ -17,8 +17,10 @@
 package org.sonar.java.utils;
 
 import java.beans.Introspector;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -105,7 +107,7 @@ public final class SpringUtils {
         Optional<String> name = attrs.stream()
           .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
           .map(v -> (String) v.value())
-          .filter(s -> !s.isBlank())
+          .filter(s -> s != null && !s.isBlank())
           .findFirst();
         if (name.isPresent()) {
           return name.get();
@@ -116,24 +118,34 @@ public final class SpringUtils {
   }
 
   /**
-   * Resolves the Spring bean name for a {@code @Bean} factory method.
-   * Returns the explicit name/value from the annotation if present, otherwise the method name.
+   * Resolves all Spring bean names for a {@code @Bean} factory method, including aliases.
+   * Returns the explicit names from the annotation if present, otherwise a singleton list of the method name.
+   */
+  public static List<String> resolveBeanMethodNames(MethodTree method) {
+    List<SymbolMetadata.AnnotationValue> attrs = method.symbol().metadata().valuesForAnnotation(BEAN_ANNOTATION);
+    if (attrs == null) {
+      return List.of(method.simpleName().name());
+    }
+    List<String> names = attrs.stream()
+      .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
+      .flatMap(v -> {
+        Object val = v.value();
+        if (val instanceof Object[] arr) {
+          return Arrays.stream(arr).filter(String.class::isInstance).map(String.class::cast);
+        }
+        return val instanceof String s ? Stream.of(s) : Stream.empty();
+      })
+      .filter(s -> !s.isBlank())
+      .toList();
+    return names.isEmpty() ? List.of(method.simpleName().name()) : names;
+  }
+
+  /**
+   * Resolves the primary Spring bean name for a {@code @Bean} factory method.
+   * Returns the first explicit name from the annotation if present, otherwise the method name.
    */
   public static String resolveBeanMethodName(MethodTree method) {
-    List<SymbolMetadata.AnnotationValue> attrs = method.symbol().metadata().valuesForAnnotation(BEAN_ANNOTATION);
-    return Optional.ofNullable(attrs)
-      .flatMap(list -> list.stream()
-        .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
-        .map(v -> {
-          Object val = v.value();
-          if (val instanceof Object[] arr && arr.length > 0) {
-            return (String) arr[0];
-          }
-          return val instanceof String s ? s : null;
-        })
-        .filter(s -> s != null && !s.isBlank())
-        .findFirst())
-      .orElseGet(() -> method.simpleName().name());
+    return resolveBeanMethodNames(method).get(0);
   }
 
   public static List<MethodTree> getBeanMethods(ClassTree classTree) {
