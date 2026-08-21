@@ -71,6 +71,19 @@ public class NullabilityAtMethodLevel {
     return new Object();
   }
 
+  // ============== Bean Validation @NotNull is treated as WEAK_NULLABLE, not NON_NULL ==============
+  @javax.validation.constraints.NotNull
+  public Object id2025_type_WEAK_NULLABLE_level_METHOD(
+    @javax.validation.constraints.NotNull Object id2026_type_WEAK_NULLABLE_level_VARIABLE) {
+    return new Object();
+  }
+
+  @jakarta.validation.constraints.NotNull
+  public Object id2027_type_WEAK_NULLABLE_level_METHOD(
+    @jakarta.validation.constraints.NotNull Object id2028_type_WEAK_NULLABLE_level_VARIABLE) {
+    return new Object();
+  }
+
 }
 
 abstract class NullabilityAtMethodLevelParent {

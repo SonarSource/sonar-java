@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.JUtils;
@@ -34,11 +35,20 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import org.sonarsource.analyzer.commons.collections.SetUtils;
+
 import static org.sonar.java.checks.helpers.NullabilityDataUtils.nullabilityAsString;
 import static org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityLevel.PACKAGE;
 
 @Rule(key = "S2638")
 public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
+
+  // Bean Validation @NotNull is a runtime constraint, not a static nullability guarantee.
+  // When the parent parameter is annotated with it, strengthening it to @Nonnull in the child is not a contract violation.
+  private static final Set<String> BEAN_VALIDATION_ANNOTATIONS = SetUtils.immutableSetOf(
+    "javax.validation.constraints.NotNull",
+    "jakarta.validation.constraints.NotNull"
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -83,9 +93,12 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
 
   private void compareNullability(TypeTree tree, SymbolMetadata upperBound, SymbolMetadata lowerBound, boolean overriddenIsLowerBound) {
     // Check current level
-    if (upperBound.nullabilityData().isNullable(PACKAGE, false, false)
-        && lowerBound.nullabilityData().isNonNull(PACKAGE, false, false)) {
-      reportIssue(tree, lowerBound.nullabilityData(), upperBound.nullabilityData(), overriddenIsLowerBound);
+    NullabilityData upperData = upperBound.nullabilityData();
+    NullabilityData lowerData = lowerBound.nullabilityData();
+    if (!isBeanValidationAnnotation(upperData)
+        && upperData.isNullable(PACKAGE, false, false)
+        && lowerData.isNonNull(PACKAGE, false, false)) {
+      reportIssue(tree, lowerData, upperData, overriddenIsLowerBound);
     }
 
     // Check type parameters
@@ -112,6 +125,12 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
 
   private void checkParameter(VariableTree parameter, SymbolMetadata overrideeParam) {
     compareNullability(parameter.type(), overrideeParam, parameter.symbol().metadata(), false);
+  }
+
+  private static boolean isBeanValidationAnnotation(NullabilityData data) {
+    SymbolMetadata.AnnotationInstance annotation = data.annotation();
+    return annotation != null
+      && BEAN_VALIDATION_ANNOTATIONS.contains(annotation.symbol().type().fullyQualifiedName());
   }
 
   private void reportIssue(Tree reportLocation, NullabilityData upperBound, NullabilityData lowerBound, boolean overriddenIsLowerBound) {

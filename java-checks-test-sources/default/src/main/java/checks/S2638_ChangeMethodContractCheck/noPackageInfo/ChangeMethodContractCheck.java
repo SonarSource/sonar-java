@@ -187,35 +187,63 @@ class ChangeMethodContractCheck_WithMetaAnnotations {
 }
 
 /**
- * Not null with arguments is inconsistently supported. See SONARJAVA-3803.
+ * Javax and Jakarta validation NotNull annotations are treated as weakly nullable.
  */
-class ChangeMethodContractCheck_NonnullWithArguments {
+class ChangeMethodContractCheck_JavaxAndJakartaValidation {
 
   class Parent {
     @javax.validation.constraints.NotNull(groups = { ChangeMethodContractCheck.class })
-    String annotatedNotNullWithArg(Object a) { return "null"; }
+    String annotatedJavaxNotNullWithArg(Object a) { return "null"; }
 
     @javax.validation.constraints.NotNull
-    String annotatedNotNullWithoutArg(Object a) { return "null"; }
+    String annotatedJavaxNotNullWithoutArg(Object a) { return "null"; }
+
+    @jakarta.validation.constraints.NotNull(groups = { ChangeMethodContractCheck.class })
+    String annotatedJakartaNotNullWithArg(Object a) { return "null"; }
+
+    @jakarta.validation.constraints.NotNull
+    String annotatedJakartaNotNullWithoutArg(Object a) { return "null"; }
 
     void argAnnotatedNoNullWithArg(@javax.validation.constraints.NotNull(groups = { ChangeMethodContractCheck.class }) Object a) { }
     void argAnnotatedNoNullWithoutArg(@javax.validation.constraints.NotNull Object a) { }
+    void argAnnotatedJavaxNotNull(@javax.validation.constraints.NotNull Object a) { }
+    void argAnnotatedJakartaNotNull(@jakarta.validation.constraints.NotNull Object a) { }
+
+    @javax.validation.constraints.NotNull
+    String methodNonnullJavaxBvReturn(Object a) { return ""; }
+    @jakarta.validation.constraints.NotNull
+    String methodNonnullJakartaBvReturn(Object a) { return ""; }
   }
 
   class Child extends Parent {
-    // Parent is not strictly not null (NotNull with arguments).
+    // Parent is weakly nullable.
     @Override
     @javax.annotation.CheckForNull
-    String annotatedNotNullWithArg(Object a) { return null; }
+    String annotatedJavaxNotNullWithArg(Object a) { return null; }
 
     @Override
-    // This one is a TP though.
     @javax.annotation.CheckForNull
-    String annotatedNotNullWithoutArg(Object a) { return null; } // Noncompliant {{Fix the incompatibility of the annotation @CheckForNull to honor @NotNull of the overridden method.}}
+    String annotatedJavaxNotNullWithoutArg(Object a) { return null; }
 
-    // It works correctly for arguments though.
+    @Override
+    @javax.annotation.CheckForNull
+    String annotatedJakartaNotNullWithArg(Object a) { return null; }
+
+    @Override
+    @javax.annotation.CheckForNull
+    String annotatedJakartaNotNullWithoutArg(Object a) { return null; }
+
+    // It works correctly also for arguments.
     void argAnnotatedNoNullWithArg(@javax.annotation.CheckForNull Object a) { }
     void argAnnotatedNoNullWithoutArg(@javax.annotation.CheckForNull Object a) { }
+    // Bean Validation @NotNull is a runtime constraint: strengthening to @Nonnull in child is not a contract violation.
+    void argAnnotatedJavaxNotNull(@javax.annotation.Nonnull Object a) { } // Compliant
+    void argAnnotatedJakartaNotNull(@javax.annotation.Nonnull Object a) { } // Compliant
+    // It works correctly also for return values: BV @NotNull to @Nonnull is strengthening.
+    @javax.annotation.Nonnull
+    String methodNonnullJavaxBvReturn(Object a) { return ""; } // Compliant
+    @javax.annotation.Nonnull
+    String methodNonnullJakartaBvReturn(Object a) { return ""; } // Compliant
   }
 }
 
