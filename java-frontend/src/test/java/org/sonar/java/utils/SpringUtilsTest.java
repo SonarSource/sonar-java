@@ -16,7 +16,11 @@
  */
 package org.sonar.java.utils;
 
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -176,12 +180,22 @@ class SpringUtilsTest {
 
   // ---- resolveBeanMethodNames -------------------------------------------------
 
-  @Test
-  void resolve_bean_method_names_no_annotation_returns_method_name() {
-    var cu = JParserTestUtils.parse("class A { Object myMethod() { return null; } }");
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("fallBackToMethodNameArguments")
+  void resolve_bean_method_names_falls_back_to_method_name(String description, String source) {
+    var cu = JParserTestUtils.parse("A", source, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     var clazz = (ClassTreeImpl) cu.types().get(0);
     var method = (MethodTreeImpl) clazz.members().get(0);
     assertThat(SpringUtils.resolveBeanMethodNames(method)).containsOnly("myMethod");
+  }
+
+  static Stream<Arguments> fallBackToMethodNameArguments() {
+    return Stream.of(
+      Arguments.of("no annotation",           "class A { Object myMethod() { return null; } }"),
+      Arguments.of("empty array",             "import org.springframework.context.annotation.Bean; class A { @Bean(name = {}) Object myMethod() { return null; } }"),
+      Arguments.of("non-name/value attribute","import org.springframework.context.annotation.Bean; class A { @Bean(initMethod = \"init\") Object myMethod() { return null; } }"),
+      Arguments.of("blank name",              "import org.springframework.context.annotation.Bean; class A { @Bean(name = \"\") Object myMethod() { return null; } }")
+    );
   }
 
   @Test
@@ -210,49 +224,6 @@ class SpringUtilsTest {
     var clazz = (ClassTreeImpl) cu.types().get(0);
     var method = (MethodTreeImpl) clazz.members().get(0);
     assertThat(SpringUtils.resolveBeanMethodNames(method)).containsExactlyInAnyOrder("primary", "alias");
-  }
-
-  @Test
-  void resolve_bean_method_names_empty_array_falls_back_to_method_name() {
-    var cu = JParserTestUtils.parse("A", """
-      import org.springframework.context.annotation.Bean;
-      class A {
-        @Bean(name = {})
-        Object myMethod() { return null; }
-      }
-      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
-    var clazz = (ClassTreeImpl) cu.types().get(0);
-    var method = (MethodTreeImpl) clazz.members().get(0);
-    assertThat(SpringUtils.resolveBeanMethodNames(method)).containsOnly("myMethod");
-  }
-
-  @Test
-  void resolve_bean_method_names_non_name_attribute_is_ignored() {
-    // @Bean(initMethod="...") — the "initMethod" attribute is not "value" or "name", so filtered out → falls back to method name
-    var cu = JParserTestUtils.parse("A", """
-      import org.springframework.context.annotation.Bean;
-      class A {
-        @Bean(initMethod = "init")
-        Object myMethod() { return null; }
-      }
-      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
-    var clazz = (ClassTreeImpl) cu.types().get(0);
-    var method = (MethodTreeImpl) clazz.members().get(0);
-    assertThat(SpringUtils.resolveBeanMethodNames(method)).containsOnly("myMethod");
-  }
-
-  @Test
-  void resolve_bean_method_names_blank_name_is_ignored_and_falls_back_to_method_name() {
-    var cu = JParserTestUtils.parse("A", """
-      import org.springframework.context.annotation.Bean;
-      class A {
-        @Bean(name = "")
-        Object myMethod() { return null; }
-      }
-      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
-    var clazz = (ClassTreeImpl) cu.types().get(0);
-    var method = (MethodTreeImpl) clazz.members().get(0);
-    assertThat(SpringUtils.resolveBeanMethodNames(method)).containsOnly("myMethod");
   }
 
   @Test
