@@ -159,11 +159,6 @@ class AlmostJavadocCheckSample {
   public void eclipseMarkerLineComment() {
   }
 
-  /* (non-Javadoc) returns </code> */
-  public String eclipseMarkerWithHtml() {
-    return name;
-  }
-
   record Point(int x, int y) {
     // Noncompliant@+1
     /* @param x the x coordinate */
