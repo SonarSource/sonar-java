@@ -4,7 +4,7 @@ class FinalizerAttackCheckSample {
 
   // --- Noncompliant: non-final class with throwing constructor ---
 
-  class SecurityService { // Noncompliant {{Make this class "final" or make the throwing constructors "private".}}
+  static class SecurityService { // Noncompliant {{Make this class "final" or make the throwing constructors "private".}}
     private final String token;
 
     public SecurityService(String token) throws IllegalArgumentException {
@@ -15,7 +15,7 @@ class FinalizerAttackCheckSample {
     }
   }
 
-  class AuthProvider { // Noncompliant
+  static class AuthProvider { // Noncompliant
     public AuthProvider(String credentials) throws Exception {
       if (credentials.isEmpty()) {
         throw new Exception("Bad credentials");
@@ -23,7 +23,7 @@ class FinalizerAttackCheckSample {
     }
   }
 
-  class ResourceLoader { // Noncompliant
+  static class ResourceLoader { // Noncompliant
     ResourceLoader(String path) {
       if (path == null) {
         throw new NullPointerException();
@@ -31,7 +31,7 @@ class FinalizerAttackCheckSample {
     }
   }
 
-  class MultiConstructorService { // Noncompliant
+  static class MultiConstructorService { // Noncompliant
     MultiConstructorService(int id) throws Exception {
       if (id < 0) {
         throw new Exception("Negative id");
@@ -42,7 +42,7 @@ class FinalizerAttackCheckSample {
     }
   }
 
-  class ProtectedConstructorService { // Noncompliant
+  static class ProtectedConstructorService { // Noncompliant
     protected ProtectedConstructorService(String data) throws Exception {
       if (data == null) {
         throw new Exception("Null data");
@@ -50,14 +50,14 @@ class FinalizerAttackCheckSample {
     }
   }
 
-  class ThrowsClauseOnly { // Noncompliant
+  static class ThrowsClauseOnly { // Noncompliant
     public ThrowsClauseOnly() throws Exception {
     }
   }
 
   // --- Compliant: final class ---
 
-  final class SecureService {
+  static final class SecureService {
     public SecureService(String token) throws IllegalArgumentException {
       if (token == null) {
         throw new IllegalArgumentException("Invalid token");
@@ -67,7 +67,7 @@ class FinalizerAttackCheckSample {
 
   // --- Compliant: all constructors private (factory pattern) ---
 
-  class FactoryService {
+  static class FactoryService {
     private FactoryService(String data) {
     }
 
@@ -81,20 +81,20 @@ class FinalizerAttackCheckSample {
 
   // --- Compliant: no throwing constructor ---
 
-  class SafeService {
+  static class SafeService {
     public SafeService(String data) {
       // no throw
     }
   }
 
-  class NoConstructor {
+  static class NoConstructor {
     void doSomething() {
     }
   }
 
   // --- Compliant: abstract class ---
 
-  abstract class AbstractService {
+  static abstract class AbstractService {
     public AbstractService(String data) throws Exception {
       if (data == null) {
         throw new Exception("Null");
@@ -104,7 +104,7 @@ class FinalizerAttackCheckSample {
 
   // --- Compliant: private throwing constructor, public non-throwing constructor ---
 
-  class MixedConstructors {
+  static class MixedConstructors {
     private MixedConstructors(String data) throws Exception {
       if (data == null) {
         throw new Exception("Null");
@@ -142,7 +142,7 @@ class FinalizerAttackCheckSample {
 
   // --- Noncompliant: throw in constructor body without throws clause ---
 
-  class ConfigLoader { // Noncompliant
+  static class ConfigLoader { // Noncompliant
     public ConfigLoader(String config) {
       if (config == null) {
         throw new IllegalStateException("Missing config");
@@ -152,7 +152,7 @@ class FinalizerAttackCheckSample {
 
   // --- Compliant: throw in a method, not in constructor ---
 
-  class Processor {
+  static class Processor {
     public Processor() {
     }
 
@@ -163,7 +163,7 @@ class FinalizerAttackCheckSample {
 
   // --- Noncompliant: nested throw in try block within constructor ---
 
-  class DatabaseConnection { // Noncompliant
+  static class DatabaseConnection { // Noncompliant
     public DatabaseConnection(String url) {
       try {
         if (url == null) {
@@ -177,7 +177,7 @@ class FinalizerAttackCheckSample {
 
   // --- Compliant: all throwing constructors are private ---
 
-  class PrivateOnlyThrowers {
+  static class PrivateOnlyThrowers {
     private PrivateOnlyThrowers(String s) throws Exception {
       throw new Exception();
     }
