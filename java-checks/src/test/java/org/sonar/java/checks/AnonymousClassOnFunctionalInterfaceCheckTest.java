@@ -19,14 +19,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class AnonymousClassOnFunctionalInterfaceCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AnonymousClassOnFunctionalInterfaceCheckSample.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AnonymousClassOnFunctionalInterfaceCheckSample.java"))
       .withCheck(new AnonymousClassOnFunctionalInterfaceCheck())
       .withJavaVersion(8)
       .verifyIssues();
@@ -35,7 +35,7 @@ class AnonymousClassOnFunctionalInterfaceCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/AnonymousClassOnFunctionalInterfaceCheckSampleWithoutSemantic.java"))
+      .onFile(testCodeSourcesPath("checks/tests/AnonymousClassOnFunctionalInterfaceCheckSampleWithoutSemantic.java"))
       .withCheck(new AnonymousClassOnFunctionalInterfaceCheck())
       .withJavaVersion(8)
       .withoutSemantic()

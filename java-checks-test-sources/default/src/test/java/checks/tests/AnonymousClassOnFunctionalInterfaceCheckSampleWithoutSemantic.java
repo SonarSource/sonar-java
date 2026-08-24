@@ -1,6 +1,6 @@
-package checks;
+package checks.tests;
 
-class AnonymousClassOnFunctionalInterfaceCheckSample {
+class AnonymousClassOnFunctionalInterfaceCheckSampleWithoutSemantic {
 
   enum Foo {
     FOO {
@@ -34,7 +34,7 @@ class AnonymousClassOnFunctionalInterfaceCheckSample {
   void toto() {
     new MyInterface() {}; // Compliant
 
-    new Handler(){ // Noncompliant {{Make this anonymous inner class a lambda}}
+    new Handler(){ // Noncompliant
       @Override
       public String handle() {
         return "handled";
@@ -59,7 +59,7 @@ class AnonymousClassOnFunctionalInterfaceCheckSample {
       }
     }.handle();
 
-    new Handler(){ // Noncompliant {{Make this anonymous inner class a lambda}}
+    new Handler(){ // Noncompliant
       @Override
       public String handle() {
         class C{
@@ -83,7 +83,7 @@ class AnonymousClassOnFunctionalInterfaceCheckSample {
       }
     };
 
-    new Handler(){ // Noncompliant {{Make this anonymous inner class a lambda}}
+    new Handler(){ // Noncompliant
       @Override
       public String handle() {
         return "";
@@ -91,11 +91,11 @@ class AnonymousClassOnFunctionalInterfaceCheckSample {
     };
 
     new
-    Handler // Noncompliant {{Make this anonymous inner class a lambda}}
+    Handler // Noncompliant
     (){
       @Override
       public String handle() {
-        return AnonymousClassOnFunctionalInterfaceCheckSample.this.toString();
+        return AnonymousClassOnFunctionalInterfaceCheckSampleWithoutSemantic.this.toString();
       }
     };
 
@@ -161,14 +161,14 @@ class AnonymousClassOnFunctionalInterfaceCheckSample {
   }
 }
 
-class SamWithExceptionS9357 {
+class SamWithExceptionS9357WS {
 
   class MyCheckedException extends Exception {}
   interface I {
     void apply(String s) throws MyCheckedException;
   }
   void foo(I i) {
-    foo(new I() { // Compliant: cannot refactor as lambda because of checked exception
+    foo(new I() { // Compliant: checked exception
       @Override
       public void apply(String s) throws MyCheckedException {
       }
@@ -176,7 +176,7 @@ class SamWithExceptionS9357 {
   }
 }
 
-abstract class WithinLambdaS9357 {
+abstract class WithinLambdaS9357WS {
 
   @FunctionalInterface
   interface Action<T> {
@@ -185,7 +185,7 @@ abstract class WithinLambdaS9357 {
 
   abstract <T> T doSomething(Action<T> action);
 
-  private void bar(WithinLambdaS9357 a) {
+  private void bar(WithinLambdaS9357WS a) {
     a.doSomething(
       (Action<Void>) () -> {
         new Thread(
@@ -199,7 +199,7 @@ abstract class WithinLambdaS9357 {
   }
 }
 
-interface ABS9357 {
+interface ABS9357WS {
   default void foo() {
   }
 
@@ -207,7 +207,7 @@ interface ABS9357 {
   }
 
   static void main() {
-    ABS9357 a = new ABS9357() { // Compliant
+    ABS9357WS a = new ABS9357WS() { // Compliant
       @Override
       public void foo() {
       }
@@ -215,14 +215,14 @@ interface ABS9357 {
   }
 }
 
-interface BAS9357 {
+interface BAS9357WS {
   default void foo() {
   }
 
   void bar();
 
   static void main() {
-    BAS9357 a = new BAS9357() { // Noncompliant
+    BAS9357WS a = new BAS9357WS() { // Noncompliant
       @Override
       public void bar() {
       }
@@ -230,7 +230,7 @@ interface BAS9357 {
   }
 }
 
-class AlphaS9357 {
+class AlphaS9357WS {
 
   interface Lvl1 {
     void foo();
@@ -249,7 +249,7 @@ class AlphaS9357 {
   Lvl2 level2 = () -> {};
 }
 
-class ThisInstanceTestS9357 {
+class ThisInstanceTestS9357WS {
 
   interface WithDefault {
     default String defaultMethod() { return "defaultMethod"; }
@@ -291,9 +291,9 @@ class ThisInstanceTestS9357 {
   }
 }
 
-abstract class GenericTypeS9357<X> {
+abstract class GenericTypeS9357WS<X> {
 
-  void foo(GenericTypeS9357<String> something) {
+  void foo(GenericTypeS9357WS<String> something) {
     bar(something, new MyComparable() { // Compliant - compare is a generic method
       @Override
       public <T extends Comparable<T>> int compare(T obj1, T obj2) {
@@ -302,7 +302,7 @@ abstract class GenericTypeS9357<X> {
     });
   }
 
-  abstract <T extends Comparable<T>> void bar(GenericTypeS9357<T> object, MyComparable comp);
+  abstract <T extends Comparable<T>> void bar(GenericTypeS9357WS<T> object, MyComparable comp);
 
   interface MyComparable {
     <T extends Comparable<T>> int compare(T obj1, T obj2);
