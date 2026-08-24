@@ -17,7 +17,11 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,24 +53,18 @@ class JavadocReferencesExistingSymbolsCheckTest {
     assertThat(refs).containsExactly("java.util.List");
   }
 
-  @Test
-  void extractSeeReferences_skips_urls() {
-    List<String> refs = JavadocReferencesExistingSymbolsCheck.extractSeeReferences(
-      "/** @see http://example.com @see https://example.com */");
-    assertThat(refs).isEmpty();
+  static Stream<Arguments> nonReferenceInputs() {
+    return Stream.of(
+      Arguments.of("URLs", "/** @see http://example.com @see https://example.com */"),
+      Arguments.of("HTML anchors", "/** @see <a href=\"http://example.com\">Example</a> */"),
+      Arguments.of("quoted strings", "/** @see \"The Java Programming Language\" */")
+    );
   }
 
-  @Test
-  void extractSeeReferences_skips_html_anchors() {
-    List<String> refs = JavadocReferencesExistingSymbolsCheck.extractSeeReferences(
-      "/** @see <a href=\"http://example.com\">Example</a> */");
-    assertThat(refs).isEmpty();
-  }
-
-  @Test
-  void extractSeeReferences_skips_quoted_strings() {
-    List<String> refs = JavadocReferencesExistingSymbolsCheck.extractSeeReferences(
-      "/** @see \"The Java Programming Language\" */");
+  @ParameterizedTest(name = "extractSeeReferences skips {0}")
+  @MethodSource("nonReferenceInputs")
+  void extractSeeReferences_skips_non_references(String description, String javadoc) {
+    List<String> refs = JavadocReferencesExistingSymbolsCheck.extractSeeReferences(javadoc);
     assertThat(refs).isEmpty();
   }
 

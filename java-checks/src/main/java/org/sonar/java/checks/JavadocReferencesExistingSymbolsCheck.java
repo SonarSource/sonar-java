@@ -46,6 +46,7 @@ public class JavadocReferencesExistingSymbolsCheck extends IssuableSubscriptionV
   private static final Pattern SEE_TAG_PATTERN = Pattern.compile("@see\\s++(\\S++)");
   private static final Pattern LINK_TAG_PATTERN = Pattern.compile("\\{@link(?:plain)?\\s++([^\\s}]+)");
   private static final String JAVA_LANG_PREFIX = "java.lang.";
+  private static final Tree.Kind[] CLASS_KINDS = Tree.Kind.CLASS_KINDS.toArray(new Tree.Kind[0]);
 
   private String currentPackage = "";
   private final Map<String, String> importedSimpleNames = new HashMap<>();
@@ -57,16 +58,13 @@ public class JavadocReferencesExistingSymbolsCheck extends IssuableSubscriptionV
     currentPackage = "";
     importedSimpleNames.clear();
     declaredTypeSimpleNames.clear();
-    Tree tree = context.getTree();
-    if (tree != null && tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      CompilationUnitTree cut = (CompilationUnitTree) tree;
-      PackageDeclarationTree pkg = cut.packageDeclaration();
-      if (pkg != null) {
-        currentPackage = ExpressionsHelper.concatenate(pkg.packageName());
-      }
-      collectImports(cut);
-      collectDeclaredTypes(cut);
+    CompilationUnitTree cut = context.getTree();
+    PackageDeclarationTree pkg = cut.packageDeclaration();
+    if (pkg != null) {
+      currentPackage = ExpressionsHelper.concatenate(pkg.packageName());
     }
+    collectImports(cut);
+    collectDeclaredTypes(cut);
   }
 
   private void collectImports(CompilationUnitTree cut) {
@@ -91,7 +89,7 @@ public class JavadocReferencesExistingSymbolsCheck extends IssuableSubscriptionV
   }
 
   private void collectDeclaredTypesFromTree(Tree tree) {
-    if (!tree.is(Tree.Kind.CLASS_KINDS.toArray(new Tree.Kind[0]))) {
+    if (!tree.is(CLASS_KINDS)) {
       return;
     }
     ClassTree classTree = (ClassTree) tree;
@@ -197,11 +195,14 @@ public class JavadocReferencesExistingSymbolsCheck extends IssuableSubscriptionV
   }
 
   private boolean isUnresolvableInnerClassReference(Sema sema, String typeName) {
-    // For dotted references like "Outer.Inner", try replacing dots with $ for inner class resolution
-    // Try with current package prefix and $ notation
-    int lastDot = typeName.lastIndexOf('.');
-    while (lastDot > 0) {
-      String withDollar = typeName.substring(0, lastDot) + "$" + typeName.substring(lastDot + 1);
+    // For dotted references like "Outer.Inner" or "pkg.Outer.Inner.Deep",
+    // try interpreting trailing dots as inner class separators (replacing with $).
+    // We split on dots and try each possible split point between package/outer and inner classes.
+    int firstDot = typeName.indexOf('.');
+    while (firstDot > 0 && firstDot < typeName.length() - 1) {
+      String prefix = typeName.substring(0, firstDot);
+      String suffix = typeName.substring(firstDot + 1).replace('.', '$');
+      String withDollar = prefix + "$" + suffix;
       if (!isUnknownType(sema, withDollar)) {
         return false;
       }
@@ -209,17 +210,16 @@ public class JavadocReferencesExistingSymbolsCheck extends IssuableSubscriptionV
         return false;
       }
       // Try imported prefix
-      String outerName = typeName.substring(0, lastDot);
-      int outerLastDot = outerName.lastIndexOf('.');
-      String outerSimple = outerLastDot >= 0 ? outerName.substring(outerLastDot + 1) : outerName;
+      int prefixLastDot = prefix.lastIndexOf('.');
+      String outerSimple = prefixLastDot >= 0 ? prefix.substring(prefixLastDot + 1) : prefix;
       String importedOuter = importedSimpleNames.get(outerSimple);
       if (importedOuter != null) {
-        String resolvedInner = importedOuter + "$" + typeName.substring(lastDot + 1);
+        String resolvedInner = importedOuter + "$" + suffix;
         if (!isUnknownType(sema, resolvedInner)) {
           return false;
         }
       }
-      lastDot = typeName.lastIndexOf('.', lastDot - 1);
+      firstDot = typeName.indexOf('.', firstDot + 1);
     }
     return true;
   }
