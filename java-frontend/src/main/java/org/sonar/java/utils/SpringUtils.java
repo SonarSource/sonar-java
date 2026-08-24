@@ -38,6 +38,7 @@ public final class SpringUtils {
   public static final String REPOSITORY_ANNOTATION = "org.springframework.stereotype.Repository";
   public static final String SERVICE_ANNOTATION = "org.springframework.stereotype.Service";
   public static final String AUTOWIRED_ANNOTATION = BEANS_FACTORY_ANNOTATION_PACKAGE + "Autowired";
+  public static final String QUALIFIER_ANNOTATION = BEANS_FACTORY_ANNOTATION_PACKAGE + "Qualifier";
   public static final String VALUE_ANNOTATION = BEANS_FACTORY_ANNOTATION_PACKAGE + "Value";
   public static final String TRANSACTIONAL_ANNOTATION = "org.springframework.transaction.annotation.Transactional";
   public static final String BEAN_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "Bean";

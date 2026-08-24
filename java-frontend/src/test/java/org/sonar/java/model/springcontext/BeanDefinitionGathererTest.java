@@ -36,7 +36,6 @@ import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
@@ -191,7 +190,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var beans = model.getBeanDefinitionRegistry().getByName(expectedBeanName);
     assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getDependingBeans())
+    assertThat(beans.get(0).getDependingBeans().keySet())
       .containsExactlyInAnyOrder(
         "org.springframework.context.ApplicationContext",
         "org.springframework.core.env.Environment"
@@ -204,6 +203,57 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
       Arguments.of("src/test/files/springcontext/AutowiredConstructorDependencies.java", "autowiredConstructorDependencies"),
       Arguments.of("src/test/files/springcontext/BeanMethodWithDependencies.java", "myBean")
     );
+  }
+
+  // ---- @Qualifier handling --------------------------------------------------
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("qualifiedDependencyArguments")
+  void qualifier_is_captured_on_qualified_dependency(String filePath, String expectedBeanName) {
+    scan(filePath);
+
+    var beans = model.getBeanDefinitionRegistry().getByName(expectedBeanName);
+    assertThat(beans).hasSize(1);
+    var deps = beans.get(0).getDependingBeans();
+    assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("primaryContext");
+    assertThat(deps.get("org.springframework.core.env.Environment")).containsOnly("environment");
+  }
+
+  static Stream<Arguments> qualifiedDependencyArguments() {
+    return Stream.of(
+      Arguments.of("src/test/files/springcontext/QualifiedFieldDependencies.java", "qualifiedFieldDependencies"),
+      Arguments.of("src/test/files/springcontext/QualifiedConstructorDependencies.java", "qualifiedConstructorDependencies"),
+      Arguments.of("src/test/files/springcontext/QualifiedBeanMethodDependencies.java", "myBean")
+    );
+  }
+
+  @Test
+  void qualifier_selects_specific_bean_among_multiple_candidates() {
+    scan(
+      "src/test/files/springcontext/PaymentProcessor.java",
+      "src/test/files/springcontext/CreditCardProcessor.java",
+      "src/test/files/springcontext/PayPalProcessor.java",
+      "src/test/files/springcontext/OrderService.java"
+    );
+
+    var beans = model.getBeanDefinitionRegistry().getByName("orderService");
+    assertThat(beans).hasSize(1);
+    var deps = beans.get(0).getDependingBeans();
+    // @Qualifier("paypal") takes precedence over the parameter name "paymentProcessor"
+    // Note: PaymentProcessor resolves without package since it's not on the compiled classpath
+    assertThat(deps).containsOnlyKeys("PaymentProcessor");
+    assertThat(deps.get("PaymentProcessor")).containsOnly("paypal");
+  }
+
+  @Test
+  void unqualified_dependency_stores_field_name_in_names_set() {
+    scan("src/test/files/springcontext/AutowiredDependencies.java");
+
+    var beans = model.getBeanDefinitionRegistry().getByName("autowiredDependencies");
+    assertThat(beans).hasSize(1);
+    var deps = beans.get(0).getDependingBeans();
+    assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("applicationContext");
+    assertThat(deps.get("org.springframework.core.env.Environment")).containsOnly("environment");
   }
 
   // ---- Bean location --------------------------------------------------------
@@ -345,6 +395,73 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     when(context.getCacheContext()).thenReturn(cacheContext);
 
     assertThat(gatherer.scanWithoutParsing(context)).isFalse();
+  }
+
+  @Test
+  void leaveFile_writes_dependencies_with_qualifiers_to_cache() {
+    WriteCache writeCache = mock(WriteCache.class);
+    SensorContextTester ctx = SensorContextTester.create(new File(""));
+    ctx.setCacheEnabled(true);
+    ctx.setNextCache(writeCache);
+
+    scan(ctx, "src/test/files/springcontext/QualifiedFieldDependencies.java");
+
+    var dataCaptor = ArgumentCaptor.forClass(byte[].class);
+    verify(writeCache).write(anyString(), dataCaptor.capture());
+    String serialized = new String(dataCaptor.getValue(), StandardCharsets.UTF_8);
+
+    String encodedAppContext = Base64.getEncoder().encodeToString("org.springframework.context.ApplicationContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
+    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
+    assertThat(serialized)
+      .contains(encodedAppContext + ":" + encodedPrimaryContext)
+      .contains(encodedEnvType + ":" + encodedEnvironment);
+  }
+
+  @Test
+  void scanWithoutParsing_restores_dependencies_with_and_without_qualifier_from_cache() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/QualifiedFieldDependencies.java"));
+    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
+    String encodedName = Base64.getEncoder().encodeToString("qualifiedFieldDependencies".getBytes(StandardCharsets.UTF_8));
+    String encodedAppContext = Base64.getEncoder().encodeToString("org.springframework.context.ApplicationContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
+    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
+    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
+      + encodedAppContext + ":" + encodedPrimaryContext
+      + "," + encodedEnvType + ":" + encodedEnvironment;
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+
+    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
+    when(moduleScannerContext.getModuleKey()).thenReturn("");
+    gatherer.gatherSpringContextData(moduleScannerContext, model);
+
+    var beans = model.getBeanDefinitionRegistry().getByName("qualifiedFieldDependencies");
+    assertThat(beans).hasSize(1);
+    var deps = beans.get(0).getDependingBeans();
+    assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("primaryContext");
+    assertThat(deps.get("org.springframework.core.env.Environment")).containsOnly("environment");
+  }
+
+  @Test
+  void blank_qualifier_value_is_treated_as_no_qualifier() {
+    scan("src/test/files/springcontext/BlankQualifierDependency.java");
+
+    var beans = model.getBeanDefinitionRegistry().getByName("blankQualifierDependency");
+    assertThat(beans).hasSize(1);
+    var deps = beans.get(0).getDependingBeans();
+    assertThat(deps).containsOnlyKeys("org.springframework.context.ApplicationContext");
+    assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("applicationContext");
   }
 
   private static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
