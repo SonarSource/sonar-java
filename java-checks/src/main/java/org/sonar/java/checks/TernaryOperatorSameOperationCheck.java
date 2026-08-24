@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
@@ -41,8 +42,8 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
   @Override
   public void visitNode(Tree tree) {
     var conditional = (org.sonar.plugins.java.api.tree.ConditionalExpressionTree) tree;
-    var trueExpr = conditional.trueExpression();
-    var falseExpr = conditional.falseExpression();
+    var trueExpr = ExpressionUtils.skipParentheses(conditional.trueExpression());
+    var falseExpr = ExpressionUtils.skipParentheses(conditional.falseExpression());
 
     if (hasSameOperationStructure(trueExpr, falseExpr)) {
       reportIssue(conditional, "Move the conditional expression inside this operation.");
@@ -77,12 +78,13 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
       return false;
     }
 
+    boolean anyDifferent = false;
     for (int i = 0; i < leftArgs.size(); i++) {
-      if (sameExpression(leftArgs.get(i), rightArgs.get(i))) {
-        return false;
+      if (!sameExpression(leftArgs.get(i), rightArgs.get(i))) {
+        anyDifferent = true;
       }
     }
-    return true;
+    return anyDifferent;
   }
 
   private static boolean sameMethodSelect(ExpressionTree left, ExpressionTree right) {
@@ -125,12 +127,13 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
       return false;
     }
 
+    boolean anyDifferent = false;
     for (int i = 0; i < leftArgs.size(); i++) {
-      if (sameExpression(leftArgs.get(i), rightArgs.get(i))) {
-        return false;
+      if (!sameExpression(leftArgs.get(i), rightArgs.get(i))) {
+        anyDifferent = true;
       }
     }
-    return true;
+    return anyDifferent;
   }
 
   private static boolean sameArrayAccess(ArrayAccessExpressionTree left, ArrayAccessExpressionTree right) {
