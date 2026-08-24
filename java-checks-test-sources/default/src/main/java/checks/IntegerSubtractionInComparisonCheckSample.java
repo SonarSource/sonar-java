@@ -3,6 +3,7 @@ package checks;
 import java.io.File;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.IntSupplier;
 
 class IntegerSubtractionInComparisonCheckSample {
@@ -222,6 +223,101 @@ class IntegerSubtractionInComparisonCheckSample {
     @Override
     public int compareTo(BoxedShortCompareTo other) {
       return this.value - other.value; // Compliant - difference fits in int
+    }
+  }
+
+  static class ArrayLengthComparator implements Comparator<int[]> {
+    @Override
+    public int compare(int[] left, int[] right) {
+      return left.length - right.length; // Compliant - both operands are array lengths, bounded in [0, Integer.MAX_VALUE]
+    }
+  }
+
+  static class StringLengthComparator implements Comparator<String> {
+    @Override
+    public int compare(String left, String right) {
+      return left.length() - right.length(); // Compliant - both operands are String.length(), bounded in [0, Integer.MAX_VALUE]
+    }
+  }
+
+  static class CollectionSizeComparator implements Comparator<List<Object>> {
+    @Override
+    public int compare(List<Object> left, List<Object> right) {
+      return left.size() - right.size(); // Compliant - both operands are Collection.size(), bounded in [0, Integer.MAX_VALUE]
+    }
+  }
+
+  static class MapSizeComparator implements Comparator<Map<Object, Object>> {
+    @Override
+    public int compare(Map<Object, Object> left, Map<Object, Object> right) {
+      return left.size() - right.size(); // Compliant - both operands are Map.size(), bounded in [0, Integer.MAX_VALUE]
+    }
+  }
+
+  enum Suit {
+    CLUBS, DIAMONDS, HEARTS, SPADES
+  }
+
+  static class OrdinalComparator implements Comparator<Suit> {
+    @Override
+    public int compare(Suit left, Suit right) {
+      return left.ordinal() - right.ordinal(); // Compliant - both operands are Enum.ordinal(), bounded in [0, Integer.MAX_VALUE]
+    }
+  }
+
+  static class BitCountComparator implements Comparator<Integer> {
+    @Override
+    public int compare(Integer left, Integer right) {
+      return Integer.bitCount(left) - Integer.bitCount(right); // Compliant - both operands are bounded in [0, 32]
+    }
+  }
+
+  static class MaskedByteComparator implements Comparator<byte[]> {
+    @Override
+    public int compare(byte[] left, byte[] right) {
+      int a = left[0] & 0xff;
+      int b = right[0] & 0xff;
+      return a - b; // Compliant - both operands are masked to [0, 255]
+    }
+  }
+
+  static class DirectMaskedByteComparator implements Comparator<byte[]> {
+    @Override
+    public int compare(byte[] left, byte[] right) {
+      return (left[0] & 0xff) - (right[0] & 0xff); // Compliant - both operands are masked to [0, 255]
+    }
+  }
+
+  static class IndirectLengthComparator implements Comparator<String> {
+    @Override
+    public int compare(String left, String right) {
+      int len1 = left.length();
+      int len2 = right.length();
+      return len1 - len2; // Compliant - len1 and len2 are single-write locals holding String.length()
+    }
+  }
+
+  static class LiteralConstantComparator implements Comparator<Object> {
+    @Override
+    public int compare(Object left, Object right) {
+      return 0 - 1; // Compliant - both operands are compile-time constants
+    }
+  }
+
+  static class MixedBoundedAndUnboundedComparator implements Comparable<MixedBoundedAndUnboundedComparator> {
+    private int value;
+
+    @Override
+    public int compareTo(MixedBoundedAndUnboundedComparator other) {
+      // Noncompliant@+1 {{Subtracting numeric values in compareTo can overflow; use Integer.compare instead.}}
+      return this.value - other.getClass().getName().length();
+    }
+  }
+
+  static class UnknownRangeComparator implements Comparable<UnknownRangeComparator> {
+    @Override
+    public int compareTo(UnknownRangeComparator other) {
+      return this.hashCode() - other.hashCode(); // Noncompliant {{Subtracting numeric values in compareTo can overflow; use Integer.compare instead.}}
     }
   }
 
