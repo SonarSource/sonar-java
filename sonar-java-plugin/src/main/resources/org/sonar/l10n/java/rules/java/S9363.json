@@ -1,0 +1,25 @@
+{
+  "title": "Invalid time-zone IDs should not silently fall back to GMT",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "datetime",
+    "timezone",
+    "pitfall"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9363",
+  "sqKey": "S9363",
+  "scope": "All",
+  "quickfix": "partial",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  }
+}
