@@ -1,8 +1,7 @@
-<p>Java 9 introduced immutable collection factory methods: <code>Map.of()</code>, <code>Map.ofEntries()</code>, and <code>Set.of()</code>. Unlike
-mutable collections such as <code>HashMap</code> (where duplicate keys overwrite previous entries) or <code>HashSet</code> (where duplicate elements
-are ignored), these static factory methods disallow duplicate keys and elements.</p>
-<p>When duplicate keys are passed to <code>Map.of()</code> or <code>Map.ofEntries()</code>, or duplicate elements are passed to <code>Set.of()</code>,
-an <code>IllegalArgumentException</code> is thrown at runtime during collection creation.</p>
+<p>Passing duplicate keys to <code>Map.of()</code> or <code>Map.ofEntries()</code>, or duplicate elements to <code>Set.of()</code>, throws an
+<code>IllegalArgumentException</code> at runtime during collection creation.</p>
+<p>Unlike mutable collections such as <code>HashMap</code> (where duplicate keys overwrite previous entries) or <code>HashSet</code> (where duplicate
+elements are ignored), these static factory methods disallow duplicate keys and elements.</p>
 <h2>Why is this an issue?</h2>
 <p>Passing duplicate keys or duplicate elements to immutable collection factories is almost always a copy-paste error or a misunderstanding of the API
 contract. Because the factory methods validate their arguments at initialization time, duplicate entries cause an immediate runtime crash when the
@@ -87,6 +86,9 @@ class CollectionFactoryExamples {
   href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html#ofEntries(java.util.Map.Entry…​)">Method
   Map.ofEntries</a></li>
   <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html#of(E…​)">Method Set.of</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
   <li>{rule:java:S4143} - Map values should not be replaced unconditionally</li>
 </ul>
 
