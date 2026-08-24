@@ -1,0 +1,98 @@
+<p>In a colon-style <code>switch</code>, case labels do not introduce separate lexical scopes. A local variable declared directly in one case group
+remains in scope in later case groups.</p>
+<h2>Why is this an issue?</h2>
+<p>Case groups look like separate branches, so readers commonly expect variables declared in one group to belong only to that group. When a later
+group accesses such a variable, its actual scope no longer matches the visual structure of the code. Understanding the variable then requires tracing
+its declaration and every later case group, which makes the <code>switch</code> harder to read and maintain.</p>
+<p>Java’s definite-assignment rules prevent reading a local variable before it has been assigned. This rule does not identify uninitialized reads. It
+reports variables that are assigned or otherwise accessed across distinct case groups because sharing them obscures their scope.</p>
+<p>Consecutive case labels form one case group and do not trigger an issue by themselves. Declarations inside their own block are also excluded
+because the block limits the variable’s scope.</p>
+<h2>How to fix it</h2>
+<p>Give each case group its own variable. For colon-style switches, enclose each group’s statements in a block. Alternatively, use arrow-style rules,
+which naturally isolate the code for each branch.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+void logState(State state) {
+  switch (state) {
+    case NEW:
+    case QUEUED:
+      String message = "Waiting"; // Noncompliant
+      log(message);
+      break;
+    case RETRY:
+      message = "Retrying"; // Accessed from this later case group.
+      log(message);
+      break;
+    case FAILED:
+      message = "Failed"; // Accessed from this later case group.
+      log(message);
+      break;
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+void logState(State state) {
+  switch (state) {
+    case NEW:
+    case QUEUED: {
+      String message = "Waiting";
+      log(message);
+      break;
+    }
+    case RETRY: {
+      String message = "Retrying";
+      log(message);
+      break;
+    }
+    case FAILED: {
+      String message = "Failed";
+      log(message);
+      break;
+    }
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+int priority(State state) {
+  return switch (state) {
+    case NEW:
+      int priority = 1; // Noncompliant
+      yield priority;
+    case RETRY:
+      priority = 2; // Accessed from this later case group.
+      yield priority;
+    default:
+      yield 0;
+  };
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+int priority(State state) {
+  return switch (state) {
+    case NEW -&gt; {
+      int priority = 1;
+      yield priority;
+    }
+    case RETRY -&gt; {
+      int priority = 2;
+      yield priority;
+    }
+    default -&gt; 0;
+  };
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-6.html#jls-6.3">Scope of a Declaration</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-14.html#jls-14.11">The <code>switch</code>
+  Statement</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-15.html#jls-15.28"><code>switch</code>
+  Expressions</a></li>
+</ul>
+
