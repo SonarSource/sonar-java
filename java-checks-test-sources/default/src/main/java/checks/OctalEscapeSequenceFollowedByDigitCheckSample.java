@@ -11,6 +11,7 @@ class OctalEscapeSequenceFollowedByDigitCheckSample {
     String s7 = "\7777"; // Noncompliant
     String s8 = "a\128b"; // Noncompliant
     String s9 = "\12\3456"; // Noncompliant
+    String s10 = "\456"; // Noncompliant
   }
 
   void testCompliant() {
@@ -31,6 +32,8 @@ class OctalEscapeSequenceFollowedByDigitCheckSample {
     String s15 = "\\\\8"; // Compliant - double escaped backslash followed by digit
     String s16 = "\1"; // Compliant - single octal at end
     String s17 = "abc"; // Compliant - no escapes
+    String s18 = "\45"; // Compliant
+    String s19 = "\45a"; // Compliant
   }
 
   void testNoncompliantTextBlock() {
