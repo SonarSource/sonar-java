@@ -16,14 +16,18 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -36,6 +40,11 @@ public final class AnonymousClassToLambdaUtils {
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
   private AnonymousClassToLambdaUtils() {
+  }
+
+  public static void scanForAnonymousClassConvertibleToLambda(JavaFileScanner check, JavaFileScannerContext context) {
+    var visitor = new AnonymousClassToLambdaVisitor(check, context);
+    context.getTree().accept(visitor);
   }
 
   public static boolean canBeConvertedToLambda(ClassTree classBody, Set<IdentifierTree> enumConstants) {
@@ -105,6 +114,33 @@ public final class AnonymousClassToLambdaUtils {
     UsesThisInstanceVisitor visitor = new UsesThisInstanceVisitor(body.symbol().type());
     body.accept(visitor);
     return visitor.usesThisInstance;
+  }
+
+  private static class AnonymousClassToLambdaVisitor extends BaseTreeVisitor {
+    private final JavaFileScanner check;
+    private final JavaFileScannerContext context;
+    private final Set<IdentifierTree> enumConstants = new HashSet<>();
+
+    AnonymousClassToLambdaVisitor(JavaFileScanner check, JavaFileScannerContext context) {
+      this.check = check;
+      this.context = context;
+    }
+
+    @Override
+    public void visitEnumConstant(EnumConstantTree tree) {
+      enumConstants.add(tree.simpleName());
+      super.visitEnumConstant(tree);
+      enumConstants.remove(tree.simpleName());
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      super.visitNewClass(tree);
+      ClassTree classBody = tree.classBody();
+      if (classBody != null && canBeConvertedToLambda(classBody, enumConstants)) {
+        context.reportIssue(check, tree.identifier(), "Make this anonymous inner class a lambda" + context.getJavaVersion().java8CompatibilityMessage());
+      }
+    }
   }
 
   private static class UsesThisInstanceVisitor extends BaseTreeVisitor {
