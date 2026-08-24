@@ -453,4 +453,64 @@ class FinalizerAttackCheckSample {
       }
     }
   }
+
+  // --- Compliant: field initializer calls method (no direct throw in initializer) ---
+
+  static class FieldInitializerIndirectThrow2 {
+    private final Object value = throwingInit();
+
+    private static Object throwingInit() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  // --- Compliant: field initializer is a method call (no direct throw in initializer expression) ---
+
+  static class FieldInitWithExplicitConstructor {
+    private final Object data = initField();
+
+    public FieldInitWithExplicitConstructor() {
+    }
+
+    private Object initField() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  // --- Compliant: abstract class with non-throwing constructor and no initializers ---
+
+  static abstract class AbstractNoThrow {
+    public AbstractNoThrow() {
+    }
+  }
+
+  // --- Compliant: sealed class with only sealed/final subclasses (resolved via symbolType) ---
+
+  static sealed class SealedResolved permits ResolvedFinalChild {
+    public SealedResolved(String s) throws Exception {
+      if (s == null) throw new Exception();
+    }
+  }
+
+  static final class ResolvedFinalChild extends SealedResolved {
+    ResolvedFinalChild(String s) throws Exception {
+      super(s);
+    }
+  }
+
+  // --- Noncompliant: class with multiple constructors, some throwing ---
+
+  static class PartiallyVulnerable { // Secondary {{Non-final class}}
+    PartiallyVulnerable(int x) throws Exception { // Noncompliant
+      if (x < 0) throw new Exception();
+    }
+
+    private PartiallyVulnerable(String s) throws Exception {
+      if (s == null) throw new Exception();
+    }
+
+    PartiallyVulnerable(double d) {
+      // compliant: non-throwing
+    }
+  }
 }

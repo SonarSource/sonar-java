@@ -130,21 +130,24 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
       return false;
     }
     for (TypeTree permitted : classTree.permittedTypes()) {
-      Type permittedType = permitted.symbolType();
-      if (!permittedType.isUnknown()) {
-        Symbol.TypeSymbol permittedSymbol = permittedType.symbol();
-        ClassTree permittedDecl = permittedSymbol.declaration();
-        if (permittedDecl != null && ModifiersUtils.hasModifier(permittedDecl.modifiers(), Modifier.NON_SEALED)) {
-          return false;
-        }
-      } else {
-        ClassTree permittedDecl = findClassByName(classTree, getSimpleName(permitted));
-        if (permittedDecl != null && ModifiersUtils.hasModifier(permittedDecl.modifiers(), Modifier.NON_SEALED)) {
-          return false;
-        }
+      if (isNonSealedPermittedType(classTree, permitted)) {
+        return false;
       }
     }
     return true;
+  }
+
+  private static boolean isNonSealedPermittedType(ClassTree context, TypeTree permitted) {
+    ClassTree permittedDecl = resolvePermittedDeclaration(context, permitted);
+    return permittedDecl != null && ModifiersUtils.hasModifier(permittedDecl.modifiers(), Modifier.NON_SEALED);
+  }
+
+  private static ClassTree resolvePermittedDeclaration(ClassTree context, TypeTree permitted) {
+    Type permittedType = permitted.symbolType();
+    if (!permittedType.isUnknown()) {
+      return permittedType.symbol().declaration();
+    }
+    return findClassByName(context, getSimpleName(permitted));
   }
 
   private static String getSimpleName(TypeTree typeTree) {
