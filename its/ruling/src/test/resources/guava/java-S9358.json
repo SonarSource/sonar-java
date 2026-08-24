@@ -1,0 +1,15 @@
+{
+"com.google.guava:guava:src/com/google/common/collect/ImmutableList.java": [
+209
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSet.java": [
+263
+],
+"com.google.guava:guava:src/com/google/common/collect/RegularImmutableTable.java": [
+151,
+155
+],
+"com.google.guava:guava:src/com/google/common/hash/MessageDigestHashFunction.java": [
+156
+]
+}
