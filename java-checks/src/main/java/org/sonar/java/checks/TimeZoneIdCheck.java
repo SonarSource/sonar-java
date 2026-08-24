@@ -46,11 +46,11 @@ public class TimeZoneIdCheck extends AbstractMethodDetection {
   private static final Set<String> AVAILABLE_ZONE_IDS = Set.copyOf(Arrays.asList(TimeZone.getAvailableIDs()));
 
   private static final Pattern CUSTOM_GMT_PRE_JAVA19 = Pattern.compile(
-    "^GMT[+-](?:[01]?[0-9]|2[0-3])(?::[0-5][0-9]|[0-5][0-9])?$"
+    "^GMT[+-](?:[01]?\\d|2[0-3])(?::[0-5]\\d|[0-5]\\d)?$"
   );
 
   private static final Pattern CUSTOM_GMT_JAVA19_PLUS = Pattern.compile(
-    "^GMT[+-](?:[01]?[0-9]|2[0-3])(?::[0-5][0-9](?::[0-5][0-9])?|[0-5][0-9])?$"
+    "^GMT[+-](?:[01]?\\d|2[0-3])(?::[0-5]\\d(?::[0-5]\\d)?|[0-5]\\d)?$"
   );
 
   @Override
