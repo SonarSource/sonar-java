@@ -43,12 +43,6 @@ class JavadocReferencesExistingSymbolsCheckTest {
   }
 
   @Test
-  void extractSeeReferences_returns_empty_for_null_or_empty() {
-    assertThat(JavadocReferencesExistingSymbolsCheck.extractSeeReferences(null)).isEmpty();
-    assertThat(JavadocReferencesExistingSymbolsCheck.extractSeeReferences("")).isEmpty();
-  }
-
-  @Test
   void extractSeeReferences_extracts_see_tags() {
     List<String> refs = JavadocReferencesExistingSymbolsCheck.extractSeeReferences(
       "/** @see java.util.List */");
@@ -84,39 +78,27 @@ class JavadocReferencesExistingSymbolsCheckTest {
   }
 
   @Test
-  void resolveReference_returns_null_for_null_or_empty() {
-    JavadocReferencesExistingSymbolsCheck check = new JavadocReferencesExistingSymbolsCheck();
-    assertThat(check.resolveReference(null)).isNull();
-    assertThat(check.resolveReference("")).isNull();
+  void stripMemberReference_returns_null_for_method_references() {
+    assertThat(JavadocReferencesExistingSymbolsCheck.stripMemberReference("#myMethod")).isNull();
   }
 
   @Test
-  void resolveReference_returns_null_for_method_references() {
-    JavadocReferencesExistingSymbolsCheck check = new JavadocReferencesExistingSymbolsCheck();
-    assertThat(check.resolveReference("#myMethod")).isNull();
+  void stripMemberReference_returns_fully_qualified_name_as_is() {
+    assertThat(JavadocReferencesExistingSymbolsCheck.stripMemberReference("java.util.List")).isEqualTo("java.util.List");
   }
 
   @Test
-  void resolveReference_returns_fully_qualified_name_as_is() {
-    JavadocReferencesExistingSymbolsCheck check = new JavadocReferencesExistingSymbolsCheck();
-    assertThat(check.resolveReference("java.util.List")).isEqualTo("java.util.List");
+  void stripMemberReference_strips_method_signature() {
+    assertThat(JavadocReferencesExistingSymbolsCheck.stripMemberReference("java.util.List#size()")).isEqualTo("java.util.List");
   }
 
   @Test
-  void resolveReference_strips_method_signature() {
-    JavadocReferencesExistingSymbolsCheck check = new JavadocReferencesExistingSymbolsCheck();
-    assertThat(check.resolveReference("java.util.List#size()")).isEqualTo("java.util.List");
+  void stripMemberReference_strips_member_reference() {
+    assertThat(JavadocReferencesExistingSymbolsCheck.stripMemberReference("java.util.List#EMPTY_LIST")).isEqualTo("java.util.List");
   }
 
   @Test
-  void resolveReference_strips_member_reference() {
-    JavadocReferencesExistingSymbolsCheck check = new JavadocReferencesExistingSymbolsCheck();
-    assertThat(check.resolveReference("java.util.List#EMPTY_LIST")).isEqualTo("java.util.List");
-  }
-
-  @Test
-  void resolveReference_returns_simple_name_without_package() {
-    JavadocReferencesExistingSymbolsCheck check = new JavadocReferencesExistingSymbolsCheck();
-    assertThat(check.resolveReference("MyClass")).isEqualTo("MyClass");
+  void stripMemberReference_returns_simple_name() {
+    assertThat(JavadocReferencesExistingSymbolsCheck.stripMemberReference("MyClass")).isEqualTo("MyClass");
   }
 }

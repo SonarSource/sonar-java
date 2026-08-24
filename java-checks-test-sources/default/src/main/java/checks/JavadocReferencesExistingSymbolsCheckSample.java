@@ -68,6 +68,26 @@ class JavadocReferencesExistingSymbolsCheckSample {
   void mixedValidSeeInvalidLink() {
   }
 
+  /** @see String
+   */ // Compliant - java.lang.String is implicitly available
+  void simpleNameJavaLang() {
+  }
+
+  /** @see List
+   */ // Compliant - List is imported
+  void simpleNameImported() {
+  }
+
+  /** {@link Map}
+   */ // Compliant - Map is imported
+  void simpleNameImportedLink() {
+  }
+
+  /** @see JavadocReferencesExistingSymbolsCheckSample
+   */ // Compliant - same-package class
+  void simpleNameSamePackage() {
+  }
+
   void existingMethod() {
   }
 }
