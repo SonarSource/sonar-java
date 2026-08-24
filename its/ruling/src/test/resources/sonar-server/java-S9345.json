@@ -1,23 +1,23 @@
 {
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/source/ReportIterator.java": [
-33
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIteratorForSingleChunk.java": [
-53
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java": [
-42
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/UpdateCenterClient.java": [
-64
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/SecurityRealmFactory.java": [
 38
 ],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIteratorForSingleChunk.java": [
+114
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java": [
+48
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/UpdateCenterClient.java": [
+75
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/SecurityRealmFactory.java": [
+43
+],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/ObjectInputStreamIterator.java": [
-31
+35
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/cache/DiskCache.java": [
-37
+42
 ]
 }
