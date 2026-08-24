@@ -250,6 +250,11 @@ int z = baz(); // compliant
 
 Secondary locations use `[[...]]` inline markers when needed.
 
+The precise locations of the issues are underlined using `^` characters. To produce that underline use a script like:
+```shell
+str="<line including <substring>>"; sub="<substring>"; pre="${str%%"$sub"*}" suf="${str#*"$sub"}"; echo "${pre//?/ }${sub//?/^}"
+```
+
 ---
 
 # Ruling Tests
