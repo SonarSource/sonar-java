@@ -81,7 +81,7 @@ public class OctalEscapeSequenceFollowedByDigitCheck extends IssuableSubscriptio
 
   private static int findEscapeEnd(String value, int start) {
     int escapeEnd = start + 2;
-    int maxEnd = value.charAt(start + 1) <= '3' ? start + 4 : start + 3;
+    int maxEnd = (value.charAt(start + 1) <= '3') ? (start + 4) : (start + 3);
     while (escapeEnd < value.length()
         && isOctalDigit(value.charAt(escapeEnd))
         && escapeEnd < maxEnd) {
