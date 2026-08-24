@@ -16,8 +16,52 @@
  */
 package org.sonar.java.checks;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.AnonymousClassToLambdaUtils;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.EnumConstantTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 
 @Rule(key = "S9357")
-public class AnonymousClassOnFunctionalInterfaceCheck extends AbstractAnonymousClassToLambdaCheck {
+public class AnonymousClassOnFunctionalInterfaceCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
+
+  private JavaFileScannerContext context;
+  private final Set<IdentifierTree> enumConstants = new HashSet<>();
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava8Compatible();
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    enumConstants.clear();
+    scan(context.getTree());
+  }
+
+  @Override
+  public void visitEnumConstant(EnumConstantTree tree) {
+    enumConstants.add(tree.simpleName());
+    super.visitEnumConstant(tree);
+    enumConstants.remove(tree.simpleName());
+  }
+
+  @Override
+  public void visitNewClass(NewClassTree tree) {
+    super.visitNewClass(tree);
+    ClassTree classBody = tree.classBody();
+    if (classBody != null && AnonymousClassToLambdaUtils.canBeConvertedToLambda(classBody, enumConstants)) {
+      context.reportIssue(this, tree.identifier(), "Make this anonymous inner class a lambda" + context.getJavaVersion().java8CompatibilityMessage());
+    }
+  }
+
 }

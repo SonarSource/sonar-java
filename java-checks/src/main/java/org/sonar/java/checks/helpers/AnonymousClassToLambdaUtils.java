@@ -14,73 +14,38 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.helpers;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
 
-public abstract class AbstractAnonymousClassToLambdaCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
+public final class AnonymousClassToLambdaUtils {
 
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
-  private JavaFileScannerContext context;
-  private final Set<IdentifierTree> enumConstants = new HashSet<>();
 
-  @Override
-  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
-    return version.isJava8Compatible();
+  private AnonymousClassToLambdaUtils() {
   }
 
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    enumConstants.clear();
-    scan(context.getTree());
-  }
-
-  @Override
-  public void visitEnumConstant(EnumConstantTree tree) {
-    enumConstants.add(tree.simpleName());
-    super.visitEnumConstant(tree);
-    enumConstants.remove(tree.simpleName());
-  }
-
-  @Override
-  public void visitNewClass(NewClassTree tree) {
-    super.visitNewClass(tree);
-    ClassTree classBody = tree.classBody();
-    if (classBody != null) {
-      TypeTree identifier = tree.identifier();
-      if (!useThisInstance(classBody) && !enumConstants.contains(identifier) && isSAM(classBody)) {
-        context.reportIssue(this, identifier, "Make this anonymous inner class a lambda" + context.getJavaVersion().java8CompatibilityMessage());
-      }
-    }
+  public static boolean canBeConvertedToLambda(ClassTree classBody, Set<IdentifierTree> enumConstants) {
+    var identifier = ((NewClassTree) classBody.parent()).identifier();
+    return !useThisInstance(classBody) && !enumConstants.contains(identifier) && isSAM(classBody);
   }
 
   private static boolean isSAM(ClassTree classBody) {
     if (hasOnlyOneMethod(classBody.members())) {
-      // When overriding only one method of a functional interface, it can only be the single abstract method
-      // and not one of the default methods. No need to check that the method signature matches.
       Symbol.TypeSymbol symbol = classBody.symbol();
-      // should be anonymous class of interface and not abstract class
       return symbol.interfaces().size() == 1
         && symbol.superClass().is(JAVA_LANG_OBJECT)
         && hasSingleAbstractMethodInHierarchy(symbol.superTypes());
@@ -92,15 +57,11 @@ public abstract class AbstractAnonymousClassToLambdaCheck extends BaseTreeVisito
     return superTypes.stream()
       .filter(type -> !type.is(JAVA_LANG_OBJECT))
       .map(Type::symbol)
-      // collect all the methods declared in hierarchy
       .flatMap(superType -> superType.memberSymbols().stream().filter(Symbol::isMethodSymbol).filter(Symbol::isAbstract))
       .map(Symbol.MethodSymbol.class::cast)
-      // remove objects methods redefined in interfaces
       .filter(symbol -> !isObjectMethod(symbol))
-      // remove generic methods, which can not be written as lambda (JLS-11 §15.27)
       .filter(symbol -> !symbol.isParametrizedMethod())
-      // always take same symbol if method is redeclared over and over in hierarchy
-      .map(AbstractAnonymousClassToLambdaCheck::overriddenSymbolIfAny)
+      .map(AnonymousClassToLambdaUtils::overriddenSymbolIfAny)
       .collect(Collectors.toSet())
       .size() == 1;
   }
@@ -135,8 +96,6 @@ public abstract class AbstractAnonymousClassToLambdaCheck extends BaseTreeVisito
   }
 
   private static boolean canRefactorMethod(MethodTree methodTree) {
-    // if overridden method declares to throw an exception, refactoring to a lambda might prove tricky
-    // if it is annotated with something else than @Override, it is not possible to refactor the code
     return methodTree.throwsClauses().isEmpty()
       && methodTree.symbol().metadata().annotations().stream()
       .allMatch(annotation -> annotation.symbol().type().is("java.lang.Override"));
@@ -159,7 +118,6 @@ public abstract class AbstractAnonymousClassToLambdaCheck extends BaseTreeVisito
 
     @Override
     public void visitClass(ClassTree tree) {
-      // visit the class body but ignore inner classes
       if (!visitedClassTree) {
         visitedClassTree = true;
         super.visitClass(tree);
@@ -174,7 +132,6 @@ public abstract class AbstractAnonymousClassToLambdaCheck extends BaseTreeVisito
     @Override
     public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
       scan(tree.expression());
-      // ignore identifier, because if it is this, it is a qualified this.
     }
 
     @Override
