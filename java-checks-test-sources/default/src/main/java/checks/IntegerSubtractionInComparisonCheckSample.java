@@ -338,6 +338,62 @@ class IntegerSubtractionInComparisonCheckSample {
     }
   }
 
+  static class SignBitLiteralComparator implements Comparator<String> {
+    @Override
+    public int compare(String left, String right) {
+      // 0x80000000 is the int literal for Integer.MIN_VALUE; left.length() is bounded but this still overflows.
+      // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+      return left.length() - 0x80000000;
+    }
+  }
+
+  static class MaskedByUnresolvedMaskComparator implements Comparator<Integer> {
+    @Override
+    public int compare(Integer left, Integer right) {
+      int mask = computeMask(left);
+      // mask does not resolve to a constant, so the mask range - and therefore this subtraction - is unknown.
+      // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+      return (left & mask) - 0;
+    }
+
+    private static int computeMask(int seed) {
+      return seed > 0 ? 0xff : 0x0f;
+    }
+  }
+
+  static class DeeplyChainedLocalsComparator implements Comparator<String> {
+    @Override
+    public int compare(String left, String right) {
+      int a = left.length();
+      int b = a;
+      int c = b;
+      int d = c;
+      int e = d;
+      // The single-write resolution depth cap keeps this conservative: e is not traced all the way back to
+      // left.length(), so it is treated as unbounded even though it provably isn't.
+      // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+      return e - right.length();
+    }
+  }
+
+  static class IncrementedCounterComparator implements Comparator<String[]> {
+    @Override
+    public int compare(String[] left, String[] right) {
+      int leftCount = 0;
+      for (String s : left) {
+        leftCount++;
+      }
+      int rightCount = 0;
+      for (String s : right) {
+        rightCount++;
+      }
+      // leftCount and rightCount are mutated with ++, not a single assignment, so they are not resolved to a
+      // bounded range even though both loops only ever increment their counter.
+      // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+      return leftCount - rightCount;
+    }
+  }
+
   static class UnknownRangeComparator implements Comparable<UnknownRangeComparator> {
     @Override
     public int compareTo(UnknownRangeComparator other) {
