@@ -176,18 +176,18 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
       if (classTree.simpleName() != null && name.equals(classTree.simpleName().name())) {
         return classTree;
       }
-      for (Tree member : classTree.members()) {
-        ClassTree found = findClassInTree(member, name);
-        if (found != null) {
-          return found;
-        }
-      }
+      return findClassInChildren(classTree.members(), name);
     } else if (tree.is(Kind.COMPILATION_UNIT)) {
-      for (Tree child : ((CompilationUnitTree) tree).types()) {
-        ClassTree found = findClassInTree(child, name);
-        if (found != null) {
-          return found;
-        }
+      return findClassInChildren(((CompilationUnitTree) tree).types(), name);
+    }
+    return null;
+  }
+
+  private static ClassTree findClassInChildren(List<? extends Tree> children, String name) {
+    for (Tree child : children) {
+      ClassTree found = findClassInTree(child, name);
+      if (found != null) {
+        return found;
       }
     }
     return null;

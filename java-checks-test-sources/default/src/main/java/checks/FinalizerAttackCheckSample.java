@@ -611,4 +611,94 @@ class FinalizerAttackCheckSample {
       throw new Exception();
     }
   }
+
+  // --- Compliant: sealed class with all sealed children (no non-sealed in hierarchy) ---
+
+  static sealed class SealedAllSealed permits SealedChildA {
+    public SealedAllSealed(String s) throws Exception {
+      if (s == null) throw new Exception();
+    }
+  }
+
+  static final class SealedChildA extends SealedAllSealed {
+    SealedChildA(String s) throws Exception {
+      super(s);
+    }
+  }
+
+  // --- Compliant: field initializer calls method (no direct throw in expression) ---
+
+  static class FieldInitMethodCallOnly {
+    private final Object value = initOrThrow();
+
+    private static Object initOrThrow() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  // --- Compliant: abstract class with private constructor and throwing initializer ---
+
+  static abstract class AbstractPrivateCtorThrowingInit {
+    {
+      if (System.currentTimeMillis() == 0) {
+        throw new RuntimeException("init");
+      }
+    }
+
+    private AbstractPrivateCtorThrowingInit() {
+    }
+  }
+
+  // --- Noncompliant: class with multiple constructors, one private one public, throwing initializer ---
+
+  static class MixedCtorsThrowingInit { // Secondary {{Non-final class}}
+    {
+      if (System.currentTimeMillis() == 0) {
+        throw new RuntimeException("init");
+      }
+    }
+
+    private MixedCtorsThrowingInit(int x) {
+    }
+
+    public MixedCtorsThrowingInit(String s) { // Noncompliant
+    }
+  }
+
+  // --- Compliant: class with final finalize() and throwing field initializer calls method ---
+
+  static class FinalFinalizerFieldInit {
+    private final Object value = computeValue();
+
+    private static Object computeValue() {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected final void finalize() {
+    }
+  }
+
+  // --- Compliant: class with only private constructor, throwing initializer, no default ctor ---
+
+  static class PrivateCtorOnlyThrowInit {
+    {
+      if (System.currentTimeMillis() == 0) {
+        throw new RuntimeException("init");
+      }
+    }
+
+    private PrivateCtorOnlyThrowInit(String s) {
+    }
+  }
+
+  // --- Noncompliant: nested inner class with throwing constructor ---
+
+  static class OuterClass {
+    static class InnerVulnerable { // Secondary {{Non-final class}}
+      public InnerVulnerable(String s) throws Exception { // Noncompliant
+        if (s == null) throw new Exception();
+      }
+    }
+  }
 }
