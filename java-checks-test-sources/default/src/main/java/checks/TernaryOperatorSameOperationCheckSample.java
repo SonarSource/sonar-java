@@ -26,6 +26,9 @@ class TernaryOperatorSameOperationCheckSample {
     // Method invocations with multiple args where some differ - Noncompliant
     String m5 = condition ? foo(a, x) : foo(b, x); // Noncompliant
 
+    // Method invocations with multiple args where all differ - Compliant
+    String m6 = condition ? foo(a, x) : foo(b, y); // Compliant - more than one argument differs
+
     // Method invocations - Compliant (different operations or same arguments)
     String c1 = condition ? foo(a) : bar(b); // Compliant - different methods
     String c2 = condition ? foo(a) : foo(a); // Compliant - same arguments
@@ -62,6 +65,9 @@ class TernaryOperatorSameOperationCheckSample {
 
     // New class with multiple args where some differ - Noncompliant
     Object n2 = condition ? new Foo(a, b) : new Foo(b, b); // Noncompliant
+
+    // New class with multiple args where all differ - Compliant
+    Object n3 = condition ? new Foo(a, a) : new Foo(b, b); // Compliant - more than one argument differs
 
     // New class - Compliant
     Object c4 = condition ? new Foo(a) : new Bar(b); // Compliant - different classes

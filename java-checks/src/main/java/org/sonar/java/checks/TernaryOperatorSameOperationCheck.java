@@ -97,13 +97,13 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
     if (leftArgs.size() != rightArgs.size()) {
       return false;
     }
-    boolean anyDifferent = false;
+    int differences = 0;
     for (int i = 0; i < leftArgs.size(); i++) {
       if (!sameTree(leftArgs.get(i), rightArgs.get(i))) {
-        anyDifferent = true;
+        differences++;
       }
     }
-    return anyDifferent;
+    return differences == 1;
   }
 
   private static boolean sameArrayAccess(ArrayAccessExpressionTree left, ArrayAccessExpressionTree right) {
