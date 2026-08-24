@@ -1,0 +1,56 @@
+<p>This is an issue when an octal escape sequence in a string literal is immediately followed by another digit, creating ambiguity about which digits
+are part of the escape sequence.</p>
+<h2>Why is this an issue?</h2>
+<p>Some programming languages support numeric escape sequences in string and character literals where the escape sequence consists of a backslash
+followed by a variable number of digits in a specific number base (such as octal or other bases). For example, an escape sequence might consist of a
+backslash followed by one to three digits representing a character code.</p>
+<p>The problem arises when such a variable-length escape sequence is immediately followed by another digit that could be part of the sequence.
+Consider a string containing a backslash, followed by digits that could be interpreted as either a single long escape sequence or a shorter escape
+sequence followed by a literal digit character. This creates confusion because:</p>
+<ul>
+  <li>The boundary between the escape sequence and the literal digit is not visually clear</li>
+  <li>Developers unfamiliar with the specific numeric notation may misinterpret the intended character</li>
+  <li>These numeric escape sequences are rarely used in modern code, making them unexpected</li>
+</ul>
+<p>This ambiguity can lead to bugs where the string contains different characters than the developer intended. The issue is particularly problematic
+because:</p>
+<ul>
+  <li>Variable-length escapes can use different numbers of digits, so the parsing rules are complex</li>
+  <li>Once an escape sequence encounters a digit outside its valid range, it terminates, but this isn’t obvious from the code</li>
+  <li>Modern developers rarely think in alternative number bases, so these sequences are hard to read and verify</li>
+</ul>
+<p>In Java, these are octal escape sequences consisting of a backslash followed by one to three octal digits (0-7). For example, <code>"\12"</code>
+represents a line feed character (decimal 10), and <code>"\128"</code> is actually the octal escape <code>\12</code> (line feed) followed by the
+literal character <code>8</code>.</p>
+<h3>What is the potential impact?</h3>
+<p>This issue affects code maintainability and can lead to subtle bugs. When developers misunderstand what characters are in a string, it can
+cause:</p>
+<ul>
+  <li>Incorrect string comparisons or pattern matching</li>
+  <li>Unexpected behavior when the string is displayed or processed</li>
+  <li>Difficulty debugging because the string’s actual content differs from its apparent content</li>
+  <li>Confusion for code reviewers and future maintainers</li>
+</ul>
+<p>While the impact is typically low severity, it can waste significant debugging time when the actual characters in a string don’t match
+expectations.</p>
+<h2>How to fix it</h2>
+<p>Replace the octal escape sequence with a Unicode escape sequence. Unicode escapes use the format <code>\uXXXX</code> where XXXX is the four-digit
+hexadecimal code point. This makes it clear exactly which character is intended and eliminates ambiguity.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+String message = "Error code: \128"; // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+String message = "Error code: \u000A" + "8";
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/data/characters.html">Escape Sequences for Character and
+  String Literals</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-3.html#jls-3.10.6">3.10.6. Escape Sequences for
+  Character and String Literals</a></li>
+</ul>
+
