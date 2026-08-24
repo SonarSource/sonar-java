@@ -276,4 +276,94 @@ class FinalizerAttackCheckSample {
       }
     }
   }
+
+  // --- Compliant: field initializer calls a method, no direct throw in initializer expression ---
+
+  static class FieldInitializerIndirectThrow {
+    private final Object data = check(null);
+
+    private static Object check(Object o) {
+      if (o == null) {
+        throw new IllegalArgumentException();
+      }
+      return o;
+    }
+  }
+
+  // --- Noncompliant: non-final finalize() does not protect ---
+
+  static class NonFinalFinalize { // Secondary {{Non-final class}}
+    public NonFinalFinalize(String data) throws Exception { // Noncompliant
+      if (data == null) {
+        throw new Exception("Null");
+      }
+    }
+
+    @Override
+    protected void finalize() {
+      // non-final finalize does NOT protect
+    }
+  }
+
+  // --- Compliant: throw only inside lambda in constructor ---
+
+  static class ThrowInLambda {
+    public ThrowInLambda() {
+      Runnable r = () -> {
+        throw new RuntimeException("in lambda");
+      };
+    }
+  }
+
+  // --- Compliant: throw only inside anonymous class in constructor ---
+
+  static class ThrowInAnonymousClass {
+    public ThrowInAnonymousClass() {
+      Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          throw new RuntimeException("in anon");
+        }
+      };
+    }
+  }
+
+  // --- Noncompliant: multiple throwing instance initializers, no explicit constructor ---
+
+  static class MultipleThrowingInitializers { // Noncompliant {{Make this class "final" or add a private constructor, because initializers can throw.}}
+    { // Secondary {{Throwing initializer}}
+      if (System.currentTimeMillis() == 0) {
+        throw new RuntimeException("init block 1");
+      }
+    }
+    { // Secondary {{Throwing initializer}}
+      if (System.currentTimeMillis() == 1) {
+        throw new RuntimeException("init block 2");
+      }
+    }
+  }
+
+  // --- Compliant: local class inside a constructor ---
+
+  static class EnclosingWithLocalInConstructor {
+    EnclosingWithLocalInConstructor() {
+      class InnerLocal {
+        InnerLocal() throws Exception {
+          throw new Exception("local in ctor");
+        }
+      }
+    }
+  }
+
+  // --- Compliant: field initializer without throw ---
+
+  static class FieldInitializerNoThrow {
+    private final String data = "hello";
+  }
+
+  // --- Compliant: field without initializer ---
+
+  static class FieldNoInitializer {
+    private String data;
+  }
 }

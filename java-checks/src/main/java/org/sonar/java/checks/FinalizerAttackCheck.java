@@ -60,18 +60,17 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
     List<JavaFileScannerContext.Location> secondaryLocations = Collections.singletonList(
       new JavaFileScannerContext.Location("Non-final class", classTree.simpleName()));
 
+    checkMembers(classTree, secondaryLocations);
+  }
+
+  private void checkMembers(ClassTree classTree, List<JavaFileScannerContext.Location> secondaryLocations) {
     boolean hasExplicitConstructor = false;
     List<Tree> throwingInitializers = new ArrayList<>();
 
     for (Tree member : classTree.members()) {
       if (member.is(Kind.CONSTRUCTOR)) {
         hasExplicitConstructor = true;
-        if (isVulnerableConstructor((MethodTree) member)) {
-          MethodTree constructor = (MethodTree) member;
-          reportIssue(constructor.simpleName(),
-            "Make this class \"final\" or make this throwing constructor \"private\".",
-            secondaryLocations, null);
-        }
+        reportVulnerableConstructor((MethodTree) member, secondaryLocations);
       } else if (member.is(Kind.INITIALIZER) && containsThrowStatementInBlock((BlockTree) member)) {
         throwingInitializers.add(member);
       } else if (member.is(Kind.VARIABLE) && hasThrowingFieldInitializer((VariableTree) member)) {
@@ -80,14 +79,26 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
     }
 
     if (!hasExplicitConstructor && !throwingInitializers.isEmpty()) {
-      List<JavaFileScannerContext.Location> locations = new ArrayList<>();
-      for (Tree init : throwingInitializers) {
-        locations.add(new JavaFileScannerContext.Location("Throwing initializer", init));
-      }
-      reportIssue(classTree.simpleName(),
-        "Make this class \"final\" or add a private constructor, because initializers can throw.",
-        locations, null);
+      reportThrowingInitializers(classTree, throwingInitializers);
     }
+  }
+
+  private void reportVulnerableConstructor(MethodTree constructor, List<JavaFileScannerContext.Location> secondaryLocations) {
+    if (isVulnerableConstructor(constructor)) {
+      reportIssue(constructor.simpleName(),
+        "Make this class \"final\" or make this throwing constructor \"private\".",
+        secondaryLocations, null);
+    }
+  }
+
+  private void reportThrowingInitializers(ClassTree classTree, List<Tree> throwingInitializers) {
+    List<JavaFileScannerContext.Location> locations = new ArrayList<>();
+    for (Tree init : throwingInitializers) {
+      locations.add(new JavaFileScannerContext.Location("Throwing initializer", init));
+    }
+    reportIssue(classTree.simpleName(),
+      "Make this class \"final\" or add a private constructor, because initializers can throw.",
+      locations, null);
   }
 
   private static boolean isLocalClass(ClassTree classTree) {
