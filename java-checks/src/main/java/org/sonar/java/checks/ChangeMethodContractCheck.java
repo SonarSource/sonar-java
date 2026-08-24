@@ -83,9 +83,11 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
 
   private void compareNullability(TypeTree tree, SymbolMetadata upperBound, SymbolMetadata lowerBound, boolean overriddenIsLowerBound) {
     // Check current level
-    if (upperBound.nullabilityData().isNullable(PACKAGE, false, false)
-        && lowerBound.nullabilityData().isNonNull(PACKAGE, false, false)) {
-      reportIssue(tree, lowerBound.nullabilityData(), upperBound.nullabilityData(), overriddenIsLowerBound);
+    NullabilityData upperData = upperBound.nullabilityData();
+    NullabilityData lowerData = lowerBound.nullabilityData();
+    if (upperData.isNullable(PACKAGE, false, false)
+        && lowerData.isNonNull(PACKAGE, false, false)) {
+      reportIssue(tree, lowerData, upperData, overriddenIsLowerBound);
     }
 
     // Check type parameters

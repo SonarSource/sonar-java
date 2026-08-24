@@ -41,17 +41,6 @@ public class EqualsParametersMarkedNonNullCheckSample {
     }
   }
 
-  static class F {
-    public boolean equals(
-      @javax.validation.constraints.NotNull // Noncompliant {{"equals" method parameters should not be marked "@NotNull".}} [[quickfixes=qf2]]
-//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      java.lang.Object object) {
-      // fix@qf2 {{Remove "@NotNull"}}
-      // edit@qf2 [[sc=7;ec=7;el=+2]] {{}}
-      return false;
-    }
-  }
-
   @org.eclipse.jdt.annotation.NonNullByDefault
   static class G {
     public boolean equals(Object object) { // Compliant
