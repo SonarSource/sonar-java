@@ -86,7 +86,7 @@ class TypeToBeanNamesIndexGathererTest extends SpringContextGathererTest {
   void bean_method_aliases_are_all_registered() {
     scan("src/test/files/springcontext/ConfigurationWithBeanMethods.java");
 
-    // @Bean(name = {"arrayNamedBean", "alias"}) — both names must appear in the index
+    // @Bean(name = {"arrayNamedBean", "alias"}) — both names appear in the index
     var index = model.getTypeToBeanNamesIndex();
     assertThat(index.getNamesForType("org.springframework.context.ApplicationContext"))
       .contains("arrayNamedBean", "alias");
@@ -95,18 +95,17 @@ class TypeToBeanNamesIndexGathererTest extends SpringContextGathererTest {
   // ---- Multiple beans ---------------------------------------------------------
 
   @Test
-  void multiple_beans_of_same_type_all_registered() {
+  void multiple_beans_all_registered() {
     scan(
-      "src/test/files/springcontext/SimpleComponent.java",
-      "src/test/files/springcontext/SimpleService.java"
+      "src/test/files/springcontext/PayPalProcessor.java",
+      "src/test/files/springcontext/CreditCardProcessor.java"
     );
 
     var index = model.getTypeToBeanNamesIndex();
-    // Each bean appears only under its own concrete type
-    assertThat(index.getNamesForType("checks.spring.context.SimpleComponent"))
-      .containsOnly("simpleComponent");
-    assertThat(index.getNamesForType("checks.spring.context.SimpleService"))
-      .containsOnly("simpleService");
+    assertThat(index.getNamesForType("checks.spring.context.PayPalProcessor"))
+      .containsOnly("paypal");
+    assertThat(index.getNamesForType("checks.spring.context.CreditCardProcessor"))
+      .containsOnly("creditCard");
   }
 
   // ---- No annotation ----------------------------------------------------------
