@@ -22,16 +22,16 @@ class LocalVariablesShouldNotSpanSwitchCaseGroupsCheckSample {
     switch (selector) {
       case 0:
       case 1:
-        int value = 0; // Noncompliant {{Declare a separate variable in each case group; sharing this local variable across groups obscures its scope.}} [[sc=13;ec=18;secondary=+4,+9]]
+        int value = 0; // Noncompliant {{Declare a separate variable in each case group; sharing this local variable across groups obscures its scope.}} [[sc=13;ec=18;flows=statementCase2,statementDefault]]
         consume(value);
         break;
       case 2:
-        value = 2;
+        value = 2; // flow@statementCase2 [[sc=9;ec=14]] {{Accessed from this later case group.}}
         value++;
         consume(value);
         break;
       default:
-        value += 3;
+        value += 3; // flow@statementDefault [[sc=9;ec=14]] {{Accessed from this later case group.}}
         consume(value);
     }
   }
@@ -135,6 +135,23 @@ class LocalVariablesShouldNotSpanSwitchCaseGroupsCheckSample {
           }
         }
         new Local().increment();
+    }
+  }
+
+  void nestedSwitchesAreIndependent(int selector) {
+    switch (selector) {
+      case 0:
+        int outer = 0; // Noncompliant {{Declare a separate variable in each case group; sharing this local variable across groups obscures its scope.}} [[sc=13;ec=18;secondary=+6]]
+        break;
+      default:
+        switch (selector + 1) {
+          case 1:
+            outer = 1;
+            int nested = 0; // Noncompliant {{Declare a separate variable in each case group; sharing this local variable across groups obscures its scope.}} [[sc=17;ec=23;secondary=+3]]
+            break;
+          default:
+            nested = 1;
+        }
     }
   }
 
