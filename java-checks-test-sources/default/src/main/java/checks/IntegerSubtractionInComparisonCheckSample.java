@@ -272,6 +272,13 @@ class IntegerSubtractionInComparisonCheckSample {
     }
   }
 
+  static class LongBitCountComparator implements Comparator<Long> {
+    @Override
+    public int compare(Long left, Long right) {
+      return Long.bitCount(left) - Long.bitCount(right); // Compliant - both operands are bounded in [0, 64]
+    }
+  }
+
   static class MaskedByteComparator implements Comparator<byte[]> {
     @Override
     public int compare(byte[] left, byte[] right) {
@@ -311,6 +318,23 @@ class IntegerSubtractionInComparisonCheckSample {
     public int compareTo(MixedBoundedAndUnboundedComparator other) {
       // Noncompliant@+1 {{Subtracting numeric values in compareTo can overflow; use Integer.compare instead.}}
       return this.value - other.getClass().getName().length();
+    }
+  }
+
+  static class MixedUnboundedAndBoundedComparator implements Comparator<String> {
+    @Override
+    public int compare(String left, String right) {
+      // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+      return left.length() - right.hashCode();
+    }
+  }
+
+  static class BoundedButUnsafeComparator implements Comparator<byte[]> {
+    @Override
+    public int compare(byte[] left, byte[] right) {
+      int a = left[0] & 0xff;
+      // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
+      return a - Integer.MIN_VALUE;
     }
   }
 

@@ -18,7 +18,6 @@ package org.sonar.java.checks.helpers;
 
 import javax.annotation.CheckForNull;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -104,11 +103,17 @@ public final class BoundedIntegerRange {
 
   @CheckForNull
   private static Range constantRange(ExpressionTree tree) {
-    Long value = LiteralUtils.longLiteralValue(tree);
-    if (value == null) {
-      return null;
+    // Resolve through the compiler's own constant folding rather than re-parsing literal text, so the
+    // value respects the expression's static type: an int-typed 0x80000000 is -2147483648, not +2147483648.
+    Integer intValue = tree.asConstant(Integer.class).orElse(null);
+    if (intValue != null) {
+      return new Range(intValue, intValue);
     }
-    return new Range(value, value);
+    Long longValue = tree.asConstant(Long.class).orElse(null);
+    if (longValue != null) {
+      return new Range(longValue, longValue);
+    }
+    return null;
   }
 
   @CheckForNull
@@ -160,7 +165,9 @@ public final class BoundedIntegerRange {
   @CheckForNull
   private static Range identifierRange(IdentifierTree identifier, int depth) {
     Symbol symbol = identifier.symbol();
-    if (symbol.isUnknown()) {
+    if (symbol.isUnknown() || !ExpressionsHelper.isNotReassigned(symbol)) {
+      // getSingleWriteUsage only looks at AssignmentExpressionTree reassignments, so a variable
+      // mutated by ++/-- would otherwise look like a single-write local pinned to its initializer.
       return null;
     }
     ExpressionTree singleWriteUsage = ExpressionsHelper.getSingleWriteUsage(symbol);
