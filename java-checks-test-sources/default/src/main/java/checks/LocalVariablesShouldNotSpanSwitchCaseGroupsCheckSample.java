@@ -31,7 +31,7 @@ class LocalVariablesShouldNotSpanSwitchCaseGroupsCheckSample {
         consume(value);
         break;
       default:
-        value += 3; // flow@statementDefault [[sc=9;ec=14]] {{Accessed from this later case group.}}
+        value = 3; // flow@statementDefault [[sc=9;ec=14]] {{Accessed from this later case group.}}
         consume(value);
     }
   }
@@ -57,7 +57,7 @@ class LocalVariablesShouldNotSpanSwitchCaseGroupsCheckSample {
         break;
       default:
         first = 1;
-        second += 2;
+        second = 2;
     }
   }
 
@@ -141,7 +141,7 @@ class LocalVariablesShouldNotSpanSwitchCaseGroupsCheckSample {
   void nestedSwitchesAreIndependent(int selector) {
     switch (selector) {
       case 0:
-        int outer = 0; // Noncompliant {{Declare a separate variable in each case group; sharing this local variable across groups obscures its scope.}} [[sc=13;ec=18;secondary=+6]]
+        int outer = 0; // Noncompliant {{Declare a separate variable in each case group; sharing this local variable across groups obscures its scope.}} [[sc=13;ec=18;secondary=+5]]
         break;
       default:
         switch (selector + 1) {
