@@ -323,7 +323,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         }
       }
     }
-    if (deps.isEmpty() && unannotatedConstructors.size() == 1) {
+    if (unannotatedConstructors.size() == 1) {
       parameterDependencies(unannotatedConstructors.get(0)).forEach((type, names) ->
         deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(names));
     }
