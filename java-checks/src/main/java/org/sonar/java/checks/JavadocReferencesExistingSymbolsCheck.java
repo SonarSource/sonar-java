@@ -159,11 +159,7 @@ public class JavadocReferencesExistingSymbolsCheck extends IssuableSubscriptionV
       return false;
     }
 
-    if (!currentPackage.isEmpty() && !isUnknownType(sema, currentPackage + "." + typeName)) {
-      return false;
-    }
-
-    return true;
+    return currentPackage.isEmpty() || isUnknownType(sema, currentPackage + "." + typeName);
   }
 
   private static boolean isUnknownType(Sema sema, String fullyQualifiedName) {
