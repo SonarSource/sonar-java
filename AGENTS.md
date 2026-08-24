@@ -43,6 +43,9 @@ Rules are Java classes annotated with `@Rule(key = "SXXXX")` that extend one of:
 - **`BaseTreeVisitor`** — Visitor pattern: override `visit*` methods; combined with `JavaFileScanner` to report issues
 - **`JavaFileScanner`** — Full scan: override `scanFile` to traverse the entire compilation unit
 
+To avoid coupling between rules, never introduce new abstract classes from which rules would inherit.
+To avoid duplicating code, you may use utility classes.
+
 ### Example: IssuableSubscriptionVisitor
 
 ```java
