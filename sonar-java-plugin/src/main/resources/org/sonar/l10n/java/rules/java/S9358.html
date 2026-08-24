@@ -1,0 +1,51 @@
+<p>An issue is raised when a conditional expression (with a condition determining which of two alternative expressions to evaluate) performs the same
+operation on both branches, differing only in the arguments.</p>
+<p>In Java, this refers to the ternary operator with the syntax <code>condition ? trueExpr : falseExpr</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>When both branches of a ternary operator apply the same function call or operation to different values, the code contains unnecessary duplication.
+This pattern makes the code harder to read because the common operation is stated twice instead of once.</p>
+<p>Consider this example:</p>
+<pre>
+message = isError ? formatMessage(errorText) : formatMessage(warningText)
+</pre>
+<p>Here, the message formatting function appears in both branches. This duplication obscures the actual difference between the branches (the input
+value) and makes the code longer than necessary.</p>
+<p>By moving the condition inside the function call, you highlight what actually varies:</p>
+<pre>
+message = formatMessage(isError ? errorText : warningText)
+</pre>
+<p>This refactored version:</p>
+<ul>
+  <li>Eliminates repetition of the function call</li>
+  <li>Makes the variable part (the condition) more visible</li>
+  <li>Reduces the overall line length</li>
+  <li>Improves readability by following the DRY (Don’t Repeat Yourself) principle</li>
+</ul>
+<p>This pattern applies to function calls, object creation, array access, and other operations that are identical in both branches.</p>
+<h3>What is the potential impact?</h3>
+<p>This issue has a minor impact on code maintainability:</p>
+<ul>
+  <li><strong>Readability</strong>: Duplicated operations make code harder to scan and understand quickly</li>
+  <li><strong>Maintenance burden</strong>: If the operation needs to change, developers must update it in two places instead of one</li>
+  <li><strong>Code size</strong>: Unnecessary duplication increases the code footprint without adding value</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Move the ternary operator inside the common method call or operation. The condition should determine which argument is passed, not which method is
+called.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+String result = condition ? foo(a) : foo(b); // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+String result = foo(condition ? a : b);
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/expressions.html">The Java Tutorials -
+  Expressions, Statements, and Blocks</a></li>
+  <li>Refactoring Guru - <a href="https://refactoring.guru/simplifying-conditional-expressions">Simplifying Conditional Expressions</a></li>
+</ul>
+
