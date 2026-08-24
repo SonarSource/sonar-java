@@ -513,4 +513,102 @@ class FinalizerAttackCheckSample {
       // compliant: non-throwing
     }
   }
+
+  // --- Compliant: abstract class with no throwing constructor and no throwing initializer ---
+
+  static abstract class AbstractSafeClass {
+    public AbstractSafeClass(String data) {
+      // no throw
+    }
+
+    abstract void doWork();
+  }
+
+  // --- Noncompliant: abstract class with constructor that has throws clause only ---
+
+  static abstract class AbstractThrowsClause { // Secondary {{Non-final class}}
+    protected AbstractThrowsClause() throws Exception { // Noncompliant
+    }
+  }
+
+  // --- Compliant: sealed class with sealed child (not non-sealed) ---
+
+  static sealed class SealedWithSealedChild permits SealedChild {
+    public SealedWithSealedChild(String s) throws Exception {
+      if (s == null) throw new Exception();
+    }
+  }
+
+  static sealed class SealedChild extends SealedWithSealedChild permits FinalGrandchild {
+    public SealedChild(String s) throws Exception {
+      super(s);
+    }
+  }
+
+  static final class FinalGrandchild extends SealedChild {
+    public FinalGrandchild(String s) throws Exception {
+      super(s);
+    }
+  }
+
+  // --- Compliant: abstract class with only abstract methods ---
+
+  static abstract class AbstractMethodOnly {
+    abstract void compute();
+  }
+
+  // --- Compliant: field initializer without direct throw ---
+
+  static class FieldInitializerSafe {
+    private final String value = String.valueOf(42);
+
+    public FieldInitializerSafe() {
+    }
+  }
+
+  // --- Compliant: field initializer is anonymous class with throw (skipped by visitor) ---
+
+  static class FieldInitAnonymousThrow {
+    private final Runnable action = new Runnable() {
+      @Override
+      public void run() {
+        throw new RuntimeException("in anon in field init");
+      }
+    };
+  }
+
+  // --- Noncompliant: non-final, non-private constructors where one has throw and one has throws clause ---
+
+  static class BothThrowAndThrowsClause { // Secondary {{Non-final class}}
+    public BothThrowAndThrowsClause(int x) { // Noncompliant
+      if (x < 0) {
+        throw new IllegalArgumentException();
+      }
+    }
+
+    protected BothThrowAndThrowsClause(String s) throws Exception { // Noncompliant
+    }
+  }
+
+  // --- Noncompliant: finalize(Object) is not zero-arg finalize, does not protect ---
+
+  static class WrongFinalizeSignature { // Secondary {{Non-final class}}
+    public WrongFinalizeSignature(String s) throws Exception { // Noncompliant
+      if (s == null) throw new Exception();
+    }
+
+    protected final void finalize(Object obj) {
+      // wrong signature, does not protect
+    }
+  }
+
+  // --- Noncompliant: class with field without initializer but throwing constructor ---
+
+  static class FieldWithoutInitializer { // Secondary {{Non-final class}}
+    private Object data;
+
+    public FieldWithoutInitializer() throws Exception { // Noncompliant
+      throw new Exception();
+    }
+  }
 }
