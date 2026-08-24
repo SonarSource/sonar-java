@@ -9,7 +9,8 @@
   "tags": [
     "lambda",
     "java8",
-    "convention"
+    "convention",
+    "tests"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-9357",
