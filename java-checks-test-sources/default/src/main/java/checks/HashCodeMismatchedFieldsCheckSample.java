@@ -62,7 +62,6 @@ class HashCodeMismatchedFieldsCheckSample {
 
     String getLastName() {
       return lastName;
-//           ^^^^^^^^> {{Not compared in equals()}}
     }
 
     @Override
@@ -74,6 +73,7 @@ class HashCodeMismatchedFieldsCheckSample {
     public int hashCode() { // Noncompliant {{This hashCode() implementation is inconsistent with equals(): it reads "lastName", which equals() never reads, so equal objects may hash differently.}}
 //             ^^^^^^^^
       return Objects.hash(getFirstName(), getLastName());
+//                                        ^^^^^^^^^^^^^< {{Not compared in equals()}}
     }
   }
 
@@ -138,7 +138,7 @@ class HashCodeMismatchedFieldsCheckSample {
   static class MemoizedHash {
     private final int x;
     private final int y;
-    private int cachedHash;
+    private int hc;
 
     MemoizedHash(int x, int y) {
       this.x = x;
@@ -152,10 +152,52 @@ class HashCodeMismatchedFieldsCheckSample {
 
     @Override
     public int hashCode() {
-      if (cachedHash == 0) {
-        cachedHash = Objects.hash(x, y);
+      if (this.hc == 0) {
+        this.hc = Objects.hash(x, y);
       }
+      return this.hc;
+    }
+  }
+
+  static class EagerCachedHash {
+    private final int x;
+    private final int cachedHash;
+
+    EagerCachedHash(int x) {
+      this.x = x;
+      this.cachedHash = Objects.hash(x);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      return other instanceof EagerCachedHash that && x == that.x;
+    }
+
+    @Override
+    public int hashCode() {
       return cachedHash;
+    }
+  }
+
+  static class IdentityFieldContainingHash {
+    private final long id;
+    private final String contentHash;
+
+    IdentityFieldContainingHash(long id, String contentHash) {
+      this.id = id;
+      this.contentHash = contentHash;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      return other instanceof IdentityFieldContainingHash that && id == that.id;
+    }
+
+    @Override
+    public int hashCode() { // Noncompliant {{This hashCode() implementation is inconsistent with equals(): it reads "contentHash", which equals() never reads, so equal objects may hash differently.}}
+//             ^^^^^^^^
+      return Objects.hash(id, contentHash);
+//                            ^^^^^^^^^^^< {{Not compared in equals()}}
     }
   }
 

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -47,6 +48,14 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
   private static final String ISSUE_MESSAGE =
     "This hashCode() implementation is inconsistent with equals(): it reads \"%s\", which equals() never reads, so equal objects may hash differently.";
   private static final String SECONDARY_MESSAGE = "Not compared in equals()";
+  private static final Set<String> MEMOIZED_HASH_FIELD_NAMES = Set.of(
+    "hash",
+    "hashcode",
+    "cachedhash",
+    "cachedhashcode",
+    "memoizedhash",
+    "memoizedhashcode",
+    "hashcache");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -83,7 +92,8 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
     extraFields.keySet().removeAll(equalsFields.fields.keySet());
     // A field caching a previously computed hash value does not add new identity state: recognize it either by
     // name, or because hashCode() itself assigns to it (the memoization pattern), regardless of its name.
-    extraFields.keySet().removeIf(field -> field.name().toLowerCase(Locale.ROOT).contains("hash") || hashCodeFields.assignedFields.contains(field));
+    extraFields.keySet().removeIf(field ->
+      MEMOIZED_HASH_FIELD_NAMES.contains(field.name().toLowerCase(Locale.ROOT)) || hashCodeFields.assignedFields.contains(field));
     return extraFields;
   }
 
@@ -208,12 +218,9 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if (tree.variable() instanceof IdentifierTree identifier) {
-        Symbol symbol = identifier.symbol();
-        if (!symbol.isUnknown() && symbol.isVariableSymbol() && !symbol.isStatic() && ownedByEnclosing(symbol)) {
-          assignedFields.add(symbol);
-        }
-      }
+      ExpressionUtils.extractIdentifierSymbol(tree.variable())
+        .filter(symbol -> !symbol.isUnknown() && symbol.isVariableSymbol() && !symbol.isStatic() && ownedByEnclosing(symbol))
+        .ifPresent(assignedFields::add);
       super.visitAssignmentExpression(tree);
     }
 
@@ -226,7 +233,7 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
         } else {
           Map<Symbol, Tree> helperFields = fieldsByHelper.get(symbol);
           if (helperFields != null) {
-            helperFields.forEach(fields::putIfAbsent);
+            helperFields.keySet().forEach(field -> fields.putIfAbsent(field, tree));
           } else if (symbol.isStatic()) {
             // A same-class static helper we could not pre-scan (e.g. it takes parameters) may hide field
             // reads: bail out rather than silently ignoring it. An external static utility (e.g. Objects.hash)
