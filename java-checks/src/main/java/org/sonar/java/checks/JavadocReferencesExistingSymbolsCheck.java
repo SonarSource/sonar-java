@@ -21,11 +21,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -34,7 +36,7 @@ public class JavadocReferencesExistingSymbolsCheck extends IssuableSubscriptionV
 
   private static final String MESSAGE = "Make sure this reference is valid.";
   private static final Pattern SEE_TAG_PATTERN = Pattern.compile("@see\\s++(\\S++)");
-  private static final Pattern SEE_ANCHOR_PATTERN = Pattern.compile("\\{@see\\s++([^\\s}]+)");
+  private static final Pattern LINK_TAG_PATTERN = Pattern.compile("\\{@link(?:plain)?\\s++([^\\s}]+)");
 
   private String currentPackage = "";
 
@@ -43,9 +45,9 @@ public class JavadocReferencesExistingSymbolsCheck extends IssuableSubscriptionV
     super.setContext(context);
     Tree tree = context.getTree();
     if (tree != null && tree.is(Tree.Kind.COMPILATION_UNIT)) {
-      Tree pkg = ((CompilationUnitTree) tree).packageDeclaration();
+      PackageDeclarationTree pkg = ((CompilationUnitTree) tree).packageDeclaration();
       if (pkg != null) {
-        currentPackage = pkg.toString();
+        currentPackage = ExpressionsHelper.concatenate(pkg.packageName());
       }
     }
   }
@@ -73,20 +75,24 @@ public class JavadocReferencesExistingSymbolsCheck extends IssuableSubscriptionV
 
     Sema sema = (Sema) semanticModel;
 
-    for (String reference : extractSeeReferences(syntaxTrivia.comment())) {
-      String resolvedRef = resolveReference(reference);
-      if (resolvedRef == null) {
-        continue;
-      }
-
-      Type type = sema.getClassType(resolvedRef);
-      if (type != null && !type.isUnknown()) {
-        continue;
-      }
-
+    if (hasInvalidReference(sema, syntaxTrivia.comment())) {
       addIssue(syntaxTrivia.range().end().line(), MESSAGE);
-      return;
     }
+  }
+
+  private boolean hasInvalidReference(Sema sema, String javadocText) {
+    for (String reference : extractSeeReferences(javadocText)) {
+      String resolvedRef = resolveReference(reference);
+      if (resolvedRef != null && isUnknownType(sema, resolvedRef)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean isUnknownType(Sema sema, String fullyQualifiedName) {
+    Type type = sema.getClassType(fullyQualifiedName);
+    return type == null || type.isUnknown();
   }
 
   @Override
@@ -108,7 +114,7 @@ public class JavadocReferencesExistingSymbolsCheck extends IssuableSubscriptionV
       }
     }
 
-    Matcher anchorMatcher = SEE_ANCHOR_PATTERN.matcher(javadocText);
+    Matcher anchorMatcher = LINK_TAG_PATTERN.matcher(javadocText);
     while (anchorMatcher.find()) {
       String ref = anchorMatcher.group(1);
       if (!ref.startsWith("http://") && !ref.startsWith("https://")) {
@@ -144,12 +150,6 @@ public class JavadocReferencesExistingSymbolsCheck extends IssuableSubscriptionV
     // If already fully qualified, use as-is
     if (reference.contains(".")) {
       return reference;
-    }
-
-    // Skip simple method names (e.g., "existingMethod()")
-    // These are handled by a different rule
-    if (!reference.contains(".")) {
-      return null;
     }
 
     // Resolve relative reference against current package
