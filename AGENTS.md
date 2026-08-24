@@ -4,6 +4,8 @@ SonarJava is a static code analyzer for Java.
 
 The rules are implemented in **Java** using the SonarJava API. Test resources are **Java** files annotated with special comment markers.
 
+For step-by-step guidance on implementing a new rule (including metadata generation), see `.claude/skills/new-rule/SKILL.md`.
+
 ---
 
 
@@ -94,7 +96,7 @@ public class MyCheck extends BaseTreeVisitor implements JavaFileScanner {
 - **`reportIssue(tree, message)`** — Report an issue at a specific AST node
 - **`reportIssue(tree, message, secondaries, cost)`** — Report with secondary locations
 - **`Tree.Kind.*`** — AST node type enumeration (e.g., `Tree.Kind.METHOD`, `Tree.Kind.IF_STATEMENT`, `Tree.Kind.METHOD_INVOCATION`)
-- **`TreeUtils.firstAncestorOfKind(tree, Tree.Kind.METHOD)`** — Navigate up the AST
+- **`ExpressionUtils.getParentOfType(tree, Tree.Kind.METHOD)`** — Navigate up the AST
 - **`ExpressionUtils`**, **`MethodMatchers`** — Utility classes for common analysis patterns
 
 ### MethodMatchers
@@ -132,6 +134,11 @@ When a rule should only apply when a specific library is present, or when its be
 public class TransactionalMethodVisibilityCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
   private boolean isSpring6OrLater = false;
+
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return Collections.singletonList(Tree.Kind.METHOD);
+  }
 
   /** Called before analysis. Return false to disable the rule entirely when required dependencies are absent. */
   @Override
@@ -196,7 +203,7 @@ Rules may behave differently depending on the Java language level:
 The file general structure for a rule implementation and its tests is as follows:
 - Rule class: `java-checks/src/main/java/org/sonar/java/checks/{RuleId}Check.java`
 - Test class: `java-checks/src/test/java/org/sonar/java/checks/{RuleId}CheckTest.java`
-- Test samples: `java-checks-test-sources/default/src/main/files/checks/{RuleId}CheckSample.java`
+- Test samples: `java-checks-test-sources/default/src/main/java/checks/{RuleId}CheckSample.java`
 
 ## Test Class
 
@@ -205,13 +212,14 @@ This is to prevent false positives when the rule is applied to code that does no
 Example:
 
 ```java
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class AbsOnNegativeCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AbsOnNegative.java")
+      .onFile(mainCodeSourcesPath("checks/AbsOnNegativeCheckSample.java"))
       .withCheck(new AbsOnNegativeCheck())
       .verifyIssues();
   }
@@ -219,7 +227,7 @@ class AbsOnNegativeCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/AbsOnNegative.java")
+      .onFile(mainCodeSourcesPath("checks/AbsOnNegativeCheckSample.java"))
       .withCheck(new AbsOnNegativeCheck())
       .withoutSemantic()
       .verifyIssues();
