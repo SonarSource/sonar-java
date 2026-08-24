@@ -2,39 +2,7 @@
 "com.google.guava:guava:src/com/google/common/collect/ExplicitOrdering.java": [
 41
 ],
-"com.google.guava:guava:src/com/google/common/primitives/Booleans.java": [
-297
-],
-"com.google.guava:guava:src/com/google/common/primitives/Chars.java": [
-414
-],
-"com.google.guava:guava:src/com/google/common/primitives/Doubles.java": [
-401
-],
-"com.google.guava:guava:src/com/google/common/primitives/Floats.java": [
-397
-],
-"com.google.guava:guava:src/com/google/common/primitives/Ints.java": [
-462
-],
-"com.google.guava:guava:src/com/google/common/primitives/Longs.java": [
-498
-],
-"com.google.guava:guava:src/com/google/common/primitives/Shorts.java": [
-461
-],
-"com.google.guava:guava:src/com/google/common/primitives/SignedBytes.java": [
-202
-],
 "com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java": [
-409,
-420,
-436
-],
-"com.google.guava:guava:src/com/google/common/primitives/UnsignedInts.java": [
-176
-],
-"com.google.guava:guava:src/com/google/common/primitives/UnsignedLongs.java": [
-177
+409
 ]
 }

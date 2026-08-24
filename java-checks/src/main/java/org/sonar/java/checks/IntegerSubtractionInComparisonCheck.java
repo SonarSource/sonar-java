@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.BoundedIntegerRange;
 import org.sonar.java.checks.helpers.ComparisonMethodUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -103,6 +104,11 @@ public class IntegerSubtractionInComparisonCheck extends IssuableSubscriptionVis
       return "Long.compare";
     }
     if (isInt(left) || isInt(right)) {
+      if (BoundedIntegerRange.subtractionCannotOverflow(tree.leftOperand(), tree.rightOperand())) {
+        // Both operands have a provable range whose difference is guaranteed to fit in an int,
+        // e.g. lengths, sizes, ordinals, or masked values: no overflow is possible.
+        return null;
+      }
       return "Integer.compare";
     }
     return null;
