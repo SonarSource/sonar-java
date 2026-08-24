@@ -80,7 +80,7 @@ class TernaryOperatorSameOperationCheckSample {
 
     // Multiple different operations - Compliant
     String c10 = condition ? foo(a) : bar(b); // Compliant
-    String c11 = condition ? new Foo(a) : new Bar(b); // Compliant
+    Object c11 = condition ? new Foo(a) : new Bar(b); // Compliant
   }
 
   // Private methods used in ternary
