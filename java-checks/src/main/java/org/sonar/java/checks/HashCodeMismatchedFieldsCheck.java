@@ -74,9 +74,9 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
 
     Map<Symbol.MethodSymbol, Map<Symbol, Tree>> fieldsByHelper = collectHelperFields(owner, methods.otherMethods);
 
-    FieldReadCollector equalsFields = scan(methods.equalsMethod, owner, fieldsByHelper, Role.EQUALS);
-    FieldReadCollector hashCodeFields = scan(methods.hashCodeMethod, owner, fieldsByHelper, Role.HASH_CODE);
-    if (equalsFields.failed || hashCodeFields.failed || equalsFields.fields.isEmpty()) {
+    ReadAndAssignedFields equalsFields = collectReadFields(methods.equalsMethod, owner, fieldsByHelper, Role.EQUALS);
+    ReadAndAssignedFields hashCodeFields = collectReadFields(methods.hashCodeMethod, owner, fieldsByHelper, Role.HASH_CODE);
+    if (equalsFields.failed || hashCodeFields.failed || equalsFields.readFields.isEmpty()) {
       // Bail out on unresolved members, or when equals() compares no state (likely reference equality).
       return;
     }
@@ -87,9 +87,9 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static Map<Symbol, Tree> computeExtraFields(FieldReadCollector equalsFields, FieldReadCollector hashCodeFields) {
-    Map<Symbol, Tree> extraFields = new LinkedHashMap<>(hashCodeFields.fields);
-    extraFields.keySet().removeAll(equalsFields.fields.keySet());
+  private static Map<Symbol, Tree> computeExtraFields(ReadAndAssignedFields equalsFields, ReadAndAssignedFields hashCodeFields) {
+    Map<Symbol, Tree> extraFields = new LinkedHashMap<>(hashCodeFields.readFields);
+    extraFields.keySet().removeAll(equalsFields.readFields.keySet());
     // A field caching a previously computed hash value does not add new identity state: recognize it either by
     // name, or because hashCode() itself assigns to it (the memoization pattern), regardless of its name.
     extraFields.keySet().removeIf(field ->
@@ -143,18 +143,22 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
       if (helperSymbol.isUnknown() || !helper.parameters().isEmpty()) {
         continue;
       }
-      FieldReadCollector collector = scan(helper, owner, Map.of(), Role.HELPER);
-      if (!collector.failed) {
-        fieldsByHelper.put(helperSymbol, collector.fields);
+      ReadAndAssignedFields fields = collectReadFields(helper, owner, Map.of(), Role.HELPER);
+      if (!fields.failed) {
+        fieldsByHelper.put(helperSymbol, fields.readFields);
       }
     }
     return fieldsByHelper;
   }
 
-  private static FieldReadCollector scan(MethodTree method, Symbol owner, Map<Symbol.MethodSymbol, Map<Symbol, Tree>> fieldsByHelper, Role role) {
+  private static ReadAndAssignedFields collectReadFields(
+    MethodTree method,
+    Symbol owner,
+    Map<Symbol.MethodSymbol, Map<Symbol, Tree>> fieldsByHelper,
+    Role role) {
     FieldReadCollector collector = new FieldReadCollector(owner, fieldsByHelper, role);
     method.block().accept(collector);
-    return collector;
+    return new ReadAndAssignedFields(collector.readFields, collector.assignedFields, collector.failed);
   }
 
   private void reportMismatch(MethodTree hashCodeMethod, Map<Symbol, Tree> extraFields) {
@@ -175,6 +179,19 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
     HASH_CODE
   }
 
+  private static final class ReadAndAssignedFields {
+
+    private final Map<Symbol, Tree> readFields;
+    private final Set<Symbol> assignedFields;
+    private final boolean failed;
+
+    private ReadAndAssignedFields(Map<Symbol, Tree> readFields, Set<Symbol> assignedFields, boolean failed) {
+      this.readFields = readFields;
+      this.assignedFields = assignedFields;
+      this.failed = failed;
+    }
+  }
+
   /**
    * Collects same-owner, non-static field reads inside a method body. Any unresolved symbol, or any
    * instance-method call that is not on the small allow-list for the method's role, marks the scan as
@@ -185,7 +202,7 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
     private final Symbol enclosingClass;
     private final Map<Symbol.MethodSymbol, Map<Symbol, Tree>> fieldsByHelper;
     private final Role role;
-    private final Map<Symbol, Tree> fields = new LinkedHashMap<>();
+    private final Map<Symbol, Tree> readFields = new LinkedHashMap<>();
     private final Set<Symbol> assignedFields = new HashSet<>();
     private boolean failed;
 
@@ -209,7 +226,7 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
           if (symbol.isUnknown()) {
             failed = true;
           } else if (symbol.isVariableSymbol() && !symbol.isStatic() && ownedByEnclosing(symbol)) {
-            fields.putIfAbsent(symbol, tree);
+            readFields.putIfAbsent(symbol, tree);
           }
         }
       }
@@ -233,7 +250,7 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
         } else {
           Map<Symbol, Tree> helperFields = fieldsByHelper.get(symbol);
           if (helperFields != null) {
-            helperFields.keySet().forEach(field -> fields.putIfAbsent(field, tree));
+            helperFields.keySet().forEach(field -> readFields.putIfAbsent(field, tree));
           } else if (symbol.isStatic()) {
             // A same-class static helper we could not pre-scan (e.g. it takes parameters) may hide field
             // reads: bail out rather than silently ignoring it. An external static utility (e.g. Objects.hash)
