@@ -1,0 +1,102 @@
+<p><code>TimeZone.getTimeZone(String)</code> returns the GMT zone when it cannot understand the identifier, and it does not throw an exception for an
+unknown identifier. A misspelled value such as <code>America/Los_Angele</code> therefore uses GMT instead of the intended zone.</p>
+<h2>Why is this an issue?</h2>
+<p>The <code>String</code> overload of <code>TimeZone.getTimeZone</code> does not reject unknown identifiers. If the argument is not a named ID and
+does not match custom GMT syntax, the method returns the GMT zone. The call succeeds, so the application can keep running with GMT instead of the
+intended zone.</p>
+<p>Use a named identifier that Java recognizes, such as <code>America/Los_Angeles</code>, or a custom GMT offset that matches the documented
+syntax.</p>
+<p>This rule accepts a named identifier when Java recognizes it, such as <code>America/Los_Angeles</code>. The recognized set can differ slightly
+across JDK and time-zone database versions. Legacy three-letter IDs such as <code>PST</code> remain recognized for compatibility and are not
+reported.</p>
+<p>When no named ID matches, a custom GMT identifier can still be valid. The syntax is <code>GMT</code> followed by a sign and an offset:
+<code>GMT+10</code> and <code>GMT-8:00</code> are accepted. Hours must be between 0 and 23, and minutes must be between 00 and 59. From Java 19,
+seconds between 00 and 59 are also accepted, for example <code>GMT+01:00:30</code>. On earlier Java versions that form is not recognized and falls
+back to GMT. When <code>sonar.java.source</code> is not set, this rule accepts identifiers that include seconds.</p>
+<h3>Exceptions</h3>
+<p>This rule does not raise an issue when the argument is not a compile-time constant <code>String</code>, including values computed at runtime.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+void namedIds(String userZone) {
+  TimeZone.getTimeZone("America/Los_Angele"); // Noncompliant
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+void namedIds(String userZone) {
+  TimeZone.getTimeZone("America/Los_Angeles");
+  TimeZone.getTimeZone("PST"); // legacy three-letter ID
+  TimeZone.getTimeZone(userZone); // not a compile-time constant
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+void spacedId() {
+  TimeZone.getTimeZone("America/Los Angeles"); // Noncompliant
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+void spacedId() {
+  TimeZone.getTimeZone("America/Los_Angeles");
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+void customOffsets() {
+  TimeZone.getTimeZone("GMT+24"); // Noncompliant
+  TimeZone.getTimeZone("GMT1"); // Noncompliant
+  TimeZone.getTimeZone("UTC+0"); // Noncompliant: custom offsets must start with "GMT"
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+void customOffsets() {
+  TimeZone.getTimeZone("GMT+10");
+  TimeZone.getTimeZone("GMT-8");
+  TimeZone.getTimeZone("GMT+00:00");
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<p>For projects targeting Java 18 and earlier:</p>
+<pre data-diff-id="4" data-diff-type="noncompliant">
+void customOffsetWithSeconds() {
+  TimeZone.getTimeZone("GMT+01:00:30"); // Noncompliant: seconds are not recognized before Java 19
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="4" data-diff-type="compliant">
+void customOffsetWithSeconds() {
+  TimeZone.getTimeZone("GMT+01:00");
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<p>For projects targeting Java 19 and later:</p>
+<pre data-diff-id="5" data-diff-type="noncompliant">
+void customOffsetWithSeconds() {
+  TimeZone.getTimeZone("GMT+01:00:60"); // Noncompliant: seconds must be between 00 and 59
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="5" data-diff-type="compliant">
+void customOffsetWithSeconds() {
+  TimeZone.getTimeZone("GMT+01:00:30");
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/TimeZone.html"><code>TimeZone</code> (Java
+  SE 25)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/TimeZone.html"><code>TimeZone</code> (Java
+  SE 19)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/TimeZone.html"><code>TimeZone</code> (Java
+  SE 17)</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S2143} - "java.time" classes should be used for dates and times</li>
+  <li>{rule:java:S8688} - Time-based <code>.now()</code> methods should specify a <code>ZoneId</code> or a <code>Clock</code></li>
+</ul>
+
