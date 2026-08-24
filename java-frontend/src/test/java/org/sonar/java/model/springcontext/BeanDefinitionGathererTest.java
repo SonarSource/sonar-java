@@ -216,7 +216,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(beans).hasSize(1);
     var deps = beans.get(0).getDependingBeans();
     assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("primaryContext");
-    assertThat(deps.get("org.springframework.core.env.Environment")).isNotEmpty();
+    assertThat(deps.get("org.springframework.core.env.Environment")).containsOnly("environment");
   }
 
   static Stream<Arguments> qualifiedDependencyArguments() {
@@ -225,6 +225,24 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
       Arguments.of("src/test/files/springcontext/QualifiedConstructorDependencies.java", "qualifiedConstructorDependencies"),
       Arguments.of("src/test/files/springcontext/QualifiedBeanMethodDependencies.java", "myBean")
     );
+  }
+
+  @Test
+  void qualifier_selects_specific_bean_among_multiple_candidates() {
+    scan(
+      "src/test/files/springcontext/PaymentProcessor.java",
+      "src/test/files/springcontext/CreditCardProcessor.java",
+      "src/test/files/springcontext/PayPalProcessor.java",
+      "src/test/files/springcontext/OrderService.java"
+    );
+
+    var beans = model.getBeanDefinitionRegistry().getByName("orderService");
+    assertThat(beans).hasSize(1);
+    var deps = beans.get(0).getDependingBeans();
+    // @Qualifier("paypal") takes precedence over the parameter name "paymentProcessor"
+    // Note: PaymentProcessor resolves without package since it's not on the compiled classpath
+    assertThat(deps).containsOnlyKeys("PaymentProcessor");
+    assertThat(deps.get("PaymentProcessor")).containsOnly("paypal");
   }
 
   @Test
