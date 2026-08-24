@@ -21,15 +21,13 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
-import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeArguments;
-import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S9358")
 public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisitor {
@@ -41,7 +39,7 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
 
   @Override
   public void visitNode(Tree tree) {
-    var conditional = (org.sonar.plugins.java.api.tree.ConditionalExpressionTree) tree;
+    var conditional = (ConditionalExpressionTree) tree;
     var trueExpr = ExpressionUtils.skipParentheses(conditional.trueExpression());
     var falseExpr = ExpressionUtils.skipParentheses(conditional.falseExpression());
 
@@ -51,10 +49,6 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
   }
 
   private static boolean hasSameOperationStructure(ExpressionTree left, ExpressionTree right) {
-    if (left == null || right == null) {
-      return false;
-    }
-
     if (left.is(Tree.Kind.METHOD_INVOCATION) && right.is(Tree.Kind.METHOD_INVOCATION)) {
       return sameMethodInvocation((MethodInvocationTree) left, (MethodInvocationTree) right);
     }
@@ -68,23 +62,8 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
   }
 
   private static boolean sameMethodInvocation(MethodInvocationTree left, MethodInvocationTree right) {
-    if (!sameMethodSelect(left.methodSelect(), right.methodSelect())) {
-      return false;
-    }
-
-    var leftArgs = (List<ExpressionTree>) left.arguments();
-    var rightArgs = (List<ExpressionTree>) right.arguments();
-    if (leftArgs.size() != rightArgs.size()) {
-      return false;
-    }
-
-    boolean anyDifferent = false;
-    for (int i = 0; i < leftArgs.size(); i++) {
-      if (!sameExpression(leftArgs.get(i), rightArgs.get(i))) {
-        anyDifferent = true;
-      }
-    }
-    return anyDifferent;
+    return sameMethodSelect(left.methodSelect(), right.methodSelect())
+      && hasExactlyOneArgumentDifference(left.arguments(), right.arguments());
   }
 
   private static boolean sameMethodSelect(ExpressionTree left, ExpressionTree right) {
@@ -100,7 +79,7 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
     if (left.is(Tree.Kind.IDENTIFIER)) {
       return sameIdentifier((IdentifierTree) left, (IdentifierTree) right);
     }
-    return left.toString().equals(right.toString());
+    return sameTree(left, right);
   }
 
   private static boolean sameIdentifier(IdentifierTree left, IdentifierTree right) {
@@ -111,25 +90,16 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
     if (!sameTree(left.identifier(), right.identifier())) {
       return false;
     }
+    return hasExactlyOneArgumentDifference(left.arguments(), right.arguments());
+  }
 
-    var leftTypeArgs = left.typeArguments();
-    var rightTypeArgs = right.typeArguments();
-    if ((leftTypeArgs == null) != (rightTypeArgs == null)) {
-      return false;
-    }
-    if (leftTypeArgs != null && !sameTypeArguments(leftTypeArgs, rightTypeArgs)) {
-      return false;
-    }
-
-    var leftArgs = (List<ExpressionTree>) left.arguments();
-    var rightArgs = (List<ExpressionTree>) right.arguments();
+  private static boolean hasExactlyOneArgumentDifference(List<? extends ExpressionTree> leftArgs, List<? extends ExpressionTree> rightArgs) {
     if (leftArgs.size() != rightArgs.size()) {
       return false;
     }
-
     boolean anyDifferent = false;
     for (int i = 0; i < leftArgs.size(); i++) {
-      if (!sameExpression(leftArgs.get(i), rightArgs.get(i))) {
+      if (!sameTree(leftArgs.get(i), rightArgs.get(i))) {
         anyDifferent = true;
       }
     }
@@ -137,54 +107,14 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
   }
 
   private static boolean sameArrayAccess(ArrayAccessExpressionTree left, ArrayAccessExpressionTree right) {
-    if (!sameExpression(left.expression(), right.expression())) {
-      return false;
-    }
-    var leftIndex = getArrayIndex(left);
-    var rightIndex = getArrayIndex(right);
-    if (leftIndex == null || rightIndex == null) {
-      return false;
-    }
-    return !sameExpression(leftIndex, rightIndex);
-  }
-
-  private static ExpressionTree getArrayIndex(ArrayAccessExpressionTree arrayAccess) {
-    var dimension = arrayAccess.dimension();
-    if (dimension != null && dimension.expression() != null) {
-      return dimension.expression();
-    }
-    return null;
-  }
-
-  private static boolean sameExpression(ExpressionTree left, ExpressionTree right) {
-    if (left == null || right == null) {
-      return false;
-    }
-    if (!left.is(right.kind())) {
-      return false;
-    }
-    return left.toString().equals(right.toString());
+    return sameTree(left.expression(), right.expression())
+      && !sameTree(left.dimension().expression(), right.dimension().expression());
   }
 
   private static boolean sameTree(Tree left, Tree right) {
-    if (left == null || right == null) {
-      return false;
-    }
     if (!left.is(right.kind())) {
       return false;
     }
     return left.toString().equals(right.toString());
-  }
-
-  private static boolean sameTypeArguments(TypeArguments left, TypeArguments right) {
-    if (left.size() != right.size()) {
-      return false;
-    }
-    for (int i = 0; i < left.size(); i++) {
-      if (!left.get(i).toString().equals(right.get(i).toString())) {
-        return false;
-      }
-    }
-    return true;
   }
 }
