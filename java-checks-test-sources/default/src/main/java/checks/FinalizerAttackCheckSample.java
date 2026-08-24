@@ -92,10 +92,10 @@ class FinalizerAttackCheckSample {
     }
   }
 
-  // --- Compliant: abstract class ---
+  // --- Noncompliant: abstract class with throwing constructor (attacker can subclass) ---
 
-  static abstract class AbstractService {
-    public AbstractService(String data) throws Exception {
+  static abstract class AbstractService { // Secondary {{Non-final class}}
+    public AbstractService(String data) throws Exception { // Noncompliant
       if (data == null) {
         throw new Exception("Null");
       }
@@ -134,18 +134,34 @@ class FinalizerAttackCheckSample {
     }
   }
 
-  // --- Compliant: sealed class (cannot be subclassed by attackers) ---
+  // --- Compliant: sealed class whose permitted subclasses are all final/sealed ---
 
-  static sealed class SealedService permits AllowedSubclass {
-    public SealedService(String data) throws Exception {
+  static sealed class SealedServiceAllFinal permits AllowedSubclass {
+    public SealedServiceAllFinal(String data) throws Exception {
       if (data == null) {
         throw new Exception("Null");
       }
     }
   }
 
-  static final class AllowedSubclass extends SealedService {
+  static final class AllowedSubclass extends SealedServiceAllFinal {
     public AllowedSubclass(String data) throws Exception {
+      super(data);
+    }
+  }
+
+  // --- Noncompliant: sealed class with a non-sealed permitted subclass ---
+
+  static sealed class SealedServiceWithNonSealed permits OpenSubclass { // Secondary {{Non-final class}}
+    public SealedServiceWithNonSealed(String data) throws Exception { // Noncompliant
+      if (data == null) {
+        throw new Exception("Null");
+      }
+    }
+  }
+
+  static non-sealed class OpenSubclass extends SealedServiceWithNonSealed { // Secondary {{Non-final class}}
+    public OpenSubclass(String data) throws Exception { // Noncompliant
       super(data);
     }
   }
@@ -200,6 +216,64 @@ class FinalizerAttackCheckSample {
 
     private PrivateOnlyThrowers(int i) {
       throw new IllegalArgumentException();
+    }
+  }
+
+  // --- Compliant: class declares final finalize() method ---
+
+  static class ProtectedByFinalizer {
+    public ProtectedByFinalizer(String data) throws Exception {
+      if (data == null) {
+        throw new Exception("Null");
+      }
+    }
+
+    @Override
+    protected final void finalize() {
+      // prevents finalizer attack
+    }
+  }
+
+  // --- Noncompliant: instance initializer throws, no explicit constructor ---
+
+  static class InitializerThrower { // Noncompliant {{Make this class "final" or add a private constructor, because initializers can throw.}}
+    { // Secondary {{Throwing initializer}}
+      if (System.currentTimeMillis() == 0) {
+        throw new RuntimeException("init");
+      }
+    }
+  }
+
+  // --- Compliant: field initializer calls a method that may throw, but no direct throw statement ---
+
+  static class FieldInitializerMethodCall {
+    private final Object value = computeValue();
+
+    private static Object computeValue() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  // --- Compliant: instance initializer throws but has explicit private constructor ---
+
+  static class InitializerWithPrivateConstructor {
+    {
+      if (System.currentTimeMillis() == 0) {
+        throw new RuntimeException("init");
+      }
+    }
+
+    private InitializerWithPrivateConstructor() {
+    }
+  }
+
+  // --- Compliant: local class (cannot be subclassed from outside) ---
+
+  void someMethod() {
+    class LocalClass {
+      LocalClass() throws Exception {
+        throw new Exception("local");
+      }
     }
   }
 }

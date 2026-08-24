@@ -7,9 +7,7 @@
     "constantCost": "5min"
   },
   "tags": [
-    "cert",
-    "cwe",
-    "serialization"
+    "cert"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-9345",
@@ -26,7 +24,6 @@
     "attribute": "COMPLETE"
   },
   "securityStandards": {
-    "CWE": [586],
     "CERT": ["OBJ11-J."]
   }
 }
