@@ -70,10 +70,7 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
     for (Tree member : classTree.members()) {
       if (member.is(Kind.CONSTRUCTOR)) {
         hasExplicitConstructor = true;
-      } else if (member.is(Kind.INITIALIZER) && containsThrowStatementInBlock((BlockTree) member)) {
-        throwingInitializers.add(member);
-        hasThrowingInitializers = true;
-      } else if (member.is(Kind.VARIABLE) && hasThrowingFieldInitializer((VariableTree) member)) {
+      } else if (isThrowingInitializer(member)) {
         throwingInitializers.add(member);
         hasThrowingInitializers = true;
       }
@@ -108,6 +105,11 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
     reportIssue(classTree.simpleName(),
       "Make this class \"final\" or add a private constructor, because initializers can throw.",
       locations, null);
+  }
+
+  private static boolean isThrowingInitializer(Tree member) {
+    return (member.is(Kind.INITIALIZER) && containsThrowStatementInBlock((BlockTree) member))
+      || (member.is(Kind.VARIABLE) && hasThrowingFieldInitializer((VariableTree) member));
   }
 
   private static boolean isLocalClass(ClassTree classTree) {
