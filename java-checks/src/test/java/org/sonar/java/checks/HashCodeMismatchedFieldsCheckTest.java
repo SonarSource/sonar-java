@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class HashCodeMismatchedFieldsCheckTest {
 
@@ -39,5 +40,14 @@ class HashCodeMismatchedFieldsCheckTest {
       .withCheck(new HashCodeMismatchedFieldsCheck())
       .withoutSemantic()
       .verifyIssues();
+  }
+
+  @Test
+  void test_non_compiling() {
+    // Covers the isUnknown() bail-out paths for unresolved identifiers and unresolved method calls.
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath("checks/HashCodeMismatchedFieldsCheckSampleNonCompiling.java"))
+      .withCheck(new HashCodeMismatchedFieldsCheck())
+      .verifyNoIssues();
   }
 }

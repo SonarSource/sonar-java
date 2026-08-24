@@ -21,7 +21,9 @@ class HashCodeMismatchedFieldsCheckSample {
 
     @Override
     public int hashCode() { // Noncompliant {{This hashCode() implementation is inconsistent with equals(): it reads "version", which equals() never reads, so equal objects may hash differently.}}
-      return Objects.hash(id, version); // secondary=-1
+//             ^^^^^^^^
+      return Objects.hash(id, version);
+//                            ^^^^^^^< {{Not compared in equals()}}
     }
   }
 
@@ -60,6 +62,7 @@ class HashCodeMismatchedFieldsCheckSample {
 
     String getLastName() {
       return lastName;
+//           ^^^^^^^^> {{Not compared in equals()}}
     }
 
     @Override
@@ -69,7 +72,8 @@ class HashCodeMismatchedFieldsCheckSample {
 
     @Override
     public int hashCode() { // Noncompliant {{This hashCode() implementation is inconsistent with equals(): it reads "lastName", which equals() never reads, so equal objects may hash differently.}}
-      return Objects.hash(getFirstName(), getLastName()); // secondary=-1
+//             ^^^^^^^^
+      return Objects.hash(getFirstName(), getLastName());
     }
   }
 
@@ -120,8 +124,14 @@ class HashCodeMismatchedFieldsCheckSample {
     }
 
     @Override
-    public int hashCode() { // Noncompliant {{This hashCode() implementation is inconsistent with equals(): it reads "tag", "version", which equals() never reads, so equal objects may hash differently.}} [[secondary=-1,-1]]
-      return Objects.hash(id, version, tag);
+    public int hashCode() { // Noncompliant {{This hashCode() implementation is inconsistent with equals(): it reads "tag", "version", which equals() never reads, so equal objects may hash differently.}}
+//             ^^^^^^^^
+      int result = Objects.hashCode(id);
+      result = 31 * result + Objects.hashCode(version);
+//                                            ^^^^^^^< {{Not compared in equals()}}
+      result = 31 * result + Objects.hashCode(tag);
+//                                            ^^^< {{Not compared in equals()}}
+      return result;
     }
   }
 
@@ -304,14 +314,81 @@ class HashCodeMismatchedFieldsCheckSample {
   }
 
   abstract static class AbstractPair {
-    abstract boolean equals(Object other);
+    public abstract boolean equals(Object other);
 
-    abstract int hashCode();
+    public abstract int hashCode();
   }
 
   interface HasIdentity {
     boolean equals(Object other);
 
     int hashCode();
+  }
+
+  static class StaticEqualsDelegate {
+    private final long id;
+    private final int b;
+
+    StaticEqualsDelegate(long id, int b) {
+      this.id = id;
+      this.b = b;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      // "b" is actually compared, but only inside the static helper: the check cannot verify that without
+      // scanning a two-argument static method, so it must not assume "b" is unused and report a false positive.
+      return other instanceof StaticEqualsDelegate that && id == that.id && sameB(this, that);
+    }
+
+    private static boolean sameB(StaticEqualsDelegate a, StaticEqualsDelegate b) {
+      return a.b == b.b;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(id, b);
+    }
+  }
+
+  static class EqualsOverloadDelegate {
+    private final long id;
+    private final int b;
+
+    EqualsOverloadDelegate(long id, int b) {
+      this.id = id;
+      this.b = b;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      return other instanceof EqualsOverloadDelegate that && equals(that);
+    }
+
+    // Overload, not an override of Object.equals(Object): "b" is compared here, but the check must not
+    // blindly trust every one-argument "equals" call on the enclosing class as if it were Object.equals().
+    private boolean equals(EqualsOverloadDelegate that) {
+      return id == that.id && b == that.b;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(id, b);
+    }
+  }
+
+  record PointRecord(int x, int y, int z) {
+
+    @Override
+    public boolean equals(Object other) {
+      return other instanceof PointRecord that && x == that.x && y == that.y;
+    }
+
+    @Override
+    public int hashCode() { // Noncompliant {{This hashCode() implementation is inconsistent with equals(): it reads "z", which equals() never reads, so equal objects may hash differently.}}
+//             ^^^^^^^^
+      return Objects.hash(x, y, z);
+//                              ^< {{Not compared in equals()}}
+    }
   }
 }

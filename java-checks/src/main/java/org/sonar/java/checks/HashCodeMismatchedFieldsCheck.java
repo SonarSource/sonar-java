@@ -18,15 +18,18 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -47,7 +50,7 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CLASS);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.RECORD);
   }
 
   @Override
@@ -88,8 +91,9 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
 
     Map<Symbol, Tree> extraFields = new LinkedHashMap<>(hashCodeFields.fields);
     extraFields.keySet().removeAll(equalsFields.fields.keySet());
-    // A field caching a previously computed hash value does not add new identity state.
-    extraFields.keySet().removeIf(field -> field.name().toLowerCase(Locale.ROOT).contains("hash"));
+    // A field caching a previously computed hash value does not add new identity state: recognize it either by
+    // name, or because hashCode() itself assigns to it (the memoization pattern), regardless of its name.
+    extraFields.keySet().removeIf(field -> field.name().toLowerCase(Locale.ROOT).contains("hash") || hashCodeFields.assignedFields.contains(field));
     if (extraFields.isEmpty()) {
       return;
     }
@@ -101,7 +105,7 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
     Map<Symbol.MethodSymbol, Map<Symbol, Tree>> fieldsByHelper = new HashMap<>();
     for (MethodTree helper : otherMethods) {
       Symbol.MethodSymbol helperSymbol = helper.symbol();
-      if (helperSymbol.isUnknown() || helperSymbol.isStatic() || !helper.parameters().isEmpty()) {
+      if (helperSymbol.isUnknown() || !helper.parameters().isEmpty()) {
         continue;
       }
       FieldReadCollector collector = scan(helper, owner, Map.of(), Role.HELPER);
@@ -147,6 +151,7 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
     private final Map<Symbol.MethodSymbol, Map<Symbol, Tree>> fieldsByHelper;
     private final Role role;
     private final Map<Symbol, Tree> fields = new LinkedHashMap<>();
+    private final Set<Symbol> assignedFields = new HashSet<>();
     private boolean failed;
 
     private FieldReadCollector(Symbol enclosingClass, Map<Symbol.MethodSymbol, Map<Symbol, Tree>> fieldsByHelper, Role role) {
@@ -177,6 +182,17 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
     }
 
     @Override
+    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+      if (tree.variable() instanceof IdentifierTree identifier) {
+        Symbol symbol = identifier.symbol();
+        if (!symbol.isUnknown() && symbol.isVariableSymbol() && !symbol.isStatic() && ownedByEnclosing(symbol)) {
+          assignedFields.add(symbol);
+        }
+      }
+      super.visitAssignmentExpression(tree);
+    }
+
+    @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (!failed) {
         Symbol.MethodSymbol symbol = tree.methodSymbol();
@@ -186,7 +202,14 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
           Map<Symbol, Tree> helperFields = fieldsByHelper.get(symbol);
           if (helperFields != null) {
             helperFields.forEach(fields::putIfAbsent);
-          } else if (!symbol.isStatic() && !isAllowedInstanceCall(symbol)) {
+          } else if (symbol.isStatic()) {
+            // A same-class static helper we could not pre-scan (e.g. it takes parameters) may hide field
+            // reads: bail out rather than silently ignoring it. An external static utility (e.g. Objects.hash)
+            // is assumed side-effect free and is not owned by the enclosing class.
+            failed = ownedByEnclosing(symbol);
+          } else if (ownedByEnclosing(symbol) || !isAllowedInstanceCall(symbol)) {
+            // A same-class instance method other than the trusted getClass()/equals()/hashCode() allow-list
+            // (e.g. a differently-parameterized equals(SpecificType) overload) may hide field reads.
             failed = true;
           }
         }
