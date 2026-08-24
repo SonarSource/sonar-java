@@ -43,8 +43,10 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL) ||
-      ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
+    if (classTree.simpleName() == null ||
+      ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL) ||
+      ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT) ||
+      ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.SEALED)) {
       return;
     }
     List<JavaFileScannerContext.Location> secondaryLocations = Collections.singletonList(

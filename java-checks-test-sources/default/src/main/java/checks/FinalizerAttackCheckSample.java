@@ -134,6 +134,22 @@ class FinalizerAttackCheckSample {
     }
   }
 
+  // --- Compliant: sealed class (cannot be subclassed by attackers) ---
+
+  static sealed class SealedService permits AllowedSubclass {
+    public SealedService(String data) throws Exception {
+      if (data == null) {
+        throw new Exception("Null");
+      }
+    }
+  }
+
+  static final class AllowedSubclass extends SealedService {
+    public AllowedSubclass(String data) throws Exception {
+      super(data);
+    }
+  }
+
   // --- Compliant: inner interface (no constructors) ---
 
   interface Service {
