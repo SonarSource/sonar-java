@@ -1,0 +1,25 @@
+{
+  "title": "Constant expressions and comparisons should be simplified",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "confusing",
+    "convention",
+    "clarity"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9360",
+  "sqKey": "S9360",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  }
+}
