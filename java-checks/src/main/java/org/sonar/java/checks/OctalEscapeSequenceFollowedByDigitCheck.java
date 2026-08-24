@@ -42,32 +42,37 @@ public class OctalEscapeSequenceFollowedByDigitCheck extends IssuableSubscriptio
     if (node.is(Kind.TEXT_BLOCK)) {
       value = value.replaceAll("(\\r?\\n|\\r)\\s*", " ");
     }
+    if (containsOctalFollowedByDigit(value)) {
+      reportIssue(node, "Remove this octal escape sequence or separate it from the following digit.");
+    }
+  }
 
+  private static boolean containsOctalFollowedByDigit(String value) {
     int i = 0;
     while (i < value.length()) {
-      char c = value.charAt(i);
-      if (c == '\\') {
-        // Skip escaped backslash
-        if (i + 1 < value.length() && value.charAt(i + 1) == '\\') {
-          i += 2;
-          continue;
-        }
-        // Check for octal escape followed by digit or another escape
-        if (i + 1 < value.length()) {
-          char next = value.charAt(i + 1);
-          if (isOctalDigit(next)) {
-            int escapeEnd = findEscapeEnd(value, i);
-            if (escapeEnd < value.length() && isAmbiguousFollowUp(value.charAt(escapeEnd))) {
-              reportIssue(node, "Remove this octal escape sequence or separate it from the following digit.");
-              return;
-            }
-            i = escapeEnd;
-            continue;
-          }
+      if (value.charAt(i) != '\\') {
+        i++;
+      } else if (i + 1 < value.length() && value.charAt(i + 1) == '\\') {
+        i += 2;
+      } else {
+        i = processBackslash(value, i);
+        if (i < 0) {
+          return true;
         }
       }
-      i++;
     }
+    return false;
+  }
+
+  private static int processBackslash(String value, int i) {
+    if (i + 1 < value.length() && isOctalDigit(value.charAt(i + 1))) {
+      int escapeEnd = findEscapeEnd(value, i);
+      if (escapeEnd < value.length() && isAmbiguousFollowUp(value.charAt(escapeEnd))) {
+        return -1;
+      }
+      return escapeEnd;
+    }
+    return i + 1;
   }
 
   private static boolean isOctalDigit(char c) {

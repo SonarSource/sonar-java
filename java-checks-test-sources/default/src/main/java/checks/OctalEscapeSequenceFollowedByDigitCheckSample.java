@@ -23,10 +23,40 @@ class OctalEscapeSequenceFollowedByDigitCheckSample {
     String s7 = "\\08"; // Compliant
     String s8 = "\12" + "8"; // Compliant
     String s9 = "\1\2"; // Compliant
+    String s10 = ""; // Compliant - empty string
+    String s11 = "\377"; // Compliant - max octal at end of string
+    String s12 = "\377a"; // Compliant - max octal followed by non-digit
+    String s13 = "\t9"; // Compliant - non-octal escape followed by digit
+    String s14 = "\n0"; // Compliant - non-octal escape followed by digit
+    String s15 = "\\\\8"; // Compliant - double escaped backslash followed by digit
+    String s16 = "\1"; // Compliant - single octal at end
+    String s17 = "abc"; // Compliant - no escapes
+  }
+
+  void testNoncompliantTextBlock() {
+    String tb1 = """
+      \128"""; // Noncompliant@-1
+    String tb2 = """
+      \09"""; // Noncompliant@-1
+  }
+
+  void testCompliantTextBlock() {
+    String tb1 = """
+      \12""";
+    String tb2 = """
+      \12a""";
+    String tb3 = """
+      \\128""";
+    String tb4 = """
+      \n0""";
   }
 
   void testCharacterLiteral() {
     char c1 = '\12'; // Compliant
     char c2 = '\1'; // Compliant
+  }
+
+  void testNoncompliantMaxOctal() {
+    String s1 = "\3778"; // Noncompliant
   }
 }
