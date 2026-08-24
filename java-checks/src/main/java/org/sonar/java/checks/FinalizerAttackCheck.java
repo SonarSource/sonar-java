@@ -65,29 +65,39 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
 
   private void checkMembers(ClassTree classTree, List<JavaFileScannerContext.Location> secondaryLocations) {
     boolean hasExplicitConstructor = false;
+    boolean hasThrowingInitializers = false;
     List<Tree> throwingInitializers = new ArrayList<>();
 
     for (Tree member : classTree.members()) {
       if (member.is(Kind.CONSTRUCTOR)) {
         hasExplicitConstructor = true;
-        reportVulnerableConstructor((MethodTree) member, secondaryLocations);
       } else if (member.is(Kind.INITIALIZER) && containsThrowStatementInBlock((BlockTree) member)) {
         throwingInitializers.add(member);
+        hasThrowingInitializers = true;
       } else if (member.is(Kind.VARIABLE) && hasThrowingFieldInitializer((VariableTree) member)) {
         throwingInitializers.add(member);
+        hasThrowingInitializers = true;
       }
     }
 
-    if (!hasExplicitConstructor && !throwingInitializers.isEmpty()) {
+    if (hasExplicitConstructor) {
+      reportVulnerableConstructors(classTree, hasThrowingInitializers, secondaryLocations);
+    } else if (hasThrowingInitializers) {
       reportThrowingInitializers(classTree, throwingInitializers);
     }
   }
 
-  private void reportVulnerableConstructor(MethodTree constructor, List<JavaFileScannerContext.Location> secondaryLocations) {
-    if (isVulnerableConstructor(constructor)) {
-      reportIssue(constructor.simpleName(),
-        "Make this class \"final\" or make this throwing constructor \"private\".",
-        secondaryLocations, null);
+  private void reportVulnerableConstructors(ClassTree classTree, boolean hasThrowingInitializers,
+    List<JavaFileScannerContext.Location> secondaryLocations) {
+    for (Tree member : classTree.members()) {
+      if (member.is(Kind.CONSTRUCTOR)) {
+        MethodTree constructor = (MethodTree) member;
+        if (isVulnerableConstructor(constructor, hasThrowingInitializers)) {
+          reportIssue(constructor.simpleName(),
+            "Make this class \"final\" or make this throwing constructor \"private\".",
+            secondaryLocations, null);
+        }
+      }
     }
   }
 
@@ -195,11 +205,11 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  private static boolean isVulnerableConstructor(MethodTree constructor) {
+  private static boolean isVulnerableConstructor(MethodTree constructor, boolean hasThrowingInitializers) {
     if (ModifiersUtils.hasModifier(constructor.modifiers(), Modifier.PRIVATE)) {
       return false;
     }
-    return !constructor.throwsClauses().isEmpty() || containsThrowStatement(constructor);
+    return hasThrowingInitializers || !constructor.throwsClauses().isEmpty() || containsThrowStatement(constructor);
   }
 
   private static boolean containsThrowStatement(MethodTree method) {

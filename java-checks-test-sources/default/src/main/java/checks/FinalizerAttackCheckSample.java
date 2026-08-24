@@ -366,4 +366,91 @@ class FinalizerAttackCheckSample {
   static class FieldNoInitializer {
     private String data;
   }
+
+  // --- Noncompliant: explicit non-private constructor AND throwing initializer ---
+
+  static class ConstructorAndThrowingInitializer { // Secondary {{Non-final class}}
+    {
+      if (System.currentTimeMillis() == 0) {
+        throw new RuntimeException("init");
+      }
+    }
+
+    public ConstructorAndThrowingInitializer(String data) throws Exception { // Noncompliant
+      if (data == null) {
+        throw new Exception("Null");
+      }
+    }
+  }
+
+  // --- Noncompliant: explicit non-throwing constructor AND throwing initializer (constructor is still a vector) ---
+
+  static class NonThrowingConstructorWithThrowingInit { // Secondary {{Non-final class}}
+    {
+      if (System.currentTimeMillis() == 0) {
+        throw new RuntimeException("init");
+      }
+    }
+
+    public NonThrowingConstructorWithThrowingInit() { // Noncompliant
+      // non-throwing, but the initializer block throws during construction
+    }
+  }
+
+  // --- Noncompliant: abstract class with throwing initializer, no constructor ---
+
+  static abstract class AbstractWithThrowingInitializer { // Noncompliant {{Make this class "final" or add a private constructor, because initializers can throw.}}
+    { // Secondary {{Throwing initializer}}
+      if (System.currentTimeMillis() == 0) {
+        throw new RuntimeException("abstract init");
+      }
+    }
+  }
+
+  // --- Compliant: sealed class with all final + sealed subclasses (deep hierarchy) ---
+
+  static sealed class DeepSealedParent permits DeepSealedChild {
+    public DeepSealedParent(String data) throws Exception {
+      if (data == null) {
+        throw new Exception("Null");
+      }
+    }
+  }
+
+  static sealed class DeepSealedChild extends DeepSealedParent permits DeepSealedGrandchild {
+    public DeepSealedChild(String data) throws Exception {
+      super(data);
+    }
+  }
+
+  static final class DeepSealedGrandchild extends DeepSealedChild {
+    public DeepSealedGrandchild(String data) throws Exception {
+      super(data);
+    }
+  }
+
+  // --- Compliant: class with final finalize() and throwing initializer ---
+
+  static class FinalFinalizerWithThrowingInit {
+    {
+      if (System.currentTimeMillis() == 0) {
+        throw new RuntimeException("init");
+      }
+    }
+
+    @Override
+    protected final void finalize() {
+      // prevents finalizer attack
+    }
+  }
+
+  // --- Compliant: class with only static initializer that throws ---
+
+  static class StaticInitializerThrower {
+    static {
+      if (System.getenv("MISSING") == null) {
+        throw new RuntimeException("static init");
+      }
+    }
+  }
 }
