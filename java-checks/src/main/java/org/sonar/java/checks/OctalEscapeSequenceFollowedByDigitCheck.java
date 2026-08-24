@@ -40,7 +40,7 @@ public class OctalEscapeSequenceFollowedByDigitCheck extends IssuableSubscriptio
     }
     String value = LiteralUtils.trimQuotes(((LiteralTree) node).value());
     if (node.is(Kind.TEXT_BLOCK)) {
-      value = value.replaceAll("(\\r?\\n|\\r)\\s*", "");
+      value = value.replaceAll("(\\r?\\n|\\r)\\s*", " ");
     }
 
     int i = 0;
@@ -85,6 +85,6 @@ public class OctalEscapeSequenceFollowedByDigitCheck extends IssuableSubscriptio
   }
 
   private static boolean isAmbiguousFollowUp(char c) {
-    return c >= '0' && c <= '9' || c == '\\';
+    return c >= '0' && c <= '9';
   }
 }
