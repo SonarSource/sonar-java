@@ -1,0 +1,23 @@
+{
+  "title": "Javadoc references should point to existing types and members",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "documentation"
+  ],
+  "defaultSeverity": "Minor",
+  "ruleSpecification": "RSPEC-9360",
+  "sqKey": "S9360",
+  "scope": "All",
+  "quickfix": "covered",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "LOW"
+    },
+    "attribute": "CLEAR"
+  }
+}

@@ -1,0 +1,50 @@
+<p>This rule detects <code>@see</code> references in Javadoc comments that point to non-existent types or members.</p>
+<h2>Why is this an issue?</h2>
+<p>Javadoc <code>@see</code> tags are used to create cross-references between documentation. When these references point to non-existent types or members, they result in broken links in the generated documentation, reducing its usefulness.</p>
+<p>The following patterns are detected:</p>
+<ul>
+  <li>References to classes that cannot be resolved (e.g., <code>@see com.example.NonExistentClass</code>)</li>
+  <li>References to methods or fields that don't exist in the referenced class</li>
+  <li>Relative references to classes that don't exist in the current package</li>
+</ul>
+<p>This rule does not flag references to external URLs (starting with <code>http://</code> or <code>https://</code>), as these are handled separately.</p>
+<h2>How to fix it</h2>
+<p>Verify that each <code>@see</code> reference points to an existing type or member. If the reference is intentional (e.g., documenting a planned API), consider removing it or adding a note explaining why it's referenced.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import java.util.List;
+
+/**
+ * @see java.util.NonExistentClass
+ */
+public class MyClass { }
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import java.util.List;
+
+/**
+ * @see java.util.List
+ */
+public class MyClass { }
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+/**
+ * @see com.example.NonExistentClass
+ */
+class MyClass { }
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+/**
+ * @see com.example.ExistentClass
+ */
+class MyClass { }
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/javadoc/doc-comment-spec.html">Javadoc Tag Reference</a></li>
+</ul>
