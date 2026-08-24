@@ -57,48 +57,73 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     Symbol owner = classTree.symbol();
-    if (owner.isUnknown() || owner.type().isUnknown()) {
+
+    EqualsAndHashCode methods = EqualsAndHashCode.find(classTree);
+    if (methods == null) {
       return;
     }
 
-    MethodTree equalsMethod = null;
-    MethodTree hashCodeMethod = null;
-    List<MethodTree> otherMethods = new ArrayList<>();
-    for (Tree member : classTree.members()) {
-      if (!(member instanceof MethodTree methodTree) || methodTree.block() == null) {
-        continue;
-      }
-      if (MethodTreeUtils.isEqualsMethod(methodTree)) {
-        equalsMethod = methodTree;
-      } else if (MethodTreeUtils.isHashCodeMethod(methodTree)) {
-        hashCodeMethod = methodTree;
-      } else {
-        otherMethods.add(methodTree);
-      }
-    }
-    if (equalsMethod == null || hashCodeMethod == null) {
-      return;
-    }
+    Map<Symbol.MethodSymbol, Map<Symbol, Tree>> fieldsByHelper = collectHelperFields(owner, methods.otherMethods);
 
-    Map<Symbol.MethodSymbol, Map<Symbol, Tree>> fieldsByHelper = collectHelperFields(owner, otherMethods);
-
-    FieldReadCollector equalsFields = scan(equalsMethod, owner, fieldsByHelper, Role.EQUALS);
-    FieldReadCollector hashCodeFields = scan(hashCodeMethod, owner, fieldsByHelper, Role.HASH_CODE);
+    FieldReadCollector equalsFields = scan(methods.equalsMethod, owner, fieldsByHelper, Role.EQUALS);
+    FieldReadCollector hashCodeFields = scan(methods.hashCodeMethod, owner, fieldsByHelper, Role.HASH_CODE);
     if (equalsFields.failed || hashCodeFields.failed || equalsFields.fields.isEmpty()) {
       // Bail out on unresolved members, or when equals() compares no state (likely reference equality).
       return;
     }
 
+    Map<Symbol, Tree> extraFields = computeExtraFields(equalsFields, hashCodeFields);
+    if (!extraFields.isEmpty()) {
+      reportMismatch(methods.hashCodeMethod, extraFields);
+    }
+  }
+
+  private static Map<Symbol, Tree> computeExtraFields(FieldReadCollector equalsFields, FieldReadCollector hashCodeFields) {
     Map<Symbol, Tree> extraFields = new LinkedHashMap<>(hashCodeFields.fields);
     extraFields.keySet().removeAll(equalsFields.fields.keySet());
     // A field caching a previously computed hash value does not add new identity state: recognize it either by
     // name, or because hashCode() itself assigns to it (the memoization pattern), regardless of its name.
     extraFields.keySet().removeIf(field -> field.name().toLowerCase(Locale.ROOT).contains("hash") || hashCodeFields.assignedFields.contains(field));
-    if (extraFields.isEmpty()) {
-      return;
+    return extraFields;
+  }
+
+  /**
+   * The locally declared {@code equals(Object)} and {@code hashCode()} methods of a class, plus every other
+   * concrete method declared in that class as helper candidates.
+   */
+  private static final class EqualsAndHashCode {
+
+    private final MethodTree equalsMethod;
+    private final MethodTree hashCodeMethod;
+    private final List<MethodTree> otherMethods;
+
+    private EqualsAndHashCode(MethodTree equalsMethod, MethodTree hashCodeMethod, List<MethodTree> otherMethods) {
+      this.equalsMethod = equalsMethod;
+      this.hashCodeMethod = hashCodeMethod;
+      this.otherMethods = otherMethods;
     }
 
-    reportMismatch(hashCodeMethod, extraFields);
+    private static EqualsAndHashCode find(ClassTree classTree) {
+      MethodTree equalsMethod = null;
+      MethodTree hashCodeMethod = null;
+      List<MethodTree> otherMethods = new ArrayList<>();
+      for (Tree member : classTree.members()) {
+        if (!(member instanceof MethodTree methodTree) || methodTree.block() == null) {
+          continue;
+        }
+        if (MethodTreeUtils.isEqualsMethod(methodTree)) {
+          equalsMethod = methodTree;
+        } else if (MethodTreeUtils.isHashCodeMethod(methodTree)) {
+          hashCodeMethod = methodTree;
+        } else {
+          otherMethods.add(methodTree);
+        }
+      }
+      if (equalsMethod == null || hashCodeMethod == null) {
+        return null;
+      }
+      return new EqualsAndHashCode(equalsMethod, hashCodeMethod, otherMethods);
+    }
   }
 
   private static Map<Symbol.MethodSymbol, Map<Symbol, Tree>> collectHelperFields(Symbol owner, List<MethodTree> otherMethods) {

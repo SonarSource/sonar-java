@@ -377,6 +377,36 @@ class HashCodeMismatchedFieldsCheckSample {
     }
   }
 
+  static class GetClassAndLocalClass {
+    private final long id;
+    private final int version;
+
+    GetClassAndLocalClass(long id, int version) {
+      this.id = id;
+      this.version = version;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (other == null || getClass() != other.getClass()) {
+        return false;
+      }
+      Runnable ignored = new Runnable() {
+        @Override
+        public void run() {
+          // Field reads inside a nested class must not be attributed to the enclosing equals()/hashCode().
+        }
+      };
+      GetClassAndLocalClass that = (GetClassAndLocalClass) other;
+      return id == that.id && version == that.version;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(id, version);
+    }
+  }
+
   record PointRecord(int x, int y, int z) {
 
     @Override
