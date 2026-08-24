@@ -88,6 +88,38 @@ class JavadocReferencesExistingSymbolsCheckSample {
   void simpleNameSamePackage() {
   }
 
+  /** @see <a href="http://example.com">Example</a>
+   */ // Compliant - HTML anchor @see tag
+  void htmlAnchorSeeTag() {
+  }
+
+  /** @see "The Java Programming Language"
+   */ // Compliant - quoted string @see tag
+  void quotedStringSeeTag() {
+  }
+
+  /** @see InnerClass
+   */ // Compliant - inner type of the current class
+  void innerTypeReference() {
+  }
+
+  /** {@link InnerEnum}
+   */ // Compliant - inner enum of the current class
+  void innerEnumReference() {
+  }
+
+  /** @see Map.Entry
+   */ // Compliant - inner type via imported outer class
+  void innerTypeViaImport() {
+  }
+
   void existingMethod() {
+  }
+
+  static class InnerClass {
+  }
+
+  enum InnerEnum {
+    VALUE
   }
 }

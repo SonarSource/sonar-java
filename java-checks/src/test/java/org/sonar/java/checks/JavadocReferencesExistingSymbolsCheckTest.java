@@ -57,6 +57,20 @@ class JavadocReferencesExistingSymbolsCheckTest {
   }
 
   @Test
+  void extractSeeReferences_skips_html_anchors() {
+    List<String> refs = JavadocReferencesExistingSymbolsCheck.extractSeeReferences(
+      "/** @see <a href=\"http://example.com\">Example</a> */");
+    assertThat(refs).isEmpty();
+  }
+
+  @Test
+  void extractSeeReferences_skips_quoted_strings() {
+    List<String> refs = JavadocReferencesExistingSymbolsCheck.extractSeeReferences(
+      "/** @see \"The Java Programming Language\" */");
+    assertThat(refs).isEmpty();
+  }
+
+  @Test
   void extractSeeReferences_extracts_link_tags() {
     List<String> refs = JavadocReferencesExistingSymbolsCheck.extractSeeReferences(
       "/** {@link java.util.List} */");
