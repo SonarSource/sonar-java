@@ -1,0 +1,61 @@
+<p>A copy constructor creates an object from another object of the same class. It should explicitly initialize every eligible field that represents
+the new object’s state.</p>
+<h2>Why is this an issue?</h2>
+<p>A class can evolve after its copy constructor is written. When a new field is added but the copy constructor is not updated, the copied object
+silently keeps Java’s default value for that field, such as <code>null</code>, zero, or <code>false</code>. The result is an incomplete copy that can
+behave differently from its source and cause failures far from the constructor.</p>
+<p>This rule raises one issue on a constructor whose sole parameter has the same type as the enclosing class when one or more eligible fields are not
+explicitly initialized. The declarations of the omitted fields are identified as secondary locations. Eligible fields are instance fields declared in
+the enclosing class that are not <code>transient</code> and do not have declaration initializers.</p>
+<p>Initialize each eligible field explicitly. An assignment of any value counts as initialization, including <code>null</code>, zero, or
+<code>false</code>. Use such an explicit assignment when a field should intentionally be reset instead of copied.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class Account {
+  private static int accountCount;
+  private String owner;
+  private String note;
+  private int retryCount;
+  private boolean enabled;
+  private transient Object cachedSession;
+  private Object auditData = new Object();
+
+  Account(Account other) { // Noncompliant: "note", "retryCount", and "enabled" are not explicitly initialized
+    this.owner = other.owner;
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Account {
+  private static int accountCount;
+  private String owner;
+  private String note;
+  private int retryCount;
+  private boolean enabled;
+  private transient Object cachedSession;
+  private Object auditData = new Object();
+
+  Account(Account other) {
+    this.owner = other.owner;
+    this.note = null; // intentional reset
+    this.retryCount = 0; // intentional reset
+    this.enabled = false; // intentional reset
+  }
+}
+</pre>
+<h3>Exceptions</h3>
+<p>Static fields do not belong to an individual object and are not considered. Fields with declaration initializers are already initialized
+explicitly, and <code>transient</code> fields often represent state that should not be copied, so the rule does not require assignments for them.</p>
+<p>The rule does not attempt to determine whether copying a field should be shallow or deep, or whether the value assigned to a field is correct. It
+only checks whether each eligible field is explicitly initialized.</p>
+<p>Assignments made directly, through constructor delegation, or through instance helper methods called on <code>this</code> count when the rule can
+resolve the invoked code. It does not raise an issue when required semantic information or an invoked initialization path cannot be resolved.</p>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.12.5">Initial Values of
+  Variables</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-8.html#jls-8.3.2">Field Initialization</a></li>
+</ul>
