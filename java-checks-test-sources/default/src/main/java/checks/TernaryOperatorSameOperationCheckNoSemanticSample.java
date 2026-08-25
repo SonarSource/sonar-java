@@ -60,6 +60,15 @@ class TernaryOperatorSameOperationCheckNoSemanticSample {
     String c8 = condition ? arr[i] : otherArr[j]; // Compliant - different arrays
   }
 
+  void testNewClassWithClassBody() {
+    String a = "a";
+    String b = "b";
+
+    // Anonymous class body - Compliant even without semantics
+    Object ac1 = condition ? new Foo(a) { } : new Foo(b) { }; // Compliant - anonymous class bodies
+    Object ac2 = condition ? new Foo(a) { } : new Foo(b); // Compliant - one has class body
+  }
+
   // Private methods used in ternary
   private String foo(String s) { return s; }
   private String foo(String s, String t) { return s + t; }

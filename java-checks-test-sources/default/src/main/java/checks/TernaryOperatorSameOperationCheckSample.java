@@ -155,6 +155,28 @@ class TernaryOperatorSameOperationCheckSample {
     Object ac2 = condition ? new Foo(a) { } : new Foo(b); // Compliant - one has class body
   }
 
+  void testQualifiedInstantiations() {
+    String a = "a";
+    String b = "b";
+
+    // Qualified instantiation with same enclosing expression - Noncompliant
+    Object qi1 = condition ? obj.new Inner(a) : obj.new Inner(b); // Noncompliant
+
+    // Qualified instantiation with different enclosing expression - Compliant
+    Object qi2 = condition ? obj.new Inner(a) : obj2.new Inner(b); // Compliant - different enclosing expressions
+
+    // Mixed: unqualified vs qualified - Compliant
+    Object qi3 = condition ? new Inner(a) : obj.new Inner(b); // Compliant - one has enclosing, other doesn't
+  }
+
+  void testNonIdentifierReceiver() {
+    String a = "a";
+    String b = "b";
+
+    // Non-identifier receiver (method call as receiver) - Noncompliant
+    Object nir1 = condition ? getObj().foo(a) : getObj().foo(b); // Noncompliant
+  }
+
   // Private methods used in ternary
   private String foo(String s) { return s; }
   private String foo(String s, String t) { return s + t; }
@@ -163,6 +185,7 @@ class TernaryOperatorSameOperationCheckSample {
   private String noArg() { return ""; }
   private Object overloaded(int i) { return i; }
   private Object overloaded(String s) { return s; }
+  private TernaryOperatorSameOperationCheckSample getObj() { return this; }
 
   private static class StaticClass {
     static String foo(String s) { return s; }
@@ -180,6 +203,10 @@ class TernaryOperatorSameOperationCheckSample {
   private static class OverloadedCtor {
     OverloadedCtor(int i) {}
     OverloadedCtor(String s) {}
+  }
+
+  class Inner {
+    Inner(String s) {}
   }
 
 }

@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -144,9 +145,6 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
   }
 
   private static boolean sameTree(Tree left, Tree right) {
-    if (!left.is(right.kind())) {
-      return false;
-    }
-    return left.toString().equals(right.toString());
+    return SyntacticEquivalence.areEquivalent(left, right);
   }
 }
