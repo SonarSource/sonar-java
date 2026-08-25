@@ -22,7 +22,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
-@Rule(key = "S9356")
+@Rule(key = "S909")
 public class ContinueInLoopCheck extends IssuableSubscriptionVisitor {
 
   @Override
