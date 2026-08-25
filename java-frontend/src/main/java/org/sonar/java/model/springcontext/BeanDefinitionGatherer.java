@@ -329,15 +329,15 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   private static Map<String, Set<String>> collectAutowiredDependencies(ClassTree classTree) {
     Map<String, Set<String>> deps = new LinkedHashMap<>();
     List<MethodTree> unannotatedConstructors = new ArrayList<>();
+    boolean hasAutowiredConstructor = false;
     for (Tree member : classTree.members()) {
-      if (member instanceof VariableTree field) {
-        if (field.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
-          String typeFqn = field.symbol().type().fullyQualifiedName();
-          String name = dependencyKey(field.simpleName().name(), extractQualifier(field.symbol().metadata()));
-          deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(name);
-        }
+      if (member instanceof VariableTree field && field.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
+        String typeFqn = field.symbol().type().fullyQualifiedName();
+        String name = dependencyKey(field.simpleName().name(), extractQualifier(field.symbol().metadata()));
+        deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(name);
       } else if (member instanceof MethodTree method) {
         if (method.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
+          hasAutowiredConstructor |= method.is(Tree.Kind.CONSTRUCTOR);
           parameterDependencies(method).forEach((type, names) ->
             deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(names));
         } else if (method.is(Tree.Kind.CONSTRUCTOR)) {
@@ -345,7 +345,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         }
       }
     }
-    if (deps.isEmpty() && unannotatedConstructors.size() == 1) {
+    if (!hasAutowiredConstructor && unannotatedConstructors.size() == 1) {
       parameterDependencies(unannotatedConstructors.get(0)).forEach((type, names) ->
         deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(names));
     }

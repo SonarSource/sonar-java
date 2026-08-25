@@ -216,6 +216,25 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(beans.get(0).getDependingBeans()).isEmpty();
   }
 
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("mixedInjectionArguments")
+  void both_injection_sources_collected_when_mixing_injection_styles(String filePath, String beanName) {
+    scan(filePath);
+
+    var beans = model.getBeanDefinitionRegistry().getByName(beanName);
+    assertThat(beans).hasSize(1);
+    var deps = beans.get(0).getDependingBeans();
+    assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("applicationContext");
+    assertThat(deps.get("org.springframework.core.env.Environment")).containsOnly("environment");
+  }
+
+  static Stream<Arguments> mixedInjectionArguments() {
+    return Stream.of(
+      Arguments.of("src/test/files/springcontext/AutowiredConstructorWithUnannotatedConstructor.java", "autowiredConstructorWithUnannotatedConstructor"),
+      Arguments.of("src/test/files/springcontext/MixedInjectionDependencies.java", "mixedInjectionDependencies")
+    );
+  }
+
   // ---- @Qualifier handling --------------------------------------------------
 
   @ParameterizedTest(name = "{0}")
