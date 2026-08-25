@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
@@ -201,7 +202,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     return Stream.of(
       Arguments.of("src/test/files/springcontext/AutowiredDependencies.java", "autowiredDependencies"),
       Arguments.of("src/test/files/springcontext/AutowiredConstructorDependencies.java", "autowiredConstructorDependencies"),
-      Arguments.of("src/test/files/springcontext/BeanMethodWithDependencies.java",    "myBean"),
+      Arguments.of("src/test/files/springcontext/BeanMethodWithDependencies.java", "myBean"),
       Arguments.of("src/test/files/springcontext/SingleConstructorDependencies.java", "singleConstructorDependencies")
     );
   }
@@ -217,15 +218,23 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(beans.get(0).getDependingBeans()).isEmpty();
   }
 
-  @Test
-  void mixed_field_and_implicit_constructor_injection_collects_all_dependencies() {
-    scan("src/test/files/springcontext/MixedInjectionDependencies.java");
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("mixedInjectionArguments")
+  void both_injection_sources_collected_when_mixing_injection_styles(String filePath, String beanName) {
+    scan(filePath);
 
-    var beans = model.getBeanDefinitionRegistry().getByName("mixedInjectionDependencies");
+    var beans = model.getBeanDefinitionRegistry().getByName(beanName);
     assertThat(beans).hasSize(1);
     var deps = beans.get(0).getDependingBeans();
     assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("applicationContext");
     assertThat(deps.get("org.springframework.core.env.Environment")).containsOnly("environment");
+  }
+
+  static Stream<Arguments> mixedInjectionArguments() {
+    return Stream.of(
+      Arguments.of("src/test/files/springcontext/AutowiredConstructorWithUnannotatedConstructor.java", "autowiredConstructorWithUnannotatedConstructor"),
+      Arguments.of("src/test/files/springcontext/MixedInjectionDependencies.java", "mixedInjectionDependencies")
+    );
   }
 
   // ---- @Qualifier handling --------------------------------------------------
