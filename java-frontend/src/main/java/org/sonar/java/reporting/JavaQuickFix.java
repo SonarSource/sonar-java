@@ -105,7 +105,7 @@ public class JavaQuickFix {
         if (result != 0) {
           return result;
         }
-        return first.endCharacter - second.endCharacter;
+        return Integer.compare(first.endCharacter, second.endCharacter);
       }
     }
   }

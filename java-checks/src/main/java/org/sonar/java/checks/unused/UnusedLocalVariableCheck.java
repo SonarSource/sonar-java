@@ -113,8 +113,12 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
     if (parent instanceof AssignmentExpressionTree assignment) {
       return assignment.variable() != tree;
     }
+    if (parent == null) {
+      return false;
+    }
+    Tree grandParent = parent.parent();
     // Note that an expression statement can't be a parenthesized expression, so we don't need to skip parentheses here
-    return !(parent.is(INCREMENT_KINDS) && parent.parent().is(Tree.Kind.EXPRESSION_STATEMENT));
+    return grandParent != null && !(parent.is(INCREMENT_KINDS) && grandParent.is(Tree.Kind.EXPRESSION_STATEMENT));
   }
 
   private static boolean isProperLocalVariable(VariableTree variable) {

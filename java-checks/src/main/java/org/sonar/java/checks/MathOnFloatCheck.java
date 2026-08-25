@@ -53,7 +53,7 @@ public class MathOnFloatCheck extends BaseTreeVisitor implements JavaFileScanner
 
   private static boolean withinStringConcatenation(BinaryExpressionTree tree) {
     Tree parent = skipParenthesesUpwards(tree.parent());
-    return parent.is(Tree.Kind.PLUS) && ((BinaryExpressionTree) parent).symbolType().is("java.lang.String");
+    return parent != null && parent.is(Tree.Kind.PLUS) && ((BinaryExpressionTree) parent).symbolType().is("java.lang.String");
   }
 
 }

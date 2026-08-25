@@ -61,8 +61,8 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscr
   }
 
   private static boolean instantiateOwnClass(Tree identifier, Symbol.TypeSymbol newClassTypeSymbol) {
-    Type enclosingClassType = JUtils.enclosingClass(identifier).type();
-    return enclosingClassType.equals(newClassTypeSymbol.type());
+    Symbol enclosingClass = JUtils.enclosingClass(identifier);
+    return enclosingClass != null && enclosingClass.type().equals(newClassTypeSymbol.type());
   }
 
   private static boolean hasOnlyStaticMethodsAndFields(Symbol.TypeSymbol newClassTypeSymbol) {

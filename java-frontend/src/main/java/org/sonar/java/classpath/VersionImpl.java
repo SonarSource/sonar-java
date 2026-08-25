@@ -57,14 +57,14 @@ public record VersionImpl(Integer major, Integer minor, @Nullable Integer patch,
   @Override
   public int compareTo(Version o) {
     if (!Objects.equals(major, o.major())) {
-      return major - o.major();
+      return Integer.compare(major, o.major());
     }
     if (!Objects.equals(minor, o.minor())) {
-      return minor - o.minor();
+      return Integer.compare(minor, o.minor());
     }
     if (!Objects.equals(patch, o.patch())) {
       if (patch == null || o.patch() == null) return 0;
-      return patch - o.patch();
+      return Integer.compare(patch, o.patch());
     }
     return 0;
   }

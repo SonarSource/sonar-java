@@ -44,7 +44,7 @@ public class UsePageableParameterForPagedQueryCheck extends IssuableSubscription
   public void visitNode(Tree tree) {
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
     Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
-    if (!enclosingClass.isInterface()) {
+    if (enclosingClass == null || !enclosingClass.isInterface()) {
       return;
     }
     if (isPageableMethod(methodTree, enclosingClass.type()) && !hasPageableParameter(methodTree)) {
