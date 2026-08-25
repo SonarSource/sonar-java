@@ -28,10 +28,8 @@ class YodaConditionCheckSample {
   void testBooleanLiteral() {
     boolean flag = true;
     boolean result = false;
-    if (true == flag) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
-//      ^^^^
-    if (false != result) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
-//      ^^^^^
+    if (true == flag) { } // Compliant - boolean literal comparisons handled by S1125
+    if (false != result) { } // Compliant - boolean literal comparisons handled by S1125
     if (flag == true) { } // Compliant
     if (result != false) { } // Compliant
   }
@@ -72,9 +70,9 @@ class YodaConditionCheckSample {
   void testLessThanGreaterThan() {
     int count = 0;
     int x = 5;
-    if (0 < count) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
+    if (0 < count) { } // Noncompliant {{Put the variable on the left side of this comparison and invert the operator.}}
 //      ^
-    if (5 > x) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
+    if (5 > x) { } // Noncompliant {{Put the variable on the left side of this comparison and invert the operator.}}
 //      ^
     if (count > 0) { } // Compliant
     if (x < 5) { } // Compliant
@@ -83,9 +81,9 @@ class YodaConditionCheckSample {
   void testLessThanOrEqualGreaterThanOrEqual() {
     int count = 0;
     int x = 5;
-    if (0 <= count) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
+    if (0 <= count) { } // Noncompliant {{Put the variable on the left side of this comparison and invert the operator.}}
 //      ^
-    if (5 >= x) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
+    if (5 >= x) { } // Noncompliant {{Put the variable on the left side of this comparison and invert the operator.}}
 //      ^
     if (count >= 0) { } // Compliant
     if (x <= 5) { } // Compliant
@@ -113,10 +111,23 @@ class YodaConditionCheckSample {
     if (array[0] == 0) { } // Compliant
   }
 
+  void testUnaryMinusPlusYoda() {
+    int index = 0;
+    if (-1 == index) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
+//      ^^
+    if (+1 == index) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
+//      ^^
+    if (index == -1) { } // Compliant
+    if (index == +1) { } // Compliant
+  }
+
   void testBothLiterals() {
     if (0 == 0) { } // Compliant - both sides are literals
     if (5 != 10) { } // Compliant - both sides are literals
     if (true == false) { } // Compliant - both sides are literals
+    if (0 == -1) { } // Compliant - both sides are literals
+    if (-1 == 0) { } // Compliant - both sides are literals
+    if (-1 == -2) { } // Compliant - both sides are literals
   }
 
   void testBothVariables() {
@@ -137,8 +148,6 @@ class YodaConditionCheckSample {
 //                ^^^^^^^^^
     int abs = Math.abs(-5); // Noncompliant {{Replace this call to "abs" with the precomputed constant value.}}
 //            ^^^^^^^^
-    double pow = Math.pow(2.0, 3.0); // Noncompliant {{Replace this call to "pow" with the precomputed constant value.}}
-//               ^^^^^^^^
     long rounded = Math.round(3.14); // Noncompliant {{Replace this call to "round" with the precomputed constant value.}}
 //                 ^^^^^^^^^^
     double floor = Math.floor(3.7); // Noncompliant {{Replace this call to "floor" with the precomputed constant value.}}
@@ -164,6 +173,14 @@ class YodaConditionCheckSample {
 //            ^^^^^^^^
     double sqrt = Math.sqrt(+4.0); // Noncompliant {{Replace this call to "sqrt" with the precomputed constant value.}}
 //                ^^^^^^^^^
+  }
+
+  void testTranscendentalMathCallsCompliant() {
+    double pow = Math.pow(2.0, 3.0); // Compliant - transcendental functions excluded (result may vary across JVMs)
+    double sin = Math.sin(0.5); // Compliant
+    double cos = Math.cos(0.5); // Compliant
+    double log = Math.log(2.0); // Compliant
+    double exp = Math.exp(1.0); // Compliant
   }
 
   void testNonMathMethodCalls() {

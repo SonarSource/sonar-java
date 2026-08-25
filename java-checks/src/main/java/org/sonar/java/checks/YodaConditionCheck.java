@@ -31,14 +31,16 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 public class YodaConditionCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_MATH = "java.lang.Math";
+  private static final String FLOAT = "float";
+  private static final String DOUBLE = "double";
 
   private static final MethodMatchers CONSTANT_MATH_METHODS = MethodMatchers.or(
     MethodMatchers.create().ofTypes(JAVA_LANG_MATH)
       .names("max", "min")
       .addParametersMatcher("int", "int")
       .addParametersMatcher("long", "long")
-      .addParametersMatcher("float", "float")
-      .addParametersMatcher("double", "double")
+      .addParametersMatcher(FLOAT, FLOAT)
+      .addParametersMatcher(DOUBLE, DOUBLE)
       .build(),
     MethodMatchers.create().ofTypes(JAVA_LANG_MATH)
       .names("abs", "absExact", "negateExact", "incrementExact", "decrementExact")
@@ -47,23 +49,21 @@ public class YodaConditionCheck extends IssuableSubscriptionVisitor {
       .build(),
     MethodMatchers.create().ofTypes(JAVA_LANG_MATH)
       .names("abs")
-      .addParametersMatcher("float")
-      .addParametersMatcher("double")
+      .addParametersMatcher(FLOAT)
+      .addParametersMatcher(DOUBLE)
       .build(),
     MethodMatchers.create().ofTypes(JAVA_LANG_MATH)
-      .names("sqrt", "cbrt", "ceil", "floor", "rint", "log", "log10", "exp",
-        "sin", "cos", "tan", "asin", "acos", "atan", "sinh", "cosh", "tanh",
-        "toDegrees", "toRadians", "signum", "expm1", "log1p")
-      .addParametersMatcher("double")
+      .names("sqrt", "cbrt", "ceil", "floor", "rint", "toDegrees", "toRadians", "signum")
+      .addParametersMatcher(DOUBLE)
       .build(),
     MethodMatchers.create().ofTypes(JAVA_LANG_MATH)
       .names("round")
-      .addParametersMatcher("float")
-      .addParametersMatcher("double")
+      .addParametersMatcher(FLOAT)
+      .addParametersMatcher(DOUBLE)
       .build(),
     MethodMatchers.create().ofTypes(JAVA_LANG_MATH)
-      .names("pow", "atan2", "IEEEremainder", "copySign")
-      .addParametersMatcher("double", "double")
+      .names("copySign")
+      .addParametersMatcher(DOUBLE, DOUBLE)
       .build(),
     MethodMatchers.create().ofTypes(JAVA_LANG_MATH)
       .names("addExact", "subtractExact", "multiplyExact", "floorDiv", "floorMod")
@@ -76,7 +76,7 @@ public class YodaConditionCheck extends IssuableSubscriptionVisitor {
       .build(),
     MethodMatchers.create().ofTypes(JAVA_LANG_MATH)
       .names("signum")
-      .addParametersMatcher("float")
+      .addParametersMatcher(FLOAT)
       .build()
   );
 
@@ -107,7 +107,12 @@ public class YodaConditionCheck extends IssuableSubscriptionVisitor {
     ExpressionTree right = ExpressionUtils.skipParentheses(binaryExpression.rightOperand());
 
     if (isLiteral(left) && !isLiteral(right)) {
-      reportIssue(left, "Put the variable on the left side of this comparison.");
+      if (binaryExpression.is(Tree.Kind.LESS_THAN, Tree.Kind.GREATER_THAN,
+        Tree.Kind.LESS_THAN_OR_EQUAL_TO, Tree.Kind.GREATER_THAN_OR_EQUAL_TO)) {
+        reportIssue(left, "Put the variable on the left side of this comparison and invert the operator.");
+      } else {
+        reportIssue(left, "Put the variable on the left side of this comparison.");
+      }
     }
   }
 
@@ -136,12 +141,15 @@ public class YodaConditionCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isLiteral(ExpressionTree tree) {
-    return tree.is(
+    ExpressionTree expr = tree;
+    if (expr.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
+      expr = ExpressionUtils.skipParentheses(((UnaryExpressionTree) expr).expression());
+    }
+    return expr.is(
       Tree.Kind.INT_LITERAL,
       Tree.Kind.LONG_LITERAL,
       Tree.Kind.FLOAT_LITERAL,
       Tree.Kind.DOUBLE_LITERAL,
-      Tree.Kind.BOOLEAN_LITERAL,
       Tree.Kind.CHAR_LITERAL,
       Tree.Kind.STRING_LITERAL,
       Tree.Kind.NULL_LITERAL

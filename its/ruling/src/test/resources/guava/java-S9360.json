@@ -10,13 +10,6 @@
 "com.google.guava:guava:src/com/google/common/io/LittleEndianDataInputStream.java": [
 82
 ],
-"com.google.guava:guava:src/com/google/common/math/BigIntegerMath.java": [
-195,
-196
-],
-"com.google.guava:guava:src/com/google/common/math/DoubleMath.java": [
-220
-],
 "com.google.guava:guava:src/com/google/common/net/MediaType.java": [
 628,
 631,
