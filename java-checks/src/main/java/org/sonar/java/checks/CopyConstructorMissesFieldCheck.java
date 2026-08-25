@@ -90,7 +90,7 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
     }
 
     AnalysisResult result = analyzeInitializers(classTree, owner, eligibleFields.keySet())
-      .merge(analyze(constructor, owner, eligibleFields.keySet(), new HashSet<>()));
+      .merge(analyzeMethod(constructor, owner, eligibleFields.keySet(), new HashSet<>()));
     if (!result.complete) {
       return;
     }
@@ -134,7 +134,11 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
     return result;
   }
 
-  private static AnalysisResult analyze(MethodTree method, Symbol.TypeSymbol owner, Set<Symbol> eligibleFields,
+  /**
+   * Analyzes explicit field writes performed by a constructor or helper method, including writes reached through
+   * resolvable calls on the current instance. Active methods form the current call chain and prevent infinite recursion.
+   */
+  private static AnalysisResult analyzeMethod(MethodTree method, Symbol.TypeSymbol owner, Set<Symbol> eligibleFields,
     Set<Symbol.MethodSymbol> activeMethods) {
     Symbol.MethodSymbol methodSymbol = method.symbol();
     if (methodSymbol.isUnknown() || method.block() == null || !activeMethods.add(methodSymbol)) {
@@ -146,6 +150,12 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
     return collector.result();
   }
 
+  /**
+   * Collects explicit writes to eligible fields while following resolvable constructor and helper calls on the current
+   * instance. Eligible fields are instance fields declared by the analyzed class that are neither transient nor already
+   * initialized at their declaration. Active methods are the methods in the current call chain; they are tracked to
+   * detect recursive calls. An analysis is complete only when every followed initialization path can be resolved.
+   */
   private static final class AssignmentCollector extends BaseTreeVisitor {
     private final Symbol.TypeSymbol owner;
     private final Set<Symbol> eligibleFields;
@@ -224,7 +234,7 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
         complete = false;
         return;
       }
-      AnalysisResult nested = analyze(declaration, owner, eligibleFields, activeMethods);
+      AnalysisResult nested = analyzeMethod(declaration, owner, eligibleFields, activeMethods);
       assignedFields.addAll(nested.assignedFields);
       complete &= nested.complete;
     }
