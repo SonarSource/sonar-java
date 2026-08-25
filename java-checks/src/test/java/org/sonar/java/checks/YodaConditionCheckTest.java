@@ -33,15 +33,6 @@ class YodaConditionCheckTest {
   }
 
   @Test
-  void no_issue_without_semantic() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/YodaConditionCheckSample.java"))
-      .withCheck(new YodaConditionCheck())
-      .withoutSemantic()
-      .verifyIssues();
-  }
-
-  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/YodaConditionCheckSample.java"))

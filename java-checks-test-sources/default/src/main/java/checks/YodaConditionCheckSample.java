@@ -79,6 +79,17 @@ class YodaConditionCheckSample {
     if (x < 5) { } // Compliant
   }
 
+  void testLessThanOrEqualGreaterThanOrEqual() {
+    int count = 0;
+    int x = 5;
+    if (0 <= count) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
+//      ^
+    if (5 >= x) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
+//      ^
+    if (count >= 0) { } // Compliant
+    if (x <= 5) { } // Compliant
+  }
+
   void testNonComparisonContexts() {
     int count = 0;
     int a = 1;
@@ -86,7 +97,6 @@ class YodaConditionCheckSample {
     count = 0; // Compliant - assignment
     int sum = a + 5; // Compliant - arithmetic
     int product = 5 * b; // Compliant - arithmetic
-    Object obj = Math.max(5, 10); // Compliant - method call
   }
 
   void testTernaryOperator() {
@@ -115,5 +125,48 @@ class YodaConditionCheckSample {
     Object obj2 = null;
     if (count == otherCount) { } // Compliant - both are variables
     if (obj1 == obj2) { } // Compliant - both are variables
+  }
+
+  void testConstantMathCalls() {
+    int max = Math.max(5, 10); // Noncompliant {{Replace this call to "max" with the precomputed constant value.}}
+//            ^^^^^^^^
+    int min = Math.min(3, 7); // Noncompliant {{Replace this call to "min" with the precomputed constant value.}}
+//            ^^^^^^^^
+    double sqrt = Math.sqrt(16.0); // Noncompliant {{Replace this call to "sqrt" with the precomputed constant value.}}
+//                ^^^^^^^^^
+    int abs = Math.abs(-5); // Noncompliant {{Replace this call to "abs" with the precomputed constant value.}}
+//            ^^^^^^^^
+    double pow = Math.pow(2.0, 3.0); // Noncompliant {{Replace this call to "pow" with the precomputed constant value.}}
+//               ^^^^^^^^
+    long rounded = Math.round(3.14); // Noncompliant {{Replace this call to "round" with the precomputed constant value.}}
+//                 ^^^^^^^^^^
+    double floor = Math.floor(3.7); // Noncompliant {{Replace this call to "floor" with the precomputed constant value.}}
+//                 ^^^^^^^^^^
+    double ceil = Math.ceil(3.2); // Noncompliant {{Replace this call to "ceil" with the precomputed constant value.}}
+//                ^^^^^^^^^
+  }
+
+  void testConstantMathCallsCompliant() {
+    int x = 5;
+    int y = 10;
+    int max = Math.max(x, 10); // Compliant - x is not a literal
+    int min = Math.min(3, y); // Compliant - y is not a literal
+    double sqrt = Math.sqrt(x); // Compliant - x is not a literal
+    int abs = Math.abs(x); // Compliant - x is not a literal
+    int maxVar = Math.max(x, y); // Compliant - neither is a literal
+  }
+
+  void testConstantMathCallsWithUnaryMinus() {
+    int abs = Math.abs(-10); // Noncompliant {{Replace this call to "abs" with the precomputed constant value.}}
+//            ^^^^^^^^
+    int max = Math.max(-5, -3); // Noncompliant {{Replace this call to "max" with the precomputed constant value.}}
+//            ^^^^^^^^
+    double sqrt = Math.sqrt(+4.0); // Noncompliant {{Replace this call to "sqrt" with the precomputed constant value.}}
+//                ^^^^^^^^^
+  }
+
+  void testNonMathMethodCalls() {
+    String result = String.valueOf(5); // Compliant - not a Math method
+    int hash = Integer.hashCode(42); // Compliant - not a Math method
   }
 }
