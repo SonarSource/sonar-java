@@ -24,10 +24,12 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
 class BadPackageNameCheckTest {
 
@@ -99,6 +101,31 @@ class BadPackageNameCheckTest {
 
     verify(check, times(0)).scanFile(any());
     verify(check, times(1)).scanWithoutParsing(any());
+    assertThat(writeCache2.getData()).containsExactlyInAnyOrderEntriesOf(writeCache.getData());
+  }
+
+  @Test
+  void caching_default_package() {
+    String defaultPackageFile = mainCodeSourcesPath("DefaultPackage.java");
+
+    CheckVerifier.newVerifier()
+      .onFile(defaultPackageFile)
+      .withCheck(new BadPackageNameCheck())
+      .withCache(readCache, writeCache)
+      .verifyNoIssues();
+
+    var check = spy(new BadPackageNameCheck());
+    var populatedReadCache = new InternalReadCache().putAll(writeCache);
+    var writeCache2 = new InternalWriteCache().bind(populatedReadCache);
+    CheckVerifier.newVerifier()
+      .withCache(populatedReadCache, writeCache2)
+      .addFiles(InputFile.Status.SAME, defaultPackageFile)
+      .withCheck(check)
+      .verifyNoIssues();
+
+    verify(check, times(0)).scanFile(any());
+    verify(check, times(1)).scanWithoutParsing(any());
+    assertThat(writeCache2.getData()).containsExactlyInAnyOrderEntriesOf(writeCache.getData());
   }
 
   @Test

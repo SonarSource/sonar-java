@@ -48,22 +48,27 @@ public class BadPackageNameCheck implements JavaFileScanner, EndOfAnalysis {
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext context) {
-    var bytes = context.getCacheContext().getReadCache().readBytes(CACHE_KEY_PREFIX + context.getInputFile().key());
+    var cacheKey = CACHE_KEY_PREFIX + context.getInputFile().key();
+    var bytes = context.getCacheContext().getReadCache().readBytes(cacheKey);
     if (bytes == null) {
       return false;
     }
-    handlePackageName(new String(bytes, StandardCharsets.UTF_8));
+    context.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
+    String name = new String(bytes, StandardCharsets.UTF_8);
+    if (!name.isEmpty()) {
+      handlePackageName(name);
+    }
     return true;
   }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     var packageDeclaration = context.getTree().packageDeclaration();
-    if (packageDeclaration != null) {
-      String name = PackageUtils.packageName(packageDeclaration, ".");
-      if (context.getCacheContext().isCacheEnabled()) {
-        context.getCacheContext().getWriteCache().write(CACHE_KEY_PREFIX + context.getInputFile().key(), name.getBytes(StandardCharsets.UTF_8));
-      }
+    String name = packageDeclaration != null ? PackageUtils.packageName(packageDeclaration, ".") : "";
+    if (context.getCacheContext().isCacheEnabled()) {
+      context.getCacheContext().getWriteCache().write(CACHE_KEY_PREFIX + context.getInputFile().key(), name.getBytes(StandardCharsets.UTF_8));
+    }
+    if (!name.isEmpty()) {
       handlePackageName(name);
     }
   }
