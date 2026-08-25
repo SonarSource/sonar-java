@@ -12,9 +12,9 @@ visible to readers.</p>
 <p><strong>Yoda Conditions</strong></p>
 <p>Yoda conditions place the constant on the left side of a comparison: <code>0 == count</code> instead of <code>count == 0</code>. This pattern
 originated in C programming to prevent accidental assignment (single equals operator) instead of comparison (double equals operator).</p>
-<p>In modern type-safe languages, this defensive technique is unnecessary. Type systems that distinguish between assignment and comparison contexts
-will reject code that attempts assignment where a boolean expression is expected. For example, attempting to assign a numeric value in a conditional
-expression produces a compiler error in languages with strong type checking.</p>
+<p>In Java, this defensive technique is largely unnecessary. The compiler rejects assignment in conditional contexts for non-boolean types (for example,
+<code>if (count = 0)</code> does not compile when <code>count</code> is an <code>int</code>). While <code>if (flag = true)</code> does compile for
+boolean variables, that case is better addressed by removing the redundant boolean comparison entirely.</p>
 <p>Placing constants on the left reduces readability. Natural language flows from subject to comparison: "Is the count zero?" translates more
 naturally to <code>count == 0</code> than to <code>0 == count</code>.</p>
 <p>By following conventional comparison order, code becomes more intuitive for developers to read and maintain.</p>
@@ -43,9 +43,8 @@ public class Example {
         }
 
         Object obj = null;
-        boolean flag = true;
-        if (null == obj &amp;&amp; true == flag) { // Noncompliant
-            System.out.println("Both conditions met");
+        if (null == obj) { // Noncompliant
+            System.out.println("Condition met");
         }
     }
 }
@@ -63,9 +62,8 @@ public class Example {
         }
 
         Object obj = null;
-        boolean flag = true;
-        if (obj == null &amp;&amp; flag == true) { // Natural comparison order
-            System.out.println("Both conditions met");
+        if (obj == null) { // Natural comparison order
+            System.out.println("Condition met");
         }
     }
 }

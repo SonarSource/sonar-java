@@ -53,7 +53,7 @@ public class YodaConditionCheck extends IssuableSubscriptionVisitor {
       .addParametersMatcher(DOUBLE)
       .build(),
     MethodMatchers.create().ofTypes(JAVA_LANG_MATH)
-      .names("sqrt", "cbrt", "ceil", "floor", "rint", "toDegrees", "toRadians", "signum")
+      .names("sqrt", "ceil", "floor", "rint", "signum")
       .addParametersMatcher(DOUBLE)
       .build(),
     MethodMatchers.create().ofTypes(JAVA_LANG_MATH)

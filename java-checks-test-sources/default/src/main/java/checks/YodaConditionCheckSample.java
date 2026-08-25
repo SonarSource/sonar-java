@@ -181,6 +181,9 @@ class YodaConditionCheckSample {
     double cos = Math.cos(0.5); // Compliant
     double log = Math.log(2.0); // Compliant
     double exp = Math.exp(1.0); // Compliant
+    double cbrt = Math.cbrt(8.0); // Compliant - not exactly specified
+    double deg = Math.toDegrees(1.0); // Compliant - not exactly specified
+    double rad = Math.toRadians(90.0); // Compliant - not exactly specified
   }
 
   void testNonMathMethodCalls() {
