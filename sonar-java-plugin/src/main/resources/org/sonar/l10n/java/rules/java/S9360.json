@@ -1,5 +1,5 @@
 {
-  "title": "Constant expressions and comparisons should be simplified",
+  "title": "Comparisons should not use Yoda conditions",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {

@@ -63,20 +63,32 @@ class YodaConditionCheckSample {
 
   void testNestedParentheses() {
     int count = 0;
+    Object obj = null;
     if ((0) == count) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
-    if (((null)) == count) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
+    if (((null)) == obj) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
 //        ^^^^
   }
 
   void testLessThanGreaterThan() {
     int count = 0;
     int x = 5;
-    if (0 < count) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
+    if (0 < count) { } // Noncompliant {{Put the variable on the left side of this comparison and reverse the operator.}}
 //      ^
-    if (5 > x) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
+    if (5 > x) { } // Noncompliant {{Put the variable on the left side of this comparison and reverse the operator.}}
 //      ^
     if (count > 0) { } // Compliant
     if (x < 5) { } // Compliant
+  }
+
+  void testLessThanOrEqualGreaterThanOrEqual() {
+    int count = 0;
+    int x = 5;
+    if (0 <= count) { } // Noncompliant {{Put the variable on the left side of this comparison and reverse the operator.}}
+//      ^
+    if (5 >= x) { } // Noncompliant {{Put the variable on the left side of this comparison and reverse the operator.}}
+//      ^
+    if (count >= 0) { } // Compliant
+    if (x <= 5) { } // Compliant
   }
 
   void testNonComparisonContexts() {

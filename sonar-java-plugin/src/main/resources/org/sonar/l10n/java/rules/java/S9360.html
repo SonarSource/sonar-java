@@ -1,15 +1,5 @@
-<p>This rule raises an issue when code contains operations on constants that can be precomputed, or when comparisons place constants on the left side
-(Yoda conditions).</p>
+<p>This rule raises an issue when comparisons place constants on the left side (Yoda conditions).</p>
 <h2>Why is this an issue?</h2>
-<p>Code that works with constants can often be simplified to improve readability and, in some cases, performance.</p>
-<p><strong>Constant Function Calls</strong></p>
-<p>When all arguments to a deterministic function are compile-time constants, the result is also a constant. For example, a function that returns the
-maximum of two numbers when called with literal values <code>5</code> and <code>10</code> always returns <code>10</code>. Computing this value at
-runtime is unnecessary and makes the code less clear.</p>
-<p>Mathematical functions that compute maximum values, minimum values, square roots, and absolute values produce predictable results when given
-constant inputs. Replacing these calls with their precomputed values eliminates function call overhead and makes the intended value immediately
-visible to readers.</p>
-<p><strong>Yoda Conditions</strong></p>
 <p>Yoda conditions place the constant on the left side of a comparison: <code>0 == count</code> instead of <code>count == 0</code>. This pattern
 originated in C programming to prevent accidental assignment (single equals operator) instead of comparison (double equals operator).</p>
 <p>In modern type-safe languages, this defensive technique is unnecessary. Type systems that distinguish between assignment and comparison contexts
@@ -21,22 +11,16 @@ naturally to <code>count == 0</code> than to <code>0 == count</code>.</p>
 <h3>What is the potential impact?</h3>
 <p>The impact on code quality is primarily related to maintainability:</p>
 <ul>
-  <li><strong>Readability</strong>: Simplified constant expressions and natural comparison order make code easier to understand</li>
-  <li><strong>Performance</strong>: Precomputing constant values eliminates unnecessary method calls at runtime, though the performance gain is
-  typically negligible in modern compilers and runtime environments with optimization</li>
+  <li><strong>Readability</strong>: Natural comparison order makes code easier to understand</li>
   <li><strong>Maintainability</strong>: Clear, conventional code patterns reduce cognitive load for developers</li>
 </ul>
 <h2>How to fix it</h2>
-<p>For constant method calls, replace the method invocation with the precomputed result. For Yoda conditions, reverse the comparison to place the
-variable on the left and the constant on the right.</p>
+<p>Reverse the comparison to place the variable on the left and the constant on the right.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 public class Example {
-    public void calculate() {
-        int max = Math.max(5, 10); // Noncompliant
-        double result = Math.sqrt(16.0) + Math.abs(-5); // Noncompliant
-
+    public void check() {
         int count = 0;
         if (0 == count) { // Noncompliant
             return;
@@ -53,10 +37,7 @@ public class Example {
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 public class Example {
-    public void calculate() {
-        int max = 10; // Precomputed constant
-        double result = 4.0 + 5; // Precomputed constants
-
+    public void check() {
         int count = 0;
         if (count == 0) { // Natural comparison order
             return;
@@ -64,7 +45,7 @@ public class Example {
 
         Object obj = null;
         boolean flag = true;
-        if (obj == null &amp;&amp; flag == true) { // Natural comparison order
+        if (obj == null &amp;&amp; flag) { // Natural comparison order
             System.out.println("Both conditions met");
         }
     }
@@ -73,7 +54,5 @@ public class Example {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Math.html">Math (Java Platform SE 8)</a></li>
   <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.26">Assignment Operators</a></li>
 </ul>
-

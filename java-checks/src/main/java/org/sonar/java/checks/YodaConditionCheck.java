@@ -27,13 +27,18 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S9360")
 public class YodaConditionCheck extends IssuableSubscriptionVisitor {
 
+  private static final String MESSAGE = "Put the variable on the left side of this comparison.";
+  private static final String MESSAGE_WITH_REVERSE = "Put the variable on the left side of this comparison and reverse the operator.";
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(
       Tree.Kind.EQUAL_TO,
       Tree.Kind.NOT_EQUAL_TO,
       Tree.Kind.LESS_THAN,
-      Tree.Kind.GREATER_THAN
+      Tree.Kind.GREATER_THAN,
+      Tree.Kind.LESS_THAN_OR_EQUAL_TO,
+      Tree.Kind.GREATER_THAN_OR_EQUAL_TO
     );
   }
 
@@ -44,8 +49,17 @@ public class YodaConditionCheck extends IssuableSubscriptionVisitor {
     ExpressionTree right = ExpressionUtils.skipParentheses(binaryExpression.rightOperand());
 
     if (isLiteral(left) && !isLiteral(right)) {
-      reportIssue(left, "Put the variable on the left side of this comparison.");
+      reportIssue(left, isRelationalOperator(tree) ? MESSAGE_WITH_REVERSE : MESSAGE);
     }
+  }
+
+  private static boolean isRelationalOperator(Tree tree) {
+    return tree.is(
+      Tree.Kind.LESS_THAN,
+      Tree.Kind.GREATER_THAN,
+      Tree.Kind.LESS_THAN_OR_EQUAL_TO,
+      Tree.Kind.GREATER_THAN_OR_EQUAL_TO
+    );
   }
 
   private static boolean isLiteral(ExpressionTree tree) {
