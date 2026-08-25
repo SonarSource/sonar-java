@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
@@ -38,7 +39,9 @@ import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -60,7 +63,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  *   <li>{@code @Primary} designation</li>
  *   <li>Dependencies via {@code @Autowired} fields, constructors, and setters for class-level beans</li>
  *   <li>Dependencies via method parameters for {@code @Bean} method beans</li>
+ *   <li>Implicit single-constructor injection (no {@code @Autowired} required)</li>
  * </ul>
+ *
+ * <p>Also populates {@link TypeToBeanNamesIndex} with the full type hierarchy of each bean,
+ * so that rules can look up all beans assignable to a given type.
  */
 public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
@@ -72,6 +79,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   private static final String DEP_SEPARATOR = ",";
   private static final String DEP_KEY_VALUE_SEPARATOR = ":";
   private static final String DEP_NAMES_SEPARATOR = ";";
+  private static final String TYPE_HIERARCHY_SEPARATOR = ";";
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
   private static final String VALUE_ATTRIBUTE = "value";
@@ -88,7 +96,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     InputFile inputFile,
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
-    Map<String, Set<String>> dependingBeans) {
+    Map<String, Set<String>> dependingBeans,
+    Set<String> typeHierarchy) {
   }
 
   @Override
@@ -117,13 +126,14 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       String beanName = extractBeanName(meta)
         .orElseGet(() -> defaultBeanName(classTree.simpleName().name()));
       Map<String, Set<String>> deps = collectAutowiredDependencies(classTree);
-      // Class-level bean (stereotype annotations)
+      Set<String> typeHierarchy = collectTypeHierarchy(classTree.symbol());
       var beanData = new BeanData(
         beanName, fqn, pkg,
         context.getInputFile(),
         AnalyzerMessage.textSpanFor(classTree.simpleName()),
         meta.isAnnotatedWith(PRIMARY_ANNOTATION),
-        deps);
+        deps,
+        typeHierarchy);
       collectedBeans.add(beanData);
       beansCollectedAtFileLevel.add(beanData);
 
@@ -167,6 +177,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
           .map(n -> Base64.getEncoder().encodeToString(n.getBytes(StandardCharsets.UTF_8)))
           .collect(Collectors.joining(DEP_NAMES_SEPARATOR)))
       .collect(Collectors.joining(DEP_SEPARATOR));
+    var typeHierarchy = String.join(TYPE_HIERARCHY_SEPARATOR, bean.typeHierarchy());
     var span = bean.textSpan();
     var encodedName = Base64.getEncoder().encodeToString(bean.beanName().getBytes(StandardCharsets.UTF_8));
     return String.join(FIELD_SEPARATOR,
@@ -175,7 +186,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       bean.beanPackage(),
       span.startLine + ":" + span.startCharacter + ":" + span.endLine + ":" + span.endCharacter,
       Boolean.toString(bean.isPrimary()),
-      deps);
+      deps,
+      typeHierarchy);
   }
 
   @Override
@@ -190,6 +202,9 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       }
       springContextModel.getBeanDefinitionRegistry()
         .addBeanDefinition(data.beanName(), holderBuilder.build());
+      for (String typeFqn : data.typeHierarchy()) {
+        springContextModel.getTypeToBeanNamesIndex().addBeanForType(typeFqn, data.beanName());
+      }
     }
   }
 
@@ -247,7 +262,10 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         deps.put(typeFqn, names);
       }
     }
-    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, deps);
+    Set<String> typeHierarchy = !fields[6].isEmpty()
+      ? new LinkedHashSet<>(List.of(fields[6].split(TYPE_HIERARCHY_SEPARATOR)))
+      : new LinkedHashSet<>();
+    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, deps, typeHierarchy);
   }
 
   private static Optional<String> extractBeanName(SymbolMetadata meta) {
@@ -274,34 +292,38 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   private void collectBeanMethod(MethodTree method, String pkg) {
     SymbolMetadata beanMeta = method.symbol().metadata();
     List<SymbolMetadata.AnnotationValue> attrs = beanMeta.valuesForAnnotation(SpringUtils.BEAN_ANNOTATION);
-    String beanName = Optional.ofNullable(attrs)
-      .flatMap(list -> list.stream()
+    List<String> beanNames = Optional.ofNullable(attrs)
+      .map(list -> list.stream()
         .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
-        .map(v -> {
+        .flatMap(v -> {
           Object val = v.value();
           if (val instanceof Object[] arr && arr.length > 0) {
-            return (String) arr[0];
+            return Arrays.stream(arr).filter(String.class::isInstance).map(String.class::cast);
           }
-          return val instanceof String s ? s : null;
+          return Stream.empty();
         })
-        .filter(s -> s != null && !s.isBlank())
-        .findFirst())
-      .orElseGet(() -> method.simpleName().name());
+        .filter(s -> !s.isBlank())
+        .toList())
+      .filter(names -> !names.isEmpty())
+      .orElse(List.of(method.simpleName().name()));
 
     String returnTypeFqn = method.returnType() != null
       ? method.returnType().symbolType().fullyQualifiedName()
       : "";
+    Set<String> typeHierarchy = method.returnType() != null
+      ? collectTypeHierarchy(method.returnType().symbolType().symbol())
+      : Set.of();
 
     Map<String, Set<String>> paramDeps = parameterDependencies(method);
+    boolean isPrimary = beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION);
+    var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
+    var inputFile = context.getInputFile();
 
-    var beanData = new BeanData(
-      beanName, returnTypeFqn, pkg,
-      context.getInputFile(),
-      AnalyzerMessage.textSpanFor(method.simpleName()),
-      beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION),
-      paramDeps);
-    collectedBeans.add(beanData);
-    beansCollectedAtFileLevel.add(beanData);
+    for (String beanName : beanNames) {
+      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, paramDeps, typeHierarchy);
+      collectedBeans.add(beanData);
+      beansCollectedAtFileLevel.add(beanData);
+    }
   }
 
   private static Map<String, Set<String>> collectAutowiredDependencies(ClassTree classTree) {
@@ -356,6 +378,28 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       .filter(s -> !s.isBlank())
       .findFirst()
       .orElse(null);
+  }
+
+  private static Set<String> collectTypeHierarchy(Symbol.TypeSymbol symbol) {
+    Set<String> visited = new LinkedHashSet<>();
+    walkTypeHierarchy(symbol, visited);
+    return visited;
+  }
+
+  private static void walkTypeHierarchy(Symbol.TypeSymbol symbol, Set<String> visited) {
+    String fqn = symbol.type().fullyQualifiedName();
+    if ("java.lang.Object".equals(fqn) || symbol.type().isUnknown() || !visited.add(fqn)) {
+      return;
+    }
+    Type superClass = symbol.superClass();
+    if (superClass != null && !superClass.isUnknown()) {
+      walkTypeHierarchy(superClass.symbol(), visited);
+    }
+    for (Type iface : symbol.interfaces()) {
+      if (!iface.isUnknown()) {
+        walkTypeHierarchy(iface.symbol(), visited);
+      }
+    }
   }
 
 }
