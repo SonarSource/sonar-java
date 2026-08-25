@@ -14,7 +14,7 @@
   "ruleSpecification": "RSPEC-9359",
   "sqKey": "S9359",
   "scope": "All",
-  "quickfix": "infeasible",
+  "quickfix": "unknown",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "MEDIUM"

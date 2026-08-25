@@ -34,8 +34,9 @@ cause:</p>
 <p>While the impact is typically low severity, it can waste significant debugging time when the actual characters in a string don’t match
 expectations.</p>
 <h2>How to fix it</h2>
-<p>Replace the octal escape sequence with a Unicode escape sequence. Unicode escapes use the format <code>\uXXXX</code> where XXXX is the four-digit
-hexadecimal code point. This makes it clear exactly which character is intended and eliminates ambiguity.</p>
+<p>Replace the octal escape sequence with the equivalent standard escape sequence or separate the escape from the trailing digit to remove ambiguity.
+For characters that have a named escape (such as <code>\n</code> for newline or <code>\t</code> for tab), prefer using that form. Alternatively, split
+the string so the escape sequence and the following literal digit are in separate concatenated strings.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -43,7 +44,7 @@ String message = "Error code: \128"; // Noncompliant
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
-String message = "Error code: \u000A" + "8";
+String message = "Error code: \n" + "8";
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
