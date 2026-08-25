@@ -208,7 +208,7 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
         return eligibleFields.contains(identifier.symbol()) ? identifier.symbol() : null;
       }
       if (variable instanceof MemberSelectExpressionTree memberSelect
-        && ExpressionUtils.isThis(ExpressionUtils.skipParentheses(memberSelect.expression()))
+        && isCurrentInstance(memberSelect.expression())
         && eligibleFields.contains(memberSelect.identifier().symbol())) {
         return memberSelect.identifier().symbol();
       }
@@ -223,12 +223,26 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
       return invocation.methodSelect() instanceof IdentifierTree identifier && "this".equals(identifier.name());
     }
 
-    private static boolean isInvocationOnThis(MethodInvocationTree invocation) {
+    private boolean isInvocationOnThis(MethodInvocationTree invocation) {
       if (invocation.methodSelect() instanceof IdentifierTree identifier) {
         return !"super".equals(identifier.name());
       }
       return invocation.methodSelect() instanceof MemberSelectExpressionTree memberSelect
-        && ExpressionUtils.isThis(ExpressionUtils.skipParentheses(memberSelect.expression()));
+        && isCurrentInstance(memberSelect.expression());
+    }
+
+    private boolean isCurrentInstance(ExpressionTree expression) {
+      ExpressionTree receiver = ExpressionUtils.skipParentheses(expression);
+      if (receiver instanceof IdentifierTree identifier) {
+        // An unqualified `this` has no type binding in the syntax tree, but is unambiguous.
+        return "this".equals(identifier.name());
+      }
+      if (!(receiver instanceof MemberSelectExpressionTree qualifiedThis)
+        || !ExpressionUtils.isThis(qualifiedThis.identifier())) {
+        return false;
+      }
+      Symbol thisSymbol = qualifiedThis.identifier().symbol();
+      return !thisSymbol.isUnknown() && thisSymbol.enclosingClass() == owner;
     }
   }
 

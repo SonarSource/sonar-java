@@ -292,4 +292,24 @@ class CopyConstructorMissesFieldCheckSample {
       this.value = value;
     }
   }
+
+  static class QualifiedDirectAssignment {
+    private int value;
+
+    QualifiedDirectAssignment(QualifiedDirectAssignment other) {
+      QualifiedDirectAssignment.this.value = other.value;
+    }
+  }
+
+  static class QualifiedHelperCall {
+    private int value;
+
+    QualifiedHelperCall(QualifiedHelperCall other) {
+      QualifiedHelperCall.this.initialize(other);
+    }
+
+    private void initialize(QualifiedHelperCall other) {
+      value = other.value;
+    }
+  }
 }
