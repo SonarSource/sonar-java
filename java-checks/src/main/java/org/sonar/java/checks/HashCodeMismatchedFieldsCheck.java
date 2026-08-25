@@ -76,7 +76,7 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
 
     ReadAndAssignedFields equalsFields = collectReadFields(methods.equalsMethod, owner, fieldsByHelper, Role.EQUALS);
     ReadAndAssignedFields hashCodeFields = collectReadFields(methods.hashCodeMethod, owner, fieldsByHelper, Role.HASH_CODE);
-    if (equalsFields.failed || hashCodeFields.failed || equalsFields.readFields.isEmpty()) {
+    if (equalsFields.failed() || hashCodeFields.failed() || equalsFields.readFields().isEmpty()) {
       // Bail out on unresolved members, or when equals() compares no state (likely reference equality).
       return;
     }
@@ -88,12 +88,12 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Map<Symbol, Tree> computeExtraFields(ReadAndAssignedFields equalsFields, ReadAndAssignedFields hashCodeFields) {
-    Map<Symbol, Tree> extraFields = new LinkedHashMap<>(hashCodeFields.readFields);
-    extraFields.keySet().removeAll(equalsFields.readFields.keySet());
+    Map<Symbol, Tree> extraFields = new LinkedHashMap<>(hashCodeFields.readFields());
+    extraFields.keySet().removeAll(equalsFields.readFields().keySet());
     // A field caching a previously computed hash value does not add new identity state: recognize it either by
     // name, or because hashCode() itself assigns to it (the memoization pattern), regardless of its name.
     extraFields.keySet().removeIf(field ->
-      MEMOIZED_HASH_FIELD_NAMES.contains(field.name().toLowerCase(Locale.ROOT)) || hashCodeFields.assignedFields.contains(field));
+      MEMOIZED_HASH_FIELD_NAMES.contains(field.name().toLowerCase(Locale.ROOT)) || hashCodeFields.assignedFields().contains(field));
     return extraFields;
   }
 
@@ -143,9 +143,9 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
       if (helperSymbol.isUnknown() || !helper.parameters().isEmpty()) {
         continue;
       }
-      ReadAndAssignedFields fields = collectReadFields(helper, owner, Map.of(), Role.HELPER);
-      if (!fields.failed) {
-        fieldsByHelper.put(helperSymbol, fields.readFields);
+      ReadAndAssignedFields helperFields = collectReadFields(helper, owner, Map.of(), Role.HELPER);
+      if (!helperFields.failed()) {
+        fieldsByHelper.put(helperSymbol, helperFields.readFields());
       }
     }
     return fieldsByHelper;
@@ -158,7 +158,7 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
     Role role) {
     FieldReadCollector collector = new FieldReadCollector(owner, fieldsByHelper, role);
     method.block().accept(collector);
-    return new ReadAndAssignedFields(collector.readFields, collector.assignedFields, collector.failed);
+    return collector.fields;
   }
 
   private void reportMismatch(MethodTree hashCodeMethod, Map<Symbol, Tree> extraFields) {
@@ -179,16 +179,14 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
     HASH_CODE
   }
 
-  private static final class ReadAndAssignedFields {
+  private record ReadAndAssignedFields(Map<Symbol, Tree> readFields, Set<Symbol> assignedFields, boolean failed) {
 
-    private final Map<Symbol, Tree> readFields;
-    private final Set<Symbol> assignedFields;
-    private final boolean failed;
+    private ReadAndAssignedFields() {
+      this(new LinkedHashMap<>(), new HashSet<>(), false);
+    }
 
-    private ReadAndAssignedFields(Map<Symbol, Tree> readFields, Set<Symbol> assignedFields, boolean failed) {
-      this.readFields = readFields;
-      this.assignedFields = assignedFields;
-      this.failed = failed;
+    private ReadAndAssignedFields asFailed() {
+      return new ReadAndAssignedFields(readFields, assignedFields, true);
     }
   }
 
@@ -202,9 +200,7 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
     private final Symbol enclosingClass;
     private final Map<Symbol.MethodSymbol, Map<Symbol, Tree>> fieldsByHelper;
     private final Role role;
-    private final Map<Symbol, Tree> readFields = new LinkedHashMap<>();
-    private final Set<Symbol> assignedFields = new HashSet<>();
-    private boolean failed;
+    private ReadAndAssignedFields fields = new ReadAndAssignedFields();
 
     private FieldReadCollector(Symbol enclosingClass, Map<Symbol.MethodSymbol, Map<Symbol, Tree>> fieldsByHelper, Role role) {
       this.enclosingClass = enclosingClass;
@@ -219,14 +215,14 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      if (!failed) {
+      if (!fields.failed()) {
         String name = tree.name();
         if (!"this".equals(name) && !"super".equals(name)) {
           Symbol symbol = tree.symbol();
           if (symbol.isUnknown()) {
-            failed = true;
+            fields = fields.asFailed();
           } else if (symbol.isVariableSymbol() && !symbol.isStatic() && ownedByEnclosing(symbol)) {
-            readFields.putIfAbsent(symbol, tree);
+            fields.readFields().putIfAbsent(symbol, tree);
           }
         }
       }
@@ -237,29 +233,31 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
       ExpressionUtils.extractIdentifierSymbol(tree.variable())
         .filter(symbol -> !symbol.isUnknown() && symbol.isVariableSymbol() && !symbol.isStatic() && ownedByEnclosing(symbol))
-        .ifPresent(assignedFields::add);
+        .ifPresent(fields.assignedFields()::add);
       super.visitAssignmentExpression(tree);
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (!failed) {
+      if (!fields.failed()) {
         Symbol.MethodSymbol symbol = tree.methodSymbol();
         if (symbol.isUnknown()) {
-          failed = true;
+          fields = fields.asFailed();
         } else {
           Map<Symbol, Tree> helperFields = fieldsByHelper.get(symbol);
           if (helperFields != null) {
-            helperFields.keySet().forEach(field -> readFields.putIfAbsent(field, tree));
+            helperFields.keySet().forEach(field -> fields.readFields().putIfAbsent(field, tree));
           } else if (symbol.isStatic()) {
             // A same-class static helper we could not pre-scan (e.g. it takes parameters) may hide field
             // reads: bail out rather than silently ignoring it. An external static utility (e.g. Objects.hash)
             // is assumed side-effect free and is not owned by the enclosing class.
-            failed = ownedByEnclosing(symbol);
+            if (ownedByEnclosing(symbol)) {
+              fields = fields.asFailed();
+            }
           } else if (ownedByEnclosing(symbol) || !isAllowedInstanceCall(symbol)) {
             // A same-class instance method other than the trusted getClass()/equals()/hashCode() allow-list
             // (e.g. a differently-parameterized equals(SpecificType) overload) may hide field reads.
-            failed = true;
+            fields = fields.asFailed();
           }
         }
       }
