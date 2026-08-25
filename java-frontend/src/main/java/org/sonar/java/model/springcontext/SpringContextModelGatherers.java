@@ -40,8 +40,7 @@ public class SpringContextModelGatherers {
   public static List<JavaCheck> getAllGatherers() {
     return List.of(
       new ComponentScanPackageGatherer(),
-      new BeanDefinitionGatherer(),
-      new TypeToBeanNamesIndexGatherer()
+      new BeanDefinitionGatherer()
     );
   }
 

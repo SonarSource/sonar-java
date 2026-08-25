@@ -16,11 +16,7 @@
  */
 package org.sonar.java.utils;
 
-import java.beans.Introspector;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -57,8 +53,6 @@ public final class SpringUtils {
     CONFIGURATION_ANNOTATION
   );
 
-  public static final String VALUE_ATTRIBUTE = "value";
-
   private SpringUtils() {
     // Utils class
   }
@@ -70,7 +64,7 @@ public final class SpringUtils {
       return true;
     }
     for (SymbolMetadata.AnnotationValue annotationValue : values) {
-      if (VALUE_ATTRIBUTE.equals(annotationValue.name()) || "scopeName".equals(annotationValue.name())) {
+      if ("value".equals(annotationValue.name()) || "scopeName".equals(annotationValue.name())) {
         Object value = annotationValue.value();
         if (value instanceof String stringValue && !"singleton".equals(stringValue)) {
           return false;
@@ -95,61 +89,6 @@ public final class SpringUtils {
     }
     ClassTree parentClass = (ClassTree) parentOfType;
     return UnitTestUtils.isUnitTest(methodTree) && SpringUtils.isSpringBootTestClass(parentClass.symbol());
-  }
-
-  /**
-   * Resolves the Spring bean name for a stereotype-annotated class.
-   * Returns the explicit name from the annotation if present, otherwise the decapitalized simple class name.
-   */
-  public static String resolveStereotypeBeanName(SymbolMetadata meta, String simpleName) {
-    for (String annotation : STEREOTYPE_ANNOTATIONS) {
-      List<SymbolMetadata.AnnotationValue> attrs = meta.valuesForAnnotation(annotation);
-      if (attrs != null) {
-        Optional<String> name = attrs.stream()
-          .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
-          .map(v -> (String) v.value())
-          .filter(s -> !s.isBlank())
-          .findFirst();
-        if (name.isPresent()) {
-          return name.get();
-        }
-      }
-    }
-    return Introspector.decapitalize(simpleName);
-  }
-
-  /**
-   * Resolves all Spring bean names for a {@code @Bean} factory method, including aliases.
-   * Returns the explicit names from the annotation if present, otherwise a singleton list of the method name.
-   */
-  public static List<String> resolveBeanMethodNames(MethodTree method) {
-    List<SymbolMetadata.AnnotationValue> attrs = method.symbol().metadata().valuesForAnnotation(BEAN_ANNOTATION);
-    if (attrs == null) {
-      return List.of(method.simpleName().name());
-    }
-    List<String> names = attrs.stream()
-      .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
-      .flatMap(v -> {
-        Object val = v.value();
-        if (val instanceof Object[] arr && arr.length > 0) {
-          return Arrays.stream(arr).filter(String.class::isInstance).map(String.class::cast);
-        }
-        if (val instanceof String s) {
-          return Stream.of(s);
-        }
-        return Stream.empty();
-      })
-      .filter(s -> !s.isBlank())
-      .toList();
-    return names.isEmpty() ? List.of(method.simpleName().name()) : names;
-  }
-
-  /**
-   * Resolves the primary Spring bean name for a {@code @Bean} factory method.
-   * Returns the first explicit name from the annotation if present, otherwise the method name.
-   */
-  public static String resolveBeanMethodName(MethodTree method) {
-    return resolveBeanMethodNames(method).get(0);
   }
 
   public static List<MethodTree> getBeanMethods(ClassTree classTree) {
