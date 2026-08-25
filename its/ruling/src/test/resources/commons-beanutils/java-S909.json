@@ -9,15 +9,5 @@
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java": [
 880
-],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
-3998,
-4001,
-4004,
-4056,
-4059,
-4063,
-4066,
-4069
 ]
 }
