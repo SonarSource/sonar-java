@@ -16,21 +16,26 @@
  */
 package org.sonar.java.checks.naming;
 
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.PackageUtils;
+import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "S00120", repositoryKey = "squid")
 @Rule(key = "S120")
-public class BadPackageNameCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class BadPackageNameCheck implements JavaFileScanner, EndOfAnalysis {
 
   private static final String DEFAULT_FORMAT = "^[a-z_]+(\\.[a-z_][a-z0-9_]*)*$";
+  private static final String CACHE_KEY_PREFIX = "java:S120:package:";
 
   @RuleProperty(
     key = "format",
@@ -39,25 +44,49 @@ public class BadPackageNameCheck extends BaseTreeVisitor implements JavaFileScan
   public String format = DEFAULT_FORMAT;
 
   private Pattern pattern = null;
-  private JavaFileScannerContext context;
+  private final Set<String> badPackageNames = new HashSet<>();
+
+  @Override
+  public boolean scanWithoutParsing(InputFileScannerContext context) {
+    var cacheKey = CACHE_KEY_PREFIX + context.getInputFile().key();
+    var bytes = context.getCacheContext().getReadCache().readBytes(cacheKey);
+    if (bytes == null) {
+      return false;
+    }
+    context.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
+    String name = new String(bytes, StandardCharsets.UTF_8);
+    if (!name.isEmpty()) {
+      handlePackageName(name);
+    }
+    return true;
+  }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    var packageDeclaration = context.getTree().packageDeclaration();
+    String name = packageDeclaration != null ? PackageUtils.packageName(packageDeclaration, ".") : "";
+    if (context.getCacheContext().isCacheEnabled()) {
+      context.getCacheContext().getWriteCache().write(CACHE_KEY_PREFIX + context.getInputFile().key(), name.getBytes(StandardCharsets.UTF_8));
+    }
+    if (!name.isEmpty()) {
+      handlePackageName(name);
+    }
+  }
+
+  private void handlePackageName(String name) {
     if (pattern == null) {
       pattern = Pattern.compile(format, Pattern.DOTALL);
     }
-    this.context = context;
-    scan(context.getTree());
-  }
-
-  @Override
-  public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (tree.packageDeclaration() != null) {
-      String name = PackageUtils.packageName(tree.packageDeclaration(), ".");
-      if (!pattern.matcher(name).matches()) {
-        context.reportIssue(this, tree.packageDeclaration().packageName(), "Rename this package name to match the regular expression '" + format + "'.");
-      }
+    if (!pattern.matcher(name).matches()) {
+      badPackageNames.add(name);
     }
   }
 
+  @Override
+  public void endOfAnalysis(ModuleScannerContext context) {
+    for (String badPackageName : badPackageNames) {
+      context.addIssueOnProject(this, "Rename package \"" + badPackageName + "\" to match the regular expression '" + format + "'.");
+    }
+    badPackageNames.clear();
+  }
 }
