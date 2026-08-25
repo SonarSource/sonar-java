@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -191,7 +192,7 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
       }
       // make sure it is not used for decryption - in such case you need to reuse one
       if (CIPHER_INIT.matches(methodInvocation) && methodInvocation.arguments().size() > 2) {
-        int opMode = methodInvocation.arguments().get(0).asConstant(Integer.class).orElse(-1);
+        int opMode = resolveIntConstant(methodInvocation.arguments().get(0)).orElse(-1);
         if (CIPHER_INIT_DECRYPT_MODE == opMode && isPartOfArguments(methodInvocation)) {
           hasBeenSecurelyInitialized = true;
         }
@@ -239,6 +240,21 @@ public class CipherBlockChainingCheck extends AbstractMethodDetection {
         .map(ExpressionUtils::skipParentheses)
         .map(SecureInitializationFinder::symbol)
         .anyMatch(ivParameterSymbol::equals);
+    }
+
+    private static Optional<Integer> resolveIntConstant(ExpressionTree expression) {
+      Optional<Integer> constant = expression.asConstant(Integer.class);
+      if (constant.isPresent()) {
+        return constant;
+      }
+      if (expression instanceof IdentifierTree identifierTree
+        && identifierTree.symbol() instanceof Symbol.VariableSymbol variableSymbol) {
+        var declaration = variableSymbol.declaration();
+        if (declaration != null && declaration.initializer() != null) {
+          return declaration.initializer().asConstant(Integer.class);
+        }
+      }
+      return Optional.empty();
     }
 
     private static Symbol symbol(ExpressionTree expression) {
