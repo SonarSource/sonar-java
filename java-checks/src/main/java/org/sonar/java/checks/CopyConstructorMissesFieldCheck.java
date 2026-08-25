@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -259,6 +260,9 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
 
     private boolean isCurrentInstance(ExpressionTree expression) {
       ExpressionTree receiver = ExpressionUtils.skipParentheses(expression);
+      while (receiver instanceof TypeCastTree cast) {
+        receiver = ExpressionUtils.skipParentheses(cast.expression());
+      }
       if (receiver instanceof IdentifierTree identifier) {
         // An unqualified `this` has no type binding in the syntax tree, but is unambiguous.
         return "this".equals(identifier.name());

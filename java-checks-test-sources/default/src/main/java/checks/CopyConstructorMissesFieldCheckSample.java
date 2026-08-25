@@ -341,4 +341,46 @@ class CopyConstructorMissesFieldCheckSample {
       value = other.value;
     }
   }
+
+  static class QualifiedOuterThis {
+    private int outerValue;
+
+    class Inner {
+      private int innerValue;
+
+      Inner(Inner other) { // Noncompliant [[secondary=349]]
+        QualifiedOuterThis.this.outerValue = other.innerValue;
+      }
+    }
+  }
+
+  static class NestedReceiverIsNotThis {
+    private int value;
+    private NestedReceiverIsNotThis delegate = this;
+
+    NestedReceiverIsNotThis(NestedReceiverIsNotThis other) { // Noncompliant [[secondary=358]]
+      other.delegate.value = 1;
+    }
+  }
+
+  static class CastReceiver {
+    private int value;
+
+    CastReceiver(CastReceiver other) {
+      ((CastReceiver) this).initialize(other);
+    }
+
+    private void initialize(CastReceiver other) {
+      value = other.value;
+    }
+  }
+
+  static class RejectedUnaryWrites {
+    private int value;
+
+    RejectedUnaryWrites(RejectedUnaryWrites other) { // Noncompliant [[secondary=379]]
+      int ignored = -other.value;
+      other.value++;
+    }
+  }
 }
