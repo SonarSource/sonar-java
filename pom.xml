@@ -309,7 +309,7 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-expression</artifactId>
-        <version>7.0.8</version>
+        <version>7.0.9</version>
         <exclusions>
           <!-- Annotation APIs must not leak into analysis of projects without libraries. -->
           <exclusion>
