@@ -113,17 +113,15 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
     if (left.classBody() != null || right.classBody() != null) {
       return false;
     }
-    return sameNullableTree(left.enclosingExpression(), right.enclosingExpression());
-  }
-
-  private static boolean sameNullableTree(Tree left, Tree right) {
-    if (left == null && right == null) {
+    var leftEnclosing = left.enclosingExpression();
+    var rightEnclosing = right.enclosingExpression();
+    if (leftEnclosing == null && rightEnclosing == null) {
       return true;
     }
-    if (left == null || right == null) {
+    if (leftEnclosing == null || rightEnclosing == null) {
       return false;
     }
-    return sameTree(left, right);
+    return sameTree(leftEnclosing, rightEnclosing);
   }
 
   private static boolean hasExactlyOneArgumentDifference(List<? extends ExpressionTree> leftArgs, List<? extends ExpressionTree> rightArgs) {
