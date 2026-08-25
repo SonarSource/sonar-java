@@ -34,7 +34,7 @@ class TernaryOperatorSameOperationCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/TernaryOperatorSameOperationCheckSample.java"))
+      .onFile(mainCodeSourcesPath("checks/TernaryOperatorSameOperationCheckNoSemanticSample.java"))
       .withCheck(new TernaryOperatorSameOperationCheck())
       .withoutSemantic()
       .verifyIssues();

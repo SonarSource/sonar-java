@@ -20,6 +20,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -62,8 +63,20 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
   }
 
   private static boolean sameMethodInvocation(MethodInvocationTree left, MethodInvocationTree right) {
-    return sameMethodSelect(left.methodSelect(), right.methodSelect())
-      && hasExactlyOneArgumentDifference(left.arguments(), right.arguments());
+    if (!sameMethodSelect(left.methodSelect(), right.methodSelect())) {
+      return false;
+    }
+    if (!hasExactlyOneArgumentDifference(left.arguments(), right.arguments())) {
+      return false;
+    }
+    return sameMethodSymbol(left.methodSymbol(), right.methodSymbol());
+  }
+
+  private static boolean sameMethodSymbol(Symbol.MethodSymbol left, Symbol.MethodSymbol right) {
+    if (left.isUnknown() || right.isUnknown()) {
+      return true;
+    }
+    return left.equals(right);
   }
 
   private static boolean sameMethodSelect(ExpressionTree left, ExpressionTree right) {
@@ -90,7 +103,26 @@ public class TernaryOperatorSameOperationCheck extends IssuableSubscriptionVisit
     if (!sameTree(left.identifier(), right.identifier())) {
       return false;
     }
-    return hasExactlyOneArgumentDifference(left.arguments(), right.arguments());
+    if (!hasExactlyOneArgumentDifference(left.arguments(), right.arguments())) {
+      return false;
+    }
+    if (!sameMethodSymbol(left.methodSymbol(), right.methodSymbol())) {
+      return false;
+    }
+    if (left.classBody() != null || right.classBody() != null) {
+      return false;
+    }
+    return sameNullableTree(left.enclosingExpression(), right.enclosingExpression());
+  }
+
+  private static boolean sameNullableTree(Tree left, Tree right) {
+    if (left == null && right == null) {
+      return true;
+    }
+    if (left == null || right == null) {
+      return false;
+    }
+    return sameTree(left, right);
   }
 
   private static boolean hasExactlyOneArgumentDifference(List<? extends ExpressionTree> leftArgs, List<? extends ExpressionTree> rightArgs) {

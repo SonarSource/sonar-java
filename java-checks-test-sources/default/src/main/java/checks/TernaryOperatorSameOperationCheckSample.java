@@ -131,12 +131,38 @@ class TernaryOperatorSameOperationCheckSample {
     Object o2 = condition ? new Foo(a) : arr[0]; // Compliant - different expression kinds
   }
 
+  void testOverloadedMethods() {
+    // Overloaded methods with different parameter types - Compliant (different method symbols)
+    Object ov1 = condition ? overloaded(1) : overloaded("x"); // Compliant - different overloads
+    Object ov2 = condition ? this.overloaded(1) : this.overloaded("x"); // Compliant - different overloads
+
+    // Same overload, different arguments - Noncompliant
+    Object ov3 = condition ? overloaded(1) : overloaded(2); // Noncompliant
+    Object ov4 = condition ? overloaded("a") : overloaded("b"); // Noncompliant
+  }
+
+  void testOverloadedConstructors() {
+    // Overloaded constructors with different parameter types - Compliant (different constructor symbols)
+    Object oc1 = condition ? new OverloadedCtor(1) : new OverloadedCtor("x"); // Compliant - different constructors
+  }
+
+  void testNewClassWithClassBody() {
+    String a = "a";
+    String b = "b";
+
+    // Anonymous class body - Compliant (class bodies make each instantiation unique)
+    Object ac1 = condition ? new Foo(a) { } : new Foo(b) { }; // Compliant - anonymous class bodies
+    Object ac2 = condition ? new Foo(a) { } : new Foo(b); // Compliant - one has class body
+  }
+
   // Private methods used in ternary
   private String foo(String s) { return s; }
   private String foo(String s, String t) { return s + t; }
   private String bar(String s) { return s; }
   private String method(String s) { return s; }
   private String noArg() { return ""; }
+  private Object overloaded(int i) { return i; }
+  private Object overloaded(String s) { return s; }
 
   private static class StaticClass {
     static String foo(String s) { return s; }
@@ -149,6 +175,11 @@ class TernaryOperatorSameOperationCheckSample {
 
   private static class Bar {
     Bar(String s) {}
+  }
+
+  private static class OverloadedCtor {
+    OverloadedCtor(int i) {}
+    OverloadedCtor(String s) {}
   }
 
 }
