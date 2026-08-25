@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
@@ -190,42 +191,35 @@ public class JavaRulingTest {
 
   @Test
   public void spring_mall() throws Exception {
-    String projectName = "mall";
-    MavenBuild build = test_project("com.macro.mall:mall", projectName);
-    build
-      .setProperty("docker.skip", "true")
-      .setProperty("java.version", "21")
-      .setProperty("maven-bundle-plugin.version", "5.1.4")
-      .setProperty("maven.javadoc.skip", "true")
-      .setProperty("sonar.java.experimental.batchModeSizeInKB", "420");
-    executeBuildWithCommonProperties(build, projectName);
+    RulingProject project = ProjectConfigLoader.requireProject("mall");
+    executeMavenBuild(project, Map.of(
+      "docker.skip", "true",
+      "java.version", "21",
+      "maven-bundle-plugin.version", "5.1.4",
+      "maven.javadoc.skip", "true",
+      "sonar.java.experimental.batchModeSizeInKB", "420"
+    ));
   }
 
   @Test
   public void guava() throws Exception {
-    String projectName = "guava";
-    MavenBuild build = test_project("com.google.guava:guava", projectName);
-    build
-      // Keep compilation and analysis on Java 17 without overriding the Java runtime version seen by the scanner.
-      .setProperty("sonar.java.source", "17")
-      .setProperty("maven-bundle-plugin.version", "5.1.4")
-      .setProperty("maven.javadoc.skip", "true")
-      .setProperty("animal.sniffer.skip", "true")
-      // use batch
-      .setProperty("sonar.java.experimental.batchModeSizeInKB", "8192");
-    executeBuildWithCommonProperties(build, projectName);
+    RulingProject project = ProjectConfigLoader.requireProject("guava");
+    executeMavenBuild(project, Map.of(
+      "sonar.java.source", "17",
+      "maven-bundle-plugin.version", "5.1.4",
+      "maven.javadoc.skip", "true",
+      "animal.sniffer.skip", "true",
+      "sonar.java.experimental.batchModeSizeInKB", "8192"
+    ));
   }
 
   @Test
   public void apache_commons_beanutils() throws Exception {
-    String projectName = "commons-beanutils";
-    MavenBuild build = test_project("commons-beanutils:commons-beanutils", projectName);
-    build
-      // by default it can not be built with jdk 17 without changing some plugin versions
-      .setProperty("maven-bundle-plugin.version", "5.1.4")
-      // use batch
-      .setProperty("sonar.java.experimental.batchModeSizeInKB", "8192");
-    executeBuildWithCommonProperties(build, projectName);
+    RulingProject project = ProjectConfigLoader.requireProject("commons-beanutils");
+    executeMavenBuild(project, Map.of(
+      "maven-bundle-plugin.version", "5.1.4",
+      "sonar.java.experimental.batchModeSizeInKB", "8192"
+    ));
   }
 
   @Test
@@ -236,14 +230,15 @@ public class JavaRulingTest {
 
     List<String> dirs = Arrays.asList("jetty-http/", "jetty-io/", "jetty-jmx/", "jetty-server/", "jetty-slf4j-impl/", "jetty-util/", "jetty-util-ajax/", "jetty-xml/", "tests/jetty-http-tools/");
 
-    String mainBranchSourceCode = "eclipse-jetty";
+    RulingProject mainProject = ProjectConfigLoader.requireProject("eclipse-jetty");
+    String mainBranchSourceCode = mainProject.projectName();
     String mainBinaries = dirs.stream().map(dir -> FileLocation.of("../sources/" + mainBranchSourceCode + "/" + dir + "target/classes"))
       .map(JavaRulingTest::getFileLocationAbsolutePath)
       .collect(Collectors.joining(","));
 
     final var mainBranch = "eclipse-jetty-main";
 
-    MavenBuild branchBuild = test_project("org.eclipse.jetty:jetty-project", mainBranchSourceCode)
+    MavenBuild branchBuild = test_project(mainProject.projectKey(), mainBranchSourceCode)
       // re-define binaries from initial maven build
       .setProperty("sonar.java.binaries", mainBinaries)
       .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
@@ -265,14 +260,15 @@ public class JavaRulingTest {
     var time1 = after1 - before1;
 
     // Huge PR
-    String prSourceCode = "eclipse-jetty-similar-to-main";
+    RulingProject prProject = ProjectConfigLoader.requireProject("eclipse-jetty-similar-to-main");
+    String prSourceCode = prProject.projectName();
     String prBinaries = dirs.stream().map(dir -> FileLocation.of("../sources/" + prSourceCode + "/" + dir + "target/classes"))
       .map(JavaRulingTest::getFileLocationAbsolutePath)
       .collect(Collectors.joining(","));
 
     final var prBranch = "eclipse-jetty-same-issues-as-main";
 
-    MavenBuild prBuild = test_existing_project("org.eclipse.jetty:jetty-project", prSourceCode)
+    MavenBuild prBuild = test_existing_project(prProject.projectKey(), prSourceCode)
       // re-define binaries from initial maven build
       .setProperty("sonar.java.binaries", prBinaries)
       .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
@@ -297,14 +293,15 @@ public class JavaRulingTest {
     var time2 = after2 - before2;
 
     // Small PR
-    String smallPrSourceCode = "eclipse-jetty-similar-to-main-small";
+    RulingProject smallPrProject = ProjectConfigLoader.requireProject("eclipse-jetty-similar-to-main-small");
+    String smallPrSourceCode = smallPrProject.projectName();
     String smallPrBinaries = dirs.stream().map(dir -> FileLocation.of("../sources/" + smallPrSourceCode + "/" + dir + "target/classes"))
       .map(JavaRulingTest::getFileLocationAbsolutePath)
       .collect(Collectors.joining(","));
 
     final var smallPrBranch = "eclipse-jetty-same-issues-as-main-small";
 
-    MavenBuild smallPrBuild = test_existing_project("org.eclipse.jetty:jetty-project", smallPrSourceCode)
+    MavenBuild smallPrBuild = test_existing_project(smallPrProject.projectKey(), smallPrSourceCode)
       // re-define binaries from initial maven build
       .setProperty("sonar.java.binaries", smallPrBinaries)
       .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
@@ -343,9 +340,10 @@ public class JavaRulingTest {
   public void java_time_example_incremental() throws Exception {
     // Main branch: 85% int literals → above 80% threshold → S8694 suppresses all issues
     final var mainBranch = "main";
-    String mainSourceCode = "java-time-example";
+    RulingProject mainProject = ProjectConfigLoader.requireProject("java-time-example");
+    String mainSourceCode = mainProject.projectName();
 
-    MavenBuild branchBuild = test_project("example:java-time-example", mainSourceCode)
+    MavenBuild branchBuild = test_project(mainProject.projectKey(), mainSourceCode)
       .setProperties(
         "sonar.branch.name", mainBranch,
         "sonar.scm.provider", "git",
@@ -356,10 +354,11 @@ public class JavaRulingTest {
     executeBuildWithCommonProperties(branchBuild, mainSourceCode);
 
     // PR: 50% int literals → below 80% threshold → S8694 raises issues
-    String prSourceCode = "java-time-example-less-threshold";
+    RulingProject prProject = ProjectConfigLoader.requireProject("java-time-example-less-threshold");
+    String prSourceCode = prProject.projectName();
     final var prBranch = "java-time-example-pr";
 
-    MavenBuild prBuild = test_existing_project("example:java-time-example", prSourceCode)
+    MavenBuild prBuild = test_existing_project(prProject.projectKey(), prSourceCode)
       .setProperties(
         "sonar.pullrequest.key", prBranch,
         "sonar.pullrequest.branch", prBranch,
@@ -382,22 +381,18 @@ public class JavaRulingTest {
 
   @Test
   public void sonarqube_server() throws Exception {
-    // sonarqube-6.5/server/sonar-server (v.6.5)
-    String projectName = "sonar-server";
-    MavenBuild build = test_project("org.sonarsource.sonarqube:sonar-server", "sonarqube-6.5/server", projectName)
-      .setProperty("sonar.java.fileByFile", "true");
-    executeBuildWithCommonProperties(build, projectName);
+    RulingProject project = ProjectConfigLoader.requireProject("sonar-server");
+    executeMavenBuild(project, Map.of("sonar.java.fileByFile", "true"));
   }
 
   @Test
   public void jboss_ejb3_tutorial() throws Exception {
-    // https://github.com/jbossejb3/jboss-ejb3-tutorial (18/01/2015)
-    String projectName = "jboss-ejb3-tutorial";
-    prepareProject(projectName, projectName);
-    SonarScanner build = SonarScanner.create(FileLocation.of("../sources/jboss-ejb3-tutorial").getFile())
+    RulingProject project = ProjectConfigLoader.requireProject("jboss-ejb3-tutorial");
+    prepareProject(project.projectKey(), project.projectName());
+    SonarScanner build = SonarScanner.create(FileLocation.of("../sources/" + project.path()).getFile())
       .setProperty("sonar.java.fileByFile", "true")
-      .setProjectKey(projectName)
-      .setProjectName(projectName)
+      .setProjectKey(project.projectKey())
+      .setProjectName(project.projectName())
       .setProjectVersion("0.1.0-SNAPSHOT")
       .setSourceEncoding("UTF-8")
       .setSourceDirs(".")
@@ -405,15 +400,13 @@ public class JavaRulingTest {
       // Dummy sonar.java.binaries to pass validation
       .setProperty("sonar.java.binaries", "asynch")
       .setProperty("sonar.java.source", "1.5");
-    executeDebugBuildWithCommonProperties(build, projectName);
+    executeDebugBuildWithCommonProperties(build, project.projectName());
   }
 
   @Test
   public void regex_examples() throws IOException {
-    String projectName = "regex-examples";
-    MavenBuild build = test_project("org.regex-examples:regex-examples", projectName)
-      .setProperty("sonar.java.fileByFile", "true");
-    executeBuildWithCommonProperties(build, projectName);
+    RulingProject project = ProjectConfigLoader.requireProject("regex-examples");
+    executeMavenBuild(project, Map.of("sonar.java.fileByFile", "true"));
   }
 
   /**
@@ -421,12 +414,18 @@ public class JavaRulingTest {
    */
   @Test
   public void vibebot() throws IOException {
-    String projectName = "vibebot";
-    File pomFile = FileLocation.of("../vibebot/pom.xml").getFile().getCanonicalFile();
-    prepareProject("org.vibebot:vibebot", projectName);
+    RulingProject project = ProjectConfigLoader.requireProject("vibebot");
+    File pomFile = FileLocation.of("../" + project.path() + "/pom.xml").getFile().getCanonicalFile();
+    prepareProject(project.projectKey(), project.projectName());
     MavenBuild build = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests");
-    build.setProperty("sonar.projectKey", "org.vibebot:vibebot");
-    executeBuildWithCommonProperties(build, projectName);
+    build.setProperty("sonar.projectKey", project.projectKey());
+    executeBuildWithCommonProperties(build, project.projectName());
+  }
+
+  private static void executeMavenBuild(RulingProject project, Map<String, String> extraProperties) throws IOException {
+    MavenBuild build = test_project(project.projectKey(), project.projectName());
+    extraProperties.forEach(build::setProperty);
+    executeBuildWithCommonProperties(build, project.projectName());
   }
 
   private static MavenBuild test_project(String projectKey, String projectName) throws IOException {
