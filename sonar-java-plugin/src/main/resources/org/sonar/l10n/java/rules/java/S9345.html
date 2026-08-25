@@ -1,0 +1,67 @@
+<h2>Why is this an issue?</h2>
+<p>When a constructor throws an exception, you might expect the object construction to fail completely and no reference to the object to exist. However,
+finalization or cleanup mechanisms can be exploited to obtain a reference to a partially-constructed object.</p>
+<p>Here's how a Finalizer attack works:</p>
+<ol>
+  <li>An attacker creates a malicious derived class that overrides the cleanup/finalization method</li>
+  <li>The attacker attempts to instantiate this derived class</li>
+  <li>If the parent constructor throws an exception during initialization, the object is not fully constructed</li>
+  <li>Despite the exception, the garbage collector will eventually call the finalization method on the partially-constructed object</li>
+  <li>The malicious cleanup method can store a reference to the object being finalized, effectively "resurrecting" the broken object</li>
+  <li>The attacker now has access to an object that bypassed security checks or validation logic in the constructor</li>
+</ol>
+<p>This vulnerability is particularly dangerous for security-sensitive classes where the constructor performs authentication or authorization checks,
+input validation, resource allocation with security constraints, or initialization of security-critical fields.</p>
+<h2>How to fix it</h2>
+<p>The simplest solution is to declare the class as <code>final</code>. This prevents attackers from creating malicious subclasses that override the
+<code>finalize()</code> method.</p>
+<p>However, some frameworks such as Spring or JPA/Hibernate require non-final classes. In such cases, use a <strong>factory method with a private
+constructor</strong> to ensure the object is fully validated before any reference is exposed. Since the constructor is private, no malicious subclass
+can be created, achieving the same protection as <code>final</code>.</p>
+<h3>Noncompliant code example</h3>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class SecuritySensitiveClass {
+    private final String credentials;
+
+    public SecuritySensitiveClass(String credentials) throws AuthenticationException {
+        if (!isValid(credentials)) {
+            throw new AuthenticationException("Invalid credentials"); // Noncompliant
+        }
+        this.credentials = credentials;
+    }
+
+    private boolean isValid(String credentials) {
+        return credentials != null &amp;&amp; credentials.length() &gt; 10;
+    }
+}
+</pre>
+<h3>Compliant solution</h3>
+<pre data-diff-id="1" data-diff-type="compliant">
+public final class SecuritySensitiveClass { // Compliant: class is final
+    private final String credentials;
+
+    public SecuritySensitiveClass(String credentials) throws AuthenticationException {
+        if (!isValid(credentials)) {
+            throw new AuthenticationException("Invalid credentials");
+        }
+        this.credentials = credentials;
+    }
+
+    private boolean isValid(String credentials) {
+        return credentials != null &amp;&amp; credentials.length() &gt; 10;
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://www.oracle.com/java/technologies/javase/seccodeguide.html">Secure Coding Guidelines for Java
+  SE</a></li>
+  <li>Java Language Specification - <a
+  href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html#jls-12.6">Finalization of Class Instances</a></li>
+</ul>
+<h3>Standards</h3>
+<ul>
+  <li>CERT - <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ11-J.+Be+wary+of+letting+constructors+throw+exceptions">CERT-OBJ11-J: Be
+  wary of letting constructors throw exceptions</a></li>
+</ul>
