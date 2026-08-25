@@ -21,12 +21,14 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 class BadPackageNameCheckTest {
 
+  private static final String DEFAULT_FORMAT = "^[a-z_]+(\\.[a-z_][a-z0-9_]*)*$";
+
   @Test
   void test() {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/PACKAGE/BadPackageNameNoncompliant.java")
       .withCheck(new BadPackageNameCheck())
-      .verifyIssues();
+      .verifyIssueOnProject("Rename package \"PACKAGE\" to match the regular expression '" + DEFAULT_FORMAT + "'.");
   }
 
   @Test
@@ -44,7 +46,7 @@ class BadPackageNameCheckTest {
     CheckVerifier.newVerifier()
       .onFile("src/test/files/checks/PACKAGE/BadQualifiedIdentifierPackageName.java")
       .withCheck(new BadPackageNameCheck())
-      .verifyIssues();
+      .verifyIssueOnProject("Rename package \"com.foo.PACKAGE\" to match the regular expression '" + DEFAULT_FORMAT + "'.");
   }
 
   @Test
@@ -53,6 +55,6 @@ class BadPackageNameCheckTest {
       .onFile("src/test/files/checks/PACKAGE/BadPackageNameNoncompliant.java")
       .withCheck(new BadPackageNameCheck())
       .withoutSemantic()
-      .verifyIssues();
+      .verifyIssueOnProject("Rename package \"PACKAGE\" to match the regular expression '" + DEFAULT_FORMAT + "'.");
   }
 }

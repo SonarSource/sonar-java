@@ -16,19 +16,21 @@
  */
 package org.sonar.java.checks.naming;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.PackageUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "S00120", repositoryKey = "squid")
 @Rule(key = "S120")
-public class BadPackageNameCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class BadPackageNameCheck implements JavaFileScanner, EndOfAnalysis {
 
   private static final String DEFAULT_FORMAT = "^[a-z_]+(\\.[a-z_][a-z0-9_]*)*$";
 
@@ -39,25 +41,26 @@ public class BadPackageNameCheck extends BaseTreeVisitor implements JavaFileScan
   public String format = DEFAULT_FORMAT;
 
   private Pattern pattern = null;
-  private JavaFileScannerContext context;
+  private final Set<String> badPackageNames = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     if (pattern == null) {
       pattern = Pattern.compile(format, Pattern.DOTALL);
     }
-    this.context = context;
-    scan(context.getTree());
-  }
-
-  @Override
-  public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (tree.packageDeclaration() != null) {
-      String name = PackageUtils.packageName(tree.packageDeclaration(), ".");
+    var packageDeclaration = context.getTree().packageDeclaration();
+    if (packageDeclaration != null) {
+      String name = PackageUtils.packageName(packageDeclaration, ".");
       if (!pattern.matcher(name).matches()) {
-        context.reportIssue(this, tree.packageDeclaration().packageName(), "Rename this package name to match the regular expression '" + format + "'.");
+        badPackageNames.add(name);
       }
     }
   }
 
+  @Override
+  public void endOfAnalysis(ModuleScannerContext context) {
+    for (String badPackageName : badPackageNames) {
+      context.addIssueOnProject(this, "Rename package \"" + badPackageName + "\" to match the regular expression '" + format + "'.");
+    }
+  }
 }
