@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.WriteCache;
@@ -36,7 +37,6 @@ import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
@@ -151,6 +151,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     // Anonymous class (no simpleName) should be skipped — it would not be registered as a bean
     // SpringBootApplication itself is not a stereotype bean
     assertThat(model.getBeanDefinitionRegistry().getByName("")).isEmpty();
+    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("")).isEmpty();
   }
 
   @Test
@@ -202,12 +203,10 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     return Stream.of(
       Arguments.of("src/test/files/springcontext/AutowiredDependencies.java", "autowiredDependencies"),
       Arguments.of("src/test/files/springcontext/AutowiredConstructorDependencies.java", "autowiredConstructorDependencies"),
-      Arguments.of("src/test/files/springcontext/BeanMethodWithDependencies.java", "myBean"),
-      Arguments.of("src/test/files/springcontext/SingleConstructorDependencies.java", "singleConstructorDependencies")
+      Arguments.of("src/test/files/springcontext/SingleConstructorDependencies.java", "singleConstructorDependencies"),
+      Arguments.of("src/test/files/springcontext/BeanMethodWithDependencies.java", "myBean")
     );
   }
-
-  // ---- Implicit single-constructor injection --------------------------------
 
   @Test
   void multiple_constructors_without_autowired_yields_no_dependencies() {
@@ -334,7 +333,8 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
       .contains(encodedName)
       .contains("checks.spring.context.SimpleComponent")
       .contains("checks.spring.context")
-      .contains("false");
+      .contains("false")
+      .endsWith("|checks.spring.context.SimpleComponent");
   }
 
   @Test
@@ -342,7 +342,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
     String encodedName = Base64.getEncoder().encodeToString("simpleComponent".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.SimpleComponent|checks.spring.context|6:6:6:21|false|";
+    String serialized = encodedName + "|checks.spring.context.SimpleComponent|checks.spring.context|6:6:6:21|false||checks.spring.context.SimpleComponent";
 
     JavaReadCache readCache = mock(JavaReadCache.class);
     when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
@@ -362,6 +362,8 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(beans).hasSize(1);
     assertThat(beans.get(0).getType()).isEqualTo("checks.spring.context.SimpleComponent");
     assertThat(beans.get(0).isPrimary()).isFalse();
+    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("checks.spring.context.SimpleComponent"))
+      .containsOnly("simpleComponent");
   }
 
   @Test
@@ -462,7 +464,8 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
     String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
       + encodedAppContext + ":" + encodedPrimaryContext
-      + "," + encodedEnvType + ":" + encodedEnvironment;
+      + "," + encodedEnvType + ":" + encodedEnvironment
+      + "|checks.spring.context.QualifiedFieldDependencies";
 
     JavaReadCache readCache = mock(JavaReadCache.class);
     when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
@@ -494,6 +497,133 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     var deps = beans.get(0).getDependingBeans();
     assertThat(deps).containsOnlyKeys("org.springframework.context.ApplicationContext");
     assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("applicationContext");
+  }
+
+  // ---- TypeToBeanNamesIndex -------------------------------------------------
+
+  @ParameterizedTest(name = "{0}")
+  @ValueSource(strings = {
+    "src/test/files/springcontext/SimpleComponent.java",
+    "src/test/files/springcontext/SimpleService.java",
+    "src/test/files/springcontext/SimpleRepository.java",
+    "src/test/files/springcontext/SimpleController.java",
+    "src/test/files/springcontext/SimpleRestController.java",
+    "src/test/files/springcontext/SimpleConfiguration.java"
+  })
+  void stereotype_bean_is_registered_under_its_own_type(String filePath) {
+    scan(filePath);
+
+    var index = model.getTypeToBeanNamesIndex();
+    assertThat(index.getNamesForType("checks.spring.context." + beanClassNameFrom(filePath)))
+      .isNotEmpty();
+  }
+
+  @Test
+  void bean_is_registered_under_full_type_hierarchy() {
+    scan("src/test/files/springcontext/ComponentImplementingInterface.java");
+
+    var index = model.getTypeToBeanNamesIndex();
+    assertThat(index.getNamesForType("checks.spring.context.ComponentImplementingInterface"))
+      .containsOnly("componentImplementingInterface");
+    assertThat(index.getNamesForType("org.springframework.context.ApplicationContextAware"))
+      .containsOnly("componentImplementingInterface");
+    assertThat(index.getNamesForType("org.springframework.beans.factory.Aware"))
+      .containsOnly("componentImplementingInterface");
+  }
+
+  @Test
+  void scanWithoutParsing_restores_full_type_hierarchy_from_cache() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/ComponentImplementingInterface.java"));
+    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
+    String encodedName = Base64.getEncoder().encodeToString("componentImplementingInterface".getBytes(StandardCharsets.UTF_8));
+    String serialized = encodedName + "|checks.spring.context.ComponentImplementingInterface|checks.spring.context|8:6:8:36|false|"
+      + "|checks.spring.context.ComponentImplementingInterface"
+      + ";org.springframework.context.ApplicationContextAware"
+      + ";org.springframework.beans.factory.Aware";
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+
+    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
+    when(moduleScannerContext.getModuleKey()).thenReturn("");
+    gatherer.gatherSpringContextData(moduleScannerContext, model);
+
+    var index = model.getTypeToBeanNamesIndex();
+    assertThat(index.getNamesForType("checks.spring.context.ComponentImplementingInterface"))
+      .containsOnly("componentImplementingInterface");
+    assertThat(index.getNamesForType("org.springframework.context.ApplicationContextAware"))
+      .containsOnly("componentImplementingInterface");
+    assertThat(index.getNamesForType("org.springframework.beans.factory.Aware"))
+      .containsOnly("componentImplementingInterface");
+  }
+
+  @Test
+  void explicit_bean_name_is_used_in_index() {
+    scan("src/test/files/springcontext/ExplicitNameComponent.java");
+
+    var index = model.getTypeToBeanNamesIndex();
+    assertThat(index.getNamesForType("checks.spring.context.ExplicitNameComponent"))
+      .containsOnly("myBean");
+  }
+
+  @Test
+  void bean_method_return_type_is_registered() {
+    scan("src/test/files/springcontext/ConfigurationWithBeanMethods.java");
+
+    var index = model.getTypeToBeanNamesIndex();
+    assertThat(index.getNamesForType("org.springframework.context.ApplicationContext"))
+      .contains("simpleServiceBean", "namedBean", "arrayNamedBean", "emptyNameArrayMethod");
+  }
+
+  @Test
+  void bean_method_aliases_are_all_registered() {
+    scan("src/test/files/springcontext/ConfigurationWithBeanMethods.java");
+
+    // @Bean(name = {"arrayNamedBean", "alias"}) — both names appear in the index
+    var index = model.getTypeToBeanNamesIndex();
+    assertThat(index.getNamesForType("org.springframework.context.ApplicationContext"))
+      .contains("arrayNamedBean", "alias");
+  }
+
+  @Test
+  void multiple_beans_all_registered_in_index() {
+    scan(
+      "src/test/files/springcontext/PayPalProcessor.java",
+      "src/test/files/springcontext/CreditCardProcessor.java"
+    );
+
+    var index = model.getTypeToBeanNamesIndex();
+    assertThat(index.getNamesForType("checks.spring.context.PayPalProcessor"))
+      .containsOnly("paypal");
+    assertThat(index.getNamesForType("checks.spring.context.CreditCardProcessor"))
+      .containsOnly("creditCard");
+  }
+
+  @Test
+  void non_spring_class_registers_nothing_in_index() {
+    scan("src/test/files/springcontext/NoScanAnnotations.java");
+
+    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("checks.spring.context.NoScanAnnotations"))
+      .isEmpty();
+  }
+
+  @Test
+  void index_gatherer_skipped_when_spring_not_in_classpath() {
+    scan(List.of(), "src/test/files/springcontext/SimpleComponent.java");
+
+    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("checks.spring.context.SimpleComponent"))
+      .isEmpty();
+  }
+
+  private static String beanClassNameFrom(String filePath) {
+    return filePath.substring(filePath.lastIndexOf('/') + 1, filePath.lastIndexOf('.'));
   }
 
   private static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
