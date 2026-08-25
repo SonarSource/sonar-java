@@ -52,7 +52,7 @@ public class BadPackageNameCheck implements JavaFileScanner, EndOfAnalysis {
     if (bytes == null) {
       return false;
     }
-    handlePackageName(context, new String(bytes, StandardCharsets.UTF_8));
+    handlePackageName(new String(bytes, StandardCharsets.UTF_8));
     return true;
   }
 
@@ -64,11 +64,11 @@ public class BadPackageNameCheck implements JavaFileScanner, EndOfAnalysis {
       if (context.getCacheContext().isCacheEnabled()) {
         context.getCacheContext().getWriteCache().write(CACHE_KEY_PREFIX + context.getInputFile().key(), name.getBytes(StandardCharsets.UTF_8));
       }
-      handlePackageName(context, name);
+      handlePackageName(name);
     }
   }
 
-  private void handlePackageName(InputFileScannerContext context, String name) {
+  private void handlePackageName(String name) {
     if (pattern == null) {
       pattern = Pattern.compile(format, Pattern.DOTALL);
     }
@@ -82,5 +82,6 @@ public class BadPackageNameCheck implements JavaFileScanner, EndOfAnalysis {
     for (String badPackageName : badPackageNames) {
       context.addIssueOnProject(this, "Rename package \"" + badPackageName + "\" to match the regular expression '" + format + "'.");
     }
+    badPackageNames.clear();
   }
 }
