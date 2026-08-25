@@ -4,8 +4,11 @@ class FinalizerAttackCheckSemanticSample {
 
   // --- Noncompliant: field initializer calls a method that declares checked exception ---
 
-  static class FieldInitializerCheckedThrow { // Noncompliant {{Make this class "final" or add a private constructor, because initializers can throw.}}
-    private final Object value = loadValue(); // Secondary {{Throwing initializer}}
+  static class FieldInitializerCheckedThrow { // Secondary {{Non-final class}}
+    private final Object value = loadValue();
+
+    FieldInitializerCheckedThrow() throws Exception { // Noncompliant {{Make this class "final" or make this throwing constructor "private".}}
+    }
 
     private static Object loadValue() throws Exception {
       return new Object();
@@ -20,8 +23,11 @@ class FinalizerAttackCheckSemanticSample {
     }
   }
 
-  static class FieldInitializerNewThrows { // Noncompliant {{Make this class "final" or add a private constructor, because initializers can throw.}}
-    private final ThrowingConstructorTarget svc = new ThrowingConstructorTarget("token"); // Secondary {{Throwing initializer}}
+  static class FieldInitializerNewThrows { // Secondary {{Non-final class}}
+    private final ThrowingConstructorTarget svc = new ThrowingConstructorTarget("token");
+
+    FieldInitializerNewThrows() throws Exception { // Noncompliant {{Make this class "final" or make this throwing constructor "private".}}
+    }
   }
 
   // --- Noncompliant: field initializer with explicit constructor, method declares checked exception ---
@@ -29,7 +35,7 @@ class FinalizerAttackCheckSemanticSample {
   static class FieldInitWithCheckedAndCtor { // Secondary {{Non-final class}}
     private final Object data = initField();
 
-    public FieldInitWithCheckedAndCtor() { // Noncompliant
+    public FieldInitWithCheckedAndCtor() throws Exception { // Noncompliant
     }
 
     private static Object initField() throws Exception {
