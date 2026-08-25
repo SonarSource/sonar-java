@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9365")
@@ -87,7 +88,8 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
       return;
     }
 
-    AnalysisResult result = analyze(constructor, owner, eligibleFields.keySet(), new HashSet<>());
+    AnalysisResult result = analyzeInitializers(classTree, owner, eligibleFields.keySet())
+      .merge(analyze(constructor, owner, eligibleFields.keySet(), new HashSet<>()));
     if (!result.complete) {
       return;
     }
@@ -113,9 +115,22 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
       .filter(variable -> variable.initializer() == null)
       .filter(variable -> !ModifiersUtils.hasModifier(variable.modifiers(), Modifier.STATIC))
       .filter(variable -> !ModifiersUtils.hasModifier(variable.modifiers(), Modifier.TRANSIENT))
-      .filter(variable -> variable.symbol().owner() == owner)
+      .filter(variable -> owner.equals(variable.symbol().owner()))
       .forEach(variable -> fields.put(variable.symbol(), variable));
     return fields;
+  }
+
+  private static AnalysisResult analyzeInitializers(ClassTree classTree, Symbol.TypeSymbol owner, Set<Symbol> eligibleFields) {
+    AnalysisResult result = AnalysisResult.emptyComplete();
+    Set<Symbol.MethodSymbol> activeMethods = new HashSet<>();
+    for (Tree member : classTree.members()) {
+      if (member.is(Tree.Kind.INITIALIZER)) {
+        AssignmentCollector collector = new AssignmentCollector(owner, eligibleFields, activeMethods);
+        member.accept(collector);
+        result = result.merge(collector.result());
+      }
+    }
+    return result;
   }
 
   private static AnalysisResult analyze(MethodTree method, Symbol.TypeSymbol owner, Set<Symbol> eligibleFields,
@@ -153,6 +168,17 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
     }
 
     @Override
+    public void visitUnaryExpression(UnaryExpressionTree tree) {
+      if (tree.is(Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT)) {
+        Symbol assignedField = currentInstanceField(tree.expression());
+        if (assignedField != null) {
+          assignedFields.add(assignedField);
+        }
+      }
+      super.visitUnaryExpression(tree);
+    }
+
+    @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (isThisConstructorInvocation(tree)) {
         mergeResolvedTarget(tree.methodSymbol());
@@ -160,7 +186,7 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
         Symbol.MethodSymbol method = tree.methodSymbol();
         if (method.isUnknown()) {
           complete = false;
-        } else if (!method.isStatic() && method.enclosingClass() == owner) {
+        } else if (!method.isStatic() && owner.equals(method.enclosingClass())) {
           mergeResolvedTarget(method);
         }
       }
@@ -188,7 +214,7 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
     }
 
     private void mergeResolvedTarget(Symbol.MethodSymbol method) {
-      if (method.isUnknown() || method.enclosingClass() != owner) {
+      if (method.isUnknown() || !owner.equals(method.enclosingClass())) {
         complete = false;
         return;
       }
@@ -242,13 +268,23 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
         return false;
       }
       Symbol thisSymbol = qualifiedThis.identifier().symbol();
-      return !thisSymbol.isUnknown() && thisSymbol.enclosingClass() == owner;
+      return !thisSymbol.isUnknown() && owner.equals(thisSymbol.enclosingClass());
     }
   }
 
   private record AnalysisResult(Set<Symbol> assignedFields, boolean complete) {
+    private static AnalysisResult emptyComplete() {
+      return new AnalysisResult(Set.of(), true);
+    }
+
     private static AnalysisResult incomplete() {
       return new AnalysisResult(Set.of(), false);
+    }
+
+    private AnalysisResult merge(AnalysisResult other) {
+      Set<Symbol> mergedAssignments = new HashSet<>(assignedFields);
+      mergedAssignments.addAll(other.assignedFields);
+      return new AnalysisResult(Set.copyOf(mergedAssignments), complete && other.complete);
     }
   }
 }

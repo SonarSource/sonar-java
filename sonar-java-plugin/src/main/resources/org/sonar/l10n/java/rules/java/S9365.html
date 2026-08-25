@@ -7,8 +7,9 @@ behave differently from its source and cause failures far from the constructor.<
 <p>This rule raises one issue on a constructor whose sole parameter has the same type as the enclosing class when one or more eligible fields are not
 explicitly initialized. The declarations of the omitted fields are identified as secondary locations. Eligible fields are instance fields declared in
 the enclosing class that are not <code>transient</code> and do not have declaration initializers.</p>
-<p>Initialize each eligible field explicitly. An assignment of any value counts as initialization, including <code>null</code>, zero, or
-<code>false</code>. Use such an explicit assignment when a field should intentionally be reset instead of copied.</p>
+<p>Initialize each eligible field explicitly. Any explicit write to an eligible field counts as initialization. This includes assignments of any
+value, such as <code>null</code>, zero, or <code>false</code>, as well as increment and decrement operations. Use an explicit assignment when a field
+should intentionally be reset instead of copied.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -50,8 +51,9 @@ class Account {
 explicitly, and <code>transient</code> fields often represent state that should not be copied, so the rule does not require assignments for them.</p>
 <p>The rule does not attempt to determine whether copying a field should be shallow or deep, or whether the value assigned to a field is correct. It
 only checks whether each eligible field is explicitly initialized.</p>
-<p>Assignments made directly, through constructor delegation, or through instance helper methods called on <code>this</code> count when the rule can
-resolve the invoked code. It does not raise an issue when required semantic information or an invoked initialization path cannot be resolved.</p>
+<p>Explicit writes made in instance initializer blocks, directly in the constructor, through constructor delegation, or through instance helper
+methods called on <code>this</code> count when the rule can resolve the invoked code. It does not raise an issue when required semantic information or
+an invoked initialization path cannot be resolved.</p>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>

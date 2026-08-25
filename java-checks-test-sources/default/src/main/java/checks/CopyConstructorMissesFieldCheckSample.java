@@ -75,11 +75,11 @@ class CopyConstructorMissesFieldCheckSample {
     }
   }
 
-  static class IncrementIsNotAssignment {
-    private int value;
+  static class IncrementAndDecrement {
+    private int postfixIncrement, prefixIncrement, postfixDecrement, prefixDecrement;
 
-    IncrementIsNotAssignment(IncrementIsNotAssignment other) { // Noncompliant [[secondary=79]]
-      value++;
+    IncrementAndDecrement(IncrementAndDecrement other) {
+      postfixIncrement++; ++prefixIncrement; postfixDecrement--; --prefixDecrement;
     }
   }
 
@@ -309,6 +309,35 @@ class CopyConstructorMissesFieldCheckSample {
     }
 
     private void initialize(QualifiedHelperCall other) {
+      value = other.value;
+    }
+  }
+
+  static class InstanceInitializerAssignments {
+    private final int direct;
+    private int throughHelper;
+
+    {
+      direct = 1;
+      initialize();
+    }
+
+    InstanceInitializerAssignments(InstanceInitializerAssignments other) {
+    }
+
+    private void initialize() {
+      throughHelper = 1;
+    }
+  }
+
+  static class GenericHelper<T> {
+    private T value;
+
+    GenericHelper(GenericHelper<T> other) {
+      initialize(other);
+    }
+
+    private void initialize(GenericHelper<T> other) {
       value = other.value;
     }
   }
