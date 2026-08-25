@@ -17,6 +17,7 @@
 package org.sonar.java.checks;
 
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
@@ -82,7 +83,7 @@ public class UnsupportedChronoUnitWithInstantCheck extends AbstractMethodDetecti
     }
   }
 
-  private static Symbol referencedSymbol(ExpressionTree argument) {
+  private static @Nullable Symbol referencedSymbol(ExpressionTree argument) {
     if (argument instanceof IdentifierTree identifier) {
       return identifier.symbol();
     }
@@ -92,7 +93,7 @@ public class UnsupportedChronoUnitWithInstantCheck extends AbstractMethodDetecti
     return null;
   }
 
-  private static boolean isChronoUnitConstant(Symbol symbol) {
+  private static boolean isChronoUnitConstant(@Nullable Symbol symbol) {
     if (symbol == null || symbol.isUnknown() || !symbol.isVariableSymbol() || !symbol.isEnum()) {
       return false;
     }
