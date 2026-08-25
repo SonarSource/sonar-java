@@ -42,6 +42,14 @@ class FinalizerAttackCheckTest {
   }
 
   @Test
+  void test_semantic_only() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/FinalizerAttackCheckSemanticSample.java"))
+      .withCheck(new FinalizerAttackCheck())
+      .verifyIssues();
+  }
+
+  @Test
   void test_non_compiling() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath("checks/FinalizerAttackCheckSample.java"))

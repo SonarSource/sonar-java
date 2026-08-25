@@ -244,7 +244,7 @@ class FinalizerAttackCheckSample {
     }
   }
 
-  // --- Compliant: field initializer calls a method that may throw, but no direct throw statement ---
+  // --- Compliant: field initializer calls a method that throws unchecked exception (no throws clause) ---
 
   static class FieldInitializerMethodCall {
     private final Object value = computeValue();
@@ -253,6 +253,7 @@ class FinalizerAttackCheckSample {
       throw new UnsupportedOperationException();
     }
   }
+
 
   // --- Compliant: instance initializer throws but has explicit private constructor ---
 
@@ -425,6 +426,28 @@ class FinalizerAttackCheckSample {
 
   static final class DeepSealedGrandchild extends DeepSealedChild {
     public DeepSealedGrandchild(String data) throws Exception {
+      super(data);
+    }
+  }
+
+  // --- Noncompliant: sealed class with deep hierarchy ending in non-sealed ---
+
+  static sealed class DeepSealedNonSealedBottom permits DeepSealedMid { // Secondary {{Non-final class}}
+    public DeepSealedNonSealedBottom(String data) throws Exception { // Noncompliant
+      if (data == null) {
+        throw new Exception("Null");
+      }
+    }
+  }
+
+  static sealed class DeepSealedMid extends DeepSealedNonSealedBottom permits DeepSealedOpen { // Secondary {{Non-final class}}
+    public DeepSealedMid(String data) throws Exception { // Noncompliant
+      super(data);
+    }
+  }
+
+  static non-sealed class DeepSealedOpen extends DeepSealedMid { // Secondary {{Non-final class}}
+    public DeepSealedOpen(String data) throws Exception { // Noncompliant
       super(data);
     }
   }
@@ -665,7 +688,7 @@ class FinalizerAttackCheckSample {
     }
   }
 
-  // --- Compliant: class with final finalize() and throwing field initializer calls method ---
+  // --- Compliant: class with final empty finalize() and throwing field initializer calls method ---
 
   static class FinalFinalizerFieldInit {
     private final Object value = computeValue();
@@ -676,6 +699,21 @@ class FinalizerAttackCheckSample {
 
     @Override
     protected final void finalize() {
+    }
+  }
+
+  // --- Noncompliant: class with final finalize() but non-empty body (can still resurrect object) ---
+
+  static class FinalFinalizerNonEmpty { // Secondary {{Non-final class}}
+    public FinalFinalizerNonEmpty(String data) throws Exception { // Noncompliant
+      if (data == null) {
+        throw new Exception("Null");
+      }
+    }
+
+    @Override
+    protected final void finalize() {
+      System.out.println("leaked");
     }
   }
 

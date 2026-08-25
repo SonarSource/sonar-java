@@ -18,11 +18,14 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -30,8 +33,11 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -127,20 +133,41 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isSafelySealedClass(ClassTree classTree) {
+    return isSafelySealedClass(classTree, new HashSet<>());
+  }
+
+  private static boolean isSafelySealedClass(ClassTree classTree, Set<ClassTree> visited) {
     if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.SEALED)) {
       return false;
     }
+    if (!visited.add(classTree)) {
+      return true;
+    }
     for (TypeTree permitted : classTree.permittedTypes()) {
-      if (isNonSealedPermittedType(classTree, permitted)) {
+      if (!isSafePermittedType(classTree, permitted, visited)) {
         return false;
       }
     }
     return true;
   }
 
-  private static boolean isNonSealedPermittedType(ClassTree context, TypeTree permitted) {
+  private static boolean isSafePermittedType(ClassTree context, TypeTree permitted, Set<ClassTree> visited) {
     ClassTree permittedDecl = resolvePermittedDeclaration(context, permitted);
-    return permittedDecl != null && ModifiersUtils.hasModifier(permittedDecl.modifiers(), Modifier.NON_SEALED);
+    if (permittedDecl == null) {
+      // Unresolved permitted type: conservatively treat as unsafe
+      return false;
+    }
+    if (ModifiersUtils.hasModifier(permittedDecl.modifiers(), Modifier.NON_SEALED)) {
+      return false;
+    }
+    if (ModifiersUtils.hasModifier(permittedDecl.modifiers(), Modifier.FINAL)) {
+      return true;
+    }
+    if (ModifiersUtils.hasModifier(permittedDecl.modifiers(), Modifier.SEALED)) {
+      return isSafelySealedClass(permittedDecl, visited);
+    }
+    // Neither final, sealed, nor non-sealed — treat as unsafe
+    return false;
   }
 
   private static ClassTree resolvePermittedDeclaration(ClassTree context, TypeTree permitted) {
@@ -201,12 +228,22 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
         MethodTree method = (MethodTree) member;
         if ("finalize".equals(method.simpleName().name()) &&
           method.parameters().isEmpty() &&
-          ModifiersUtils.hasModifier(method.modifiers(), Modifier.FINAL)) {
+          ModifiersUtils.hasModifier(method.modifiers(), Modifier.FINAL) &&
+          hasEmptyBody(method)) {
           return true;
         }
       }
     }
     return false;
+  }
+
+  private static boolean hasEmptyBody(MethodTree method) {
+    BlockTree body = method.block();
+    if (body == null) {
+      return true;
+    }
+    List<StatementTree> statements = body.body();
+    return statements.isEmpty();
   }
 
   private static boolean isVulnerableConstructor(MethodTree constructor, boolean hasThrowingInitializers) {
@@ -234,9 +271,9 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
     if (variable.initializer() == null) {
       return false;
     }
-    ThrowStatementVisitor visitor = new ThrowStatementVisitor();
+    ThrowingExpressionVisitor visitor = new ThrowingExpressionVisitor();
     variable.initializer().accept(visitor);
-    return visitor.hasThrow;
+    return visitor.hasThrowing;
   }
 
   private static class ThrowStatementVisitor extends BaseTreeVisitor {
@@ -255,6 +292,48 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitLambdaExpression(LambdaExpressionTree tree) {
       // skip lambdas
+    }
+  }
+
+  private static class ThrowingExpressionVisitor extends BaseTreeVisitor {
+    boolean hasThrowing;
+
+    @Override
+    public void visitThrowStatement(ThrowStatementTree tree) {
+      hasThrowing = true;
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (canThrowCheckedException(tree.methodSymbol())) {
+        hasThrowing = true;
+      }
+      super.visitMethodInvocation(tree);
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      if (canThrowCheckedException(tree.methodSymbol())) {
+        hasThrowing = true;
+      }
+      super.visitNewClass(tree);
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // skip nested classes
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree tree) {
+      // skip lambdas
+    }
+
+    private static boolean canThrowCheckedException(Symbol.MethodSymbol methodSymbol) {
+      if (methodSymbol.isUnknown()) {
+        return false;
+      }
+      return !methodSymbol.thrownTypes().isEmpty();
     }
   }
 }

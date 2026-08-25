@@ -18,10 +18,10 @@ class FinalizerAttackCheckSample {
     }
   }
 
-  // --- Compliant: sealed class permitting only unknown types (conservatively safe) ---
+  // --- Noncompliant: sealed class permitting only unknown types (conservatively unsafe) ---
 
-  static sealed class SealedWithOnlyUnknown permits AnotherUnknownType {
-    public SealedWithOnlyUnknown(String s) throws Exception {
+  static sealed class SealedWithOnlyUnknown permits AnotherUnknownType { // Secondary {{Non-final class}}
+    public SealedWithOnlyUnknown(String s) throws Exception { // Noncompliant
       if (s == null) throw new Exception();
     }
   }
