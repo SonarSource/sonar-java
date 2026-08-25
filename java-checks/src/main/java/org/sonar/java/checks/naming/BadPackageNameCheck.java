@@ -16,12 +16,14 @@
  */
 package org.sonar.java.checks.naming;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.PackageUtils;
+import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
@@ -33,6 +35,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 public class BadPackageNameCheck implements JavaFileScanner, EndOfAnalysis {
 
   private static final String DEFAULT_FORMAT = "^[a-z_]+(\\.[a-z_][a-z0-9_]*)*$";
+  private static final String CACHE_KEY_PREFIX = "java:S120:package:";
 
   @RuleProperty(
     key = "format",
@@ -44,16 +47,33 @@ public class BadPackageNameCheck implements JavaFileScanner, EndOfAnalysis {
   private final Set<String> badPackageNames = new HashSet<>();
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    if (pattern == null) {
-      pattern = Pattern.compile(format, Pattern.DOTALL);
+  public boolean scanWithoutParsing(InputFileScannerContext context) {
+    var bytes = context.getCacheContext().getReadCache().readBytes(CACHE_KEY_PREFIX + context.getInputFile().key());
+    if (bytes == null) {
+      return false;
     }
+    handlePackageName(context, new String(bytes, StandardCharsets.UTF_8));
+    return true;
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
     var packageDeclaration = context.getTree().packageDeclaration();
     if (packageDeclaration != null) {
       String name = PackageUtils.packageName(packageDeclaration, ".");
-      if (!pattern.matcher(name).matches()) {
-        badPackageNames.add(name);
+      if (context.getCacheContext().isCacheEnabled()) {
+        context.getCacheContext().getWriteCache().write(CACHE_KEY_PREFIX + context.getInputFile().key(), name.getBytes(StandardCharsets.UTF_8));
       }
+      handlePackageName(context, name);
+    }
+  }
+
+  private void handlePackageName(InputFileScannerContext context, String name) {
+    if (pattern == null) {
+      pattern = Pattern.compile(format, Pattern.DOTALL);
+    }
+    if (!pattern.matcher(name).matches()) {
+      badPackageNames.add(name);
     }
   }
 
