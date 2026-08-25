@@ -1,0 +1,13 @@
+{
+"com.google.guava:guava:src/com/google/common/base/SmallCharMatcher.java": [
+61
+],
+"com.google.guava:guava:src/com/google/common/io/LittleEndianDataInputStream.java": [
+82
+],
+"com.google.guava:guava:src/com/google/common/net/MediaType.java": [
+628,
+631,
+632
+]
+}
