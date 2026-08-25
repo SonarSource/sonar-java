@@ -1,0 +1,59 @@
+{
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpStatus.java": [
+343,
+358,
+373,
+388,
+403
+],
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpURI.java": [
+1028
+],
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/MimeTypes.java": [
+431,
+436,
+445,
+453,
+455,
+459,
+465,
+471,
+477,
+483,
+489,
+495,
+497,
+501,
+503,
+514,
+514,
+515,
+575,
+615,
+617,
+622,
+624,
+628,
+634,
+640,
+646,
+652,
+658,
+664,
+666,
+670,
+677,
+684
+],
+"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/ServletPathSpec.java": [
+93,
+414
+],
+"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/ArrayByteBufferPoolTest.java": [
+94
+],
+"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpServerTestBase.java": [
+744,
+835
+]
+}
