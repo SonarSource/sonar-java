@@ -151,6 +151,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     // Anonymous class (no simpleName) should be skipped — it would not be registered as a bean
     // SpringBootApplication itself is not a stereotype bean
     assertThat(model.getBeanDefinitionRegistry().getByName("")).isEmpty();
+    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("")).isEmpty();
   }
 
   @Test
@@ -332,7 +333,8 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
       .contains(encodedName)
       .contains("checks.spring.context.SimpleComponent")
       .contains("checks.spring.context")
-      .contains("false");
+      .contains("false")
+      .endsWith("|checks.spring.context.SimpleComponent");
   }
 
   @Test
@@ -360,6 +362,8 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(beans).hasSize(1);
     assertThat(beans.get(0).getType()).isEqualTo("checks.spring.context.SimpleComponent");
     assertThat(beans.get(0).isPrimary()).isFalse();
+    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("checks.spring.context.SimpleComponent"))
+      .containsOnly("simpleComponent");
   }
 
   @Test
@@ -515,13 +519,48 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
   }
 
   @Test
-  void bean_is_registered_under_implemented_interface() {
+  void bean_is_registered_under_full_type_hierarchy() {
     scan("src/test/files/springcontext/ComponentImplementingInterface.java");
 
     var index = model.getTypeToBeanNamesIndex();
     assertThat(index.getNamesForType("checks.spring.context.ComponentImplementingInterface"))
       .containsOnly("componentImplementingInterface");
     assertThat(index.getNamesForType("org.springframework.context.ApplicationContextAware"))
+      .containsOnly("componentImplementingInterface");
+    assertThat(index.getNamesForType("org.springframework.beans.factory.Aware"))
+      .containsOnly("componentImplementingInterface");
+  }
+
+  @Test
+  void scanWithoutParsing_restores_full_type_hierarchy_from_cache() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/ComponentImplementingInterface.java"));
+    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
+    String encodedName = Base64.getEncoder().encodeToString("componentImplementingInterface".getBytes(StandardCharsets.UTF_8));
+    String serialized = encodedName + "|checks.spring.context.ComponentImplementingInterface|checks.spring.context|8:6:8:36|false|"
+      + "|checks.spring.context.ComponentImplementingInterface"
+      + ";org.springframework.context.ApplicationContextAware"
+      + ";org.springframework.beans.factory.Aware";
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+
+    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
+    when(moduleScannerContext.getModuleKey()).thenReturn("");
+    gatherer.gatherSpringContextData(moduleScannerContext, model);
+
+    var index = model.getTypeToBeanNamesIndex();
+    assertThat(index.getNamesForType("checks.spring.context.ComponentImplementingInterface"))
+      .containsOnly("componentImplementingInterface");
+    assertThat(index.getNamesForType("org.springframework.context.ApplicationContextAware"))
+      .containsOnly("componentImplementingInterface");
+    assertThat(index.getNamesForType("org.springframework.beans.factory.Aware"))
       .containsOnly("componentImplementingInterface");
   }
 
@@ -581,13 +620,6 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     assertThat(model.getTypeToBeanNamesIndex().getNamesForType("checks.spring.context.SimpleComponent"))
       .isEmpty();
-  }
-
-  @Test
-  void index_anonymous_class_is_skipped() {
-    scan("src/test/files/springcontext/SpringBootAppWithAnonymousClass.java");
-
-    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("")).isEmpty();
   }
 
   private static String beanClassNameFrom(String filePath) {

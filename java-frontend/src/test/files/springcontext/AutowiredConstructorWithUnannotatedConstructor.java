@@ -18,8 +18,8 @@ class AutowiredConstructorWithUnannotatedConstructor {
   }
 
   // Spring ignores this constructor — its parameters must not appear as dependencies
-  AutowiredConstructorWithUnannotatedConstructor(ApplicationContext applicationContext) {
-    this.applicationContext = applicationContext;
+  AutowiredConstructorWithUnannotatedConstructor(ApplicationContext ignoredContext) {
+    this.applicationContext = ignoredContext;
     this.environment = null;
   }
 }
