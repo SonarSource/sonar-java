@@ -63,8 +63,9 @@ class YodaConditionCheckSample {
 
   void testNestedParentheses() {
     int count = 0;
+    Object obj = new Object();
     if ((0) == count) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
-    if (((null)) == count) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
+    if (((null)) == obj) { } // Noncompliant {{Put the variable on the left side of this comparison.}}
 //        ^^^^
   }
 
