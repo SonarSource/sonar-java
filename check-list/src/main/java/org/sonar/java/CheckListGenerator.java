@@ -180,6 +180,7 @@ public class CheckListGenerator {
             CallToDeprecatedMethodCheck.class,
             // Rules relying on correct setup of java version
             AbstractClassNoFieldShouldBeInterfaceCheck.class,
+            AnonymousClassOnFunctionalInterfaceCheck.class,
             AnonymousClassShouldBeLambdaCheck.class,
             CombineCatchCheck.class,
             DateAndTimesCheck.class,
