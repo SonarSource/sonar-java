@@ -23,8 +23,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 
-@Rule(key = "S1604")
-public class AnonymousClassShouldBeLambdaCheck implements JavaFileScanner, JavaVersionAwareVisitor {
+@Rule(key = "S9357")
+public class AnonymousClassOnFunctionalInterfaceCheck implements JavaFileScanner, JavaVersionAwareVisitor {
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
