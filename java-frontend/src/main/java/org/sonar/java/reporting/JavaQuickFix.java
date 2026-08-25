@@ -93,19 +93,19 @@ public class JavaQuickFix {
         AnalyzerMessage.TextSpan first = a.getTextSpan();
         AnalyzerMessage.TextSpan second = b.getTextSpan();
 
-        int result = first.startLine - second.startLine;
+        int result = Integer.compare(first.startLine, second.startLine);
         if (result != 0) {
           return result;
         }
-        result = first.startCharacter - second.startCharacter;
+        result = Integer.compare(first.startCharacter, second.startCharacter);
         if (result != 0) {
           return result;
         }
-        result = first.endLine - second.endLine;
+        result = Integer.compare(first.endLine, second.endLine);
         if (result != 0) {
           return result;
         }
-        return first.endCharacter - second.endCharacter;
+        return Integer.compare(first.endCharacter, second.endCharacter);
       }
     }
   }
