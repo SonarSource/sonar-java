@@ -340,7 +340,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
     String encodedName = Base64.getEncoder().encodeToString("simpleComponent".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.SimpleComponent|checks.spring.context|6:6:6:21|false|";
+    String serialized = encodedName + "|checks.spring.context.SimpleComponent|checks.spring.context|6:6:6:21|false||checks.spring.context.SimpleComponent";
 
     JavaReadCache readCache = mock(JavaReadCache.class);
     when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
@@ -460,7 +460,8 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
     String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
       + encodedAppContext + ":" + encodedPrimaryContext
-      + "," + encodedEnvType + ":" + encodedEnvironment;
+      + "," + encodedEnvType + ":" + encodedEnvironment
+      + "|checks.spring.context.QualifiedFieldDependencies";
 
     JavaReadCache readCache = mock(JavaReadCache.class);
     when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));

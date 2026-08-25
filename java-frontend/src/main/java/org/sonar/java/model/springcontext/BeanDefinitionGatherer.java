@@ -262,7 +262,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         deps.put(typeFqn, names);
       }
     }
-    Set<String> typeHierarchy = fields.length > 6 && !fields[6].isEmpty()
+    Set<String> typeHierarchy = !fields[6].isEmpty()
       ? new LinkedHashSet<>(List.of(fields[6].split(TYPE_HIERARCHY_SEPARATOR)))
       : new LinkedHashSet<>();
     return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, deps, typeHierarchy);
