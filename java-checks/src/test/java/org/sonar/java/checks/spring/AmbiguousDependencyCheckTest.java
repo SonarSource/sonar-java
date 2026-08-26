@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.plugins.java;
+package org.sonar.java.checks.spring;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,10 +24,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
-import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.batch.sensor.issue.Issue;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.verifier.TestUtils;
 import org.sonar.java.model.JParser;
@@ -42,54 +39,51 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SpringContextModelSensorTest {
+class AmbiguousDependencyCheckTest {
 
   private static final String BASE_PATH = "checks/spring/s9352/";
 
+  private final AmbiguousDependencyCheck check = new AmbiguousDependencyCheck();
+
   @Test
-  void test_toString() {
-    DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
-    SpringContextModelSensor sensor = new SpringContextModelSensor(new SpringContextModel());
-    sensor.describe(descriptor);
-    assertThat(descriptor.name()).isEqualTo("Java SpringContextModelSensor");
-    assertThat(descriptor.languages()).containsExactly("java", "jsp");
+  void ambiguous_dependency_with_no_disambiguation_raises_issue() {
+    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "UnresolvedConsumer.java");
+    assertThat(check.findAmbiguousDependencies(model)).hasSize(1);
   }
 
   @Test
-  void reports_an_issue_for_an_ambiguous_dependency() {
-    SensorContextTester context = SensorContextTester.create(new File(""));
-    SpringContextModel model = buildModel(context, "ComponentOne.java", "ComponentTwo.java", "UnresolvedConsumer.java");
-
-    new SpringContextModelSensor(model).execute(context);
-
-    assertThat(context.allIssues()).hasSize(1);
-    Issue issue = context.allIssues().iterator().next();
-    assertThat(issue.ruleKey()).isEqualTo(RuleKey.of("java", "S9352"));
-    assertThat(issue.primaryLocation().message())
-      .isEqualTo("Multiple beans of type \"org.springframework.context.ApplicationContextAware\" match this dependency"
-        + " (componentOne, componentTwo); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".");
-    assertThat(issue.primaryLocation().textRange().start().line()).isEqualTo(10);
+  void primary_candidate_resolves_ambiguity() {
+    SpringContextModel model = buildModel("BeanNameComponent.java", "PrimaryComponent.java", "PrimaryConsumer.java");
+    assertThat(check.findAmbiguousDependencies(model)).isEmpty();
   }
 
   @Test
-  void reports_no_issue_when_only_one_candidate_exists() {
-    SensorContextTester context = SensorContextTester.create(new File(""));
-    SpringContextModel model = buildModel(context, "ResourceLoaderComponent.java", "SingleCandidateConsumer.java");
+  void field_name_matching_bean_name_resolves_ambiguity() {
+    SpringContextModel model = buildModel("BeanFactoryComponentA.java", "BeanFactoryComponentB.java", "NameMatchConsumer.java");
+    assertThat(check.findAmbiguousDependencies(model)).isEmpty();
+  }
 
-    new SpringContextModelSensor(model).execute(context);
+  @Test
+  void qualifier_resolves_ambiguity() {
+    SpringContextModel model = buildModel("EnvironmentComponentA.java", "EnvironmentComponentB.java", "QualifierConsumer.java");
+    assertThat(check.findAmbiguousDependencies(model)).isEmpty();
+  }
 
-    assertThat(context.allIssues()).isEmpty();
+  @Test
+  void single_candidate_does_not_raise_issue() {
+    SpringContextModel model = buildModel("ResourceLoaderComponent.java", "SingleCandidateConsumer.java");
+    assertThat(check.findAmbiguousDependencies(model)).isEmpty();
   }
 
   /**
    * Runs {@link BeanDefinitionGatherer} over the given files (relative to {@link #BASE_PATH}) into a single,
-   * freshly built {@link SpringContextModel}, registering each file's {@link InputFile} on the given
-   * {@link SensorContextTester} so that issues reported against it can be resolved.
+   * freshly built {@link SpringContextModel}, mirroring how {@code JavaSensor} drives gatherers during a real
+   * analysis, without needing java-frontend's test-only scanning helpers.
    */
-  private static SpringContextModel buildModel(SensorContextTester context, String... relativeFilePaths) {
+  private static SpringContextModel buildModel(String... relativeFilePaths) {
     List<File> classpath = TestClasspathUtils.DEFAULT_MODULE.getClassPath();
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
-    sonarComponents.setSensorContext(context);
+    sonarComponents.setSensorContext(SensorContextTester.create(new File("")));
     SpringContextModel model = new SpringContextModel();
     sonarComponents.setSpringContextModel(model);
 
@@ -98,9 +92,7 @@ class SpringContextModelSensorTest {
     for (String relativeFilePath : relativeFilePaths) {
       File file = new File(TestUtils.mainCodeSourcesPath(BASE_PATH + relativeFilePath));
       CompilationUnitTree compilationUnit = parse(file, classpath);
-      InputFile inputFile = inputFile(file);
-      context.fileSystem().add(inputFile);
-      visitorsBridge.setCurrentFile(inputFile);
+      visitorsBridge.setCurrentFile(inputFile(file));
       visitorsBridge.visitFile(compilationUnit, false);
     }
     visitorsBridge.endOfAnalysis();

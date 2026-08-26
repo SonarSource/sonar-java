@@ -19,9 +19,15 @@ package org.sonar.plugins.java;
 import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
+import org.sonar.api.batch.sensor.issue.NewIssue;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scanner.sensor.ProjectSensor;
+import org.sonar.java.GeneratedCheckList;
+import org.sonar.java.checks.spring.AmbiguousDependencyCheck;
 import org.sonar.java.jsp.Jasper;
+import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
+import org.sonar.java.reporting.AnalyzerMessage;
 
 /**
  * A post-phase {@link ProjectSensor} that holds the shared {@link SpringContextModel} built during analysis.
@@ -49,7 +55,21 @@ public class SpringContextModelSensor implements ProjectSensor {
 
   @Override
   public void execute(SensorContext context) {
-    // Nothing to do for now
+    reportAmbiguousDependencies(context);
+  }
+
+  private void reportAmbiguousDependencies(SensorContext context) {
+    RuleKey ruleKey = RuleKey.of(GeneratedCheckList.REPOSITORY_KEY, "S9352");
+    for (var ambiguousDependency : new AmbiguousDependencyCheck().findAmbiguousDependencies(springContextModel)) {
+      BeanLocation location = ambiguousDependency.location();
+      AnalyzerMessage.TextSpan span = location.mainLocation();
+      NewIssue newIssue = context.newIssue().forRule(ruleKey);
+      newIssue.at(newIssue.newLocation()
+        .on(location.inputFile())
+        .at(location.inputFile().newRange(span.startLine, span.startCharacter, span.endLine, span.endCharacter))
+        .message(ambiguousDependency.message()));
+      newIssue.save();
+    }
   }
 }
 
