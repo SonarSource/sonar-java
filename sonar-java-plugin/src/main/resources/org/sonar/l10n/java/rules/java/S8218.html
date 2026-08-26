@@ -1,0 +1,85 @@
+<p><code>Instant</code> supports only time-based <code>ChronoUnit</code> values and <code>ChronoUnit.DAYS</code>. Passing another
+<code>ChronoUnit</code> value to its arithmetic methods causes an <code>UnsupportedTemporalTypeException</code> when the unit is evaluated.</p>
+<h2>Why is this an issue?</h2>
+<p>An <code>Instant</code> represents a point on the timeline as a number of seconds and nanoseconds from the epoch. It does not define how date-based
+<code>ChronoUnit</code> values such as <code>MONTHS</code> or <code>YEARS</code> apply to its timeline. Custom <code>TemporalUnit</code>
+implementations may define their own behavior.</p>
+<p>The <code>plus(long, TemporalUnit)</code>, <code>minus(long, TemporalUnit)</code>, and <code>until(Temporal, TemporalUnit)</code> methods support
+the following <code>ChronoUnit</code> values:</p>
+<ul>
+  <li><code>NANOS</code></li>
+  <li><code>MICROS</code></li>
+  <li><code>MILLIS</code></li>
+  <li><code>SECONDS</code></li>
+  <li><code>MINUTES</code></li>
+  <li><code>HOURS</code></li>
+  <li><code>HALF_DAYS</code></li>
+  <li><code>DAYS</code></li>
+</ul>
+<p>Using <code>WEEKS</code>, <code>MONTHS</code>, <code>YEARS</code>, <code>DECADES</code>, <code>CENTURIES</code>, <code>MILLENNIA</code>,
+<code>ERAS</code>, or <code>FOREVER</code> with these methods throws an <code>UnsupportedTemporalTypeException</code> when the unit is evaluated. The
+operation cannot produce a result, which can interrupt date and time processing in the application.</p>
+<h3>Exceptions</h3>
+<p>This rule reports only direct <code>ChronoUnit</code> constants. It does not track a constant stored in a variable.</p>
+<p>Custom <code>TemporalUnit</code> implementations are not reported because <code>Instant</code> delegates the operation to them. The
+<code>plus(TemporalAmount)</code> and <code>minus(TemporalAmount)</code> overloads and the <code>truncatedTo(TemporalUnit)</code> method are also
+outside the scope of this rule.</p>
+<h2>How to fix it</h2>
+<p>Use a supported <code>ChronoUnit</code> for a fixed amount of elapsed time. When an operation must follow calendar rules, convert the
+<code>Instant</code> to a calendar type such as <code>ZonedDateTime</code> using the intended <code>ZoneId</code>. A custom <code>TemporalUnit</code>
+is also valid when its implementation explicitly defines the required timeline behavior.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import static java.time.temporal.ChronoUnit.YEARS;
+
+void update(Instant instant, Instant end) {
+  instant.plus(
+    1,
+    ChronoUnit.MONTHS); // Noncompliant: "MONTHS" is unsupported by Instant and causes an UnsupportedTemporalTypeException.
+
+  instant.minus(
+    1,
+    YEARS); // Noncompliant: "YEARS" is unsupported by Instant and causes an UnsupportedTemporalTypeException.
+
+  instant.until(
+    end,
+    ChronoUnit.WEEKS); // Noncompliant: "WEEKS" is unsupported by Instant and causes an UnsupportedTemporalTypeException.
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import static java.time.temporal.ChronoUnit.YEARS;
+
+void update(Instant instant, Instant end, ZoneId zone, TemporalUnit customUnit) {
+  // Use supported units for elapsed-time operations.
+  instant.plus(1, ChronoUnit.DAYS);
+  instant.minus(12, ChronoUnit.HOURS);
+  instant.until(end, ChronoUnit.MINUTES);
+
+  // Use a calendar type and an explicit time zone for calendar arithmetic.
+  ZonedDateTime dateTime = instant.atZone(zone);
+  ZonedDateTime endDateTime = end.atZone(zone);
+  dateTime.plus(1, ChronoUnit.MONTHS);
+  dateTime.minus(1, YEARS);
+  dateTime.until(endDateTime, ChronoUnit.WEEKS);
+
+  // Support for custom units is defined by their implementation.
+  instant.plus(1, customUnit);
+  instant.minus(1, customUnit);
+  instant.until(end, customUnit);
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Instant.html#isSupported(java.time.temporal.TemporalUnit)"><code>Instant.isSupported(TemporalUnit)</code></a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Instant.html#plus(long,java.time.temporal.TemporalUnit)"><code>Instant.plus(long, TemporalUnit)</code></a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Instant.html#minus(long,java.time.temporal.TemporalUnit)"><code>Instant.minus(long, TemporalUnit)</code></a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/Instant.html#until(java.time.temporal.Temporal,java.time.temporal.TemporalUnit)"><code>Instant.until(Temporal, TemporalUnit)</code></a></li>
+</ul>
+
