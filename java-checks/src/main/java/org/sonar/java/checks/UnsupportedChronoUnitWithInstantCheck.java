@@ -73,7 +73,7 @@ public class UnsupportedChronoUnitWithInstantCheck extends AbstractMethodDetecti
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if (context.getSemanticModel() == null || mit.arguments().size() < 2) {
+    if (context.getSemanticModel() == null) {
       return;
     }
     ExpressionTree argument = mit.arguments().get(1);
