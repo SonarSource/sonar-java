@@ -52,3 +52,4 @@ public class SpringContextModelSensor implements ProjectSensor {
     // Nothing to do for now
   }
 }
+
