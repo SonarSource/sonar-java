@@ -82,7 +82,7 @@
   <properties>
     <license.title>SonarQube Java</license.title>
 
-    <jdk.min.version>17</jdk.min.version>
+    <jdk.min.version>21</jdk.min.version>
 
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
 
