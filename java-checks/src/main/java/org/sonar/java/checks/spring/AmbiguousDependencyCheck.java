@@ -71,8 +71,10 @@ public class AmbiguousDependencyCheck implements JavaCheck {
   }
 
   private static boolean isResolved(Set<String> candidates, Set<String> injectionPointNames, BeanDefinitionRegistry registry) {
+    // injectionPointNames merges every injection point of this type declared on the bean: it is only resolved
+    // if EVERY one of them names a candidate, otherwise at least one injection point remains ambiguous.
     return candidates.size() <= 1
-      || candidates.stream().anyMatch(injectionPointNames::contains)
+      || injectionPointNames.stream().allMatch(candidates::contains)
       || candidates.stream().anyMatch(candidate -> isPrimary(registry, candidate));
   }
 

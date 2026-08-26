@@ -77,6 +77,12 @@ class AmbiguousDependencyCheckTest {
   }
 
   @Test
+  void one_resolved_injection_point_does_not_hide_another_ambiguous_one_of_the_same_type() {
+    SpringContextModel model = buildModel("MixedInjectionComponentA.java", "MixedInjectionComponentB.java", "MixedInjectionConsumer.java");
+    assertThat(check.findAmbiguousDependencies(model)).hasSize(1);
+  }
+
+  @Test
   void fallback_candidate_resolves_ambiguity_when_it_is_the_sole_remaining_candidate() {
     SpringContextModel model = buildModelFromNonCompilingSources(
       "FallbackRegularComponent.java", "FallbackComponent.java", "FallbackConsumer.java");
