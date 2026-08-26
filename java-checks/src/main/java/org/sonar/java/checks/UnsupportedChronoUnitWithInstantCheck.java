@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
-@Rule(key = "S9366")
+@Rule(key = "S8218")
 public class UnsupportedChronoUnitWithInstantCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
   private static final String INSTANT = "java.time.Instant";

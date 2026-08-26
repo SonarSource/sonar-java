@@ -1,5 +1,5 @@
 {
-  "title": "Unsupported \"ChronoUnit\" values should not be used with \"Instant\"",
+  "title": "Instant APIs should only use supported temporal units",
   "type": "BUG",
   "status": "ready",
   "remediation": {
@@ -12,8 +12,8 @@
     "pitfall"
   ],
   "defaultSeverity": "Major",
-  "ruleSpecification": "RSPEC-9366",
-  "sqKey": "S9366",
+  "ruleSpecification": "RSPEC-8218",
+  "sqKey": "S8218",
   "scope": "All",
   "quickfix": "infeasible",
   "code": {
