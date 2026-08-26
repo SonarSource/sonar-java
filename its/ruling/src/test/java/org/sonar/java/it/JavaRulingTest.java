@@ -433,7 +433,7 @@ public class JavaRulingTest {
   }
 
   private static MavenBuild test_project(String projectKey, @Nullable String path, String projectName) throws IOException {
-    String pomLocation = "../sources/" + (path != null ? path + "/" : "") + projectName + "/pom.xml";
+    String pomLocation = "../sources/" + (path != null ? path : projectName) + "/pom.xml";
     File pomFile = FileLocation.of(pomLocation).getFile().getCanonicalFile();
     prepareProject(projectKey, projectName);
     MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests");

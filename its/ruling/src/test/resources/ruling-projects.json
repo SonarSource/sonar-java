@@ -50,7 +50,7 @@
   {
     "projectName": "sonar-server",
     "projectKey": "org.sonarsource.sonarqube:sonar-server",
-    "path": "sonarqube-6.5/server",
+    "path": "sonarqube-6.5/server/sonar-server",
     "buildType": "maven"
   },
   {

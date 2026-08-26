@@ -26,7 +26,6 @@ public class ProjectConfigLoaderTest {
   @Test
   public void loadProjectsReturnsAllProjects() {
     List<RulingProject> projects = ProjectConfigLoader.loadProjects();
-    assertThat(projects).isNotEmpty();
     assertThat(projects).hasSize(12);
   }
 
