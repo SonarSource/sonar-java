@@ -61,6 +61,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  * <p>Also captures:
  * <ul>
  *   <li>{@code @Primary} designation</li>
+ *   <li>{@code @Fallback} designation</li>
  *   <li>Dependencies via {@code @Autowired} fields, constructors, and setters for class-level beans</li>
  *   <li>Dependencies via method parameters for {@code @Bean} method beans</li>
  *   <li>Implicit single-constructor injection (no {@code @Autowired} required)</li>
@@ -82,6 +83,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   private static final String TYPE_HIERARCHY_SEPARATOR = ";";
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
+  private static final String FALLBACK_ANNOTATION = "org.springframework.context.annotation.Fallback";
   private static final String VALUE_ATTRIBUTE = "value";
 
   private final List<BeanData> collectedBeans = new ArrayList<>();
@@ -96,6 +98,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     InputFile inputFile,
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
+    boolean isFallback,
     Map<String, Set<String>> dependingBeans,
     Set<String> typeHierarchy) {
   }
@@ -132,6 +135,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         context.getInputFile(),
         AnalyzerMessage.textSpanFor(classTree.simpleName()),
         meta.isAnnotatedWith(PRIMARY_ANNOTATION),
+        meta.isAnnotatedWith(FALLBACK_ANNOTATION),
         deps,
         typeHierarchy);
       collectedBeans.add(beanData);
@@ -186,6 +190,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       bean.beanPackage(),
       span.startLine + ":" + span.startCharacter + ":" + span.endLine + ":" + span.endCharacter,
       Boolean.toString(bean.isPrimary()),
+      Boolean.toString(bean.isFallback()),
       deps,
       typeHierarchy);
   }
@@ -199,6 +204,9 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         .dependingBeans(data.dependingBeans());
       if (data.isPrimary()) {
         holderBuilder.primary();
+      }
+      if (data.isFallback()) {
+        holderBuilder.fallback();
       }
       springContextModel.getBeanDefinitionRegistry()
         .addBeanDefinition(data.beanName(), holderBuilder.build());
@@ -251,9 +259,10 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       Integer.parseInt(spanParts[2]),
       Integer.parseInt(spanParts[3]));
     boolean isPrimary = Boolean.parseBoolean(fields[4]);
+    boolean isFallback = Boolean.parseBoolean(fields[5]);
     Map<String, Set<String>> deps = new LinkedHashMap<>();
-    if (!fields[5].isEmpty()) {
-      for (String entry : fields[5].split(DEP_SEPARATOR)) {
+    if (!fields[6].isEmpty()) {
+      for (String entry : fields[6].split(DEP_SEPARATOR)) {
         int idx = entry.indexOf(DEP_KEY_VALUE_SEPARATOR);
         String typeFqn = new String(Base64.getDecoder().decode(entry.substring(0, idx)), StandardCharsets.UTF_8);
         Set<String> names = Arrays.stream(entry.substring(idx + 1).split(DEP_NAMES_SEPARATOR))
@@ -262,10 +271,10 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         deps.put(typeFqn, names);
       }
     }
-    Set<String> typeHierarchy = !fields[6].isEmpty()
-      ? new LinkedHashSet<>(List.of(fields[6].split(TYPE_HIERARCHY_SEPARATOR)))
+    Set<String> typeHierarchy = !fields[7].isEmpty()
+      ? new LinkedHashSet<>(List.of(fields[7].split(TYPE_HIERARCHY_SEPARATOR)))
       : new LinkedHashSet<>();
-    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, deps, typeHierarchy);
+    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, isFallback, deps, typeHierarchy);
   }
 
   private static Optional<String> extractBeanName(SymbolMetadata meta) {
@@ -316,11 +325,12 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
     Map<String, Set<String>> paramDeps = parameterDependencies(method);
     boolean isPrimary = beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION);
+    boolean isFallback = beanMeta.isAnnotatedWith(FALLBACK_ANNOTATION);
     var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
     var inputFile = context.getInputFile();
 
     for (String beanName : beanNames) {
-      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, paramDeps, typeHierarchy);
+      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, isFallback, paramDeps, typeHierarchy);
       collectedBeans.add(beanData);
       beansCollectedAtFileLevel.add(beanData);
     }

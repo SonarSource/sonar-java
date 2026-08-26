@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
@@ -75,12 +76,44 @@ class AmbiguousDependencyCheckTest {
     assertThat(check.findAmbiguousDependencies(model)).isEmpty();
   }
 
+  @Test
+  void fallback_candidate_resolves_ambiguity_when_it_is_the_sole_remaining_candidate() {
+    SpringContextModel model = buildModelFromNonCompilingSources(
+      "FallbackRegularComponent.java", "FallbackComponent.java", "FallbackConsumer.java");
+    assertThat(check.findAmbiguousDependencies(model)).isEmpty();
+  }
+
+  @Test
+  void fallback_candidate_does_not_resolve_ambiguity_with_two_other_candidates() {
+    SpringContextModel model = buildModelFromNonCompilingSources(
+      "FallbackTwoCandidatesComponentA.java", "FallbackTwoCandidatesComponentB.java",
+      "FallbackTwoCandidatesFallbackComponent.java", "FallbackTwoCandidatesConsumer.java");
+    assertThat(check.findAmbiguousDependencies(model)).hasSize(1);
+  }
+
   /**
-   * Runs {@link BeanDefinitionGatherer} over the given files (relative to {@link #BASE_PATH}) into a single,
-   * freshly built {@link SpringContextModel}, mirroring how {@code JavaSensor} drives gatherers during a real
-   * analysis, without needing java-frontend's test-only scanning helpers.
+   * Runs {@link BeanDefinitionGatherer} over the given files (relative to {@link #BASE_PATH} under
+   * {@code src/main/java}) into a single, freshly built {@link SpringContextModel}, mirroring how
+   * {@code JavaSensor} drives gatherers during a real analysis, without needing java-frontend's test-only
+   * scanning helpers.
    */
   private static SpringContextModel buildModel(String... relativeFilePaths) {
+    return buildModel(Arrays.stream(relativeFilePaths)
+      .map(relativeFilePath -> TestUtils.mainCodeSourcesPath(BASE_PATH + relativeFilePath))
+      .toList());
+  }
+
+  /**
+   * Same as {@link #buildModel(String...)}, but resolving files under {@code src/main/files/non-compiling}
+   * instead, for fixtures relying on annotations not present on this module's classpath.
+   */
+  private static SpringContextModel buildModelFromNonCompilingSources(String... relativeFilePaths) {
+    return buildModel(Arrays.stream(relativeFilePaths)
+      .map(relativeFilePath -> TestUtils.nonCompilingTestSourcesPath(BASE_PATH + relativeFilePath))
+      .toList());
+  }
+
+  private static SpringContextModel buildModel(List<String> filePaths) {
     List<File> classpath = TestClasspathUtils.DEFAULT_MODULE.getClassPath();
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(SensorContextTester.create(new File("")));
@@ -89,8 +122,8 @@ class AmbiguousDependencyCheckTest {
 
     BeanDefinitionGatherer gatherer = new BeanDefinitionGatherer();
     VisitorsBridge visitorsBridge = new VisitorsBridge(List.of((JavaCheck) gatherer), classpath, sonarComponents);
-    for (String relativeFilePath : relativeFilePaths) {
-      File file = new File(TestUtils.mainCodeSourcesPath(BASE_PATH + relativeFilePath));
+    for (String filePath : filePaths) {
+      File file = new File(filePath);
       CompilationUnitTree compilationUnit = parse(file, classpath);
       visitorsBridge.setCurrentFile(inputFile(file));
       visitorsBridge.visitFile(compilationUnit, false);

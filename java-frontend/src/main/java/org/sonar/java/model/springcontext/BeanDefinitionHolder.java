@@ -66,6 +66,9 @@ public class BeanDefinitionHolder {
   /** Whether the bean is marked as {@code @Primary}, making it the preferred candidate for autowiring. */
   private boolean isPrimary = false;
 
+  /** Whether the bean is marked as {@code @Fallback}, making it a last-resort candidate for autowiring. */
+  private boolean isFallback = false;
+
   private BeanDefinitionHolder(String type, String module, String beanPackage, BeanLocation location) {
     this.type = type;
     this.module = module;
@@ -83,6 +86,10 @@ public class BeanDefinitionHolder {
 
   private void setPrimary() {
     this.isPrimary = true;
+  }
+
+  private void setFallback() {
+    this.isFallback = true;
   }
 
   public String getType() {
@@ -114,6 +121,10 @@ public class BeanDefinitionHolder {
     return isPrimary;
   }
 
+  public boolean isFallback() {
+    return isFallback;
+  }
+
   public static class Builder {
     private final String type;
     private final String module;
@@ -123,6 +134,7 @@ public class BeanDefinitionHolder {
     @Nullable
     private String profiles;
     private boolean isPrimary = false;
+    private boolean isFallback = false;
 
     public Builder(String type, String module, String beanPackage, BeanLocation location) {
       this.type = type;
@@ -146,6 +158,11 @@ public class BeanDefinitionHolder {
       return this;
     }
 
+    public Builder fallback() {
+      this.isFallback = true;
+      return this;
+    }
+
     public BeanDefinitionHolder build() {
       BeanDefinitionHolder holder = new BeanDefinitionHolder(type, module, beanPackage, location);
       holder.setDependingBeans(dependingBeans.entrySet().stream()
@@ -153,6 +170,9 @@ public class BeanDefinitionHolder {
       holder.setProfiles(profiles);
       if (isPrimary) {
         holder.setPrimary();
+      }
+      if (isFallback) {
+        holder.setFallback();
       }
       return holder;
     }

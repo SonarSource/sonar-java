@@ -56,22 +56,39 @@ public class AmbiguousDependencyCheck implements JavaCheck {
       for (Map.Entry<String, Set<String>> dependency : bean.getDependingBeans().entrySet()) {
         String requiredType = dependency.getKey();
         Set<String> candidates = typeToBeanNamesIndex.getNamesForType(requiredType);
-        if (isAmbiguous(candidates, dependency.getValue(), registry)) {
-          ambiguousDependencies.add(new AmbiguousDependency(bean.getLocation(), message(requiredType, candidates)));
+        if (isResolved(candidates, dependency.getValue(), registry)) {
+          continue;
+        }
+        // A @Fallback candidate is only a real contender when it is the sole remaining one; otherwise it is
+        // ignored by Spring, so the effective candidates are whichever bean(s) are not marked @Fallback.
+        Set<String> effectiveCandidates = excludeFallbackCandidates(candidates, registry);
+        if (effectiveCandidates.size() > 1) {
+          ambiguousDependencies.add(new AmbiguousDependency(bean.getLocation(), message(requiredType, effectiveCandidates)));
         }
       }
     }
     return ambiguousDependencies;
   }
 
-  private static boolean isAmbiguous(Set<String> candidates, Set<String> injectionPointNames, BeanDefinitionRegistry registry) {
-    return candidates.size() > 1
-      && candidates.stream().noneMatch(candidate -> isPrimary(registry, candidate))
-      && candidates.stream().noneMatch(injectionPointNames::contains);
+  private static boolean isResolved(Set<String> candidates, Set<String> injectionPointNames, BeanDefinitionRegistry registry) {
+    return candidates.size() <= 1
+      || candidates.stream().anyMatch(injectionPointNames::contains)
+      || candidates.stream().anyMatch(candidate -> isPrimary(registry, candidate));
+  }
+
+  private static Set<String> excludeFallbackCandidates(Set<String> candidates, BeanDefinitionRegistry registry) {
+    Set<String> nonFallbackCandidates = candidates.stream()
+      .filter(candidate -> !isFallback(registry, candidate))
+      .collect(Collectors.toUnmodifiableSet());
+    return nonFallbackCandidates.isEmpty() ? candidates : nonFallbackCandidates;
   }
 
   private static boolean isPrimary(BeanDefinitionRegistry registry, String beanName) {
     return registry.getByName(beanName).stream().anyMatch(BeanDefinitionHolder::isPrimary);
+  }
+
+  private static boolean isFallback(BeanDefinitionRegistry registry, String beanName) {
+    return registry.getByName(beanName).stream().anyMatch(BeanDefinitionHolder::isFallback);
   }
 
   private static String message(String requiredType, Set<String> candidates) {
