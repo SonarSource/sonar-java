@@ -17,6 +17,7 @@
 package org.sonar.java.it;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +25,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import org.assertj.core.api.Assertions;
 
@@ -49,13 +49,15 @@ public final class ProjectConfigLoader {
    */
   public static List<RulingProject> loadProjects() {
     try (InputStream is = ProjectConfigLoader.class.getClassLoader().getResourceAsStream(CONFIG_RESOURCE)) {
-      Objects.requireNonNull(is, "Resource '" + CONFIG_RESOURCE + "' not found on classpath");
+      if (is == null) {
+        throw new IllegalStateException("Resource '" + CONFIG_RESOURCE + "' not found on classpath");
+      }
       List<RulingProject> projects = GSON.fromJson(
         new InputStreamReader(is, StandardCharsets.UTF_8),
         new TypeToken<List<RulingProject>>() {}.getType()
       );
       return projects != null ? Collections.unmodifiableList(projects) : Collections.emptyList();
-    } catch (IOException e) {
+    } catch (IOException | JsonParseException e) {
       throw new IllegalStateException("Failed to load ruling project configurations", e);
     }
   }

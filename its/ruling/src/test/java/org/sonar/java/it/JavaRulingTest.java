@@ -423,7 +423,7 @@ public class JavaRulingTest {
   }
 
   private static void executeMavenBuild(RulingProject project, Map<String, String> extraProperties) throws IOException {
-    MavenBuild build = test_project(project.projectKey(), project.projectName());
+    MavenBuild build = test_project(project.projectKey(), project.path(), project.projectName());
     extraProperties.forEach(build::setProperty);
     executeBuildWithCommonProperties(build, project.projectName());
   }
