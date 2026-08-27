@@ -130,6 +130,7 @@ class DefaultJavaResourceLocatorTest {
         Object obj = new I() {
           @Override
           public void foo() {
+            // empty implementation
           }
         };
       }

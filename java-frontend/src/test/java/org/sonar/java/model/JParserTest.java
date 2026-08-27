@@ -859,6 +859,7 @@ class JParserTest {
     BiConsumer<InputFile, JParserConfig.Result> action = spy(new BiConsumer<InputFile, JParserConfig.Result>() {
       @Override
       public void accept(InputFile inputFile, JParserConfig.Result result) {
+        // Do nothing
       }
     });
     BooleanSupplier isCanceled = spy(new BooleanSupplier() {

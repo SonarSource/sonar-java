@@ -409,7 +409,6 @@ final class JSymbolMetadata implements SymbolMetadata {
 
     private Object convertAnnotationValue(Object value) {
       return switch (value) {
-        case null -> value;
         case IVariableBinding iVariableBinding -> sema.variableSymbol(iVariableBinding);
         case ITypeBinding iTypeBinding -> sema.typeSymbol(iTypeBinding);
         case IAnnotationBinding iAnnotationBinding -> sema.annotation(iAnnotationBinding);
@@ -420,7 +419,7 @@ final class JSymbolMetadata implements SymbolMetadata {
           }
           yield result;
         }
-        default -> value;
+        case null, default -> value;
       };
     }
   }

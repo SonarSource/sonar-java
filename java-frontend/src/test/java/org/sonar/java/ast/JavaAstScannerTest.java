@@ -451,8 +451,8 @@ class JavaAstScannerTest {
   @Test
   void test_modifyCompilationUnit_modify_ast() {
 
-    var check = (JavaFileScanner) context -> {
-      CompilationUnitTree tree = context.getTree();
+    var check = (JavaFileScanner) scannerContext -> {
+      CompilationUnitTree tree = scannerContext.getTree();
       ClassTreeImpl classTree = (ClassTreeImpl) tree.types().get(0);
       assertThat(classTree.simpleName().symbol().isUnknown()).isTrue();
     };
