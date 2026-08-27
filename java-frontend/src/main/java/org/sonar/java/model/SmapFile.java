@@ -43,7 +43,7 @@ import static java.lang.Integer.parseInt;
  * <p>
  * We expect only single JSP stratum, with single FileSection and LineSection. Moreover only single file is expected in FileSection
  */
-public class SmapFile {
+public final class SmapFile {
 
   private static final Pattern LINE_INFO = Pattern.compile("(?<inputStartLine>\\d+)" +
     "(?:#(?<lineFileId>\\d+))?" +

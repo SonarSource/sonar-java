@@ -113,11 +113,10 @@ public class LiveVariables {
       Set<Symbol> newIn = new HashSet<>(gen.get(block));
       newIn.addAll(SetUtils.difference(blockOut, kill.get(block)));
 
-      if (newIn.equals(in.get(block))) {
-        continue;
+      if (!newIn.equals(in.get(block))) {
+        in.put(block, newIn);
+        block.predecessors().forEach(workList::addLast);
       }
-      in.put(block, newIn);
-      block.predecessors().forEach(workList::addLast);
     }
   }
 

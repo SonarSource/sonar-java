@@ -24,7 +24,7 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
+public final class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
 
   private final CommentKind commentKind;

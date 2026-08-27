@@ -451,13 +451,10 @@ class JavaAstScannerTest {
   @Test
   void test_modifyCompilationUnit_modify_ast() {
 
-    var check = new JavaFileScanner() {
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        CompilationUnitTree tree = context.getTree();
-        ClassTreeImpl classTree = (ClassTreeImpl) tree.types().get(0);
-        assertThat(classTree.simpleName().symbol().isUnknown()).isTrue();
-      }
+    var check = (JavaFileScanner) scannerContext -> {
+      CompilationUnitTree tree = scannerContext.getTree();
+      ClassTreeImpl classTree = (ClassTreeImpl) tree.types().get(0);
+      assertThat(classTree.simpleName().symbol().isUnknown()).isTrue();
     };
 
     VisitorsBridge visitorsBridge = new VisitorsBridge(

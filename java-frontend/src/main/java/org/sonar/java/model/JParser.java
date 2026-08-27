@@ -976,9 +976,10 @@ public class JParser {
     final InternalSyntaxToken closeParToken;
     if (tokenManager.get(openParTokenIndex).tokenType == TerminalToken.TokenNameLPAREN) {
       openParToken = createSyntaxToken(openParTokenIndex);
-      closeParToken = e.arguments().isEmpty()
-        ? firstTokenAfter(e.getName(), TerminalToken.TokenNameRPAREN)
-        : firstTokenAfter((ASTNode) e.arguments().get(e.arguments().size() - 1), TerminalToken.TokenNameRPAREN);
+      ASTNode closeParAnchor = e.arguments().isEmpty()
+        ? e.getName()
+        : (ASTNode) e.arguments().get(e.arguments().size() - 1);
+      closeParToken = firstTokenAfter(closeParAnchor, TerminalToken.TokenNameRPAREN);
     } else {
       openParToken = null;
       closeParToken = null;
@@ -2737,9 +2738,11 @@ public class JParser {
     if (bound == null) {
       t = new JavaTree.WildcardTreeImpl(questionToken);
     } else {
+      Tree.Kind wildcardKind = e.isUpperBound() ? Tree.Kind.EXTENDS_WILDCARD : Tree.Kind.SUPER_WILDCARD;
+      TerminalToken boundTokenType = e.isUpperBound() ? TerminalToken.TokenNameextends : TerminalToken.TokenNamesuper;
       t = new JavaTree.WildcardTreeImpl(
-        e.isUpperBound() ? Tree.Kind.EXTENDS_WILDCARD : Tree.Kind.SUPER_WILDCARD,
-        e.isUpperBound() ? firstTokenBefore(bound, TerminalToken.TokenNameextends) : firstTokenBefore(bound, TerminalToken.TokenNamesuper),
+        wildcardKind,
+        firstTokenBefore(bound, boundTokenType),
         convertType(bound)
       ).complete(questionToken);
     }
