@@ -92,8 +92,8 @@ public class AndroidMobileDatabaseEncryptionKeysCheck extends IssuableSubscripti
 
   private void reportIssueIfHardCoded(MethodInvocationTree mit, String argName) {
     Arguments arguments = mit.arguments();
-    ExpressionTree passwordArg = arguments.size() == 1 ? arguments.get(0) : arguments.get(1);
-    reportIssueIfHardCoded(passwordArg, argName);
+    int argIndex = arguments.size() == 1 ? 0 : 1;
+    reportIssueIfHardCoded(arguments.get(argIndex), argName);
   }
 
   private void reportIssueIfHardCoded(ExpressionTree expressionTree, String messageArg) {
