@@ -245,12 +245,9 @@ class JavaCheckVerifierTest {
     assertThatCode(() -> {
       JavaCheckVerifier.newInstance()
         .onFile(TEST_FILE)
-        .withCheck(new JavaFileScanner() {
-          @Override
-          public void scanFile(JavaFileScannerContext context) {
-            assertThat(context.getRootProjectWorkingDirectory().getPath()).isEqualTo(rootWorkDir);
-          }
-        })
+        .withCheck((JavaFileScanner) context ->
+          assertThat(context.getRootProjectWorkingDirectory().getPath()).isEqualTo(rootWorkDir)
+        )
         .withProjectLevelWorkDir(rootWorkDir)
         .verifyNoIssues();
     }).doesNotThrowAnyException();
@@ -432,13 +429,10 @@ class JavaCheckVerifierTest {
       classTree.complete((ModifiersTreeImpl) classTree.modifiers(), classTree.declarationKeyword(), ident);
     };
 
-    var check = new JavaFileScanner() {
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        CompilationUnitTree tree = context.getTree();
-        ClassTreeImpl classTree = (ClassTreeImpl) tree.types().get(0);
-        assertThat(classTree.simpleName().name()).isEqualTo("Modified");
-      }
+    var check = (JavaFileScanner) context -> {
+      CompilationUnitTree tree = context.getTree();
+      ClassTreeImpl classTree = (ClassTreeImpl) tree.types().get(0);
+      assertThat(classTree.simpleName().name()).isEqualTo("Modified");
     };
 
     JavaCheckVerifier.newInstance()

@@ -856,18 +856,9 @@ class JParserTest {
   void test_is_canceled_is_called_before_each_action_file_by_file() {
     List<InputFile> inputFiles = Arrays.asList(TestUtils.inputFile("src/test/files/metrics/Classes.java"),
       TestUtils.inputFile("src/test/files/metrics/Methods.java"));
-    BiConsumer<InputFile, JParserConfig.Result> action = spy(new BiConsumer<InputFile, JParserConfig.Result>() {
-      @Override
-      public void accept(InputFile inputFile, JParserConfig.Result result) {
-        // Do nothing
-      }
+    BiConsumer<InputFile, JParserConfig.Result> action = spy((BiConsumer<InputFile, JParserConfig.Result>) (inputFile, result) -> {
     });
-    BooleanSupplier isCanceled = spy(new BooleanSupplier() {
-      @Override
-      public boolean getAsBoolean() {
-        return false;
-      }
-    });
+    BooleanSupplier isCanceled = spy((BooleanSupplier) () -> false);
 
     FILE_BY_FILE
       .create(MAXIMUM_SUPPORTED_JAVA_VERSION, DEFAULT_CLASSPATH)
