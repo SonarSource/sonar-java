@@ -35,7 +35,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import static org.sonar.java.checks.HardcodedIpCheck.IP_V6_ALONE;
 
 @Rule(key = "S6418")
-public class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
+public final class HardCodedSecretCheck extends AbstractHardCodedCredentialChecker {
 
   private static final String DEFAULT_SECRET_WORDS = "api[_.-]?key,auth,credential,secret,token";
   private static final String DEFAULT_RANDOMNESS_SENSIBILITY= "5.0";

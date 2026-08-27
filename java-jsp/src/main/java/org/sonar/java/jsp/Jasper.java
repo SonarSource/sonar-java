@@ -236,7 +236,7 @@ public class Jasper {
   /**
    * Overloading log methods so messages are redirected to scanner log
    */
-  static class ServletContext extends JspCServletContext {
+  static final class ServletContext extends JspCServletContext {
 
     public ServletContext(URL aResourceBaseURL, ClassLoader classLoader) throws JasperException {
       super(/* not used */ null, aResourceBaseURL, classLoader, false, true);
