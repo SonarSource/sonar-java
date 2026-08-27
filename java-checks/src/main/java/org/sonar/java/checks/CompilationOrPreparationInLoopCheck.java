@@ -200,9 +200,10 @@ public class CompilationOrPreparationInLoopCheck extends IssuableSubscriptionVis
     public void visitUnaryExpression(UnaryExpressionTree tree) {
       super.visitUnaryExpression(tree);
       switch (tree.kind()) {
-        case POSTFIX_INCREMENT, POSTFIX_DECREMENT, PREFIX_INCREMENT, PREFIX_DECREMENT
-          when tree.expression().is(Tree.Kind.IDENTIFIER) -> {
-          names.add(((IdentifierTree) tree.expression()).name());
+        case POSTFIX_INCREMENT, POSTFIX_DECREMENT, PREFIX_INCREMENT, PREFIX_DECREMENT -> {
+          if (tree.expression().is(Tree.Kind.IDENTIFIER)) {
+            names.add(((IdentifierTree) tree.expression()).name());
+          }
         }
         default -> {
           // not a mutation

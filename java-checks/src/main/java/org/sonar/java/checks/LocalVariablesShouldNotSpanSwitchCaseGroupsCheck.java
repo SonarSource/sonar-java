@@ -51,12 +51,11 @@ public class LocalVariablesShouldNotSpanSwitchCaseGroupsCheck extends IssuableSu
     List<CaseGroupTree> caseGroups = ((SwitchTree) tree).cases();
     for (int index = 0; index < caseGroups.size(); index++) {
       CaseGroupTree caseGroup = caseGroups.get(index);
-      if (!caseGroup.labels().get(0).isFallThrough()) {
-        continue;
-      }
-      for (StatementTree statement : caseGroup.body()) {
-        if (statement instanceof VariableTree variable) {
-          reportIfAccessedFromLaterGroup(variable, caseGroups, index + 1);
+      if (caseGroup.labels().get(0).isFallThrough()) {
+        for (StatementTree statement : caseGroup.body()) {
+          if (statement instanceof VariableTree variable) {
+            reportIfAccessedFromLaterGroup(variable, caseGroups, index + 1);
+          }
         }
       }
     }

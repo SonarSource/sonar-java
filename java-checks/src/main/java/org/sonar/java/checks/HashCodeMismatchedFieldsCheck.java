@@ -118,15 +118,14 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
       MethodTree hashCodeMethod = null;
       List<MethodTree> otherMethods = new ArrayList<>();
       for (Tree member : classTree.members()) {
-        if (!(member instanceof MethodTree methodTree) || methodTree.block() == null) {
-          continue;
-        }
-        if (MethodTreeUtils.isEqualsMethod(methodTree)) {
-          equalsMethod = methodTree;
-        } else if (MethodTreeUtils.isHashCodeMethod(methodTree)) {
-          hashCodeMethod = methodTree;
-        } else {
-          otherMethods.add(methodTree);
+        if (member instanceof MethodTree methodTree && methodTree.block() != null) {
+          if (MethodTreeUtils.isEqualsMethod(methodTree)) {
+            equalsMethod = methodTree;
+          } else if (MethodTreeUtils.isHashCodeMethod(methodTree)) {
+            hashCodeMethod = methodTree;
+          } else {
+            otherMethods.add(methodTree);
+          }
         }
       }
       if (equalsMethod == null || hashCodeMethod == null) {
@@ -140,12 +139,11 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
     Map<Symbol.MethodSymbol, Map<Symbol, Tree>> fieldsByHelper = new HashMap<>();
     for (MethodTree helper : otherMethods) {
       Symbol.MethodSymbol helperSymbol = helper.symbol();
-      if (helperSymbol.isUnknown() || !helper.parameters().isEmpty()) {
-        continue;
-      }
-      ReadAndAssignedFields helperFields = collectReadFields(helper, owner, Map.of(), Role.HELPER);
-      if (!helperFields.failed()) {
-        fieldsByHelper.put(helperSymbol, helperFields.readFields());
+      if (!helperSymbol.isUnknown() && helper.parameters().isEmpty()) {
+        ReadAndAssignedFields helperFields = collectReadFields(helper, owner, Map.of(), Role.HELPER);
+        if (!helperFields.failed()) {
+          fieldsByHelper.put(helperSymbol, helperFields.readFields());
+        }
       }
     }
     return fieldsByHelper;
