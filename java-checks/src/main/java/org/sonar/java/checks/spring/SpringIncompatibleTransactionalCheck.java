@@ -31,6 +31,7 @@ import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationValue;
@@ -58,6 +59,12 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
   private static final String SUPPORTS = "SUPPORTS";
   // Made name to represent no annotation
   private static final String NOT_TRANSACTIONAL = "SONAR_NOT_TRANSACTIONAL";
+
+  private static final MethodMatchers TRANSACTION_TEMPLATE_EXECUTE = MethodMatchers.create()
+    .ofTypes("org.springframework.transaction.support.TransactionTemplate")
+    .names("execute", "executeWithoutResult")
+    .withAnyParameters()
+    .build();
 
   private static final Map<String, Set<String>> INCOMPATIBLE_PROPAGATION_MAP = buildIncompatiblePropagationMap();
 
@@ -96,14 +103,21 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
       return;
     }
     methodBody.accept(new BaseTreeVisitor() {
+      private boolean insideTransactionTemplateCallback = false;
+
       @Override
       public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
+        boolean previousState = insideTransactionTemplateCallback;
+        if (TRANSACTION_TEMPLATE_EXECUTE.matches(methodInvocation)) {
+          insideTransactionTemplateCallback = true;
+        }
         super.visitMethodInvocation(methodInvocation);
+        insideTransactionTemplateCallback = previousState;
         Symbol calleeMethodSymbol = methodInvocation.methodSymbol();
         if (calleeMethodSymbol.isUnknown()) {
           return;
         }
-        if (methodsPropagationMap.containsKey(calleeMethodSymbol) && methodInvocationOnThisInstance(methodInvocation)) {
+        if (!insideTransactionTemplateCallback && methodsPropagationMap.containsKey(calleeMethodSymbol) && methodInvocationOnThisInstance(methodInvocation)) {
           String calleePropagation = methodsPropagationMap.get(calleeMethodSymbol);
           checkIncompatiblePropagation(methodInvocation, callerPropagation, calleeMethodSymbol, calleePropagation);
         }
