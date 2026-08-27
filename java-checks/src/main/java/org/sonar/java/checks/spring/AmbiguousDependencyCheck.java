@@ -58,14 +58,13 @@ public class AmbiguousDependencyCheck implements JavaCheck {
       for (Map.Entry<String, Set<String>> dependency : bean.getDependingBeans().entrySet()) {
         String requiredType = dependency.getKey();
         Set<String> candidates = typeToBeanNamesIndex.getNamesForType(requiredType);
-        if (isResolved(candidates, dependency.getValue(), registry)) {
-          continue;
-        }
-        // A @Fallback candidate is only a real contender when it is the sole remaining one; otherwise it is
-        // ignored by Spring, so the effective candidates are whichever bean(s) are not marked @Fallback.
-        Set<String> effectiveCandidates = excludeFallbackCandidates(candidates, registry);
-        if (effectiveCandidates.size() > 1) {
-          ambiguousDependencies.add(new AmbiguousDependency(bean.getLocation(), message(requiredType, effectiveCandidates)));
+        if (!isResolved(candidates, dependency.getValue(), registry)) {
+          // A @Fallback candidate is only a real contender when it is the sole remaining one; otherwise it is
+          // ignored by Spring, so the effective candidates are whichever bean(s) are not marked @Fallback.
+          Set<String> effectiveCandidates = excludeFallbackCandidates(candidates, registry);
+          if (effectiveCandidates.size() > 1) {
+            ambiguousDependencies.add(new AmbiguousDependency(bean.getLocation(), message(requiredType, effectiveCandidates)));
+          }
         }
       }
     }
