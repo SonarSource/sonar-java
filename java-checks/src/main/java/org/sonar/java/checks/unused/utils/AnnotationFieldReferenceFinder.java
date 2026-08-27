@@ -72,7 +72,7 @@ public class AnnotationFieldReferenceFinder extends BaseTreeVisitor {
    * Constructs an instance of this visitor that looks for references of the given fields inside annotations.
    */
   public static AnnotationFieldReferenceFinder findReferencesTo(Collection<VariableTree> fields) {
-    var fieldNameToVariableTree = new HashMap<String, VariableTree>(fields.size());
+    var fieldNameToVariableTree = HashMap.<String, VariableTree>newHashMap(fields.size());
 
     for (var variable : fields) {
       var fieldName = variable.simpleName().name();

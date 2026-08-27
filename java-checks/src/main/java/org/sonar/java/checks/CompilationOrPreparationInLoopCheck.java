@@ -201,8 +201,8 @@ public class CompilationOrPreparationInLoopCheck extends IssuableSubscriptionVis
       super.visitUnaryExpression(tree);
       switch (tree.kind()) {
         case POSTFIX_INCREMENT, POSTFIX_DECREMENT, PREFIX_INCREMENT, PREFIX_DECREMENT -> {
-          if (tree.expression().is(Tree.Kind.IDENTIFIER)) {
-            names.add(((IdentifierTree) tree.expression()).name());
+          if (tree.expression() instanceof IdentifierTree identifier) {
+            names.add(identifier.name());
           }
         }
         default -> {

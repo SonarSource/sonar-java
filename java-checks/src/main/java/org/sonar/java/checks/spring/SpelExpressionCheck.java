@@ -246,8 +246,8 @@ public class SpelExpressionCheck extends IssuableSubscriptionVisitor {
           } else {
             state = new DefaultValue(0, expr, idx + 1);
           }
-        } else if (state instanceof DefaultValue d && current == '}' && d.nestingLevel == 0) {
-          return new Placeholder(ctx.offset(), new Range(startIdx, idx + 1), d.expr, expressionSource.substring(d.startDefault, idx).trim());
+        } else if (state instanceof DefaultValue(int nestingLevel, String expr, int startDefault) && current == '}' && nestingLevel == 0) {
+          return new Placeholder(ctx.offset(), new Range(startIdx, idx + 1), expr, expressionSource.substring(startDefault, idx).trim());
         } else if (state instanceof DefaultValue d) {
           if (SpEL.matchPrefix(expressionSource, idx)) {
             SpEL.parse(ctx, idx);
