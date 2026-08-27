@@ -77,7 +77,12 @@ public class AmbiguousDependencyCheck implements JavaCheck {
     // itself), otherwise at least one injection point remains ambiguous.
     return candidates.size() <= 1
       || injectionPointNames.stream().allMatch(name -> matchesCandidate(name, candidates, registry))
-      || candidates.stream().anyMatch(candidate -> isPrimary(registry, candidate));
+      || hasExactlyOnePrimaryCandidate(candidates, registry);
+  }
+
+  private static boolean hasExactlyOnePrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry) {
+    // Two or more @Primary candidates still leave the dependency ambiguous.
+    return candidates.stream().filter(candidate -> isPrimary(registry, candidate)).count() == 1;
   }
 
   private static boolean matchesCandidate(String injectionPointName, Set<String> candidates, BeanDefinitionRegistry registry) {

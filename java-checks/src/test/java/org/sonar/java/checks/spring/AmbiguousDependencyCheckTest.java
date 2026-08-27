@@ -59,6 +59,12 @@ class AmbiguousDependencyCheckTest {
   }
 
   @Test
+  void two_primary_candidates_still_raise_issue() {
+    SpringContextModel model = buildModel("TwoPrimaryComponentA.java", "TwoPrimaryComponentB.java", "TwoPrimaryConsumer.java");
+    assertThat(check.findAmbiguousDependencies(model)).hasSize(1);
+  }
+
+  @Test
   void field_name_matching_bean_name_resolves_ambiguity() {
     SpringContextModel model = buildModel("BeanFactoryComponentA.java", "BeanFactoryComponentB.java", "NameMatchConsumer.java");
     assertThat(check.findAmbiguousDependencies(model)).isEmpty();
