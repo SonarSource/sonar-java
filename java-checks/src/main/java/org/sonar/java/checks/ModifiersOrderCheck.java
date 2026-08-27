@@ -146,12 +146,15 @@ public class ModifiersOrderCheck extends IssuableSubscriptionVisitor {
     int numberModifiers = modifiersTree.size();
     for (int i = 0; i < numberModifiers; i++) {
       ModifierTree current = modifiersTree.get(i);
-      if (!current.is(Tree.Kind.ANNOTATION)) {
-        if (i == (numberModifiers - 1)) {
-          removals.add(AnalyzerMessage.textSpanBetween(current, true, QuickFixHelper.nextToken(modifiersTree), false));
-        } else {
-          removals.add(AnalyzerMessage.textSpanBetween(current, true, modifiersTree.get(i + 1), false));
-        }
+      if (current.is(Tree.Kind.ANNOTATION)) {
+        continue;
+      }
+      if (i == (numberModifiers - 1)) {
+        // Last: remove last token and potential space
+        removals.add(AnalyzerMessage.textSpanBetween(current, true, QuickFixHelper.nextToken(modifiersTree), false));
+      } else {
+        // Take into account neighboring modifiers (can be on different lines)
+        removals.add(AnalyzerMessage.textSpanBetween(current, true, modifiersTree.get(i + 1), false));
       }
     }
     return removals;

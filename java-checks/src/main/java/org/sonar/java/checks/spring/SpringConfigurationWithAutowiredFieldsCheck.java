@@ -81,10 +81,12 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
     for(String annotation: AUTOWIRED_ANNOTATIONS) {
       List<SymbolMetadata.AnnotationValue> annotationValues = metadata.valuesForAnnotation(annotation);
       if (annotationValues != null) {
-        if (annotationValues.stream().noneMatch(SpringConfigurationWithAutowiredFieldsCheck::isRequiredFalse)
-          || variable.initializer() == null) {
-          autowiredFields.put(variableSymbol, variable);
+        if (annotationValues.stream().anyMatch(SpringConfigurationWithAutowiredFieldsCheck::isRequiredFalse)
+          && variable.initializer() != null) {
+          // Common pattern used to define a default value.
+          continue;
         }
+        autowiredFields.put(variableSymbol, variable);
       }
     }
   }

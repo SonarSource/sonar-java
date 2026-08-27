@@ -41,12 +41,13 @@ public class SerialVersionUidInRecordCheck extends IssuableSubscriptionVisitor {
       return;
     }
     for (Tree member : targetRecord.members()) {
-      if (member.is(Tree.Kind.VARIABLE)) {
-        VariableTree variable = (VariableTree) member;
-        if (isSerialVersionUIDField(variable) && setsTheValueToZero(variable)) {
-          reportIssue(variable, "Remove this redundant \"serialVersionUID\" field");
-          return;
-        }
+      if (!member.is(Tree.Kind.VARIABLE)) {
+        continue;
+      }
+      VariableTree variable = (VariableTree) member;
+      if (isSerialVersionUIDField(variable) && setsTheValueToZero(variable)) {
+        reportIssue(variable, "Remove this redundant \"serialVersionUID\" field");
+        return;
       }
     }
   }

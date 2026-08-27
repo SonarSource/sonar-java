@@ -194,14 +194,15 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     List<String> words = new ArrayList<>();
     Pattern splitPattern = Pattern.compile("(?=[A-Z])");
     for (String part : identifier.split("_")) {
-      if (!part.isEmpty()) {
-        if (isAllUppercaseWithLetter(part)) {
-          words.add(part.toLowerCase(Locale.ROOT));
-        } else {
-          for (String sub : splitPattern.split(part)) {
-            if (!sub.isEmpty()) {
-              words.add(sub.toLowerCase(Locale.ROOT));
-            }
+      if (part.isEmpty()) {
+        continue;
+      }
+      if (isAllUppercaseWithLetter(part)) {
+        words.add(part.toLowerCase(Locale.ROOT));
+      } else {
+        for (String sub : splitPattern.split(part)) {
+          if (!sub.isEmpty()) {
+            words.add(sub.toLowerCase(Locale.ROOT));
           }
         }
       }

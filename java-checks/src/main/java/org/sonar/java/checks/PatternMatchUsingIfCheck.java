@@ -217,20 +217,18 @@ public class PatternMatchUsingIfCheck extends IssuableSubscriptionVisitor implem
   }
 
   private void writeCase(Case caze, StringBuilder sb, int baseIndent, boolean canLiftReturn) {
-    switch (caze) {
-      case PatternMatchCase patternMatchCase -> {
-        sb.append("case ").append(QuickFixHelper.contentForTree(patternMatchCase.pattern, context));
-        if (!patternMatchCase.guards().isEmpty()) {
-          List<ExpressionTree> guards = patternMatchCase.guards();
-          sb.append(" when ");
-          join(guards, " && ", sb);
-        }
+    if (caze instanceof PatternMatchCase patternMatchCase) {
+      sb.append("case ").append(QuickFixHelper.contentForTree(patternMatchCase.pattern, context));
+      if (!patternMatchCase.guards().isEmpty()) {
+        List<ExpressionTree> guards = patternMatchCase.guards();
+        sb.append(" when ");
+        join(guards, " && ", sb);
       }
-      case EqualityCase equalityCase -> {
-        sb.append("case ");
-        join(equalityCase.constants, ", ", sb);
-      }
-      default -> sb.append("default");
+    } else if (caze instanceof EqualityCase equalityCase) {
+      sb.append("case ");
+      join(equalityCase.constants, ", ", sb);
+    } else {
+      sb.append("default");
     }
     sb.append(" -> ");
     if (canLiftReturn) {

@@ -98,15 +98,17 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
     ComparisonCollector collector = new ComparisonCollector(owner);
     methodTree.block().accept(collector);
     for (ComparisonSite comparison : collector.comparisons) {
-      if (!collector.pairsByStatement.get(comparison.statement).contains(comparison.pair().reversed())) {
-        reportIssue(
-          comparison.tree,
-          String.format(ISSUE_MESSAGE, comparison.thisMember.displayName, comparison.otherMember.displayName),
-          List.of(
-            new JavaFileScannerContext.Location(SECONDARY_THIS, comparison.thisMember.tree),
-            new JavaFileScannerContext.Location(SECONDARY_OTHER, comparison.otherMember.tree)),
-          null);
+      // Order-independent equality: (a, b) || (b, a) in the same statement is not a mismatch.
+      if (collector.pairsByStatement.get(comparison.statement).contains(comparison.pair().reversed())) {
+        continue;
       }
+      reportIssue(
+        comparison.tree,
+        String.format(ISSUE_MESSAGE, comparison.thisMember.displayName, comparison.otherMember.displayName),
+        List.of(
+          new JavaFileScannerContext.Location(SECONDARY_THIS, comparison.thisMember.tree),
+          new JavaFileScannerContext.Location(SECONDARY_OTHER, comparison.otherMember.tree)),
+        null);
     }
   }
 

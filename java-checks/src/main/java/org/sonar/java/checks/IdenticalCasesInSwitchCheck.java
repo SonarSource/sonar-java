@@ -85,13 +85,14 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
     Set<CaseGroupTree> duplicates = new HashSet<>();
     for (CaseGroupTree caseGroupTree : cases) {
       index++;
-      if (!duplicates.contains(caseGroupTree)) {
-        for (int i = index; i < cases.size(); i++) {
-          CaseGroupTree caseI = cases.get(i);
-          if (SyntacticEquivalence.areEquivalent(caseGroupTree.body(), caseI.body())) {
-            duplicates.add(caseI);
-            identicalBranches.computeIfAbsent(caseGroupTree, k -> new HashSet<>()).add(caseI);
-          }
+      if (duplicates.contains(caseGroupTree)) {
+        continue;
+      }
+      for (int i = index; i < cases.size(); i++) {
+        CaseGroupTree caseI = cases.get(i);
+        if (SyntacticEquivalence.areEquivalent(caseGroupTree.body(), caseI.body())) {
+          duplicates.add(caseI);
+          identicalBranches.computeIfAbsent(caseGroupTree, k -> new HashSet<>()).add(caseI);
         }
       }
     }
@@ -124,14 +125,15 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
     IfElseChain ifElseChain = new IfElseChain();
     Set<StatementTree> duplicates = new HashSet<>();
     for (int i = 0; i < allBranches.size(); i++) {
-      if (!duplicates.contains(allBranches.get(i))) {
-        for (int j = i + 1; j < allBranches.size(); j++) {
-          StatementTree statement1 = allBranches.get(i);
-          StatementTree statement2 = allBranches.get(j);
-          if (SyntacticEquivalence.areEquivalentIncludingSameVariables(statement1, statement2)) {
-            duplicates.add(statement2);
-            ifElseChain.branches.computeIfAbsent(statement1, k -> new HashSet<>()).add(statement2);
-          }
+      if (duplicates.contains(allBranches.get(i))) {
+        continue;
+      }
+      for (int j = i + 1; j < allBranches.size(); j++) {
+        StatementTree statement1 = allBranches.get(i);
+        StatementTree statement2 = allBranches.get(j);
+        if (SyntacticEquivalence.areEquivalentIncludingSameVariables(statement1, statement2)) {
+          duplicates.add(statement2);
+          ifElseChain.branches.computeIfAbsent(statement1, k -> new HashSet<>()).add(statement2);
         }
       }
     }

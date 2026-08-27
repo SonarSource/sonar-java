@@ -83,15 +83,16 @@ public class MissingOverridesInRecordWithArrayComponentCheck extends IssuableSub
     boolean hashCodeIsOverridden = false;
     boolean toStringIsOverridden = false;
     for (Tree member : tree.members()) {
-      if (member.is(Tree.Kind.METHOD)) {
-        MethodTree method = (MethodTree) member;
-        if (EQUALS_MATCHER.matches(method)) {
-          equalsIsOverridden = true;
-        } else if (HASH_CODE_MATCHER.matches(method)) {
-          hashCodeIsOverridden = true;
-        } else if (TO_STRING_MATCHER.matches(method)) {
-          toStringIsOverridden = true;
-        }
+      if (!member.is(Tree.Kind.METHOD)) {
+        continue;
+      }
+      MethodTree method = (MethodTree) member;
+      if (EQUALS_MATCHER.matches(method)) {
+        equalsIsOverridden = true;
+      } else if (HASH_CODE_MATCHER.matches(method)) {
+        hashCodeIsOverridden = true;
+      } else if (TO_STRING_MATCHER.matches(method)) {
+        toStringIsOverridden = true;
       }
     }
     return computeMessage(equalsIsOverridden, hashCodeIsOverridden, toStringIsOverridden);

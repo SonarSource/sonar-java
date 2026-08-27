@@ -53,20 +53,22 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends SubscriptionVisitor 
     for (CaseGroupTree aCase : switchExpression.cases()) {
       List<CaseLabelTree> labels = aCase.labels();
       int size = labels.size();
-      if (size > 1) {
-        Deque<CaseLabelTree> caseLabels = labels.stream()
-          .filter(label -> "case".equals(label.caseOrDefaultKeyword().text()))
-          .collect(Collectors.toCollection(ArrayDeque::new));
+      if (size == 1) {
+        continue;
+      }
 
-        if (caseLabels.size() > 1) {
-          CaseLabelTree lastLabel = caseLabels.removeLast();
-          ((DefaultJavaFileScannerContext) context).newIssue()
-            .forRule(this)
-            .onTree(lastLabel)
-            .withMessage(MESSAGE)
-            .withSecondaries(caseLabels.stream().map(label -> new JavaFileScannerContext.Location("", label)).toList())
-            .report();
-        }
+      Deque<CaseLabelTree> caseLabels = labels.stream()
+        .filter(label -> "case".equals(label.caseOrDefaultKeyword().text()))
+        .collect(Collectors.toCollection(ArrayDeque::new));
+
+      if (caseLabels.size() > 1) {
+        CaseLabelTree lastLabel = caseLabels.removeLast();
+        ((DefaultJavaFileScannerContext) context).newIssue()
+          .forRule(this)
+          .onTree(lastLabel)
+          .withMessage(MESSAGE)
+          .withSecondaries(caseLabels.stream().map(label -> new JavaFileScannerContext.Location("", label)).toList())
+          .report();
       }
 
     }

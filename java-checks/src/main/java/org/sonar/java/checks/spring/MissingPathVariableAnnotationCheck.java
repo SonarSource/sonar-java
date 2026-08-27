@@ -102,13 +102,14 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
   private static Set<String> extractModelAttributeMethodParameter(List<MethodTree> methods){
     Set<String> modelAttributeMethodParameter = new HashSet<>();
     for (var method : methods) {
-      if (method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION)) {
-        for (var parameter : method.parameters()) {
-          SymbolMetadata metadata = parameter.symbol().metadata();
-          var arguments = metadata.valuesForAnnotation(PATH_VARIABLE_ANNOTATION);
-          if (arguments != null) {
-            modelAttributeMethodParameter.add(extractPathMethodParameters(parameter, arguments).value);
-          }
+      if (!method.symbol().metadata().isAnnotatedWith(MODEL_ATTRIBUTE_ANNOTATION)) {
+        continue;
+      }
+      for (var parameter : method.parameters()) {
+        SymbolMetadata metadata = parameter.symbol().metadata();
+        var arguments = metadata.valuesForAnnotation(PATH_VARIABLE_ANNOTATION);
+        if (arguments != null) {
+          modelAttributeMethodParameter.add(extractPathMethodParameters(parameter, arguments).value);
         }
       }
     }
@@ -172,9 +173,11 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
 
       String fullyQualifiedName = ann.annotationType().symbolType().fullyQualifiedName();
       var values = method.symbol().metadata().valuesForAnnotation(fullyQualifiedName);
-      if (values != null && MAPPING_ANNOTATIONS.contains(fullyQualifiedName)) {
-        templateVariables.add(new UriInfo<>(ann, templateVariablesFromMapping(values)));
+      if (values == null || !MAPPING_ANNOTATIONS.contains(fullyQualifiedName)) {
+        continue;
       }
+
+      templateVariables.add(new UriInfo<>(ann, templateVariablesFromMapping(values)));
     }
 
     // we handle the case where a path variable doesn't match to uri parameter (/{aParam}/)
@@ -293,14 +296,18 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
 
     for (var parameter : method.parameters()) {
       Type parameterType = parameter.type().symbolType();
-      if (!parameterType.isUnknown()
-        && !isStandardDataType(parameterType) && !parameterType.isSubtypeOf(MAP)
-        && !requiresModelAttributeAnnotation(parameter.symbol().metadata())) {
-        if (parameterType.isSubtypeOf("java.lang.Record") && springWebVersion != SpringWebVersion.LESS_THAN_5_3) {
-          properties.addAll(extractRecordProperties(parameterType));
-        } else if (parameterType.isClass()) {
-          properties.addAll(extractSetterProperties(parameterType));
-        }
+      if (parameterType.isUnknown()
+        || isStandardDataType(parameterType) || parameterType.isSubtypeOf(MAP)
+        || requiresModelAttributeAnnotation(parameter.symbol().metadata())) {
+        continue;
+      }
+
+      if (parameterType.isSubtypeOf("java.lang.Record") && springWebVersion != SpringWebVersion.LESS_THAN_5_3) {
+        // Extract record's components
+        properties.addAll(extractRecordProperties(parameterType));
+      } else if (parameterType.isClass()) {
+        // Extract setter properties from the class
+        properties.addAll(extractSetterProperties(parameterType));
       }
     }
 
@@ -316,10 +323,14 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
 
     // Extract properties from explicit setter methods
     for (Symbol member : typeSymbol.memberSymbols()) {
-      if (member.isMethodSymbol()) {
-        Symbol.MethodSymbol method = (Symbol.MethodSymbol) member;
-        isSetterLike(method).ifPresent(properties::add);
+      if (!member.isMethodSymbol()) {
+        continue;
       }
+
+      Symbol.MethodSymbol method = (Symbol.MethodSymbol) member;
+
+      // Check if it's a setter and extract a property name
+      isSetterLike(method).ifPresent(properties::add);
     }
 
     return properties;
@@ -334,13 +345,17 @@ public class MissingPathVariableAnnotationCheck extends IssuableSubscriptionVisi
 
     // Extract properties from fields if Lombok generates setters
     for (Symbol.VariableSymbol field : typeSymbol.memberSymbols().stream().filter(Symbol::isVariableSymbol).map(Symbol.VariableSymbol.class::cast).toList()) {
-      if (!field.isStatic() && !field.isFinal()) {
-        boolean hasFieldLevelSetter = field.metadata().annotations().stream()
-          .anyMatch(annotation -> "lombok.Setter".equals(annotation.symbol().type().fullyQualifiedName()));
+      if (field.isStatic() || field.isFinal()) {
+        continue;
+      }
 
-        if (hasLombokSetters || hasFieldLevelSetter) {
-          properties.add(field.name());
-        }
+      // Check if field has @Setter annotation at field level
+      boolean hasFieldLevelSetter = field.metadata().annotations().stream()
+        .anyMatch(annotation -> "lombok.Setter".equals(annotation.symbol().type().fullyQualifiedName()));
+
+      // Add property if class-level or field-level Lombok setter exists
+      if (hasLombokSetters || hasFieldLevelSetter) {
+        properties.add(field.name());
       }
     }
 

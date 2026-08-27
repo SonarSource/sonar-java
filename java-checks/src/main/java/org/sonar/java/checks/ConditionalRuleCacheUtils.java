@@ -112,26 +112,27 @@ class ConditionalRuleCacheUtils {
     int issueCount = Integer.parseInt(header[1]);
     List<CachedIssue> issues = new ArrayList<>();
     for (int i = 1; i < lines.length; i++) {
-      if (!lines[i].isEmpty()) {
-        String[] parts = lines[i].split("\\|", -1);
-        int sl = Integer.parseInt(parts[0]);
-        int sc = Integer.parseInt(parts[1]);
-        int el = Integer.parseInt(parts[2]);
-        int ec = Integer.parseInt(parts[3]);
-        String message = new String(dec.decode(parts[4]), StandardCharsets.UTF_8);
-        String replacement = new String(dec.decode(parts[5]), StandardCharsets.UTF_8);
-        boolean hasImport = "1".equals(parts[6]);
-        ImportEditData importEdit = null;
-        if (hasImport) {
-          int isl = Integer.parseInt(parts[7]);
-          int isc = Integer.parseInt(parts[8]);
-          int iel = Integer.parseInt(parts[9]);
-          int iec = Integer.parseInt(parts[10]);
-          String importRepl = new String(dec.decode(parts[11]), StandardCharsets.UTF_8);
-          importEdit = new ImportEditData(isl, isc, iel, iec, importRepl);
-        }
-        issues.add(new CachedIssue(sl, sc, el, ec, message, replacement, importEdit));
+      if (lines[i].isEmpty()) {
+        continue;
       }
+      String[] parts = lines[i].split("\\|", -1);
+      int sl = Integer.parseInt(parts[0]);
+      int sc = Integer.parseInt(parts[1]);
+      int el = Integer.parseInt(parts[2]);
+      int ec = Integer.parseInt(parts[3]);
+      String message = new String(dec.decode(parts[4]), StandardCharsets.UTF_8);
+      String replacement = new String(dec.decode(parts[5]), StandardCharsets.UTF_8);
+      boolean hasImport = "1".equals(parts[6]);
+      ImportEditData importEdit = null;
+      if (hasImport) {
+        int isl = Integer.parseInt(parts[7]);
+        int isc = Integer.parseInt(parts[8]);
+        int iel = Integer.parseInt(parts[9]);
+        int iec = Integer.parseInt(parts[10]);
+        String importRepl = new String(dec.decode(parts[11]), StandardCharsets.UTF_8);
+        importEdit = new ImportEditData(isl, isc, iel, iec, importRepl);
+      }
+      issues.add(new CachedIssue(sl, sc, el, ec, message, replacement, importEdit));
     }
     return new CachedFileData(totalCount, issueCount, issues);
   }

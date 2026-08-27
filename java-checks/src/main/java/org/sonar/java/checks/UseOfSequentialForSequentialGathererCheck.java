@@ -88,19 +88,20 @@ public class UseOfSequentialForSequentialGathererCheck extends IssuableSubscript
     MethodInvocationTree mit = (MethodInvocationTree) tree;
 
     for (Case caze : CASES) {
-      if (caze.matcher.matches(mit)) {
-        var argumentPredicate = caze.pred;
-        var issues = argumentPredicate.predicate.apply(mit.arguments().get(argumentPredicate.argIdx));
-        if (!issues.isEmpty()) {
+      if (!caze.matcher.matches(mit)) {
+        continue;
+      }
+      var argumentPredicate = caze.pred;
+      var issues = argumentPredicate.predicate.apply(mit.arguments().get(argumentPredicate.argIdx));
+      if (!issues.isEmpty()) {
 
-          var secondaries = issues.subList(1, issues.size())
-            .stream()
-            .map(element -> new JavaFileScannerContext.Location("", element))
-            .toList();
+        var secondaries = issues.subList(1, issues.size())
+          .stream()
+          .map(element -> new JavaFileScannerContext.Location("", element))
+          .toList();
 
-          context.reportIssue(this, issues.get(0), caze.msg, secondaries, null);
-          return;
-        }
+        context.reportIssue(this, issues.get(0), caze.msg, secondaries, null);
+        return;
       }
     }
 

@@ -94,19 +94,21 @@ public class ForStatelessGatherersOmitInitializerCheck extends IssuableSubscript
     MethodInvocationTree mit = (MethodInvocationTree) tree;
 
     for (Case c : CASES) {
-      if (c.matcher.matches(mit)) {
-        var argPredicate = c.pred;
-        var issues = argPredicate.predicate.apply(mit.arguments().get(argPredicate.argIdx));
-        if (!issues.isEmpty()) {
+      if (!c.matcher.matches(mit)) {
+        continue;
+      }
 
-          var secondaries = issues.subList(1, issues.size())
-            .stream()
-            .map(element -> new JavaFileScannerContext.Location("", element))
-            .toList();
+      var argPredicate = c.pred;
+      var issues = argPredicate.predicate.apply(mit.arguments().get(argPredicate.argIdx));
+      if (!issues.isEmpty()) {
 
-          context.reportIssue(this, issues.get(0), c.msg, secondaries, null);
-          return;
-        }
+        var secondaries = issues.subList(1, issues.size())
+          .stream()
+          .map(element -> new JavaFileScannerContext.Location("", element))
+          .toList();
+
+        context.reportIssue(this, issues.get(0), c.msg, secondaries, null);
+        return;
       }
     }
   }

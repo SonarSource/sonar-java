@@ -164,7 +164,12 @@ class JavaAstScannerTest {
 
   @Test
   void should_handle_analysis_cancellation() {
-    JavaFileScanner visitor = spy((JavaFileScanner) context -> JavaAstScannerTest.this.context.setCancelled(true));
+    JavaFileScanner visitor = spy(new JavaFileScanner() {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        JavaAstScannerTest.this.context.setCancelled(true);
+      }
+    });
 
     scanTwoFilesWithVisitor(visitor, false, false);
 

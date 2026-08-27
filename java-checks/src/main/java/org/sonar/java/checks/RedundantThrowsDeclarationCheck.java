@@ -83,23 +83,24 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
 
     for (TypeTree typeTree : thrownList) {
       Type exceptionType = typeTree.symbolType();
-      if (!exceptionType.isUnknown()) {
-        String fullyQualifiedName = exceptionType.fullyQualifiedName();
-        if (!reported.contains(fullyQualifiedName)) {
-          String superTypeName = isSubclassOfAny(exceptionType, thrownList);
-          if (superTypeName != null && !exceptionType.isSubtypeOf("java.lang.RuntimeException")) {
-            reportIssueWithQuickfix(methodTree, typeTree, String.format(
-              "Remove the declaration of thrown exception '%s' which is a subclass of '%s'.", fullyQualifiedName, superTypeName));
-          } else if (declaredMoreThanOnce(fullyQualifiedName, thrownList)) {
-            reportIssueWithQuickfix(methodTree, typeTree, String.format(
-              "Remove the redundant '%s' thrown exception declaration(s).", fullyQualifiedName));
-          } else if (canNotBeThrown(methodTree, exceptionType, thrownExceptions) && (!isOverridableMethod || undocumentedExceptionNames.contains(exceptionType.name()))) {
-            reportIssueWithQuickfix(methodTree, typeTree, String.format(
-              "Remove the declaration of thrown exception '%s', as it cannot be thrown from %s's body.", fullyQualifiedName,
-              methodTreeType(methodTree)));
-          }
-          reported.add(fullyQualifiedName);
+      if (exceptionType.isUnknown()) {
+        continue;
+      }
+      String fullyQualifiedName = exceptionType.fullyQualifiedName();
+      if (!reported.contains(fullyQualifiedName)) {
+        String superTypeName = isSubclassOfAny(exceptionType, thrownList);
+        if (superTypeName != null && !exceptionType.isSubtypeOf("java.lang.RuntimeException")) {
+          reportIssueWithQuickfix(methodTree, typeTree, String.format(
+            "Remove the declaration of thrown exception '%s' which is a subclass of '%s'.", fullyQualifiedName, superTypeName));
+        } else if (declaredMoreThanOnce(fullyQualifiedName, thrownList)) {
+          reportIssueWithQuickfix(methodTree, typeTree, String.format(
+            "Remove the redundant '%s' thrown exception declaration(s).", fullyQualifiedName));
+        } else if (canNotBeThrown(methodTree, exceptionType, thrownExceptions) && (!isOverridableMethod || undocumentedExceptionNames.contains(exceptionType.name()))) {
+          reportIssueWithQuickfix(methodTree, typeTree, String.format(
+            "Remove the declaration of thrown exception '%s', as it cannot be thrown from %s's body.", fullyQualifiedName,
+            methodTreeType(methodTree)));
         }
+        reported.add(fullyQualifiedName);
       }
     }
   }

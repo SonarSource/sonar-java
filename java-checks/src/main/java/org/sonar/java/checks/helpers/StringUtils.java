@@ -60,11 +60,14 @@ public class StringUtils {
   public static String[] flatten(Object ... args) {
     List<String> result = new ArrayList<>();
     for (Object arg : args) {
-      switch (arg) {
-        case String s -> result.add(s);
-        case String[] arr -> Collections.addAll(result, arr);
-        case Collection<?> col -> result.addAll((Collection<String>) col);
-        default -> throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
+      if (arg instanceof String s) {
+        result.add(s);
+      } else if (arg instanceof String[] arr) {
+        Collections.addAll(result, arr);
+      } else if (arg instanceof Collection<?> col) {
+        result.addAll((Collection<String>) col);
+      } else {
+        throw new IllegalArgumentException("Unsupported argument type: " + arg.getClass());
       }
     }
     return result.toArray(new String[0]);

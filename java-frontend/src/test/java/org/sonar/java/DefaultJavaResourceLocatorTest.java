@@ -127,7 +127,10 @@ class DefaultJavaResourceLocatorTest {
 
     private void method() {
       class B {
-        Object obj = (I) () -> {
+        Object obj = new I() {
+          @Override
+          public void foo() {
+          }
         };
       }
     }

@@ -128,12 +128,15 @@ public class UtilityClassWithPublicConstructorCheck extends IssuableSubscription
   }
 
   private static boolean isAccessLevelNotPublic(ExpressionTree tree) {
-    String valueName = switch (tree) {
-      case MemberSelectExpressionTree mset -> mset.identifier().name();
-      case IdentifierTree identifier -> identifier.name();
-      default -> null;
-    };
-    return valueName != null && !"PUBLIC".equals(valueName);
+    String valueName;
+    if (tree instanceof MemberSelectExpressionTree mset) {
+      valueName = mset.identifier().name();
+    } else if (tree instanceof IdentifierTree identifier) {
+      valueName = identifier.name();
+    } else {
+      return false;
+    }
+    return !"PUBLIC".equals(valueName);
   }
 
   private static List<JavaQuickFix> computeQuickFixes(ClassTree classTree) {

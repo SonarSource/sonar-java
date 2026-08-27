@@ -201,17 +201,17 @@ public abstract class AbstractPrintfChecker extends AbstractMethodDetection {
     while (matcher.find()) {
       if (firstArgumentIsLT(params, matcher.group(2))) {
         reportMissingPrevious(mit);
-      } else {
-        StringBuilder param = new StringBuilder();
-        for (int groupIndex : new int[] {1, 2, 5, 6}) {
-          if (matcher.group(groupIndex) != null) {
-            param.append(matcher.group(groupIndex));
-          }
+        continue;
+      }
+      StringBuilder param = new StringBuilder();
+      for (int groupIndex : new int[] {1, 2, 5, 6}) {
+        if (matcher.group(groupIndex) != null) {
+          param.append(matcher.group(groupIndex));
         }
-        String specifier = param.toString();
-        if(!"%".equals(specifier)) {
-          params.add(specifier);
-        }
+      }
+      String specifier = param.toString();
+      if(!"%".equals(specifier)) {
+        params.add(specifier);
       }
     }
     return params;
