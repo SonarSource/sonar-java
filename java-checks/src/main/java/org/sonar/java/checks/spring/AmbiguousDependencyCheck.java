@@ -19,8 +19,10 @@ package org.sonar.java.checks.spring;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanDefinitionRegistry;
@@ -72,10 +74,25 @@ public class AmbiguousDependencyCheck implements JavaCheck {
 
   private static boolean isResolved(Set<String> candidates, Set<String> injectionPointNames, BeanDefinitionRegistry registry) {
     // injectionPointNames merges every injection point of this type declared on the bean: it is only resolved
-    // if EVERY one of them names a candidate, otherwise at least one injection point remains ambiguous.
+    // if EVERY one of them names a candidate (by bean name or by a @Qualifier declared on that candidate bean
+    // itself), otherwise at least one injection point remains ambiguous.
     return candidates.size() <= 1
-      || injectionPointNames.stream().allMatch(candidates::contains)
+      || injectionPointNames.stream().allMatch(name -> matchesCandidate(name, candidates, registry))
       || candidates.stream().anyMatch(candidate -> isPrimary(registry, candidate));
+  }
+
+  private static boolean matchesCandidate(String injectionPointName, Set<String> candidates, BeanDefinitionRegistry registry) {
+    return candidates.contains(injectionPointName)
+      || candidates.stream().anyMatch(candidate -> injectionPointName.equals(qualifierOf(registry, candidate)));
+  }
+
+  @Nullable
+  private static String qualifierOf(BeanDefinitionRegistry registry, String beanName) {
+    return registry.getByName(beanName).stream()
+      .map(BeanDefinitionHolder::getQualifier)
+      .filter(Objects::nonNull)
+      .findFirst()
+      .orElse(null);
   }
 
   private static Set<String> excludeFallbackCandidates(Set<String> candidates, BeanDefinitionRegistry registry) {

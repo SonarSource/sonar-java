@@ -83,6 +83,12 @@ class AmbiguousDependencyCheckTest {
   }
 
   @Test
+  void qualifier_declared_on_the_bean_itself_resolves_ambiguity() {
+    SpringContextModel model = buildModel("QualifierOnBeanComponentA.java", "QualifierOnBeanComponentB.java", "QualifierOnBeanConsumer.java");
+    assertThat(check.findAmbiguousDependencies(model)).isEmpty();
+  }
+
+  @Test
   void fallback_candidate_resolves_ambiguity_when_it_is_the_sole_remaining_candidate() {
     SpringContextModel model = buildModelFromNonCompilingSources(
       "FallbackRegularComponent.java", "FallbackComponent.java", "FallbackConsumer.java");

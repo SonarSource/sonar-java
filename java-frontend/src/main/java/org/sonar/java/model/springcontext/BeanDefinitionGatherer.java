@@ -62,6 +62,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  * <ul>
  *   <li>{@code @Primary} designation</li>
  *   <li>{@code @Fallback} designation</li>
+ *   <li>{@code @Qualifier} value declared on the bean itself (as opposed to on an injection point)</li>
  *   <li>Dependencies via {@code @Autowired} fields, constructors, and setters for class-level beans</li>
  *   <li>Dependencies via method parameters for {@code @Bean} method beans</li>
  *   <li>Implicit single-constructor injection (no {@code @Autowired} required)</li>
@@ -99,6 +100,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
     boolean isFallback,
+    @Nullable String qualifier,
     Map<String, Set<String>> dependingBeans,
     Set<String> typeHierarchy) {
   }
@@ -136,6 +138,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         AnalyzerMessage.textSpanFor(classTree.simpleName()),
         meta.isAnnotatedWith(PRIMARY_ANNOTATION),
         meta.isAnnotatedWith(FALLBACK_ANNOTATION),
+        extractQualifier(meta),
         deps,
         typeHierarchy);
       collectedBeans.add(beanData);
@@ -184,6 +187,9 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     var typeHierarchy = String.join(TYPE_HIERARCHY_SEPARATOR, bean.typeHierarchy());
     var span = bean.textSpan();
     var encodedName = Base64.getEncoder().encodeToString(bean.beanName().getBytes(StandardCharsets.UTF_8));
+    var encodedQualifier = bean.qualifier() != null
+      ? Base64.getEncoder().encodeToString(bean.qualifier().getBytes(StandardCharsets.UTF_8))
+      : "";
     return String.join(FIELD_SEPARATOR,
       encodedName,
       bean.type(),
@@ -191,6 +197,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       span.startLine + ":" + span.startCharacter + ":" + span.endLine + ":" + span.endCharacter,
       Boolean.toString(bean.isPrimary()),
       Boolean.toString(bean.isFallback()),
+      encodedQualifier,
       deps,
       typeHierarchy);
   }
@@ -208,6 +215,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       if (data.isFallback()) {
         holderBuilder.fallback();
       }
+      holderBuilder.qualifier(data.qualifier());
       springContextModel.getBeanDefinitionRegistry()
         .addBeanDefinition(data.beanName(), holderBuilder.build());
       for (String typeFqn : data.typeHierarchy()) {
@@ -260,9 +268,12 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       Integer.parseInt(spanParts[3]));
     boolean isPrimary = Boolean.parseBoolean(fields[4]);
     boolean isFallback = Boolean.parseBoolean(fields[5]);
+    String qualifier = !fields[6].isEmpty()
+      ? new String(Base64.getDecoder().decode(fields[6]), StandardCharsets.UTF_8)
+      : null;
     Map<String, Set<String>> deps = new LinkedHashMap<>();
-    if (!fields[6].isEmpty()) {
-      for (String entry : fields[6].split(DEP_SEPARATOR)) {
+    if (!fields[7].isEmpty()) {
+      for (String entry : fields[7].split(DEP_SEPARATOR)) {
         int idx = entry.indexOf(DEP_KEY_VALUE_SEPARATOR);
         String typeFqn = new String(Base64.getDecoder().decode(entry.substring(0, idx)), StandardCharsets.UTF_8);
         Set<String> names = Arrays.stream(entry.substring(idx + 1).split(DEP_NAMES_SEPARATOR))
@@ -271,10 +282,10 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         deps.put(typeFqn, names);
       }
     }
-    Set<String> typeHierarchy = !fields[7].isEmpty()
-      ? new LinkedHashSet<>(List.of(fields[7].split(TYPE_HIERARCHY_SEPARATOR)))
+    Set<String> typeHierarchy = !fields[8].isEmpty()
+      ? new LinkedHashSet<>(List.of(fields[8].split(TYPE_HIERARCHY_SEPARATOR)))
       : new LinkedHashSet<>();
-    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, isFallback, deps, typeHierarchy);
+    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, isFallback, qualifier, deps, typeHierarchy);
   }
 
   private static Optional<String> extractBeanName(SymbolMetadata meta) {
@@ -326,11 +337,12 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     Map<String, Set<String>> paramDeps = parameterDependencies(method);
     boolean isPrimary = beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION);
     boolean isFallback = beanMeta.isAnnotatedWith(FALLBACK_ANNOTATION);
+    String qualifier = extractQualifier(beanMeta);
     var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
     var inputFile = context.getInputFile();
 
     for (String beanName : beanNames) {
-      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, isFallback, paramDeps, typeHierarchy);
+      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, isFallback, qualifier, paramDeps, typeHierarchy);
       collectedBeans.add(beanData);
       beansCollectedAtFileLevel.add(beanData);
     }
