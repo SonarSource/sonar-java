@@ -169,15 +169,12 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
         ", %s".formatted(contentFor(argument))
       ).orElse("");
 
-      return isTryBlock ?
-        new Replacements(
-          "assertThrows(%s, () -> ".formatted(typeClass(firstCaughtTypeInTry(tryStatement))),
-          "%s);".formatted(argumentsSuffix)
-        ) :
-        new Replacements(
-          "assertDoesNotThrow(() -> ",
-          "%s);".formatted(argumentsSuffix)
-        );
+      return new Replacements(
+        isTryBlock
+          ? "assertThrows(%s, () -> ".formatted(typeClass(firstCaughtTypeInTry(tryStatement)))
+          : "assertDoesNotThrow(() -> ",
+        "%s);".formatted(argumentsSuffix)
+      );
     }
 
     private Replacements assertJReplacement(
@@ -188,15 +185,12 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       var failureMessagePart = failArguments.isEmpty() ?
         "" :
         ".withFailMessage(%s)".formatted(contentFor(failArguments.get(0)));
-      return isTryBlock ?
-        new Replacements(
-          "assertThatCode(() -> ",
-          ")%s.isInstanceOf(%s);".formatted(failureMessagePart, typeClass(firstCaughtTypeInTry(tryStatement)))
-        ) :
-        new Replacements(
-          "assertThatCode(() -> ",
-          ")%s.doesNotThrowAnyException();".formatted(failureMessagePart)
-        );
+      return new Replacements(
+        "assertThatCode(() -> ",
+        isTryBlock
+          ? ")%s.isInstanceOf(%s);".formatted(failureMessagePart, typeClass(firstCaughtTypeInTry(tryStatement)))
+          : ")%s.doesNotThrowAnyException();".formatted(failureMessagePart)
+      );
     }
 
     private String contentFor(Tree tree) {
