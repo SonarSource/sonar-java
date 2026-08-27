@@ -2,10 +2,11 @@
 method). In Java, these anonymous inner classes should be replaced with lambda expressions, which provide a cleaner and more concise syntax for the
 same functionality.</p>
 <h2>Why is this an issue?</h2>
-<p>A single-method interface is a type that defines exactly one abstract behavior contract. Common examples include interfaces for tasks,
-computations, comparisons, and various transformation operations.</p>
-<p>Before modern versions of the language introduced simplified syntax, the only way to implement a single-method interface was through verbose inline
-type implementations. This approach requires significant boilerplate code that obscures the actual logic:</p>
+<p>A single-method interface is a type that defines exactly one abstract behavior contract. In Java, these are called <strong>functional
+interfaces</strong>. Common examples include <code>Runnable</code>, <code>Callable</code>, <code>Comparator</code>, and the interfaces in the
+<code>java.util.function</code> package.</p>
+<p>Before Java 8 introduced lambda expressions, the only way to implement a functional interface inline was through verbose anonymous inner classes.
+This approach requires significant boilerplate code that obscures the actual logic:</p>
 <pre>
 taskVariable = new InterfaceImplementation() {
     @Override
@@ -14,23 +15,37 @@ taskVariable = new InterfaceImplementation() {
     }
 };
 </pre>
-<p>Modern language versions introduced inline function syntax specifically to simplify this pattern. An inline function literal is a concise way to
-represent a single-method interface using an expression. The same functionality can be written as:</p>
+<p>Java 8 introduced lambda expressions specifically to simplify this pattern. A lambda expression is a concise way to represent a functional
+interface using an expression. The same functionality can be written as:</p>
 <pre>
 taskVariable = () -&gt; processData();
 </pre>
-<p>Using inline function syntax instead of verbose type implementations offers several benefits:</p>
+<p>Using lambda expressions instead of anonymous inner classes offers several benefits:</p>
 <ul>
-  <li><strong>Reduced boilerplate</strong>: Inline functions eliminate the need to repeat the interface name, method name, and method override
-  annotations.</li>
-  <li><strong>Improved readability</strong>: The code focuses on what the method does rather than the mechanics of creating an inline
-  implementation.</li>
+  <li><strong>Reduced boilerplate</strong>: Lambda expressions eliminate the need to repeat the interface name, method name, and
+  <code>@Override</code> annotations.</li>
+  <li><strong>Improved readability</strong>: The code focuses on what the method does rather than the mechanics of creating an anonymous class.</li>
   <li><strong>Better maintenance</strong>: Less code means fewer opportunities for errors and easier refactoring.</li>
-  <li><strong>Modern style</strong>: Inline function syntax is the idiomatic way to work with single-method interfaces in modern versions of the
-  language.</li>
+  <li><strong>Modern style</strong>: Lambda expressions are the idiomatic way to work with functional interfaces since Java 8.</li>
 </ul>
-<p>The conversion from verbose inline implementation to concise function syntax is straightforward because the compiler can infer the interface type
-from the context. This type inference is what makes inline functions so concise.</p>
+<p>The conversion from anonymous inner class to lambda expression is straightforward because the compiler can infer the interface type from the
+context. This type inference is what makes lambda expressions so concise.</p>
+<p>Note that this conversion may require judgment in some cases. When the anonymous class references its own <code>this</code> keyword, the semantics
+change in a lambda (see "How to fix it" below). Similarly, when the target type is ambiguous due to method overloading, additional casts or type hints
+may be needed.</p>
+<p>This rule does not apply when the anonymous class is intentionally kept for readability (e.g., complex multi-statement bodies where a lambda would
+hurt clarity), when framework constraints require a named type, or when the anonymous class defines additional methods or fields beyond the single
+abstract method.</p>
+<h3>Exceptions</h3>
+<p>This rule does not raise an issue in the following cases:</p>
+<ul>
+  <li>The anonymous class references <code>this</code> or <code>super</code>, because <code>this</code> in a lambda refers to the enclosing class, not
+  the lambda itself.</li>
+  <li>The anonymous class defines additional non-overridden methods or fields beyond the single abstract method, because a lambda expression cannot
+  carry extra members.</li>
+  <li>The anonymous class has serialization requirements (e.g., implements <code>Serializable</code> explicitly), because lambda serialization has
+  different semantics and caveats.</li>
+</ul>
 <p>In Java, these single-method interfaces are called <strong>functional interfaces</strong>. Common examples include <code>Runnable</code>,
 <code>Callable</code>, <code>Comparator</code>, and the many interfaces in the <code>java.util.function</code> package. Lambda expressions were
 introduced in Java 8 as the standard syntax for implementing functional interfaces concisely.</p>
@@ -46,8 +61,13 @@ introduced in Java 8 as the standard syntax for implementing functional interfac
 While this doesn’t affect the runtime behavior or security of the application, it impacts code maintainability. Developers spend more time reading and
 understanding unnecessarily complex code, which slows down development and increases the likelihood of introducing errors during modifications.</p>
 <h2>How to fix it</h2>
-<p>Replace the anonymous inner class with a lambda expression. The lambda syntax uses parameters in parentheses, an arrow <code>→</code>, and the
+<p>Replace the anonymous inner class with a lambda expression. The lambda syntax uses parameters in parentheses, an arrow <code>-&gt;</code>, and the
 method body. For single-expression bodies, you can omit the braces and <code>return</code> keyword.</p>
+<p>When the lambda body is a single method call, consider using a method reference instead (e.g., <code>this::processData</code> or
+<code>System.out::println</code>). Method references can be even more concise than lambdas and make the intent clearer.</p>
+<p>Note that <code>this</code> inside an anonymous inner class refers to the anonymous class instance, while <code>this</code> inside a lambda refers
+to the enclosing class. Before converting, check whether the anonymous class uses <code>this</code> to reference its own instance. If it does, the
+conversion will change behavior and should not be applied mechanically.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -65,8 +85,8 @@ Runnable task = () -&gt; System.out.println("Processing...");
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html">Lambda Expressions</a></li>
-  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html">FunctionalInterface (Java SE
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html">Lambda Expressions</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html">FunctionalInterface (Java SE
   8)</a></li>
 </ul>
 

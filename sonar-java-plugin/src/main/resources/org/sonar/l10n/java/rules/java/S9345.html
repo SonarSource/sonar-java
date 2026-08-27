@@ -1,24 +1,51 @@
+<p>This is an issue when an object’s initialization code can throw an exception and the class is not protected against attacks through cleanup hooks,
+which can execute on partially-constructed objects. Protection mechanisms include preventing inheritance, providing empty cleanup implementations that
+cannot be overridden, or using construction patterns that prevent direct instantiation.</p>
+<p>In Java, these cleanup hooks are called finalizers, and the protection mechanisms specifically refer to declaring the class as <code>final</code>,
+or using the factory pattern. Implementing a <code>final</code> empty <code>finalize()</code> method was also a known solution, but
+<code>finalize()</code> has been deprecated since Java 9 and is marked for removal.</p>
 <h2>Why is this an issue?</h2>
-<p>When a constructor throws an exception, you might expect the object construction to fail completely and no reference to the object to exist. However,
-finalization or cleanup mechanisms can be exploited to obtain a reference to a partially-constructed object.</p>
-<p>Here's how a Finalizer attack works:</p>
+<p>When a constructor throws an exception, you might expect the object construction to fail completely and no reference to the object to exist.
+However, finalization or cleanup mechanisms can be exploited to obtain a reference to a partially-constructed object.</p>
+<p>Here’s how a Finalizer attack works:</p>
 <ol>
-  <li>An attacker creates a malicious derived class that overrides the cleanup/finalization method</li>
+  <li>An attacker creates a malicious derived class that overrides the cleanup/finalization method (the method automatically called by the runtime
+  when an object is being destroyed)</li>
   <li>The attacker attempts to instantiate this derived class</li>
   <li>If the parent constructor throws an exception during initialization, the object is not fully constructed</li>
-  <li>Despite the exception, the garbage collector will eventually call the finalization method on the partially-constructed object</li>
+  <li>Despite the exception, the memory management system will eventually call the cleanup/finalization method on the partially-constructed
+  object</li>
   <li>The malicious cleanup method can store a reference to the object being finalized, effectively "resurrecting" the broken object</li>
   <li>The attacker now has access to an object that bypassed security checks or validation logic in the constructor</li>
 </ol>
-<p>This vulnerability is particularly dangerous for security-sensitive classes where the constructor performs authentication or authorization checks,
-input validation, resource allocation with security constraints, or initialization of security-critical fields.</p>
+<p>This vulnerability is particularly dangerous for security-sensitive classes where the constructor performs:</p>
+<ul>
+  <li>Authentication or authorization checks</li>
+  <li>Input validation</li>
+  <li>Resource allocation with security constraints</li>
+  <li>Initialization of security-critical fields</li>
+</ul>
+<p>If an attacker can obtain a reference to a partially-constructed instance, they may be able to call methods on an object in an inconsistent state,
+potentially bypassing security controls.</p>
+<h3>What is the potential impact?</h3>
+<p>Attacks exploiting cleanup mechanisms for incompletely initialized objects can lead to serious security vulnerabilities:</p>
+<ul>
+  <li><strong>Security bypass</strong>: Attackers can obtain references to objects that failed security checks in their initialization code</li>
+  <li><strong>Privilege escalation</strong>: Partially-constructed objects may have elevated privileges without proper authorization</li>
+  <li><strong>Data corruption</strong>: Methods called on partially-initialized objects can corrupt application state</li>
+  <li><strong>Unauthorized access</strong>: Security-sensitive resources may be accessed through objects that should never have been created</li>
+</ul>
 <h2>How to fix it</h2>
 <p>The simplest solution is to declare the class as <code>final</code>. This prevents attackers from creating malicious subclasses that override the
 <code>finalize()</code> method.</p>
 <p>However, some frameworks such as Spring or JPA/Hibernate require non-final classes. In such cases, use a <strong>factory method with a private
 constructor</strong> to ensure the object is fully validated before any reference is exposed. Since the constructor is private, no malicious subclass
 can be created, achieving the same protection as <code>final</code>.</p>
-<h3>Noncompliant code example</h3>
+<p>This rule targets classes whose constructors can throw exceptions and that are not protected against finalizer attacks. If the class is internal to
+your application and never exposed to untrusted code, or if the constructor cannot actually throw, the risk is lower and the finding may be acceptable
+as a won’t-fix. A genuine false positive would occur when the constructor is guaranteed not to throw, making the attack path impossible.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 public class SecuritySensitiveClass {
     private final String credentials;
@@ -35,7 +62,7 @@ public class SecuritySensitiveClass {
     }
 }
 </pre>
-<h3>Compliant solution</h3>
+<h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 public final class SecuritySensitiveClass { // Compliant: class is final
     private final String credentials;
@@ -52,16 +79,39 @@ public final class SecuritySensitiveClass { // Compliant: class is final
     }
 }
 </pre>
+<p>When the class cannot be <code>final</code> because a framework requires subclassing or proxying, use a factory method with a private
+constructor:</p>
+<pre>
+public class SecuritySensitiveClass { // Compliant: constructor is private, instances are created through factory method
+    private final String credentials;
+
+    private SecuritySensitiveClass(String credentials) {
+        this.credentials = credentials;
+    }
+
+    public static SecuritySensitiveClass create(String credentials) throws AuthenticationException {
+        if (!isValid(credentials)) {
+            throw new AuthenticationException("Invalid credentials");
+        }
+        return new SecuritySensitiveClass(credentials);
+    }
+
+    private static boolean isValid(String credentials) {
+        return credentials != null &amp;&amp; credentials.length() &gt; 10;
+    }
+}
+</pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
   <li>Oracle Java Documentation - <a href="https://www.oracle.com/java/technologies/javase/seccodeguide.html">Secure Coding Guidelines for Java
   SE</a></li>
-  <li>Java Language Specification - <a
-  href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html#jls-12.6">Finalization of Class Instances</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-12.html#jls-12.6">Finalization of Class
+  Instances</a></li>
 </ul>
 <h3>Standards</h3>
 <ul>
   <li>CERT - <a href="https://wiki.sei.cmu.edu/confluence/display/java/OBJ11-J.+Be+wary+of+letting+constructors+throw+exceptions">CERT-OBJ11-J: Be
   wary of letting constructors throw exceptions</a></li>
 </ul>
+

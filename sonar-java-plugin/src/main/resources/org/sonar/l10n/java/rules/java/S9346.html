@@ -1,33 +1,58 @@
-<p>Using 32-bit signed integer types for timestamps can lead to serious reliability issues such as incorrect time representation,
-system failures, and the Year 2038 problem.</p>
+<p>This is an issue when a smaller integer type value is widened to a larger integer type and then used as an absolute timestamp, such as milliseconds
+or seconds since the Unix epoch (January 1, 1970).</p>
 <h2>Why is this an issue?</h2>
-<p>A 32-bit signed integer can hold values from -2,147,483,648 to 2,147,483,647. While this might seem like a large range, it's insufficient for
+<p>A 32-bit signed integer can hold values from -2,147,483,648 to 2,147,483,647. While this might seem like a large range, it’s insufficient for
 representing timestamps:</p>
 <ul>
   <li><strong>Milliseconds since epoch</strong>: A 32-bit integer can only represent approximately 24.8 days of milliseconds. Any timestamp beyond
   this range will overflow.</li>
-  <li><strong>Seconds since epoch</strong>: A 32-bit integer can represent about 68 years, covering dates from 1970 to 2038.</li>
+  <li><strong>Seconds since epoch</strong>: A 32-bit integer can represent about 68 years, covering dates from 1970 to 2038. This is the famous "Year
+  2038 problem" for 32-bit systems.</li>
 </ul>
-<p>When you cast a 32-bit integer to a 64-bit integer for use as a timestamp, you're not fixing the underlying problem &mdash; the value is already
-corrupted or limited by the 32-bit constraint before the cast happens.</p>
-<h3>Noncompliant code example</h3>
+<p>When you cast a 32-bit integer to a 64-bit integer for use as a timestamp, you’re not fixing the underlying problem — the value is already
+corrupted or limited by the 32-bit constraint before the cast happens. The cast simply preserves the incorrect or overflowed value in a larger
+container.</p>
+<p>Timestamps should be stored as 64-bit integer values from the start to ensure they can represent dates far into the past and future without
+overflow. A 64-bit integer type can represent timestamps for approximately 292 million years, which is more than sufficient for any practical
+application.</p>
+<p>Using a 32-bit integer for timestamps is almost always a bug that will cause:</p>
+<ul>
+  <li>Incorrect date and time calculations</li>
+  <li>Application failures when processing dates outside the limited range</li>
+  <li>Data corruption when timestamps overflow</li>
+  <li>Difficult-to-diagnose issues in production systems</li>
+</ul>
+<p>In Java, 32-bit integers are represented by the <code>int</code> type and 64-bit integers by the <code>long</code> type.</p>
+<h3>What is the potential impact?</h3>
+<p>Using 32-bit signed integer types for timestamps can lead to serious reliability issues:</p>
+<ul>
+  <li><strong>Incorrect time representation</strong>: Dates may be displayed incorrectly or calculations may produce wrong results</li>
+  <li><strong>System failures</strong>: Applications may crash or behave unpredictably when timestamps overflow</li>
+  <li><strong>Data integrity issues</strong>: Stored timestamps may be corrupted, leading to incorrect historical records</li>
+  <li><strong>Year 2038 problem</strong>: For second-based timestamps, the system will fail on January 19, 2038, when the maximum value representable
+  by a 32-bit signed integer is exceeded</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Change the variable type from <code>int</code> to <code>long</code> to properly represent the timestamp. This ensures the value can hold the full
+range of possible timestamp values without overflow.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 int timestamp = 1234567890;
-Date date = new Date(timestamp);          // Noncompliant — int implicitly widened
-Date date2 = new Date((long) timestamp);  // Noncompliant — cast doesn't fix overflow
+Date date = new Date(timestamp);          // Noncompliant: int implicitly widened
+Date date2 = new Date((long) timestamp);  // Noncompliant: the cast does not fix the overflow
 </pre>
-<h3>Compliant solution</h3>
+<h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 long timestamp = 1234567890L;
 Date date = new Date(timestamp);
-Date date2 = new Date(timestamp);
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li><a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html">Oracle Java Documentation - Primitive Data Types</a></li>
-  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.html#currentTimeMillis()">Oracle Java Documentation -
-  System.currentTimeMillis()</a></li>
-  <li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Instant.html">Oracle Java Documentation - Class Instant</a>
-  </li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html">Primitive Data Types</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.html#currentTimeMillis()">Class
+  System - currentTimeMillis()</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Instant.html">Class Instant</a></li>
 </ul>
+
