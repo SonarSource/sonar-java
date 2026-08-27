@@ -4,18 +4,16 @@
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5min"
+    "constantCost": "5 min"
   },
   "tags": [
-    "cert"
+    "cert",
+    "serialization"
   ],
   "defaultSeverity": "Critical",
   "ruleSpecification": "RSPEC-9345",
   "sqKey": "S9345",
   "scope": "Main",
-  "defaultQualityProfiles": [
-    "Sonar way"
-  ],
   "quickfix": "unknown",
   "code": {
     "impacts": {
@@ -24,6 +22,8 @@
     "attribute": "COMPLETE"
   },
   "securityStandards": {
-    "CERT": ["OBJ11-J."]
+    "CERT": [
+      "ERR09-J."
+    ]
   }
 }

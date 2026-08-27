@@ -9,13 +9,12 @@
   "tags": [
     "lambda",
     "java8",
-    "convention",
-    "tests"
+    "convention"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-9357",
   "sqKey": "S9357",
-  "scope": "Tests",
+  "scope": "All",
   "quickfix": "unknown",
   "code": {
     "impacts": {

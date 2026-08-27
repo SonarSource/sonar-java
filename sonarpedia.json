@@ -4,7 +4,7 @@
     "JAVA"
   ],
   "profiles-path": "./sonar-java-plugin/src/main/resources/profiles",
-  "latest-update": "2026-08-20T11:55:51.315148260Z",
+  "latest-update": "2026-08-27T11:00:00.611131466Z",
   "options": {
     "no-language-in-filenames": true,
     "preserve-filenames": false
