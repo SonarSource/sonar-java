@@ -8,10 +8,7 @@ import org.springframework.stereotype.Component;
 // Three candidates of type MessageSourceAware exist: this class, FallbackTwoCandidatesComponentB (both regular),
 // and FallbackTwoCandidatesFallbackComponent (@Fallback). Spring ignores the fallback candidate only when a
 // single non-fallback candidate remains; here two non-fallback candidates still compete, so the dependency
-// remains ambiguous. Not yet handled by AmbiguousDependencyCheck (see FallbackRegularComponent for context on
-// why @Fallback support is pending), so this currently (incorrectly) raises no issue; it should once handled.
-// A distinct interface from the other scenarios in this package, so that a whole-module scan does not merge
-// candidate pools across scenarios.
+// remains ambiguous.
 @Component
 public class FallbackTwoCandidatesComponentA implements MessageSourceAware {
 

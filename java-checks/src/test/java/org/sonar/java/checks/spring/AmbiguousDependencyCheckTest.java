@@ -106,7 +106,11 @@ class AmbiguousDependencyCheckTest {
     SpringContextModel model = buildModelFromNonCompilingSources(
       "FallbackTwoCandidatesComponentA.java", "FallbackTwoCandidatesComponentB.java",
       "FallbackTwoCandidatesFallbackComponent.java", "FallbackTwoCandidatesConsumer.java");
-    assertThat(check.findAmbiguousDependencies(model)).hasSize(1);
+    List<AmbiguousDependencyCheck.AmbiguousDependency> found = check.findAmbiguousDependencies(model);
+    assertThat(found).hasSize(1);
+    assertThat(found.get(0).message())
+      .contains("fallbackTwoCandidatesComponentA", "fallbackTwoCandidatesComponentB")
+      .doesNotContain("fallbackTwoCandidatesFallbackComponent");
   }
 
   /**
