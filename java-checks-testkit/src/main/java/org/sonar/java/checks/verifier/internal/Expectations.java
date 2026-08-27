@@ -448,26 +448,24 @@ class Expectations {
         List<JavaQuickFix> quickFixesForIssue = new ArrayList<>();
 
         for (String quickFixId : entry.getValue()) {
-          if (NO_QUICK_FIX_ID.equals(quickFixId)) {
-            // When the id corresponds to the "no quick fix id", it means that we expect no quick fix for this issue.
-            continue;
-          }
-          allQuickFixIds.add(quickFixId);
-          String message = quickfixesMessages.get(quickFixId);
-          if (message == null) {
-            throw new AssertionError("Missing message for quick fix: " + quickFixId);
-          }
-          List<QuickFixEditComment> edits = quickfixesEdits.get(quickFixId);
-          if (edits == null) {
-            throw new AssertionError("Missing edits for quick fix: " + quickFixId);
-          }
+          if (!NO_QUICK_FIX_ID.equals(quickFixId)) {
+            allQuickFixIds.add(quickFixId);
+            String message = quickfixesMessages.get(quickFixId);
+            if (message == null) {
+              throw new AssertionError("Missing message for quick fix: " + quickFixId);
+            }
+            List<QuickFixEditComment> edits = quickfixesEdits.get(quickFixId);
+            if (edits == null) {
+              throw new AssertionError("Missing edits for quick fix: " + quickFixId);
+            }
 
-          JavaQuickFix javaQuickFix = JavaQuickFix.newQuickFix(message).addTextEdits(
-            edits.stream()
-              .map(edit -> getEdit(edit, issueTextSpan, quickFixId))
-              .toList()
-          ).build();
-          quickFixesForIssue.add(javaQuickFix);
+            JavaQuickFix javaQuickFix = JavaQuickFix.newQuickFix(message).addTextEdits(
+              edits.stream()
+                .map(edit -> getEdit(edit, issueTextSpan, quickFixId))
+                .toList()
+            ).build();
+            quickFixesForIssue.add(javaQuickFix);
+          }
         }
         quickFixes.put(issueTextSpan, quickFixesForIssue);
       }

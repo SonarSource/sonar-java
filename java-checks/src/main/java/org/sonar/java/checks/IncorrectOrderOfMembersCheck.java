@@ -44,8 +44,8 @@ public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements Jav
     int prev = 0;
     for (int i = 0; i < tree.members().size(); i++) {
       final Tree member = tree.members().get(i);
-      final int priority;
-      IdentifierTree identifier;
+      int priority = -1;
+      IdentifierTree identifier = null;
       if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree variable = ((VariableTree) member);
         if (variable.symbol().isStatic()) {
@@ -60,13 +60,13 @@ public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements Jav
       } else if (member.is(Tree.Kind.METHOD)) {
         priority = 3;
         identifier = ((MethodTree) member).simpleName();
-      } else {
-        continue;
       }
-      if (priority < prev) {
-        context.reportIssue(this, identifier, "Move this " + NAMES[priority] + " to comply with Java Code Conventions.");
-      } else {
-        prev = priority;
+      if (identifier != null) {
+        if (priority < prev) {
+          context.reportIssue(this, identifier, "Move this " + NAMES[priority] + " to comply with Java Code Conventions.");
+        } else {
+          prev = priority;
+        }
       }
     }
 

@@ -66,20 +66,16 @@ public class JavaSdkUtil {
     List<File> rootFiles = new ArrayList<>();
     Set<Path> duplicatePathFilter = new HashSet<>();
     for (Path jarDir : collectJarDirs(home, isMac)) {
-      if (!Files.isDirectory(jarDir)) {
-        continue;
+      if (Files.isDirectory(jarDir)) {
+        listFiles(jarDir, JavaSdkUtil::isJarFile).stream()
+          .filter(JavaSdkUtil::isNotAlternativeImplementation)
+          .map(JavaSdkUtil::toRealPath).filter(Optional::isPresent).map(Optional::get)
+          .forEach(jarFile -> {
+            if (duplicatePathFilter.add(jarFile)) {
+              rootFiles.add(jarFile.toFile());
+            }
+          });
       }
-      listFiles(jarDir, JavaSdkUtil::isJarFile).stream()
-        // filter out alternative implementations
-        .filter(JavaSdkUtil::isNotAlternativeImplementation)
-        // filter out duplicate (symbolically linked) .jar files commonly found in OS X JDK distributions
-        .map(JavaSdkUtil::toRealPath).filter(Optional::isPresent).map(Optional::get)
-        // make sure there is no duplicates
-        .forEach(jarFile -> {
-          if (duplicatePathFilter.add(jarFile)) {
-            rootFiles.add(jarFile.toFile());
-          }
-        });
     }
 
     return rootFiles;

@@ -73,30 +73,26 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
     Set<MethodTree> handled = new HashSet<>();
     for (int i = 0; i < methods.size(); i++) {
       MethodTree method = methods.get(i);
-      if (handled.contains(method)) {
-        continue;
-      }
-      List<StatementTree> methodBody = method.block().body();
-      // In addition to filtering literals, we want to count the number of differences since they will represent the number of parameter
-      // that would be required to transform the tests to a single parametrized one.
-      CollectAndIgnoreLiterals collectAndIgnoreLiterals = new CollectAndIgnoreLiterals();
+      if (!handled.contains(method)) {
+        List<StatementTree> methodBody = method.block().body();
+        CollectAndIgnoreLiterals collectAndIgnoreLiterals = new CollectAndIgnoreLiterals();
 
-      List<MethodTree> equivalentMethods = new ArrayList<>();
+        List<MethodTree> equivalentMethods = new ArrayList<>();
 
-      for (int j = i + 1; j < methods.size(); j++) {
-        MethodTree otherMethod = methods.get(j);
-        if (!handled.contains(otherMethod)) {
-          boolean areEquivalent = SyntacticEquivalence.areEquivalent(methodBody, otherMethod.block().body(), collectAndIgnoreLiterals);
-          if (areEquivalent) {
-            // If methods where not equivalent, we don't want to pollute the set of node to parameterize.
-            equivalentMethods.add(otherMethod);
-            collectAndIgnoreLiterals.finishCollect();
+        for (int j = i + 1; j < methods.size(); j++) {
+          MethodTree otherMethod = methods.get(j);
+          if (!handled.contains(otherMethod)) {
+            boolean areEquivalent = SyntacticEquivalence.areEquivalent(methodBody, otherMethod.block().body(), collectAndIgnoreLiterals);
+            if (areEquivalent) {
+              equivalentMethods.add(otherMethod);
+              collectAndIgnoreLiterals.finishCollect();
+            }
+            collectAndIgnoreLiterals.clearCurrentNodes();
           }
-          collectAndIgnoreLiterals.clearCurrentNodes();
         }
-      }
 
-      reportIfIssue(handled, method, collectAndIgnoreLiterals, equivalentMethods);
+        reportIfIssue(handled, method, collectAndIgnoreLiterals, equivalentMethods);
+      }
     }
   }
 

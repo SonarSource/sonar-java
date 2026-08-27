@@ -82,16 +82,15 @@ public class RedundantSpringAnnotationCheck extends IssuableSubscriptionVisitor 
 
     for (RedundancyRule rule : REDUNDANCY_RULES) {
       List<AnnotationTree> redundantAnnotations = annotationsByFqn.get(rule.redundantFqn);
-      if (redundantAnnotations == null) {
-        continue;
-      }
-      for (AnnotationTree redundantAnnotation : redundantAnnotations) {
-        for (String impliedByFqn : rule.impliedByFqns) {
-          List<AnnotationTree> impliedByAnnotations = annotationsByFqn.get(impliedByFqn);
-          if (impliedByAnnotations != null && !impliedByAnnotations.isEmpty()
-            && passesSpecialCondition(rule, redundantAnnotation)) {
-            reportRedundancy(redundantAnnotation, impliedByAnnotations.get(0));
-            break;
+      if (redundantAnnotations != null) {
+        for (AnnotationTree redundantAnnotation : redundantAnnotations) {
+          for (String impliedByFqn : rule.impliedByFqns) {
+            List<AnnotationTree> impliedByAnnotations = annotationsByFqn.get(impliedByFqn);
+            if (impliedByAnnotations != null && !impliedByAnnotations.isEmpty()
+              && passesSpecialCondition(rule, redundantAnnotation)) {
+              reportRedundancy(redundantAnnotation, impliedByAnnotations.get(0));
+              break;
+            }
           }
         }
       }

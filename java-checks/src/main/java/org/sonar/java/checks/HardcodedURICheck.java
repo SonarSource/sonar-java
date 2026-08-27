@@ -118,17 +118,10 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
     }
 
     for(VariableData v : hardCodedUri) {
-      // equals to an identifier with unknown semantic, we cannot compare their symbols
-      if (idNamesWithoutSemantic.contains(v.identifier())) {
-        continue;
+      if (!idNamesWithoutSemantic.contains(v.identifier())
+        && !(idNamesWithSemantic.contains(v.identifier()) && idSymbols.contains(v.symbol()))) {
+        reportHardcodedURI(v.initializer());
       }
-
-      // idNamesWithSemantic is used to only compare the symbols when their string identifier are the same
-      // as comparing symbols is costly
-      if (idNamesWithSemantic.contains(v.identifier()) && idSymbols.contains(v.symbol())) {
-        continue;
-      }
-      reportHardcodedURI(v.initializer());
     }
   }
 

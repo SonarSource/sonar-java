@@ -53,10 +53,9 @@ public class InterfaceAsConstantContainerCheck extends IssuableSubscriptionVisit
         // the interface doesn't hold only constants
         return Collections.emptyList();
       }
-      if (member.is(Tree.Kind.EMPTY_STATEMENT)) {
-        continue;
+      if (!member.is(Tree.Kind.EMPTY_STATEMENT)) {
+        constantLocations.add(new JavaFileScannerContext.Location("", ((VariableTree) member).simpleName()));
       }
-      constantLocations.add(new JavaFileScannerContext.Location("", ((VariableTree) member).simpleName()));
     }
     return constantLocations;
   }

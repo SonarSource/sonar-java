@@ -160,18 +160,14 @@ public class LoopExecutingAtMostOnceCheck extends IssuableSubscriptionVisitor {
       } else {
         Tree predecessorFirstElement = predecessorElements.get(0);
 
-        if (isForStatementInitializer(predecessorFirstElement, loop)) {
-          // skip 'for' loops initializers
-          continue;
-        }
+        if (!isForStatementInitializer(predecessorFirstElement, loop)) {
+          if (isForStatementUpdate(predecessorFirstElement, loop)) {
+            return !predecessor.predecessors().isEmpty();
+          }
 
-        if (isForStatementUpdate(predecessorFirstElement, loop)) {
-          // there is no way to reach the 'for' loop update
-          return !predecessor.predecessors().isEmpty();
-        }
-
-        if (isDescendant(predecessorFirstElement, loop)) {
-          return true;
+          if (isDescendant(predecessorFirstElement, loop)) {
+            return true;
+          }
         }
       }
     }

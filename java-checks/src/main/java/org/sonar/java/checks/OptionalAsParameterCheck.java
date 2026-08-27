@@ -52,14 +52,12 @@ public class OptionalAsParameterCheck extends IssuableSubscriptionVisitor {
 
       for (VariableTree parameter : methodTree.parameters()) {
         SymbolMetadata parameterMetadata = parameter.symbol().metadata();
-        if (parameterMetadata.isAnnotatedWith("org.springframework.web.bind.annotation.RequestParam")
-          || parameterMetadata.isAnnotatedWith("org.springframework.web.bind.annotation.PathVariable")) {
-          continue;
+        if (!parameterMetadata.isAnnotatedWith("org.springframework.web.bind.annotation.RequestParam")
+          && !parameterMetadata.isAnnotatedWith("org.springframework.web.bind.annotation.PathVariable")) {
+          TypeTree typeTree = parameter.type();
+          Optional<String> msg = expectedTypeInsteadOfOptional(typeTree.symbolType());
+          msg.ifPresent(s -> reportIssue(typeTree, s));
         }
-
-        TypeTree typeTree = parameter.type();
-        Optional<String> msg = expectedTypeInsteadOfOptional(typeTree.symbolType());
-        msg.ifPresent(s -> reportIssue(typeTree, s));
       }
     }
   }
