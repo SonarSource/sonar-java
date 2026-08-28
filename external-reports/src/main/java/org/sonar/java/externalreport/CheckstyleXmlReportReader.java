@@ -112,6 +112,10 @@ class CheckstyleXmlReportReader {
     String source = getAttributeValue(element, SOURCE);
     String line = getAttributeValue(element, LINE);
     String message = getAttributeValue(element, MESSAGE);
+    if (source.isEmpty()) {
+      LOG.debug("Unexpected error without rule key (missing 'source' attribute).");
+      return;
+    }
     if (message.isEmpty()) {
       LOG.debug("Unexpected error without message for rule: '{}'", source);
       return;
