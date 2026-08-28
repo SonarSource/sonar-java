@@ -66,9 +66,6 @@ public class BeanDefinitionHolder {
   /** Whether the bean is marked as {@code @Primary}, making it the preferred candidate for autowiring. */
   private boolean isPrimary = false;
 
-  /** Whether the bean is marked as {@code @Fallback}, making it a last-resort candidate for autowiring. */
-  private boolean isFallback = false;
-
   /** Value of the {@code @Qualifier} annotation declared on the bean itself, or {@code null} if absent. */
   @Nullable
   private String qualifier;
@@ -90,10 +87,6 @@ public class BeanDefinitionHolder {
 
   private void setPrimary() {
     this.isPrimary = true;
-  }
-
-  private void setFallback() {
-    this.isFallback = true;
   }
 
   private void setQualifier(@Nullable String qualifier) {
@@ -129,10 +122,6 @@ public class BeanDefinitionHolder {
     return isPrimary;
   }
 
-  public boolean isFallback() {
-    return isFallback;
-  }
-
   @Nullable
   public String getQualifier() {
     return qualifier;
@@ -147,7 +136,6 @@ public class BeanDefinitionHolder {
     @Nullable
     private String profiles;
     private boolean isPrimary = false;
-    private boolean isFallback = false;
     @Nullable
     private String qualifier;
 
@@ -173,11 +161,6 @@ public class BeanDefinitionHolder {
       return this;
     }
 
-    public Builder fallback() {
-      this.isFallback = true;
-      return this;
-    }
-
     public Builder qualifier(@Nullable String qualifier) {
       this.qualifier = qualifier;
       return this;
@@ -191,9 +174,6 @@ public class BeanDefinitionHolder {
       holder.setQualifier(qualifier);
       if (isPrimary) {
         holder.setPrimary();
-      }
-      if (isFallback) {
-        holder.setFallback();
       }
       return holder;
     }

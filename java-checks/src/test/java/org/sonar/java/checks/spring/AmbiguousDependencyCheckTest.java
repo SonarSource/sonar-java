@@ -49,68 +49,49 @@ class AmbiguousDependencyCheckTest {
   @Test
   void ambiguous_dependency_with_no_disambiguation_raises_issue() {
     SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "UnresolvedConsumer.java");
-    assertThat(check.findAmbiguousDependencies(model)).hasSize(1);
+    assertThat(check.execute(model)).hasSize(1);
   }
 
   @Test
   void primary_candidate_resolves_ambiguity() {
     SpringContextModel model = buildModel("BeanNameComponent.java", "PrimaryComponent.java", "PrimaryConsumer.java");
-    assertThat(check.findAmbiguousDependencies(model)).isEmpty();
+    assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void two_primary_candidates_still_raise_issue() {
     SpringContextModel model = buildModel("TwoPrimaryComponentA.java", "TwoPrimaryComponentB.java", "TwoPrimaryConsumer.java");
-    assertThat(check.findAmbiguousDependencies(model)).hasSize(1);
+    assertThat(check.execute(model)).hasSize(1);
   }
 
   @Test
   void field_name_matching_bean_name_resolves_ambiguity() {
     SpringContextModel model = buildModel("BeanFactoryComponentA.java", "BeanFactoryComponentB.java", "NameMatchConsumer.java");
-    assertThat(check.findAmbiguousDependencies(model)).isEmpty();
+    assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void qualifier_resolves_ambiguity() {
     SpringContextModel model = buildModel("EnvironmentComponentA.java", "EnvironmentComponentB.java", "QualifierConsumer.java");
-    assertThat(check.findAmbiguousDependencies(model)).isEmpty();
+    assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void single_candidate_does_not_raise_issue() {
     SpringContextModel model = buildModel("ResourceLoaderComponent.java", "SingleCandidateConsumer.java");
-    assertThat(check.findAmbiguousDependencies(model)).isEmpty();
+    assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void one_resolved_injection_point_does_not_hide_another_ambiguous_one_of_the_same_type() {
     SpringContextModel model = buildModel("MixedInjectionComponentA.java", "MixedInjectionComponentB.java", "MixedInjectionConsumer.java");
-    assertThat(check.findAmbiguousDependencies(model)).hasSize(1);
+    assertThat(check.execute(model)).hasSize(1);
   }
 
   @Test
   void qualifier_declared_on_the_bean_itself_resolves_ambiguity() {
     SpringContextModel model = buildModel("QualifierOnBeanComponentA.java", "QualifierOnBeanComponentB.java", "QualifierOnBeanConsumer.java");
-    assertThat(check.findAmbiguousDependencies(model)).isEmpty();
-  }
-
-  @Test
-  void fallback_candidate_resolves_ambiguity_when_it_is_the_sole_remaining_candidate() {
-    SpringContextModel model = buildModelFromNonCompilingSources(
-      "FallbackRegularComponent.java", "FallbackComponent.java", "FallbackConsumer.java");
-    assertThat(check.findAmbiguousDependencies(model)).isEmpty();
-  }
-
-  @Test
-  void fallback_candidate_does_not_resolve_ambiguity_with_two_other_candidates() {
-    SpringContextModel model = buildModelFromNonCompilingSources(
-      "FallbackTwoCandidatesComponentA.java", "FallbackTwoCandidatesComponentB.java",
-      "FallbackTwoCandidatesFallbackComponent.java", "FallbackTwoCandidatesConsumer.java");
-    List<AmbiguousDependencyCheck.AmbiguousDependency> found = check.findAmbiguousDependencies(model);
-    assertThat(found).hasSize(1);
-    assertThat(found.get(0).message())
-      .contains("fallbackTwoCandidatesComponentA", "fallbackTwoCandidatesComponentB")
-      .doesNotContain("fallbackTwoCandidatesFallbackComponent");
+    assertThat(check.execute(model)).isEmpty();
   }
 
   /**
@@ -122,16 +103,6 @@ class AmbiguousDependencyCheckTest {
   private static SpringContextModel buildModel(String... relativeFilePaths) {
     return buildModel(Arrays.stream(relativeFilePaths)
       .map(relativeFilePath -> TestUtils.mainCodeSourcesPath(BASE_PATH + relativeFilePath))
-      .toList());
-  }
-
-  /**
-   * Same as {@link #buildModel(String...)}, but resolving files under {@code src/main/files/non-compiling}
-   * instead, for fixtures relying on annotations not present on this module's classpath.
-   */
-  private static SpringContextModel buildModelFromNonCompilingSources(String... relativeFilePaths) {
-    return buildModel(Arrays.stream(relativeFilePaths)
-      .map(relativeFilePath -> TestUtils.nonCompilingTestSourcesPath(BASE_PATH + relativeFilePath))
       .toList());
   }
 

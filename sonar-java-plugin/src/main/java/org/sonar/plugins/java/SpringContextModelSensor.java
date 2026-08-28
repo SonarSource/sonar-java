@@ -22,8 +22,11 @@ import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.batch.sensor.issue.NewIssue;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scanner.sensor.ProjectSensor;
+import org.sonar.check.Rule;
 import org.sonar.java.GeneratedCheckList;
-import org.sonar.java.checks.spring.AmbiguousDependencyCheck;
+import org.sonar.java.checks.spring.SpringContextCheck;
+import org.sonar.java.checks.spring.SpringContextChecks;
+import org.sonar.java.checks.spring.SpringContextIssue;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
@@ -55,19 +58,21 @@ public class SpringContextModelSensor implements ProjectSensor {
 
   @Override
   public void execute(SensorContext context) {
-    reportAmbiguousDependencies(context);
+    for (SpringContextCheck check : SpringContextChecks.getAllChecks()) {
+      reportIssues(context, check);
+    }
   }
 
-  private void reportAmbiguousDependencies(SensorContext context) {
-    RuleKey ruleKey = RuleKey.of(GeneratedCheckList.REPOSITORY_KEY, "S9352");
-    for (var ambiguousDependency : new AmbiguousDependencyCheck().findAmbiguousDependencies(springContextModel)) {
-      BeanLocation location = ambiguousDependency.location();
+  private void reportIssues(SensorContext context, SpringContextCheck check) {
+    RuleKey ruleKey = RuleKey.of(GeneratedCheckList.REPOSITORY_KEY, check.getClass().getAnnotation(Rule.class).key());
+    for (SpringContextIssue issue : check.execute(springContextModel)) {
+      BeanLocation location = issue.location();
       AnalyzerMessage.TextSpan span = location.mainLocation();
       NewIssue newIssue = context.newIssue().forRule(ruleKey);
       newIssue.at(newIssue.newLocation()
         .on(location.inputFile())
         .at(location.inputFile().newRange(span.startLine, span.startCharacter, span.endLine, span.endCharacter))
-        .message(ambiguousDependency.message()));
+        .message(issue.message()));
       newIssue.save();
     }
   }
