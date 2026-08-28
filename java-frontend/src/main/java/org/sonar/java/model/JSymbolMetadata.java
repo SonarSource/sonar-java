@@ -263,16 +263,12 @@ final class JSymbolMetadata implements SymbolMetadata {
   }
 
   private static NullabilityLevel getLevel(Symbol symbol) {
-    if (symbol.isVariableSymbol()) {
-      return NullabilityLevel.VARIABLE;
-    } else if (symbol.isMethodSymbol()) {
-      return NullabilityLevel.METHOD;
-    } else if (symbol.isTypeSymbol()) {
-      return NullabilityLevel.CLASS;
-    } else if (symbol.isPackageSymbol()) {
-      return NullabilityLevel.PACKAGE;
-    }
-    return NullabilityLevel.UNKNOWN;
+    return switch (symbol) {
+      case Symbol.VariableSymbol v -> NullabilityLevel.VARIABLE;
+      case Symbol.MethodSymbol m -> NullabilityLevel.METHOD;
+      case Symbol.TypeSymbol t -> NullabilityLevel.CLASS;
+      default -> symbol.isPackageSymbol() ? NullabilityLevel.PACKAGE : NullabilityLevel.UNKNOWN;
+    };
   }
 
   @CheckForNull

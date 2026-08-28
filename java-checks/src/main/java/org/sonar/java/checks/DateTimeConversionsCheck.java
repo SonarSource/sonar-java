@@ -99,12 +99,10 @@ public class DateTimeConversionsCheck extends AbstractMethodDetection implements
   private static ExpressionTree skipParenthesesAndCasts(ExpressionTree expression) {
     ExpressionTree result = expression;
     while (true) {
-      if (result instanceof ParenthesizedTree parenthesizedTree) {
-        result = parenthesizedTree.expression();
-      } else if (result instanceof TypeCastTree typeCastTree) {
-        result = typeCastTree.expression();
-      } else {
-        return result;
+      switch (result) {
+        case ParenthesizedTree parenthesizedTree -> result = parenthesizedTree.expression();
+        case TypeCastTree typeCastTree -> result = typeCastTree.expression();
+        default -> { return result; }
       }
     }
   }
