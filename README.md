@@ -1,7 +1,22 @@
-Code Quality and Security for Java [![Build Status](https://github.com/SonarSource/sonar-java/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/SonarSource/sonar-java/actions/workflows/build.yml) [![Quality Gate](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=alert_status)](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.java%3Ajava) [![Coverage](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=coverage)](https://next.sonarqube.com/sonarqube/component_measures/domain/Coverage?id=org.sonarsource.java%3Ajava)
-==========
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/a23fc7ba-23f0-489a-829d-ed88c0748521/Sonar_Logo_Dark%20Backgrounds.svg">
+    <img src="https://assets-eu-01.kc-usercontent.com/ef593040-b591-0198-9506-ed88b30bc023/82c13eba-d95c-4bb8-8007-7ce77c14e043/Sonar_Logo_Light%20Backgrounds.svg" alt="Sonar logo" width="400">
+  </picture>
+</p>
 
-This Sonar project is a code analyzer for Java projects to help developers deliver integrated code quality and security. Information about the analysis of Java features is available [here](https://redirect.sonarsource.com/plugins/java.html).
+# SonarJava
+
+[![Build Status](https://github.com/SonarSource/sonar-java/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/SonarSource/sonar-java/actions/workflows/build.yml)
+[![Quality Gate](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=alert_status)](https://next.sonarqube.com/sonarqube/dashboard?id=org.sonarsource.java%3Ajava)
+[![Coverage](https://next.sonarqube.com/sonarqube/api/project_badges/measure?project=org.sonarsource.java%3Ajava&metric=coverage)](https://next.sonarqube.com/sonarqube/component_measures/domain/Coverage?id=org.sonarsource.java%3Ajava)
+[![GitHub stars](https://img.shields.io/github/stars/SonarSource/sonar-java?style=flat)](https://github.com/SonarSource/sonar-java)
+[![License](https://img.shields.io/badge/license-SSALv1-blue)](#license)
+[![Community forum](https://img.shields.io/badge/community-forum-blue)](https://community.sonarsource.com/)
+
+SonarJava inspects Java code for bugs, vulnerabilities, and maintainability issues, then explains why each finding matters and how to fix it. Information about the analysis of Java features is available [here](https://redirect.sonarsource.com/plugins/java.html).
+
+This repository contains the analyzer source used by SonarQube Server, SonarQube Cloud, and SonarQube for IDE. SonarJava applies the same analysis to developer-written and AI-generated code, giving teams a consistent way to verify changes before they reach production.
 
 Features
 --------
@@ -10,6 +25,11 @@ Features
 * Metrics (cognitive complexity, number of lines, etc.)
 * Import of [test coverage reports](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/test-coverage/java-test-coverage/)
 * [Custom rules](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/languages/java/#custom-rules)
+
+Use SonarJava
+-------------
+
+SonarJava runs through [SonarQube Server](https://www.sonarsource.com/products/sonarqube/server/), [SonarQube Cloud](https://www.sonarsource.com/products/sonarqube/cloud/), and [SonarQube for IDE](https://www.sonarsource.com/products/sonarqube/ide/). Read the [Java analysis documentation](https://docs.sonarsource.com/sonarqube-server/analyzing-source-code/languages/java) for setup and coverage guidance.
 
 Useful links
 ------------
