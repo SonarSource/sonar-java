@@ -155,7 +155,7 @@ class CheckstyleSensorTest {
   @Test
   void issues_when_xml_file_has_errors() throws IOException {
     List<ExternalIssue> externalIssues = executeSensorImporting("checkstyle-with-errors.xml");
-    assertThat(externalIssues).hasSize(1);
+    assertThat(externalIssues).hasSize(2);
 
     ExternalIssue first = externalIssues.get(0);
     assertThat(first.primaryLocation().inputComponent().key()).isEqualTo("checkstyle-project:Main.java");
@@ -165,13 +165,22 @@ class CheckstyleSensorTest {
     assertThat(first.primaryLocation().message()).isEqualTo("Error at file level with an unknown rule key.");
     assertThat(first.primaryLocation().textRange()).isNull();
 
+    ExternalIssue second = externalIssues.get(1);
+    assertThat(second.primaryLocation().inputComponent().key()).isEqualTo("checkstyle-project:A.java");
+    assertThat(second.engineId()).isEqualTo("checkstyle");
+    assertThat(second.ruleId()).isEqualTo("com.example.CustomCheck");
+    assertThat(second.ruleKey().rule()).isEqualTo("com.example.CustomCheck");
+    assertThat(second.type()).isEqualTo(RuleType.CODE_SMELL);
+    assertThat(second.severity()).isEqualTo(Severity.MAJOR);
+    assertThat(second.primaryLocation().message()).isEqualTo("Custom rule issue.");
+    assertThat(second.primaryLocation().textRange().start().line()).isEqualTo(1);
+
     assertThat(logTester.logs(Level.ERROR)).isEmpty();
     assertThat(onlyOneLogElement(logTester.logs(Level.WARN)))
       .startsWith("No input file found for '")
       .endsWith("not-existing-file.java'. No checkstyle issues will be imported on this file.");
-    assertThat(logTester.logs(Level.DEBUG)).containsExactlyInAnyOrder(
-      "Unexpected error without message for rule: 'com.puppycrawl.tools.checkstyle.checks.ArrayTypeStyleCheck'",
-      "Unexpected rule key without 'com.puppycrawl.tools.checkstyle.checks.' prefix: 'invalid-format'");
+    assertThat(logTester.logs(Level.DEBUG)).containsExactly(
+      "Unexpected error without message for rule: 'com.puppycrawl.tools.checkstyle.checks.ArrayTypeStyleCheck'");
   }
 
   private List<ExternalIssue> executeSensorImporting(@Nullable String fileName) throws IOException {
