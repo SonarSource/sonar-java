@@ -43,6 +43,12 @@
    3) Several plugins are disabled bellow to not generate jars
    -->
   <dependencies>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib</artifactId>
+      <version>1.8.0</version>
+      <scope>provided</scope>
+    </dependency>
     <!-- https://mvnrepository.com/artifact/org.jspecify/jspecify -->
     <dependency>
       <groupId>org.jspecify</groupId>
