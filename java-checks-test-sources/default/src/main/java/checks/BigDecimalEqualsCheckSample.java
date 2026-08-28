@@ -84,6 +84,7 @@ class BigDecimalEqualsCheckSample {
 
     void testCustom(MyBigDecimal other) {
       boolean r = this.equals(other); // Noncompliant
+      r = this.setScale(2).equals(other.setScale(2));
     }
   }
 }

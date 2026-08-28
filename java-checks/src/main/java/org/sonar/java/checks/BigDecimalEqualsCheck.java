@@ -104,7 +104,7 @@ public class BigDecimalEqualsCheck extends IssuableSubscriptionVisitor {
 
   private static Optional<Integer> setScale(ExpressionTree expression) {
     ExpressionTree unwrapped = ExpressionUtils.skipParentheses(expression);
-    if (unwrapped instanceof MethodInvocationTree invocation && SET_SCALE.matches(invocation)) {
+    if (unwrapped instanceof MethodInvocationTree invocation && SET_SCALE.matches(invocation.methodSymbol())) {
       return invocation.arguments().get(0).asConstant(Integer.class);
     }
     return Optional.empty();
