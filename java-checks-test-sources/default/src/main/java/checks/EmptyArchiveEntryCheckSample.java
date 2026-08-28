@@ -228,6 +228,26 @@ class EmptyArchiveEntryCheckSample {
     zos.close();
   }
 
+  void writeViaObjectMapperWithCastArgument() throws IOException {
+    FileOutputStream fos = new FileOutputStream("archive.zip");
+    ZipOutputStream zos = new ZipOutputStream(fos);
+    zos.putNextEntry(new ZipEntry("data.json"));
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.writeValue((OutputStream) zos, new Object());
+    zos.closeEntry(); // Compliant - zos passed via cast expression
+    zos.close();
+  }
+
+  void writeViaObjectMapperWithParenthesizedArgument() throws IOException {
+    FileOutputStream fos = new FileOutputStream("archive.zip");
+    ZipOutputStream zos = new ZipOutputStream(fos);
+    zos.putNextEntry(new ZipEntry("data.json"));
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.writeValue((zos), new Object());
+    zos.closeEntry(); // Compliant - zos passed via parenthesized expression
+    zos.close();
+  }
+
   static class NonClosingOutputStream extends OutputStream {
     private final OutputStream delegate;
 

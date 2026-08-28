@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9342")
@@ -110,11 +111,13 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
     if (pendingEntries.isEmpty()) {
       return;
     }
+    removeUsedSymbols(statement, pendingEntries);
+  }
+
+  private static void removeUsedSymbols(Tree tree, Map<Symbol, MethodInvocationTree> pendingEntries) {
     TrackedSymbolVisitor visitor = new TrackedSymbolVisitor(pendingEntries);
-    statement.accept(visitor);
-    for (Symbol used : visitor.usedSymbols) {
-      pendingEntries.remove(used);
-    }
+    tree.accept(visitor);
+    visitor.usedSymbols.forEach(pendingEntries::remove);
   }
 
   @CheckForNull
@@ -165,14 +168,14 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
       return;
     }
     for (ExpressionTree arg : mit.arguments()) {
-      if (arg.is(Tree.Kind.IDENTIFIER)) {
-        pendingEntries.remove(((IdentifierTree) arg).symbol());
+      ExpressionTree unwrapped = ExpressionUtils.skipParentheses(arg);
+      while (unwrapped.is(Tree.Kind.TYPE_CAST)) {
+        unwrapped = ExpressionUtils.skipParentheses(((TypeCastTree) unwrapped).expression());
+      }
+      if (unwrapped.is(Tree.Kind.IDENTIFIER)) {
+        pendingEntries.remove(((IdentifierTree) unwrapped).symbol());
       } else {
-        TrackedSymbolVisitor visitor = new TrackedSymbolVisitor(pendingEntries);
-        arg.accept(visitor);
-        for (Symbol used : visitor.usedSymbols) {
-          pendingEntries.remove(used);
-        }
+        removeUsedSymbols(unwrapped, pendingEntries);
       }
     }
   }
