@@ -371,7 +371,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
-      <version>5.0.6.RELEASE</version>
+      <version>5.3.21</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
