@@ -1,5 +1,6 @@
 package checks;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -215,5 +216,38 @@ class EmptyArchiveEntryCheckSample {
     writer.write("data".getBytes());
     zos.closeEntry(); // Compliant - written through BufferedOutputStream wrapper
     zos.close();
+  }
+
+  void writeViaObjectMapperOnCustomOutputStream() throws IOException {
+    FileOutputStream fos = new FileOutputStream("archive.zip");
+    ZipOutputStream zos = new ZipOutputStream(fos);
+    zos.putNextEntry(new ZipEntry("data.json"));
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.writeValue(new NonClosingOutputStream(zos), new Object());
+    zos.closeEntry(); // Compliant - zos passed to custom OutputStream wrapper used by ObjectMapper
+    zos.close();
+  }
+
+  static class NonClosingOutputStream extends OutputStream {
+    private final OutputStream delegate;
+
+    NonClosingOutputStream(OutputStream delegate) {
+      this.delegate = delegate;
+    }
+
+    @Override
+    public void write(int b) throws IOException {
+      delegate.write(b);
+    }
+
+    @Override
+    public void write(byte[] b, int off, int len) throws IOException {
+      delegate.write(b, off, len);
+    }
+
+    @Override
+    public void close() {
+      // Do not close the delegate
+    }
   }
 }

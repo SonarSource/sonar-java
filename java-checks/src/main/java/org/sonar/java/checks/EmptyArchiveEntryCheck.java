@@ -161,10 +161,18 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
   }
 
   private static void clearTrackedSymbolsUsedAsArguments(MethodInvocationTree mit, Map<Symbol, MethodInvocationTree> pendingEntries) {
+    if (pendingEntries.isEmpty()) {
+      return;
+    }
     for (ExpressionTree arg : mit.arguments()) {
       if (arg.is(Tree.Kind.IDENTIFIER)) {
-        Symbol argSymbol = ((IdentifierTree) arg).symbol();
-        pendingEntries.remove(argSymbol);
+        pendingEntries.remove(((IdentifierTree) arg).symbol());
+      } else {
+        TrackedSymbolVisitor visitor = new TrackedSymbolVisitor(pendingEntries);
+        arg.accept(visitor);
+        for (Symbol used : visitor.usedSymbols) {
+          pendingEntries.remove(used);
+        }
       }
     }
   }
