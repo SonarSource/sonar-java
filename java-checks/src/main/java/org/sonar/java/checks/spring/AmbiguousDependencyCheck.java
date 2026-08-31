@@ -71,7 +71,7 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
   }
 
   private static Set<InjectionPoint> computeUnmatchingNames(Set<String> candidates, Set<InjectionPoint> injectionPointNames, BeanDefinitionRegistry registry) {
-    return injectionPointNames.stream().filter(injectionPoint -> matchesCandidate(injectionPoint.name(), candidates, registry)).collect(Collectors.toSet());
+    return injectionPointNames.stream().filter(injectionPoint -> !matchesCandidate(injectionPoint.name(), candidates, registry)).collect(Collectors.toSet());
   }
 
   private static boolean hasExactlyOnePrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry) {
