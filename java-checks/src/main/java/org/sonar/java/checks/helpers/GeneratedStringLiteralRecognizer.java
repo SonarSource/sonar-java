@@ -32,12 +32,9 @@ import org.sonar.plugins.java.api.tree.TypeTree;
  * Currently we ignore:
  *
  * <ul>
- *   <li>{@code d1} strings in {@code kotlin.Metadata} annotations:
- *     <a href="https://github.com/Blaze209/phantom-sonar/blob/4297720bd3afef6bf43accd472f34cd732819bfb/src/main/java/app/rive/Fit.java#L11">example</a></li>
- *   <li>All strings in {@code kotlin.jvm.internal.SourceDebugExtension} annotations:
- *     <a href="https://github.com/micahflee/TM-SGNL-Android/blob/bd7ccbb8bc79193fc4c57cae7cc1051e6250fa89/app/libs/common/sources/com/tm/logger/config/LogConfigurator.java#L22">example</a></li>
- *   <li>All strings in {@code kotlin.coroutines.jvm.internal.DebugMetadata} annotations:
- *     <a href="https://github.com/micahflee/TM-SGNL-Android/blob/bd7ccbb8bc79193fc4c57cae7cc1051e6250fa89/app/libs/androidcopysdk-signal/sources/com/tm/androidcopysdk/utils/ContentExtensions%24register%241.java#L23">example</a></li>
+ *   <li>{@code d1} strings in {@code kotlin.Metadata} annotations</li>
+ *   <li>All strings in {@code kotlin.jvm.internal.SourceDebugExtension} annotations</li>
+ *   <li>All strings in {@code kotlin.coroutines.jvm.internal.DebugMetadata} annotations</li>
  * </ul>
  */
 public final class GeneratedStringLiteralRecognizer {
