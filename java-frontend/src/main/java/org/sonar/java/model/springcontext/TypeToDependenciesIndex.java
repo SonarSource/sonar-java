@@ -16,7 +16,6 @@
  */
 package org.sonar.java.model.springcontext;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -33,8 +32,11 @@ import java.util.Set;
  * the `@Qualifier` annotation if present)
  */
 public class TypeToDependenciesIndex {
+
+  public record InjectionPoint(String name, BeanLocation location) {}
+
   /** Dependencies (name, location) indexed by fully-qualified type. */
-  private final Map<String, Set<String>> beanDependenciesByType = new HashMap<>();
+  private final Map<String, Set<InjectionPoint>> injectionPointsByType = new HashMap<>();
 
   /**
    * Registers a dependency under the given type.
@@ -42,8 +44,9 @@ public class TypeToDependenciesIndex {
    * @param dependencyType fully-qualified name of the dependency's type
    * @param dependencyName the dependency name to associate with that type
    */
-  public void addBeanForType(String dependencyType, String dependencyName) {
-    beanDependenciesByType.computeIfAbsent(dependencyType, k -> new HashSet<>()).add(dependencyName);
+  public void addDependencyForType(String dependencyType, String dependencyName, BeanLocation location) {
+    injectionPointsByType.computeIfAbsent(dependencyType, k -> new HashSet<>())
+      .add(new InjectionPoint(dependencyName, location));
   }
 
   /**
@@ -52,7 +55,7 @@ public class TypeToDependenciesIndex {
    * @param dependencyType fully-qualified class name of the dependency's type
    * @return an unmodifiable set of bean names, or an empty set if none were registered
    */
-  public Set<String> getNamesForType(String dependencyType) {
-    return Collections.unmodifiableSet(beanDependenciesByType.getOrDefault(dependencyType, Set.of()));
+  public Set<InjectionPoint> getDependenciesForType(String dependencyType) {
+    return injectionPointsByType.getOrDefault(dependencyType, Set.of());
   }
 }

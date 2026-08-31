@@ -17,7 +17,6 @@
 package org.sonar.java.checks.spring;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -28,6 +27,8 @@ import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanDefinitionRegistry;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.model.springcontext.TypeToBeanNamesIndex;
+import org.sonar.java.model.springcontext.TypeToDependenciesIndex;
+import org.sonar.java.model.springcontext.TypeToDependenciesIndex.InjectionPoint;
 import org.sonar.plugins.java.api.JavaCheck;
 
 /**
@@ -38,24 +39,25 @@ import org.sonar.plugins.java.api.JavaCheck;
 @Rule(key = "S9352")
 public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
 
-  private static final String MESSAGE = "Multiple beans of type \"%s\" match this dependency (%s);"
+  private static final String MESSAGE = "Multiple beans match this dependency (%s);"
     + " disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".";
 
   @Override
   public List<SpringContextIssue> execute(SpringContextModel model) {
     BeanDefinitionRegistry registry = model.getBeanDefinitionRegistry();
     TypeToBeanNamesIndex typeToBeanNamesIndex = model.getTypeToBeanNamesIndex();
+    TypeToDependenciesIndex typeToDependenciesIndex = model.getTypeToDependenciesIndex();
 
     List<SpringContextIssue> issues = new ArrayList<>();
-    for (BeanDefinitionHolder bean : registry.getAll()) {
-      for (Map.Entry<String, Set<String>> dependency : bean.getDependingBeans().entrySet()) {
-        String requiredType = dependency.getKey();
-        Set<String> candidates = typeToBeanNamesIndex.getNamesForType(requiredType);
-        if (!isResolved(candidates, dependency.getValue(), registry)) {
-          // excluding all beans with a configured profile, no matter what the profile is, to avoid FPs
-          Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
-          if (effectiveCandidates.size() > 1) {
-            issues.add(new SpringContextIssue(bean.getLocation(), message(requiredType, effectiveCandidates)));
+    for (String type : typeToBeanNamesIndex.getKeys()) {
+      Set<String> candidates = typeToBeanNamesIndex.getNamesForType(type);
+      Set<InjectionPoint> injectionPoints = typeToDependenciesIndex.getDependenciesForType(type);
+      if (!isResolved(candidates, registry)) {
+        // excluding all beans with a configured profile, no matter what the profile is, to avoid FPs
+        Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
+        if (effectiveCandidates.size() > 1) {
+          for (InjectionPoint unresolvedInjectionPoint : computeUnmatchingNames(effectiveCandidates, injectionPoints, registry)) {
+            issues.add(new SpringContextIssue(unresolvedInjectionPoint.location(), message(effectiveCandidates)));
           }
         }
       }
@@ -63,10 +65,13 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
     return issues;
   }
 
-  private static boolean isResolved(Set<String> candidates, Set<String> injectionPointNames, BeanDefinitionRegistry registry) {
+  private static boolean isResolved(Set<String> candidates, BeanDefinitionRegistry registry) {
     return candidates.size() <= 1
-      || injectionPointNames.stream().allMatch(name -> matchesCandidate(name, candidates, registry))
       || hasExactlyOnePrimaryCandidate(candidates, registry);
+  }
+
+  private static Set<InjectionPoint> computeUnmatchingNames(Set<String> candidates, Set<InjectionPoint> injectionPointNames, BeanDefinitionRegistry registry) {
+    return injectionPointNames.stream().filter(injectionPoint -> matchesCandidate(injectionPoint.name(), candidates, registry)).collect(Collectors.toSet());
   }
 
   private static boolean hasExactlyOnePrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry) {
@@ -99,9 +104,9 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
     return registry.getByName(beanName).stream().anyMatch(bean -> bean.getProfiles() != null);
   }
 
-  private static String message(String requiredType, Set<String> candidates) {
+  private static String message(Set<String> candidates) {
     String sortedCandidates = candidates.stream().sorted().collect(Collectors.joining(", "));
-    return String.format(MESSAGE, requiredType, sortedCandidates);
+    return String.format(MESSAGE, sortedCandidates);
   }
 
 }

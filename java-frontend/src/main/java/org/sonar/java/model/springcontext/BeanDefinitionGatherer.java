@@ -82,6 +82,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   private static final String DEP_SEPARATOR = ",";
   private static final String DEP_KEY_VALUE_SEPARATOR = ":";
   private static final String DEP_NAMES_SEPARATOR = ";";
+  private static final String DEP_LOCATION_SEPARATOR = "#";
   private static final String TYPE_HIERARCHY_SEPARATOR = ";";
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
@@ -101,6 +102,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     boolean isPrimary,
     @Nullable String qualifier,
     Map<String, Set<String>> dependingBeans,
+    Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> dependencyInjectionPoints,
     Set<String> typeHierarchy) {
   }
 
@@ -129,7 +131,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     if (SpringUtils.STEREOTYPE_ANNOTATIONS.stream().anyMatch(meta::isAnnotatedWith)) {
       String beanName = extractBeanName(meta)
         .orElseGet(() -> defaultBeanName(classTree.simpleName().name()));
-      Map<String, Set<String>> deps = collectAutowiredDependencies(classTree);
+      Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> injectionPoints = collectAutowiredDependencies(classTree, context.getInputFile());
+      Map<String, Set<String>> deps = toNameMap(injectionPoints);
       Set<String> typeHierarchy = collectTypeHierarchy(classTree.symbol());
       var beanData = new BeanData(
         beanName, fqn, pkg,
@@ -138,6 +141,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         meta.isAnnotatedWith(PRIMARY_ANNOTATION),
         extractQualifier(meta),
         deps,
+        injectionPoints,
         typeHierarchy);
       collectedBeans.add(beanData);
       beansCollectedAtFileLevel.add(beanData);
@@ -175,11 +179,11 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   }
 
   private static String serializeBean(BeanData bean) {
-    var deps = bean.dependingBeans().entrySet().stream()
+    var deps = bean.dependencyInjectionPoints().entrySet().stream()
       .map(e -> Base64.getEncoder().encodeToString(e.getKey().getBytes(StandardCharsets.UTF_8))
         + DEP_KEY_VALUE_SEPARATOR
         + e.getValue().stream()
-          .map(n -> Base64.getEncoder().encodeToString(n.getBytes(StandardCharsets.UTF_8)))
+          .map(BeanDefinitionGatherer::encodeInjectionPoint)
           .collect(Collectors.joining(DEP_NAMES_SEPARATOR)))
       .collect(Collectors.joining(DEP_SEPARATOR));
     var typeHierarchy = String.join(TYPE_HIERARCHY_SEPARATOR, bean.typeHierarchy());
@@ -199,6 +203,13 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       typeHierarchy);
   }
 
+  private static String encodeInjectionPoint(TypeToDependenciesIndex.InjectionPoint point) {
+    var span = point.location().mainLocation();
+    return Base64.getEncoder().encodeToString(point.name().getBytes(StandardCharsets.UTF_8))
+      + DEP_LOCATION_SEPARATOR
+      + span.startLine + ":" + span.startCharacter + ":" + span.endLine + ":" + span.endCharacter;
+  }
+
   @Override
   public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {
     for (BeanData data : collectedBeans) {
@@ -215,8 +226,9 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       for (String typeFqn : data.typeHierarchy()) {
         springContextModel.getTypeToBeanNamesIndex().addBeanForType(typeFqn, data.beanName());
       }
-      data.dependingBeans().forEach((typeFqn, names) ->
-        names.forEach(name -> springContextModel.getTypeToDependenciesIndex().addBeanForType(typeFqn, name)));
+      data.dependencyInjectionPoints().forEach((typeFqn, points) ->
+        points.forEach(point -> springContextModel.getTypeToDependenciesIndex()
+          .addDependencyForType(typeFqn, point.name(), point.location())));
     }
   }
 
@@ -266,21 +278,34 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     String qualifier = !fields[5].isEmpty()
       ? new String(Base64.getDecoder().decode(fields[5]), StandardCharsets.UTF_8)
       : null;
-    Map<String, Set<String>> deps = new LinkedHashMap<>();
+    Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> injectionPoints = new LinkedHashMap<>();
     if (!fields[6].isEmpty()) {
       for (String entry : fields[6].split(DEP_SEPARATOR)) {
         int idx = entry.indexOf(DEP_KEY_VALUE_SEPARATOR);
         String typeFqn = new String(Base64.getDecoder().decode(entry.substring(0, idx)), StandardCharsets.UTF_8);
-        Set<String> names = Arrays.stream(entry.substring(idx + 1).split(DEP_NAMES_SEPARATOR))
-          .map(n -> new String(Base64.getDecoder().decode(n), StandardCharsets.UTF_8))
+        Set<TypeToDependenciesIndex.InjectionPoint> points = Arrays.stream(entry.substring(idx + 1).split(DEP_NAMES_SEPARATOR))
+          .map(token -> decodeInjectionPoint(token, inputFile))
           .collect(Collectors.toCollection(LinkedHashSet::new));
-        deps.put(typeFqn, names);
+        injectionPoints.put(typeFqn, points);
       }
     }
+    Map<String, Set<String>> deps = toNameMap(injectionPoints);
     Set<String> typeHierarchy = !fields[7].isEmpty()
       ? new LinkedHashSet<>(List.of(fields[7].split(TYPE_HIERARCHY_SEPARATOR)))
       : new LinkedHashSet<>();
-    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, qualifier, deps, typeHierarchy);
+    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, qualifier, deps, injectionPoints, typeHierarchy);
+  }
+
+  private static TypeToDependenciesIndex.InjectionPoint decodeInjectionPoint(String token, InputFile inputFile) {
+    int idx = token.indexOf(DEP_LOCATION_SEPARATOR);
+    String name = new String(Base64.getDecoder().decode(token.substring(0, idx)), StandardCharsets.UTF_8);
+    String[] spanParts = token.substring(idx + 1).split(":");
+    var span = new AnalyzerMessage.TextSpan(
+      Integer.parseInt(spanParts[0]),
+      Integer.parseInt(spanParts[1]),
+      Integer.parseInt(spanParts[2]),
+      Integer.parseInt(spanParts[3]));
+    return new TypeToDependenciesIndex.InjectionPoint(name, new BeanLocation(inputFile, span));
   }
 
   private static Optional<String> extractBeanName(SymbolMetadata meta) {
@@ -329,53 +354,65 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       ? collectTypeHierarchy(method.returnType().symbolType().symbol())
       : Set.of();
 
-    Map<String, Set<String>> paramDeps = parameterDependencies(method);
+    var inputFile = context.getInputFile();
+    Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> injectionPoints = parameterDependencies(method, inputFile);
+    Map<String, Set<String>> paramDeps = toNameMap(injectionPoints);
     boolean isPrimary = beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION);
     String qualifier = extractQualifier(beanMeta);
     var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
-    var inputFile = context.getInputFile();
 
     for (String beanName : beanNames) {
-      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, qualifier, paramDeps, typeHierarchy);
+      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, qualifier, paramDeps, injectionPoints, typeHierarchy);
       collectedBeans.add(beanData);
       beansCollectedAtFileLevel.add(beanData);
     }
   }
 
-  private static Map<String, Set<String>> collectAutowiredDependencies(ClassTree classTree) {
-    Map<String, Set<String>> deps = new LinkedHashMap<>();
+  private static Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> collectAutowiredDependencies(ClassTree classTree, InputFile inputFile) {
+    Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> deps = new LinkedHashMap<>();
     List<MethodTree> unannotatedConstructors = new ArrayList<>();
     boolean hasAutowiredConstructor = false;
     for (Tree member : classTree.members()) {
       if (member instanceof VariableTree field && field.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
         String typeFqn = field.symbol().type().fullyQualifiedName();
         String name = dependencyKey(field.simpleName().name(), extractQualifier(field.symbol().metadata()));
-        deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(name);
+        var location = new BeanLocation(inputFile, AnalyzerMessage.textSpanFor(field.simpleName()));
+        deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(new TypeToDependenciesIndex.InjectionPoint(name, location));
       } else if (member instanceof MethodTree method) {
         if (method.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
           hasAutowiredConstructor |= method.is(Tree.Kind.CONSTRUCTOR);
-          parameterDependencies(method).forEach((type, names) ->
-            deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(names));
+          parameterDependencies(method, inputFile).forEach((type, points) ->
+            deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(points));
         } else if (method.is(Tree.Kind.CONSTRUCTOR)) {
           unannotatedConstructors.add(method);
         }
       }
     }
     if (!hasAutowiredConstructor && unannotatedConstructors.size() == 1) {
-      parameterDependencies(unannotatedConstructors.get(0)).forEach((type, names) ->
-        deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(names));
+      parameterDependencies(unannotatedConstructors.get(0), inputFile).forEach((type, points) ->
+        deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(points));
     }
     return deps;
   }
 
-  private static Map<String, Set<String>> parameterDependencies(MethodTree method) {
-    Map<String, Set<String>> deps = new LinkedHashMap<>();
+  private static Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> parameterDependencies(MethodTree method, InputFile inputFile) {
+    Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> deps = new LinkedHashMap<>();
     for (var p : method.parameters()) {
       String typeFqn = p.symbol().type().fullyQualifiedName();
       String name = dependencyKey(p.simpleName().name(), extractQualifier(p.symbol().metadata()));
-      deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(name);
+      var location = new BeanLocation(inputFile, AnalyzerMessage.textSpanFor(p.simpleName()));
+      deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(new TypeToDependenciesIndex.InjectionPoint(name, location));
     }
     return deps;
+  }
+
+  private static Map<String, Set<String>> toNameMap(Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> injectionPointsByType) {
+    Map<String, Set<String>> names = new LinkedHashMap<>();
+    injectionPointsByType.forEach((typeFqn, points) ->
+      names.put(typeFqn, points.stream()
+        .map(TypeToDependenciesIndex.InjectionPoint::name)
+        .collect(Collectors.toCollection(LinkedHashSet::new))));
+    return names;
   }
 
   private static String dependencyKey(String fieldOrParamName, @Nullable String qualifier) {
