@@ -19,12 +19,9 @@ package org.sonar.java.checks.helpers;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
 
 /**
  * Recognizes strings that are most likely not hand-written and maintained by developers.
@@ -76,31 +73,10 @@ public final class GeneratedStringLiteralRecognizer {
   }
 
   private static boolean isAnnotationType(AnnotationTree annotation, String fullyQualifiedName) {
-    TypeTree annotationTypeTree = annotation.annotationType();
-    Type annotationType = annotationTypeTree.symbolType();
-    if (!annotationType.isUnknown()) {
-      return annotationType.is(fullyQualifiedName);
-    }
-
-    String annotationName = ExpressionsHelper.concatenate((ExpressionTree) annotationTypeTree);
-    if (fullyQualifiedName.equals(annotationName)) {
-      return true;
-    }
-
+    Type annotationType = annotation.symbolType();
     String unqualifiedName = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf('.') + 1);
-    return annotationName.equals(unqualifiedName)
-      && hasExplicitImport(annotation, fullyQualifiedName);
-  }
-
-  private static boolean hasExplicitImport(Tree tree, String fullyQualifiedName) {
-    CompilationUnitTree compilationUnit = (CompilationUnitTree) ExpressionUtils.getParentOfType(tree, Tree.Kind.COMPILATION_UNIT);
-    return compilationUnit.imports().stream()
-      .filter(ImportTree.class::isInstance)
-      .map(ImportTree.class::cast)
-      .filter(importTree -> !importTree.isStatic())
-      .map(ImportTree::qualifiedIdentifier)
-      .anyMatch(imported -> imported instanceof ExpressionTree expression
-        && fullyQualifiedName.equals(ExpressionsHelper.concatenate(expression)));
+    return annotationType.is(fullyQualifiedName)
+      || (annotationType.isUnknown() && annotationType.name().equals(unqualifiedName));
   }
 
 }

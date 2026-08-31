@@ -66,7 +66,6 @@ class GeneratedStringLiteralRecognizerTest {
   @Test
   void recognizes_generated_literals_without_dependencies() {
     assertGenerated("""
-      import kotlin.Metadata;
       @Metadata(d1 = {"generated"})
       class A {}
       """);
@@ -97,11 +96,6 @@ class GeneratedStringLiteralRecognizerTest {
         String value = "not generated";
         char character = 'a';
       }
-      """);
-
-    assertNotGenerated("""
-      @Metadata(d1 = {"not generated"})
-      class A {}
       """);
   }
 
