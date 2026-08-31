@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
@@ -632,5 +633,69 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     when(cacheContext.getReadCache()).thenReturn(readCache);
     when(cacheContext.getWriteCache()).thenReturn(writeCache);
     return cacheContext;
+  }
+
+  // ---- TypeToDependenciesIndex -------------------------------------------------
+  @ParameterizedTest(name = "{0}")
+  @ValueSource(strings = {"src/test/files/springcontext/AutowiredDependencies.java",
+    "src/test/files/springcontext/AutowiredConstructorDependencies.java"
+  })
+  void regular_dependencies_registered_in_index(String filePath) {
+    scan(filePath);
+    assertThat(model.getTypeToDependenciesIndex().getNamesForType("org.springframework.context.ApplicationContext")).containsOnly("applicationContext");
+    assertThat(model.getTypeToDependenciesIndex().getNamesForType("org.springframework.core.env.Environment")).containsOnly("environment");
+  }
+
+  @Test
+  void dependency_with_qualifier_registered_with_qualifier_value() {
+    scan("src/test/files/springcontext/QualifiedBeanMethodDependencies.java");
+    assertThat(model.getTypeToDependenciesIndex().getNamesForType("org.springframework.context.ApplicationContext")).containsOnly("primaryContext");
+  }
+
+  @Test
+  void dependency_with_qualifier_on_constructor_registered_with_qualifier_value() {
+    scan("src/test/files/springcontext/OrderService.java");
+    assertThat(model.getTypeToDependenciesIndex().getNamesForType("PaymentProcessor")).containsOnly("paypal");
+  }
+
+  @Test
+  void dependencies_in_multiple_files_all_registered() {
+    scan("src/test/files/springcontext/OrderService.java", "src/test/files/springcontext/BlankQualifierDependency.java");
+    assertThat(model.getTypeToDependenciesIndex().getNamesForType("PaymentProcessor")).containsOnly("paypal");
+    assertThat(model.getTypeToDependenciesIndex().getNamesForType("org.springframework.context.ApplicationContext")).containsOnly("applicationContext");
+  }
+
+  @Test
+  void scanWithoutParsing_restores_dependencies_index_from_cache() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/QualifiedFieldDependencies.java"));
+    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
+    String encodedName = Base64.getEncoder().encodeToString("qualifiedFieldDependencies".getBytes(StandardCharsets.UTF_8));
+    String encodedAppContext = Base64.getEncoder().encodeToString("org.springframework.context.ApplicationContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
+    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
+    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false||"
+      + encodedAppContext + ":" + encodedPrimaryContext
+      + "," + encodedEnvType + ":" + encodedEnvironment
+      + "|checks.spring.context.QualifiedFieldDependencies";
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+
+    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
+    when(moduleScannerContext.getModuleKey()).thenReturn("");
+    gatherer.gatherSpringContextData(moduleScannerContext, model);
+
+    assertThat(model.getTypeToDependenciesIndex().getNamesForType("org.springframework.context.ApplicationContext"))
+      .containsOnly("primaryContext");
+    assertThat(model.getTypeToDependenciesIndex().getNamesForType("org.springframework.core.env.Environment"))
+      .containsOnly("environment");
   }
 }

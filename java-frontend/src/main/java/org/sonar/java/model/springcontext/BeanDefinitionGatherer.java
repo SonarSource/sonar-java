@@ -67,8 +67,10 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  *   <li>Implicit single-constructor injection (no {@code @Autowired} required)</li>
  * </ul>
  *
- * <p>Also populates {@link TypeToBeanNamesIndex} with the full type hierarchy of each bean,
- * so that rules can look up all beans assignable to a given type.
+ * <p>Also populates:
+ * <ul>
+ *   <li>{@link TypeToBeanNamesIndex} with the full type hierarchy of each bean</li>
+ *   <li>{@link TypeToDependenciesIndex} with the full type hierarchy of each bean</li>
  */
 public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
@@ -213,6 +215,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       for (String typeFqn : data.typeHierarchy()) {
         springContextModel.getTypeToBeanNamesIndex().addBeanForType(typeFqn, data.beanName());
       }
+      data.dependingBeans().forEach((typeFqn, names) ->
+        names.forEach(name -> springContextModel.getTypeToDependenciesIndex().addBeanForType(typeFqn, name)));
     }
   }
 
