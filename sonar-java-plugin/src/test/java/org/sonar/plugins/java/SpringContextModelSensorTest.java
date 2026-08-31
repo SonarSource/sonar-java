@@ -66,9 +66,9 @@ class SpringContextModelSensorTest {
     Issue issue = context.allIssues().iterator().next();
     assertThat(issue.ruleKey()).isEqualTo(RuleKey.of("java", "S9352"));
     assertThat(issue.primaryLocation().message())
-      .isEqualTo("Multiple beans of type \"org.springframework.context.ApplicationContextAware\" match this dependency"
+      .isEqualTo("Multiple beans match this dependency"
         + " (componentOne, componentTwo); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".");
-    assertThat(issue.primaryLocation().textRange().start().line()).isEqualTo(10);
+    assertThat(issue.primaryLocation().textRange().start().line()).isEqualTo(13);
   }
 
   @Test
