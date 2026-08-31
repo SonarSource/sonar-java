@@ -16,57 +16,126 @@
  */
 package org.sonar.java.checks.helpers;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class GeneratedStringLiteralRecognizerTest {
 
-  private static final String TEST_FILE = "checks/helpers/GeneratedStringLiteralRecognizerSample.java";
-
   @Test
-  void test() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath(TEST_FILE))
-      .withCheck(new TestCheck())
-      .verifyIssues();
-  }
-
-  @Test
-  void test_without_dependencies() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath(TEST_FILE))
-      .withCheck(new TestCheck())
-      .withClassPath(List.of())
-      .verifyIssues();
-  }
-
-  @Test
-  void test_without_semantic() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath(TEST_FILE))
-      .withCheck(new TestCheck())
-      .withoutSemantic()
-      .verifyIssues();
-  }
-
-  private static class TestCheck extends IssuableSubscriptionVisitor {
-
-    @Override
-    public List<Tree.Kind> nodesToVisit() {
-      return List.of(Tree.Kind.STRING_LITERAL, Tree.Kind.CHAR_LITERAL, Tree.Kind.TEXT_BLOCK);
-    }
-
-    @Override
-    public void visitNode(Tree tree) {
-      if (GeneratedStringLiteralRecognizer.isGenerated((LiteralTree) tree)) {
-        reportIssue(tree, "Recognized as generated.");
+  void recognizes_generated_literals() {
+    assertGenerated("""
+      package kotlin;
+      @interface Metadata {
+        String[] d1();
       }
-    }
+      @Metadata(d1 = {"generated"})
+      class A {}
+      """);
+
+    assertGenerated("""
+      package kotlin.jvm.internal;
+      @interface SourceDebugExtension {
+        String[] value();
+      }
+      @SourceDebugExtension({
+        "generated",
+        \"""
+          generated text block
+          \"""})
+      class A {}
+      """);
+
+    assertGenerated("""
+      package kotlin.coroutines.jvm.internal;
+      @interface DebugMetadata {
+        String c();
+        String f();
+        String m();
+        String[] n();
+      }
+      @DebugMetadata(c = "c", f = "f", m = "m", n = {"n"})
+      class A {}
+      """);
+  }
+
+  @Test
+  void recognizes_generated_literals_without_dependencies() {
+    assertGenerated("""
+      import kotlin.Metadata;
+      @Metadata(d1 = {"generated"})
+      class A {}
+      """);
+
+    assertGenerated("""
+      @kotlin.jvm.internal.SourceDebugExtension({"generated"})
+      class A {}
+      """);
+  }
+
+  @Test
+  void does_not_recognize_other_literals() {
+    assertNotGenerated("""
+      package kotlin;
+      @interface Metadata {
+        String[] d2();
+      }
+      @Metadata(d2 = {"not generated"})
+      class A {}
+      """);
+
+    assertNotGenerated("""
+      @interface NotKotlinMetadata {
+        String[] d1();
+      }
+      @NotKotlinMetadata(d1 = {"not generated"})
+      class A {
+        String value = "not generated";
+        char character = 'a';
+      }
+      """);
+
+    assertNotGenerated("""
+      @Metadata(d1 = {"not generated"})
+      class A {}
+      """);
+  }
+
+  @Test
+  void does_not_recognize_shadowed_kotlin_metadata() {
+    assertNotGenerated("""
+      import kotlin.Metadata;
+      class A {
+        @interface Metadata {
+          String[] d1();
+        }
+        @Metadata(d1 = {"not generated"})
+        class B {}
+      }
+      """);
+  }
+
+  private static void assertGenerated(String source) {
+    assertThat(literals(source)).allMatch(GeneratedStringLiteralRecognizer::isGenerated);
+  }
+
+  private static void assertNotGenerated(String source) {
+    assertThat(literals(source)).noneMatch(GeneratedStringLiteralRecognizer::isGenerated);
+  }
+
+  private static List<LiteralTree> literals(String source) {
+    List<LiteralTree> literals = new ArrayList<>();
+    JParserTestUtils.parse(source).accept(new BaseTreeVisitor() {
+      @Override
+      public void visitLiteral(LiteralTree tree) {
+        literals.add(tree);
+      }
+    });
+    assertThat(literals).isNotEmpty();
+    return literals;
   }
 }
