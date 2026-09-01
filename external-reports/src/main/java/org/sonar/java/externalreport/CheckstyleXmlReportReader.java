@@ -112,15 +112,15 @@ class CheckstyleXmlReportReader {
     String source = getAttributeValue(element, SOURCE);
     String line = getAttributeValue(element, LINE);
     String message = getAttributeValue(element, MESSAGE);
-    if (!source.startsWith(CHECKSTYLE_PREFIX)) {
-      LOG.debug("Unexpected rule key without '{}' prefix: '{}'", CHECKSTYLE_PREFIX, source);
+    if (source.isEmpty()) {
+      LOG.debug("Unexpected error without rule key (missing 'source' attribute).");
       return;
     }
     if (message.isEmpty()) {
       LOG.debug("Unexpected error without message for rule: '{}'", source);
       return;
     }
-    String key = source.substring(CHECKSTYLE_PREFIX.length());
+    String key = source.startsWith(CHECKSTYLE_PREFIX) ? source.substring(CHECKSTYLE_PREFIX.length()) : source;
     consumer.onError(context, inputFile, key, line, message);
   }
 
