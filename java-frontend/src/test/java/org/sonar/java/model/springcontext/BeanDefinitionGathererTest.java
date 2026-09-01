@@ -345,7 +345,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
     String encodedName = Base64.getEncoder().encodeToString("simpleComponent".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.SimpleComponent|checks.spring.context|6:6:6:21|false|||checks.spring.context.SimpleComponent";
+    String serialized = encodedName + "|checks.spring.context.SimpleComponent|checks.spring.context|6:6:6:21|false||checks.spring.context.SimpleComponent";
 
     JavaReadCache readCache = mock(JavaReadCache.class);
     when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
@@ -466,7 +466,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
     String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
     // Field declaration lines in QualifiedFieldDependencies.java: applicationContext=14, environment=17.
-    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false||"
+    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
       + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
       + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
       + "|checks.spring.context.QualifiedFieldDependencies";
@@ -540,7 +540,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/ComponentImplementingInterface.java"));
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
     String encodedName = Base64.getEncoder().encodeToString("componentImplementingInterface".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.ComponentImplementingInterface|checks.spring.context|8:6:8:36|false||"
+    String serialized = encodedName + "|checks.spring.context.ComponentImplementingInterface|checks.spring.context|8:6:8:36|false|"
       + "|checks.spring.context.ComponentImplementingInterface"
       + ";org.springframework.context.ApplicationContextAware"
       + ";org.springframework.beans.factory.Aware";
@@ -731,7 +731,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
     String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
     // Field declaration lines in QualifiedFieldDependencies.java: applicationContext=14, environment=17.
-    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false||"
+    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
       + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
       + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
       + "|checks.spring.context.QualifiedFieldDependencies";

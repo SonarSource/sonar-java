@@ -18,10 +18,8 @@ package org.sonar.java.checks.spring;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanDefinitionRegistry;
@@ -56,7 +54,7 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
         // excluding all beans with a configured profile, no matter what the profile is, to avoid FPs
         Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
         if (effectiveCandidates.size() > 1) {
-          for (InjectionPoint unresolvedInjectionPoint : computeUnresolvedInjectionPoints(effectiveCandidates, injectionPoints, registry)) {
+          for (InjectionPoint unresolvedInjectionPoint : computeUnresolvedInjectionPoints(effectiveCandidates, injectionPoints)) {
             issues.add(new SpringContextIssue(unresolvedInjectionPoint.location(), message(effectiveCandidates)));
           }
         }
@@ -70,28 +68,12 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
       || hasExactlyOnePrimaryCandidate(candidates, registry);
   }
 
-  private static Set<InjectionPoint> computeUnresolvedInjectionPoints(Set<String> candidates, Set<InjectionPoint> injectionPointNames, BeanDefinitionRegistry registry) {
-    return injectionPointNames.stream().filter(injectionPoint -> !hasExactlyOneMatchingCandidate(injectionPoint.name(), candidates, registry)).collect(Collectors.toSet());
+  private static Set<InjectionPoint> computeUnresolvedInjectionPoints(Set<String> candidates, Set<InjectionPoint> injectionPointNames) {
+    return injectionPointNames.stream().filter(injectionPoint -> !candidates.contains(injectionPoint.name())).collect(Collectors.toSet());
   }
 
   private static boolean hasExactlyOnePrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry) {
     return candidates.stream().filter(candidate -> isPrimary(registry, candidate)).count() == 1;
-  }
-
-  private static boolean hasExactlyOneMatchingCandidate(String injectionPointName, Set<String> candidates, BeanDefinitionRegistry registry) {
-    long matchCount = candidates.stream()
-      .filter(candidate -> candidate.equals(injectionPointName) || injectionPointName.equals(qualifierOf(registry, candidate)))
-      .count();
-    return matchCount == 1;
-  }
-
-  @Nullable
-  private static String qualifierOf(BeanDefinitionRegistry registry, String beanName) {
-    return registry.getByName(beanName).stream()
-      .map(BeanDefinitionHolder::getQualifier)
-      .filter(Objects::nonNull)
-      .findFirst()
-      .orElse(null);
   }
 
   private static Set<String> excludeCandidatesWithProfile(Set<String> candidates, BeanDefinitionRegistry registry) {

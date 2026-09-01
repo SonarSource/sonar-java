@@ -66,10 +66,6 @@ public class BeanDefinitionHolder {
   /** Whether the bean is marked as {@code @Primary}, making it the preferred candidate for autowiring. */
   private boolean isPrimary = false;
 
-  /** Value of the {@code @Qualifier} annotation declared on the bean itself, or {@code null} if absent. */
-  @Nullable
-  private String qualifier;
-
   private BeanDefinitionHolder(String type, String module, String beanPackage, BeanLocation location) {
     this.type = type;
     this.module = module;
@@ -87,10 +83,6 @@ public class BeanDefinitionHolder {
 
   private void setPrimary() {
     this.isPrimary = true;
-  }
-
-  private void setQualifier(@Nullable String qualifier) {
-    this.qualifier = qualifier;
   }
 
   public String getType() {
@@ -122,11 +114,6 @@ public class BeanDefinitionHolder {
     return isPrimary;
   }
 
-  @Nullable
-  public String getQualifier() {
-    return qualifier;
-  }
-
   public static class Builder {
     private final String type;
     private final String module;
@@ -136,8 +123,6 @@ public class BeanDefinitionHolder {
     @Nullable
     private String profiles;
     private boolean isPrimary = false;
-    @Nullable
-    private String qualifier;
 
     public Builder(String type, String module, String beanPackage, BeanLocation location) {
       this.type = type;
@@ -161,17 +146,11 @@ public class BeanDefinitionHolder {
       return this;
     }
 
-    public Builder qualifier(@Nullable String qualifier) {
-      this.qualifier = qualifier;
-      return this;
-    }
-
     public BeanDefinitionHolder build() {
       BeanDefinitionHolder holder = new BeanDefinitionHolder(type, module, beanPackage, location);
       holder.setDependingBeans(dependingBeans.entrySet().stream()
         .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, e -> Set.copyOf(e.getValue()))));
       holder.setProfiles(profiles);
-      holder.setQualifier(qualifier);
       if (isPrimary) {
         holder.setPrimary();
       }

@@ -88,12 +88,6 @@ class AmbiguousDependencyCheckTest {
     assertThat(check.execute(model)).hasSize(1);
   }
 
-  @Test
-  void qualifier_declared_on_the_bean_itself_resolves_ambiguity() {
-    SpringContextModel model = buildModel("QualifierOnBeanComponentA.java", "QualifierOnBeanComponentB.java", "QualifierOnBeanConsumer.java");
-    assertThat(check.execute(model)).isEmpty();
-  }
-
   /**
    * Runs {@link BeanDefinitionGatherer} over the given files (relative to {@link #BASE_PATH} under
    * {@code src/main/java}) into a single, freshly built {@link SpringContextModel}, mirroring how
