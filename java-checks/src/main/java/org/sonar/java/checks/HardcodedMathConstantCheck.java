@@ -31,7 +31,11 @@ public class HardcodedMathConstantCheck extends IssuableSubscriptionVisitor {
     PI(Math.PI, "Math.PI", "pi"),
     E(Math.E, "Math.E", "Euler's number"),
     SQRT2(Math.sqrt(2), "Math.sqrt(2)", "the square root of 2"),
-    LN2(Math.log(2), "Math.log(2)", "the natural logarithm of 2");
+    SQRT3(Math.sqrt(3), "Math.sqrt(3)", "the square root of 3"),
+    LN2(Math.log(2), "Math.log(2)", "the natural logarithm of 2"),
+    LN10(Math.log(10), "Math.log(10)", "the natural logarithm of 10"),
+    LOG10E(Math.log10(Math.E), "Math.log10(Math.E)", "the base-10 logarithm of Euler's number"),
+    PHI((1 + Math.sqrt(5)) / 2, "(1 + Math.sqrt(5)) / 2", "the golden ratio");
 
     final double value;
     final String replacement;

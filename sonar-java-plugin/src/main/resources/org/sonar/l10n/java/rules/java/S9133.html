@@ -14,14 +14,18 @@ quality.</p>
 <p>Common constants that are frequently approximated include:</p>
 <ul>
   <li>π (pi): approximately 3.14159…​ - available as a predefined constant in standard mathematical libraries</li>
-  <li>e (Euler’s number): approximately 2.71828…​ - available as a predefined constant in standard mathematical libraries</li>
+  <li>e (Euler's number): approximately 2.71828…​ - available as a predefined constant in standard mathematical libraries</li>
   <li>√2: approximately 1.41421…​ - can be computed using library functions that calculate square roots of literal values</li>
+  <li>√3: approximately 1.73205…​ - can be computed using library functions that calculate square roots of literal values</li>
   <li>ln(2): approximately 0.69314…​ - can be computed using library functions that calculate natural logarithms of literal values</li>
+  <li>ln(10): approximately 2.30258…​ - can be computed using library functions that calculate natural logarithms of literal values</li>
+  <li>log₁₀(e): approximately 0.43429…​ - can be computed using library functions that calculate base-10 logarithms</li>
+  <li>φ (golden ratio): approximately 1.61803…​ - can be computed as <code>(1 + √5) / 2</code></li>
 </ul>
 <p>If a literal value happens to be close to one of these constants but represents something else entirely, such as a version number or a
 domain-specific threshold, mark the issue as won’t-fix.</p>
 <p>In Java, these constants and functions are available in the <code>Math</code> class: <code>Math.PI</code>, <code>Math.E</code>,
-<code>Math.sqrt(2)</code>, and <code>Math.log(2)</code>.</p>
+<code>Math.sqrt(2)</code>, <code>Math.sqrt(3)</code>, <code>Math.log(2)</code>, <code>Math.log(10)</code>, and <code>Math.log10(Math.E)</code>.</p>
 <h3>What is the potential impact?</h3>
 <p>Using hard-coded approximations instead of predefined constants reduces code quality in three main ways:</p>
 <ul>
@@ -34,8 +38,9 @@ domain-specific threshold, mark the issue as won’t-fix.</p>
 </ul>
 <h2>How to fix it</h2>
 <p>Replace hard-coded numeric approximations with the appropriate predefined constant from the <code>Math</code> class. For π, use
-<code>Math.PI</code>. For Euler’s number, use <code>Math.E</code>. For other common constants that don’t have direct equivalents, use mathematical
-expressions like <code>Math.sqrt(2)</code> or <code>Math.log(2)</code>.</p>
+<code>Math.PI</code>. For Euler's number, use <code>Math.E</code>. For other common constants that don't have direct equivalents, use mathematical
+expressions like <code>Math.sqrt(2)</code>, <code>Math.sqrt(3)</code>, <code>Math.log(2)</code>, <code>Math.log(10)</code>,
+<code>Math.log10(Math.E)</code>, or <code>(1 + Math.sqrt(5)) / 2</code> for the golden ratio.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
