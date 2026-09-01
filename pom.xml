@@ -113,9 +113,8 @@
     <mockito-agent-jar>mockito-core-${mockito-core.version}.jar</mockito-agent-jar>
 
     <!-- The product must work with the SLF4J provided in the Plugin API. -->
-    <slf4j.version>1.7.36</slf4j.version>
-    <!-- SonarLint Core, used in plugin ITs, requires new SLF4J. -->
-    <slf4j.test.version>2.0.18</slf4j.test.version>
+    <slf4j.version>2.0.18</slf4j.version>
+    <logback.version>1.6.3</logback.version>
 
   </properties>
 
@@ -284,6 +283,16 @@
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${logback.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
