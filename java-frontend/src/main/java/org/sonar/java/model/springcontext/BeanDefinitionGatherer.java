@@ -69,7 +69,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  * <p>Also populates:
  * <ul>
  *   <li>{@link TypeToBeanNamesIndex} with the full type hierarchy of each bean</li>
- *   <li>{@link TypeToDependenciesIndex} with the full type hierarchy of each bean</li>
+ *   <li>{@link TypeToDependenciesIndex} with all the dependencies collected by type</li>
+ * </ul>
  */
 public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 

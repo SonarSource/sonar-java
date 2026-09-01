@@ -465,7 +465,6 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
     String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
     String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
-    // Field declaration lines in QualifiedFieldDependencies.java: applicationContext=14, environment=17.
     String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
       + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
       + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
@@ -704,7 +703,6 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     var injectionPoints = model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext");
     assertThat(injectionPoints).hasSize(2);
     assertThat(injectionPoints).extracting(TypeToDependenciesIndex.InjectionPoint::name).containsOnly("applicationContext");
-    // Same type and same name, but two distinct occurrences — each must keep its own location, not collapse into one.
     assertThat(injectionPoints)
       .extracting(p -> p.location().inputFile(), p -> p.location().mainLocation().startLine)
       .containsExactlyInAnyOrder(
@@ -730,7 +728,6 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
     String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
     String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
-    // Field declaration lines in QualifiedFieldDependencies.java: applicationContext=14, environment=17.
     String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
       + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
       + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"

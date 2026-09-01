@@ -22,7 +22,6 @@ import java.util.List;
  * Registry of all {@link SpringContextCheck}s to be run against the {@code SpringContextModel}.
  *
  * <p>Use {@link #getAllChecks()} to obtain the full list of checks to be run by the scanner.
- * New checks should be added here as the set of Spring context issues we detect grows.
  */
 public final class SpringContextChecks {
 
@@ -31,7 +30,7 @@ public final class SpringContextChecks {
   }
 
   /**
-   * Returns all checks that reason over the {@code SpringContextModel}.
+   * Return all checks that reason over the {@code SpringContextModel}.
    */
   public static List<SpringContextCheck> getAllChecks() {
     return List.of(

@@ -42,15 +42,6 @@ public class BeanDefinitionRegistry {
     return beanDefinitions.getOrDefault(beanName, List.of());
   }
 
-  /**
-   * Returns every bean definition registered so far, regardless of the name it is registered under.
-   */
-  public List<BeanDefinitionHolder> getAll() {
-    return beanDefinitions.values().stream()
-      .flatMap(List::stream)
-      .toList();
-  }
-
   public void addBeanDefinition(String beanName, BeanDefinitionHolder beanDefinition) {
     beanDefinitions.computeIfAbsent(beanName, k -> new ArrayList<>()).add(beanDefinition);
   }

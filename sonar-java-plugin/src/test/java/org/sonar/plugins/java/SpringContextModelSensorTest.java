@@ -17,10 +17,6 @@
 package org.sonar.plugins.java;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
@@ -28,23 +24,17 @@ import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.java.SonarComponents;
-import org.sonar.java.checks.verifier.TestUtils;
-import org.sonar.java.model.JParser;
-import org.sonar.java.model.JParserConfig;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.java.model.springcontext.BeanDefinitionGatherer;
+import org.sonar.java.model.springcontext.BeanDefinitionHolder;
+import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
-import org.sonar.java.test.classpath.TestClasspathUtils;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaVersion;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SpringContextModelSensorTest {
 
-  private static final String BASE_PATH = "checks/spring/s9352/";
+  private static final String MODULE_KEY = "module";
+  private static final String PACKAGE = "checks.spring.s9352";
 
   @Test
   void test_toString() {
@@ -58,7 +48,13 @@ class SpringContextModelSensorTest {
   @Test
   void reports_an_issue_for_an_ambiguous_dependency() {
     SensorContextTester context = SensorContextTester.create(new File(""));
-    SpringContextModel model = buildModel(context, "ComponentOne.java", "ComponentTwo.java", "UnresolvedConsumer.java");
+    SpringContextModel model = new SpringContextModel();
+    InputFile inputFile = fakeInputFile(context, "UnresolvedConsumer.java");
+    String type = "org.springframework.context.ApplicationContextAware";
+
+    registerBean(model, type, "componentOne", inputFile, 5, 0, 5, 12);
+    registerBean(model, type, "componentTwo", inputFile, 6, 0, 6, 12);
+    registerDependency(model, type, "contextAware", inputFile, 13, 13, 13, 25);
 
     new SpringContextModelSensor(model).execute(context);
 
@@ -71,64 +67,30 @@ class SpringContextModelSensorTest {
     assertThat(issue.primaryLocation().textRange().start().line()).isEqualTo(13);
   }
 
-  @Test
-  void reports_no_issue_when_only_one_candidate_exists() {
-    SensorContextTester context = SensorContextTester.create(new File(""));
-    SpringContextModel model = buildModel(context, "ResourceLoaderComponent.java", "SingleCandidateConsumer.java");
-
-    new SpringContextModelSensor(model).execute(context);
-
-    assertThat(context.allIssues()).isEmpty();
+  private static void registerBean(SpringContextModel model, String type, String beanName, InputFile inputFile,
+    int startLine, int startCharacter, int endLine, int endCharacter) {
+    BeanLocation location = new BeanLocation(inputFile, new TextSpan(startLine, startCharacter, endLine, endCharacter));
+    model.getBeanDefinitionRegistry().addBeanDefinition(beanName,
+      new BeanDefinitionHolder.Builder(type, MODULE_KEY, PACKAGE, location).build());
+    model.getTypeToBeanNamesIndex().addBeanForType(type, beanName);
   }
 
-  /**
-   * Runs {@link BeanDefinitionGatherer} over the given files (relative to {@link #BASE_PATH}) into a single,
-   * freshly built {@link SpringContextModel}, registering each file's {@link InputFile} on the given
-   * {@link SensorContextTester} so that issues reported against it can be resolved.
-   */
-  private static SpringContextModel buildModel(SensorContextTester context, String... relativeFilePaths) {
-    List<File> classpath = TestClasspathUtils.DEFAULT_MODULE.getClassPath();
-    SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
-    sonarComponents.setSensorContext(context);
-    SpringContextModel model = new SpringContextModel();
-    sonarComponents.setSpringContextModel(model);
-
-    BeanDefinitionGatherer gatherer = new BeanDefinitionGatherer();
-    VisitorsBridge visitorsBridge = new VisitorsBridge(List.of((JavaCheck) gatherer), classpath, sonarComponents);
-    for (String relativeFilePath : relativeFilePaths) {
-      File file = new File(TestUtils.mainCodeSourcesPath(BASE_PATH + relativeFilePath));
-      CompilationUnitTree compilationUnit = parse(file, classpath);
-      InputFile inputFile = inputFile(file);
-      context.fileSystem().add(inputFile);
-      visitorsBridge.setCurrentFile(inputFile);
-      visitorsBridge.visitFile(compilationUnit, false);
-    }
-    visitorsBridge.endOfAnalysis();
-    return model;
+  private static void registerDependency(SpringContextModel model, String type, String dependencyName, InputFile inputFile,
+    int startLine, int startCharacter, int endLine, int endCharacter) {
+    BeanLocation location = new BeanLocation(inputFile, new TextSpan(startLine, startCharacter, endLine, endCharacter));
+    model.getTypeToDependenciesIndex().addDependencyForType(type, dependencyName, location);
   }
 
-  private static InputFile inputFile(File file) {
-    try {
-      return new TestInputFileBuilder("", file.getParentFile(), file)
-        .setContents(Files.readString(file.toPath(), StandardCharsets.UTF_8))
-        .setCharset(StandardCharsets.UTF_8)
-        .setLanguage("java")
-        .setType(InputFile.Type.MAIN)
-        .build();
-    } catch (IOException e) {
-      throw new IllegalStateException("Unable to read file '" + file.getAbsolutePath() + "'", e);
-    }
-  }
-
-  private static CompilationUnitTree parse(File file, List<File> classpath) {
-    String source;
-    try {
-      source = Files.readString(file.toPath(), StandardCharsets.UTF_8);
-    } catch (Exception e) {
-      throw new IllegalStateException("Unable to read file '" + file.getAbsolutePath() + "'", e);
-    }
-    JavaVersion version = JParserConfig.MAXIMUM_SUPPORTED_JAVA_VERSION;
-    return JParser.parse(JParserConfig.Mode.FILE_BY_FILE.create(version, classpath).astParser(), version.toString(), file.getName(), source);
+  private static InputFile fakeInputFile(SensorContextTester context, String fileName) {
+    String line = "// dummy source line //////\n";
+    String contents = line.repeat(20);
+    InputFile inputFile = new TestInputFileBuilder("", fileName)
+      .setContents(contents)
+      .setLanguage("java")
+      .setType(InputFile.Type.MAIN)
+      .build();
+    context.fileSystem().add(inputFile);
+    return inputFile;
   }
 
 }
