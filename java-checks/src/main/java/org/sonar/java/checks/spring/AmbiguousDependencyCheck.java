@@ -56,7 +56,7 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
         // excluding all beans with a configured profile, no matter what the profile is, to avoid FPs
         Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
         if (effectiveCandidates.size() > 1) {
-          for (InjectionPoint unresolvedInjectionPoint : computeUnmatchingNames(effectiveCandidates, injectionPoints, registry)) {
+          for (InjectionPoint unresolvedInjectionPoint : computeUnresolvedInjectionPoints(effectiveCandidates, injectionPoints, registry)) {
             issues.add(new SpringContextIssue(unresolvedInjectionPoint.location(), message(effectiveCandidates)));
           }
         }
@@ -70,17 +70,19 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
       || hasExactlyOnePrimaryCandidate(candidates, registry);
   }
 
-  private static Set<InjectionPoint> computeUnmatchingNames(Set<String> candidates, Set<InjectionPoint> injectionPointNames, BeanDefinitionRegistry registry) {
-    return injectionPointNames.stream().filter(injectionPoint -> !matchesCandidate(injectionPoint.name(), candidates, registry)).collect(Collectors.toSet());
+  private static Set<InjectionPoint> computeUnresolvedInjectionPoints(Set<String> candidates, Set<InjectionPoint> injectionPointNames, BeanDefinitionRegistry registry) {
+    return injectionPointNames.stream().filter(injectionPoint -> !hasExactlyOneMatchingCandidate(injectionPoint.name(), candidates, registry)).collect(Collectors.toSet());
   }
 
   private static boolean hasExactlyOnePrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry) {
     return candidates.stream().filter(candidate -> isPrimary(registry, candidate)).count() == 1;
   }
 
-  private static boolean matchesCandidate(String injectionPointName, Set<String> candidates, BeanDefinitionRegistry registry) {
-    return candidates.contains(injectionPointName)
-      || candidates.stream().anyMatch(candidate -> injectionPointName.equals(qualifierOf(registry, candidate)));
+  private static boolean hasExactlyOneMatchingCandidate(String injectionPointName, Set<String> candidates, BeanDefinitionRegistry registry) {
+    long matchCount = candidates.stream()
+      .filter(candidate -> candidate.equals(injectionPointName) || injectionPointName.equals(qualifierOf(registry, candidate)))
+      .count();
+    return matchCount == 1;
   }
 
   @Nullable
