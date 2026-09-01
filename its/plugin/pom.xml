@@ -41,13 +41,6 @@
       <version>${sonarlint.plugin.api.version}</version>
       <scope>test</scope>
     </dependency>
-    <!-- sonarlint-core requires slf4j 2.x at runtime; override the parent's 1.7 management for this module. -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.test.version}</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
