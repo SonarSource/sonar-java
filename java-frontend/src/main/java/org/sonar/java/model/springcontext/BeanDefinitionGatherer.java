@@ -327,8 +327,6 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
         Object val = v.value();
         if (val instanceof Object[] arr) {
           return Arrays.stream(arr).filter(String.class::isInstance).map(String.class::cast);
-        } else if (val instanceof String s) {
-          return Stream.of(s);
         }
         return Stream.empty();
       })

@@ -169,6 +169,50 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     );
   }
 
+  @Test
+  void leaveFile_writes_profile_to_cache() {
+    WriteCache writeCache = mock(WriteCache.class);
+    SensorContextTester ctx = SensorContextTester.create(new File(""));
+    ctx.setCacheEnabled(true);
+    ctx.setNextCache(writeCache);
+
+    scan(ctx, "src/test/files/springcontext/ProfiledComponent.java");
+
+    var dataCaptor = ArgumentCaptor.forClass(byte[].class);
+    verify(writeCache).write(anyString(), dataCaptor.capture());
+    String serialized = new String(dataCaptor.getValue(), StandardCharsets.UTF_8);
+    String encodedProfiles = Base64.getEncoder().encodeToString("prod".getBytes(StandardCharsets.UTF_8));
+    assertThat(serialized).contains(encodedProfiles);
+  }
+
+  @Test
+  void scanWithoutParsing_restores_profile_from_cache() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/ProfiledComponent.java"));
+    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
+    String encodedName = Base64.getEncoder().encodeToString("profiledComponent".getBytes(StandardCharsets.UTF_8));
+    String encodedProfiles = Base64.getEncoder().encodeToString("prod".getBytes(StandardCharsets.UTF_8));
+    String serialized = encodedName + "|checks.spring.context.ProfiledComponent|checks.spring.context|8:6:8:23|false|"
+      + encodedProfiles + "||checks.spring.context.ProfiledComponent";
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+
+    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
+    when(moduleScannerContext.getModuleKey()).thenReturn("");
+    gatherer.gatherSpringContextData(moduleScannerContext, model);
+
+    var beans = model.getBeanDefinitionRegistry().getByName("profiledComponent");
+    assertThat(beans).hasSize(1);
+    assertThat(beans.get(0).getProfiles()).isEqualTo("prod");
+  }
+
   // ---- Anonymous / no annotation --------------------------------------------
 
   @Test
