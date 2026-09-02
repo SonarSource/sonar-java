@@ -55,6 +55,6 @@ public class TypeToBeanNamesIndex {
   }
 
   public Set<String> getKeys() {
-    return beanNamesByType.keySet();
+    return Collections.unmodifiableSet(beanNamesByType.keySet());
   }
 }
