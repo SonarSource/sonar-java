@@ -184,11 +184,7 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
       if (symbol != null) {
         pendingEntries.remove(symbol);
       } else {
-        ExpressionTree unwrapped = ExpressionUtils.skipParentheses(arg);
-        while (unwrapped.is(Tree.Kind.TYPE_CAST)) {
-          unwrapped = ExpressionUtils.skipParentheses(((TypeCastTree) unwrapped).expression());
-        }
-        removeUsedSymbols(unwrapped, pendingEntries);
+        removeUsedSymbols(arg, pendingEntries);
       }
     }
   }
@@ -197,9 +193,9 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
   private static Symbol getReceiverSymbol(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-      if (expression.is(Tree.Kind.IDENTIFIER) && !((IdentifierTree) expression).symbol().isUnknown()) {
-        return ((IdentifierTree) expression).symbol();
+      Symbol symbol = extractIdentifierSymbol(((MemberSelectExpressionTree) methodSelect).expression());
+      if (symbol != null && !symbol.isUnknown()) {
+        return symbol;
       }
     }
     return null;

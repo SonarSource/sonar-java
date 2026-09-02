@@ -261,6 +261,32 @@ class EmptyArchiveEntryCheckSample {
     zos.close();
   }
 
+  void writeViaCastReceiver() throws IOException {
+    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+    zos.putNextEntry(new ZipEntry("cast.txt"));
+    ((OutputStream) zos).write("data".getBytes());
+    zos.closeEntry(); // Compliant - written through cast receiver
+    zos.close();
+  }
+
+  void writeViaParenthesizedReceiver() throws IOException {
+    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+    zos.putNextEntry(new ZipEntry("paren.txt"));
+    (zos).write("data".getBytes());
+    zos.closeEntry(); // Compliant - written through parenthesized receiver
+    zos.close();
+  }
+
+  void writeViaCastReceiverInNestedStatement() throws IOException {
+    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+    zos.putNextEntry(new ZipEntry("nested-cast.txt"));
+    if (System.currentTimeMillis() > 0) {
+      ((OutputStream) zos).write("data".getBytes());
+    }
+    zos.closeEntry(); // Compliant - written through cast receiver in nested statement
+    zos.close();
+  }
+
   void writeViaObjectMapperWithParenthesizedArgument() throws IOException {
     FileOutputStream fos = new FileOutputStream("archive.zip");
     ZipOutputStream zos = new ZipOutputStream(fos);
