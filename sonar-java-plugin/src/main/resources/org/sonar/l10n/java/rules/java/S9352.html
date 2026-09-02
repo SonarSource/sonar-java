@@ -1,0 +1,188 @@
+<p>This is an issue when a dependency injection framework cannot determine which component to inject because multiple components of the same type
+exist in the application’s dependency injection container without explicit disambiguation.</p>
+<p>In Spring Framework specifically, this occurs when the application context contains multiple beans of the same type.</p>
+<h2>Why is this an issue?</h2>
+<p>Dependency injection frameworks rely on matching component types to injection points. When you register multiple components of the same type in the
+application context, the framework cannot automatically decide which component to inject.</p>
+<p>For example, if you define two database connection pool components and try to inject a connection pool dependency without specifying which one to
+use, the framework has no way to choose between them. This ambiguity violates the framework’s requirement for unambiguous component resolution.</p>
+<p>At application startup, the framework will throw an exception indicating multiple matching candidates exist and fail to initialize the context.
+This means your application will not start at all - it crashes before it can handle any requests or perform any work.</p>
+<p>This happens because autowiring by type requires exactly one matching component. When multiple candidates exist, explicit disambiguation is
+mandatory.</p>
+<p>Dependency injection frameworks provide two mechanisms to resolve this ambiguity:</p>
+<ul>
+  <li><strong>Qualifier annotations</strong> - Use a custom qualifier at the injection point to specify which of the multiple beans of the same type
+  to inject</li>
+  <li><strong>Primary designation</strong> - Designate one component as the default choice when multiple candidates exist</li>
+</ul>
+<p>Without using one of these mechanisms, the application context cannot be created, and the application will fail to start.</p>
+<p>In Spring specifically, this exception is called <code>NoUniqueBeanDefinitionException</code>. The disambiguation mechanisms are implemented using
+the <strong>@Qualifier</strong> annotation (to specify which bean to inject), the <strong>@Primary</strong> annotation (to designate the default
+bean), and the <strong>@Fallback</strong> annotation (available since Spring 6.2, to mark a bean as a last-resort candidate).</p>
+<h3>What is the potential impact?</h3>
+<p>The application will fail to start with an error indicating ambiguous dependency resolution during the dependency injection framework’s
+initialization phase. This prevents the application from running and requires immediate attention to resolve the configuration error.</p>
+<h2>How to fix it in Spring</h2>
+<p>Use the <code>@Qualifier</code> annotation at the injection point to explicitly specify which bean to inject. The qualifier value must match the
+bean name (typically the method name for <code>@Bean</code> methods).</p>
+<p>This approach is useful when different parts of your application need different beans of the same type. Each injection point can specify exactly
+which bean it requires.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@Configuration
+public class DataSourceConfig {
+    @Bean
+    public DataSource primaryDataSource() {
+        return new HikariDataSource();
+    }
+
+    @Bean
+    public DataSource secondaryDataSource() {
+        return new HikariDataSource();
+    }
+}
+
+@Service
+public class ReportService {
+    @Autowired
+    private DataSource dataSource; // Noncompliant; Spring cannot determine which DataSource bean to inject
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@Configuration
+public class DataSourceConfig {
+    @Bean
+    public DataSource primaryDataSource() {
+        return new HikariDataSource();
+    }
+
+    @Bean
+    public DataSource secondaryDataSource() {
+        return new HikariDataSource();
+    }
+}
+
+@Service
+public class ReportService {
+    @Autowired
+    @Qualifier("primaryDataSource")
+    private DataSource dataSource; // Compliant; @Qualifier explicitly specifies that primaryDataSource needs to be used
+}
+</pre>
+<p>Use the <code>@Primary</code> annotation on one of the bean definitions to mark it as the default choice. When Spring encounters multiple beans of
+the same type, it will automatically select the primary bean if no explicit qualifier is specified.</p>
+<p>This approach is useful when you have a clear default bean that should be used in most cases, with alternative beans available for specific
+scenarios.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@Configuration
+public class DataSourceConfig {
+    @Bean
+    public DataSource primaryDataSource() {
+        return new HikariDataSource();
+    }
+
+    @Bean
+    public DataSource secondaryDataSource() {
+        return new HikariDataSource();
+    }
+}
+
+@Service
+public class ReportService {
+    @Autowired
+    private DataSource dataSource; // Noncompliant
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@Configuration
+public class DataSourceConfig {
+    @Bean
+    @Primary
+    public DataSource primaryDataSource() {
+        return new HikariDataSource();
+    }
+
+    @Bean
+    public DataSource secondaryDataSource() {
+        return new HikariDataSource();
+    }
+}
+
+@Service
+public class ReportService {
+    @Autowired
+    private DataSource dataSource; // Compliant; will use default primaryDataSource
+}
+</pre>
+<p>Use the <code>@Fallback</code> annotation on a bean definition to mark it as a last-resort candidate (available since Spring 6.2). A fallback bean
+is only selected when no non-fallback bean of the same type is present in the application context.</p>
+<p>This approach is the semantic inverse of <code>@Primary</code>: instead of promoting one bean, it demotes another. It is particularly useful for
+library or auto-configuration beans that should yield to any user-defined bean of the same type.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+@Configuration
+public class DataSourceConfig {
+    @Bean
+    public DataSource primaryDataSource() {
+        return new HikariDataSource();
+    }
+
+    @Bean
+    public DataSource secondaryDataSource() {
+        return new HikariDataSource();
+    }
+}
+
+@Service
+public class ReportService {
+    @Autowired
+    private DataSource dataSource; // Noncompliant
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+@Configuration
+public class DataSourceConfig {
+    @Bean
+    public DataSource primaryDataSource() {
+        return new HikariDataSource();
+    }
+
+    @Bean
+    @Fallback
+    public DataSource secondaryDataSource() { // secondaryDataSource is only used if no other DataSource bean exists
+        return new HikariDataSource();
+    }
+}
+
+@Service
+public class ReportService {
+    @Autowired
+    private DataSource dataSource; // Compliant; will use primaryDataSource
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Spring Framework Documentation - <a
+  href="https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired-qualifiers.html">Fine-tuning Annotation-based
+  Autowiring with Qualifiers</a></li>
+  <li>Spring Framework Documentation - <a
+  href="https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired-primary.html">Fine-tuning Annotation-based Autowiring
+  with @Primary or @Fallback</a></li>
+  <li>Spring Framework API - <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Qualifier.html">@Qualifier
+  Annotation</a></li>
+  <li>Spring Framework API - <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Primary.html">@Primary
+  Annotation</a></li>
+  <li>Spring Framework API - <a
+  href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Fallback.html">@Fallback
+  Annotation</a></li>
+</ul>
+
