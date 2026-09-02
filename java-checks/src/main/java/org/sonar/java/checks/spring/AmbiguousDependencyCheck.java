@@ -43,10 +43,10 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
   /** Creates the list of issues using the spring context model.
    * For each bean type in the project, gets the names of beans of this type (candidates) and the dependencies
    * (injection points) that require this type, then check if there are ambiguous dependencies of this type:
-   * a single candidate, or a single one marked {@code @Primary} is unambiguous; otherwise
-   * candidates with a profile are excluded as potentially mutually exclusive, and if multiple
-   * candidates remain, an issue is created for each injection point that does not match a candidate
-   * by name.
+   * a single candidate, or a single one marked {@code @Primary}, is unambiguous, whether it has a
+   * profile. Otherwise, candidates with a profile are excluded as potentially mutually exclusive, and the
+   * same unique/{@code @Primary} check is re-applied to the remaining candidates; if multiple still remain,
+   * an issue is created for each injection point that does not match one of them by name.
    *
    * @param model the Spring context model of the project
    */
@@ -59,13 +59,14 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
     List<SpringContextIssue> issues = new ArrayList<>();
     for (String type : typeToBeanNamesIndex.getKeys()) {
       Set<String> candidates = typeToBeanNamesIndex.getNamesForType(type);
+      if (hasUniqueOrPrimaryCandidate(candidates, registry)) {
+        continue;
+      }
       Set<InjectionPoint> injectionPoints = typeToDependenciesIndex.getDependenciesForType(type);
-      if (!hasUniqueOrPrimaryCandidate(candidates, registry)) {
-        Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
-        if (effectiveCandidates.size() > 1) {
-          for (InjectionPoint unresolvedInjectionPoint : findInjectionPointsNotMatchingCandidateByName(effectiveCandidates, injectionPoints)) {
-            issues.add(new SpringContextIssue(unresolvedInjectionPoint.location(), message(effectiveCandidates)));
-          }
+      Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
+      if (!hasUniqueOrPrimaryCandidate(effectiveCandidates, registry) && effectiveCandidates.size() > 1) {
+        for (InjectionPoint unresolvedInjectionPoint : findInjectionPointsNotMatchingCandidateByName(effectiveCandidates, injectionPoints)) {
+          issues.add(new SpringContextIssue(unresolvedInjectionPoint.location(), message(effectiveCandidates)));
         }
       }
     }
