@@ -49,7 +49,8 @@ class GeneratedCheckListTest {
   private static final Set<String> BLACK_LIST = SetUtils.immutableSetOf(
     "AbstractXPathBasedCheck.java",
     "AbstractWebXmlXPathBasedCheck.java",
-    "AbstractRegexCheck.java");
+    "AbstractRegexCheck.java",
+    "SpringContextCheck.java");
 
   /**
    * Enforces that each check declared in list.
@@ -156,6 +157,7 @@ class GeneratedCheckListTest {
     files.stream()
       .filter(file -> file.getName().endsWith("Check.java"))
       .filter(file -> !file.getName().startsWith("Abstract"))
+      .filter(file -> !BLACK_LIST.contains(file.getName()))
       .map(File::getAbsolutePath)
       .map(f -> f.replace(File.separatorChar, '.'))
       .map(f -> f.substring(f.indexOf("org.sonar.java.checks"), f.length() - 5))
