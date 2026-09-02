@@ -61,6 +61,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  * <p>Also captures:
  * <ul>
  *   <li>{@code @Primary} designation</li>
+ *   <li>{@code @Profile} expression, if any; for {@code @Bean} methods, the method's own {@code @Profile}
+ *       takes precedence over the one declared on the enclosing {@code @Configuration}/{@code @Component} class</li>
  *   <li>Dependencies via {@code @Autowired} fields, constructors, and setters for class-level beans</li>
  *   <li>Dependencies via method parameters for {@code @Bean} method beans</li>
  *   <li>Implicit single-constructor injection (no {@code @Autowired} required)</li>
@@ -84,6 +86,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   private static final String DEP_NAMES_SEPARATOR = ";";
   private static final String DEP_LOCATION_SEPARATOR = "#";
   private static final String TYPE_HIERARCHY_SEPARATOR = ";";
+  private static final String PROFILE_SEPARATOR = ",";
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
   private static final String VALUE_ATTRIBUTE = "value";
@@ -100,6 +103,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     InputFile inputFile,
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
+    @Nullable String profiles,
     Map<String, Set<String>> dependingBeans,
     Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> dependencyInjectionPoints,
     Set<String> typeHierarchy) {
@@ -133,11 +137,13 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> injectionPoints = collectAutowiredDependencies(classTree, context.getInputFile());
       Map<String, Set<String>> deps = toNameMap(injectionPoints);
       Set<String> typeHierarchy = collectTypeHierarchy(classTree.symbol());
+      String classProfiles = extractProfiles(meta);
       var beanData = new BeanData(
         beanName, fqn, pkg,
         context.getInputFile(),
         AnalyzerMessage.textSpanFor(classTree.simpleName()),
         meta.isAnnotatedWith(PRIMARY_ANNOTATION),
+        classProfiles,
         deps,
         injectionPoints,
         typeHierarchy);
@@ -146,7 +152,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
       // @Bean methods — only if class is a configuration/component class
       for (MethodTree method : SpringUtils.getBeanMethods(classTree)) {
-        collectBeanMethod(method, pkg);
+        collectBeanMethod(method, pkg, classProfiles);
       }
     }
   }
@@ -187,12 +193,16 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     var typeHierarchy = String.join(TYPE_HIERARCHY_SEPARATOR, bean.typeHierarchy());
     var span = bean.textSpan();
     var encodedName = Base64.getEncoder().encodeToString(bean.beanName().getBytes(StandardCharsets.UTF_8));
+    var encodedProfiles = bean.profiles() != null
+      ? Base64.getEncoder().encodeToString(bean.profiles().getBytes(StandardCharsets.UTF_8))
+      : "";
     return String.join(FIELD_SEPARATOR,
       encodedName,
       bean.type(),
       bean.beanPackage(),
       span.startLine + ":" + span.startCharacter + ":" + span.endLine + ":" + span.endCharacter,
       Boolean.toString(bean.isPrimary()),
+      encodedProfiles,
       deps,
       typeHierarchy);
   }
@@ -210,7 +220,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       var location = new BeanLocation(data.inputFile(), data.textSpan());
       var holderBuilder = new BeanDefinitionHolder.Builder(
         data.type(), context.getModuleKey(), data.beanPackage(), location)
-        .dependingBeans(data.dependingBeans());
+        .dependingBeans(data.dependingBeans())
+        .profiles(data.profiles());
       if (data.isPrimary()) {
         holderBuilder.primary();
       }
@@ -268,9 +279,12 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       Integer.parseInt(spanParts[2]),
       Integer.parseInt(spanParts[3]));
     boolean isPrimary = Boolean.parseBoolean(fields[4]);
+    String profiles = !fields[5].isEmpty()
+      ? new String(Base64.getDecoder().decode(fields[5]), StandardCharsets.UTF_8)
+      : null;
     Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> injectionPoints = new LinkedHashMap<>();
-    if (!fields[5].isEmpty()) {
-      for (String entry : fields[5].split(DEP_SEPARATOR)) {
+    if (!fields[6].isEmpty()) {
+      for (String entry : fields[6].split(DEP_SEPARATOR)) {
         int idx = entry.indexOf(DEP_KEY_VALUE_SEPARATOR);
         String typeFqn = new String(Base64.getDecoder().decode(entry.substring(0, idx)), StandardCharsets.UTF_8);
         Set<TypeToDependenciesIndex.InjectionPoint> points = Arrays.stream(entry.substring(idx + 1).split(DEP_NAMES_SEPARATOR))
@@ -280,10 +294,10 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       }
     }
     Map<String, Set<String>> deps = toNameMap(injectionPoints);
-    Set<String> typeHierarchy = !fields[6].isEmpty()
-      ? new LinkedHashSet<>(List.of(fields[6].split(TYPE_HIERARCHY_SEPARATOR)))
+    Set<String> typeHierarchy = !fields[7].isEmpty()
+      ? new LinkedHashSet<>(List.of(fields[7].split(TYPE_HIERARCHY_SEPARATOR)))
       : new LinkedHashSet<>();
-    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, deps, injectionPoints, typeHierarchy);
+    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, profiles, deps, injectionPoints, typeHierarchy);
   }
 
   private static TypeToDependenciesIndex.InjectionPoint decodeInjectionPoint(String token, InputFile inputFile) {
@@ -319,7 +333,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     return Introspector.decapitalize(simpleName);
   }
 
-  private void collectBeanMethod(MethodTree method, String pkg) {
+  private void collectBeanMethod(MethodTree method, String pkg, @Nullable String classProfiles) {
     SymbolMetadata beanMeta = method.symbol().metadata();
     List<SymbolMetadata.AnnotationValue> attrs = beanMeta.valuesForAnnotation(SpringUtils.BEAN_ANNOTATION);
     List<String> beanNames = Optional.ofNullable(attrs)
@@ -348,10 +362,12 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     Map<String, Set<TypeToDependenciesIndex.InjectionPoint>> injectionPoints = parameterDependencies(method, inputFile);
     Map<String, Set<String>> paramDeps = toNameMap(injectionPoints);
     boolean isPrimary = beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION);
+    String ownProfiles = extractProfiles(beanMeta);
+    String profiles = ownProfiles != null ? ownProfiles : classProfiles;
     var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
 
     for (String beanName : beanNames) {
-      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, paramDeps, injectionPoints, typeHierarchy);
+      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, profiles, paramDeps, injectionPoints, typeHierarchy);
       collectedBeans.add(beanData);
       beansCollectedAtFileLevel.add(beanData);
     }
@@ -420,6 +436,28 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       .filter(s -> !s.isBlank())
       .findFirst()
       .orElse(null);
+  }
+
+  @Nullable
+  private static String extractProfiles(SymbolMetadata metadata) {
+    List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(SpringUtils.PROFILE_ANNOTATION);
+    if (attrs == null) {
+      return null;
+    }
+    List<String> profiles = attrs.stream()
+      .filter(v -> VALUE_ATTRIBUTE.equals(v.name()))
+      .flatMap(v -> {
+        Object val = v.value();
+        if (val instanceof Object[] arr) {
+          return Arrays.stream(arr).filter(String.class::isInstance).map(String.class::cast);
+        } else if (val instanceof String s) {
+          return Stream.of(s);
+        }
+        return Stream.empty();
+      })
+      .filter(s -> !s.isBlank())
+      .toList();
+    return profiles.isEmpty() ? null : String.join(PROFILE_SEPARATOR, profiles);
   }
 
   private static Set<String> collectTypeHierarchy(Symbol.TypeSymbol symbol) {
