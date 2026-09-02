@@ -40,6 +40,16 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
   private static final String MESSAGE = "Multiple beans match this dependency (%s);"
     + " disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".";
 
+  /** Creates the list of issues using the spring context model.
+   * For each bean type in the project, gets the names of beans of this type (candidates) and the dependencies
+   * (injection points) that require this type, then check if there are ambiguous dependencies of this type:
+   * a single candidate, or a single one marked {@code @Primary} is unambiguous; otherwise
+   * candidates with a profile are excluded as potentially mutually exclusive, and if multiple
+   * candidates remain, an issue is created for each injection point that does not match a candidate
+   * by name.
+   *
+   * @param model the Spring context model of the project
+   */
   @Override
   public List<SpringContextIssue> execute(SpringContextModel model) {
     BeanDefinitionRegistry registry = model.getBeanDefinitionRegistry();
@@ -50,11 +60,10 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
     for (String type : typeToBeanNamesIndex.getKeys()) {
       Set<String> candidates = typeToBeanNamesIndex.getNamesForType(type);
       Set<InjectionPoint> injectionPoints = typeToDependenciesIndex.getDependenciesForType(type);
-      if (!isResolved(candidates, registry)) {
-        // excluding all beans with a configured profile, no matter what the profile is, to avoid FPs
+      if (!hasUniqueOrPrimaryCandidate(candidates, registry)) {
         Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
         if (effectiveCandidates.size() > 1) {
-          for (InjectionPoint unresolvedInjectionPoint : computeUnresolvedInjectionPoints(effectiveCandidates, injectionPoints)) {
+          for (InjectionPoint unresolvedInjectionPoint : findInjectionPointsNotMatchingCandidateByName(effectiveCandidates, injectionPoints)) {
             issues.add(new SpringContextIssue(unresolvedInjectionPoint.location(), message(effectiveCandidates)));
           }
         }
@@ -63,12 +72,12 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
     return issues;
   }
 
-  private static boolean isResolved(Set<String> candidates, BeanDefinitionRegistry registry) {
+  private static boolean hasUniqueOrPrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry) {
     return candidates.size() <= 1
       || hasExactlyOnePrimaryCandidate(candidates, registry);
   }
 
-  private static Set<InjectionPoint> computeUnresolvedInjectionPoints(Set<String> candidates, Set<InjectionPoint> injectionPointNames) {
+  private static Set<InjectionPoint> findInjectionPointsNotMatchingCandidateByName(Set<String> candidates, Set<InjectionPoint> injectionPointNames) {
     return injectionPointNames.stream().filter(injectionPoint -> !candidates.contains(injectionPoint.name())).collect(Collectors.toSet());
   }
 
