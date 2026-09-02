@@ -112,6 +112,10 @@
     <jacoco-agent-jar>org.jacoco.agent-${version.jacoco.plugin}-runtime.jar</jacoco-agent-jar>
     <mockito-agent-jar>mockito-core-${mockito-core.version}.jar</mockito-agent-jar>
 
+    <!-- Keep direct logging dependencies aligned with the versions provided by the Plugin API. -->
+    <slf4j.version>2.0.18</slf4j.version>
+    <logback.version>1.6.3</logback.version>
+
   </properties>
 
   <distributionManagement>
@@ -272,6 +276,22 @@
         <artifactId>assertj-core</artifactId>
         <version>3.27.7</version>
         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
       </dependency>
 
       <dependency>
