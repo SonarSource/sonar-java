@@ -53,4 +53,8 @@ public class TypeToBeanNamesIndex {
   public Set<String> getNamesForType(String beanType) {
     return Collections.unmodifiableSet(beanNamesByType.getOrDefault(beanType, Set.of()));
   }
+
+  public Set<String> getKeys() {
+    return beanNamesByType.keySet();
+  }
 }

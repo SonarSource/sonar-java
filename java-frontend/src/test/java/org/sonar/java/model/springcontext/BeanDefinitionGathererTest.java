@@ -20,6 +20,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,8 +38,10 @@ import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -463,8 +466,8 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
     String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
     String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
-      + encodedAppContext + ":" + encodedPrimaryContext
-      + "," + encodedEnvType + ":" + encodedEnvironment
+      + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
+      + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
       + "|checks.spring.context.QualifiedFieldDependencies";
 
     JavaReadCache readCache = mock(JavaReadCache.class);
@@ -632,5 +635,123 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     when(cacheContext.getReadCache()).thenReturn(readCache);
     when(cacheContext.getWriteCache()).thenReturn(writeCache);
     return cacheContext;
+  }
+
+  // ---- TypeToDependenciesIndex -------------------------------------------------
+
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("regularDependencyArguments")
+  void regular_dependencies_registered_in_index(String filePath, int applicationContextLine, int environmentLine) {
+    scan(filePath);
+    InputFile inputFile = TestUtils.inputFile(new File(filePath));
+
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext"),
+      "applicationContext", inputFile, applicationContextLine);
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.core.env.Environment"),
+      "environment", inputFile, environmentLine);
+  }
+
+  static Stream<Arguments> regularDependencyArguments() {
+    return Stream.of(
+      Arguments.of("src/test/files/springcontext/AutowiredDependencies.java", 12, 15),
+      Arguments.of("src/test/files/springcontext/AutowiredConstructorDependencies.java", 15, 15)
+    );
+  }
+
+  @Test
+  void dependency_with_qualifier_registered_with_qualifier_value() {
+    scan("src/test/files/springcontext/QualifiedBeanMethodDependencies.java");
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/QualifiedBeanMethodDependencies.java"));
+
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext"),
+      "primaryContext", inputFile, 14);
+  }
+
+  @Test
+  void dependency_with_qualifier_on_constructor_registered_with_qualifier_value() {
+    scan("src/test/files/springcontext/OrderService.java");
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/OrderService.java"));
+
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("PaymentProcessor"),
+      "paypal", inputFile, 13);
+  }
+
+  @Test
+  void dependencies_in_multiple_files_all_registered() {
+    scan("src/test/files/springcontext/OrderService.java", "src/test/files/springcontext/BlankQualifierDependency.java");
+    InputFile orderServiceFile = TestUtils.inputFile(new File("src/test/files/springcontext/OrderService.java"));
+    InputFile blankQualifierFile = TestUtils.inputFile(new File("src/test/files/springcontext/BlankQualifierDependency.java"));
+
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("PaymentProcessor"),
+      "paypal", orderServiceFile, 13);
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext"),
+      "applicationContext", blankQualifierFile, 13);
+  }
+
+  @Test
+  void two_beans_depending_on_same_type_and_name_both_tracked_with_distinct_locations() {
+    scan("src/test/files/springcontext/AutowiredDependencies.java", "src/test/files/springcontext/AutowiredConstructorDependencies.java");
+    InputFile autowiredDependenciesFile = TestUtils.inputFile(new File("src/test/files/springcontext/AutowiredDependencies.java"));
+    InputFile autowiredConstructorFile = TestUtils.inputFile(new File("src/test/files/springcontext/AutowiredConstructorDependencies.java"));
+
+    var injectionPoints = model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext");
+    assertThat(injectionPoints).hasSize(2);
+    assertThat(injectionPoints).extracting(TypeToDependenciesIndex.InjectionPoint::name).containsOnly("applicationContext");
+    assertThat(injectionPoints)
+      .extracting(p -> p.location().inputFile(), p -> p.location().mainLocation().startLine)
+      .containsExactlyInAnyOrder(
+        tuple(autowiredDependenciesFile, 12),
+        tuple(autowiredConstructorFile, 15));
+  }
+
+  private static void assertInjectionPoint(Set<TypeToDependenciesIndex.InjectionPoint> injectionPoints, String expectedName,
+    InputFile expectedInputFile, int expectedLine) {
+    assertThat(injectionPoints).hasSize(1);
+    var point = injectionPoints.iterator().next();
+    assertThat(point.name()).isEqualTo(expectedName);
+    assertThat(point.location().inputFile()).isEqualTo(expectedInputFile);
+    assertThat(point.location().mainLocation().startLine).isEqualTo(expectedLine);
+  }
+
+  @Test
+  void scanWithoutParsing_restores_dependencies_index_from_cache() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/QualifiedFieldDependencies.java"));
+    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
+    String encodedName = Base64.getEncoder().encodeToString("qualifiedFieldDependencies".getBytes(StandardCharsets.UTF_8));
+    String encodedAppContext = Base64.getEncoder().encodeToString("org.springframework.context.ApplicationContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
+    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
+    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
+      + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
+      + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
+      + "|checks.spring.context.QualifiedFieldDependencies";
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+
+    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
+    when(moduleScannerContext.getModuleKey()).thenReturn("");
+    gatherer.gatherSpringContextData(moduleScannerContext, model);
+
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext"),
+      "primaryContext", inputFile, 14);
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.core.env.Environment"),
+      "environment", inputFile, 17);
   }
 }
