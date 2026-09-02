@@ -107,8 +107,34 @@ public class TransactionalMethodCheckedExceptionCheckSample {
 
   @Transactional
   static class ClassLevelNoConfig {
-    public void noConfig() throws IOException { // Noncompliant [[secondary=106]]
-//              ^^^^^^^^ {{Specify rollback behavior for checked exceptions using "rollbackFor" or "noRollbackFor" attributes on the class-level @Transactional.}}
+    public void noConfig() throws IOException { // Compliant - method name does not suggest a transactional operation
+    }
+
+    public void saveOrder() throws IOException { // Noncompliant [[secondary=108]]
+//              ^^^^^^^^^
+    }
+
+    public void deleteRecord() throws IOException { // Noncompliant [[secondary=108]]
+//              ^^^^^^^^^^^^
+    }
+
+    public void updateStatus() throws IOException { // Noncompliant [[secondary=108]]
+//              ^^^^^^^^^^^^
+    }
+
+    public void persistEntity() throws IOException { // Noncompliant [[secondary=108]]
+//              ^^^^^^^^^^^^^
+    }
+
+    public void mergeData() throws IOException { // Noncompliant [[secondary=108]]
+//              ^^^^^^^^^
+    }
+
+    public void flushChanges() throws IOException { // Noncompliant [[secondary=108]]
+//              ^^^^^^^^^^^^
+    }
+
+    public void readData() throws IOException { // Compliant - no transactional prefix
     }
 
     @Transactional(rollbackFor = IOException.class)
@@ -142,8 +168,11 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   static class OuterClass {
     @Transactional
     static class InnerClassWithAnnotation {
-      public void nestedMethod() throws IOException { // Noncompliant [[secondary=141]]
-//                ^^^^^^^^^^^^ {{Specify rollback behavior for checked exceptions using "rollbackFor" or "noRollbackFor" attributes on the class-level @Transactional.}}
+      public void nestedMethod() throws IOException { // Compliant - no transactional prefix
+      }
+
+      public void saveNestedEntity() throws IOException { // Noncompliant [[secondary=155]]
+//                ^^^^^^^^^^^^^^^^
       }
     }
 
@@ -156,8 +185,10 @@ public class TransactionalMethodCheckedExceptionCheckSample {
 
   @Transactional
   interface TransactionalInterface {
-    void interfaceMethod() throws IOException; // Noncompliant [[secondary=155]]
-//       ^^^^^^^^^^^^^^^ {{Specify rollback behavior for checked exceptions using "rollbackFor" or "noRollbackFor" attributes on the class-level @Transactional.}}
+    void interfaceMethod() throws IOException; // Compliant - no transactional prefix
+
+    void saveEntity() throws IOException; // Noncompliant [[secondary=169]]
+//       ^^^^^^^^^^ {{Specify rollback behavior for checked exceptions using "rollbackFor" or "noRollbackFor" attributes on the class-level @Transactional.}}
   }
 
   // Test meta-annotated (composed) annotation
@@ -201,8 +232,11 @@ public class TransactionalMethodCheckedExceptionCheckSample {
     void packagePrivateInClassLevel() throws IOException { // Compliant - package-private methods are not proxied
     }
 
-    public void publicInClassLevel() throws IOException { // Noncompliant [[secondary=191]]
-//              ^^^^^^^^^^^^^^^^^^
+    public void publicInClassLevel() throws IOException { // Compliant - no transactional prefix
+    }
+
+    public void savePublicInClassLevel() throws IOException { // Noncompliant [[secondary=207]]
+//              ^^^^^^^^^^^^^^^^^^^^^^
     }
   }
 
@@ -271,8 +305,52 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   static class ClassWithMultipleAnnotations {
     @Deprecated
     @SuppressWarnings("unused")
-    public void methodWithOtherAnnotations() throws IOException { // Noncompliant [[secondary=270]]
-//              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    public void methodWithOtherAnnotations() throws IOException { // Compliant - no transactional prefix
+    }
+
+    @Deprecated
+    public void deleteWithAnnotations() throws IOException { // Noncompliant [[secondary=290]]
+//              ^^^^^^^^^^^^^^^^^^^^^
+    }
+  }
+
+  @Transactional
+  static class ClassLevelWithMethodCalls {
+    public void processOrder(Object repository) throws IOException { // Noncompliant [[secondary=297]]
+//              ^^^^^^^^^^^^
+      repository.toString();
+      saveOrder();
+    }
+
+    public void doWork() throws IOException { // Compliant - no transactional prefix and no transactional calls
+      System.out.println("work");
+    }
+
+    private void saveOrder() {
+    }
+
+    public void delegateToFlush() throws IOException { // Noncompliant [[secondary=297]]
+//              ^^^^^^^^^^^^^^^
+      flushAll();
+    }
+
+    private void flushAll() {
+    }
+
+    public void delegateToDelete(Object entity) throws IOException { // Noncompliant [[secondary=297]]
+//              ^^^^^^^^^^^^^^^^
+      deleteEntity(entity);
+    }
+
+    private void deleteEntity(Object entity) {
+    }
+
+    public void noTransactionalCalls() throws IOException { // Compliant - no transactional method calls
+      System.out.println("no transaction");
+      computeResult();
+    }
+
+    private void computeResult() {
     }
   }
 }

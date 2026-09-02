@@ -19,12 +19,14 @@ package org.sonar.java.checks.spring;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -36,11 +38,13 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -49,6 +53,8 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 
 @Rule(key = "S8989")
 public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
+
+  private static final List<String> TRANSACTIONAL_PREFIXES = List.of("save", "delete", "update", "persist", "merge", "flush");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -99,6 +105,10 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     }
 
     boolean isClassLevel = isClassLevelAnnotation(method, transactionalAnnotation);
+
+    if (isClassLevel && !looksTransactional(method)) {
+      return;
+    }
 
     var issueBuilder = QuickFixHelper.newIssue(context)
       .forRule(this)
@@ -272,6 +282,36 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
         }
         return false;
       });
+  }
+
+  private static boolean looksTransactional(MethodTree method) {
+    if (hasTransactionalPrefix(method.simpleName().name())) {
+      return true;
+    }
+    var visitor = new MethodInvocationVisitor();
+    method.accept(visitor);
+    return visitor.foundTransactionalCall;
+  }
+
+  private static boolean hasTransactionalPrefix(String name) {
+    String lowerName = name.toLowerCase(Locale.ROOT);
+    return TRANSACTIONAL_PREFIXES.stream().anyMatch(lowerName::startsWith);
+  }
+
+  private static class MethodInvocationVisitor extends BaseTreeVisitor {
+    boolean foundTransactionalCall = false;
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (!foundTransactionalCall) {
+        String calledMethodName = ExpressionUtils.methodName(tree).name();
+        if (hasTransactionalPrefix(calledMethodName)) {
+          foundTransactionalCall = true;
+          return;
+        }
+      }
+      super.visitMethodInvocation(tree);
+    }
   }
 
   private static boolean isNonPublicMethod(MethodTree method) {
