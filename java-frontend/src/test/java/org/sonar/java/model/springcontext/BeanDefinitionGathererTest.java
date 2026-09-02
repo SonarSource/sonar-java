@@ -164,8 +164,8 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
       Arguments.of("src/test/files/springcontext/SimpleComponent.java", "simpleComponent", null),
       // @Bean method without its own @Profile inherits the enclosing class's one
       Arguments.of("src/test/files/springcontext/ProfiledConfigurationWithBeanMethods.java", "inheritedProfileBean", "prod"),
-      // @Bean method's own @Profile takes precedence over the enclosing class's one
-      Arguments.of("src/test/files/springcontext/ProfiledConfigurationWithBeanMethods.java", "ownProfileBean", "test")
+      // @Bean method's own @Profile is combined (AND-ed) with the enclosing class's one, not overriding it
+      Arguments.of("src/test/files/springcontext/ProfiledConfigurationWithBeanMethods.java", "ownProfileBean", "prod;test")
     );
   }
 

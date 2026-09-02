@@ -58,7 +58,8 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  * <ul>
  *   <li>{@code @Primary} designation</li>
  *   <li>{@code @Profile} expression, if any; for {@code @Bean} methods, the method's own {@code @Profile}
- *       takes precedence over the one declared on the enclosing {@code @Configuration}/{@code @Component} class</li>
+ *       is combined with (not overridden by) the one declared on the enclosing {@code @Configuration}/{@code @Component}
+ *       class, since Spring requires both to match for the bean to be active</li>
  *   <li>Dependencies via {@code @Autowired} fields, constructors, and setters for class-level beans</li>
  *   <li>Dependencies via method parameters for {@code @Bean} method beans</li>
  *   <li>Implicit single-constructor injection (no {@code @Autowired} required)</li>
@@ -74,7 +75,10 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   private static final Logger LOG = LoggerFactory.getLogger(BeanDefinitionGatherer.class);
 
+  /** Joins the values of a single {@code @Profile} annotation, which are OR-ed together by Spring. */
   private static final String PROFILE_SEPARATOR = ",";
+  /** Joins the class-level and method-level {@code @Profile} expressions of a {@code @Bean} method, which are AND-ed together by Spring. */
+  private static final String PROFILE_AND_SEPARATOR = ";";
   private static final String VALUE_ATTRIBUTE = "value";
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
@@ -228,7 +232,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     Map<String, Set<String>> paramDeps = toNameMap(injectionPoints);
     boolean isPrimary = beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION);
     String ownProfiles = extractProfiles(beanMeta);
-    String profiles = ownProfiles != null ? ownProfiles : classProfiles;
+    String profiles = composeProfiles(classProfiles, ownProfiles);
     var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
 
     for (String beanName : beanNames) {
@@ -333,6 +337,22 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       .filter(s -> !s.isBlank())
       .toList();
     return profiles.isEmpty() ? null : String.join(PROFILE_SEPARATOR, profiles);
+  }
+
+  /**
+   * Combines a {@code @Bean} method's own {@code @Profile} with the one declared on its enclosing class.
+   * Spring requires both to match for the bean to be active, so the two expressions are AND-ed rather
+   * than one overriding the other.
+   */
+  @Nullable
+  private static String composeProfiles(@Nullable String classProfiles, @Nullable String ownProfiles) {
+    if (classProfiles == null) {
+      return ownProfiles;
+    }
+    if (ownProfiles == null) {
+      return classProfiles;
+    }
+    return classProfiles + PROFILE_AND_SEPARATOR + ownProfiles;
   }
 
 }
