@@ -238,6 +238,29 @@ class EmptyArchiveEntryCheckSample {
     zos.close();
   }
 
+  void writeViaCustomOutputStreamWithCastInNestedStatement() throws IOException {
+    FileOutputStream fos = new FileOutputStream("archive.zip");
+    ZipOutputStream zos = new ZipOutputStream(fos);
+    zos.putNextEntry(new ZipEntry("data.json"));
+    if (System.currentTimeMillis() > 0) {
+      OutputStream out = new NonClosingOutputStream((OutputStream) zos);
+      out.write("data".getBytes());
+    }
+    zos.closeEntry(); // Compliant - zos passed via cast to constructor in nested statement
+    zos.close();
+  }
+
+  void writeViaMethodCallWithCastInNestedStatement() throws IOException {
+    FileOutputStream fos = new FileOutputStream("archive.zip");
+    ZipOutputStream zos = new ZipOutputStream(fos);
+    zos.putNextEntry(new ZipEntry("data.json"));
+    if (System.currentTimeMillis() > 0) {
+      writeContent((ZipOutputStream) (zos));
+    }
+    zos.closeEntry(); // Compliant - zos passed via cast and parentheses in nested statement
+    zos.close();
+  }
+
   void writeViaObjectMapperWithParenthesizedArgument() throws IOException {
     FileOutputStream fos = new FileOutputStream("archive.zip");
     ZipOutputStream zos = new ZipOutputStream(fos);

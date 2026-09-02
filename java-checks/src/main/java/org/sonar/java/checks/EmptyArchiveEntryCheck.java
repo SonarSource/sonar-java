@@ -163,18 +163,31 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
     return null;
   }
 
+  @CheckForNull
+  private static Symbol extractIdentifierSymbol(ExpressionTree expression) {
+    ExpressionTree unwrapped = ExpressionUtils.skipParentheses(expression);
+    while (unwrapped.is(Tree.Kind.TYPE_CAST)) {
+      unwrapped = ExpressionUtils.skipParentheses(((TypeCastTree) unwrapped).expression());
+    }
+    if (unwrapped.is(Tree.Kind.IDENTIFIER)) {
+      return ((IdentifierTree) unwrapped).symbol();
+    }
+    return null;
+  }
+
   private static void clearTrackedSymbolsUsedAsArguments(MethodInvocationTree mit, Map<Symbol, MethodInvocationTree> pendingEntries) {
     if (pendingEntries.isEmpty()) {
       return;
     }
     for (ExpressionTree arg : mit.arguments()) {
-      ExpressionTree unwrapped = ExpressionUtils.skipParentheses(arg);
-      while (unwrapped.is(Tree.Kind.TYPE_CAST)) {
-        unwrapped = ExpressionUtils.skipParentheses(((TypeCastTree) unwrapped).expression());
-      }
-      if (unwrapped.is(Tree.Kind.IDENTIFIER)) {
-        pendingEntries.remove(((IdentifierTree) unwrapped).symbol());
+      Symbol symbol = extractIdentifierSymbol(arg);
+      if (symbol != null) {
+        pendingEntries.remove(symbol);
       } else {
+        ExpressionTree unwrapped = ExpressionUtils.skipParentheses(arg);
+        while (unwrapped.is(Tree.Kind.TYPE_CAST)) {
+          unwrapped = ExpressionUtils.skipParentheses(((TypeCastTree) unwrapped).expression());
+        }
         removeUsedSymbols(unwrapped, pendingEntries);
       }
     }
@@ -206,29 +219,23 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
       if (receiver != null && pendingEntries.containsKey(receiver) && WRITE.matches(mit)) {
         usedSymbols.add(receiver);
       }
-      // Check if any tracked symbol is passed as argument
-      for (ExpressionTree arg : mit.arguments()) {
-        if (arg.is(Tree.Kind.IDENTIFIER)) {
-          Symbol argSymbol = ((IdentifierTree) arg).symbol();
-          if (pendingEntries.containsKey(argSymbol)) {
-            usedSymbols.add(argSymbol);
-          }
-        }
-      }
+      collectTrackedArgumentSymbols(mit.arguments());
       super.visitMethodInvocation(mit);
     }
 
     @Override
     public void visitNewClass(NewClassTree tree) {
-      for (ExpressionTree arg : tree.arguments()) {
-        if (arg.is(Tree.Kind.IDENTIFIER)) {
-          Symbol argSymbol = ((IdentifierTree) arg).symbol();
-          if (pendingEntries.containsKey(argSymbol)) {
-            usedSymbols.add(argSymbol);
-          }
+      collectTrackedArgumentSymbols(tree.arguments());
+      super.visitNewClass(tree);
+    }
+
+    private void collectTrackedArgumentSymbols(List<ExpressionTree> arguments) {
+      for (ExpressionTree arg : arguments) {
+        Symbol argSymbol = extractIdentifierSymbol(arg);
+        if (argSymbol != null && pendingEntries.containsKey(argSymbol)) {
+          usedSymbols.add(argSymbol);
         }
       }
-      super.visitNewClass(tree);
     }
 
     @Override
