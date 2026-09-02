@@ -53,7 +53,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 
-@Execution(ExecutionMode.CONCURRENT)
+@Execution(ExecutionMode.SAME_THREAD)
 public abstract class ScannerIntegrationAbstractTest {
 
   private static FileLocation javaPluginLocation;
