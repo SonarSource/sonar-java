@@ -1,5 +1,6 @@
 package checks;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -215,5 +216,107 @@ class EmptyArchiveEntryCheckSample {
     writer.write("data".getBytes());
     zos.closeEntry(); // Compliant - written through BufferedOutputStream wrapper
     zos.close();
+  }
+
+  void writeViaObjectMapperOnCustomOutputStream() throws IOException {
+    FileOutputStream fos = new FileOutputStream("archive.zip");
+    ZipOutputStream zos = new ZipOutputStream(fos);
+    zos.putNextEntry(new ZipEntry("data.json"));
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.writeValue(new NonClosingOutputStream(zos), new Object());
+    zos.closeEntry(); // Compliant - zos passed to custom OutputStream wrapper used by ObjectMapper
+    zos.close();
+  }
+
+  void writeViaObjectMapperWithCastArgument() throws IOException {
+    FileOutputStream fos = new FileOutputStream("archive.zip");
+    ZipOutputStream zos = new ZipOutputStream(fos);
+    zos.putNextEntry(new ZipEntry("data.json"));
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.writeValue((OutputStream) zos, new Object());
+    zos.closeEntry(); // Compliant - zos passed via cast expression
+    zos.close();
+  }
+
+  void writeViaCustomOutputStreamWithCastInNestedStatement() throws IOException {
+    FileOutputStream fos = new FileOutputStream("archive.zip");
+    ZipOutputStream zos = new ZipOutputStream(fos);
+    zos.putNextEntry(new ZipEntry("data.json"));
+    if (System.currentTimeMillis() > 0) {
+      OutputStream out = new NonClosingOutputStream((OutputStream) zos);
+      out.write("data".getBytes());
+    }
+    zos.closeEntry(); // Compliant - zos passed via cast to constructor in nested statement
+    zos.close();
+  }
+
+  void writeViaMethodCallWithCastInNestedStatement() throws IOException {
+    FileOutputStream fos = new FileOutputStream("archive.zip");
+    ZipOutputStream zos = new ZipOutputStream(fos);
+    zos.putNextEntry(new ZipEntry("data.json"));
+    if (System.currentTimeMillis() > 0) {
+      writeContent((ZipOutputStream) (zos));
+    }
+    zos.closeEntry(); // Compliant - zos passed via cast and parentheses in nested statement
+    zos.close();
+  }
+
+  void writeViaCastReceiver() throws IOException {
+    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+    zos.putNextEntry(new ZipEntry("cast.txt"));
+    ((OutputStream) zos).write("data".getBytes());
+    zos.closeEntry(); // Compliant - written through cast receiver
+    zos.close();
+  }
+
+  void writeViaParenthesizedReceiver() throws IOException {
+    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+    zos.putNextEntry(new ZipEntry("paren.txt"));
+    (zos).write("data".getBytes());
+    zos.closeEntry(); // Compliant - written through parenthesized receiver
+    zos.close();
+  }
+
+  void writeViaCastReceiverInNestedStatement() throws IOException {
+    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream("archive.zip"));
+    zos.putNextEntry(new ZipEntry("nested-cast.txt"));
+    if (System.currentTimeMillis() > 0) {
+      ((OutputStream) zos).write("data".getBytes());
+    }
+    zos.closeEntry(); // Compliant - written through cast receiver in nested statement
+    zos.close();
+  }
+
+  void writeViaObjectMapperWithParenthesizedArgument() throws IOException {
+    FileOutputStream fos = new FileOutputStream("archive.zip");
+    ZipOutputStream zos = new ZipOutputStream(fos);
+    zos.putNextEntry(new ZipEntry("data.json"));
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.writeValue((zos), new Object());
+    zos.closeEntry(); // Compliant - zos passed via parenthesized expression
+    zos.close();
+  }
+
+  static class NonClosingOutputStream extends OutputStream {
+    private final OutputStream delegate;
+
+    NonClosingOutputStream(OutputStream delegate) {
+      this.delegate = delegate;
+    }
+
+    @Override
+    public void write(int b) throws IOException {
+      delegate.write(b);
+    }
+
+    @Override
+    public void write(byte[] b, int off, int len) throws IOException {
+      delegate.write(b, off, len);
+    }
+
+    @Override
+    public void close() {
+      // Do not close the delegate
+    }
   }
 }
