@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model.springcontext;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,6 +44,7 @@ public class TypeToDependenciesIndex {
    *
    * @param dependencyType fully-qualified name of the dependency's type
    * @param dependencyName the dependency name to associate with that type
+   * @param location       the source location of the injection point
    */
   public void addDependencyForType(String dependencyType, String dependencyName, BeanLocation location) {
     injectionPointsByType.computeIfAbsent(dependencyType, k -> new HashSet<>())
@@ -50,12 +52,12 @@ public class TypeToDependenciesIndex {
   }
 
   /**
-   * Returns an immutable set of all bean names registered for the given type.
+   * Returns an unmodifiable set of all injection points registered for the given type.
    *
    * @param dependencyType fully-qualified class name of the dependency's type
-   * @return an unmodifiable set of bean names, or an empty set if none were registered
+   * @return an unmodifiable set of injection points, or an empty set if none were registered
    */
   public Set<InjectionPoint> getDependenciesForType(String dependencyType) {
-    return injectionPointsByType.getOrDefault(dependencyType, Set.of());
+    return Collections.unmodifiableSet(injectionPointsByType.getOrDefault(dependencyType, Set.of()));
   }
 }
