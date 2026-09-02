@@ -112,8 +112,6 @@
     <jacoco-agent-jar>org.jacoco.agent-${version.jacoco.plugin}-runtime.jar</jacoco-agent-jar>
     <mockito-agent-jar>mockito-core-${mockito-core.version}.jar</mockito-agent-jar>
 
-    <!-- The product must work with the SLF4J provided in the Plugin API. -->
-    <slf4j.version>2.0.18</slf4j.version>
   </properties>
 
   <distributionManagement>
@@ -276,12 +274,6 @@
         <scope>test</scope>
       </dependency>
 
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${slf4j.version}</version>
-        <scope>test</scope>
-      </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
