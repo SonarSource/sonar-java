@@ -155,9 +155,9 @@ final class SpringContextCacheHelper {
   /**
    * Serializes one bean into a single "|"-delimited line, reversed by {@link #deserializeBean}.
    *
-   * Any string sourced from user code (bean name, dependency type keys, injection point names) is
-   * Base64-encoded first, since {@code |}, {@code :}, {@code ,}, {@code ;} or {@code #} could otherwise
-   * appear in an identifier and be mistaken for a field/entry separator.
+   * Any string sourced from user code (bean name, {@code @Profile} expression, dependency type keys,
+   * injection point names) is Base64-encoded first, since {@code |}, {@code :}, {@code ,}, {@code ;} or
+   * {@code #} could otherwise appear in an identifier and be mistaken for a field/entry separator.
    *
    * @param bean The bean to serialize
    * @return The bean encoded as a single "|"-delimited line
@@ -173,12 +173,16 @@ final class SpringContextCacheHelper {
     var typeHierarchy = String.join(TYPE_HIERARCHY_SEPARATOR, bean.typeHierarchy());
     var span = bean.textSpan();
     var encodedName = Base64.getEncoder().encodeToString(bean.beanName().getBytes(StandardCharsets.UTF_8));
+    var encodedProfiles = bean.profiles() != null
+      ? Base64.getEncoder().encodeToString(bean.profiles().getBytes(StandardCharsets.UTF_8))
+      : "";
     return String.join(FIELD_SEPARATOR,
       encodedName,
       bean.type(),
       bean.beanPackage(),
       span.startLine + ":" + span.startCharacter + ":" + span.endLine + ":" + span.endCharacter,
       Boolean.toString(bean.isPrimary()),
+      encodedProfiles,
       deps,
       typeHierarchy);
   }
@@ -213,9 +217,12 @@ final class SpringContextCacheHelper {
       Integer.parseInt(spanParts[2]),
       Integer.parseInt(spanParts[3]));
     boolean isPrimary = Boolean.parseBoolean(fields[4]);
+    String profiles = !fields[5].isEmpty()
+      ? new String(Base64.getDecoder().decode(fields[5]), StandardCharsets.UTF_8)
+      : null;
     Map<String, Set<InjectionPoint>> injectionPoints = new LinkedHashMap<>();
-    if (!fields[5].isEmpty()) {
-      for (String entry : fields[5].split(DEP_SEPARATOR)) {
+    if (!fields[6].isEmpty()) {
+      for (String entry : fields[6].split(DEP_SEPARATOR)) {
         // indexOf is safe: Base64 output never contains ':', so the first ':' is unambiguously the key/value boundary.
         int idx = entry.indexOf(DEP_KEY_VALUE_SEPARATOR);
         String typeFqn = new String(Base64.getDecoder().decode(entry.substring(0, idx)), StandardCharsets.UTF_8);
@@ -226,10 +233,10 @@ final class SpringContextCacheHelper {
       }
     }
     Map<String, Set<String>> deps = BeanDefinitionGatherer.toNameMap(injectionPoints);
-    Set<String> typeHierarchy = !fields[6].isEmpty()
-      ? new LinkedHashSet<>(List.of(fields[6].split(TYPE_HIERARCHY_SEPARATOR)))
+    Set<String> typeHierarchy = !fields[7].isEmpty()
+      ? new LinkedHashSet<>(List.of(fields[7].split(TYPE_HIERARCHY_SEPARATOR)))
       : new LinkedHashSet<>();
-    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, deps, injectionPoints, typeHierarchy);
+    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, profiles, deps, injectionPoints, typeHierarchy);
   }
 
   /** Reverse of {@link #encodeInjectionPoint}. */

@@ -145,6 +145,30 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(beans.get(0).isPrimary()).isFalse();
   }
 
+  // ---- @Profile ---------------------------------------------------------------
+
+  @ParameterizedTest(name = "{1}")
+  @MethodSource("profileArguments")
+  void profile_annotation_is_captured(String filePath, String beanName, String expectedProfiles) {
+    scan(filePath);
+
+    var beans = model.getBeanDefinitionRegistry().getByName(beanName);
+    assertThat(beans).hasSize(1);
+    assertThat(beans.get(0).getProfiles()).isEqualTo(expectedProfiles);
+  }
+
+  static Stream<Arguments> profileArguments() {
+    return Stream.of(
+      Arguments.of("src/test/files/springcontext/ProfiledComponent.java", "profiledComponent", "prod"),
+      Arguments.of("src/test/files/springcontext/MultiProfileComponent.java", "multiProfileComponent", "prod,cloud"),
+      Arguments.of("src/test/files/springcontext/SimpleComponent.java", "simpleComponent", null),
+      // @Bean method without its own @Profile inherits the enclosing class's one
+      Arguments.of("src/test/files/springcontext/ProfiledConfigurationWithBeanMethods.java", "inheritedProfileBean", "prod"),
+      // @Bean method's own @Profile takes precedence over the enclosing class's one
+      Arguments.of("src/test/files/springcontext/ProfiledConfigurationWithBeanMethods.java", "ownProfileBean", "test")
+    );
+  }
+
   // ---- Anonymous / no annotation --------------------------------------------
 
   @Test
@@ -345,7 +369,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
     String encodedName = Base64.getEncoder().encodeToString("simpleComponent".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.SimpleComponent|checks.spring.context|6:6:6:21|false||checks.spring.context.SimpleComponent";
+    String serialized = encodedName + "|checks.spring.context.SimpleComponent|checks.spring.context|6:6:6:21|false|||checks.spring.context.SimpleComponent";
 
     JavaReadCache readCache = mock(JavaReadCache.class);
     when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
@@ -465,7 +489,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
     String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
     String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
+    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false||"
       + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
       + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
       + "|checks.spring.context.QualifiedFieldDependencies";
@@ -539,7 +563,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/ComponentImplementingInterface.java"));
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
     String encodedName = Base64.getEncoder().encodeToString("componentImplementingInterface".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.ComponentImplementingInterface|checks.spring.context|8:6:8:36|false|"
+    String serialized = encodedName + "|checks.spring.context.ComponentImplementingInterface|checks.spring.context|8:6:8:36|false||"
       + "|checks.spring.context.ComponentImplementingInterface"
       + ";org.springframework.context.ApplicationContextAware"
       + ";org.springframework.beans.factory.Aware";
@@ -728,7 +752,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
     String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
     String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
+    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false||"
       + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
       + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
       + "|checks.spring.context.QualifiedFieldDependencies";

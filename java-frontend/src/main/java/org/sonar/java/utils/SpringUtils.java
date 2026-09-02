@@ -43,6 +43,7 @@ public final class SpringUtils {
   public static final String BEAN_ANNOTATION = "org.springframework.context.annotation.Bean";
   public static final String SCOPE_ANNOTATION = "org.springframework.context.annotation.Scope";
   public static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
+  public static final String PROFILE_ANNOTATION = "org.springframework.context.annotation.Profile";
   public static final String ASYNC_ANNOTATION = "org.springframework.scheduling.annotation.Async";
   public static final String DATA_REPOSITORY_ANNOTATION = "org.springframework.data.repository.Repository";
   public static final String REST_CONTROLLER_ANNOTATION = "org.springframework.web.bind.annotation.RestController";
