@@ -17,14 +17,12 @@
 package org.sonar.java.model.springcontext;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
@@ -322,21 +320,23 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   @Nullable
   private static String extractProfiles(SymbolMetadata metadata) {
     List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(SpringUtils.PROFILE_ANNOTATION);
-    if (attrs == null) {
-      return null;
+    List<String> profiles = new ArrayList<>();
+    if (attrs != null) {
+      for (SymbolMetadata.AnnotationValue attr : attrs) {
+        collectProfileAttributeValues(attr, profiles);
+      }
     }
-    List<String> profiles = attrs.stream()
-      .filter(v -> VALUE_ATTRIBUTE.equals(v.name()))
-      .flatMap(v -> {
-        Object val = v.value();
-        if (val instanceof Object[] arr) {
-          return Arrays.stream(arr).filter(String.class::isInstance).map(String.class::cast);
-        }
-        return Stream.empty();
-      })
-      .filter(s -> !s.isBlank())
-      .toList();
     return profiles.isEmpty() ? null : String.join(PROFILE_SEPARATOR, profiles);
+  }
+
+  private static void collectProfileAttributeValues(SymbolMetadata.AnnotationValue attr, List<String> profiles) {
+    if (VALUE_ATTRIBUTE.equals(attr.name()) && attr.value() instanceof Object[] values) {
+      for (Object value : values) {
+        if (value instanceof String profile && !profile.isBlank()) {
+          profiles.add(profile);
+        }
+      }
+    }
   }
 
   /**
