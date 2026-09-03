@@ -111,6 +111,14 @@ class AmbiguousDependencyCheckTest {
     assertThat(check.execute(model)).isEmpty();
   }
 
+  @Test
+  void qualifier_towards_profiled_candidate_is_not_flagged_as_ambiguous() {
+    SpringContextModel model = buildModel(
+      "PlainEventPublisherComponentA.java", "PlainEventPublisherComponentB.java", "ProfiledEventPublisherComponent.java",
+      "EventPublisherQualifierConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
   /**
    * Runs {@link BeanDefinitionGatherer} over the given files (relative to {@link #BASE_PATH} under
    * {@code src/main/java}) into a single, freshly built {@link SpringContextModel}, mirroring how

@@ -46,7 +46,9 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
    * a single candidate, or a single one marked {@code @Primary}, is unambiguous, whether it has a
    * profile. Otherwise, candidates with a profile are excluded as potentially mutually exclusive, and the
    * same unique/{@code @Primary} check is re-applied to the remaining candidates; if multiple still remain,
-   * an issue is created for each injection point that does not match one of them by name.
+   * an issue is created for each injection point that does not match one of the <em>full</em> set of candidates
+   * by name — an injection point explicitly qualified towards a profiled bean is already disambiguated and must
+   * not be flagged, even though that bean was excluded from the uniqueness/{@code @Primary} heuristic above.
    *
    * @param model the Spring context model of the project
    */
@@ -64,8 +66,8 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
       }
       Set<InjectionPoint> injectionPoints = typeToDependenciesIndex.getDependenciesForType(type);
       Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
-      if (!hasUniqueOrPrimaryCandidate(effectiveCandidates, registry) && effectiveCandidates.size() > 1) {
-        for (InjectionPoint unresolvedInjectionPoint : findInjectionPointsNotMatchingCandidateByName(effectiveCandidates, injectionPoints)) {
+      if (!hasUniqueOrPrimaryCandidate(effectiveCandidates, registry)) {
+        for (InjectionPoint unresolvedInjectionPoint : findInjectionPointsNotMatchingCandidateByName(candidates, injectionPoints)) {
           issues.add(new SpringContextIssue(unresolvedInjectionPoint.location(), message(effectiveCandidates)));
         }
       }
