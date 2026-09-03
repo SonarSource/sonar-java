@@ -22,29 +22,29 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
-class CompilationOrPreparationInLoopCheckTest {
+class PreparedStatementInsideLoopCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CompilationOrPreparationInLoopCheckSample.java"))
-      .withCheck(new CompilationOrPreparationInLoopCheck())
+      .onFile(mainCodeSourcesPath("checks/PreparedStatementInsideLoopCheckSample.java"))
+      .withCheck(new PreparedStatementInsideLoopCheck())
       .verifyIssues();
   }
 
   @Test
   void testNonCompiling() {
     CheckVerifier.newVerifier()
-      .onFile(nonCompilingTestSourcesPath("checks/CompilationOrPreparationInLoopCheckSample.java"))
-      .withCheck(new CompilationOrPreparationInLoopCheck())
+      .onFile(nonCompilingTestSourcesPath("checks/PreparedStatementInsideLoopCheckSample.java"))
+      .withCheck(new PreparedStatementInsideLoopCheck())
       .verifyNoIssues();
   }
 
   @Test
   void testWithoutSemantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CompilationOrPreparationInLoopCheckSample.java"))
-      .withCheck(new CompilationOrPreparationInLoopCheck())
+      .onFile(mainCodeSourcesPath("checks/PreparedStatementInsideLoopCheckSample.java"))
+      .withCheck(new PreparedStatementInsideLoopCheck())
       .withoutSemantic()
       .verifyIssues();
   }
