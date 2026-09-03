@@ -66,13 +66,13 @@ class AmbiguousDependencyCheckTest {
 
   @Test
   void field_name_matching_bean_name_resolves_ambiguity() {
-    SpringContextModel model = buildModel("BeanFactoryComponentA.java", "BeanFactoryComponentB.java", "NameMatchConsumer.java");
+    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "NameMatchConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
   void qualifier_resolves_ambiguity() {
-    SpringContextModel model = buildModel("EnvironmentComponentA.java", "EnvironmentComponentB.java", "QualifierConsumer.java");
+    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "QualifierConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
@@ -84,7 +84,7 @@ class AmbiguousDependencyCheckTest {
 
   @Test
   void one_resolved_injection_point_does_not_hide_another_ambiguous_one_of_the_same_type() {
-    SpringContextModel model = buildModel("MixedInjectionComponentA.java", "MixedInjectionComponentB.java", "MixedInjectionConsumer.java");
+    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "MixedInjectionConsumer.java");
     assertThat(check.execute(model)).hasSize(1);
   }
 
