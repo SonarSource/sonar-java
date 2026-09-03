@@ -63,17 +63,6 @@
         "/^org\\.apache\\.tomcat(?:\\.|:)/"
       ],
       "allowedVersions": "/^9\\./"
-    },
-    {
-      "description": "Major SLF4J version changes can create incompatibilities, so we prefer to update it manually.",
-      "matchPackageNames": [
-        "org.slf4j:**",
-        "org.slf4j"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "enabled": false
     }
   ]
 }

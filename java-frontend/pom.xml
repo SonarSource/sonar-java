@@ -40,6 +40,16 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.sonarsource.scanner.engine</groupId>
       <artifactId>plugin-api-scanner-impl</artifactId>
       <scope>test</scope>
