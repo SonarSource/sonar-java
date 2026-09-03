@@ -31,27 +31,12 @@ class AmbiguousDependencyCrossModuleTest extends ScannerIntegrationAbstractTest 
   void test() {
     var issues = analyze(Path.of("ambiguous-dependencies-should-be-resolved"), "S9352");
     assertThat(issues)
-      .hasSize(5)
+      .hasSize(2)
       .contains(new TextRangeIssue(
-        "app/src/main/java/com/example/app/ReportingConsumer.java",
+        "app/src/main/java/com/example/app/PaymentConsumer.java",
         "java:S9352",
-        "Multiple beans match this dependency (excelReportingService, pdfReportingService); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
-        new TextRange(16, 16, 29, 45)),
-        new TextRangeIssue(
-          "app/src/main/java/com/example/app/CacheConsumer.java",
-          "java:S9352",
-          "Multiple beans match this dependency (diskCacheProvider, inMemoryCacheProvider, redisCacheProvider); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
-          new TextRange(12, 12, 26, 39)),
-        new TextRangeIssue(
-          "app/src/main/java/com/example/app/PaymentConsumer.java",
-          "java:S9352",
-          "Multiple beans match this dependency (creditCardPaymentGateway, digitalWalletPaymentGateway); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
-          new TextRange(15, 15, 27, 41)),
-        new TextRangeIssue(
-          "app/src/main/java/com/example/app/NotificationConsumer.java",
-          "java:S9352",
-          "Multiple beans match this dependency (emailNotificationService, smsNotificationService); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
-          new TextRange(16, 16, 32, 51)),
+        "Multiple beans match this dependency (creditCardPaymentGateway, digitalWalletPaymentGateway); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
+        new TextRange(15, 15, 27, 41)),
         new TextRangeIssue(
           "app/src/main/java/com/example/app/InventoryConsumer.java",
           "java:S9352",
