@@ -22,7 +22,7 @@ class CustomCheckedException extends Exception {}
 public class TransactionalMethodCheckedExceptionCheckSample {
 
   @Transactional
-  public void processOrder(Order order) throws IOException, SQLException { // Noncompliant [[secondary=22;quickfixes=qf1,qf2]]
+  public void processOrder(Order order) throws IOException, SQLException { // Noncompliant [[secondary=24;quickfixes=qf1,qf2]]
 //            ^^^^^^^^^^^^
   // fix@qf1 {{Add rollbackFor attribute}}
   // edit@qf1 [[sl=-1;sc=3;el=-1;ec=17]] {{@Transactional(rollbackFor = {java.io.IOException.class, java.sql.SQLException.class})}}
@@ -31,19 +31,19 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   }
 
   @Transactional
-  public void importData() throws Exception { // Noncompliant [[secondary=31;quickfixes=qf3]]
+  public void importData() throws Exception { // Noncompliant [[secondary=33;quickfixes=qf3]]
 //            ^^^^^^^^^^
   // fix@qf3 {{Add rollbackFor = Exception.class}}
   // edit@qf3 [[sl=-1;sc=3;el=-1;ec=17]] {{@Transactional(rollbackFor = java.lang.Exception.class)}}
   }
 
   @Transactional(timeout = 30)
-  public void withOtherAttributes() throws SQLException { // Noncompliant [[secondary=38]]
+  public void withOtherAttributes() throws SQLException { // Noncompliant [[secondary=40]]
 //            ^^^^^^^^^^^^^^^^^^^
   }
 
   @Transactional
-  public void customException() throws CustomCheckedException { // Noncompliant [[secondary=43;quickfixes=qf7,qf8]]
+  public void customException() throws CustomCheckedException { // Noncompliant [[secondary=45;quickfixes=qf7,qf8]]
 //            ^^^^^^^^^^^^^^^
   // fix@qf7 {{Add rollbackFor attribute}}
   // edit@qf7 [[sl=-1;sc=3;el=-1;ec=17]] {{@Transactional(rollbackFor = checks.spring.CustomCheckedException.class)}}
@@ -52,7 +52,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   }
 
   @Transactional
-  public void mixedExceptions() throws IOException, RuntimeException { // Noncompliant [[secondary=52;quickfixes=qf9,qf10]]
+  public void mixedExceptions() throws IOException, RuntimeException { // Noncompliant [[secondary=54;quickfixes=qf9,qf10]]
 //            ^^^^^^^^^^^^^^^
   // fix@qf9 {{Add rollbackFor attribute}}
   // edit@qf9 [[sl=-1;sc=3;el=-1;ec=17]] {{@Transactional(rollbackFor = java.io.IOException.class)}}
@@ -134,7 +134,40 @@ public class TransactionalMethodCheckedExceptionCheckSample {
 //              ^^^^^^^^^^^^
     }
 
+    public void insertRecord() throws IOException { // Noncompliant [[secondary=108]]
+//              ^^^^^^^^^^^^
+    }
+
+    public void createEntity() throws IOException { // Noncompliant [[secondary=108]]
+//              ^^^^^^^^^^^^
+    }
+
+    public void removeItem() throws IOException { // Noncompliant [[secondary=108]]
+//              ^^^^^^^^^^
+    }
+
+    public void storeData() throws IOException { // Noncompliant [[secondary=108]]
+//              ^^^^^^^^^
+    }
+
+    public void executeUpdate() throws IOException { // Noncompliant [[secondary=108]]
+//              ^^^^^^^^^^^^^
+    }
+
+    public void save() throws IOException { // Noncompliant [[secondary=108]]
+//              ^^^^
+    }
+
     public void readData() throws IOException { // Compliant - no transactional prefix
+    }
+
+    public void savedSearch() throws IOException { // Compliant - "saved" has no word boundary after "save"
+    }
+
+    public void persisted() throws IOException { // Compliant - "persisted" has no word boundary after "persist"
+    }
+
+    public void deletion() throws IOException { // Compliant - "deletion" has no word boundary after "delete"
     }
 
     @Transactional(rollbackFor = IOException.class)
@@ -147,7 +180,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   }
 
   @org.springframework.transaction.annotation.Transactional
-  public void fullyQualified() throws IOException { // Noncompliant [[secondary=121;quickfixes=qf13,qf14]]
+  public void fullyQualified() throws IOException { // Noncompliant [[secondary=182;quickfixes=qf13,qf14]]
 //            ^^^^^^^^^^^^^^
   // fix@qf13 {{Add rollbackFor attribute}}
   // edit@qf13 [[sl=-1;sc=3;el=-1;ec=60]] {{@org.springframework.transaction.annotation.Transactional(rollbackFor = java.io.IOException.class)}}
@@ -160,7 +193,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   }
 
   @Transactional(value = "txManager")
-  public void withValueAttribute() throws IOException { // Noncompliant [[secondary=134]]
+  public void withValueAttribute() throws IOException { // Noncompliant [[secondary=195]]
 //            ^^^^^^^^^^^^^^^^^^
   }
 
@@ -171,7 +204,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
       public void nestedMethod() throws IOException { // Compliant - no transactional prefix
       }
 
-      public void saveNestedEntity() throws IOException { // Noncompliant [[secondary=155]]
+      public void saveNestedEntity() throws IOException { // Noncompliant [[secondary=202]]
 //                ^^^^^^^^^^^^^^^^
       }
     }
@@ -187,19 +220,19 @@ public class TransactionalMethodCheckedExceptionCheckSample {
   interface TransactionalInterface {
     void interfaceMethod() throws IOException; // Compliant - no transactional prefix
 
-    void saveEntity() throws IOException; // Noncompliant [[secondary=169]]
+    void saveEntity() throws IOException; // Noncompliant [[secondary=219]]
 //       ^^^^^^^^^^ {{Specify rollback behavior for checked exceptions using "rollbackFor" or "noRollbackFor" attributes on the class-level @Transactional.}}
   }
 
   // Test meta-annotated (composed) annotation
   @MyTransactional
-  public void metaAnnotated() throws IOException { // Noncompliant [[secondary=162]]
+  public void metaAnnotated() throws IOException { // Noncompliant [[secondary=228]]
 //            ^^^^^^^^^^^^^
   }
 
   // Test annotation with value attribute (transaction manager name)
   @Transactional("txManager")
-  public void valueShorthand() throws IOException { // Noncompliant [[secondary=168]]
+  public void valueShorthand() throws IOException { // Noncompliant [[secondary=234]]
 //            ^^^^^^^^^^^^^^
     // Has value attribute but no rollback configuration
   }
@@ -235,7 +268,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
     public void publicInClassLevel() throws IOException { // Compliant - no transactional prefix
     }
 
-    public void savePublicInClassLevel() throws IOException { // Noncompliant [[secondary=207]]
+    public void savePublicInClassLevel() throws IOException { // Noncompliant [[secondary=257]]
 //              ^^^^^^^^^^^^^^^^^^^^^^
     }
   }
@@ -262,13 +295,13 @@ public class TransactionalMethodCheckedExceptionCheckSample {
 
   // readOnly = false with default propagation is still noncompliant
   @Transactional(readOnly = false)
-  public void readOnlyFalse() throws IOException { // Noncompliant [[secondary=228]]
+  public void readOnlyFalse() throws IOException { // Noncompliant [[secondary=297]]
 //            ^^^^^^^^^^^^^
   }
 
   // Explicit REQUIRED propagation still needs rollback config
   @Transactional(propagation = Propagation.REQUIRED)
-  public void requiredPropagation() throws IOException { // Noncompliant [[secondary=234]]
+  public void requiredPropagation() throws IOException { // Noncompliant [[secondary=303]]
 //            ^^^^^^^^^^^^^^^^^^^
   }
 
@@ -309,14 +342,14 @@ public class TransactionalMethodCheckedExceptionCheckSample {
     }
 
     @Deprecated
-    public void deleteWithAnnotations() throws IOException { // Noncompliant [[secondary=290]]
+    public void deleteWithAnnotations() throws IOException { // Noncompliant [[secondary=337]]
 //              ^^^^^^^^^^^^^^^^^^^^^
     }
   }
 
   @Transactional
   static class ClassLevelWithMethodCalls {
-    public void processOrder(Object repository) throws IOException { // Noncompliant [[secondary=297]]
+    public void processOrder(Object repository) throws IOException { // Noncompliant [[secondary=350]]
 //              ^^^^^^^^^^^^
       repository.toString();
       saveOrder();
@@ -329,7 +362,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
     private void saveOrder() {
     }
 
-    public void delegateToFlush() throws IOException { // Noncompliant [[secondary=297]]
+    public void delegateToFlush() throws IOException { // Noncompliant [[secondary=350]]
 //              ^^^^^^^^^^^^^^^
       flushAll();
     }
@@ -337,7 +370,7 @@ public class TransactionalMethodCheckedExceptionCheckSample {
     private void flushAll() {
     }
 
-    public void delegateToDelete(Object entity) throws IOException { // Noncompliant [[secondary=297]]
+    public void delegateToDelete(Object entity) throws IOException { // Noncompliant [[secondary=350]]
 //              ^^^^^^^^^^^^^^^^
       deleteEntity(entity);
     }

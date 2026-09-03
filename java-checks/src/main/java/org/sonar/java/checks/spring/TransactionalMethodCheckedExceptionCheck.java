@@ -54,7 +54,9 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 @Rule(key = "S8989")
 public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
-  private static final List<String> TRANSACTIONAL_PREFIXES = List.of("save", "delete", "update", "persist", "merge", "flush");
+  private static final List<String> TRANSACTIONAL_PREFIXES = List.of(
+    "save", "delete", "update", "persist", "merge", "flush",
+    "insert", "create", "remove", "store", "execute");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -295,7 +297,12 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
 
   private static boolean hasTransactionalPrefix(String name) {
     String lowerName = name.toLowerCase(Locale.ROOT);
-    return TRANSACTIONAL_PREFIXES.stream().anyMatch(lowerName::startsWith);
+    return TRANSACTIONAL_PREFIXES.stream().anyMatch(prefix -> {
+      if (!lowerName.startsWith(prefix)) {
+        return false;
+      }
+      return name.length() == prefix.length() || Character.isUpperCase(name.charAt(prefix.length()));
+    });
   }
 
   private static class MethodInvocationVisitor extends BaseTreeVisitor {
