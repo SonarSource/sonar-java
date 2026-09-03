@@ -42,6 +42,20 @@ class PreparedStatementInsideLoopCheckSample {
     }
   }
 
+  void forEachExpression(Connection conn) throws SQLException {
+    for (PreparedStatement p : List.of(conn.prepareStatement("SELECT 1"))) { // Compliant: expression evaluated once
+      p.close();
+    }
+  }
+
+  void forEachExpressionInsideOuterLoop(Connection conn, List<Integer> ids) throws SQLException {
+    for (int id : ids) {
+      for (PreparedStatement p : List.of(conn.prepareStatement("SELECT 1"))) { // Noncompliant
+        p.close();
+      }
+    }
+  }
+
   void compliant(Connection conn, List<Integer> ids) throws SQLException {
     PreparedStatement ps = conn.prepareStatement("SELECT * FROM t WHERE id = ?");
     for (int id : ids) {
