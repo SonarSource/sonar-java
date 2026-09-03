@@ -88,6 +88,29 @@ class AmbiguousDependencyCheckTest {
     assertThat(check.execute(model)).hasSize(1);
   }
 
+  // ---- @Profile -------------------------------------------------------------
+
+  @Test
+  void unprofiled_primary_resolves_ambiguity_despite_a_competing_profiled_primary() {
+    SpringContextModel model = buildModel(
+      "UnprofiledPrimaryComponent.java", "ProfiledPrimaryComponent.java", "PlainMessageSourceComponent.java", "MessageSourceConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void excluding_profiled_candidate_still_leaves_ambiguity_between_the_rest() {
+    SpringContextModel model = buildModel(
+      "PlainEventPublisherComponentA.java", "PlainEventPublisherComponentB.java", "ProfiledEventPublisherComponent.java", "EventPublisherConsumer.java");
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  @Test
+  void profiled_primary_resolves_ambiguity_on_the_raw_candidate_set() {
+    SpringContextModel model = buildModel(
+      "ProfiledPrimaryClassLoaderComponent.java", "PlainClassLoaderComponentA.java", "PlainClassLoaderComponentB.java", "ClassLoaderConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
   /**
    * Runs {@link BeanDefinitionGatherer} over the given files (relative to {@link #BASE_PATH} under
    * {@code src/main/java}) into a single, freshly built {@link SpringContextModel}, mirroring how
