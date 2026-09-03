@@ -20,6 +20,9 @@ import java.io.File;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.TestInputFileBuilder;
+import org.sonar.api.batch.rule.ActiveRules;
+import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
+import org.sonar.api.batch.rule.internal.NewActiveRule;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
@@ -35,6 +38,7 @@ class SpringContextModelSensorTest {
 
   private static final String MODULE_KEY = "module";
   private static final String PACKAGE = "checks.spring.s9352";
+  private static final RuleKey S9352_RULE_KEY = RuleKey.of("java", "S9352");
 
   @Test
   void test_toString() {
@@ -48,6 +52,7 @@ class SpringContextModelSensorTest {
   @Test
   void reports_an_issue_for_an_ambiguous_dependency() {
     SensorContextTester context = SensorContextTester.create(new File(""));
+    context.setActiveRules(activeRulesWithS9352());
     SpringContextModel model = new SpringContextModel();
     InputFile inputFile = fakeInputFile(context, "UnresolvedConsumer.java");
     String type = "org.springframework.context.ApplicationContextAware";
@@ -60,11 +65,34 @@ class SpringContextModelSensorTest {
 
     assertThat(context.allIssues()).hasSize(1);
     Issue issue = context.allIssues().iterator().next();
-    assertThat(issue.ruleKey()).isEqualTo(RuleKey.of("java", "S9352"));
+    assertThat(issue.ruleKey()).isEqualTo(S9352_RULE_KEY);
     assertThat(issue.primaryLocation().message())
       .isEqualTo("Multiple beans match this dependency"
         + " (componentOne, componentTwo); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".");
     assertThat(issue.primaryLocation().textRange().start().line()).isEqualTo(13);
+  }
+
+  @Test
+  void does_not_report_issues_when_rule_is_not_active() {
+    SensorContextTester context = SensorContextTester.create(new File(""));
+    // No active rules registered: S9352 is not in the quality profile.
+    SpringContextModel model = new SpringContextModel();
+    InputFile inputFile = fakeInputFile(context, "UnresolvedConsumer.java");
+    String type = "org.springframework.context.ApplicationContextAware";
+
+    registerBean(model, type, "componentOne", inputFile, 5, 0, 5, 12);
+    registerBean(model, type, "componentTwo", inputFile, 6, 0, 6, 12);
+    registerDependency(model, type, "contextAware", inputFile, 13, 13, 13, 25);
+
+    new SpringContextModelSensor(model).execute(context);
+
+    assertThat(context.allIssues()).isEmpty();
+  }
+
+  private static ActiveRules activeRulesWithS9352() {
+    return new ActiveRulesBuilder()
+      .addRule(new NewActiveRule.Builder().setRuleKey(S9352_RULE_KEY).build())
+      .build();
   }
 
   private static void registerBean(SpringContextModel model, String type, String beanName, InputFile inputFile,
