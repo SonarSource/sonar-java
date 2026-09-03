@@ -65,6 +65,10 @@ public class SpringContextModelSensor implements ProjectSensor {
 
   private void reportIssues(SensorContext context, SpringContextCheck check) {
     RuleKey ruleKey = RuleKey.of(GeneratedCheckList.REPOSITORY_KEY, check.getClass().getAnnotation(Rule.class).key());
+    if (context.activeRules().find(ruleKey) == null) {
+      // Rule not active in the quality profile: skip running the check, its issues would be discarded anyway.
+      return;
+    }
     for (SpringContextIssue issue : check.execute(springContextModel)) {
       BeanLocation location = issue.location();
       AnalyzerMessage.TextSpan span = location.mainLocation();
