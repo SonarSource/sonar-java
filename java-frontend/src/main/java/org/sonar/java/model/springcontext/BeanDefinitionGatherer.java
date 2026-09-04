@@ -16,32 +16,26 @@
  */
 package org.sonar.java.model.springcontext;
 
-import java.beans.Introspector;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.model.JUtils;
+import org.sonar.java.model.springcontext.TypeToDependenciesIndex.InjectionPoint;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -66,30 +60,24 @@ import org.sonar.plugins.java.api.tree.VariableTree;
  *   <li>Implicit single-constructor injection (no {@code @Autowired} required)</li>
  * </ul>
  *
- * <p>Also populates {@link TypeToBeanNamesIndex} with the full type hierarchy of each bean,
- * so that rules can look up all beans assignable to a given type.
+ * <p>Also populates:
+ * <ul>
+ *   <li>{@link TypeToBeanNamesIndex} with the full type hierarchy of each bean</li>
+ *   <li>{@link TypeToDependenciesIndex} with all the dependencies collected by type</li>
+ * </ul>
  */
 public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   private static final Logger LOG = LoggerFactory.getLogger(BeanDefinitionGatherer.class);
 
-  private static final String CACHE_KEY_PREFIX = "java:spring:bean-definitions:";
-  private static final String BEAN_SEPARATOR = "\n";
-  private static final String FIELD_SEPARATOR = "|";
-  private static final String DEP_SEPARATOR = ",";
-  private static final String DEP_KEY_VALUE_SEPARATOR = ":";
-  private static final String DEP_NAMES_SEPARATOR = ";";
-  private static final String TYPE_HIERARCHY_SEPARATOR = ";";
-
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
-  private static final String VALUE_ATTRIBUTE = "value";
 
   private final List<BeanData> collectedBeans = new ArrayList<>();
 
   /** Beans found in the file currently being scanned, used for per-file cache writes. */
   private final List<BeanData> beansCollectedAtFileLevel = new ArrayList<>();
 
-  private record BeanData(
+  record BeanData(
     String beanName,
     String type,
     String beanPackage,
@@ -97,6 +85,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
     Map<String, Set<String>> dependingBeans,
+    Map<String, Set<InjectionPoint>> dependencyInjectionPoints,
     Set<String> typeHierarchy) {
   }
 
@@ -111,6 +100,15 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     return List.of(Tree.Kind.CLASS);
   }
 
+  /**
+   * Visits class nodes and registers all beans defined in the class.
+   *
+   * Registers a bean when the class carries a stereotype annotation ({@code @Component},
+   * {@code @Service}, {@code @Repository}, {@code @Controller}, {@code @RestController}, {@code @Configuration}),
+   * then registers beans for {@code @Bean} factory methods on that same class.
+   *
+   * @param tree The class tree to visit
+   */
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
@@ -123,21 +121,23 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     String pkg = PackageUtils.packageNameOf(classTree.symbol());
 
     if (SpringUtils.STEREOTYPE_ANNOTATIONS.stream().anyMatch(meta::isAnnotatedWith)) {
-      String beanName = extractBeanName(meta)
-        .orElseGet(() -> defaultBeanName(classTree.simpleName().name()));
-      Map<String, Set<String>> deps = collectAutowiredDependencies(classTree);
-      Set<String> typeHierarchy = collectTypeHierarchy(classTree.symbol());
+      String beanName = SpringUtils.extractBeanName(meta, classTree.simpleName().name());
+      // collect autowired dependencies as InjectionPoints to store in TypeToDependenciesIndex
+      Map<String, Set<InjectionPoint>> injectionPoints = collectAutowiredDependencies(classTree, context.getInputFile());
+      // also collect their names mapped by type to store in dependingBeans
+      Map<String, Set<String>> deps = toNameMap(injectionPoints);
+      Set<String> typeHierarchy = JUtils.collectTypeHierarchy(classTree.symbol());
       var beanData = new BeanData(
         beanName, fqn, pkg,
         context.getInputFile(),
         AnalyzerMessage.textSpanFor(classTree.simpleName()),
         meta.isAnnotatedWith(PRIMARY_ANNOTATION),
         deps,
+        injectionPoints,
         typeHierarchy);
       collectedBeans.add(beanData);
       beansCollectedAtFileLevel.add(beanData);
 
-      // @Bean methods — only if class is a configuration/component class
       for (MethodTree method : SpringUtils.getBeanMethods(classTree)) {
         collectBeanMethod(method, pkg);
       }
@@ -147,56 +147,28 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     if (context.getCacheContext().isCacheEnabled()) {
-      writeToCache(context, beansCollectedAtFileLevel);
+      SpringContextCacheHelper.writeBeanDefinitionsToCache(context, LOG, beansCollectedAtFileLevel);
     }
     beansCollectedAtFileLevel.clear();
   }
 
-  private static String cacheKey(InputFile inputFile) {
-    return CACHE_KEY_PREFIX + inputFile.key();
-  }
-
-  private static void writeToCache(JavaFileScannerContext context, List<BeanData> beans) {
-    var cacheKey = cacheKey(context.getInputFile());
-    var data = beans.stream()
-      .map(BeanDefinitionGatherer::serializeBean)
-      .collect(Collectors.joining(BEAN_SEPARATOR))
-      .getBytes(StandardCharsets.UTF_8);
-    try {
-      context.getCacheContext().getWriteCache().write(cacheKey, data);
-    } catch (IllegalArgumentException e) {
-      LOG.trace("Tried to write multiple times to cache key '{}'. Ignoring writes after the first.", cacheKey);
-    }
-  }
-
-  private static String serializeBean(BeanData bean) {
-    var deps = bean.dependingBeans().entrySet().stream()
-      .map(e -> Base64.getEncoder().encodeToString(e.getKey().getBytes(StandardCharsets.UTF_8))
-        + DEP_KEY_VALUE_SEPARATOR
-        + e.getValue().stream()
-          .map(n -> Base64.getEncoder().encodeToString(n.getBytes(StandardCharsets.UTF_8)))
-          .collect(Collectors.joining(DEP_NAMES_SEPARATOR)))
-      .collect(Collectors.joining(DEP_SEPARATOR));
-    var typeHierarchy = String.join(TYPE_HIERARCHY_SEPARATOR, bean.typeHierarchy());
-    var span = bean.textSpan();
-    var encodedName = Base64.getEncoder().encodeToString(bean.beanName().getBytes(StandardCharsets.UTF_8));
-    return String.join(FIELD_SEPARATOR,
-      encodedName,
-      bean.type(),
-      bean.beanPackage(),
-      span.startLine + ":" + span.startCharacter + ":" + span.endLine + ":" + span.endCharacter,
-      Boolean.toString(bean.isPrimary()),
-      deps,
-      typeHierarchy);
-  }
-
+  /**
+   * Transfers all beans collected across the module into the shared {@link SpringContextModel}.
+   *
+   * Registers all encountered bean definitions in {@link BeanDefinitionRegistry},
+   * their position in every ancestor/interface type in {@link TypeToBeanNamesIndex}, and
+   * each of their dependencies by type in {@link TypeToDependenciesIndex}.
+   *
+   * @param context Scanner context used here to access the current module key
+   * @param springContextModel Shared cross-module Spring context
+   */
   @Override
   public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {
     for (BeanData data : collectedBeans) {
       var location = new BeanLocation(data.inputFile(), data.textSpan());
       var holderBuilder = new BeanDefinitionHolder.Builder(
         data.type(), context.getModuleKey(), data.beanPackage(), location)
-        .dependingBeans(data.dependingBeans());
+          .dependingBeans(data.dependingBeans());
       if (data.isPrimary()) {
         holderBuilder.primary();
       }
@@ -205,201 +177,122 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       for (String typeFqn : data.typeHierarchy()) {
         springContextModel.getTypeToBeanNamesIndex().addBeanForType(typeFqn, data.beanName());
       }
+      data.dependencyInjectionPoints().forEach((typeFqn, points) -> points.forEach(point -> springContextModel.getTypeToDependenciesIndex()
+        .addDependencyForType(typeFqn, point.name(), point.location())));
     }
   }
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext ctx) {
-    return readFromCache(ctx).map(beans -> {
+    return SpringContextCacheHelper.readBeanDefinitionsFromCache(ctx, LOG).map(beans -> {
       collectedBeans.addAll(beans);
       return true;
     }).orElse(false);
   }
 
-  private static Optional<List<BeanData>> readFromCache(InputFileScannerContext ctx) {
-    var cacheKey = cacheKey(ctx.getInputFile());
-    var bytes = ctx.getCacheContext().getReadCache().readBytes(cacheKey);
-    if (bytes == null) {
-      return Optional.empty();
-    }
-    String content = new String(bytes, StandardCharsets.UTF_8);
-    if (content.isEmpty()) {
-      ctx.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
-      return Optional.of(List.of());
-    }
-    try {
-      var beans = content.lines()
-        .map(line -> deserializeBean(line, ctx.getInputFile()))
-        .toList();
-      ctx.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
-      return Optional.of(beans);
-    } catch (RuntimeException e) {
-      LOG.trace("Failed to deserialize cached beans for '{}', will re-parse.", cacheKey);
-      return Optional.empty();
-    }
-  }
-
-  private static BeanData deserializeBean(String line, InputFile inputFile) {
-    String[] fields = line.split("\\" + FIELD_SEPARATOR, -1);
-    String beanName = new String(Base64.getDecoder().decode(fields[0]), StandardCharsets.UTF_8);
-    String type = fields[1];
-    String beanPackage = fields[2];
-    String[] spanParts = fields[3].split(":");
-    var textSpan = new AnalyzerMessage.TextSpan(
-      Integer.parseInt(spanParts[0]),
-      Integer.parseInt(spanParts[1]),
-      Integer.parseInt(spanParts[2]),
-      Integer.parseInt(spanParts[3]));
-    boolean isPrimary = Boolean.parseBoolean(fields[4]);
-    Map<String, Set<String>> deps = new LinkedHashMap<>();
-    if (!fields[5].isEmpty()) {
-      for (String entry : fields[5].split(DEP_SEPARATOR)) {
-        int idx = entry.indexOf(DEP_KEY_VALUE_SEPARATOR);
-        String typeFqn = new String(Base64.getDecoder().decode(entry.substring(0, idx)), StandardCharsets.UTF_8);
-        Set<String> names = Arrays.stream(entry.substring(idx + 1).split(DEP_NAMES_SEPARATOR))
-          .map(n -> new String(Base64.getDecoder().decode(n), StandardCharsets.UTF_8))
-          .collect(Collectors.toCollection(LinkedHashSet::new));
-        deps.put(typeFqn, names);
-      }
-    }
-    Set<String> typeHierarchy = !fields[6].isEmpty()
-      ? new LinkedHashSet<>(List.of(fields[6].split(TYPE_HIERARCHY_SEPARATOR)))
-      : new LinkedHashSet<>();
-    return new BeanData(beanName, type, beanPackage, inputFile, textSpan, isPrimary, deps, typeHierarchy);
-  }
-
-  private static Optional<String> extractBeanName(SymbolMetadata meta) {
-    for (String annotation : SpringUtils.STEREOTYPE_ANNOTATIONS) {
-      List<SymbolMetadata.AnnotationValue> attrs = meta.valuesForAnnotation(annotation);
-      if (attrs != null) {
-        Optional<String> name = attrs.stream()
-          .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
-          .map(v -> (String) v.value())
-          .filter(s -> !s.isBlank())
-          .findFirst();
-        if (name.isPresent()) {
-          return name;
-        }
-      }
-    }
-    return Optional.empty();
-  }
-
-  private static String defaultBeanName(String simpleName) {
-    return Introspector.decapitalize(simpleName);
-  }
-
+  /**
+   * Collects {@link BeanData} for a bean registered with the {@code @Bean} factory method.
+   *
+   * If multiple aliases are declared (e.g. {@code @Bean({"a", "b"})}), one {@link BeanData} is
+   * registered for each alias.
+   *
+   * @param method The {@code @Bean} factory method to visit
+   * @param pkg The bean's package (carried through to be stored in BeanData)
+   */
   private void collectBeanMethod(MethodTree method, String pkg) {
     SymbolMetadata beanMeta = method.symbol().metadata();
-    List<SymbolMetadata.AnnotationValue> attrs = beanMeta.valuesForAnnotation(SpringUtils.BEAN_ANNOTATION);
-    List<String> beanNames = Optional.ofNullable(attrs)
-      .map(list -> list.stream()
-        .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
-        .flatMap(v -> {
-          Object val = v.value();
-          if (val instanceof Object[] arr && arr.length > 0) {
-            return Arrays.stream(arr).filter(String.class::isInstance).map(String.class::cast);
-          }
-          return Stream.empty();
-        })
-        .filter(s -> !s.isBlank())
-        .toList())
-      .filter(names -> !names.isEmpty())
-      .orElse(List.of(method.simpleName().name()));
+    List<String> beanNames = SpringUtils.extractBeanMethodNames(beanMeta, method);
 
     String returnTypeFqn = method.returnType() != null
       ? method.returnType().symbolType().fullyQualifiedName()
       : "";
     Set<String> typeHierarchy = method.returnType() != null
-      ? collectTypeHierarchy(method.returnType().symbolType().symbol())
+      ? JUtils.collectTypeHierarchy(method.returnType().symbolType().symbol())
       : Set.of();
 
-    Map<String, Set<String>> paramDeps = parameterDependencies(method);
+    var inputFile = context.getInputFile();
+    // Unlike class-level beans, a {@code @Bean} method's dependencies come only from its own parameters.
+    Map<String, Set<InjectionPoint>> injectionPoints = parameterDependencies(method, inputFile);
+    Map<String, Set<String>> paramDeps = toNameMap(injectionPoints);
     boolean isPrimary = beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION);
     var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
-    var inputFile = context.getInputFile();
 
     for (String beanName : beanNames) {
-      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, paramDeps, typeHierarchy);
+      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, paramDeps, injectionPoints, typeHierarchy);
       collectedBeans.add(beanData);
       beansCollectedAtFileLevel.add(beanData);
     }
   }
 
-  private static Map<String, Set<String>> collectAutowiredDependencies(ClassTree classTree) {
-    Map<String, Set<String>> deps = new LinkedHashMap<>();
+  /**
+   * Collects a class-level bean's dependencies from {@code @Autowired} fields, constructors and setters.
+   *
+   * Also applies Spring's implicit single-constructor injection if no constructor is {@code @Autowired}
+   * and the class declares exactly one constructor. {@code hasAutowiredConstructor} guards against
+   * misapplying that fallback when an {@code @Autowired} constructor already exists alongside other,
+   * unannotated ones.
+   *
+   * @param classTree The class whose members are scanned for dependencies
+   * @param inputFile The file {@code classTree} was parsed from, used to locate each injection point
+   * @return The class's dependencies, mapped by required type FQN to the {@link InjectionPoint}s that require it
+   */
+  private static Map<String, Set<InjectionPoint>> collectAutowiredDependencies(ClassTree classTree, InputFile inputFile) {
+    Map<String, Set<InjectionPoint>> deps = new LinkedHashMap<>();
     List<MethodTree> unannotatedConstructors = new ArrayList<>();
     boolean hasAutowiredConstructor = false;
     for (Tree member : classTree.members()) {
       if (member instanceof VariableTree field && field.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
         String typeFqn = field.symbol().type().fullyQualifiedName();
-        String name = dependencyKey(field.simpleName().name(), extractQualifier(field.symbol().metadata()));
-        deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(name);
+        String name = dependencyKey(field.simpleName().name(), SpringUtils.extractQualifier(field.symbol().metadata()));
+        var location = new BeanLocation(inputFile, AnalyzerMessage.textSpanFor(field.simpleName()));
+        deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(new InjectionPoint(name, location));
       } else if (member instanceof MethodTree method) {
         if (method.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
           hasAutowiredConstructor |= method.is(Tree.Kind.CONSTRUCTOR);
-          parameterDependencies(method).forEach((type, names) ->
-            deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(names));
+          parameterDependencies(method, inputFile).forEach((type, points) -> deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(points));
         } else if (method.is(Tree.Kind.CONSTRUCTOR)) {
+          // Held back until the class has been fully scanned, in case an @Autowired constructor appears
+          // later among the members and disqualifies the implicit single-constructor rule below.
           unannotatedConstructors.add(method);
         }
       }
     }
     if (!hasAutowiredConstructor && unannotatedConstructors.size() == 1) {
-      parameterDependencies(unannotatedConstructors.get(0)).forEach((type, names) ->
-        deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(names));
+      parameterDependencies(unannotatedConstructors.get(0), inputFile).forEach((type, points) -> deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(points));
     }
     return deps;
   }
 
-  private static Map<String, Set<String>> parameterDependencies(MethodTree method) {
-    Map<String, Set<String>> deps = new LinkedHashMap<>();
+  /**
+   * Collect the given method's parameters as dependencies.
+   *
+   * @param method Method whose parameters are stored as dependencies, either {@code @Autowired} constructors/setters or
+   * {@code @Bean} factory methods
+   * @param inputFile The file {@code method} was parsed from, used to locate each injection point
+   * @return The collected dependencies, mapped by required type FQN to the {@link InjectionPoint}s that require it
+   */
+  private static Map<String, Set<InjectionPoint>> parameterDependencies(MethodTree method, InputFile inputFile) {
+    Map<String, Set<InjectionPoint>> deps = new LinkedHashMap<>();
     for (var p : method.parameters()) {
       String typeFqn = p.symbol().type().fullyQualifiedName();
-      String name = dependencyKey(p.simpleName().name(), extractQualifier(p.symbol().metadata()));
-      deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(name);
+      String name = dependencyKey(p.simpleName().name(), SpringUtils.extractQualifier(p.symbol().metadata()));
+      var location = new BeanLocation(inputFile, AnalyzerMessage.textSpanFor(p.simpleName()));
+      deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(new InjectionPoint(name, location));
     }
     return deps;
+  }
+
+  /** Projects each type's injection points down to just their names, discarding location — the flat view stored in {@code BeanDefinitionHolder}. */
+  static Map<String, Set<String>> toNameMap(Map<String, Set<InjectionPoint>> injectionPointsByType) {
+    Map<String, Set<String>> names = new LinkedHashMap<>();
+    injectionPointsByType.forEach((typeFqn, points) -> names.put(typeFqn, points.stream()
+      .map(InjectionPoint::name)
+      .collect(Collectors.toCollection(LinkedHashSet::new))));
+    return names;
   }
 
   private static String dependencyKey(String fieldOrParamName, @Nullable String qualifier) {
     return qualifier != null ? qualifier : fieldOrParamName;
-  }
-
-  @Nullable
-  private static String extractQualifier(SymbolMetadata metadata) {
-    List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(SpringUtils.QUALIFIER_ANNOTATION);
-    if (attrs == null) {
-      return null;
-    }
-    return attrs.stream()
-      .filter(v -> VALUE_ATTRIBUTE.equals(v.name()))
-      .map(v -> (String) v.value())
-      .filter(s -> !s.isBlank())
-      .findFirst()
-      .orElse(null);
-  }
-
-  private static Set<String> collectTypeHierarchy(Symbol.TypeSymbol symbol) {
-    Set<String> visited = new LinkedHashSet<>();
-    walkTypeHierarchy(symbol, visited);
-    return visited;
-  }
-
-  private static void walkTypeHierarchy(Symbol.TypeSymbol symbol, Set<String> visited) {
-    String fqn = symbol.type().fullyQualifiedName();
-    if ("java.lang.Object".equals(fqn) || symbol.type().isUnknown() || !visited.add(fqn)) {
-      return;
-    }
-    Type superClass = symbol.superClass();
-    if (superClass != null && !superClass.isUnknown()) {
-      walkTypeHierarchy(superClass.symbol(), visited);
-    }
-    for (Type iface : symbol.interfaces()) {
-      if (!iface.isUnknown()) {
-        walkTypeHierarchy(iface.symbol(), visited);
-      }
-    }
   }
 
 }

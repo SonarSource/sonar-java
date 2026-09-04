@@ -18,6 +18,7 @@ package org.sonar.java.model;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -91,6 +92,34 @@ public final class JUtils {
       return null;
     }
     return ((JMethodSymbol) method).methodBinding().getDefaultValue();
+  }
+
+  /**
+   * Recursively walks superclasses and interfaces, recording each type's FQN.
+   *
+   * {@code java.lang.Object} and unknown/unresolved types are excluded; a common ancestor
+   * reached through more than one interface is deduplicated by the returned {@link Set}.
+   *
+   * @param symbol The type symbol whose superclass and interface hierarchy is walked
+   * @return The set of fully qualified names collected from {@code symbol} and its ancestors
+   */
+  public static Set<String> collectTypeHierarchy(Symbol.TypeSymbol symbol) {
+    Set<String> visited = new LinkedHashSet<>();
+    String fqn = symbol.type().fullyQualifiedName();
+    if ("java.lang.Object".equals(fqn) || symbol.type().isUnknown()) {
+      return visited;
+    }
+    visited.add(fqn);
+    Type superClass = symbol.superClass();
+    if (superClass != null && !superClass.isUnknown()) {
+      visited.addAll(collectTypeHierarchy(superClass.symbol()));
+    }
+    for (Type iface : symbol.interfaces()) {
+      if (!iface.isUnknown()) {
+        visited.addAll(collectTypeHierarchy(iface.symbol()));
+      }
+    }
+    return visited;
   }
 
   public static Set<Type> directSuperTypes(Type type) {
