@@ -50,6 +50,7 @@ public final class SpringUtils {
   public static final String SPRING_BOOT_TEST_ANNOTATION = "org.springframework.boot.test.context.SpringBootTest";
 
   private static final String VALUE_ATTRIBUTE = "value";
+  private static final String PROFILE_SEPARATOR = ",";
 
   public static final List<String> STEREOTYPE_ANNOTATIONS = List.of(
     COMPONENT_ANNOTATION,
@@ -170,6 +171,26 @@ public final class SpringUtils {
       .filter(s -> !s.isBlank())
       .findFirst()
       .orElse(null);
+  }
+
+  /**
+   * Reads the {@code @Profile} annotation's "value" attribute, joining every profile name it lists with ",".
+   *
+   * @param metadata The symbol metadata of the class or {@code @Bean} method to check for a {@code @Profile}
+   * @return The joined profile expression, or {@code null} if none is declared
+   */
+  @Nullable
+  public static String extractProfiles(SymbolMetadata metadata) {
+    List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(PROFILE_ANNOTATION);
+    List<String> profiles = attrs == null ? List.of() : attrs.stream()
+      .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()))
+      .filter(attr -> attr.value() instanceof Object[])
+      .flatMap(attr -> Arrays.stream((Object[]) attr.value()))
+      .filter(String.class::isInstance)
+      .map(String.class::cast)
+      .filter(profile -> !profile.isBlank())
+      .toList();
+    return profiles.isEmpty() ? null : String.join(PROFILE_SEPARATOR, profiles);
   }
 
 }
