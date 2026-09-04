@@ -95,7 +95,7 @@
     <sonarlint.plugin.api.version>11.9.0.86162</sonarlint.plugin.api.version>
     <sonar.sca.exclusions>its/**,java-checks-test-sources/**</sonar.sca.exclusions>
     <analyzer.commons.version>2.31.0.5284</analyzer.commons.version>
-    <orchestrator.version>6.4.2.4626</orchestrator.version>
+    <orchestrator.version>6.4.3.4676</orchestrator.version>
     <sslr.version>1.26.0.4194</sslr.version>
     <argLine>-Xmx512m</argLine>
     <gitRepositoryName>sonar-java</gitRepositoryName>
