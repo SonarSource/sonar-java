@@ -51,6 +51,16 @@ jobs:
             --define sonar.skip=true
             --projects !java-checks-test-sources/aws,!java-checks-test-sources/default,!java-checks-test-sources/java-17,!java-checks-test-sources/spring-3.2,!java-checks-test-sources/spring-web-4.0
 
+      # PROJECT_VERSION is exported by build-maven; it is the concrete deployed PR version that
+      # PVF resolves as the candidate plugin. The pvf-comment workflow downloads this artifact.
+      - run: printf '%s\n' "$PROJECT_VERSION" > candidate-version.txt
+
+      # Used by PVF validation
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: candidate-version
+          path: candidate-version.txt
+
   ruling-qa:
     strategy:
       fail-fast: false

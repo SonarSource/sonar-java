@@ -1,0 +1,45 @@
+name: PVF /pvf comment
+
+# On a `/pvf` comment by a repo member on a PR, dispatch a Performance Validation run into the
+# PRIVATE dashboard-host repo (peachee-java-kotlin). The benchmark runs and publishes its dashboard
+# THERE, on access-controlled (SSO-gated) Pages — this public repo never publishes a Pages site.
+# See SonarSource/core-languages-tooling-public/pvf-trigger for the dispatch mechanics.
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  actions: read          # pvf-trigger downloads the candidate-version artifact from this repo's build
+  contents: read
+  pull-requests: read
+  id-token: write        # vault-action-wrapper: OIDC auth to fetch the cross-repo dispatch token
+
+concurrency:
+  group: pvf-comment-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    # Only members can trigger; the repo is public, so /pvf from arbitrary users must not run.
+    if: >
+      github.event.issue.pull_request &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association) &&
+      contains(github.event.comment.body, '/pvf')
+    runs-on: sonar-xs-public
+    steps:
+      - name: Get cross-repo dispatch token from Vault
+        id: secrets
+        uses: SonarSource/vault-action-wrapper@v3
+        with:
+          secrets: |
+            development/github/token/SonarSource-sonar-java-pvf-dispatch token | DISPATCH_TOKEN;
+
+      - name: Trigger performance validation in peachee-java-kotlin
+        uses: SonarSource/core-languages-tooling-public/pvf-trigger@alex/pvf
+        with:
+          comment: ${{ github.event.comment.body }}
+          pr-number: ${{ github.event.issue.number }}
+          target-repo: SonarSource/peachee-java-kotlin
+          target-ref: master
+          dispatch-token: ${{ fromJSON(steps.secrets.outputs.vault).DISPATCH_TOKEN }}
