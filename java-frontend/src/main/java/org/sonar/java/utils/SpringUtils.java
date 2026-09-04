@@ -16,7 +16,11 @@
  */
 package org.sonar.java.utils;
 
+import java.beans.Introspector;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import javax.annotation.Nullable;
 
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -44,6 +48,8 @@ public final class SpringUtils {
   public static final String REST_CONTROLLER_ANNOTATION = "org.springframework.web.bind.annotation.RestController";
   public static final String SPRING_BOOT_TEST_ANNOTATION = "org.springframework.boot.test.context.SpringBootTest";
 
+  private static final String VALUE_ATTRIBUTE = "value";
+
   public static final List<String> STEREOTYPE_ANNOTATIONS = List.of(
     COMPONENT_ANNOTATION,
     SERVICE_ANNOTATION,
@@ -64,7 +70,7 @@ public final class SpringUtils {
       return true;
     }
     for (SymbolMetadata.AnnotationValue annotationValue : values) {
-      if ("value".equals(annotationValue.name()) || "scopeName".equals(annotationValue.name())) {
+      if (VALUE_ATTRIBUTE.equals(annotationValue.name()) || "scopeName".equals(annotationValue.name())) {
         Object value = annotationValue.value();
         if (value instanceof String stringValue && !"singleton".equals(stringValue)) {
           return false;
@@ -97,6 +103,72 @@ public final class SpringUtils {
       .map(MethodTree.class::cast)
       .filter(method -> method.symbol().metadata().isAnnotatedWith(BEAN_ANNOTATION))
       .toList();
+  }
+
+  /**
+   * Extracts the bean name from whichever stereotype annotation is present on the bean definition,
+   * falling back to the decapitalized simple name for an unnamed bean.
+   *
+   * @param meta The symbol metadata of the class declaring the bean
+   * @param simpleName The simple name of the class declaring the bean
+   * @return The resolved bean name
+   */
+  public static String extractBeanName(SymbolMetadata meta, String simpleName) {
+    for (String annotation : STEREOTYPE_ANNOTATIONS) {
+      List<SymbolMetadata.AnnotationValue> attrs = meta.valuesForAnnotation(annotation);
+      if (attrs != null) {
+        Optional<String> name = attrs.stream()
+          .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
+          .map(v -> (String) v.value())
+          .filter(s -> !s.isBlank())
+          .findFirst();
+        if (name.isPresent()) {
+          return name.get();
+        }
+      }
+    }
+    return Introspector.decapitalize(simpleName);
+  }
+
+  /**
+   * Reads the {@code @Bean} method's explicit "value"/"name" attribute (accepting one or several aliases),
+   * falling back to the method's own name when none is given.
+   *
+   * @param beanMeta The symbol metadata of the {@code @Bean} factory method
+   * @param method The {@code @Bean} factory method, used for its name when no alias is declared
+   * @return The declared alias(es), or the method's own name when none is declared
+   */
+  public static List<String> extractBeanMethodNames(SymbolMetadata beanMeta, MethodTree method) {
+    List<SymbolMetadata.AnnotationValue> attrs = beanMeta.valuesForAnnotation(BEAN_ANNOTATION);
+    List<String> names = attrs == null ? List.of() : attrs.stream()
+      .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()) || "name".equals(attr.name()))
+      .filter(attr -> attr.value() instanceof Object[])
+      .flatMap(attr -> Arrays.stream((Object[]) attr.value()))
+      .filter(String.class::isInstance)
+      .map(String.class::cast)
+      .filter(name -> !name.isBlank())
+      .toList();
+    return names.isEmpty() ? List.of(method.simpleName().name()) : names;
+  }
+
+  /**
+   * Reads the {@code @Qualifier} value, if any.
+   *
+   * @param metadata The symbol metadata of the field or parameter to check for a {@code @Qualifier}
+   * @return The qualifier's value, or {@code null} if none is declared
+   */
+  @Nullable
+  public static String extractQualifier(SymbolMetadata metadata) {
+    List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(QUALIFIER_ANNOTATION);
+    if (attrs == null) {
+      return null;
+    }
+    return attrs.stream()
+      .filter(v -> VALUE_ATTRIBUTE.equals(v.name()))
+      .map(v -> (String) v.value())
+      .filter(s -> !s.isBlank())
+      .findFirst()
+      .orElse(null);
   }
 
 }
