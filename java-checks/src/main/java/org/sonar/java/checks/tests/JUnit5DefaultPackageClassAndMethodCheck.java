@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ClassPatternsUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -38,7 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S5786")
 public class JUnit5DefaultPackageClassAndMethodCheck extends IssuableSubscriptionVisitor {
 
-  private static final String MESSAGE = "Remove redundant visibility modifiers from this test class and its methods.";
+  private static final String MESSAGE = "Remove redundant visibility modifiers from the methods of this test class.";
   private static final String MODIFIER_MESSAGE = "Remove this '%s' modifier.";
   private static final String QUICK_FIX_ALL = "Remove all redundant visibility modifiers";
 
@@ -57,28 +56,10 @@ public class JUnit5DefaultPackageClassAndMethodCheck extends IssuableSubscriptio
     UnitTestUtils.JUnit5MethodGroups groups = UnitTestUtils.groupJUnit5Methods(classTree);
     List<MethodTree> junit5ClassMethods = groups.classMethods();
     List<MethodTree> junit5InstanceMethods = groups.instanceMethods();
-    List<MethodTree> nonJunit5Methods = groups.otherMethods();
 
     List<ModifierKeywordTree> noncompliantModifiers = new ArrayList<>();
     collectNonCompliantModifiers(junit5ClassMethods, noncompliantModifiers);
     collectNonCompliantModifiers(junit5InstanceMethods, noncompliantModifiers);
-
-    if (!junit5InstanceMethods.isEmpty() && !ClassPatternsUtils.shouldBePublicClass(classTree, nonJunit5Methods)) {
-      if (noncompliantModifiers.isEmpty()) {
-        // Only the class modifier is noncompliant (no method violations): report on the modifier directly.
-        classTree.modifiers().modifiers().stream()
-          .filter(m -> isNonCompliantModifier(m.modifier()))
-          .findFirst()
-          .ifPresent(m -> QuickFixHelper.newIssue(context)
-            .forRule(this)
-            .onTree(m)
-            .withMessage(MODIFIER_MESSAGE, m.keyword().text())
-            .withQuickFixes(() -> List.of(buildQuickFix(List.of(m))))
-            .report());
-        return;
-      }
-      addNonCompliantModifier(classTree.modifiers(), noncompliantModifiers);
-    }
 
     if (!noncompliantModifiers.isEmpty()) {
       List<JavaFileScannerContext.Location> secondaries = noncompliantModifiers.stream()

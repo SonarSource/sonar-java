@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.ClassPatternsUtils;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -42,8 +41,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 public class JUnit5SilentlyIgnoreClassAndMethodCheck extends IssuableSubscriptionVisitor {
 
   private enum ModifierScope {
-    // annotation like @Nested that applies to class
-    CLASS,
     // annotation like @BeforeAll that applies to static class method
     CLASS_METHOD,
     // annotation like @BeforeEach that applies to non-static method
@@ -67,14 +64,9 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends IssuableSubscriptio
     UnitTestUtils.JUnit5MethodGroups groups = UnitTestUtils.groupJUnit5Methods(classTree);
     List<MethodTree> junit5ClassMethods = groups.classMethods();
     List<MethodTree> junit5InstanceMethods = groups.instanceMethods();
-    List<MethodTree> nonJunit5Methods = groups.otherMethods();
 
     raiseIssueOnMethods(junit5ClassMethods, ModifierScope.CLASS_METHOD);
     raiseIssueOnMethods(junit5InstanceMethods, ModifierScope.INSTANCE_METHOD);
-    boolean classHasJunit5InstanceMethods = !junit5InstanceMethods.isEmpty();
-    if (classHasJunit5InstanceMethods) {
-      raiseIssueOnClass(nonJunit5Methods, classTree);
-    }
   }
 
   private void raiseIssueOnMethods(List<MethodTree> methods, ModifierScope scope) {
@@ -82,13 +74,6 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends IssuableSubscriptio
       raiseIssueOnNotCompliantModifiers(method.modifiers(), scope);
       raiseIssueOnNonCompliantReturnType(method);
     }
-  }
-
-  private void raiseIssueOnClass(List<MethodTree> nonJunit5Methods, ClassTree classTree) {
-    if (ClassPatternsUtils.shouldBePublicClass(classTree, nonJunit5Methods)) {
-      return;
-    }
-    raiseIssueOnNotCompliantModifiers(classTree.modifiers(), ModifierScope.CLASS);
   }
 
   private void raiseIssueOnNotCompliantModifiers(ModifiersTree modifierTree, ModifierScope modifierScope) {

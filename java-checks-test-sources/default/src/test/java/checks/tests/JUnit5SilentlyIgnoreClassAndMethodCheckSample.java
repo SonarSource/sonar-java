@@ -44,10 +44,16 @@ class JUnit5SilentlyIgnoreClassAndMethodCheckSample {
   }
 
   @Nested
-  private class PrivateWithOneTest { // Noncompliant {{Remove this 'private' modifier.}}
-//^^^^^^^
+  private class PrivateWithOneTest { // Compliant - test method is already package-private, class may legitimately need to be private
     @Test
     void test() {}
+  }
+
+  @Nested
+  private class PrivateWithPrivateMethod { // Compliant - class modifier is not flagged
+    @Test
+    private void test() {} // Noncompliant {{Remove this 'private' modifier.}}
+//  ^^^^^^^
   }
 
   @Nested
@@ -122,10 +128,7 @@ class JUnit5SilentlyIgnoreClassAndMethodCheckSample {
     // edit@qf6 [[sc=5;ec=12]] {{}}
 
     @Nested
-    private class PrivateWithOneTest { // Noncompliant [[quickfixes=qf7]]
-//  ^^^^^^^
-      // fix@qf7 {{Remove "private" modifier}}
-      // edit@qf7 [[sc=5;ec=13]] {{}}
+    private class PrivateWithOneTest { // Compliant - test method is already package-private
       @Test
       void test() {}
     }
