@@ -53,6 +53,10 @@ exceptions), but the database state doesn’t match expectations.</p>
   the method without any transaction context, so there is no transaction to roll back.</li>
   <li><code>@Transactional(readOnly = true)</code> - Read-only transactions do not perform write operations, so there is no risk of committing partial
   or inconsistent data.</li>
+  <li>When <code>@Transactional</code> is applied at the class level, the rule only raises an issue if the method name or one of the directly called
+  methods starts with a persistence-related prefix (such as <code>save</code>, <code>delete</code>, <code>update</code>, <code>persist</code>,
+  <code>merge</code>, <code>flush</code>, or <code>insert</code>). Methods that do not appear to perform transactional write operations are not
+  flagged.</li>
 </ul>
 <h2>How to fix it in Spring</h2>
 <p>Explicitly specify <code>rollbackFor</code> to include the checked exceptions that should trigger a rollback. This is the most common fix, as most

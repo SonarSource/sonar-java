@@ -57,8 +57,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscriptionVisitor implements DependencyVersionAware {
 
   private static final List<String> TRANSACTIONAL_PREFIXES = List.of(
-    "save", "delete", "update", "persist", "merge", "flush",
-    "insert", "create", "remove", "store", "execute");
+    "save", "delete", "update", "persist", "merge", "flush", "insert");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -303,7 +302,11 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
       if (!lowerName.startsWith(prefix)) {
         return false;
       }
-      return name.length() == prefix.length() || Character.isUpperCase(name.charAt(prefix.length()));
+      if (name.length() == prefix.length()) {
+        return true;
+      }
+      char next = name.charAt(prefix.length());
+      return Character.isUpperCase(next) || Character.isDigit(next) || next == '_';
     });
   }
 
@@ -324,7 +327,9 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
 
     @Override
     public void visitLambdaExpression(LambdaExpressionTree tree) {
-      // Do not traverse into lambda bodies: they are deferred and may not execute within the transaction
+      if (isMethodArgument(tree)) {
+        super.visitLambdaExpression(tree);
+      }
     }
 
     @Override
@@ -332,10 +337,18 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
       // Do not traverse into anonymous or local class declarations
     }
 
-    @Override
-    public void visitNewClass(NewClassTree tree) {
-      // Do not traverse into anonymous class bodies, but visit constructor arguments
-      scan(tree.arguments());
+    private static boolean isMethodArgument(LambdaExpressionTree lambda) {
+      Tree parent = lambda.parent();
+      while (parent != null) {
+        if (parent instanceof MethodInvocationTree || parent instanceof NewClassTree) {
+          return true;
+        }
+        if (!(parent instanceof Arguments)) {
+          return false;
+        }
+        parent = parent.parent();
+      }
+      return false;
     }
   }
 
