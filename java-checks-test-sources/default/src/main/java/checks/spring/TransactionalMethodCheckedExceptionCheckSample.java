@@ -385,5 +385,32 @@ public class TransactionalMethodCheckedExceptionCheckSample {
 
     private void computeResult() {
     }
+
+    public void onlySavesInsideLambda() throws IOException { // Compliant - save() is in a deferred lambda, not directly executed
+      Runnable r = () -> saveOrder();
+    }
+
+    public void onlySavesInsideAnonymousClass() throws IOException { // Compliant - save() is in an anonymous class method
+      Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          saveOrder();
+        }
+      };
+    }
+
+    public void onlySavesInsideLocalClass() throws IOException { // Compliant - save() is in a local class method
+      class Local {
+        void doSave() {
+          saveOrder();
+        }
+      }
+    }
+
+    public void directSaveAndLambda() throws IOException { // Noncompliant [[secondary=350]]
+//              ^^^^^^^^^^^^^^^^^^^
+      saveOrder();
+      Runnable r = () -> deleteEntity(null);
+    }
   }
 }

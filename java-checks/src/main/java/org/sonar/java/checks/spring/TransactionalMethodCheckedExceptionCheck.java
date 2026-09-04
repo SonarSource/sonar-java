@@ -42,10 +42,12 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -318,6 +320,22 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
         }
       }
       super.visitMethodInvocation(tree);
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree tree) {
+      // Do not traverse into lambda bodies: they are deferred and may not execute within the transaction
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // Do not traverse into anonymous or local class declarations
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      // Do not traverse into anonymous class bodies, but visit constructor arguments
+      scan(tree.arguments());
     }
   }
 
