@@ -25,22 +25,32 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S9133")
 public class HardcodedMathConstantCheck extends IssuableSubscriptionVisitor {
 
-  private static final int MIN_SIGNIFICANT_DIGITS = 3;
+  private static final int DEFAULT_MIN_SIGNIFICANT_DIGITS = 3;
 
   private enum MathConstant {
     PI(Math.PI, "Math.PI", "pi"),
     E(Math.E, "Math.E", "Euler's number"),
     SQRT2(Math.sqrt(2), "Math.sqrt(2)", "the square root of 2"),
-    LN2(Math.log(2), "Math.log(2)", "the natural logarithm of 2");
+    SQRT3(Math.sqrt(3), "Math.sqrt(3)", "the square root of 3", 4),
+    LN2(Math.log(2), "Math.log(2)", "the natural logarithm of 2"),
+    LN10(Math.log(10), "Math.log(10)", "the natural logarithm of 10", 4),
+    LOG10E(Math.log10(Math.E), "Math.log10(Math.E)", "the base-10 logarithm of Euler's number", 4),
+    PHI((1 + Math.sqrt(5)) / 2, "(1 + Math.sqrt(5)) / 2", "the golden ratio", 4);
 
     final double value;
     final String replacement;
     final String description;
+    final int minSignificantDigits;
 
     MathConstant(double value, String replacement, String description) {
+      this(value, replacement, description, DEFAULT_MIN_SIGNIFICANT_DIGITS);
+    }
+
+    MathConstant(double value, String replacement, String description, int minSignificantDigits) {
       this.value = value;
       this.replacement = replacement;
       this.description = description;
+      this.minSignificantDigits = minSignificantDigits;
     }
   }
 
@@ -72,7 +82,7 @@ public class HardcodedMathConstantCheck extends IssuableSubscriptionVisitor {
     }
 
     int significantDigits = countSignificantDigits(normalized);
-    if (significantDigits < MIN_SIGNIFICANT_DIGITS) {
+    if (significantDigits < DEFAULT_MIN_SIGNIFICANT_DIGITS) {
       return;
     }
 
@@ -81,6 +91,9 @@ public class HardcodedMathConstantCheck extends IssuableSubscriptionVisitor {
     double relativeTolerance = 5.0 * Math.pow(10, -significantDigits);
 
     for (MathConstant constant : MathConstant.values()) {
+      if (significantDigits < constant.minSignificantDigits) {
+        continue;
+      }
       double relativeError = Math.abs(absoluteValue - constant.value) / constant.value;
       if (relativeError < relativeTolerance) {
         reportIssue(tree, "Use \"" + constant.replacement + "\" instead of this approximation of " + constant.description + ".");
