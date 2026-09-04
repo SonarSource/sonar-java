@@ -74,11 +74,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   private static final Logger LOG = LoggerFactory.getLogger(BeanDefinitionGatherer.class);
 
-  /** Joins the values of a single {@code @Profile} annotation, which are OR-ed together by Spring. */
-  private static final String PROFILE_SEPARATOR = ",";
   /** Joins the class-level and method-level {@code @Profile} expressions of a {@code @Bean} method, which are AND-ed together by Spring. */
   private static final String PROFILE_AND_SEPARATOR = ";";
-  private static final String VALUE_ATTRIBUTE = "value";
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
 
@@ -138,7 +135,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       // also collect their names mapped by type to store in dependingBeans
       Map<String, Set<String>> deps = projectToNames(injectionPoints);
       Set<String> typeHierarchy = JUtils.collectTypeHierarchy(classTree.symbol());
-      String classProfiles = extractProfiles(meta);
+      String classProfiles = SpringUtils.extractProfiles(meta);
       var beanData = new BeanData(
         beanName, fqn, pkg,
         context.getInputFile(),
@@ -230,7 +227,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     Map<String, Set<InjectionPoint>> injectionPoints = collectDependenciesOnMethod(method, inputFile);
     Map<String, Set<String>> paramDeps = projectToNames(injectionPoints);
     boolean isPrimary = beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION);
-    String ownProfiles = extractProfiles(beanMeta);
+    String ownProfiles = SpringUtils.extractProfiles(beanMeta);
     String profiles = composeProfiles(classProfiles, ownProfiles);
     var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
 
@@ -251,34 +248,6 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       .map(InjectionPoint::name)
       .collect(Collectors.toCollection(LinkedHashSet::new))));
     return names;
-  }
-
-  /**
-   * Reads the {@code @Profile} annotation's "value" attribute, joining every profile name it lists.
-   *
-   * @param metadata The symbol metadata of the class or {@code @Bean} method to check for a {@code @Profile}
-   * @return The joined profile expression, or {@code null} if none is declared
-   */
-  @Nullable
-  private static String extractProfiles(SymbolMetadata metadata) {
-    List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(SpringUtils.PROFILE_ANNOTATION);
-    List<String> profiles = new ArrayList<>();
-    if (attrs != null) {
-      for (SymbolMetadata.AnnotationValue attr : attrs) {
-        collectProfileAttributeValues(attr, profiles);
-      }
-    }
-    return profiles.isEmpty() ? null : String.join(PROFILE_SEPARATOR, profiles);
-  }
-
-  private static void collectProfileAttributeValues(SymbolMetadata.AnnotationValue attr, List<String> profiles) {
-    if (VALUE_ATTRIBUTE.equals(attr.name()) && attr.value() instanceof Object[] values) {
-      for (Object value : values) {
-        if (value instanceof String profile && !profile.isBlank()) {
-          profiles.add(profile);
-        }
-      }
-    }
   }
 
   /**
