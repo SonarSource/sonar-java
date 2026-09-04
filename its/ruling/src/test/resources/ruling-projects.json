@@ -1,0 +1,74 @@
+[
+  {
+    "projectName": "mall",
+    "projectKey": "com.macro.mall:mall",
+    "path": "mall",
+    "buildType": "maven"
+  },
+  {
+    "projectName": "guava",
+    "projectKey": "com.google.guava:guava",
+    "path": "guava",
+    "buildType": "maven"
+  },
+  {
+    "projectName": "commons-beanutils",
+    "projectKey": "commons-beanutils:commons-beanutils",
+    "path": "commons-beanutils",
+    "buildType": "maven"
+  },
+  {
+    "projectName": "eclipse-jetty",
+    "projectKey": "org.eclipse.jetty:jetty-project",
+    "path": "eclipse-jetty",
+    "buildType": "maven"
+  },
+  {
+    "projectName": "eclipse-jetty-similar-to-main",
+    "projectKey": "org.eclipse.jetty:jetty-project",
+    "path": "eclipse-jetty-similar-to-main",
+    "buildType": "maven-existing"
+  },
+  {
+    "projectName": "eclipse-jetty-similar-to-main-small",
+    "projectKey": "org.eclipse.jetty:jetty-project",
+    "path": "eclipse-jetty-similar-to-main-small",
+    "buildType": "maven-existing"
+  },
+  {
+    "projectName": "java-time-example",
+    "projectKey": "example:java-time-example",
+    "path": "java-time-example",
+    "buildType": "maven"
+  },
+  {
+    "projectName": "java-time-example-less-threshold",
+    "projectKey": "example:java-time-example",
+    "path": "java-time-example-less-threshold",
+    "buildType": "maven-existing"
+  },
+  {
+    "projectName": "sonar-server",
+    "projectKey": "org.sonarsource.sonarqube:sonar-server",
+    "path": "sonarqube-6.5/server/sonar-server",
+    "buildType": "maven"
+  },
+  {
+    "projectName": "jboss-ejb3-tutorial",
+    "projectKey": "jboss-ejb3-tutorial",
+    "path": "jboss-ejb3-tutorial",
+    "buildType": "sonar-scanner"
+  },
+  {
+    "projectName": "regex-examples",
+    "projectKey": "org.regex-examples:regex-examples",
+    "path": "regex-examples",
+    "buildType": "maven"
+  },
+  {
+    "projectName": "vibebot",
+    "projectKey": "org.vibebot:vibebot",
+    "path": "vibebot",
+    "buildType": "maven"
+  }
+]
