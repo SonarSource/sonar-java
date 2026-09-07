@@ -69,8 +69,7 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends IssuableSubscriptio
     raiseIssueOnMethods(junit5ClassMethods, ModifierScope.CLASS_METHOD);
     raiseIssueOnMethods(junit5InstanceMethods, ModifierScope.INSTANCE_METHOD);
 
-    if (UnitTestUtils.hasNestedAnnotation(classTree)
-      && junit5InstanceMethods.stream().anyMatch(m -> !hasNonCompliantInstanceMethodModifier(m))) {
+    if (UnitTestUtils.hasNestedAnnotation(classTree) && !junit5InstanceMethods.isEmpty()) {
       ModifiersUtils.findModifier(classTree.modifiers(), Modifier.PRIVATE)
         .ifPresent(this::raiseIssueOnNonCompliantModifier);
     }
@@ -104,11 +103,6 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends IssuableSubscriptio
 
   private static boolean isNonCompliantModifier(Modifier modifier, ModifierScope modifierScope) {
     return modifier == Modifier.PRIVATE || (modifierScope == ModifierScope.INSTANCE_METHOD && modifier == Modifier.STATIC);
-  }
-
-  private static boolean hasNonCompliantInstanceMethodModifier(MethodTree method) {
-    return method.modifiers().modifiers().stream()
-      .anyMatch(m -> isNonCompliantModifier(m.modifier(), ModifierScope.INSTANCE_METHOD));
   }
 
   private void raiseIssueOnNonCompliantReturnType(MethodTree methodTree) {
