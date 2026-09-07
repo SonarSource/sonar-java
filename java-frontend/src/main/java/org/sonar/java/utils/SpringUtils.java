@@ -61,6 +61,8 @@ public final class SpringUtils {
 
   private static final String VALUE_ATTRIBUTE = "value";
   private static final String PROFILE_SEPARATOR = ",";
+  /** Joins the class-level and method-level {@code @Profile} expressions of a {@code @Bean} method, which are AND-ed together by Spring. */
+  private static final String PROFILE_AND_SEPARATOR = ";";
 
   public static final List<String> STEREOTYPE_ANNOTATIONS = List.of(
     COMPONENT_ANNOTATION,
@@ -121,7 +123,7 @@ public final class SpringUtils {
    * Extracts the bean name from whichever stereotype annotation is present on the bean definition,
    * falling back to the decapitalized simple name for an unnamed bean.
    *
-   * @param meta The symbol metadata of the class declaring the bean
+   * @param meta       The symbol metadata of the class declaring the bean
    * @param simpleName The simple name of the class declaring the bean
    * @return The resolved bean name
    */
@@ -153,13 +155,13 @@ public final class SpringUtils {
     SymbolMetadata beanMeta = method.symbol().metadata();
     List<SymbolMetadata.AnnotationValue> attrs = beanMeta.valuesForAnnotation(BEAN_ANNOTATION);
     List<String> names = attrs == null ? List.of() : attrs.stream()
-      .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()) || "name".equals(attr.name()))
-      .filter(attr -> attr.value() instanceof Object[])
-      .flatMap(attr -> Arrays.stream((Object[]) attr.value()))
-      .filter(String.class::isInstance)
-      .map(String.class::cast)
-      .filter(name -> !name.isBlank())
-      .toList();
+                                                     .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()) || "name".equals(attr.name()))
+                                                     .filter(attr -> attr.value() instanceof Object[])
+                                                     .flatMap(attr -> Arrays.stream((Object[]) attr.value()))
+                                                     .filter(String.class::isInstance)
+                                                     .map(String.class::cast)
+                                                     .filter(name -> !name.isBlank())
+                                                     .toList();
     return names.isEmpty() ? List.of(method.simpleName().name()) : names;
   }
 
@@ -185,7 +187,7 @@ public final class SpringUtils {
 
   /**
    * Collects a class-level bean's dependencies from {@code @Autowired} fields, constructors and setters.
-   *
+   * <p>
    * Also applies Spring's implicit single-constructor injection if no constructor is {@code @Autowired}
    * and the class declares exactly one constructor. {@code hasAutowiredConstructor} guards against
    * misapplying that fallback when an {@code @Autowired} constructor already exists alongside other,
@@ -225,8 +227,8 @@ public final class SpringUtils {
   /**
    * Collect the given method's parameters as dependencies.
    *
-   * @param method Method whose parameters are stored as dependencies, either {@code @Autowired} constructors/setters or
-   * {@code @Bean} factory methods
+   * @param method    Method whose parameters are stored as dependencies, either {@code @Autowired} constructors/setters or
+   *                  {@code @Bean} factory methods
    * @param inputFile The file {@code method} was parsed from, used to locate each injection point
    * @return The collected dependencies, mapped by required type FQN to the {@link InjectionPoint}s that require it
    */
@@ -255,14 +257,35 @@ public final class SpringUtils {
   public static String extractProfiles(SymbolMetadata metadata) {
     List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(PROFILE_ANNOTATION);
     List<String> profiles = attrs == null ? List.of() : attrs.stream()
-                                                        .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()))
-                                                        .filter(attr -> attr.value() instanceof Object[])
-                                                        .flatMap(attr -> Arrays.stream((Object[]) attr.value()))
-                                                        .filter(String.class::isInstance)
-                                                        .map(String.class::cast)
-                                                        .filter(profile -> !profile.isBlank())
-                                                        .toList();
+      .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()))
+      .filter(attr -> attr.value() instanceof Object[])
+      .flatMap(attr -> Arrays.stream((Object[]) attr.value()))
+      .filter(String.class::isInstance)
+      .map(String.class::cast)
+      .filter(profile -> !profile.isBlank())
+      .toList();
     return profiles.isEmpty() ? null : String.join(PROFILE_SEPARATOR, profiles);
+  }
+
+  /**
+   * Combines a {@code @Bean} method's own {@code @Profile} with the one declared on its enclosing class.
+   *
+   * Spring requires both to match for the bean to be active, so the two expressions are AND-ed rather
+   * than one overriding the other.
+   *
+   * @param classProfiles Profile(s) of the enclosing class
+   * @param ownProfiles Profile(s) defined on the bean itself
+   * @return a semicolon-separated list of all the profiles
+   */
+  @Nullable
+  public static String composeProfiles(@Nullable String classProfiles, @Nullable String ownProfiles) {
+    if (classProfiles == null) {
+      return ownProfiles;
+    }
+    if (ownProfiles == null) {
+      return classProfiles;
+    }
+    return classProfiles + PROFILE_AND_SEPARATOR + ownProfiles;
   }
 
 }

@@ -102,38 +102,16 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
   // ---- @Profile ---------------------------------------------------------------
 
-  @ParameterizedTest(name = "{1}")
-  @MethodSource("profileArguments")
-  void profile_annotation_is_captured(String filePath, String beanName, String expectedProfiles) {
-    scan(filePath);
-
-    var beans = model.getBeanDefinitionRegistry().getByName(beanName);
-    assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getProfiles()).isEqualTo(expectedProfiles);
-  }
-
-  static Stream<Arguments> profileArguments() {
-    return Stream.of(
-      Arguments.of("src/test/files/springcontext/ProfiledComponent.java", "profiledComponent", "prod"),
-      Arguments.of("src/test/files/springcontext/MultiProfileComponent.java", "multiProfileComponent", "prod,cloud"),
-      Arguments.of("src/test/files/springcontext/SimpleComponent.java", "simpleComponent", null),
-      // @Bean method without its own @Profile inherits the enclosing class's one
-      Arguments.of("src/test/files/springcontext/ProfiledConfigurationWithBeanMethods.java", "inheritedProfileBean", "prod"),
-      // @Bean method's own @Profile is combined (AND-ed) with the enclosing class's one, not overriding it
-      Arguments.of("src/test/files/springcontext/ProfiledConfigurationWithBeanMethods.java", "ownProfileBean", "prod;test"),
-      // @Bean method's own @Profile is kept as-is when the enclosing class has none
-      Arguments.of("src/test/files/springcontext/ConfigurationWithBeanMethods.java", "methodOnlyProfileBean", "test")
-    );
-  }
-
   @Test
-  void leaveFile_writes_profile_to_cache() {
+  void leaveFile_writes_profile_beans_and_dependencies_to_cache() {
     WriteCache writeCache = mock(WriteCache.class);
     SensorContextTester ctx = SensorContextTester.create(new File(""));
     ctx.setCacheEnabled(true);
     ctx.setNextCache(writeCache);
 
-    scan(ctx, "src/test/files/springcontext/ProfiledComponent.java");
+    scan(ctx, "src/test/files/springcontext/ProfiledComponent.java",
+      "src/test/files/springcontext/SimpleComponent.java",
+      "src/test/files/springcontext/QualifiedFieldDependencies.java");
 
     var dataCaptor = ArgumentCaptor.forClass(byte[].class);
     verify(writeCache).write(anyString(), dataCaptor.capture());

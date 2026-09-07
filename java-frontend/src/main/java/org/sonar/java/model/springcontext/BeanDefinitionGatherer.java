@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.utils.SpringUtils.collectAutowiredDependenciesOnClass;
 import static org.sonar.java.utils.SpringUtils.collectDependenciesOnMethod;
+import static org.sonar.java.utils.SpringUtils.composeProfiles;
 
 /**
  * Collects Spring bean definitions discovered during AST traversal, and registers them in the
@@ -73,9 +74,6 @@ import static org.sonar.java.utils.SpringUtils.collectDependenciesOnMethod;
 public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   private static final Logger LOG = LoggerFactory.getLogger(BeanDefinitionGatherer.class);
-
-  /** Joins the class-level and method-level {@code @Profile} expressions of a {@code @Bean} method, which are AND-ed together by Spring. */
-  private static final String PROFILE_AND_SEPARATOR = ";";
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
 
@@ -250,20 +248,5 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     return names;
   }
 
-  /**
-   * Combines a {@code @Bean} method's own {@code @Profile} with the one declared on its enclosing class.
-   * Spring requires both to match for the bean to be active, so the two expressions are AND-ed rather
-   * than one overriding the other.
-   */
-  @Nullable
-  private static String composeProfiles(@Nullable String classProfiles, @Nullable String ownProfiles) {
-    if (classProfiles == null) {
-      return ownProfiles;
-    }
-    if (ownProfiles == null) {
-      return classProfiles;
-    }
-    return classProfiles + PROFILE_AND_SEPARATOR + ownProfiles;
-  }
 
 }

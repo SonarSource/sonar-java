@@ -489,4 +489,71 @@ class SpringUtilsTest {
     assertThat(SpringUtils.collectDependenciesOnMethod(createBean, inputFile)).isEmpty();
   }
 
+  // ---- extractProfiles --------------------------------------------------
+
+  @Test
+  void extract_profiles_returns_single_profile() {
+    var compilationUnit = JParserTestUtils.parse("ProfiledComponent", """
+      @org.springframework.context.annotation.Profile("prod")
+      class ProfiledComponent {}
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var clazz = (ClassTreeImpl) compilationUnit.types().get(0);
+
+    assertThat(SpringUtils.extractProfiles(clazz.symbol().metadata())).isEqualTo("prod");
+  }
+
+  @Test
+  void extract_profiles_joins_multiple_profiles_with_comma() {
+    var compilationUnit = JParserTestUtils.parse("MultiProfileComponent", """
+      @org.springframework.context.annotation.Profile({"prod", "cloud"})
+      class MultiProfileComponent {}
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var clazz = (ClassTreeImpl) compilationUnit.types().get(0);
+
+    assertThat(SpringUtils.extractProfiles(clazz.symbol().metadata())).isEqualTo("prod,cloud");
+  }
+
+  @Test
+  void extract_profiles_returns_null_when_no_profile_annotation() {
+    var compilationUnit = JParserTestUtils.parse("SimpleComponent", """
+      class SimpleComponent {}
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var clazz = (ClassTreeImpl) compilationUnit.types().get(0);
+
+    assertThat(SpringUtils.extractProfiles(clazz.symbol().metadata())).isNull();
+  }
+
+  @Test
+  void extract_profiles_ignores_blank_profile_values() {
+    var compilationUnit = JParserTestUtils.parse("BlankProfileComponent", """
+      @org.springframework.context.annotation.Profile({"prod", ""})
+      class BlankProfileComponent {}
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var clazz = (ClassTreeImpl) compilationUnit.types().get(0);
+
+    assertThat(SpringUtils.extractProfiles(clazz.symbol().metadata())).isEqualTo("prod");
+  }
+
+  // ---- composeProfiles ----------------------------------------------------
+
+  @Test
+  void compose_profiles_returns_own_profiles_when_class_has_none() {
+    assertThat(SpringUtils.composeProfiles(null, "test")).isEqualTo("test");
+  }
+
+  @Test
+  void compose_profiles_returns_class_profiles_when_own_has_none() {
+    assertThat(SpringUtils.composeProfiles("prod", null)).isEqualTo("prod");
+  }
+
+  @Test
+  void compose_profiles_returns_null_when_neither_has_profiles() {
+    assertThat(SpringUtils.composeProfiles(null, null)).isNull();
+  }
+
+  @Test
+  void compose_profiles_ands_class_and_own_profiles_with_semicolon() {
+    assertThat(SpringUtils.composeProfiles("prod", "test")).isEqualTo("prod;test");
+  }
+
 }
