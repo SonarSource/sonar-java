@@ -67,6 +67,16 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends IssuableSubscriptio
 
     raiseIssueOnMethods(junit5ClassMethods, ModifierScope.CLASS_METHOD);
     raiseIssueOnMethods(junit5InstanceMethods, ModifierScope.INSTANCE_METHOD);
+
+    // @Nested private classes are silently ignored by JUnit5 - flag the private modifier,
+    // but only when there is at least one method that would actually run if the class was fixed
+    if (classTree.symbol().metadata().isAnnotatedWith("org.junit.jupiter.api.Nested")
+      && junit5InstanceMethods.stream().anyMatch(m -> !hasNonCompliantInstanceMethodModifier(m))) {
+      classTree.modifiers().modifiers().stream()
+        .filter(m -> m.modifier() == Modifier.PRIVATE)
+        .findFirst()
+        .ifPresent(this::raiseIssueOnNonCompliantModifier);
+    }
   }
 
   private void raiseIssueOnMethods(List<MethodTree> methods, ModifierScope scope) {
@@ -97,6 +107,11 @@ public class JUnit5SilentlyIgnoreClassAndMethodCheck extends IssuableSubscriptio
 
   private static boolean isNonCompliantModifier(Modifier modifier, ModifierScope modifierScope) {
     return modifier == Modifier.PRIVATE || (modifierScope == ModifierScope.INSTANCE_METHOD && modifier == Modifier.STATIC);
+  }
+
+  private static boolean hasNonCompliantInstanceMethodModifier(MethodTree method) {
+    return method.modifiers().modifiers().stream()
+      .anyMatch(m -> isNonCompliantModifier(m.modifier(), ModifierScope.INSTANCE_METHOD));
   }
 
   private void raiseIssueOnNonCompliantReturnType(MethodTree methodTree) {
