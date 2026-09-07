@@ -1,8 +1,8 @@
 <p>This is an issue when a database <code>PreparedStatement</code> object is created inside a loop with a constant or loop-invariant SQL string
 argument.</p>
 <h2>Why is this an issue?</h2>
-<p>Creating a <code>PreparedStatement</code> is expensive because it involves parsing, validation, and internal representation building. When this
-operation is performed inside a loop with a constant or loop-invariant argument, the same work is repeated unnecessarily on every iteration.</p>
+<p>Creating a <code>PreparedStatement</code> repeatedly adds object allocation overhead and may repeat SQL parsing and preparation, depending on the
+driver and its caching configuration. Reusing the statement avoids repeated creation.</p>
 <h3>What is the potential impact?</h3>
 <p>The application may experience degraded performance, with operations that should be fast becoming noticeably slow. This is especially problematic
 when the number of iterations in the loop is very large, or when the same pattern is repeated across many places in the codebase, as the cumulative
