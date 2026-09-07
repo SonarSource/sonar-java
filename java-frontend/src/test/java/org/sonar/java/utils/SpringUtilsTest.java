@@ -171,6 +171,16 @@ class SpringUtilsTest {
 
         @org.springframework.context.annotation.Bean({"aliasOne", "aliasTwo"})
         Object anotherBeanMethod() { return new Object(); }
+      
+        @org.springframework.context.annotation.Bean(name = "namedBean")
+        ApplicationContext namedBeanMethod() {
+          return null;
+        }
+    
+        @org.springframework.context.annotation.Bean(name = {})
+        ApplicationContext emptyNameArrayMethod() {
+          return null;
+        }
 
         int field;
       }
@@ -181,7 +191,7 @@ class SpringUtilsTest {
     void get_bean_methods_returns_only_methods_annotated_with_bean() {
       assertThat(SpringUtils.getBeanMethods(configurationClass))
         .extracting(beanMethod -> beanMethod.simpleName().name())
-        .containsExactly("beanMethod", "anotherBeanMethod");
+        .containsExactly("beanMethod", "anotherBeanMethod", "namedBeanMethod", "emptyNameArrayMethod");
     }
 
     @Test
@@ -189,10 +199,15 @@ class SpringUtilsTest {
       var beanMethod = (MethodTreeImpl) configurationClass.members().get(0);
       var nonBeanMethod = (MethodTreeImpl) configurationClass.members().get(1);
       var anotherBeanMethod = (MethodTreeImpl) configurationClass.members().get(2);
+      var namedBeanMethod = (MethodTreeImpl) configurationClass.members().get(3);
+      var emptyNameArrayMethod = (MethodTreeImpl) configurationClass.members().get(4);
+
 
       assertThat(SpringUtils.extractBeanNameFromMethod(beanMethod)).containsExactly("beanName");
       assertThat(SpringUtils.extractBeanNameFromMethod(nonBeanMethod)).containsExactly("nonBeanMethod");
       assertThat(SpringUtils.extractBeanNameFromMethod(anotherBeanMethod)).containsExactly("aliasOne", "aliasTwo");
+      assertThat(SpringUtils.extractBeanNameFromMethod(namedBeanMethod)).containsExactly("namedBean");
+      assertThat(SpringUtils.extractBeanNameFromMethod(emptyNameArrayMethod)).containsExactly("emptyNameArrayMethod");
     }
   }
 
@@ -419,6 +434,7 @@ class SpringUtilsTest {
   class MethodParametersAsDependencies {
     private final CompilationUnitTree compilationUnit = JParserTestUtils.parse("BeanFactory", """
       class BeanFactory {
+        @org.springframework.context.annotation.Bean
         Object createBean(
           PaymentProcessor paymentProcessor,
           @org.springframework.beans.factory.annotation.Qualifier("special") PaymentProcessor specialProcessor,
