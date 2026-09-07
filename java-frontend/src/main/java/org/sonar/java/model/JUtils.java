@@ -105,21 +105,24 @@ public final class JUtils {
    */
   public static Set<String> collectTypeHierarchy(Symbol.TypeSymbol symbol) {
     Set<String> visited = new LinkedHashSet<>();
+    walkTypeHierarchy(symbol, visited);
+    return visited;
+  }
+
+  private static void walkTypeHierarchy(Symbol.TypeSymbol symbol, Set<String> visited) {
     String fqn = symbol.type().fullyQualifiedName();
-    if ("java.lang.Object".equals(fqn) || symbol.type().isUnknown()) {
-      return visited;
+    if ("java.lang.Object".equals(fqn) || symbol.type().isUnknown() || !visited.add(fqn)) {
+      return;
     }
-    visited.add(fqn);
     Type superClass = symbol.superClass();
     if (superClass != null && !superClass.isUnknown()) {
-      visited.addAll(collectTypeHierarchy(superClass.symbol()));
+      walkTypeHierarchy(superClass.symbol(), visited);
     }
     for (Type iface : symbol.interfaces()) {
       if (!iface.isUnknown()) {
-        visited.addAll(collectTypeHierarchy(iface.symbol()));
+        walkTypeHierarchy(iface.symbol(), visited);
       }
     }
-    return visited;
   }
 
   public static Set<Type> directSuperTypes(Type type) {
