@@ -1,5 +1,5 @@
 {
-  "title": "JUnit5 test classes and methods should have default package visibility",
+  "title": "JUnit5 test methods should have default package visibility",
   "type": "CODE_SMELL",
   "code": {
     "impacts": {

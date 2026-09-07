@@ -51,6 +51,14 @@ class JUnit5SilentlyIgnoreClassAndMethodCheckSample {
   }
 
   @Nested
+  private class PrivateWithPrivateMethod { // Noncompliant {{Remove this 'private' modifier.}}
+//^^^^^^^
+    @Test
+    private void test() {} // Noncompliant {{Remove this 'private' modifier.}}
+//  ^^^^^^^
+  }
+
+  @Nested
   public class PublicWithOneTest { // Compliant
     @Test
     void test() {}
