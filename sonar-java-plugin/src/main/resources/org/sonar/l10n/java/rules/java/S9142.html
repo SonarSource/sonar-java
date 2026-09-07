@@ -1,20 +1,15 @@
-<p>This is an issue when a database <code>PreparedStatement</code> object is created inside a loop body with a constant or loop-invariant SQL string
+<p>This is an issue when a database <code>PreparedStatement</code> object is created inside a loop with a constant or loop-invariant SQL string
 argument.</p>
 <h2>Why is this an issue?</h2>
-<p>Statement preparation operations are expensive because they involve parsing, validation, and internal representation building. When this operation
-is performed inside a loop with a constant or loop-invariant argument, the same work is repeated unnecessarily on every iteration.</p>
+<p>Creating a <code>PreparedStatement</code> is expensive because it involves parsing, validation, and internal representation building. When this
+operation is performed inside a loop with a constant or loop-invariant argument, the same work is repeated unnecessarily on every iteration.</p>
 <h3>What is the potential impact?</h3>
-<p>The application may experience:</p>
-<ul>
-  <li><strong>Degraded performance</strong>: Operations that should be fast become noticeably slow, especially when processing large collections or
-  datasets</li>
-  <li><strong>Resource exhaustion</strong>: For database operations, repeatedly creating parameterized query objects can exhaust server-side cursor or
-  statement handle limits, causing connection failures</li>
-  <li><strong>Poor scalability</strong>: The performance penalty multiplies as data volume increases, making the application unable to handle
-  production workloads efficiently</li>
-  <li><strong>Increased costs</strong>: Higher CPU usage and longer execution times can lead to increased infrastructure costs in cloud
-  environments</li>
-</ul>
+<p>The application may experience degraded performance, with operations that should be fast becoming noticeably slow. This is especially problematic
+when the number of iterations in the loop is very large, or when the same pattern is repeated across many places in the codebase, as the cumulative
+overhead can significantly affect the application’s ability to handle production workloads.</p>
+<p>Beyond performance, this can also lead to resource exhaustion, for example when repeatedly creating parameterized query objects exhausts
+server-side cursor or statement handle limits and causes connection failures, as well as increased infrastructure costs due to higher CPU usage and
+longer execution times.</p>
 <h2>How to fix it</h2>
 <p>Prepare the statement once before the loop and reuse it with different parameters.</p>
 <h3>Code examples</h3>
