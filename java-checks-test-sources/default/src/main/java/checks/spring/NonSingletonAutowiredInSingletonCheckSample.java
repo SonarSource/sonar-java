@@ -4,6 +4,7 @@ import checks.spring.NonSingletonAutowiredInSingletonCheckSampleNonSingletonBean
 import checks.spring.NonSingletonAutowiredInSingletonCheckSampleNonSingletonBeansDefinition.PrototypeBean2;
 import checks.spring.NonSingletonAutowiredInSingletonCheckSampleNonSingletonBeansDefinition.PrototypeBean3;
 import checks.spring.NonSingletonAutowiredInSingletonCheckSampleNonSingletonBeansDefinition.PrototypeBean4;
+import checks.spring.NonSingletonAutowiredInSingletonCheckSampleNonSingletonBeansDefinition.PrototypeBean5;
 import checks.spring.NonSingletonAutowiredInSingletonCheckSampleNonSingletonBeansDefinition.RequestBean1;
 import checks.spring.NonSingletonAutowiredInSingletonCheckSampleNonSingletonBeansDefinition.RequestBean2;
 import checks.spring.NonSingletonAutowiredInSingletonCheckSampleNonSingletonBeansDefinition.SessionBean1;
@@ -205,12 +206,15 @@ public class NonSingletonAutowiredInSingletonCheckSample {
 
   public class SingletonBeanWithRequestAndSessionBeans {
     @Autowired
-    private RequestBean2 requestBean2; // Noncompliant
+    private RequestBean2 requestBean2; // Noncompliant {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired field).}}
+    //      ^^^^^^^^^^^^
+
     @Autowired
     private SessionBean1 sessionBean1; // Noncompliant
 
     @Autowired
-    public void setRequestBean2(RequestBean2 requestBean2) { // Noncompliant
+    public void setRequestBean2(RequestBean2 requestBean2) { // Noncompliant {{Don't auto-wire this non-Singleton bean into a Singleton bean (autowired setter method).}}
+//                              ^^^^^^^^^^^^
       this.requestBean2 = requestBean2;
     }
 

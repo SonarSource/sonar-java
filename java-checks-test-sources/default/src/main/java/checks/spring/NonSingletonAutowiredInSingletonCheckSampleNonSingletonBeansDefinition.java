@@ -31,6 +31,10 @@ public class NonSingletonAutowiredInSingletonCheckSampleNonSingletonBeansDefinit
   public class PrototypeBean4 {
   }
 
+  @Scope(value = "prototype", proxyMode = ScopedProxyMode.NO)
+  public class PrototypeBean5 {
+  }
+
   @Scope(WebApplicationContext.SCOPE_REQUEST)
   public class RequestBean2 {
   }
