@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.model.springcontext.BeanDefinitionGatherer.BeanData;
-import org.sonar.java.model.springcontext.TypeToDependenciesIndex.InjectionPoint;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -225,7 +224,7 @@ final class SpringContextCacheHelper {
         injectionPoints.put(typeFqn, points);
       }
     }
-    Map<String, Set<String>> deps = BeanDefinitionGatherer.toNameMap(injectionPoints);
+    Map<String, Set<String>> deps = BeanDefinitionGatherer.projectToNames(injectionPoints);
     Set<String> typeHierarchy = !fields[6].isEmpty()
       ? new LinkedHashSet<>(List.of(fields[6].split(TYPE_HIERARCHY_SEPARATOR)))
       : new LinkedHashSet<>();

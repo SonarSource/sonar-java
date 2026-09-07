@@ -803,6 +803,47 @@ class JUtilsTest {
   }
 
   @Nested
+  class CollectTypeHierarchy {
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      interface Root { }
+      interface Left extends Root { }
+      interface Right extends Root { }
+      class Base implements Left { }
+      class Derived extends Base implements Right, Unknown { Unknown u; }
+      """);
+    private final ClassTreeImpl base = nthClass(cu, 3);
+    private final ClassTreeImpl derived = nthClass(cu, 4);
+
+    @Test
+    void object_has_no_hierarchy() {
+      assertThat(JUtils.collectTypeHierarchy(OBJECT_TYPE.symbol())).isEmpty();
+    }
+
+    @Test
+    void unknown_type_has_no_hierarchy() {
+      VariableTreeImpl u = firstField(derived);
+      assertThat(JUtils.collectTypeHierarchy(u.symbol().type().symbol())).isEmpty();
+    }
+
+    @Test
+    void interface_with_no_further_hierarchy_contains_only_itself() {
+      Symbol.TypeSymbol root = base.symbol().interfaces().get(0).symbol().interfaces().get(0).symbol();
+      assertThat(JUtils.collectTypeHierarchy(root)).containsOnly("Root");
+    }
+
+    @Test
+    void hierarchy_is_collected_through_superclass_and_interfaces() {
+      assertThat(JUtils.collectTypeHierarchy(base.symbol())).containsOnly("Base", "Left", "Root");
+    }
+
+    @Test
+    void common_ancestor_reached_through_multiple_interfaces_is_deduplicated() {
+      Set<String> hierarchy = JUtils.collectTypeHierarchy(derived.symbol());
+      assertThat(hierarchy).containsOnly("Derived", "Base", "Left", "Right", "Root");
+    }
+  }
+
+  @Nested
   class EnclosingClass {
     private final JavaTree.CompilationUnitTreeImpl cu = test("""
       package org.foo;

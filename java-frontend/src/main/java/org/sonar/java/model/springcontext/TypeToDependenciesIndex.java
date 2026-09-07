@@ -33,8 +33,6 @@ import java.util.Set;
  * the `@Qualifier` annotation if present)
  */
 public class TypeToDependenciesIndex {
-  /** Injection points stored by dependency name (either field/parameter name or qualifier annotation value) and location*/
-  public record InjectionPoint(String name, BeanLocation location) {}
 
   /** Dependencies indexed by fully-qualified required type. */
   private final Map<String, Set<InjectionPoint>> injectionPointsByType = new HashMap<>();

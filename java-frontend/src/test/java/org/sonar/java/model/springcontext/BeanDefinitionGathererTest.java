@@ -702,7 +702,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var injectionPoints = model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext");
     assertThat(injectionPoints).hasSize(2);
-    assertThat(injectionPoints).extracting(TypeToDependenciesIndex.InjectionPoint::name).containsOnly("applicationContext");
+    assertThat(injectionPoints).extracting(InjectionPoint::name).containsOnly("applicationContext");
     assertThat(injectionPoints)
       .extracting(p -> p.location().inputFile(), p -> p.location().mainLocation().startLine)
       .containsExactlyInAnyOrder(
@@ -710,7 +710,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
         tuple(autowiredConstructorFile, 15));
   }
 
-  private static void assertInjectionPoint(Set<TypeToDependenciesIndex.InjectionPoint> injectionPoints, String expectedName,
+  private static void assertInjectionPoint(Set<InjectionPoint> injectionPoints, String expectedName,
     InputFile expectedInputFile, int expectedLine) {
     assertThat(injectionPoints).hasSize(1);
     var point = injectionPoints.iterator().next();

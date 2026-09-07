@@ -113,7 +113,7 @@ public final class SpringUtils {
    * @param simpleName The simple name of the class declaring the bean
    * @return The resolved bean name
    */
-  public static String extractBeanName(SymbolMetadata meta, String simpleName) {
+  public static String extractBeanNameFromAnnotation(SymbolMetadata meta, String simpleName) {
     for (String annotation : STEREOTYPE_ANNOTATIONS) {
       List<SymbolMetadata.AnnotationValue> attrs = meta.valuesForAnnotation(annotation);
       if (attrs != null) {
@@ -134,11 +134,11 @@ public final class SpringUtils {
    * Reads the {@code @Bean} method's explicit "value"/"name" attribute (accepting one or several aliases),
    * falling back to the method's own name when none is given.
    *
-   * @param beanMeta The symbol metadata of the {@code @Bean} factory method
    * @param method The {@code @Bean} factory method, used for its name when no alias is declared
    * @return The declared alias(es), or the method's own name when none is declared
    */
-  public static List<String> extractBeanMethodNames(SymbolMetadata beanMeta, MethodTree method) {
+  public static List<String> extractBeanNameFromMethod(MethodTree method) {
+    SymbolMetadata beanMeta = method.symbol().metadata();
     List<SymbolMetadata.AnnotationValue> attrs = beanMeta.valuesForAnnotation(BEAN_ANNOTATION);
     List<String> names = attrs == null ? List.of() : attrs.stream()
       .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()) || "name".equals(attr.name()))
@@ -158,7 +158,7 @@ public final class SpringUtils {
    * @return The qualifier's value, or {@code null} if none is declared
    */
   @Nullable
-  public static String extractQualifier(SymbolMetadata metadata) {
+  public static String extractQualifierValue(SymbolMetadata metadata) {
     List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(QUALIFIER_ANNOTATION);
     if (attrs == null) {
       return null;
