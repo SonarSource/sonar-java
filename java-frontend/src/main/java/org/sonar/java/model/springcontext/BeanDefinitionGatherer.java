@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -38,7 +37,9 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
+
+import static org.sonar.java.utils.SpringUtils.collectAutowiredDependenciesOnClass;
+import static org.sonar.java.utils.SpringUtils.collectDependenciesOnMethod;
 
 /**
  * Collects Spring bean definitions discovered during AST traversal, and registers them in the
@@ -223,64 +224,6 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     }
   }
 
-  /**
-   * Collects a class-level bean's dependencies from {@code @Autowired} fields, constructors and setters.
-   *
-   * Also applies Spring's implicit single-constructor injection if no constructor is {@code @Autowired}
-   * and the class declares exactly one constructor. {@code hasAutowiredConstructor} guards against
-   * misapplying that fallback when an {@code @Autowired} constructor already exists alongside other,
-   * unannotated ones.
-   *
-   * @param classTree The class whose members are scanned for dependencies
-   * @param inputFile The file {@code classTree} was parsed from, used to locate each injection point
-   * @return The class's dependencies, mapped by required type FQN to the {@link InjectionPoint}s that require it
-   */
-  private static Map<String, Set<InjectionPoint>> collectAutowiredDependenciesOnClass(ClassTree classTree, InputFile inputFile) {
-    Map<String, Set<InjectionPoint>> deps = new LinkedHashMap<>();
-    List<MethodTree> unannotatedConstructors = new ArrayList<>();
-    boolean hasAutowiredConstructor = false;
-    for (Tree member : classTree.members()) {
-      if (member instanceof VariableTree field && field.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
-        String typeFqn = field.symbol().type().fullyQualifiedName();
-        String name = dependencyKey(field.simpleName().name(), SpringUtils.extractQualifierValue(field.symbol().metadata()));
-        var location = new BeanLocation(inputFile, AnalyzerMessage.textSpanFor(field.simpleName()));
-        deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(new InjectionPoint(name, location));
-      } else if (member instanceof MethodTree method) {
-        if (method.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
-          hasAutowiredConstructor |= method.is(Tree.Kind.CONSTRUCTOR);
-          collectDependenciesOnMethod(method, inputFile).forEach((type, points) -> deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(points));
-        } else if (method.is(Tree.Kind.CONSTRUCTOR)) {
-          // Held back until the class has been fully scanned, in case an @Autowired constructor appears
-          // later among the members and disqualifies the implicit single-constructor rule below.
-          unannotatedConstructors.add(method);
-        }
-      }
-    }
-    if (!hasAutowiredConstructor && unannotatedConstructors.size() == 1) {
-      collectDependenciesOnMethod(unannotatedConstructors.get(0), inputFile).forEach((type, points) -> deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(points));
-    }
-    return deps;
-  }
-
-  /**
-   * Collect the given method's parameters as dependencies.
-   *
-   * @param method Method whose parameters are stored as dependencies, either {@code @Autowired} constructors/setters or
-   * {@code @Bean} factory methods
-   * @param inputFile The file {@code method} was parsed from, used to locate each injection point
-   * @return The collected dependencies, mapped by required type FQN to the {@link InjectionPoint}s that require it
-   */
-  private static Map<String, Set<InjectionPoint>> collectDependenciesOnMethod(MethodTree method, InputFile inputFile) {
-    Map<String, Set<InjectionPoint>> deps = new LinkedHashMap<>();
-    for (var p : method.parameters()) {
-      String typeFqn = p.symbol().type().fullyQualifiedName();
-      String name = dependencyKey(p.simpleName().name(), SpringUtils.extractQualifierValue(p.symbol().metadata()));
-      var location = new BeanLocation(inputFile, AnalyzerMessage.textSpanFor(p.simpleName()));
-      deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(new InjectionPoint(name, location));
-    }
-    return deps;
-  }
-
   /** Projects each type's injection points down to just their names, discarding location — the flat view stored in {@code BeanDefinitionHolder}.
    *
    * @param injectionPointsByType Injection points mapped by type, as stored in {@link TypeToDependenciesIndex}
@@ -291,10 +234,6 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       .map(InjectionPoint::name)
       .collect(Collectors.toCollection(LinkedHashSet::new))));
     return names;
-  }
-
-  private static String dependencyKey(String fieldOrParamName, @Nullable String qualifier) {
-    return qualifier != null ? qualifier : fieldOrParamName;
   }
 
 }
