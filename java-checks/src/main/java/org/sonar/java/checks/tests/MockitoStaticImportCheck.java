@@ -50,6 +50,7 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
     .build();
 
   private Set<String> conflictingImportedNames = new HashSet<>();
+  private boolean hasStaticMockitoImport;
   private final Deque<Set<String>> classMethodsStack = new ArrayDeque<>();
 
   @Override
@@ -76,9 +77,14 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
   }
 
   private void collectConflictingImports(CompilationUnitTree compilationUnitTree) {
-    conflictingImportedNames = compilationUnitTree.imports().stream()
+    List<String> staticImportFqns = compilationUnitTree.imports().stream()
       .filter(clause -> clause instanceof ImportTree importTree && importTree.isStatic())
       .map(clause -> ExpressionsHelper.concatenate((ExpressionTree) ((ImportTree) clause).qualifiedIdentifier()))
+      .toList();
+
+    hasStaticMockitoImport = staticImportFqns.stream().anyMatch(fqn -> fqn.startsWith(MOCKITO_IMPORT_PREFIX));
+
+    conflictingImportedNames = staticImportFqns.stream()
       .filter(fqn -> !fqn.startsWith(MOCKITO_IMPORT_PREFIX) && !fqn.endsWith(".*"))
       .map(fqn -> fqn.substring(fqn.lastIndexOf('.') + 1))
       .collect(Collectors.toSet());
@@ -100,7 +106,7 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
       return;
     }
     String methodName = mset.identifier().name();
-    if (MOCKITO_METHODS.matches(mit.methodSymbol()) && !requiresTypeWitness(mit) && !isNameInConflict(methodName)) {
+    if (hasStaticMockitoImport && MOCKITO_METHODS.matches(mit.methodSymbol()) && !requiresTypeWitness(mit) && !isNameInConflict(methodName)) {
       reportIssue(methodSelect, "Use a static import for \"%s\".".formatted(methodName));
     }
   }
