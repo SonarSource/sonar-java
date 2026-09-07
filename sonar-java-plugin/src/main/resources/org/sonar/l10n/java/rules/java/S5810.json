@@ -1,5 +1,5 @@
 {
-  "title": "JUnit5 test classes and methods should not be silently ignored",
+  "title": "JUnit5 test methods should not be silently ignored",
   "type": "BUG",
   "code": {
     "impacts": {
