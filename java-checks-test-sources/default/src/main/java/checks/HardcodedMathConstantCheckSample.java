@@ -27,6 +27,26 @@ class HardcodedMathConstantCheckSample {
   double ln2_3 = 0.69314; // Noncompliant {{Use "Math.log(2)" instead of this approximation of the natural logarithm of 2.}}
   double ln2_4 = 0.693147; // Noncompliant {{Use "Math.log(2)" instead of this approximation of the natural logarithm of 2.}}
 
+  // sqrt(3) approximations (4+ significant digits required)
+  double sqrt3_1 = 1.732; // Noncompliant {{Use "Math.sqrt(3)" instead of this approximation of the square root of 3.}}
+  double sqrt3_2 = 1.73205; // Noncompliant {{Use "Math.sqrt(3)" instead of this approximation of the square root of 3.}}
+  double sqrt3_3 = 1.7320508; // Noncompliant {{Use "Math.sqrt(3)" instead of this approximation of the square root of 3.}}
+
+  // ln(10) approximations (4+ significant digits required)
+  double ln10_1 = 2.302; // Noncompliant {{Use "Math.log(10)" instead of this approximation of the natural logarithm of 10.}}
+  double ln10_2 = 2.30258; // Noncompliant {{Use "Math.log(10)" instead of this approximation of the natural logarithm of 10.}}
+  double ln10_3 = 2.302585; // Noncompliant {{Use "Math.log(10)" instead of this approximation of the natural logarithm of 10.}}
+
+  // log10(e) approximations (4+ significant digits required)
+  double log10e_2 = 0.4343; // Noncompliant {{Use "Math.log10(Math.E)" instead of this approximation of the base-10 logarithm of Euler's number.}}
+  double log10e_3 = 0.43429; // Noncompliant {{Use "Math.log10(Math.E)" instead of this approximation of the base-10 logarithm of Euler's number.}}
+  double log10e_4 = 0.4342944; // Noncompliant {{Use "Math.log10(Math.E)" instead of this approximation of the base-10 logarithm of Euler's number.}}
+
+  // phi (golden ratio) approximations (4+ significant digits required)
+  double phi_1 = 1.618; // Noncompliant {{Use "(1 + Math.sqrt(5)) / 2" instead of this approximation of the golden ratio.}}
+  double phi_2 = 1.61803; // Noncompliant {{Use "(1 + Math.sqrt(5)) / 2" instead of this approximation of the golden ratio.}}
+  double phi_3 = 1.618034; // Noncompliant {{Use "(1 + Math.sqrt(5)) / 2" instead of this approximation of the golden ratio.}}
+
   // Float literals
   float piFloat = 3.14159f; // Noncompliant {{Use "Math.PI" instead of this approximation of pi.}}
   float eFloat = 2.718f; // Noncompliant {{Use "Math.E" instead of this approximation of Euler's number.}}
@@ -68,7 +88,11 @@ class HardcodedMathConstantCheckSample {
   double compliantPi = Math.PI;
   double compliantE = Math.E;
   double compliantSqrt2 = Math.sqrt(2);
+  double compliantSqrt3 = Math.sqrt(3);
   double compliantLn2 = Math.log(2);
+  double compliantLn10 = Math.log(10);
+  double compliantLog10e = Math.log10(Math.E);
+  double compliantPhi = (1 + Math.sqrt(5)) / 2;
   double compliantStrictPi = StrictMath.PI;
   double compliantStrictE = StrictMath.E;
 
@@ -88,6 +112,12 @@ class HardcodedMathConstantCheckSample {
   double tooImprecise3 = 2.7;
   double tooImprecise4 = 1.4;
   double tooImprecise5 = 0.69;
+
+  // Compliant - only 3 significant digits for constants requiring 4
+  double price = 2.30;
+  double measurement = 1.73;
+  double ratio = 1.62;
+  double factor = 0.434;
 
   // Compliant - outside tolerance (with 3 significant digits)
   double outsideTolerance1 = 3.16;
