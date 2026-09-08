@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
