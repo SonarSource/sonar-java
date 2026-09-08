@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanDefinitionRegistry;
+import org.sonar.java.model.springcontext.InjectionPoint;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.model.springcontext.TypeToBeanNamesIndex;
 import org.sonar.java.model.springcontext.TypeToDependenciesIndex;
-import org.sonar.java.model.springcontext.TypeToDependenciesIndex.InjectionPoint;
 import org.sonar.plugins.java.api.JavaCheck;
 
 /**
