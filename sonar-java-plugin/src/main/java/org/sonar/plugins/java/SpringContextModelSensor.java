@@ -19,9 +19,18 @@ package org.sonar.plugins.java;
 import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
+import org.sonar.api.batch.sensor.issue.NewIssue;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scanner.sensor.ProjectSensor;
+import org.sonar.check.Rule;
+import org.sonar.java.GeneratedCheckList;
+import org.sonar.java.checks.spring.SpringContextCheck;
+import org.sonar.java.checks.spring.SpringContextChecks;
+import org.sonar.java.checks.spring.SpringContextIssue;
 import org.sonar.java.jsp.Jasper;
+import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
+import org.sonar.java.reporting.AnalyzerMessage;
 
 /**
  * A post-phase {@link ProjectSensor} that holds the shared {@link SpringContextModel} built during analysis.
@@ -49,6 +58,27 @@ public class SpringContextModelSensor implements ProjectSensor {
 
   @Override
   public void execute(SensorContext context) {
-    // Nothing to do for now
+    for (SpringContextCheck check : SpringContextChecks.getAllChecks()) {
+      reportIssues(context, check);
+    }
+  }
+
+  private void reportIssues(SensorContext context, SpringContextCheck check) {
+    RuleKey ruleKey = RuleKey.of(GeneratedCheckList.REPOSITORY_KEY, check.getClass().getAnnotation(Rule.class).key());
+    if (context.activeRules().find(ruleKey) == null) {
+      // Rule not active in the quality profile: skip running the check, its issues would be discarded anyway.
+      return;
+    }
+    for (SpringContextIssue issue : check.execute(springContextModel)) {
+      BeanLocation location = issue.location();
+      AnalyzerMessage.TextSpan span = location.mainLocation();
+      NewIssue newIssue = context.newIssue().forRule(ruleKey);
+      newIssue.at(newIssue.newLocation()
+        .on(location.inputFile())
+        .at(location.inputFile().newRange(span.startLine, span.startCharacter, span.endLine, span.endCharacter))
+        .message(issue.message()));
+      newIssue.save();
+    }
   }
 }
+
