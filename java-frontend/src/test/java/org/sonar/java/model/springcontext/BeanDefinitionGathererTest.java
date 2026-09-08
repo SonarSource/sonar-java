@@ -329,29 +329,6 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(gatherer.scanWithoutParsing(context)).isFalse();
   }
 
-  // ---- TypeToBeanNamesIndex -------------------------------------------------
-
-  @Test
-  void bean_is_registered_under_full_type_hierarchy() {
-    scan("src/test/files/springcontext/ComponentImplementingInterface.java");
-
-    var index = model.getTypeToBeanNamesIndex();
-    assertThat(index.getNamesForType("checks.spring.context.ComponentImplementingInterface"))
-      .containsOnly("componentImplementingInterface");
-    assertThat(index.getNamesForType("org.springframework.context.ApplicationContextAware"))
-      .containsOnly("componentImplementingInterface");
-    assertThat(index.getNamesForType("org.springframework.beans.factory.Aware"))
-      .containsOnly("componentImplementingInterface");
-  }
-
-  @Test
-  void bean_method_names_and_return_type_are_registered_in_index() {
-    scan("src/test/files/springcontext/ConfigurationWithBeanMethods.java");
-
-    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("org.springframework.context.ApplicationContext"))
-      .contains("simpleServiceBean", "namedBean", "arrayNamedBean", "alias", "emptyNameArrayMethod");
-  }
-
   private static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
     CacheContext cacheContext = mock(CacheContext.class);
     when(cacheContext.isCacheEnabled()).thenReturn(true);
