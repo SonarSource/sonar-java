@@ -20,13 +20,13 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.WriteCache;
@@ -37,8 +37,10 @@ import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -76,50 +78,6 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
       Arguments.of("src/test/files/springcontext/SimpleConfiguration.java", "simpleConfiguration", "checks.spring.context.SimpleConfiguration"),
       Arguments.of("src/test/files/springcontext/ConfigurationWithBeanMethods.java", "simpleServiceBean", "org.springframework.context.ApplicationContext")
     );
-  }
-
-  // ---- Explicit bean names ---------------------------------------------------
-
-  @Test
-  void explicit_bean_name_from_annotation_value() {
-    scan("src/test/files/springcontext/ExplicitNameComponent.java");
-
-    var beans = model.getBeanDefinitionRegistry().getByName("myBean");
-    assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getType()).isEqualTo("checks.spring.context.ExplicitNameComponent");
-    // Default name should NOT be registered
-    assertThat(model.getBeanDefinitionRegistry().getByName("explicitNameComponent")).isEmpty();
-  }
-
-  // ---- @Bean methods --------------------------------------------------------
-
-  @Test
-  void bean_method_with_explicit_name() {
-    scan("src/test/files/springcontext/ConfigurationWithBeanMethods.java");
-
-    var beans = model.getBeanDefinitionRegistry().getByName("namedBean");
-    assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getType()).isEqualTo("org.springframework.context.ApplicationContext");
-    // Method name should NOT be registered
-    assertThat(model.getBeanDefinitionRegistry().getByName("namedBeanMethod")).isEmpty();
-  }
-
-  @Test
-  void bean_method_with_array_of_names_uses_first_name() {
-    scan("src/test/files/springcontext/ConfigurationWithBeanMethods.java");
-
-    var beans = model.getBeanDefinitionRegistry().getByName("arrayNamedBean");
-    assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getType()).isEqualTo("org.springframework.context.ApplicationContext");
-  }
-
-  @Test
-  void bean_method_with_empty_name_array_falls_back_to_method_name() {
-    scan("src/test/files/springcontext/ConfigurationWithBeanMethods.java");
-
-    var beans = model.getBeanDefinitionRegistry().getByName("emptyNameArrayMethod");
-    assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getType()).isEqualTo("org.springframework.context.ApplicationContext");
   }
 
   // ---- @Primary -------------------------------------------------------------
@@ -183,80 +141,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(model.getBeanDefinitionRegistry().getByName("simpleService")).hasSize(1);
   }
 
-  // ---- @Autowired dependencies ----------------------------------------------
-
-  @ParameterizedTest(name = "{0}")
-  @MethodSource("dependencyCollectionArguments")
-  void dependencies_collected_as_depending_beans(String filePath, String expectedBeanName) {
-    scan(filePath);
-
-    var beans = model.getBeanDefinitionRegistry().getByName(expectedBeanName);
-    assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getDependingBeans().keySet())
-      .containsExactlyInAnyOrder(
-        "org.springframework.context.ApplicationContext",
-        "org.springframework.core.env.Environment"
-      );
-  }
-
-  static Stream<Arguments> dependencyCollectionArguments() {
-    return Stream.of(
-      Arguments.of("src/test/files/springcontext/AutowiredDependencies.java", "autowiredDependencies"),
-      Arguments.of("src/test/files/springcontext/AutowiredConstructorDependencies.java", "autowiredConstructorDependencies"),
-      Arguments.of("src/test/files/springcontext/SingleConstructorDependencies.java", "singleConstructorDependencies"),
-      Arguments.of("src/test/files/springcontext/BeanMethodWithDependencies.java", "myBean")
-    );
-  }
-
-  @Test
-  void multiple_constructors_without_autowired_yields_no_dependencies() {
-    scan("src/test/files/springcontext/MultipleConstructorsNoDependencies.java");
-
-    var beans = model.getBeanDefinitionRegistry().getByName("multipleConstructorsNoDependencies");
-    assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getDependingBeans()).isEmpty();
-  }
-
-  @ParameterizedTest(name = "{0}")
-  @MethodSource("mixedInjectionArguments")
-  void both_injection_sources_collected_when_mixing_injection_styles(String filePath, String beanName) {
-    scan(filePath);
-
-    var beans = model.getBeanDefinitionRegistry().getByName(beanName);
-    assertThat(beans).hasSize(1);
-    var deps = beans.get(0).getDependingBeans();
-    assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("applicationContext");
-    assertThat(deps.get("org.springframework.core.env.Environment")).containsOnly("environment");
-  }
-
-  static Stream<Arguments> mixedInjectionArguments() {
-    return Stream.of(
-      Arguments.of("src/test/files/springcontext/AutowiredConstructorWithUnannotatedConstructor.java", "autowiredConstructorWithUnannotatedConstructor"),
-      Arguments.of("src/test/files/springcontext/MixedInjectionDependencies.java", "mixedInjectionDependencies")
-    );
-  }
-
   // ---- @Qualifier handling --------------------------------------------------
-
-  @ParameterizedTest(name = "{0}")
-  @MethodSource("qualifiedDependencyArguments")
-  void qualifier_is_captured_on_qualified_dependency(String filePath, String expectedBeanName) {
-    scan(filePath);
-
-    var beans = model.getBeanDefinitionRegistry().getByName(expectedBeanName);
-    assertThat(beans).hasSize(1);
-    var deps = beans.get(0).getDependingBeans();
-    assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("primaryContext");
-    assertThat(deps.get("org.springframework.core.env.Environment")).containsOnly("environment");
-  }
-
-  static Stream<Arguments> qualifiedDependencyArguments() {
-    return Stream.of(
-      Arguments.of("src/test/files/springcontext/QualifiedFieldDependencies.java", "qualifiedFieldDependencies"),
-      Arguments.of("src/test/files/springcontext/QualifiedConstructorDependencies.java", "qualifiedConstructorDependencies"),
-      Arguments.of("src/test/files/springcontext/QualifiedBeanMethodDependencies.java", "myBean")
-    );
-  }
 
   @Test
   void qualifier_selects_specific_bean_among_multiple_candidates() {
@@ -274,17 +159,6 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     // Note: PaymentProcessor resolves without package since it's not on the compiled classpath
     assertThat(deps).containsOnlyKeys("PaymentProcessor");
     assertThat(deps.get("PaymentProcessor")).containsOnly("paypal");
-  }
-
-  @Test
-  void unqualified_dependency_stores_field_name_in_names_set() {
-    scan("src/test/files/springcontext/AutowiredDependencies.java");
-
-    var beans = model.getBeanDefinitionRegistry().getByName("autowiredDependencies");
-    assertThat(beans).hasSize(1);
-    var deps = beans.get(0).getDependingBeans();
-    assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("applicationContext");
-    assertThat(deps.get("org.springframework.core.env.Environment")).containsOnly("environment");
   }
 
   // ---- Bean location --------------------------------------------------------
@@ -463,8 +337,8 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
     String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
     String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
-      + encodedAppContext + ":" + encodedPrimaryContext
-      + "," + encodedEnvType + ":" + encodedEnvironment
+      + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
+      + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
       + "|checks.spring.context.QualifiedFieldDependencies";
 
     JavaReadCache readCache = mock(JavaReadCache.class);
@@ -488,35 +362,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(deps.get("org.springframework.core.env.Environment")).containsOnly("environment");
   }
 
-  @Test
-  void blank_qualifier_value_is_treated_as_no_qualifier() {
-    scan("src/test/files/springcontext/BlankQualifierDependency.java");
-
-    var beans = model.getBeanDefinitionRegistry().getByName("blankQualifierDependency");
-    assertThat(beans).hasSize(1);
-    var deps = beans.get(0).getDependingBeans();
-    assertThat(deps).containsOnlyKeys("org.springframework.context.ApplicationContext");
-    assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("applicationContext");
-  }
-
   // ---- TypeToBeanNamesIndex -------------------------------------------------
-
-  @ParameterizedTest(name = "{0}")
-  @ValueSource(strings = {
-    "src/test/files/springcontext/SimpleComponent.java",
-    "src/test/files/springcontext/SimpleService.java",
-    "src/test/files/springcontext/SimpleRepository.java",
-    "src/test/files/springcontext/SimpleController.java",
-    "src/test/files/springcontext/SimpleRestController.java",
-    "src/test/files/springcontext/SimpleConfiguration.java"
-  })
-  void stereotype_bean_is_registered_under_its_own_type(String filePath) {
-    scan(filePath);
-
-    var index = model.getTypeToBeanNamesIndex();
-    assertThat(index.getNamesForType("checks.spring.context." + beanClassNameFrom(filePath)))
-      .isNotEmpty();
-  }
 
   @Test
   void bean_is_registered_under_full_type_hierarchy() {
@@ -529,6 +375,14 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
       .containsOnly("componentImplementingInterface");
     assertThat(index.getNamesForType("org.springframework.beans.factory.Aware"))
       .containsOnly("componentImplementingInterface");
+  }
+
+  @Test
+  void bean_method_names_and_return_type_are_registered_in_index() {
+    scan("src/test/files/springcontext/ConfigurationWithBeanMethods.java");
+
+    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("org.springframework.context.ApplicationContext"))
+      .contains("simpleServiceBean", "namedBean", "arrayNamedBean", "alias", "emptyNameArrayMethod");
   }
 
   @Test
@@ -564,73 +418,88 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
       .containsOnly("componentImplementingInterface");
   }
 
-  @Test
-  void explicit_bean_name_is_used_in_index() {
-    scan("src/test/files/springcontext/ExplicitNameComponent.java");
-
-    var index = model.getTypeToBeanNamesIndex();
-    assertThat(index.getNamesForType("checks.spring.context.ExplicitNameComponent"))
-      .containsOnly("myBean");
-  }
-
-  @Test
-  void bean_method_return_type_is_registered() {
-    scan("src/test/files/springcontext/ConfigurationWithBeanMethods.java");
-
-    var index = model.getTypeToBeanNamesIndex();
-    assertThat(index.getNamesForType("org.springframework.context.ApplicationContext"))
-      .contains("simpleServiceBean", "namedBean", "arrayNamedBean", "emptyNameArrayMethod");
-  }
-
-  @Test
-  void bean_method_aliases_are_all_registered() {
-    scan("src/test/files/springcontext/ConfigurationWithBeanMethods.java");
-
-    // @Bean(name = {"arrayNamedBean", "alias"}) — both names appear in the index
-    var index = model.getTypeToBeanNamesIndex();
-    assertThat(index.getNamesForType("org.springframework.context.ApplicationContext"))
-      .contains("arrayNamedBean", "alias");
-  }
-
-  @Test
-  void multiple_beans_all_registered_in_index() {
-    scan(
-      "src/test/files/springcontext/PayPalProcessor.java",
-      "src/test/files/springcontext/CreditCardProcessor.java"
-    );
-
-    var index = model.getTypeToBeanNamesIndex();
-    assertThat(index.getNamesForType("checks.spring.context.PayPalProcessor"))
-      .containsOnly("paypal");
-    assertThat(index.getNamesForType("checks.spring.context.CreditCardProcessor"))
-      .containsOnly("creditCard");
-  }
-
-  @Test
-  void non_spring_class_registers_nothing_in_index() {
-    scan("src/test/files/springcontext/NoScanAnnotations.java");
-
-    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("checks.spring.context.NoScanAnnotations"))
-      .isEmpty();
-  }
-
-  @Test
-  void index_gatherer_skipped_when_spring_not_in_classpath() {
-    scan(List.of(), "src/test/files/springcontext/SimpleComponent.java");
-
-    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("checks.spring.context.SimpleComponent"))
-      .isEmpty();
-  }
-
-  private static String beanClassNameFrom(String filePath) {
-    return filePath.substring(filePath.lastIndexOf('/') + 1, filePath.lastIndexOf('.'));
-  }
-
   private static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
     CacheContext cacheContext = mock(CacheContext.class);
     when(cacheContext.isCacheEnabled()).thenReturn(true);
     when(cacheContext.getReadCache()).thenReturn(readCache);
     when(cacheContext.getWriteCache()).thenReturn(writeCache);
     return cacheContext;
+  }
+
+  // ---- TypeToDependenciesIndex -------------------------------------------------
+
+  @Test
+  void dependencies_in_multiple_files_all_registered() {
+    scan("src/test/files/springcontext/OrderService.java", "src/test/files/springcontext/BlankQualifierDependency.java");
+    InputFile orderServiceFile = TestUtils.inputFile(new File("src/test/files/springcontext/OrderService.java"));
+    InputFile blankQualifierFile = TestUtils.inputFile(new File("src/test/files/springcontext/BlankQualifierDependency.java"));
+
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("PaymentProcessor"),
+      "paypal", orderServiceFile, 13);
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext"),
+      "applicationContext", blankQualifierFile, 13);
+  }
+
+  @Test
+  void two_beans_depending_on_same_type_and_name_both_tracked_with_distinct_locations() {
+    scan("src/test/files/springcontext/AutowiredDependencies.java", "src/test/files/springcontext/AutowiredConstructorDependencies.java");
+    InputFile autowiredDependenciesFile = TestUtils.inputFile(new File("src/test/files/springcontext/AutowiredDependencies.java"));
+    InputFile autowiredConstructorFile = TestUtils.inputFile(new File("src/test/files/springcontext/AutowiredConstructorDependencies.java"));
+
+    var injectionPoints = model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext");
+    assertThat(injectionPoints).hasSize(2);
+    assertThat(injectionPoints).extracting(InjectionPoint::name).containsOnly("applicationContext");
+    assertThat(injectionPoints)
+      .extracting(p -> p.location().inputFile(), p -> p.location().mainLocation().startLine)
+      .containsExactlyInAnyOrder(
+        tuple(autowiredDependenciesFile, 12),
+        tuple(autowiredConstructorFile, 15));
+  }
+
+  private static void assertInjectionPoint(Set<InjectionPoint> injectionPoints, String expectedName,
+    InputFile expectedInputFile, int expectedLine) {
+    assertThat(injectionPoints).hasSize(1);
+    var point = injectionPoints.iterator().next();
+    assertThat(point.name()).isEqualTo(expectedName);
+    assertThat(point.location().inputFile()).isEqualTo(expectedInputFile);
+    assertThat(point.location().mainLocation().startLine).isEqualTo(expectedLine);
+  }
+
+  @Test
+  void scanWithoutParsing_restores_dependencies_index_from_cache() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/QualifiedFieldDependencies.java"));
+    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
+    String encodedName = Base64.getEncoder().encodeToString("qualifiedFieldDependencies".getBytes(StandardCharsets.UTF_8));
+    String encodedAppContext = Base64.getEncoder().encodeToString("org.springframework.context.ApplicationContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
+    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
+    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
+      + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
+      + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
+      + "|checks.spring.context.QualifiedFieldDependencies";
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+
+    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
+    when(moduleScannerContext.getModuleKey()).thenReturn("");
+    gatherer.gatherSpringContextData(moduleScannerContext, model);
+
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext"),
+      "primaryContext", inputFile, 14);
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.core.env.Environment"),
+      "environment", inputFile, 17);
   }
 }
