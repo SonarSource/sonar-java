@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTIONS_METHOD_MATCHER;
+import static org.sonar.java.utils.UnitTestUtils.ASSERTIONS_METHOD_MATCHER;
 
 @Rule(key = "S5777")
 public class TestAnnotationWithExpectedExceptionCheck extends IssuableSubscriptionVisitor {

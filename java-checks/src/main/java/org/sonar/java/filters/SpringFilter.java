@@ -24,7 +24,7 @@ import org.sonar.java.checks.OptionalAsParameterCheck;
 import org.sonar.java.checks.ServletInstanceFieldCheck;
 import org.sonar.java.checks.TooManyParametersCheck;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.utils.SpringUtils;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.semantic.Symbol;

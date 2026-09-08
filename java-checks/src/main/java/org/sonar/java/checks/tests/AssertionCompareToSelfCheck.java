@@ -23,7 +23,7 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
-import org.sonar.java.checks.helpers.UnitTestUtils;
+import org.sonar.java.utils.UnitTestUtils;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;

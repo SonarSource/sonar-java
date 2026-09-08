@@ -23,7 +23,7 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.UnitTestUtils.FAIL_METHOD_MATCHER;
+import static org.sonar.java.utils.UnitTestUtils.FAIL_METHOD_MATCHER;
 
 @Rule(key = "S5778")
 public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExceptionRule {

@@ -1,0 +1,25 @@
+{
+  "title": "Bean autowiring ambiguity should be resolved using \"@Qualifier\" or \"@Primary\"",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "spring",
+    "injection",
+    "configuration"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-9352",
+  "sqKey": "S9352",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "COMPLETE"
+  }
+}
