@@ -49,11 +49,8 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 
-@Execution(ExecutionMode.CONCURRENT)
 public abstract class ScannerIntegrationAbstractTest {
 
   private static FileLocation javaPluginLocation;
