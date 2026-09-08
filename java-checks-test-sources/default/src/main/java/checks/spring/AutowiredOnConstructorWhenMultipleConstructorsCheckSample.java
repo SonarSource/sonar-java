@@ -66,6 +66,20 @@ public class AutowiredOnConstructorWhenMultipleConstructorsCheckSample { // Comp
   }
 
   @Component
+  class ComponentWithInjectField { // Noncompliant {{Add @Autowired or @Inject to one of the constructors.}}
+//      ^^^^^^^^^^^^^^^^^^^^^^^^
+
+    @javax.inject.Inject
+    private String dependency;
+
+    public ComponentWithInjectField() {
+    }
+
+    public ComponentWithInjectField(int i) {
+    }
+  }
+
+  @Component
   class ComponentWithOtherAnnotations { // Noncompliant
 
     public ComponentWithOtherAnnotations() {
