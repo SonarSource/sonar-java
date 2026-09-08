@@ -83,9 +83,6 @@ public class JavaFrontend {
     List<JavaCheck> commonVisitors = new ArrayList<>();
     commonVisitors.add(javaResourceLocator);
     commonVisitors.add(new Java25FeaturesTelemetryVisitor(telemetry));
-    if (sonarComponents.getSpringContextModel() != null) {
-      commonVisitors.addAll(SpringContextModelGatherers.getAllGatherers());
-    }
     if (postAnalysisIssueFilter != null) {
       commonVisitors.add(postAnalysisIssueFilter);
     }
@@ -97,6 +94,13 @@ public class JavaFrontend {
 
     List<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
     testCodeVisitors.add(measurer.new TestFileMeasurer());
+
+    if (sonarComponents.getSpringContextModel() != null) {
+      // Call SpringContextModelGatherers.getAllGatherers twice to have separate gatherer
+      // instances between the main and test scanners to avoid duplicating the issues
+      codeVisitors.addAll(SpringContextModelGatherers.getAllGatherers());
+      testCodeVisitors.addAll(SpringContextModelGatherers.getAllGatherers());
+    }
 
     if (!sonarComponents.isSonarLintContext()) {
       codeVisitors.add(new FileLinesVisitor(sonarComponents));
