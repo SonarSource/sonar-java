@@ -155,13 +155,13 @@ public final class SpringUtils {
     SymbolMetadata beanMeta = method.symbol().metadata();
     List<SymbolMetadata.AnnotationValue> attrs = beanMeta.valuesForAnnotation(BEAN_ANNOTATION);
     List<String> names = attrs == null ? List.of() : attrs.stream()
-     .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()) || "name".equals(attr.name()))
-     .filter(attr -> attr.value() instanceof Object[])
-     .flatMap(attr -> Arrays.stream((Object[]) attr.value()))
-     .filter(String.class::isInstance)
-     .map(String.class::cast)
-     .filter(name -> !name.isBlank())
-     .toList();
+      .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()) || "name".equals(attr.name()))
+      .filter(attr -> attr.value() instanceof Object[])
+      .flatMap(attr -> Arrays.stream((Object[]) attr.value()))
+      .filter(String.class::isInstance)
+      .map(String.class::cast)
+      .filter(name -> !name.isBlank())
+      .toList();
     return names.isEmpty() ? List.of(method.simpleName().name()) : names;
   }
 
