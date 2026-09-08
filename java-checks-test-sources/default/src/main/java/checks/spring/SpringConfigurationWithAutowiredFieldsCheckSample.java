@@ -19,6 +19,8 @@ class SpringConfigurationWithAutowiredFieldsCheckSample {
 //                         ^^^^^^^^^^^
     @Inject private Bar jsr330; // Noncompliant {{Inject this field value directly into "jsr330", the only method that uses it.}}
 //                      ^^^^^^
+    @jakarta.inject.Inject private Bar jakartaInject; // Noncompliant {{Inject this field value directly into "jakartaInject", the only method that uses it.}}
+//                                     ^^^^^^^^^^^^^
     @Autowired private Bar multipleUsage;
     @Autowired private Bar notUsedInBeanMethod;
     @Autowired private Bar notUsed;
@@ -38,6 +40,11 @@ class SpringConfigurationWithAutowiredFieldsCheckSample {
     @Bean
     public Foo jsr330() {
       return new Foo(this.jsr330);
+    }
+
+    @Bean
+    public Foo jakartaInject() {
+      return new Foo(this.jakartaInject);
     }
 
     @Bean
@@ -149,6 +156,5 @@ class SpringConfigurationWithAutowiredFieldsCheckSample {
     }
   }
 }
-
 
 
