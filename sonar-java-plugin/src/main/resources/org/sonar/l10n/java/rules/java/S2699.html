@@ -10,6 +10,7 @@ code under test.</p>
   <li>Eclipse Vert.x</li>
   <li>Fest 1.x and 2.x</li>
   <li>Hamcrest</li>
+  <li>Java built-in <code>assert</code> statement</li>
   <li>JMock</li>
   <li>JMockit</li>
   <li>JUnit</li>
@@ -22,6 +23,8 @@ code under test.</p>
   <li>Truth Framework</li>
   <li>WireMock</li>
 </ul>
+<p>Tests annotated with <code>@Disabled</code> (JUnit 5) or <code>@Ignore</code> (JUnit 4) are excluded from this rule, as they are not executed by
+the test framework.</p>
 <p>Furthermore, as new or custom assertion frameworks may be used, the rule can be parametrized to define specific methods that will also be
 considered as assertions. No issue will be raised when such methods are found in test cases. The parameter value should have the following format
 <code>&lt;FullyQualifiedClassName&gt;#&lt;MethodName&gt;</code>, where <code>MethodName</code> can end with the wildcard character. For constructors,
