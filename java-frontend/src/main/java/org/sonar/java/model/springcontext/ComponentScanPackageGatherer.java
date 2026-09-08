@@ -16,7 +16,6 @@
  */
 package org.sonar.java.model.springcontext;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,7 +26,6 @@ import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -180,31 +178,16 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
     return Optional.empty();
   }
 
-  private static String cacheKey(InputFile inputFile) {
-    return CACHE_KEY_PREFIX + inputFile.key();
-  }
-
   private static void writeToCache(InputFileScannerContext context, Set<String> packages) {
-    var cacheKey = cacheKey(context.getInputFile());
-    var data = String.join(";", packages).getBytes(StandardCharsets.UTF_8);
-    try {
-      context.getCacheContext().getWriteCache().write(cacheKey, data);
-    } catch (IllegalArgumentException e) {
-      LOG.trace("Tried to write multiple times to cache key '{}'. Ignoring writes after the first.", cacheKey);
-    }
+    var cacheKey = SpringContextCacheHelper.cacheKey(CACHE_KEY_PREFIX, context);
+    var data = String.join(";", packages);
+    SpringContextCacheHelper.writeToCache(context, LOG, cacheKey, data);
   }
 
   private static Optional<List<String>> readFromCache(InputFileScannerContext context) {
-    var cacheKey = cacheKey(context.getInputFile());
-    var bytes = context.getCacheContext().getReadCache().readBytes(cacheKey);
-    if (bytes != null) {
-      context.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
-      String content = new String(bytes, StandardCharsets.UTF_8);
-      if (content.isEmpty()) {
-        return Optional.of(List.of());
-      }
-      return Optional.of(Arrays.asList(content.split(";")));
-    }
-    return Optional.empty();
+    var cacheKey = SpringContextCacheHelper.cacheKey(CACHE_KEY_PREFIX, context);
+    return SpringContextCacheHelper.readFromCache(context, LOG, cacheKey, content -> content.isEmpty()
+      ? List.<String>of()
+      : Arrays.asList(content.split(";")));
   }
 }

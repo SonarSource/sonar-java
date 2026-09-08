@@ -43,6 +43,9 @@ public class SpringContextModel {
   /** Index for resolving bean names by their fully-qualified type. */
   private final TypeToBeanNamesIndex typeToBeanNamesIndex = new TypeToBeanNamesIndex();
 
+  /** Index for storing injected dependencies by their fully-qualified type. */
+  private final TypeToDependenciesIndex typeToDependenciesIndex = new TypeToDependenciesIndex();
+
   /** Index of properties associated with Spring Data / Hibernate {@code @Entity} classes. */
   private final EntityClassToPropertiesIndex entityClassToPropertiesIndex = new EntityClassToPropertiesIndex();
 
@@ -56,6 +59,10 @@ public class SpringContextModel {
 
   public TypeToBeanNamesIndex getTypeToBeanNamesIndex() {
     return typeToBeanNamesIndex;
+  }
+
+  public TypeToDependenciesIndex getTypeToDependenciesIndex() {
+    return typeToDependenciesIndex;
   }
 
   public EntityClassToPropertiesIndex getEntityClassToPropertiesIndex() {
