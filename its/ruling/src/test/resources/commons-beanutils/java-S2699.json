@@ -36,9 +36,6 @@
 "commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira411TestCase.java": [
 40
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira509TestCase.java": [
-55
-],
 "commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira92TestCase.java": [
 35
 ],
