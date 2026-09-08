@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -40,6 +41,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.utils.SpringUtils.collectAutowiredDependenciesOnClass;
 import static org.sonar.java.utils.SpringUtils.collectDependenciesOnMethod;
+import static org.sonar.java.utils.SpringUtils.composeProfiles;
 
 /**
  * Collects Spring bean definitions discovered during AST traversal, and registers them in the
@@ -55,6 +57,9 @@ import static org.sonar.java.utils.SpringUtils.collectDependenciesOnMethod;
  * <p>Also captures:
  * <ul>
  *   <li>{@code @Primary} designation</li>
+ *   <li>{@code @Profile} expression, if any; for {@code @Bean} methods, the method's own {@code @Profile}
+ *       is combined with (not overridden by) the one declared on the enclosing {@code @Configuration}/{@code @Component}
+ *       class, since Spring requires both to match for the bean to be active</li>
  *   <li>Dependencies via {@code @Autowired} fields, constructors, and setters for class-level beans</li>
  *   <li>Dependencies via method parameters for {@code @Bean} method beans</li>
  *   <li>Implicit single-constructor injection (no {@code @Autowired} required)</li>
@@ -84,6 +89,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     InputFile inputFile,
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
+    @Nullable String profiles,
     Map<String, Set<String>> dependingBeans,
     Map<String, Set<InjectionPoint>> dependencyInjectionPoints,
     Set<String> typeHierarchy) {
@@ -127,11 +133,13 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       // also collect their names mapped by type to store in dependingBeans
       Map<String, Set<String>> deps = projectToNames(injectionPoints);
       Set<String> typeHierarchy = JUtils.collectTypeHierarchy(classTree.symbol());
+      String classProfiles = SpringUtils.extractProfiles(meta);
       var beanData = new BeanData(
         beanName, fqn, pkg,
         context.getInputFile(),
         AnalyzerMessage.textSpanFor(classTree.simpleName()),
         meta.isAnnotatedWith(PRIMARY_ANNOTATION),
+        classProfiles,
         deps,
         injectionPoints,
         typeHierarchy);
@@ -139,7 +147,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       beansCollectedAtFileLevel.add(beanData);
 
       for (MethodTree method : SpringUtils.getBeanMethods(classTree)) {
-        collectBeanMethod(method, pkg);
+        collectBeanMethod(method, pkg, classProfiles);
       }
     }
   }
@@ -168,7 +176,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       var location = new BeanLocation(data.inputFile(), data.textSpan());
       var holderBuilder = new BeanDefinitionHolder.Builder(
         data.type(), context.getModuleKey(), data.beanPackage(), location)
-          .dependingBeans(data.dependingBeans());
+        .dependingBeans(data.dependingBeans())
+        .profiles(data.profiles());
       if (data.isPrimary()) {
         holderBuilder.primary();
       }
@@ -198,8 +207,9 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
    *
    * @param method The {@code @Bean} factory method to visit
    * @param pkg The bean's package (carried through to be stored in BeanData)
+   * @param classProfiles The {@code @Profile} expression declared on the enclosing class, if any
    */
-  private void collectBeanMethod(MethodTree method, String pkg) {
+  private void collectBeanMethod(MethodTree method, String pkg, @Nullable String classProfiles) {
     SymbolMetadata beanMeta = method.symbol().metadata();
     List<String> beanNames = SpringUtils.extractBeanNameFromMethod(method);
 
@@ -215,10 +225,12 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     Map<String, Set<InjectionPoint>> injectionPoints = collectDependenciesOnMethod(method, inputFile);
     Map<String, Set<String>> paramDeps = projectToNames(injectionPoints);
     boolean isPrimary = beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION);
+    String ownProfiles = SpringUtils.extractProfiles(beanMeta);
+    String profiles = composeProfiles(classProfiles, ownProfiles);
     var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
 
     for (String beanName : beanNames) {
-      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, paramDeps, injectionPoints, typeHierarchy);
+      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, profiles, paramDeps, injectionPoints, typeHierarchy);
       collectedBeans.add(beanData);
       beansCollectedAtFileLevel.add(beanData);
     }
@@ -235,5 +247,6 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       .collect(Collectors.toCollection(LinkedHashSet::new))));
     return names;
   }
+
 
 }

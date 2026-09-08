@@ -58,12 +58,16 @@ public final class SpringUtils {
   public static final String BEAN_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "Bean";
   public static final String SCOPE_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "Scope";
   public static final String CONFIGURATION_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "Configuration";
+  public static final String PROFILE_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "Profile";
   public static final String ASYNC_ANNOTATION = "org.springframework.scheduling.annotation.Async";
   public static final String DATA_REPOSITORY_ANNOTATION = DATA_PACKAGE + "repository.Repository";
   public static final String REST_CONTROLLER_ANNOTATION = "org.springframework.web.bind.annotation.RestController";
   public static final String SPRING_BOOT_TEST_ANNOTATION = "org.springframework.boot.test.context.SpringBootTest";
 
   private static final String VALUE_ATTRIBUTE = "value";
+  private static final String PROFILE_SEPARATOR = ",";
+  /** Joins the class-level and method-level {@code @Profile} expressions of a {@code @Bean} method, which are AND-ed together by Spring. */
+  private static final String PROFILE_AND_SEPARATOR = ";";
 
   public static final List<String> STEREOTYPE_ANNOTATIONS = List.of(
     COMPONENT_ANNOTATION,
@@ -124,7 +128,7 @@ public final class SpringUtils {
    * Extracts the bean name from whichever stereotype annotation is present on the bean definition,
    * falling back to the decapitalized simple name for an unnamed bean.
    *
-   * @param meta The symbol metadata of the class declaring the bean
+   * @param meta       The symbol metadata of the class declaring the bean
    * @param simpleName The simple name of the class declaring the bean
    * @return The resolved bean name
    */
@@ -188,7 +192,7 @@ public final class SpringUtils {
 
   /**
    * Collects a class-level bean's dependencies from {@code @Autowired} fields, constructors and setters.
-   *
+   * <p>
    * Also applies Spring's implicit single-constructor injection if no constructor is {@code @Autowired}
    * and the class declares exactly one constructor. {@code hasAutowiredConstructor} guards against
    * misapplying that fallback when an {@code @Autowired} constructor already exists alongside other,
@@ -228,8 +232,8 @@ public final class SpringUtils {
   /**
    * Collect the given method's parameters as dependencies.
    *
-   * @param method Method whose parameters are stored as dependencies, either {@code @Autowired} constructors/setters or
-   * {@code @Bean} factory methods
+   * @param method    Method whose parameters are stored as dependencies, either {@code @Autowired} constructors/setters or
+   *                  {@code @Bean} factory methods
    * @param inputFile The file {@code method} was parsed from, used to locate each injection point
    * @return The collected dependencies, mapped by required type FQN to the {@link InjectionPoint}s that require it
    */
@@ -246,6 +250,47 @@ public final class SpringUtils {
 
   private static String dependencyKey(String fieldOrParamName, @Nullable String qualifier) {
     return qualifier != null ? qualifier : fieldOrParamName;
+  }
+
+  /**
+   * Reads the {@code @Profile} annotation's "value" attribute, joining every profile name it lists with ",".
+   *
+   * @param metadata The symbol metadata of the class or {@code @Bean} method to check for a {@code @Profile}
+   * @return The joined profile expression, or {@code null} if none is declared
+   */
+  @Nullable
+  public static String extractProfiles(SymbolMetadata metadata) {
+    List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(PROFILE_ANNOTATION);
+    List<String> profiles = attrs == null ? List.of() : attrs.stream()
+      .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()))
+      .filter(attr -> attr.value() instanceof Object[])
+      .flatMap(attr -> Arrays.stream((Object[]) attr.value()))
+      .filter(String.class::isInstance)
+      .map(String.class::cast)
+      .filter(profile -> !profile.isBlank())
+      .toList();
+    return profiles.isEmpty() ? null : String.join(PROFILE_SEPARATOR, profiles);
+  }
+
+  /**
+   * Combines a {@code @Bean} method's own {@code @Profile} with the one declared on its enclosing class.
+   *
+   * Spring requires both to match for the bean to be active, so the two expressions are AND-ed rather
+   * than one overriding the other.
+   *
+   * @param classProfiles Profile(s) of the enclosing class
+   * @param ownProfiles Profile(s) defined on the bean itself
+   * @return a semicolon-separated list of all the profiles
+   */
+  @Nullable
+  public static String composeProfiles(@Nullable String classProfiles, @Nullable String ownProfiles) {
+    if (classProfiles == null) {
+      return ownProfiles;
+    }
+    if (ownProfiles == null) {
+      return classProfiles;
+    }
+    return classProfiles + PROFILE_AND_SEPARATOR + ownProfiles;
   }
 
 }
