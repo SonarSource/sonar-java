@@ -34,9 +34,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6832")
 public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionVisitor {
-  private static final String JAVAX_INJECT_ANNOTATION = "javax.inject.Inject";
-  private static final String JAKARTA_INJECT_ANNOTATION = "jakarta.inject.Inject";
-  private static final Set<String> AUTO_WIRING_ANNOTATIONS = Set.of(SpringUtils.AUTOWIRED_ANNOTATION, JAVAX_INJECT_ANNOTATION, JAKARTA_INJECT_ANNOTATION);
   private static final Set<String> SCOPED_PROXY_MODES = Set.of("TARGET_CLASS", "INTERFACES");
 
   @Override
@@ -161,7 +158,7 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
   }
 
   private static boolean isAutoWiringAnnotation(AnnotationTree annotationTree) {
-    return AUTO_WIRING_ANNOTATIONS.contains(annotationTree.symbolType().fullyQualifiedName());
+    return SpringUtils.INJECTION_ANNOTATIONS.contains(annotationTree.symbolType().fullyQualifiedName());
   }
 
   private static boolean isSingletonBean(ClassTree classTree) {
