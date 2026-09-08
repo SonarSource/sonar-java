@@ -17,6 +17,7 @@
 package org.sonar.java.checks.helpers;
 
 import java.util.List;
+import java.util.Set;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -46,6 +47,10 @@ public final class SpringUtils {
   public static final String DATA_REPOSITORY_ANNOTATION = DATA_PACKAGE + "repository.Repository";
   public static final String REST_CONTROLLER_ANNOTATION = "org.springframework.web.bind.annotation.RestController";
   public static final String SPRING_BOOT_TEST_ANNOTATION = "org.springframework.boot.test.context.SpringBootTest";
+  public static final Set<String> INJECTION_ANNOTATIONS = Set.of(
+    AUTOWIRED_ANNOTATION,
+    "javax.inject.Inject",
+    "jakarta.inject.Inject");
 
   private SpringUtils() {
     // Utils class

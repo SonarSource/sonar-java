@@ -17,7 +17,6 @@
 package org.sonar.java.checks.spring;
 
 import java.util.List;
-import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -27,11 +26,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S6829")
 public class AutowiredOnConstructorWhenMultipleConstructorsCheck extends IssuableSubscriptionVisitor {
-
-  private static final Set<String> EXPLICIT_CONSTRUCTOR_INJECTION_ANNOTATIONS = Set.of(
-    SpringUtils.AUTOWIRED_ANNOTATION,
-    "javax.inject.Inject",
-    "jakarta.inject.Inject");
 
   private final List<String> annotations = List.of(
     SpringUtils.BEAN_ANNOTATION,
@@ -64,7 +58,7 @@ public class AutowiredOnConstructorWhenMultipleConstructorsCheck extends Issuabl
     if (constructors.size() > 1) {
       boolean hasExplicitConstructorInjection = constructors.stream()
         .anyMatch(constructor -> constructor.modifiers().annotations().stream()
-          .anyMatch(annotation -> EXPLICIT_CONSTRUCTOR_INJECTION_ANNOTATIONS.contains(annotation.symbolType().fullyQualifiedName())));
+          .anyMatch(annotation -> SpringUtils.INJECTION_ANNOTATIONS.contains(annotation.symbolType().fullyQualifiedName())));
 
       if (!hasExplicitConstructorInjection) {
         reportIssue(classTree.simpleName(), "Add @Autowired or @Inject to one of the constructors.");
