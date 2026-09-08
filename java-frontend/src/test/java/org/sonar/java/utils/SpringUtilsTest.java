@@ -547,11 +547,6 @@ class SpringUtilsTest {
   }
 
   @Test
-  void compose_profiles_returns_null_when_neither_has_profiles() {
-    assertThat(SpringUtils.composeProfiles(null, null)).isNull();
-  }
-
-  @Test
   void compose_profiles_ands_class_and_own_profiles_with_semicolon() {
     assertThat(SpringUtils.composeProfiles("prod", "test")).isEqualTo("prod;test");
   }

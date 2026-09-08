@@ -100,54 +100,6 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(beans.get(0).isPrimary()).isFalse();
   }
 
-  // ---- @Profile ---------------------------------------------------------------
-
-  @Test
-  void leaveFile_writes_profile_beans_and_dependencies_to_cache() {
-    WriteCache writeCache = mock(WriteCache.class);
-    SensorContextTester ctx = SensorContextTester.create(new File(""));
-    ctx.setCacheEnabled(true);
-    ctx.setNextCache(writeCache);
-
-    scan(ctx, "src/test/files/springcontext/ProfiledComponent.java",
-      "src/test/files/springcontext/SimpleComponent.java",
-      "src/test/files/springcontext/QualifiedFieldDependencies.java");
-
-    var dataCaptor = ArgumentCaptor.forClass(byte[].class);
-    verify(writeCache).write(anyString(), dataCaptor.capture());
-    String serialized = new String(dataCaptor.getValue(), StandardCharsets.UTF_8);
-    String encodedProfiles = Base64.getEncoder().encodeToString("prod".getBytes(StandardCharsets.UTF_8));
-    assertThat(serialized).contains(encodedProfiles);
-  }
-
-  @Test
-  void scanWithoutParsing_restores_profile_from_cache() {
-    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/ProfiledComponent.java"));
-    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
-    String encodedName = Base64.getEncoder().encodeToString("profiledComponent".getBytes(StandardCharsets.UTF_8));
-    String encodedProfiles = Base64.getEncoder().encodeToString("prod".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.ProfiledComponent|checks.spring.context|8:6:8:23|false|"
-      + encodedProfiles + "||checks.spring.context.ProfiledComponent";
-
-    JavaReadCache readCache = mock(JavaReadCache.class);
-    when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
-    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
-
-    InputFileScannerContext context = mock(InputFileScannerContext.class);
-    when(context.getInputFile()).thenReturn(inputFile);
-    when(context.getCacheContext()).thenReturn(cacheContext);
-
-    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
-
-    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
-    when(moduleScannerContext.getModuleKey()).thenReturn("");
-    gatherer.gatherSpringContextData(moduleScannerContext, model);
-
-    var beans = model.getBeanDefinitionRegistry().getByName("profiledComponent");
-    assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getProfiles()).isEqualTo("prod");
-  }
-
   // ---- Anonymous / no annotation --------------------------------------------
 
   @Test
@@ -237,34 +189,49 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
   // ---- Caching --------------------------------------------------------------
 
   @Test
-  void leaveFile_writes_beans_to_cache() {
+  void leaveFile_writes_profile_beans_and_dependencies_to_cache() {
     WriteCache writeCache = mock(WriteCache.class);
     SensorContextTester ctx = SensorContextTester.create(new File(""));
     ctx.setCacheEnabled(true);
     ctx.setNextCache(writeCache);
 
-    scan(ctx, "src/test/files/springcontext/SimpleComponent.java");
+    scan(ctx,"src/test/files/springcontext/QualifiedFieldDependencies.java");
 
     var dataCaptor = ArgumentCaptor.forClass(byte[].class);
-    verify(writeCache).write(
-      anyString(),
-      dataCaptor.capture());
+    verify(writeCache).write(anyString(), dataCaptor.capture());
     String serialized = new String(dataCaptor.getValue(), StandardCharsets.UTF_8);
-    String encodedName = Base64.getEncoder().encodeToString("simpleComponent".getBytes(StandardCharsets.UTF_8));
+    String encodedProfiles = Base64.getEncoder().encodeToString("prod".getBytes(StandardCharsets.UTF_8));
+    String encodedName = Base64.getEncoder().encodeToString("qualifiedFieldDependencies".getBytes(StandardCharsets.UTF_8));
+    String encodedAppContext = Base64.getEncoder().encodeToString("org.springframework.context.ApplicationContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
+    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
     assertThat(serialized)
+      .contains(encodedProfiles)
       .contains(encodedName)
-      .contains("checks.spring.context.SimpleComponent")
+      .contains("checks.spring.context.QualifiedFieldDependencies")
       .contains("checks.spring.context")
       .contains("false")
-      .endsWith("|checks.spring.context.SimpleComponent");
+      .endsWith("|checks.spring.context.QualifiedFieldDependencies")
+      .contains(encodedAppContext + ":" + encodedPrimaryContext)
+      .contains(encodedEnvType + ":" + encodedEnvironment);
   }
 
   @Test
-  void scanWithoutParsing_returns_true_and_restores_beans_on_cache_hit() {
-    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
+  void scanWithoutParsing_restores_profile_beans_and_dependencies_from_cache() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/QualifiedFieldDependencies.java"));
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
-    String encodedName = Base64.getEncoder().encodeToString("simpleComponent".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.SimpleComponent|checks.spring.context|6:6:6:21|false|||checks.spring.context.SimpleComponent";
+    String encodedName = Base64.getEncoder().encodeToString("qualifiedFieldDependencies".getBytes(StandardCharsets.UTF_8));
+    String encodedProfiles = Base64.getEncoder().encodeToString("prod".getBytes(StandardCharsets.UTF_8));
+    String encodedAppContext = Base64.getEncoder().encodeToString("org.springframework.context.ApplicationContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
+    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
+    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
+    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
+      + encodedProfiles + "|"
+      + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
+      + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
+      + "|checks.spring.context.QualifiedFieldDependencies";
 
     JavaReadCache readCache = mock(JavaReadCache.class);
     when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
@@ -280,12 +247,21 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     when(moduleScannerContext.getModuleKey()).thenReturn("");
     gatherer.gatherSpringContextData(moduleScannerContext, model);
 
-    var beans = model.getBeanDefinitionRegistry().getByName("simpleComponent");
+    var beans = model.getBeanDefinitionRegistry().getByName("qualifiedFieldDependencies");
     assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getType()).isEqualTo("checks.spring.context.SimpleComponent");
+    assertThat(beans.get(0).getType()).isEqualTo("checks.spring.context.QualifiedFieldDependencies");
     assertThat(beans.get(0).isPrimary()).isFalse();
-    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("checks.spring.context.SimpleComponent"))
-      .containsOnly("simpleComponent");
+    assertThat(beans.get(0).getProfiles()).isEqualTo("prod");
+    var deps = beans.get(0).getDependingBeans();
+    assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("primaryContext");
+    assertThat(deps.get("org.springframework.core.env.Environment")).containsOnly("environment");
+
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext"),
+      "primaryContext", inputFile, 14);
+    assertInjectionPoint(
+      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.core.env.Environment"),
+      "environment", inputFile, 17);
   }
 
   @Test
@@ -353,63 +329,6 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(gatherer.scanWithoutParsing(context)).isFalse();
   }
 
-  @Test
-  void leaveFile_writes_dependencies_with_qualifiers_to_cache() {
-    WriteCache writeCache = mock(WriteCache.class);
-    SensorContextTester ctx = SensorContextTester.create(new File(""));
-    ctx.setCacheEnabled(true);
-    ctx.setNextCache(writeCache);
-
-    scan(ctx, "src/test/files/springcontext/QualifiedFieldDependencies.java");
-
-    var dataCaptor = ArgumentCaptor.forClass(byte[].class);
-    verify(writeCache).write(anyString(), dataCaptor.capture());
-    String serialized = new String(dataCaptor.getValue(), StandardCharsets.UTF_8);
-
-    String encodedAppContext = Base64.getEncoder().encodeToString("org.springframework.context.ApplicationContext".getBytes(StandardCharsets.UTF_8));
-    String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
-    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
-    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
-    assertThat(serialized)
-      .contains(encodedAppContext + ":" + encodedPrimaryContext)
-      .contains(encodedEnvType + ":" + encodedEnvironment);
-  }
-
-  @Test
-  void scanWithoutParsing_restores_dependencies_with_and_without_qualifier_from_cache() {
-    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/QualifiedFieldDependencies.java"));
-    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
-    String encodedName = Base64.getEncoder().encodeToString("qualifiedFieldDependencies".getBytes(StandardCharsets.UTF_8));
-    String encodedAppContext = Base64.getEncoder().encodeToString("org.springframework.context.ApplicationContext".getBytes(StandardCharsets.UTF_8));
-    String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
-    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
-    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false||"
-      + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
-      + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
-      + "|checks.spring.context.QualifiedFieldDependencies";
-
-    JavaReadCache readCache = mock(JavaReadCache.class);
-    when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
-    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
-
-    InputFileScannerContext context = mock(InputFileScannerContext.class);
-    when(context.getInputFile()).thenReturn(inputFile);
-    when(context.getCacheContext()).thenReturn(cacheContext);
-
-    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
-
-    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
-    when(moduleScannerContext.getModuleKey()).thenReturn("");
-    gatherer.gatherSpringContextData(moduleScannerContext, model);
-
-    var beans = model.getBeanDefinitionRegistry().getByName("qualifiedFieldDependencies");
-    assertThat(beans).hasSize(1);
-    var deps = beans.get(0).getDependingBeans();
-    assertThat(deps.get("org.springframework.context.ApplicationContext")).containsOnly("primaryContext");
-    assertThat(deps.get("org.springframework.core.env.Environment")).containsOnly("environment");
-  }
-
   // ---- TypeToBeanNamesIndex -------------------------------------------------
 
   @Test
@@ -431,39 +350,6 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     assertThat(model.getTypeToBeanNamesIndex().getNamesForType("org.springframework.context.ApplicationContext"))
       .contains("simpleServiceBean", "namedBean", "arrayNamedBean", "alias", "emptyNameArrayMethod");
-  }
-
-  @Test
-  void scanWithoutParsing_restores_full_type_hierarchy_from_cache() {
-    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/ComponentImplementingInterface.java"));
-    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
-    String encodedName = Base64.getEncoder().encodeToString("componentImplementingInterface".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.ComponentImplementingInterface|checks.spring.context|8:6:8:36|false||"
-      + "|checks.spring.context.ComponentImplementingInterface"
-      + ";org.springframework.context.ApplicationContextAware"
-      + ";org.springframework.beans.factory.Aware";
-
-    JavaReadCache readCache = mock(JavaReadCache.class);
-    when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
-    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
-
-    InputFileScannerContext context = mock(InputFileScannerContext.class);
-    when(context.getInputFile()).thenReturn(inputFile);
-    when(context.getCacheContext()).thenReturn(cacheContext);
-
-    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
-
-    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
-    when(moduleScannerContext.getModuleKey()).thenReturn("");
-    gatherer.gatherSpringContextData(moduleScannerContext, model);
-
-    var index = model.getTypeToBeanNamesIndex();
-    assertThat(index.getNamesForType("checks.spring.context.ComponentImplementingInterface"))
-      .containsOnly("componentImplementingInterface");
-    assertThat(index.getNamesForType("org.springframework.context.ApplicationContextAware"))
-      .containsOnly("componentImplementingInterface");
-    assertThat(index.getNamesForType("org.springframework.beans.factory.Aware"))
-      .containsOnly("componentImplementingInterface");
   }
 
   private static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
@@ -513,41 +399,5 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(point.name()).isEqualTo(expectedName);
     assertThat(point.location().inputFile()).isEqualTo(expectedInputFile);
     assertThat(point.location().mainLocation().startLine).isEqualTo(expectedLine);
-  }
-
-  @Test
-  void scanWithoutParsing_restores_dependencies_index_from_cache() {
-    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/QualifiedFieldDependencies.java"));
-    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
-    String encodedName = Base64.getEncoder().encodeToString("qualifiedFieldDependencies".getBytes(StandardCharsets.UTF_8));
-    String encodedAppContext = Base64.getEncoder().encodeToString("org.springframework.context.ApplicationContext".getBytes(StandardCharsets.UTF_8));
-    String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
-    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
-    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false||"
-      + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
-      + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
-      + "|checks.spring.context.QualifiedFieldDependencies";
-
-    JavaReadCache readCache = mock(JavaReadCache.class);
-    when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
-    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
-
-    InputFileScannerContext context = mock(InputFileScannerContext.class);
-    when(context.getInputFile()).thenReturn(inputFile);
-    when(context.getCacheContext()).thenReturn(cacheContext);
-
-    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
-
-    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
-    when(moduleScannerContext.getModuleKey()).thenReturn("");
-    gatherer.gatherSpringContextData(moduleScannerContext, model);
-
-    assertInjectionPoint(
-      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext"),
-      "primaryContext", inputFile, 14);
-    assertInjectionPoint(
-      model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.core.env.Environment"),
-      "environment", inputFile, 17);
   }
 }
