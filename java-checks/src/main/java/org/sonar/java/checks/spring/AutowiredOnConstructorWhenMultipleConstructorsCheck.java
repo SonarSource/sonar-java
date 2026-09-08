@@ -56,12 +56,12 @@ public class AutowiredOnConstructorWhenMultipleConstructorsCheck extends Issuabl
       .toList();
 
     if (constructors.size() > 1) {
-      boolean anyHasAutowired = constructors.stream()
+      boolean hasExplicitConstructorInjection = constructors.stream()
         .anyMatch(constructor -> constructor.modifiers().annotations().stream()
-          .anyMatch(annotation -> annotation.symbolType().is(SpringUtils.AUTOWIRED_ANNOTATION)));
+          .anyMatch(annotation -> SpringUtils.INJECTION_ANNOTATIONS.contains(annotation.symbolType().fullyQualifiedName())));
 
-      if (!anyHasAutowired) {
-        reportIssue(classTree.simpleName(), "Add @Autowired to one of the constructors.");
+      if (!hasExplicitConstructorInjection) {
+        reportIssue(classTree.simpleName(), "Add @Autowired or @Inject to one of the constructors.");
       }
     }
   }
