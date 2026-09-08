@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model.springcontext;
 
+import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -30,7 +31,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.WriteCache;
-import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.java.TestUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
