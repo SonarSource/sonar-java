@@ -59,7 +59,12 @@ public class BeanDefinitionHolder {
    */
   private Map<String, Set<String>> dependingBeans;
 
-  /** Comma-separated Spring profile expressions under which this bean is active, or {@code null} if unconditional. */
+  /**
+   * Spring profile expression under which this bean is active, or {@code null} if unconditional.
+   * Comma-separated values within one {@code @Profile} annotation are OR-ed (as Spring does);
+   * a class-level and a {@code @Bean} method-level {@code @Profile} are AND-ed by joining their
+   * (already OR-ed) expressions with a semicolon, since Spring requires both to match.
+   */
   @Nullable
   private String profiles;
 
