@@ -3,6 +3,7 @@ package checks.tests.AssertionsInTestsCheck;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,11 @@ class Junit5Test {
 class ATest extends Junit5Test {
   @Override
   void test_method_parent() { // Ok - not considered as test method as it is overridden
+  }
+
+  @Disabled
+  @Test
+  void disabled_test_without_assertion() { // Compliant - @Disabled tests are skipped
   }
 
   @Test

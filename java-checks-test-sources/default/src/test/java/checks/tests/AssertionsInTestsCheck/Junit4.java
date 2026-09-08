@@ -3,6 +3,7 @@ package checks.tests.AssertionsInTestsCheck;
 import java.util.List;
 import javax.annotation.Nullable;
 import junit.framework.TestCase;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -121,6 +122,16 @@ abstract class Junit4Test {
   @Test(expected = IllegalStateException.class)
   public void junit_test_annotated_with_expected() {
     throw new IllegalStateException("message");
+  }
+
+  @Ignore
+  @Test
+  public void ignored_test_without_assertion() { // Compliant - @Ignored tests are skipped
+  }
+
+  @Test
+  public void java_assert_statement() { // Compliant - Java assert keyword is a valid assertion
+    assert true;
   }
 
   @Test

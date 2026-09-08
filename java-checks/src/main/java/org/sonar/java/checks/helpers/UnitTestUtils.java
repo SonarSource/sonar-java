@@ -59,7 +59,7 @@ public final class UnitTestUtils {
 
   @VisibleForTesting
   static final Predicate<String> ASSERTJ_ASSERTION_METHODS_PREDICATE = Pattern.compile(
-    "(allMatch|assert|contains|doesNot|has|is|returns|satisfies)([A-Z].*)?").asMatchPredicate();
+    "(accepts|allMatch|assert|contains|doesNot|has|is|matches|returns|satisfies|startsWith)([A-Z].*)?").asMatchPredicate();
 
   private static final Pattern ASSERTJ_ASSERTION_CLASSNAME_PATTERN = Pattern.compile("org\\.assertj\\.core\\.api\\.[a-zA-Z]+Assert");
   private static final Predicate<Type> ASSERTJ_ASSERTION_TYPE_PREDICATE = type -> ASSERTJ_ASSERTION_CLASSNAME_PATTERN.matcher(type.fullyQualifiedName()).matches()

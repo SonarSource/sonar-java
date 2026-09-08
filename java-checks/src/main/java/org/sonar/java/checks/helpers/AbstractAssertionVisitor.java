@@ -24,6 +24,8 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 
+import org.sonar.plugins.java.api.tree.AssertStatementTree;
+
 import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTION_INVOCATION_MATCHERS;
 import static org.sonar.java.checks.helpers.UnitTestUtils.methodNameMatchesAssertionMethodPattern;
 import static org.sonar.java.model.ExpressionUtils.methodName;
@@ -53,6 +55,11 @@ public abstract class AbstractAssertionVisitor extends BaseTreeVisitor {
     if (!hasAssertion && isAssertion(null, tree.methodSymbol())) {
       hasAssertion = true;
     }
+  }
+
+  @Override
+  public void visitAssertStatement(AssertStatementTree tree) {
+    hasAssertion = true;
   }
 
   public boolean hasAssertion() {

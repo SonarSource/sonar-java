@@ -80,6 +80,9 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     assertionInMethod.clear();
   }
 
+  private static final String JUNIT5_DISABLED_ANNOTATION = "org.junit.jupiter.api.Disabled";
+  private static final String JUNIT4_IGNORE_ANNOTATION = "org.junit.Ignore";
+
   @Override
   public void visitMethod(MethodTree methodTree) {
     if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.ABSTRACT)) {
@@ -87,13 +90,18 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     }
 
     if (isUnitTest(methodTree)) {
-      if (isSpringBootAssertableContext(methodTree)) {
+      if (isDisabledTest(methodTree) || isSpringBootAssertableContext(methodTree)) {
         return;
       }
       if (!isSpringBootSanityTest(methodTree) && !expectAssertion(methodTree) && !isLocalMethodWithAssertion(methodTree.symbol())) {
         context.reportIssue(this, methodTree.simpleName(), "Add at least one assertion to this test case.");
       }
     }
+  }
+
+  private static boolean isDisabledTest(MethodTree methodTree) {
+    SymbolMetadata metadata = methodTree.symbol().metadata();
+    return metadata.isAnnotatedWith(JUNIT5_DISABLED_ANNOTATION) || metadata.isAnnotatedWith(JUNIT4_IGNORE_ANNOTATION);
   }
 
   private boolean isSpringBootAssertableContext(MethodTree methodTree) {

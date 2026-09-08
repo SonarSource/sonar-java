@@ -193,6 +193,7 @@ public abstract class AssertJ {
   abstract boolean booleanMethod();
   abstract Object[] arrayMethod();
   abstract java.util.List<String> listStringMethod();
+  abstract java.util.function.LongPredicate longPredicateMethod();
 
   @Test
   public void bdd_assertions_with_boolean() { // Compliant
@@ -268,5 +269,30 @@ public abstract class AssertJ {
   @Test
   public void bdd_assertions_then_true_is_true(){
     org.assertj.core.api.BDDAssertions.then(true).isTrue(); // Compliant
+  }
+
+  @Test
+  public void assertj_predicate_accepts() {
+    Assertions.assertThat(longPredicateMethod()).accepts(1L, 2L);
+  }
+
+  @Test
+  public void assertj_string_starts_with() {
+    Assertions.assertThat("hello world").startsWith("hello");
+  }
+
+  @Test
+  public void assertj_string_matches() {
+    Assertions.assertThat("hello").matches("[a-z]+");
+  }
+
+  @Test
+  public void assertj_string_is_lower_case() {
+    Assertions.assertThat("hello").isLowerCase();
+  }
+
+  @Test
+  public void assertj_list_does_not_have_duplicates() {
+    Assertions.assertThat(java.util.Arrays.asList("a", "b")).doesNotHaveDuplicates();
   }
 }
