@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.sonar.java.checks.helpers.UnitTestUtils.isAnnotatedWithSkippedTestAnnotation;
 import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
 
 @Rule(key = "S2699")
@@ -87,13 +88,28 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     }
 
     if (isUnitTest(methodTree)) {
-      if (isSpringBootAssertableContext(methodTree)) {
+      if (isAnnotatedWithSkippedTestAnnotation(methodTree.symbol().metadata()) || isSpringBootAssertableContext(methodTree)) {
         return;
       }
       if (!isSpringBootSanityTest(methodTree) && !expectAssertion(methodTree) && !isLocalMethodWithAssertion(methodTree.symbol())) {
         context.reportIssue(this, methodTree.simpleName(), "Add at least one assertion to this test case.");
       }
     }
+  }
+
+  @Override
+  public void visitClass(ClassTree classTree) {
+    if (isAnnotatedWithSkippedTestAnnotation(classTree.symbol().metadata())) {
+      // Static nested classes are separate test containers;
+      // JUnit does not propagate the disabled state to them, so we still visit them.
+      classTree.members().stream()
+        .filter(member -> member.is(Tree.Kind.CLASS))
+        .map(ClassTree.class::cast)
+        .filter(nestedClass -> ModifiersUtils.hasModifier(nestedClass.modifiers(), Modifier.STATIC))
+        .forEach(this::visitClass);
+      return;
+    }
+    super.visitClass(classTree);
   }
 
   private boolean isSpringBootAssertableContext(MethodTree methodTree) {

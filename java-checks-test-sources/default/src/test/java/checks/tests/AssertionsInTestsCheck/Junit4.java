@@ -3,6 +3,7 @@ package checks.tests.AssertionsInTestsCheck;
 import java.util.List;
 import javax.annotation.Nullable;
 import junit.framework.TestCase;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -123,6 +124,16 @@ abstract class Junit4Test {
     throw new IllegalStateException("message");
   }
 
+  @Ignore
+  @Test
+  public void ignored_test_without_assertion() { // Compliant - @Ignored tests are skipped
+  }
+
+  @Test
+  public void java_assert_statement() { // Compliant - Java assert keyword is a valid assertion
+    assert true;
+  }
+
   @Test
   public void mockito_assertion_verify() {
     Mockito.verify(Mockito.mock(List.class)).clear();
@@ -141,6 +152,20 @@ abstract class Junit4Test {
   @Test
   public void mockito_assertion_verify_no_more_interactions() {
     Mockito.verifyNoMoreInteractions(Mockito.mock(List.class));
+  }
+
+  @Ignore
+  static class IgnoredTestClass {
+    @Test
+    public void test_without_assertion() { // Compliant - enclosing class is @Ignored
+    }
+
+    //  JUnit still runs static nested classes inside @Ignored
+    static class StaticNestedInsideIgnored {
+      @Test
+      public void test_without_assertion() { // Noncompliant
+      }
+    }
   }
 
   static abstract class AbstractTest {

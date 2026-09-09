@@ -96,6 +96,13 @@ public abstract class AssertJAssertionsInConsumerCheckSample {
     assertThat(myList).zipSatisfy(myList, (a, b) -> assertThat(a).isEqualTo(b));
   }
 
+  @Test
+  public void testJavaAssertKeyword() {
+    List<Object> myList = getSomeList();
+    assertThat(myList).allSatisfy(s -> { assert s != null; });
+    assertThat("a").satisfies(s -> { assert !s.isEmpty(); });
+  }
+
   private void localMethodWithAssertion(Object objectToAssert) {
     assertThat(objectToAssert).isEqualTo("b");
   }

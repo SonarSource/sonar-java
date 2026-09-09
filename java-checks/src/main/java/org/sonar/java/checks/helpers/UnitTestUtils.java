@@ -59,7 +59,7 @@ public final class UnitTestUtils {
 
   @VisibleForTesting
   static final Predicate<String> ASSERTJ_ASSERTION_METHODS_PREDICATE = Pattern.compile(
-    "(allMatch|assert|contains|doesNot|has|is|returns|satisfies)([A-Z].*)?").asMatchPredicate();
+    "(accepts|allMatch|assert|contains|doesNot|has|is|matches|returns|satisfies|startsWith)([A-Z].*)?").asMatchPredicate();
 
   private static final Pattern ASSERTJ_ASSERTION_CLASSNAME_PATTERN = Pattern.compile("org\\.assertj\\.core\\.api\\.[a-zA-Z]+Assert");
   private static final Predicate<Type> ASSERTJ_ASSERTION_TYPE_PREDICATE = type -> ASSERTJ_ASSERTION_CLASSNAME_PATTERN.matcher(type.fullyQualifiedName()).matches()
@@ -144,6 +144,12 @@ public final class UnitTestUtils {
    */
   public static final MethodMatchers COMMON_ASSERTION_MATCHER = MethodMatchers.or(
     FAIL_METHOD_MATCHER, ASSERTIONS_METHOD_MATCHER);
+
+  public static final Set<String> SKIPPED_TEST_ANNOTATIONS = Set.of("org.junit.Ignore", "org.junit.jupiter.api.Disabled");
+
+  public static boolean isAnnotatedWithSkippedTestAnnotation(SymbolMetadata metadata) {
+    return SKIPPED_TEST_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
+  }
 
   private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList(ORG_JUNIT_TEST, "org.testng.annotations.Test"));
   public static final Set<String> JUNIT5_TEST_ANNOTATIONS = Set.of(
