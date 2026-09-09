@@ -404,7 +404,7 @@ public class InternalCheckVerifier implements CheckVerifier {
       || (expectations.expectIssueAtFileLevel() && !issue.getInputComponent().isFile())) {
       throw new AssertionError(String.format("Expected the issue to be raised at %s level, not at %s level", component, otherComponent));
     }
-    if (!expectedMessage.equals(issue.getMessage())) {
+    if (!Objects.equals(expectedMessage, issue.getMessage())) {
       throw new AssertionError(String.format("Expected the issue message to be:%n\t\"%s\"%nbut was:%n\t\"%s\"", expectedMessage, issue.getMessage()));
     }
   }
