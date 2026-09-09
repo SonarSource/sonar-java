@@ -484,7 +484,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   private static void assertAttributeMatch(AnalyzerMessage issue, Object value, Map<Expectations.IssueAttribute, Object> attributes, Expectations.IssueAttribute attribute) {
-    if (attributes.containsKey(attribute) && !value.equals(attribute.get(attributes))) {
+    if (attributes.containsKey(attribute) && !Objects.equals(value, attribute.get(attributes))) {
       throw new AssertionError(
         String.format("line %d attribute mismatch for '%s'. Expected: '%s', but was: '%s'",
           issue.getLine(),
