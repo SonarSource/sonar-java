@@ -154,6 +154,13 @@ abstract class Junit4Test {
     Mockito.verifyNoMoreInteractions(Mockito.mock(List.class));
   }
 
+  @Ignore
+  static class IgnoredTestClass {
+    @Test
+    public void test_without_assertion() { // Compliant - enclosing class is @Ignored
+    }
+  }
+
   static abstract class AbstractTest {
     @Test
     public abstract void unit_test();

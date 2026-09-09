@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
@@ -94,4 +95,19 @@ class ATest extends Junit5Test {
   interface CustomStringContextProvider extends Extension {
   }
 
+  @Nested
+  @Disabled
+  class DisabledNestedClass {
+    @Test
+    void test_without_assertion() { // Compliant - enclosing @Nested class is @Disabled
+    }
+  }
+
+}
+
+@Disabled
+class DisabledClassTest {
+  @Test
+  void test_without_assertion() { // Compliant - enclosing class is @Disabled
+  }
 }

@@ -145,6 +145,12 @@ public final class UnitTestUtils {
   public static final MethodMatchers COMMON_ASSERTION_MATCHER = MethodMatchers.or(
     FAIL_METHOD_MATCHER, ASSERTIONS_METHOD_MATCHER);
 
+  public static final Set<String> SKIPPED_TEST_ANNOTATIONS = Set.of("org.junit.Ignore", "org.junit.jupiter.api.Disabled");
+
+  public static boolean isAnnotatedWithSkippedTestAnnotation(SymbolMetadata metadata) {
+    return SKIPPED_TEST_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
+  }
+
   private static final Set<String> TEST_ANNOTATIONS = new HashSet<>(asList(ORG_JUNIT_TEST, "org.testng.annotations.Test"));
   public static final Set<String> JUNIT5_TEST_ANNOTATIONS = Set.of(
     "org.junit.jupiter.api.Test",

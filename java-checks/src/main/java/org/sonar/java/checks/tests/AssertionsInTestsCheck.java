@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.sonar.java.checks.helpers.UnitTestUtils.isAnnotatedWithSkippedTestAnnotation;
 import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
 
 @Rule(key = "S2699")
@@ -80,9 +81,6 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     assertionInMethod.clear();
   }
 
-  private static final String JUNIT5_DISABLED_ANNOTATION = "org.junit.jupiter.api.Disabled";
-  private static final String JUNIT4_IGNORE_ANNOTATION = "org.junit.Ignore";
-
   @Override
   public void visitMethod(MethodTree methodTree) {
     if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.ABSTRACT)) {
@@ -90,7 +88,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     }
 
     if (isUnitTest(methodTree)) {
-      if (isDisabledTest(methodTree) || isSpringBootAssertableContext(methodTree)) {
+      if (isAnnotatedWithSkippedTestAnnotation(methodTree.symbol().metadata()) || isSpringBootAssertableContext(methodTree)) {
         return;
       }
       if (!isSpringBootSanityTest(methodTree) && !expectAssertion(methodTree) && !isLocalMethodWithAssertion(methodTree.symbol())) {
@@ -99,9 +97,12 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     }
   }
 
-  private static boolean isDisabledTest(MethodTree methodTree) {
-    SymbolMetadata metadata = methodTree.symbol().metadata();
-    return metadata.isAnnotatedWith(JUNIT5_DISABLED_ANNOTATION) || metadata.isAnnotatedWith(JUNIT4_IGNORE_ANNOTATION);
+  @Override
+  public void visitClass(ClassTree classTree) {
+    if (isAnnotatedWithSkippedTestAnnotation(classTree.symbol().metadata())) {
+      return;
+    }
+    super.visitClass(classTree);
   }
 
   private boolean isSpringBootAssertableContext(MethodTree methodTree) {
