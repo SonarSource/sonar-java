@@ -145,7 +145,7 @@ public final class UnitTestUtils {
   public static final MethodMatchers COMMON_ASSERTION_MATCHER = MethodMatchers.or(
     FAIL_METHOD_MATCHER, ASSERTIONS_METHOD_MATCHER);
 
-  public static final Set<String> SKIPPED_TEST_ANNOTATIONS = Set.of("org.junit.Ignore", "org.junit.jupiter.api.Disabled", "org.testng.annotations.Ignore");
+  public static final Set<String> SKIPPED_TEST_ANNOTATIONS = Set.of("org.junit.Ignore", "org.junit.jupiter.api.Disabled");
 
   public static boolean isAnnotatedWithSkippedTestAnnotation(SymbolMetadata metadata) {
     return SKIPPED_TEST_ANNOTATIONS.stream().anyMatch(metadata::isAnnotatedWith);
@@ -260,10 +260,7 @@ public final class UnitTestUtils {
       return true;
     }
     Symbol.TypeSymbol enclosingClass = Objects.requireNonNull(methodTree.symbol().enclosingClass(), "Must not be null for method symbols");
-    if (enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && methodTree.simpleName().name().startsWith("test")) {
-      return true;
-    }
-    return methodTree.symbol().metadata().isAnnotatedWith("org.testng.annotations.Test");
+    return enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && methodTree.simpleName().name().startsWith("test");
   }
 
   private static boolean isOrOverridesJunit4TestMethod(MethodTree methodTree) {
