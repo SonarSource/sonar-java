@@ -124,4 +124,10 @@ class DisabledClassTest {
     void test_without_assertion() { // Compliant - @Disabled propagates to @Nested classes
     }
   }
+
+  class NonStaticInnerInsideDisabled { // non-static, no @Nested: not a valid JUnit test container
+    @Test
+    void test_without_assertion() { // Compliant
+    }
+  }
 }
