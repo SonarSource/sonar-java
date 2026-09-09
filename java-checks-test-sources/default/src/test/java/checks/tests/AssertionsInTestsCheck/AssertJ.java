@@ -273,26 +273,26 @@ public abstract class AssertJ {
 
   @Test
   public void assertj_predicate_accepts() {
-    Assertions.assertThat(longPredicateMethod()).accepts(1L, 2L);
+    BDDAssertions.then(longPredicateMethod()).accepts(1L, 2L);
   }
 
   @Test
   public void assertj_string_starts_with() {
-    Assertions.assertThat("hello world").startsWith("hello");
+    BDDAssertions.then("hello world").startsWith("hello");
   }
 
   @Test
   public void assertj_string_matches() {
-    Assertions.assertThat("hello").matches("[a-z]+");
+    BDDAssertions.then("hello").matches("[a-z]+");
   }
 
   @Test
   public void assertj_string_is_lower_case() {
-    Assertions.assertThat("hello").isLowerCase();
+    BDDAssertions.then("hello").isLowerCase();
   }
 
   @Test
   public void assertj_list_does_not_have_duplicates() {
-    Assertions.assertThat(java.util.Arrays.asList("a", "b")).doesNotHaveDuplicates();
+    BDDAssertions.then(listStringMethod()).doesNotHaveDuplicates();
   }
 }

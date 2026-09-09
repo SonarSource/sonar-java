@@ -65,7 +65,8 @@ class AssertionsInTestsCheckTest {
     "Awaitility",
     "AssertJ",
     "ApproveJ",
-    "Custom"
+    "Custom",
+    "TestNG"
   })
   void test(String framework) {
     CheckVerifier.newVerifier()

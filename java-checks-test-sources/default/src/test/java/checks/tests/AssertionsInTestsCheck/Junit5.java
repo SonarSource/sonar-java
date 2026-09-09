@@ -110,4 +110,18 @@ class DisabledClassTest {
   @Test
   void test_without_assertion() { // Compliant - enclosing class is @Disabled
   }
+
+  // JUnit still runs static nested classes inside @Disabled
+  static class StaticNestedInsideDisabled {
+    @Test
+    void test_without_assertion() { // Noncompliant
+    }
+  }
+
+  @Nested
+  class NestedInsideDisabled {
+    @Test
+    void test_without_assertion() { // Compliant - @Disabled propagates to @Nested classes
+    }
+  }
 }

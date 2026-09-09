@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.sonar.java.checks.helpers.UnitTestUtils.hasNestedAnnotation;
 import static org.sonar.java.checks.helpers.UnitTestUtils.isAnnotatedWithSkippedTestAnnotation;
 import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
 
@@ -100,6 +101,13 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitClass(ClassTree classTree) {
     if (isAnnotatedWithSkippedTestAnnotation(classTree.symbol().metadata())) {
+      // Static nested classes (not @Nested) are separate test containers;
+      // JUnit does not propagate the disabled state to them, so we still visit them.
+      classTree.members().stream()
+        .filter(member -> member.is(Tree.Kind.CLASS))
+        .map(ClassTree.class::cast)
+        .filter(nestedClass -> !hasNestedAnnotation(nestedClass))
+        .forEach(this::visitClass);
       return;
     }
     super.visitClass(classTree);

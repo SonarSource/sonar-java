@@ -159,6 +159,13 @@ abstract class Junit4Test {
     @Test
     public void test_without_assertion() { // Compliant - enclosing class is @Ignored
     }
+
+    //  JUnit still runs static nested classes inside @Ignored
+    static class StaticNestedInsideIgnored {
+      @Test
+      public void test_without_assertion() { // Noncompliant
+      }
+    }
   }
 
   static abstract class AbstractTest {
