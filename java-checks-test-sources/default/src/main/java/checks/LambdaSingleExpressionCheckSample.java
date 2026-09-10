@@ -30,6 +30,8 @@ public class LambdaSingleExpressionCheckSample {
       while(true) {
       }
     });
+    // Nested block
+    IntStream.range(1, 5).map(x -> { { { return x + 1; } } }); // Noncompliant {{Remove useless curly braces around statement}}
   }
 
   // Block lambda binds to RowCallbackHandler (void); simplifying to expression lambda
@@ -37,7 +39,10 @@ public class LambdaSingleExpressionCheckSample {
   void springJdbcQuery(JdbcTemplate jdbc, NamedParameterJdbcTemplate namedJdbc) {
     Map<Long, Long> countByRecipient = new HashMap<>();
     jdbc.query("SELECT recipient_id, cnt FROM t", rs -> { countByRecipient.merge(rs.getLong("recipient_id"), rs.getLong("cnt"), Long::sum); }); // Compliant
-    namedJdbc.query("SELECT recipient_id, cnt FROM t", Collections.emptyMap(), rs -> { countByRecipient.merge(rs.getLong("recipient_id"), rs.getLong("cnt"), Long::sum); }); // Compliant
+    namedJdbc.query("SELECT recipient_id, cnt FROM t", Collections.emptyMap(),
+      rs -> { countByRecipient.merge(rs.getLong("recipient_id"), rs.getLong("cnt"), Long::sum); }); // Compliant
+    jdbc.query("SELECT name FROM t",
+      (rs, rowNum) -> { return rs.getString("name"); }); // Noncompliant {{Remove useless curly braces around statement and then remove useless return keyword}}
   }
 
   @FunctionalInterface

@@ -104,6 +104,9 @@ public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor imp
   }
 
   private static boolean isInsideSpringJdbcQuery(LambdaExpressionTree lambda) {
+    if (lambda.parameters().size() != 1) {
+      return false;
+    }
     Tree parent = lambda.parent();
     if (parent != null && parent.is(Tree.Kind.ARGUMENTS)) {
       parent = parent.parent();
