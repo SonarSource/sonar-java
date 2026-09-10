@@ -17,11 +17,17 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -30,6 +36,20 @@ import java.util.List;
 
 @Rule(key = "S1602")
 public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+
+  private static final MethodMatchers SPRING_JDBC_QUERY_MATCHER = MethodMatchers.create()
+    .ofSubTypes(
+      "org.springframework.jdbc.core.JdbcOperations",
+      "org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations")
+    .names("query")
+    .withAnyParameters()
+    .build();
+
+  private static final MethodMatchers METHOD_HANDLE_INVOKE_MATCHER = MethodMatchers.create()
+    .ofTypes("java.lang.invoke.MethodHandle")
+    .names("invoke", "invokeExact")
+    .withAnyParameters()
+    .build();
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -45,7 +65,10 @@ public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor imp
   public void visitNode(Tree tree) {
     LambdaExpressionTree lambdaExpressionTree = (LambdaExpressionTree) tree;
     Tree lambdaBody = lambdaExpressionTree.body();
-    if (isBlockWithOneStatement(lambdaBody)) {
+    if (isBlockWithOneStatement(lambdaBody)
+      && !hasMultilineBody(lambdaExpressionTree)
+      && !isInsideSpringJdbcQuery(lambdaExpressionTree)
+      && !isSingleMethodHandleInvocation(lambdaExpressionTree)) {
       String message = "Remove useless curly braces around statement";
       if (singleStatementIsReturn(lambdaExpressionTree)) {
         message += " and then remove useless return keyword";
@@ -73,5 +96,31 @@ public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor imp
 
   private static boolean isReturnStatement(Tree tree) {
     return tree.is(Tree.Kind.RETURN_STATEMENT);
+  }
+
+  private static boolean hasMultilineBody(LambdaExpressionTree lambda) {
+    BlockTree block = (BlockTree) lambda.body();
+    return LineUtils.startLine(block.openBraceToken()) != LineUtils.startLine(block.closeBraceToken());
+  }
+
+  private static boolean isInsideSpringJdbcQuery(LambdaExpressionTree lambda) {
+    Tree parent = lambda.parent();
+    if (parent != null && parent.is(Tree.Kind.ARGUMENTS)) {
+      parent = parent.parent();
+    }
+    return parent != null && parent.is(Tree.Kind.METHOD_INVOCATION)
+      && SPRING_JDBC_QUERY_MATCHER.matches((MethodInvocationTree) parent);
+  }
+
+  private static boolean isSingleMethodHandleInvocation(LambdaExpressionTree lambda) {
+    StatementTree statement = ((BlockTree) lambda.body()).body().get(0);
+    ExpressionTree expression = null;
+    if (statement.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+      expression = ((ExpressionStatementTree) statement).expression();
+    } else if (statement.is(Tree.Kind.RETURN_STATEMENT)) {
+      expression = ((ReturnStatementTree) statement).expression();
+    }
+    return expression != null && expression.is(Tree.Kind.METHOD_INVOCATION)
+      && METHOD_HANDLE_INVOKE_MATCHER.matches((MethodInvocationTree) expression);
   }
 }
