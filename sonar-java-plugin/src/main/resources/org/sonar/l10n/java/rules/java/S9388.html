@@ -1,0 +1,97 @@
+<p>This rule raises an issue when a method annotated with TestNG’s <code>@DataProvider</code> returns a type that is not one of the supported return
+types: <code>Object[][]</code>, <code>Iterator&lt;Object[]&gt;</code>, or <code>Object[]</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>TestNG relies on the <code>@DataProvider</code> annotation to supply test data for parameterized tests. For TestNG to properly execute these tests,
+<code>@DataProvider</code> methods must return one of the specifically supported types:</p>
+<ul>
+  <li><code>Object[][]</code> - a two-dimensional array where each inner array represents parameters for one test invocation</li>
+  <li><code>Iterator&lt;Object[]&gt;</code> - an iterator of arrays for lazy evaluation of test data</li>
+  <li><code>Object[]</code> - an array where each element is itself an <code>Object[]</code> (available since TestNG 6.x)</li>
+</ul>
+<p>When a <code>@DataProvider</code> method returns an incompatible type (such as <code>List</code>, <code>Stream</code>, or a simple array), TestNG
+cannot process the data correctly. This causes test failures at runtime, even though the code may compile successfully.</p>
+<p>Using the wrong return type breaks the contract between your test code and the TestNG framework, leading to:</p>
+<ul>
+  <li>Tests that fail to execute</li>
+  <li>Misleading error messages</li>
+  <li>Wasted debugging time</li>
+  <li>Reduced confidence in your test suite</li>
+</ul>
+<h3>What is the potential impact?</h3>
+<p>When a <code>@DataProvider</code> method returns an invalid type, the immediate impact is test execution failure. TestNG will throw a runtime
+exception when attempting to invoke the test method with the provided data.</p>
+<p>This has several consequences:</p>
+<ul>
+  <li><strong>Delayed feedback</strong>: The error only appears at runtime, not during compilation, making it harder to catch during development</li>
+  <li><strong>Broken test suites</strong>: Entire test classes may fail to run if the data provider is misconfigured</li>
+  <li><strong>False negatives</strong>: You might believe your code is untested when tests simply aren’t executing</li>
+  <li><strong>Maintenance burden</strong>: Team members unfamiliar with TestNG’s requirements may struggle to understand and fix the issue</li>
+</ul>
+<p>In CI/CD pipelines, this can block deployments and require emergency fixes to restore test coverage.</p>
+<h2>How to fix it in TestNG</h2>
+<p>Use <code>Object[][]</code> when you have a fixed set of test data. Each inner array represents the parameters for one test invocation.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@DataProvider
+public List&lt;String&gt; provideData() {  // Noncompliant
+    return Arrays.asList("value1", "value2", "value3");
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@DataProvider
+public Object[][] provideData() {
+    return new Object[][] {
+        {"value1"},
+        {"value2"},
+        {"value3"}
+    };
+}
+</pre>
+<p>Use <code>Iterator&lt;Object[]&gt;</code> when you need lazy evaluation or want to generate test data on-the-fly. This is useful for large datasets
+or when data generation is expensive.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+@DataProvider
+public Stream&lt;String&gt; provideData() {  // Noncompliant
+    return Stream.of("value1", "value2", "value3");
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+@DataProvider
+public Iterator&lt;Object[]&gt; provideData() {
+    return Arrays.asList(
+        new Object[]{"value1"},
+        new Object[]{"value2"},
+        new Object[]{"value3"}
+    ).iterator();
+}
+</pre>
+<p>Use <code>Object[]</code> where each element is itself an <code>Object[]</code> (available since TestNG 6.x). This can be useful when building data
+sets dynamically.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+@DataProvider
+public String[] provideData() {  // Noncompliant
+    return new String[]{"value1", "value2", "value3"};
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+@DataProvider
+public Object[] provideData() {
+    return new Object[]{
+        new Object[]{"value1"},
+        new Object[]{"value2"},
+        new Object[]{"value3"}
+    };
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>TestNG Documentation - <a href="https://testng.org/doc/documentation-main.html#parameters-dataproviders">Parameters and Data Providers</a></li>
+</ul>
+
