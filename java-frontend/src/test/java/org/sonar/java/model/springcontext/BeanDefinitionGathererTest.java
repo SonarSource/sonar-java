@@ -16,13 +16,15 @@
  */
 package org.sonar.java.model.springcontext;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -45,6 +47,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -188,6 +191,74 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
   // ---- Caching --------------------------------------------------------------
 
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("roundTripArguments")
+  void beans_written_to_cache_are_restored_identically(String filePath, String beanName, @Nullable String expectedProfiles) {
+    byte[] written = writeToCacheAndCapture(filePath);
+
+    InputFile inputFile = TestUtils.inputFile(new File(filePath));
+    String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn(written);
+    JavaWriteCache writeCache = mock(JavaWriteCache.class);
+    CacheContext cacheContext = mockCacheContext(readCache, writeCache);
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    gatherer = new BeanDefinitionGatherer();
+    model = new SpringContextModel();
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+    verify(writeCache).copyFromPrevious(cacheKey);
+
+    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
+    when(moduleScannerContext.getModuleKey()).thenReturn("");
+    gatherer.gatherSpringContextData(moduleScannerContext, model);
+
+    var restored = model.getBeanDefinitionRegistry().getByName(beanName);
+    assertThat(restored).hasSize(1);
+    assertThat(restored.getFirst().getProfiles()).isEqualTo(expectedProfiles);
+    var restoredNamesForType = model.getTypeToBeanNamesIndex().getNamesForType(restored.getFirst().getType());
+
+    gatherer = new BeanDefinitionGatherer();
+    model = new SpringContextModel();
+    scan(filePath);
+    var parsed = model.getBeanDefinitionRegistry().getByName(beanName);
+    assertThat(parsed).hasSize(1);
+    assertThat(restoredNamesForType).isEqualTo(model.getTypeToBeanNamesIndex().getNamesForType(parsed.getFirst().getType()));
+
+    assertThat(restored.get(0)).satisfies(bean -> {
+      assertThat(bean.getType()).isEqualTo(parsed.get(0).getType());
+      assertThat(bean.getBeanPackage()).isEqualTo(parsed.get(0).getBeanPackage());
+      assertThat(bean.isPrimary()).isEqualTo(parsed.get(0).isPrimary());
+      assertThat(bean.getProfiles()).isEqualTo(parsed.get(0).getProfiles());
+      assertThat(bean.getDependingBeans()).isEqualTo(parsed.get(0).getDependingBeans());
+      assertThat(bean.getLocation().mainLocation()).isEqualTo(parsed.get(0).getLocation().mainLocation());
+      assertThat(bean.getLocation().inputFile().key()).isEqualTo(parsed.get(0).getLocation().inputFile().key());
+    });
+  }
+
+  static Stream<Arguments> roundTripArguments() {
+    return Stream.of(
+      Arguments.of("src/test/files/springcontext/SimpleComponent.java", "simpleComponent", null),
+      Arguments.of("src/test/files/springcontext/QualifiedFieldDependencies.java", "qualifiedFieldDependencies", "prod"),
+      Arguments.of("src/test/files/springcontext/PrimaryBean.java", "primaryBean", null));
+  }
+
+  private byte[] writeToCacheAndCapture(String filePath) {
+    WriteCache writeCache = mock(WriteCache.class);
+    SensorContextTester ctx = SensorContextTester.create(new File(""));
+    ctx.setCacheEnabled(true);
+    ctx.setNextCache(writeCache);
+
+    scan(ctx, filePath);
+
+    var dataCaptor = ArgumentCaptor.forClass(byte[].class);
+    verify(writeCache).write(anyString(), dataCaptor.capture());
+    return dataCaptor.getValue();
+  }
+
   @Test
   void leaveFile_writes_profile_beans_and_dependencies_to_cache() {
     WriteCache writeCache = mock(WriteCache.class);
@@ -195,47 +266,36 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     ctx.setCacheEnabled(true);
     ctx.setNextCache(writeCache);
 
-    scan(ctx,"src/test/files/springcontext/QualifiedFieldDependencies.java");
+    scan(ctx, "src/test/files/springcontext/QualifiedFieldDependencies.java");
 
     var dataCaptor = ArgumentCaptor.forClass(byte[].class);
     verify(writeCache).write(anyString(), dataCaptor.capture());
     String serialized = new String(dataCaptor.getValue(), StandardCharsets.UTF_8);
-    String encodedProfiles = Base64.getEncoder().encodeToString("prod".getBytes(StandardCharsets.UTF_8));
-    String encodedName = Base64.getEncoder().encodeToString("qualifiedFieldDependencies".getBytes(StandardCharsets.UTF_8));
-    String encodedAppContext = Base64.getEncoder().encodeToString("org.springframework.context.ApplicationContext".getBytes(StandardCharsets.UTF_8));
-    String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
-    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
-    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
-    assertThat(serialized)
-      .contains(encodedProfiles)
-      .contains(encodedName)
-      .contains("checks.spring.context.QualifiedFieldDependencies")
-      .contains("checks.spring.context")
-      .contains("false")
-      .endsWith("|checks.spring.context.QualifiedFieldDependencies")
-      .contains(encodedAppContext + ":" + encodedPrimaryContext)
-      .contains(encodedEnvType + ":" + encodedEnvironment);
+    var bean = JsonParser.parseString(serialized).getAsJsonObject().getAsJsonArray("beans").get(0).getAsJsonObject();
+    assertThat(bean.get("name").getAsString()).isEqualTo("qualifiedFieldDependencies");
+    assertThat(bean.get("type").getAsString()).isEqualTo("checks.spring.context.QualifiedFieldDependencies");
+    assertThat(bean.get("package").getAsString()).isEqualTo("checks.spring.context");
+    assertThat(bean.get("primary").getAsBoolean()).isFalse();
+    assertThat(bean.get("profiles").getAsString()).isEqualTo("prod");
+    assertThat(bean.getAsJsonObject("span").get("startLine").getAsInt()).isEqualTo(12);
+    assertThat(bean.getAsJsonArray("typeHierarchy")).extracting(JsonElement::getAsString)
+      .contains("checks.spring.context.QualifiedFieldDependencies");
+    assertThat(bean.getAsJsonArray("dependencies")).extracting(element -> element.getAsJsonObject().get("type").getAsString())
+      .containsExactlyInAnyOrder("org.springframework.context.ApplicationContext", "org.springframework.core.env.Environment");
   }
 
   @Test
   void scanWithoutParsing_restores_profile_beans_and_dependencies_from_cache() {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/QualifiedFieldDependencies.java"));
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
-    String encodedName = Base64.getEncoder().encodeToString("qualifiedFieldDependencies".getBytes(StandardCharsets.UTF_8));
-    String encodedProfiles = Base64.getEncoder().encodeToString("prod".getBytes(StandardCharsets.UTF_8));
-    String encodedAppContext = Base64.getEncoder().encodeToString("org.springframework.context.ApplicationContext".getBytes(StandardCharsets.UTF_8));
-    String encodedEnvType = Base64.getEncoder().encodeToString("org.springframework.core.env.Environment".getBytes(StandardCharsets.UTF_8));
-    String encodedPrimaryContext = Base64.getEncoder().encodeToString("primaryContext".getBytes(StandardCharsets.UTF_8));
-    String encodedEnvironment = Base64.getEncoder().encodeToString("environment".getBytes(StandardCharsets.UTF_8));
-    String serialized = encodedName + "|checks.spring.context.QualifiedFieldDependencies|checks.spring.context|10:6:10:30|false|"
-      + encodedProfiles + "|"
-      + encodedAppContext + ":" + encodedPrimaryContext + "#14:2:14:41"
-      + "," + encodedEnvType + ":" + encodedEnvironment + "#17:2:17:31"
-      + "|checks.spring.context.QualifiedFieldDependencies";
+    String serialized = """
+      {"version":1,"beans":[{"name":"qualifiedFieldDependencies","type":"checks.spring.context.QualifiedFieldDependencies","package":"checks.spring.context","span":{"startLine":12,"startCharacter":6,"endLine":12,"endCharacter":32},"primary":false,"profiles":"prod","dependencies":[{"type":"org.springframework.context.ApplicationContext","injectionPoints":[{"name":"primaryContext","span":{"startLine":16,"startCharacter":2,"endLine":16,"endCharacter":55}}]},{"type":"org.springframework.core.env.Environment","injectionPoints":[{"name":"environment","span":{"startLine":19,"startCharacter":2,"endLine":19,"endCharacter":38}}]}],"typeHierarchy":["checks.spring.context.QualifiedFieldDependencies"]}]}
+      """;
 
     JavaReadCache readCache = mock(JavaReadCache.class);
     when(readCache.readBytes(cacheKey)).thenReturn(serialized.getBytes(StandardCharsets.UTF_8));
-    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+    JavaWriteCache writeCache = mock(JavaWriteCache.class);
+    CacheContext cacheContext = mockCacheContext(readCache, writeCache);
 
     InputFileScannerContext context = mock(InputFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
@@ -258,10 +318,11 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     assertInjectionPoint(
       model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext"),
-      "primaryContext", inputFile, 14);
+      "primaryContext", inputFile, 16);
     assertInjectionPoint(
       model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.core.env.Environment"),
-      "environment", inputFile, 17);
+      "environment", inputFile, 19);
+    verify(writeCache).copyFromPrevious(cacheKey);
   }
 
   @Test
@@ -285,7 +346,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
 
     JavaReadCache readCache = mock(JavaReadCache.class);
-    when(readCache.readBytes(cacheKey)).thenReturn("".getBytes(StandardCharsets.UTF_8));
+    when(readCache.readBytes(cacheKey)).thenReturn("{\"version\":1,\"beans\":[]}".getBytes(StandardCharsets.UTF_8));
     CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
 
     InputFileScannerContext context = mock(InputFileScannerContext.class);
@@ -313,20 +374,62 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
       .doesNotThrowAnyException();
   }
 
-  @Test
-  void scanWithoutParsing_returns_false_on_corrupted_cache_entry() {
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("corruptedCacheEntries")
+  void scanWithoutParsing_returns_false_on_corrupted_cache_entry(String description, String content) {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
     String cacheKey = "java:spring:bean-definitions:" + inputFile.key();
 
     JavaReadCache readCache = mock(JavaReadCache.class);
-    when(readCache.readBytes(cacheKey)).thenReturn("not|valid|cache|content".getBytes(StandardCharsets.UTF_8));
-    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+    when(readCache.readBytes(cacheKey)).thenReturn(content.getBytes(StandardCharsets.UTF_8));
+    JavaWriteCache writeCache = mock(JavaWriteCache.class);
+    CacheContext cacheContext = mockCacheContext(readCache, writeCache);
 
     InputFileScannerContext context = mock(InputFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getCacheContext()).thenReturn(cacheContext);
 
     assertThat(gatherer.scanWithoutParsing(context)).isFalse();
+    verify(writeCache, never()).copyFromPrevious(cacheKey);
+  }
+
+  static Stream<Arguments> corruptedCacheEntries() {
+    String bean = "{\"name\":\"n\",\"type\":\"t\",\"package\":\"p\",\"span\":%s,\"primary\":%s,\"profiles\":null,"
+      + "\"dependencies\":[],\"typeHierarchy\":[]}";
+    String span = "{\"startLine\":1,\"startCharacter\":0,\"endLine\":1,\"endCharacter\":5}";
+    return Stream.of(
+      Arguments.of("not json at all", "not|valid|cache|content"),
+      Arguments.of("empty content", ""),
+      Arguments.of("json array instead of object", "[]"),
+      Arguments.of("unsupported version", "{\"version\":2,\"beans\":[]}"),
+      Arguments.of("missing version", "{\"beans\":[]}"),
+      Arguments.of("non-numeric version", "{\"version\":\"1\",\"beans\":[]}"),
+      Arguments.of("version not a primitive", "{\"version\":{},\"beans\":[]}"),
+      Arguments.of("missing beans", "{\"version\":1}"),
+      Arguments.of("beans not an array", "{\"version\":1,\"beans\":\"x\"}"),
+      Arguments.of("bean not an object", "{\"version\":1,\"beans\":[\"x\"]}"),
+      Arguments.of("bean missing properties", "{\"version\":1,\"beans\":[{}]}"),
+      Arguments.of("primary not a boolean", "{\"version\":1,\"beans\":[" + bean.formatted(span, "\"yes\"") + "]}"),
+      Arguments.of("profiles neither string nor null",
+        "{\"version\":1,\"beans\":[" + bean.formatted(span, "false").replace("\"profiles\":null", "\"profiles\":42") + "]}"),
+      Arguments.of("type hierarchy holds a non-string",
+        "{\"version\":1,\"beans\":[" + bean.formatted(span, "false").replace("\"typeHierarchy\":[]", "\"typeHierarchy\":[1]") + "]}"),
+      Arguments.of("span with a zero start line",
+        "{\"version\":1,\"beans\":[" + bean.formatted(span.replace("\"startLine\":1", "\"startLine\":0"), "false") + "]}"),
+      Arguments.of("span ending before it starts",
+        "{\"version\":1,\"beans\":[" + bean.formatted(span.replace("\"endLine\":1", "\"endLine\":0"), "false") + "]}"),
+      Arguments.of("span with a fractional line number",
+        "{\"version\":1,\"beans\":[" + bean.formatted(span.replace("\"startLine\":1", "\"startLine\":1.5"), "false") + "]}"),
+      Arguments.of("span not an object",
+        "{\"version\":1,\"beans\":[" + bean.formatted("3", "false") + "]}"),
+      Arguments.of("dependency not an object",
+        "{\"version\":1,\"beans\":[" + bean.formatted(span, "false").replace("\"dependencies\":[]", "\"dependencies\":[\"x\"]") + "]}"),
+      Arguments.of("dependency missing its injection points",
+        "{\"version\":1,\"beans\":[" + bean.formatted(span, "false")
+          .replace("\"dependencies\":[]", "\"dependencies\":[{\"type\":\"T\"}]") + "]}"),
+      Arguments.of("injection point missing its name",
+        "{\"version\":1,\"beans\":[" + bean.formatted(span, "false")
+          .replace("\"dependencies\":[]", "\"dependencies\":[{\"type\":\"T\",\"injectionPoints\":[{\"span\":" + span + "}]}]") + "]}"));
   }
 
   private static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {

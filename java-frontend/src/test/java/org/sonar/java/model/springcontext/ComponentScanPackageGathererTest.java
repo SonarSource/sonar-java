@@ -16,12 +16,16 @@
  */
 package org.sonar.java.model.springcontext;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.WriteCache;
@@ -151,6 +155,51 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
 
   // ---- Caching --------------------------------------------------------------
 
+  @ParameterizedTest(name = "{0}")
+  @ValueSource(strings = {
+    "src/test/files/springcontext/SpringBootAppWithScanBasePackages.java",
+    "src/test/files/springcontext/NoScanAnnotations.java"
+  })
+  void packages_written_to_cache_are_restored_identically(String filePath) {
+    gatherer = new ComponentScanPackageGatherer();
+    model = new SpringContextModel();
+    scan(filePath);
+    var expected = model.getProjectPackageScan().getPackagesForModule(MODULE_KEY);
+
+    WriteCache writeCache = mock(WriteCache.class);
+    SensorContextTester ctx = SensorContextTester.create(new File(""));
+    ctx.setCacheEnabled(true);
+    ctx.setNextCache(writeCache);
+    gatherer = new ComponentScanPackageGatherer();
+    model = new SpringContextModel();
+    scan(ctx, filePath);
+    var dataCaptor = ArgumentCaptor.forClass(byte[].class);
+    verify(writeCache).write(anyString(), dataCaptor.capture());
+
+    InputFile inputFile = TestUtils.inputFile(new File(filePath));
+    String cacheKey = "java:spring:component-scan-packages:" + inputFile.key();
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn(dataCaptor.getValue());
+    JavaWriteCache javaWriteCache = mock(JavaWriteCache.class);
+    CacheContext cacheContext = mockCacheContext(readCache, javaWriteCache);
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    gatherer = new ComponentScanPackageGatherer();
+    model = new SpringContextModel();
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+    verify(javaWriteCache).copyFromPrevious(cacheKey);
+
+    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
+    when(moduleScannerContext.getModuleKey()).thenReturn(MODULE_KEY);
+    gatherer.gatherSpringContextData(moduleScannerContext, model);
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactlyInAnyOrderElementsOf(expected);
+  }
+
   @Test
   void leaveFile_writes_packages_to_cache() {
     WriteCache writeCache = mock(WriteCache.class);
@@ -164,9 +213,10 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
     verify(writeCache).write(
       org.mockito.ArgumentMatchers.endsWith("SpringBootAppWithScanBasePackages.java"),
       dataCaptor.capture());
-    assertThat(new String(dataCaptor.getValue(), StandardCharsets.UTF_8))
-      .contains("com.example.service")
-      .contains("com.example.web");
+    var document = JsonParser.parseString(new String(dataCaptor.getValue(), StandardCharsets.UTF_8)).getAsJsonObject();
+    assertThat(document.get("version").getAsInt()).isOne();
+    assertThat(document.getAsJsonArray("packages")).extracting(JsonElement::getAsString)
+      .containsExactlyInAnyOrder("com.example.service", "com.example.web");
   }
 
   @Test
@@ -175,7 +225,7 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
     String cacheKey = "java:spring:component-scan-packages:" + inputFile.key();
 
     JavaReadCache readCache = mock(JavaReadCache.class);
-    when(readCache.readBytes(cacheKey)).thenReturn("com.example.service;com.example.web".getBytes(StandardCharsets.UTF_8));
+    when(readCache.readBytes(cacheKey)).thenReturn("{\"version\":1,\"packages\":[\"com.example.service\",\"com.example.web\"]}".getBytes(StandardCharsets.UTF_8));
     CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
 
     InputFileScannerContext context = mock(InputFileScannerContext.class);
@@ -213,7 +263,7 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
     String cacheKey = "java:spring:component-scan-packages:" + inputFile.key();
 
     JavaReadCache readCache = mock(JavaReadCache.class);
-    when(readCache.readBytes(cacheKey)).thenReturn("".getBytes(StandardCharsets.UTF_8));
+    when(readCache.readBytes(cacheKey)).thenReturn("{\"version\":1,\"packages\":[]}".getBytes(StandardCharsets.UTF_8));
     CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
 
     InputFileScannerContext context = mock(InputFileScannerContext.class);
@@ -239,6 +289,22 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
 
     assertThatCode(() -> scan(ctx, "src/test/files/springcontext/SpringBootAppWithScanBasePackages.java"))
       .doesNotThrowAnyException();
+  }
+
+  @Test
+  void scanWithoutParsing_returns_false_on_corrupted_cache_entry() {
+    InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SpringBootAppWithScanBasePackages.java"));
+    String cacheKey = "java:spring:component-scan-packages:" + inputFile.key();
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey)).thenReturn("com.example.service;com.example.web".getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isFalse();
   }
 
   // ---- Helpers --------------------------------------------------------------
