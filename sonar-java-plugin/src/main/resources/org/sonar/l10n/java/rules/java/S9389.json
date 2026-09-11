@@ -1,0 +1,26 @@
+{
+  "title": "Data provider names should be unique within a class",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "testng",
+    "tests",
+    "confusing"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-9389",
+  "sqKey": "S9389",
+  "scope": "Tests",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH",
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  }
+}
