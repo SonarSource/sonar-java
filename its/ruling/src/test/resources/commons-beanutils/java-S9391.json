@@ -1,0 +1,16 @@
+{
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BaseDynaBeanMapDecorator.java": [
+169,
+221,
+306
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java": [
+484
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
+545
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java": [
+248
+]
+}

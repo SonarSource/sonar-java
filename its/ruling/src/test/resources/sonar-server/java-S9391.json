@@ -1,0 +1,107 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/TrackerRawInputFactory.java": [
+91
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/filter/IssueFilter.java": [
+113
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/source/DuplicationLineReader.java": [
+85
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistProjectLinksStep.java": [
+109
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistTestsStep.java": [
+165
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/EsUtils.java": [
+63
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/SearchIdResult.java": [
+61
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/request/ProxyBulkRequestBuilder.java": [
+83
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssueQueryFactory.java": [
+317
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAdditionalField.java": [
+77
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchResponseFormat.java": [
+299
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/NotificationCenter.java": [
+73
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/NotificationService.java": [
+103
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/PermissionTemplateService.java": [
+199
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/MasterServletFilter.java": [
+69
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/PluginDownloader.java": [
+110
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/PluginReferentialMetadataConverter.java": [
+50
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/ws/PendingAction.java": [
+103
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileExporters.java": [
+97
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileResetImpl.java": [
+59
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleIndexer.java": [
+174
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/ws/CreateAction.java": [
+128
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/CachingRuleFinder.java": [
+188
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/DefaultRuleFinder.java": [
+125,
+159
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java": [
+201,
+413
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleIndex.java": [
+277
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/ActiveRuleCompleter.java": [
+118
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/SearchAction.java": [
+357
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/test/index/TestDoc.java": [
+148,
+156
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/DefaultUserFinder.java": [
+71
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java": [
+342
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/ws/DeactivateAction.java": [
+149
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/EnumUtils.java": [
+38
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/cache/MemoryCache.java": [
+68
+]
+}

@@ -1,0 +1,43 @@
+{
+"com.google.guava:guava:src/com/google/common/base/Predicates.java": [
+707
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableMultimap.java": [
+219
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableMultiset.java": [
+395
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java": [
+217
+],
+"com.google.guava:guava:src/com/google/common/collect/Maps.java": [
+3777,
+3791
+],
+"com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
+222
+],
+"com.google.guava:guava:src/com/google/common/collect/Serialization.java": [
+184
+],
+"com.google.guava:guava:src/com/google/common/collect/TreeRangeMap.java": [
+534
+],
+"com.google.guava:guava:src/com/google/common/eventbus/SubscriberRegistry.java": [
+139
+],
+"com.google.guava:guava:src/com/google/common/hash/Hashing.java": [
+482,
+502
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java": [
+2087
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+497
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/SimpleTimeLimiter.java": [
+170
+]
+}
