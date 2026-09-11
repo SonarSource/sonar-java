@@ -9,8 +9,9 @@
   },
   "status": "ready",
   "remediation": {
-    "func": "Constant\/Issue",
-    "constantCost": "20min"
+    "func": "Linear",
+    "linearDesc": "per \"sun\" import",
+    "linearFactor": "20min"
   },
   "tags": [
     "lock-in",
