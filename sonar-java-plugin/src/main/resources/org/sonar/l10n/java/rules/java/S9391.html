@@ -1,0 +1,67 @@
+<p>Traditional for or foreach loops that filter elements, transform them, or collect results into a collection can be more clearly expressed using
+functional collection processing APIs that provide declarative iteration constructs.</p>
+<h2>Why is this an issue?</h2>
+<p>Modern programming languages provide declarative, functional interfaces for processing collections. Traditional imperative loops that perform
+filtering, mapping, or collecting operations can be harder to read and understand at a glance because:</p>
+<ul>
+  <li>The intent is buried in implementation details - readers must trace through the loop logic to understand what the code does</li>
+  <li>Boilerplate code (creating result collections, manual iteration) obscures the business logic</li>
+  <li>The code doesn’t follow modern idioms, making it feel outdated</li>
+</ul>
+<p>Common patterns that benefit from declarative collection processing include:</p>
+<ul>
+  <li>Filtering elements based on a condition</li>
+  <li>Transforming elements (mapping)</li>
+  <li>Collecting filtered or transformed elements into a new collection</li>
+  <li>Finding the first element matching a condition</li>
+  <li>Checking if any or all elements match a condition</li>
+</ul>
+<p>Declarative collection processing expresses these operations more clearly by:</p>
+<ul>
+  <li>Making the intent explicit through method names like <code>filter</code>, <code>map</code>, and <code>collect</code></li>
+  <li>Separating the "what" (the operation) from the "how" (the iteration mechanism)</li>
+  <li>Reducing boilerplate code</li>
+  <li>Enabling potential performance optimizations through lazy evaluation</li>
+</ul>
+<p>While the traditional loop and declarative version are functionally equivalent, the declarative version communicates intent more directly, making
+the code easier to maintain and understand.</p>
+<p>In Java, this declarative approach was introduced in Java 8 through the Stream API.</p>
+<h3>What is the potential impact?</h3>
+<p>This issue affects code maintainability and readability. While it doesn’t introduce bugs or security vulnerabilities, converting imperative
+iteration constructs to modern functional collection processing APIs:</p>
+<ul>
+  <li>Reduces the cognitive load for developers reading the code</li>
+  <li>Makes the codebase more consistent if you’re following modern language practices</li>
+  <li>Can sometimes improve performance through lazy evaluation and potential parallelization</li>
+  <li>Helps teams working with newer language versions adopt idiomatic patterns</li>
+</ul>
+<p>The impact is primarily on developer productivity - code that clearly expresses intent is faster to understand, review, and modify.</p>
+<h2>How to fix it</h2>
+<p>Replace the traditional loop with a stream pipeline. Start with <code>collection.stream()</code>, then chain the appropriate intermediate
+operations (<code>filter</code>, <code>map</code>), and finish with a terminal operation (<code>collect</code>, <code>findFirst</code>, etc.).</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+List&lt;String&gt; result = new ArrayList&lt;&gt;();
+for (Item item : items) {
+    if (item.isActive()) { // Noncompliant
+        result.add(item.getName());
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+List&lt;String&gt; result = items.stream()
+    .filter(Item::isActive)
+    .map(Item::getName)
+    .collect(Collectors.toList());
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html">Package
+  java.util.stream</a></li>
+  <li>Oracle Java Tutorials - <a href="https://docs.oracle.com/javase/tutorial/collections/streams/">Aggregate Operations</a></li>
+  <li>Baeldung - <a href="https://www.baeldung.com/java-8-streams">Java 8 Stream API Tutorial</a></li>
+</ul>
+
