@@ -307,13 +307,4 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
     assertThat(gatherer.scanWithoutParsing(context)).isFalse();
   }
 
-  // ---- Helpers --------------------------------------------------------------
-
-  private static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
-    CacheContext cacheContext = mock(CacheContext.class);
-    when(cacheContext.isCacheEnabled()).thenReturn(true);
-    when(cacheContext.getReadCache()).thenReturn(readCache);
-    when(cacheContext.getWriteCache()).thenReturn(writeCache);
-    return cacheContext;
-  }
 }

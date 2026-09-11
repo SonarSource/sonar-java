@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -63,6 +64,11 @@ public final class SpringUtils {
   public static final String DATA_REPOSITORY_ANNOTATION = DATA_PACKAGE + "repository.Repository";
   public static final String REST_CONTROLLER_ANNOTATION = "org.springframework.web.bind.annotation.RestController";
   public static final String SPRING_BOOT_TEST_ANNOTATION = "org.springframework.boot.test.context.SpringBootTest";
+  public static final String COMPONENT_SCAN_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "ComponentScan";
+
+  private static final Set<String> COMPONENT_SCAN_BASE_ATTRIBUTES = Set.of("basePackages", "basePackageClasses", "value");
+  private static final Set<String> SCAN_BASE_ATTRIBUTES = Set.of("scanBasePackages", "scanBasePackageClasses");
+  private static final String SCAN_BASE_PACKAGE_CLASSES = "scanBasePackageClasses";
 
   private static final String VALUE_ATTRIBUTE = "value";
   private static final String PROFILE_SEPARATOR = ",";
@@ -291,6 +297,92 @@ public final class SpringUtils {
       return classProfiles;
     }
     return classProfiles + PROFILE_AND_SEPARATOR + ownProfiles;
+  }
+
+  /**
+   * Returns the {@code @ComponentScan} attributes that declare packages to scan, namely
+   * {@code basePackages}, {@code basePackageClasses} and {@code value}.
+   *
+   * <p>An empty list means the class is not annotated with {@code @ComponentScan}, or carries none of
+   * those attributes — which callers use to tell whether the class configures scanning at all, a
+   * distinct question from whether any package name could be resolved from it.
+   *
+   * @param metadata metadata of the class to inspect
+   * @return the matching annotation values, in declaration order
+   */
+  public static List<SymbolMetadata.AnnotationValue> componentScanBaseAttributes(SymbolMetadata metadata) {
+    List<SymbolMetadata.AnnotationValue> attributes = metadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
+    if (attributes == null) {
+      return List.of();
+    }
+    return attributes.stream()
+      .filter(value -> COMPONENT_SCAN_BASE_ATTRIBUTES.contains(value.name()))
+      .toList();
+  }
+
+  /**
+   * Resolves the package names an annotation attribute holds: string elements are package names as
+   * written, while class references contribute the package declaring them.
+   *
+   * <p>Blank names are kept, so that callers that distinguish them can still do so.
+   *
+   * @param annotationValue the attribute to resolve
+   * @return the package names, in declaration order
+   */
+  public static List<String> packagesFromAnnotationValue(SymbolMetadata.AnnotationValue annotationValue) {
+    if (!(annotationValue.value() instanceof Object[] elements)) {
+      return List.of();
+    }
+    List<String> packages = new ArrayList<>();
+    for (Object element : elements) {
+      if (element instanceof String packageName) {
+        packages.add(packageName);
+      } else if (element instanceof Symbol classReference) {
+        packages.add(PackageUtils.packageNameOf(classReference));
+      }
+    }
+    return packages;
+  }
+
+  /**
+   * Returns the packages a {@code @SpringBootApplication} class registers for component scanning,
+   * taken from its {@code scanBasePackages} and {@code scanBasePackageClasses} attributes.
+   *
+   * <p>Used without either attribute, the annotation scans the package of the class it is placed on.
+   * That fallback applies only when {@code useOwnPackageAsFallback} is set, which lets a caller
+   * suppress it when scanning is already configured by another annotation on the same class.
+   *
+   * @param classPackageName        package of the annotated class, used for the fallback
+   * @param metadata                metadata of the annotated class, which must carry {@code @SpringBootApplication}
+   * @param useOwnPackageAsFallback whether the annotated class's own package applies when no scan attribute is present
+   * @return the package names, in declaration order
+   */
+  public static List<String> springBootApplicationScanPackages(String classPackageName, SymbolMetadata metadata, boolean useOwnPackageAsFallback) {
+    var scanBaseValues = Objects.requireNonNull(metadata.valuesForAnnotation(SPRING_BOOT_APP_ANNOTATION)).stream()
+      .filter(value -> SCAN_BASE_ATTRIBUTES.contains(value.name()) && value.value() instanceof Object[])
+      .toList();
+
+    if (scanBaseValues.isEmpty()) {
+      return useOwnPackageAsFallback ? List.of(classPackageName) : List.of();
+    }
+
+    List<String> packages = new ArrayList<>();
+    for (SymbolMetadata.AnnotationValue value : scanBaseValues) {
+      boolean isClassBased = SCAN_BASE_PACKAGE_CLASSES.equals(value.name());
+      for (Object element : (Object[]) value.value()) {
+        resolveScanBasePackage(element, isClassBased).ifPresent(packages::add);
+      }
+    }
+    return packages;
+  }
+
+  private static Optional<String> resolveScanBasePackage(Object element, boolean isClassBased) {
+    if (!isClassBased && element instanceof String packageName) {
+      return Optional.of(packageName);
+    } else if (isClassBased && element instanceof Symbol classReference) {
+      return Optional.of(PackageUtils.packageNameOf(classReference));
+    }
+    return Optional.empty();
   }
 
 }

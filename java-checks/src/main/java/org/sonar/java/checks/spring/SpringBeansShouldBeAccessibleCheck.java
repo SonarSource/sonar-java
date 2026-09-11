@@ -16,22 +16,17 @@
  */
 package org.sonar.java.checks.spring;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.check.Rule;
+import org.sonar.java.caching.FileCachingCheck;
+import org.sonar.java.caching.JsonCacheFormat;
 import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
@@ -42,17 +37,13 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.internal.EndOfAnalysis;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 @Rule(key = "S4605")
-public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisitor implements EndOfAnalysis {
-
-  private static final Logger LOG = LoggerFactory.getLogger(SpringBeansShouldBeAccessibleCheck.class);
+public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisitor implements EndOfAnalysis, FileCachingCheck<Set<String>> {
 
   private static final String MESSAGE_FORMAT = "'%s' is not reachable by @ComponentScan or @SpringBootApplication. "
     + "Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.";
@@ -65,11 +56,9 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     SpringUtils.REST_CONTROLLER_ANNOTATION
   };
 
-  private static final String COMPONENT_SCAN_ANNOTATION = "org.springframework.context.annotation.ComponentScan";
-  private static final Set<String> COMPONENT_SCAN_BASE_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "basePackageClasses", "value");
-  private static final Set<String> SCAN_BASE_ANNOTATIONS = SetUtils.immutableSetOf("scanBasePackages", "scanBasePackageClasses");
-
   private static final String CACHE_KEY_PREFIX = "java:S4605:targeted:";
+  private static final int CACHE_FORMAT_VERSION = 1;
+  private static final String PACKAGES = "packages";
 
   /**
    * The key is the package name.
@@ -93,10 +82,30 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
-    return readFromCache(inputFileScannerContext).map(targetedPackages -> {
-      packagesScannedBySpringAtProjectLevel.addAll(targetedPackages);
-      return true;
-    }).orElse(false);
+    return restoreFromCache(inputFileScannerContext);
+  }
+
+  @Override
+  public String cacheKeyPrefix() {
+    return CACHE_KEY_PREFIX;
+  }
+
+  @Override
+  public byte[] serialize(Set<String> targetedPackages) {
+    var document = JsonCacheFormat.newDocument(CACHE_FORMAT_VERSION);
+    document.add(PACKAGES, JsonCacheFormat.strings(targetedPackages));
+    return JsonCacheFormat.toBytes(document);
+  }
+
+  @Override
+  public Set<String> deserialize(InputFile inputFile, byte[] data) {
+    var document = JsonCacheFormat.parseDocument(data, CACHE_FORMAT_VERSION);
+    return JsonCacheFormat.stringSet(JsonCacheFormat.requiredArray(document, PACKAGES));
+  }
+
+  @Override
+  public void restore(InputFileScannerContext context, Set<String> targetedPackages) {
+    packagesScannedBySpringAtProjectLevel.addAll(targetedPackages);
   }
 
   @Override
@@ -123,7 +132,7 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
     if (!handledByComponentScan(classSymbolMetadata)) {
       if (hasAnnotation(classSymbolMetadata, SpringUtils.SPRING_BOOT_APP_ANNOTATION)) {
         // apply scan setting from @SpringBootApplication annotation
-        var targetedPackages = targetedPackages(classPackageName, classSymbolMetadata);
+        var targetedPackages = SpringUtils.springBootApplicationScanPackages(classPackageName, classSymbolMetadata, true);
         packagesScannedBySpringAtProjectLevel.addAll(targetedPackages);
         packagesScannedBySpringAtFileLevel.addAll(targetedPackages);
       } else if (hasAnnotation(classSymbolMetadata, SPRING_BEAN_ANNOTATIONS)) {
@@ -142,90 +151,22 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     super.leaveFile(context);
-    if (context.getCacheContext().isCacheEnabled()) {
-      writeToCache(context, packagesScannedBySpringAtFileLevel);
-    }
+    writeToCache(context, packagesScannedBySpringAtFileLevel);
     packagesScannedBySpringAtFileLevel.clear();
   }
 
   private boolean handledByComponentScan(SymbolMetadata classSymbolMetadata) {
-    boolean handledByComponentScan = false;
-    List<SymbolMetadata.AnnotationValue> componentScanAttributes = classSymbolMetadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
-    if (componentScanAttributes != null) {
-      List<SymbolMetadata.AnnotationValue> componentScanBaseAttributes = componentScanAttributes.stream().filter(v -> COMPONENT_SCAN_BASE_ARGUMENTS.contains(v.name())).toList();
-      if (!componentScanBaseAttributes.isEmpty()) {
-        handledByComponentScan = true;
-        componentScanBaseAttributes.forEach(this::addToScannedPackages);
-      }
-    }
-
-    return handledByComponentScan;
-  }
-
-  private static String cacheKey(InputFile inputFile) {
-    return CACHE_KEY_PREFIX + inputFile.key();
-  }
-
-  private static void writeToCache(InputFileScannerContext context, Collection<String> targetedPackages) {
-    var cacheKey = cacheKey(context.getInputFile());
-    var data = String.join(";", targetedPackages).getBytes(StandardCharsets.UTF_8);
-    try {
-      context.getCacheContext().getWriteCache().write(cacheKey, data);
-    } catch (IllegalArgumentException e) {
-      LOG.trace("Tried to write multiple times to cache key '{}'. Ignoring writes after the first.", cacheKey);
-    }
-  }
-
-  private static Optional<List<String>> readFromCache(InputFileScannerContext context) {
-    var cacheKey = cacheKey(context.getInputFile());
-    var bytes = context.getCacheContext().getReadCache().readBytes(cacheKey);
-    if (bytes != null) {
-      context.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
-      return Optional.of(Arrays.asList(new String(bytes, StandardCharsets.UTF_8).split(";")));
-    } else {
-      return Optional.empty();
-    }
-  }
-
-  private static List<String> targetedPackages(String classPackageName, SymbolMetadata classSymbolMetadata) {
-    // annotation is necessarily there already
-    var scanBaseValues = Objects.requireNonNull(classSymbolMetadata.valuesForAnnotation(SpringUtils.SPRING_BOOT_APP_ANNOTATION)).stream()
-      .filter(v -> SCAN_BASE_ANNOTATIONS.contains(v.name()) && v.value() instanceof Object[])
-      .toList();
-
-    List<String> packages = new ArrayList<>();
-    for (SymbolMetadata.AnnotationValue value : scanBaseValues) {
-      boolean isClassBased = "scanBasePackageClasses".equals(value.name());
-      for (Object element : (Object[]) value.value()) {
-        if (!isClassBased && element instanceof String s) {
-          packages.add(s);
-        } else if (isClassBased && element instanceof Symbol s) {
-          packages.add(PackageUtils.packageNameOf(s));
-        }
-      }
-    }
-
-    // Using this annotation without arguments tells Spring to scan the current package and all of its sub-packages.
-    return scanBaseValues.isEmpty() ? Collections.singletonList(classPackageName) : packages;
+    List<SymbolMetadata.AnnotationValue> componentScanBaseAttributes = SpringUtils.componentScanBaseAttributes(classSymbolMetadata);
+    componentScanBaseAttributes.stream()
+      .map(SpringUtils::packagesFromAnnotationValue)
+      .forEach(packagesScannedBySpringAtProjectLevel::addAll);
+    return !componentScanBaseAttributes.isEmpty();
   }
 
   private void addMessageToMap(String classPackageName, IdentifierTree classNameTree) {
     DefaultJavaFileScannerContext defaultContext = (DefaultJavaFileScannerContext) context;
     AnalyzerMessage analyzerMessage = defaultContext.createAnalyzerMessage(this, classNameTree, String.format(MESSAGE_FORMAT, classNameTree.name()));
     messagesPerPackage.computeIfAbsent(classPackageName, k -> new ArrayList<>()).add(analyzerMessage);
-  }
-
-  private void addToScannedPackages(SymbolMetadata.AnnotationValue annotationValue) {
-    if (annotationValue.value() instanceof Object[] objects) {
-      for (Object o : objects) {
-        if (o instanceof String oString) {
-          packagesScannedBySpringAtProjectLevel.add(oString);
-        }
-        if (o instanceof Symbol oSymbol) {
-          packagesScannedBySpringAtProjectLevel.add(PackageUtils.packageNameOf(oSymbol));
-        }
-      }
-    }
   }
 
   private static boolean hasAnnotation(SymbolMetadata classSymbolMetadata, String... annotationName) {
