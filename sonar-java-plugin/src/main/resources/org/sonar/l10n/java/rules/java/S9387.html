@@ -1,0 +1,69 @@
+<p>An issue is raised when a test method uses documentation comment markers (like comment-based tags) instead of proper metadata attributes or
+decorators that the testing framework requires to identify and execute tests.</p>
+<p>In Java TestNG specifically, this means using Javadoc-style tags like <code>@test</code> or <code>@beforeMethod</code> in comments instead of the
+proper Java annotations <code>@Test</code> and <code>@BeforeMethod</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>Testing frameworks initially supported documentation comment tags for configuring test methods. For example, developers could write special markers
+in documentation comments to designate methods as tests. While this approach worked in older framework versions, it has significant drawbacks compared
+to modern declarative configuration mechanisms.</p>
+<p>Documentation comment tags are simply strings embedded in comments. The compiler doesn’t check them, and development environments cannot validate
+them during development. This means typos or incorrect usage won’t be caught until runtime, making bugs harder to find.</p>
+<p>Modern testing frameworks use first-class language constructs that declare test configuration directly in code. These are part of the language
+itself, so the compiler validates them at compile time. This catches errors early and makes the code more reliable.</p>
+<p>Language-native declarations also integrate better with development tools. IDEs can provide autocomplete, navigation, and refactoring support. When
+you rename a test class or reorganize code, these declarations are automatically updated, while comment-based strings remain unchanged.</p>
+<p>Using documentation comment tags in new code creates technical debt. The code appears outdated and may confuse developers who are familiar with
+standard framework practices. It also makes the codebase inconsistent if some tests use language-native declarations while others use comment
+tags.</p>
+<p>In Java, TestNG uses annotations like <code>@Test</code>, <code>@BeforeMethod</code>, and <code>@AfterMethod</code> instead of the older
+Javadoc-style tags such as <code>/** @test */</code>.</p>
+<h3>What is the potential impact?</h3>
+<p>Using documentation comments for metadata instead of structured metadata mechanisms reduces code maintainability and increases the risk of
+errors:</p>
+<ul>
+  <li><strong>Delayed error detection</strong>: Typos or configuration mistakes in comment-based metadata are only discovered at runtime, potentially
+  during test execution in production environments.</li>
+  <li><strong>Harder refactoring</strong>: When restructuring code, development tools cannot automatically update string values embedded in comments,
+  leading to broken test configurations.</li>
+  <li><strong>Reduced discoverability</strong>: New team members may not recognize comment-based test configuration, making the codebase harder to
+  understand.</li>
+  <li><strong>Limited tooling support</strong>: Build tools and test runners may have reduced functionality with comment-based configuration compared
+  to structured metadata mechanisms.</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Replace Javadoc tags with the corresponding TestNG annotations. The most common conversions are:</p>
+<ul>
+  <li><code>/** @test */</code> becomes <code>@Test</code></li>
+  <li><code>/** @beforeMethod */</code> becomes <code>@BeforeMethod</code></li>
+  <li><code>/** @afterMethod */</code> becomes <code>@AfterMethod</code></li>
+  <li><code>/** @beforeClass */</code> becomes <code>@BeforeClass</code></li>
+  <li><code>/** @afterClass */</code> becomes <code>@AfterClass</code></li>
+</ul>
+<p>Import the annotation classes from <code>org.testng.annotations</code> package. Remove the Javadoc comment or keep it for documentation purposes
+without the tag.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+/**
+ * @test
+ */
+public void shouldValidateInput() { // Noncompliant
+    // test code
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import org.testng.annotations.Test;
+
+@Test
+public void shouldValidateInput() {
+    // test code
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>TestNG Documentation - <a href="https://testng.org/doc/documentation-main.html#annotations">Annotations</a></li>
+  <li>TestNG Documentation - <a href="https://testng.org/doc/documentation-main.html#test-methods">TestNG Test Methods</a></li>
+</ul>
+
