@@ -17,7 +17,6 @@
 package org.sonar.java.model.springcontext;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -56,8 +55,6 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
 
   private static final Logger LOG = LoggerFactory.getLogger(ComponentScanPackageGatherer.class);
 
-  private static final String CACHE_KEY_PREFIX = "java:spring:component-scan-packages:";
-
   private static final String COMPONENT_SCAN_ANNOTATION = "org.springframework.context.annotation.ComponentScan";
   private static final Set<String> COMPONENT_SCAN_BASE_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "basePackageClasses", "value");
   private static final Set<String> SCAN_BASE_ANNOTATIONS = SetUtils.immutableSetOf("scanBasePackages", "scanBasePackageClasses");
@@ -75,7 +72,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
-    return readFromCache(inputFileScannerContext).map(packages -> {
+    return SpringContextCacheHelper.readComponentScanPackagesFromCache(inputFileScannerContext, LOG).map(packages -> {
       collectedPackages.addAll(packages);
       return true;
     }).orElse(false);
@@ -102,7 +99,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     if (context.getCacheContext().isCacheEnabled()) {
-      writeToCache(context, packagesCollectedAtFileLevel);
+      SpringContextCacheHelper.writeComponentScanPackagesToCache(context, LOG, packagesCollectedAtFileLevel);
     }
     packagesCollectedAtFileLevel.clear();
   }
@@ -178,16 +175,4 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
     return Optional.empty();
   }
 
-  private static void writeToCache(InputFileScannerContext context, Set<String> packages) {
-    var cacheKey = SpringContextCacheHelper.cacheKey(CACHE_KEY_PREFIX, context);
-    var data = String.join(";", packages);
-    SpringContextCacheHelper.writeToCache(context, LOG, cacheKey, data);
-  }
-
-  private static Optional<List<String>> readFromCache(InputFileScannerContext context) {
-    var cacheKey = SpringContextCacheHelper.cacheKey(CACHE_KEY_PREFIX, context);
-    return SpringContextCacheHelper.readFromCache(context, LOG, cacheKey, content -> content.isEmpty()
-      ? List.<String>of()
-      : Arrays.asList(content.split(";")));
-  }
 }
