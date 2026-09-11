@@ -11,7 +11,7 @@ class CopyConstructorMissesFieldCheckSample {
     private int retries;
     private boolean enabled;
 
-    Basic(Basic other) { // Noncompliant {{This copy constructor leaves eligible fields uninitialized; initialize them explicitly to distinguish omissions from intentional resets.}} [[secondary=10,11,12]]
+    Basic(Basic other) { // Noncompliant
       name = other.name;
     }
   }
@@ -45,7 +45,7 @@ class CopyConstructorMissesFieldCheckSample {
     private T first;
     private T second;
 
-    Generic(Generic<T> other) { // Noncompliant [[secondary=46]]
+    Generic(Generic<T> other) { // Noncompliant
       first = other.first;
     }
   }
@@ -53,7 +53,7 @@ class CopyConstructorMissesFieldCheckSample {
   static class ForeignAssignments {
     private int value;
 
-    ForeignAssignments(ForeignAssignments other) { // Noncompliant [[secondary=54]]
+    ForeignAssignments(ForeignAssignments other) { // Noncompliant
       other.value = 1;
     }
   }
@@ -61,7 +61,7 @@ class CopyConstructorMissesFieldCheckSample {
   static class ShadowedField {
     private int value;
 
-    ShadowedField(ShadowedField other) { // Noncompliant [[secondary=62]]
+    ShadowedField(ShadowedField other) { // Noncompliant
       int value = other.value;
       value = 1;
     }
@@ -101,7 +101,7 @@ class CopyConstructorMissesFieldCheckSample {
     private String name;
     private int count;
 
-    IncompleteDelegation(IncompleteDelegation other) { // Noncompliant [[secondary=102]]
+    IncompleteDelegation(IncompleteDelegation other) { // Noncompliant
       this(other.name);
     }
 
@@ -136,7 +136,7 @@ class CopyConstructorMissesFieldCheckSample {
     private String name;
     private int count;
 
-    IncompleteHelper(IncompleteHelper other) { // Noncompliant [[secondary=137]]
+    IncompleteHelper(IncompleteHelper other) { // Noncompliant
       setName(other);
     }
 
@@ -148,7 +148,7 @@ class CopyConstructorMissesFieldCheckSample {
   static class CallsOnOtherDoNotCount {
     private int value;
 
-    CallsOnOtherDoNotCount(CallsOnOtherDoNotCount other) { // Noncompliant [[secondary=149]]
+    CallsOnOtherDoNotCount(CallsOnOtherDoNotCount other) { // Noncompliant
       other.initialize();
     }
 
@@ -160,7 +160,7 @@ class CopyConstructorMissesFieldCheckSample {
   static class StaticHelperDoesNotCount {
     private int value;
 
-    StaticHelperDoesNotCount(StaticHelperDoesNotCount other) { // Noncompliant [[secondary=161]]
+    StaticHelperDoesNotCount(StaticHelperDoesNotCount other) { // Noncompliant
       initialize(other);
     }
 
@@ -184,7 +184,7 @@ class CopyConstructorMissesFieldCheckSample {
     private int localClassValue;
     private int anonymousClassValue;
 
-    DeferredAssignments(DeferredAssignments other) { // Noncompliant [[secondary=183,184,185]]
+    DeferredAssignments(DeferredAssignments other) { // Noncompliant
       Runnable lambda = () -> lambdaValue = other.lambdaValue;
       class Local {
         void set() {
@@ -204,7 +204,7 @@ class CopyConstructorMissesFieldCheckSample {
     private SelfTypedField parent;
     private String label;
 
-    SelfTypedField(SelfTypedField other) { // Noncompliant [[secondary=205]]
+    SelfTypedField(SelfTypedField other) { // Noncompliant
       parent = other.parent;
     }
   }
@@ -219,7 +219,7 @@ class CopyConstructorMissesFieldCheckSample {
     private int first;
     private int second;
 
-    MultipleCopyConstructors(MultipleCopyConstructors other) { // Noncompliant [[secondary=220]]
+    MultipleCopyConstructors(MultipleCopyConstructors other) { // Noncompliant
       first = other.first;
     }
 
@@ -348,7 +348,7 @@ class CopyConstructorMissesFieldCheckSample {
     class Inner {
       private int innerValue;
 
-      Inner(Inner other) { // Noncompliant [[secondary=349]]
+      Inner(Inner other) { // Noncompliant
         QualifiedOuterThis.this.outerValue = other.innerValue;
       }
     }
@@ -358,7 +358,7 @@ class CopyConstructorMissesFieldCheckSample {
     private int value;
     private NestedReceiverIsNotThis delegate = this;
 
-    NestedReceiverIsNotThis(NestedReceiverIsNotThis other) { // Noncompliant [[secondary=358]]
+    NestedReceiverIsNotThis(NestedReceiverIsNotThis other) { // Noncompliant
       other.delegate.value = 1;
     }
   }
@@ -378,7 +378,7 @@ class CopyConstructorMissesFieldCheckSample {
   static class RejectedUnaryWrites {
     private int value;
 
-    RejectedUnaryWrites(RejectedUnaryWrites other) { // Noncompliant [[secondary=379]]
+    RejectedUnaryWrites(RejectedUnaryWrites other) { // Noncompliant
       int ignored = -other.value;
       other.value++;
     }
