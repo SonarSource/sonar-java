@@ -23,10 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.caching.FileCachingCheck;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.utils.PackageUtils;
@@ -71,15 +70,16 @@ import static org.sonar.java.utils.SpringUtils.composeProfiles;
  *   <li>{@link TypeToDependenciesIndex} with all the dependencies collected by type</li>
  * </ul>
  */
-public class BeanDefinitionGatherer extends SpringContextModelGatherer {
-
-  private static final Logger LOG = LoggerFactory.getLogger(BeanDefinitionGatherer.class);
+public class BeanDefinitionGatherer extends SpringContextModelGatherer implements FileCachingCheck<List<BeanDefinitionGatherer.BeanData>> {
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
+  private static final String CACHE_KEY_PREFIX = "java:spring:bean-definitions:";
 
   private final List<BeanData> collectedBeans = new ArrayList<>();
 
-  /** Beans found in the file currently being scanned, used for per-file cache writes. */
+  /**
+   * Beans found in the file currently being scanned, used for per-file cache writes.
+   */
   private final List<BeanData> beansCollectedAtFileLevel = new ArrayList<>();
 
   record BeanData(
@@ -108,7 +108,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   /**
    * Visits class nodes and registers all beans defined in the class.
-   *
+   * <p>
    * Registers a bean when the class carries a stereotype annotation ({@code @Component},
    * {@code @Service}, {@code @Repository}, {@code @Controller}, {@code @RestController}, {@code @Configuration}),
    * then registers beans for {@code @Bean} factory methods on that same class.
@@ -154,20 +154,38 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    if (context.getCacheContext().isCacheEnabled()) {
-      SpringContextCacheHelper.writeBeanDefinitionsToCache(context, LOG, beansCollectedAtFileLevel);
-    }
+    writeToCache(context, beansCollectedAtFileLevel);
     beansCollectedAtFileLevel.clear();
+  }
+
+  @Override
+  public String cacheKeyPrefix() {
+    return CACHE_KEY_PREFIX;
+  }
+
+  @Override
+  public byte[] serialize(List<BeanData> beans) {
+    return SpringContextCacheHelper.serializeBeans(beans);
+  }
+
+  @Override
+  public List<BeanData> deserialize(InputFile inputFile, byte[] data) {
+    return SpringContextCacheHelper.deserializeBeans(data, inputFile);
+  }
+
+  @Override
+  public void restore(InputFileScannerContext context, List<BeanData> beans) {
+    collectedBeans.addAll(beans);
   }
 
   /**
    * Transfers all beans collected across the module into the shared {@link SpringContextModel}.
-   *
+   * <p>
    * Registers all encountered bean definitions in {@link BeanDefinitionRegistry},
    * their position in every ancestor/interface type in {@link TypeToBeanNamesIndex}, and
    * each of their dependencies by type in {@link TypeToDependenciesIndex}.
    *
-   * @param context Scanner context used here to access the current module key
+   * @param context            Scanner context used here to access the current module key
    * @param springContextModel Shared cross-module Spring context
    */
   @Override
@@ -193,20 +211,17 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext ctx) {
-    return SpringContextCacheHelper.readBeanDefinitionsFromCache(ctx, LOG).map(beans -> {
-      collectedBeans.addAll(beans);
-      return true;
-    }).orElse(false);
+    return restoreFromCache(ctx);
   }
 
   /**
    * Collects {@link BeanData} for a bean registered with the {@code @Bean} factory method.
-   *
+   * <p>
    * If multiple aliases are declared (e.g. {@code @Bean({"a", "b"})}), one {@link BeanData} is
    * registered for each alias.
    *
-   * @param method The {@code @Bean} factory method to visit
-   * @param pkg The bean's package (carried through to be stored in BeanData)
+   * @param method        The {@code @Bean} factory method to visit
+   * @param pkg           The bean's package (carried through to be stored in BeanData)
    * @param classProfiles The {@code @Profile} expression declared on the enclosing class, if any
    */
   private void collectBeanMethod(MethodTree method, String pkg, @Nullable String classProfiles) {
@@ -236,10 +251,12 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
     }
   }
 
-  /** Projects each type's injection points down to just their names, discarding location — the flat view stored in {@code BeanDefinitionHolder}.
+  /**
+   * Projects each type's injection points down to just their names, discarding location — the flat view stored in {@code BeanDefinitionHolder}.
    *
    * @param injectionPointsByType Injection points mapped by type, as stored in {@link TypeToDependenciesIndex}
-   * @return the name of each dependency, mapped by type */
+   * @return The name of each dependency, mapped by type.
+   */
   static Map<String, Set<String>> projectToNames(Map<String, Set<InjectionPoint>> injectionPointsByType) {
     Map<String, Set<String>> names = new LinkedHashMap<>();
     injectionPointsByType.forEach((typeFqn, points) -> names.put(typeFqn, points.stream()

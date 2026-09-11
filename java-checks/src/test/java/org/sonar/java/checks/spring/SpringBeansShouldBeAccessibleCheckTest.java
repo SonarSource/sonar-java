@@ -221,8 +221,8 @@ class SpringBeansShouldBeAccessibleCheckTest {
     check = spy(new SpringBeansShouldBeAccessibleCheck());
 
     var populatedReadCache = new InternalReadCache().putAll(writeCache);
-    for(String changedFile : changedFiles) {
-      populatedReadCache.put(HashCacheTestHelper.contentHashKey(changedFile), 
+    for (String changedFile : changedFiles) {
+      populatedReadCache.put(HashCacheTestHelper.contentHashKey(changedFile),
         HashCacheTestHelper.getSlightlyDifferentContentHash(changedFile));
     }
     var finalWriteCache = new InternalWriteCache().bind(populatedReadCache);
@@ -238,6 +238,40 @@ class SpringBeansShouldBeAccessibleCheckTest {
     assertThat(finalWriteCache.getData())
       .hasSizeGreaterThanOrEqualTo(7)
       .containsExactlyInAnyOrderEntriesOf(writeCache.getData());
+  }
+
+  /**
+   * A file that registers no scanned package caches an empty set. Restoring it must contribute nothing —
+   * an earlier encoding turned the empty set into a blank package name, which matched every package as a
+   * prefix and silenced the whole rule.
+   */
+  @Test
+  void unchanged_file_without_scanned_packages_does_not_suppress_issues() throws NoSuchAlgorithmException, IOException {
+    final String testFolder = BASE_PATH + "springBootApplication/";
+    var fileWithoutScannedPackages = mainCodeSourcesPath(testFolder + "app/Ok/Ok.java");
+    var otherFiles = List.of(
+      mainCodeSourcesPath(testFolder + "app/SpringBootApp1.java"),
+      mainCodeSourcesPath(testFolder + "Ko/Ko.java"));
+
+    ReadCache initialReadCache = HashCacheTestHelper.internalReadCacheFromFiles(List.of(fileWithoutScannedPackages));
+    var initialWriteCache = new InternalWriteCache().bind(initialReadCache);
+    CheckVerifier.newVerifier()
+      .withCache(initialReadCache, initialWriteCache)
+      .addFiles(InputFile.Status.CHANGED, fileWithoutScannedPackages)
+      .addFiles(InputFile.Status.CHANGED, otherFiles)
+      .withCheck(new SpringBeansShouldBeAccessibleCheck())
+      .verifyIssues();
+
+    var populatedReadCache = new InternalReadCache().putAll(initialWriteCache);
+    var check = spy(new SpringBeansShouldBeAccessibleCheck());
+    CheckVerifier.newVerifier()
+      .withCache(populatedReadCache, new InternalWriteCache().bind(populatedReadCache))
+      .addFiles(InputFile.Status.SAME, fileWithoutScannedPackages)
+      .addFiles(InputFile.Status.CHANGED, otherFiles)
+      .withCheck(check)
+      .verifyIssues();
+
+    verify(check, times(1)).scanWithoutParsing(any());
   }
 
   @Test

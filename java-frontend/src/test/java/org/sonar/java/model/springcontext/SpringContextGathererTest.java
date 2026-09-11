@@ -25,6 +25,12 @@ import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.caching.JavaReadCache;
+import org.sonar.plugins.java.api.caching.JavaWriteCache;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 abstract class SpringContextGathererTest {
 
@@ -57,5 +63,13 @@ abstract class SpringContextGathererTest {
       visitorsBridge.visitFile(compilationUnit, false);
     }
     visitorsBridge.endOfAnalysis();
+  }
+
+  protected static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
+    CacheContext cacheContext = mock(CacheContext.class);
+    when(cacheContext.isCacheEnabled()).thenReturn(true);
+    when(cacheContext.getReadCache()).thenReturn(readCache);
+    when(cacheContext.getWriteCache()).thenReturn(writeCache);
+    return cacheContext;
   }
 }

@@ -16,15 +16,11 @@
  */
 package org.sonar.java.model.springcontext;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.caching.FileCachingCheck;
 import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -34,7 +30,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonarsource.analyzer.commons.collections.SetUtils;
 
 /**
  * Collects packages registered for Spring component scanning and stores them in
@@ -51,18 +46,18 @@ import org.sonarsource.analyzer.commons.collections.SetUtils;
  * <p>Packages are grouped by module and written to {@link org.sonar.java.model.springcontext.ProjectPackageScan}
  * at the end of each module's analysis. Per-file results are cached to speed up incremental analyses.
  */
-public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
+public class ComponentScanPackageGatherer extends SpringContextModelGatherer implements FileCachingCheck<Set<String>> {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ComponentScanPackageGatherer.class);
+  private static final String CACHE_KEY_PREFIX = "java:spring:component-scan-packages:";
 
-  private static final String COMPONENT_SCAN_ANNOTATION = "org.springframework.context.annotation.ComponentScan";
-  private static final Set<String> COMPONENT_SCAN_BASE_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "basePackageClasses", "value");
-  private static final Set<String> SCAN_BASE_ANNOTATIONS = SetUtils.immutableSetOf("scanBasePackages", "scanBasePackageClasses");
-
-  /** Packages accumulated across all files in the current module. */
+  /**
+   * Packages accumulated across all files in the current module.
+   */
   private final Set<String> collectedPackages = new HashSet<>();
 
-  /** Packages found in the file currently being scanned, used for per-file cache writes. */
+  /**
+   * Packages found in the file currently being scanned, used for per-file cache writes.
+   */
   private final Set<String> packagesCollectedAtFileLevel = new HashSet<>();
 
   @Override
@@ -72,10 +67,27 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
-    return SpringContextCacheHelper.readComponentScanPackagesFromCache(inputFileScannerContext, LOG).map(packages -> {
-      collectedPackages.addAll(packages);
-      return true;
-    }).orElse(false);
+    return restoreFromCache(inputFileScannerContext);
+  }
+
+  @Override
+  public String cacheKeyPrefix() {
+    return CACHE_KEY_PREFIX;
+  }
+
+  @Override
+  public byte[] serialize(Set<String> packages) {
+    return SpringContextCacheHelper.serializeComponentScanPackages(packages);
+  }
+
+  @Override
+  public Set<String> deserialize(InputFile inputFile, byte[] data) {
+    return SpringContextCacheHelper.deserializeComponentScanPackages(data);
+  }
+
+  @Override
+  public void restore(InputFileScannerContext context, Set<String> packages) {
+    collectedPackages.addAll(packages);
   }
 
   @Override
@@ -98,9 +110,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    if (context.getCacheContext().isCacheEnabled()) {
-      SpringContextCacheHelper.writeComponentScanPackagesToCache(context, LOG, packagesCollectedAtFileLevel);
-    }
+    writeToCache(context, packagesCollectedAtFileLevel);
     packagesCollectedAtFileLevel.clear();
   }
 
@@ -110,69 +120,33 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
   }
 
   private void collectFromComponentScan(SymbolMetadata metadata) {
-    List<SymbolMetadata.AnnotationValue> componentScanAttributes = metadata.valuesForAnnotation(COMPONENT_SCAN_ANNOTATION);
-    if (componentScanAttributes == null) {
-      return;
-    }
-    componentScanAttributes.stream()
-      .filter(v -> COMPONENT_SCAN_BASE_ARGUMENTS.contains(v.name()))
-      .forEach(this::addAnnotationValueToCollectedPackages);
+    SpringUtils.componentScanBaseAttributes(metadata).stream()
+      .map(SpringUtils::packagesFromAnnotationValue)
+      .forEach(this::collect);
   }
 
+  /**
+   * Collects the packages a {@code @SpringBootApplication} class registers for scanning.
+   *
+   * <p>The annotation's implicit "scan my own package" behaviour is suppressed once something already
+   * contributed a package for this file, so that an explicit {@code @ComponentScan} on the same class
+   * wins over the implicit fallback.
+   */
   private void collectFromSpringBootApplication(Symbol classSymbol, SymbolMetadata metadata) {
     if (!metadata.isAnnotatedWith(SpringUtils.SPRING_BOOT_APP_ANNOTATION)) {
       return;
     }
-    var packages = targetedPackages(PackageUtils.packageNameOf(classSymbol), metadata, packagesCollectedAtFileLevel.isEmpty());
-    collectedPackages.addAll(packages);
-    packagesCollectedAtFileLevel.addAll(packages);
+    collect(SpringUtils.springBootApplicationScanPackages(
+      PackageUtils.packageNameOf(classSymbol), metadata, packagesCollectedAtFileLevel.isEmpty()));
   }
 
-  private static List<String> targetedPackages(String classPackageName, SymbolMetadata metadata, boolean useOwnPackageAsFallback) {
-    var scanBaseValues = Objects.requireNonNull(metadata.valuesForAnnotation(SpringUtils.SPRING_BOOT_APP_ANNOTATION)).stream()
-      .filter(v -> SCAN_BASE_ANNOTATIONS.contains(v.name()) && v.value() instanceof Object[])
-      .toList();
-
-    List<String> packages = new ArrayList<>();
-    for (SymbolMetadata.AnnotationValue value : scanBaseValues) {
-      boolean isClassBased = "scanBasePackageClasses".equals(value.name());
-      for (Object element : (Object[]) value.value()) {
-        resolvePackage(element, isClassBased).ifPresent(packages::add);
-      }
-    }
-    if (scanBaseValues.isEmpty()) {
-      // Without explicit scan attributes, @SpringBootApplication scans its own package — but only if
-      // no packages were already collected via @ComponentScan on the same class.
-      return (useOwnPackageAsFallback && !classPackageName.isBlank()) ? Collections.singletonList(classPackageName) : List.of();
-    }
-    return packages;
-  }
-
-  private void addAnnotationValueToCollectedPackages(SymbolMetadata.AnnotationValue annotationValue) {
-    if (annotationValue.value() instanceof Object[] objects) {
-      for (Object o : objects) {
-        if (o instanceof String oString && !oString.isBlank()) {
-          collectedPackages.add(oString);
-          packagesCollectedAtFileLevel.add(oString);
-        } else if (o instanceof Symbol oSymbol) {
-          var pkg = PackageUtils.packageNameOf(oSymbol);
-          if (!pkg.isBlank()) {
-            collectedPackages.add(pkg);
-            packagesCollectedAtFileLevel.add(pkg);
-          }
-        }
-      }
-    }
-  }
-
-  private static Optional<String> resolvePackage(Object element, boolean isClassBased) {
-    if (!isClassBased && element instanceof String s && !s.isBlank()) {
-      return Optional.of(s);
-    } else if (isClassBased && element instanceof Symbol s) {
-      var pkg = PackageUtils.packageNameOf(s);
-      return pkg.isBlank() ? Optional.empty() : Optional.of(pkg);
-    }
-    return Optional.empty();
+  private void collect(List<String> packages) {
+    packages.stream()
+      .filter(packageName -> !packageName.isBlank())
+      .forEach(packageName -> {
+        collectedPackages.add(packageName);
+        packagesCollectedAtFileLevel.add(packageName);
+      });
   }
 
 }

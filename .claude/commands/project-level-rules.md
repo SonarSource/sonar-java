@@ -41,42 +41,77 @@ public class MyCheck extends IssuableSubscriptionVisitor implements EndOfAnalysi
 
 Rules implementing `EndOfAnalysis` are **never skipped** for unchanged files — they are always in `scannersThatCannotBeSkipped`. Without caching, they only see changed files on incremental runs.
 
-To correctly restore state for unchanged files, implement both:
-
-### 1. Write — `leaveFile()`: persist per-file data to cache
+Do **not** hand-roll the cache plumbing. Implement `FileCachingCheck<T>` (`java-frontend/.../org/sonar/java/caching/FileCachingCheck.java`), where `T` is the data collected for
+one file. It owns the key construction, the `isCacheEnabled()` guard, `copyFromPrevious`, and the error handling — a missing entry, an unreadable entry, or a colliding write are 
+all trace-logged and degrade to re-parsing the file.
 
 ```java
-@Override
-public void leaveFile(JavaFileScannerContext context) {
-  super.leaveFile(context);
-  if (context.getCacheContext().isCacheEnabled()) {
-    var key = CACHE_KEY_PREFIX + context.getInputFile().key();
-    var bytes = serialize(myPerFileData);
-    try {
-      context.getCacheContext().getWriteCache().write(key, bytes);
-    } catch (IllegalArgumentException e) {
-      LOG.trace("Cache key already written: {}", key);
-    }
+@Rule(key = "SXXXX")
+public class MyCheck extends IssuableSubscriptionVisitor
+  implements EndOfAnalysis, FileCachingCheck<MyCheck.PerFileData> {
+
+  private static final String CACHE_KEY_PREFIX = "java:SXXXX:";
+  private static final int CACHE_FORMAT_VERSION = 1;
+  private static final String COUNT = "count";
+
+  record PerFileData(int count) {}
+
+  @Override
+  public String cacheKeyPrefix() {
+    return CACHE_KEY_PREFIX;
   }
-  myPerFileData.clear();
+
+  @Override
+  public byte[] serialize(PerFileData data) {
+    var document = JsonCacheFormat.newDocument(CACHE_FORMAT_VERSION);
+    document.addProperty(COUNT, data.count());
+    return JsonCacheFormat.toBytes(document);
+  }
+
+  @Override
+  public PerFileData deserialize(InputFile inputFile, byte[] data) {
+    var document = JsonCacheFormat.parseDocument(data, CACHE_FORMAT_VERSION);
+    return new PerFileData(JsonCacheFormat.requiredInt(document, COUNT));
+  }
+
+  @Override
+  public void restore(InputFileScannerContext context, PerFileData data) {
+    projectCount += data.count();   // merge into the module-level state, as visiting the file would have
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    writeToCache(context, new PerFileData(currentFileCount));
+    currentFileCount = 0;
+  }
+
+  @Override
+  public boolean scanWithoutParsing(InputFileScannerContext context) {
+    return restoreFromCache(context);   // true = restored, file needs no parsing
+  }
 }
 ```
 
-### 2. Read — `scanWithoutParsing()`: restore state from cache, skip parsing
+A check implementing plain `JavaFileScanner` (no `leaveFile`) calls `writeToCache` from `scanFile`
+instead.
 
-```java
-@Override
-public boolean scanWithoutParsing(InputFileScannerContext context) {
-  var key = CACHE_KEY_PREFIX + context.getInputFile().key();
-  var bytes = context.getCacheContext().getReadCache().readBytes(key);
-  if (bytes != null) {
-    context.getCacheContext().getWriteCache().copyFromPrevious(key);
-    issues.addAll(deserialize(bytes));  // restore into aggregated state
-    return true;   // file does not need to be parsed
-  }
-  return false;    // cache miss — fall back to full parse
-}
-```
+### Serialization format
+
+Use `JsonCacheFormat` (`org.sonar.java.caching`): versioned JSON documents plus strict accessors that throw on anything unexpected, which `readFromCache` turns into a cache miss. 
+Bump your `CACHE_FORMAT_VERSION` whenever the entry shape changes — old entries are then rejected and recomputed.
+Locations are covered by `spanToJson`/`spanFromJson`.
+
+Stick to the Gson **tree API**; never its reflective object binding (`new Gson().toJson(pojo)`), because the plugin is shaded with `minimizeJar`.
+
+### Restoring locations
+
+`deserialize` receives the `InputFile` being restored. Anchor every location to it rather than to
+anything recorded when the entry was written — see `BeanDefinitionGatherer`.
+
+### Sharing an entry between rules
+
+Two checks may return the same `cacheKeyPrefix()` to share one entry, as `MissingPackageInfoCheck` (S1228) and `UselessPackageInfoCheck` (S4032) do. 
+The first write of an analysis wins and the rest are ignored.
 
 ### When caching is not needed
 
@@ -101,10 +136,12 @@ Currently `ProjectEndOfAnalysisSensor` only handles telemetry, not rule issues.
 
 | Rule | Pattern |
 |---|---|
-| `SpringBeansShouldBeAccessibleCheck` (S4605) | Full caching: writes packages per file, reads in `scanWithoutParsing`, aggregates, reports in `endOfAnalysis` |
+| `SpringBeansShouldBeAccessibleCheck` (S4605) | Full caching: writes packages per file, aggregates, reports in `endOfAnalysis` |
 | `BrainMethodCheck` (S6541) | No caching: collects candidates, noise-filters and reports in `endOfAnalysis` |
-| `AbstractPackageInfoChecker` | Base class for package-info checks |
+| `AbstractPackageInfoChecker` (S1228, S4032) | Two rules sharing one cache entry |
 | `ExcessiveContentRequestCheck` (S5693) | Cross-file config aggregation |
+| `DateEnumsCheck` (S8694) | Caches potential issues and rebuilds their quick fixes without the AST |
+| `BeanDefinitionGatherer` | Frontend gatherer; nested payload, locations re-anchored on restore |
 
 ## Memory warning
 

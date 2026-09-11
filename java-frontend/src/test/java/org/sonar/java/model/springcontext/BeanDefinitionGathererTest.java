@@ -432,14 +432,6 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
           .replace("\"dependencies\":[]", "\"dependencies\":[{\"type\":\"T\",\"injectionPoints\":[{\"span\":" + span + "}]}]") + "]}"));
   }
 
-  private static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
-    CacheContext cacheContext = mock(CacheContext.class);
-    when(cacheContext.isCacheEnabled()).thenReturn(true);
-    when(cacheContext.getReadCache()).thenReturn(readCache);
-    when(cacheContext.getWriteCache()).thenReturn(writeCache);
-    return cacheContext;
-  }
-
   // ---- TypeToDependenciesIndex -------------------------------------------------
 
   @Test
