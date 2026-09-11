@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model.springcontext;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import java.io.File;
@@ -214,7 +215,7 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
       dataCaptor.capture());
     var document = JsonParser.parseString(new String(dataCaptor.getValue(), StandardCharsets.UTF_8)).getAsJsonObject();
     assertThat(document.get("version").getAsInt()).isOne();
-    assertThat(document.getAsJsonArray("packages")).extracting(element -> element.getAsString())
+    assertThat(document.getAsJsonArray("packages")).extracting(JsonElement::getAsString)
       .containsExactlyInAnyOrder("com.example.service", "com.example.web");
   }
 

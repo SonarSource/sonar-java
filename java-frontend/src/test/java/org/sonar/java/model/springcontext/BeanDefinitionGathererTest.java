@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model.springcontext;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import java.io.File;
@@ -217,13 +218,15 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var restored = model.getBeanDefinitionRegistry().getByName(beanName);
     assertThat(restored).hasSize(1);
-    assertThat(restored.get(0).getProfiles()).isEqualTo(expectedProfiles);
+    assertThat(restored.getFirst().getProfiles()).isEqualTo(expectedProfiles);
+    var restoredNamesForType = model.getTypeToBeanNamesIndex().getNamesForType(restored.getFirst().getType());
 
     gatherer = new BeanDefinitionGatherer();
     model = new SpringContextModel();
     scan(filePath);
     var parsed = model.getBeanDefinitionRegistry().getByName(beanName);
     assertThat(parsed).hasSize(1);
+    assertThat(restoredNamesForType).isEqualTo(model.getTypeToBeanNamesIndex().getNamesForType(parsed.getFirst().getType()));
 
     assertThat(restored.get(0)).satisfies(bean -> {
       assertThat(bean.getType()).isEqualTo(parsed.get(0).getType());
@@ -275,7 +278,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(bean.get("primary").getAsBoolean()).isFalse();
     assertThat(bean.get("profiles").getAsString()).isEqualTo("prod");
     assertThat(bean.getAsJsonObject("span").get("startLine").getAsInt()).isEqualTo(12);
-    assertThat(bean.getAsJsonArray("typeHierarchy")).extracting(element -> element.getAsString())
+    assertThat(bean.getAsJsonArray("typeHierarchy")).extracting(JsonElement::getAsString)
       .contains("checks.spring.context.QualifiedFieldDependencies");
     assertThat(bean.getAsJsonArray("dependencies")).extracting(element -> element.getAsJsonObject().get("type").getAsString())
       .containsExactlyInAnyOrder("org.springframework.context.ApplicationContext", "org.springframework.core.env.Environment");
