@@ -63,6 +63,21 @@ class CastDoubleToFloatCheckSample {
 //            ^^^^^^^^^^^^^^^^
     // fix@qf11 {{Replace with a float literal}}
     // edit@qf11 [[sc=15;ec=31]] {{0x1.0p10f}}
+
+    float l = (float) -0.5; // Noncompliant [[quickfixes=qf12]]
+//            ^^^^^^^^^^^^
+    // fix@qf12 {{Replace with a float literal}}
+    // edit@qf12 [[sc=15;ec=27]] {{-0.5f}}
+
+    float m = (float) +3.14; // Noncompliant [[quickfixes=qf13]]
+//            ^^^^^^^^^^^^^
+    // fix@qf13 {{Replace with a float literal}}
+    // edit@qf13 [[sc=15;ec=28]] {{3.14f}}
+
+    float n = (float) -0.0; // Noncompliant [[quickfixes=qf14]]
+//            ^^^^^^^^^^^^
+    // fix@qf14 {{Replace with a float literal}}
+    // edit@qf14 [[sc=15;ec=27]] {{-0.0f}}
   }
 
   void compliant() {
@@ -76,5 +91,8 @@ class CastDoubleToFloatCheckSample {
     int h = (int) 3.14;
     double i = (double) 3.14f;
     float j = (float) Math.PI;
+    float k = (float) 1e300; // compliant - overflow, 1e300f is not a valid float literal
+    float l = (float) 1e-46; // compliant - underflow, 1e-46f would be zero but 1e-46 is not
+    float m = (float) 1.000000059604644775390625001; // compliant - double rounding difference
   }
 }

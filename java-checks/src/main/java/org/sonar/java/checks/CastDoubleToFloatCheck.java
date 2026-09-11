@@ -26,8 +26,10 @@ import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 @Rule(key = "S9386")
 public class CastDoubleToFloatCheck extends IssuableSubscriptionVisitor {
@@ -46,22 +48,56 @@ public class CastDoubleToFloatCheck extends IssuableSubscriptionVisitor {
       return;
     }
     ExpressionTree expression = ExpressionUtils.skipParentheses(typeCastTree.expression());
-    if (expression.is(Tree.Kind.DOUBLE_LITERAL)) {
-      String literalValue = ((LiteralTree) expression).value();
-      String replacement = stripDoubleSuffix(literalValue) + "f";
-      QuickFixHelper.newIssue(context)
-        .forRule(this)
-        .onTree(typeCastTree)
-        .withMessage(MESSAGE)
-        .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with a float literal")
-          .addTextEdit(JavaTextEdit.replaceTree(typeCastTree, replacement))
-          .build())
-        .report();
+    boolean negated = false;
+    if (expression.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
+      negated = expression.is(Tree.Kind.UNARY_MINUS);
+      expression = ((UnaryExpressionTree) expression).expression();
     }
+    if (!expression.is(Tree.Kind.DOUBLE_LITERAL)) {
+      return;
+    }
+    String literalValue = ((LiteralTree) expression).value();
+    String stripped = stripDoubleSuffix(literalValue);
+    if (!isEquivalentFloatLiteral(stripped, negated)) {
+      return;
+    }
+    String replacement = (negated ? "-" : "") + stripped + "f";
+    QuickFixHelper.newIssue(context)
+      .forRule(this)
+      .onTree(typeCastTree)
+      .withMessage(MESSAGE)
+      .withQuickFix(() -> JavaQuickFix.newQuickFix("Replace with a float literal")
+        .addTextEdit(JavaTextEdit.replaceTree(typeCastTree, replacement))
+        .build())
+      .report();
   }
 
   private static boolean isFloatCast(TypeCastTree typeCastTree) {
-    return "float".equals(typeCastTree.type().firstToken().text());
+    if (typeCastTree.type() instanceof PrimitiveTypeTree primitiveType) {
+      return "float".equals(primitiveType.keyword().text());
+    }
+    return false;
+  }
+
+  private static boolean isEquivalentFloatLiteral(String stripped, boolean negated) {
+    String parseable = stripped.replace("_", "");
+    try {
+      double asDouble = Double.parseDouble(parseable);
+      float asFloat = Float.parseFloat(parseable);
+      if (!Float.isFinite(asFloat)) {
+        return false;
+      }
+      if (asFloat == 0.0f && asDouble != 0.0) {
+        return false;
+      }
+      if (negated) {
+        asDouble = -asDouble;
+        asFloat = -asFloat;
+      }
+      return asFloat == (float) asDouble;
+    } catch (NumberFormatException e) {
+      return false;
+    }
   }
 
   private static String stripDoubleSuffix(String literal) {

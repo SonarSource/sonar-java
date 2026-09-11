@@ -1,22 +1,15 @@
-<p>An issue is raised when a higher-precision floating-point literal is explicitly converted to a lower-precision floating-point type using an
-explicit type conversion operation.</p>
 <h2>Why is this an issue?</h2>
-<p>In most languages, decimal number literals without a suffix are treated as a higher-precision floating-point type by default. When you need a
-lower-precision floating-point value, you have two options:</p>
+<p>In Java, decimal number literals without a suffix are treated as <code>double</code> by default. When you need a <code>float</code> value, you have
+two options:</p>
 <ul>
-  <li>Cast the default literal: using an explicit type cast operator</li>
-  <li>Use a type-specific literal directly: adding a suffix that designates the lower-precision type</li>
+  <li>Cast the literal: <code>(float) 3.14</code></li>
+  <li>Use a float literal directly: <code>3.14f</code></li>
 </ul>
 <p>Using an explicit cast adds unnecessary complexity to the code. The cast operator signals a type conversion, which typically requires careful
-attention from readers to ensure no precision loss or unexpected behavior occurs. However, when casting a literal value, this concern disappears - the
-value is known at compile time.</p>
-<p>Type-specific floating-point literals (decimal numbers with a suffix indicating the target type) were designed specifically for this purpose. They
-clearly express the intent that this is a value of the lower-precision type, not the default type being converted. This makes the code more readable
-and idiomatic.</p>
-<p>Additionally, while the performance impact is minimal in most cases, using a type-specific literal avoids the runtime cast operation entirely, as
-the compiler directly treats the value as the intended type.</p>
-<p>In Java specifically, use <code>3.14f</code> instead of <code>(float) 3.14</code>, where the <code>f</code> or <code>F</code> suffix designates a
-float literal.</p>
+attention from readers to ensure no precision loss or unexpected behavior occurs. However, when casting a literal value, this concern disappears — the
+value is known at compile time and the compiler folds the cast into a constant.</p>
+<p>Float literals with the <code>f</code> or <code>F</code> suffix were designed specifically for this purpose. They clearly express the intent that
+this is a <code>float</code> value, not a <code>double</code> being converted. This makes the code more readable and idiomatic.</p>
 <h3>What is the potential impact?</h3>
 <p>This issue affects code readability and maintainability. While it does not introduce bugs or security vulnerabilities, it makes the code slightly
 harder to read and understand. The unnecessary type conversion adds visual noise and may cause readers to spend extra time verifying that the
@@ -43,4 +36,3 @@ float half = 0.5f;
   <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-3.html#jls-3.10.2">Floating-Point
   Literals</a></li>
 </ul>
-
