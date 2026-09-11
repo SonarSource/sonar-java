@@ -1,0 +1,201 @@
+# Proposed Approach for S9391: Loops should use Stream API when performing filter, map, or collect operations
+
+## Summary
+
+This rule detects traditional `for` and `for-each` loops that perform filtering, mapping, or collecting operations, and suggests replacing them with Java Stream API equivalents. The rule follows the pattern established by `CollectInsteadOfForeachCheck` but operates in the reverse direction: from imperative loops to declarative streams.
+
+The rule targets loops where:
+- A collection variable is declared and populated inside the loop
+- Elements are conditionally added based on a predicate (filter pattern)
+- Elements are transformed before being added (map pattern)
+- The loop body contains only the add operation (no complex logic)
+
+## File Locations
+
+- Rule implementation: `java-checks/src/main/java/org/sonar/java/checks/ForLoopStreamSuggestionCheck.java`
+- Test class: `java-checks/src/test/java/org/sonar/java/checks/ForLoopStreamSuggestionCheckTest.java`
+- Test samples: `java-checks-test-sources/default/src/main/java/checks/ForLoopStreamSuggestionCheckSample.java`
+- Metadata: `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/S9391.html` and `S9391.json` (already provided)
+
+## Rule Behavior
+
+The rule should detect and report on:
+
+1. **Filter patterns**: Loops that declare a collection, then conditionally add elements based on an `if` condition
+2. **Map patterns**: Loops that declare a collection, then add transformed elements
+3. **Collect patterns**: Loops that declare a collection and add all elements without transformation or filtering
+4. **Find-first patterns**: Loops that iterate to find a matching element and break on first match
+
+The rule should NOT report on:
+- Loops with multiple operations per iteration
+- Loops with complex control flow (nested conditionals, multiple break/continue)
+- Loops that modify the collection being iterated
+- Loops with significant side effects
+
+## Proposed Approach
+
+Use `IssuableSubscriptionVisitor` to subscribe to `FOR_STATEMENT` and `FOR_EACH_STATEMENT` tree kinds. For each loop:
+
+1. Check if the loop body declares a collection variable
+2. Analyze the loop body for filter/map/collect patterns
+3. If a pattern is detected and the loop is simple enough, report an issue with a suggested fix
+
+This approach is preferred over `AbstractMethodDetection` because the trigger is the loop structure itself, not a method invocation. The pattern matches the style of `LoopsOnSameSetCheck` which also operates on loop constructs.
+
+## Algorithm
+
+1. **Subscribe to loops**: Override `nodesToVisit()` to return `FOR_STATEMENT` and `FOR_EACH_STATEMENT`
+2. **Extract loop context**: For each loop, collect:
+   - The iterable expression (source collection)
+   - The loop variable
+   - All statements in the loop body
+3. **Identify collection declaration**: Look for a variable declaration inside the loop body that is a collection type (List, Set, Collection, etc.)
+4. **Pattern matching**:
+   - **Filter pattern**: If the loop body contains `if (condition) { collection.add(loopVar) }` with no other operations
+   - **Map pattern**: If the loop body contains `if (condition) { collection.add(transform(loopVar)) }` with no other operations
+   - **Collect pattern**: If the loop body contains only `collection.add(loopVar)` with no condition
+   - **Find-first pattern**: If the loop body contains `if (condition) { found = true; break; }`
+5. **Validate simplicity**: Ensure the loop body has no other statements, nested loops, or complex control flow
+6. **Report issue**: If pattern matches and loop is simple, report with appropriate message
+
+## Recommended Helpers
+
+The rule can leverage existing helper classes:
+
+- `ExpressionUtils.skipParentheses(ExpressionTree)` - Used to unwrap parenthesized expressions when analyzing conditions
+- `ExpressionUtils.methodName(MethodInvocationTree)` - For extracting method names in messages
+- `ExpressionUtils.getParentOfType(tree, Tree.Kind.METHOD)` - To verify the loop is not inside another loop
+
+No new helper classes are required for the initial implementation.
+
+## Test Strategy
+
+Tests should cover:
+
+1. **Basic filter pattern**: Simple for-each with if condition and add
+2. **Map pattern**: Loop with transformation before add
+3. **Collect pattern**: Loop that adds all elements
+4. **Find-first pattern**: Loop that finds and breaks on first match
+5. **Noncompliant cases**:
+   - Simple for-each loops with filter/map/collect patterns
+   - Traditional for loops with the same patterns
+   - Nested conditions (should NOT report)
+   - Loops with multiple operations (should NOT report)
+   - Loops modifying the source collection (should NOT report)
+   - Loops with side effects (should NOT report)
+6. **Compliant cases**:
+   - Loops with complex body logic
+   - Loops without collection declaration
+   - Non-loop iteration constructs
+7. **Without semantic**: Tests should pass without semantic analysis (pattern matching based on syntax alone)
+
+## Expected Cases Covered
+
+### Noncompliant patterns
+
+1. **Filter pattern**:
+   ```java
+   List<String> result = new ArrayList<>();
+   for (Item item : items) {
+       if (item.isActive()) {
+           result.add(item.getName());
+       }
+   }
+   ```
+   Suggests: `items.stream().filter(Item::isActive).map(Item::getName).collect(Collectors.toList())`
+
+2. **Map pattern**:
+   ```java
+   List<Integer> ids = new ArrayList<>();
+   for (User user : users) {
+       ids.add(user.getId());
+   }
+   ```
+   Suggests: `users.stream().map(User::getId).collect(Collectors.toList())`
+
+3. **Collect pattern**:
+   ```java
+   List<String> names = new ArrayList<>();
+   for (String name : namesList) {
+       names.add(name);
+   }
+   ```
+   Suggests: `new ArrayList<>(namesList)` or `namesList.stream().toList()`
+
+4. **Find-first pattern**:
+   ```java
+   String found = null;
+   for (String s : strings) {
+       if (s.startsWith("prefix")) {
+           found = s;
+           break;
+       }
+   }
+   ```
+   Suggests: `strings.stream().filter(s -> s.startsWith("prefix")).findFirst().orElse(null)`
+
+### Compliant patterns
+
+1. Loop with multiple operations in body:
+   ```java
+   for (Item item : items) {
+       if (item.isActive()) {
+           result.add(item.getName());
+       }
+       process(item);  // additional operation
+   }
+   ```
+
+2. Loop without collection declaration:
+   ```java
+   for (Item item : items) {
+       System.out.println(item.getName());
+   }
+   ```
+
+3. Loop with complex control flow:
+   ```java
+   for (Item item : items) {
+       if (item.isActive()) {
+           if (item.isValid()) {
+               result.add(item.getName());
+           }
+       }
+   }
+   ```
+
+4. Loop modifying source collection:
+   ```java
+   for (Item item : items) {
+       if (item.isExpired()) {
+           items.remove(item);
+       }
+   }
+   ```
+
+5. While loop (out of scope for initial implementation):
+   ```java
+   while (iterator.hasNext()) {
+       result.add(iterator.next());
+   }
+   ```
+
+## Expected Accepted FN/FP
+
+### Accepted False Negatives
+
+1. **While loops**: The initial implementation will not detect equivalent patterns in while loops. This is acceptable because for-each and for statements cover the majority of cases.
+
+2. **Nested loops**: Loops where the collection is declared in an outer loop will not be detected. This is acceptable as the pattern is less common and the fix would be more complex.
+
+3. **Method chains**: Loops that call methods on the collection variable (e.g., `result.addAll(item.getItems())`) will not be detected. This is acceptable as the transformation is less straightforward.
+
+4. **Multi-statement lambdas**: If the loop body contains a lambda expression with multiple statements, it will not be detected. This is acceptable as the pattern matching would be significantly more complex.
+
+### Accepted False Positives
+
+1. **Edge case: method call on collection**: The rule may flag loops where the collection method is called on a method result (e.g., `getItems()::add`). This is acceptable as the suggestion is still valid, even if the exact replacement syntax differs.
+
+2. **Edge case: generic type inference**: The rule may suggest streams in contexts where type inference could fail. This is acceptable as the developer can adjust the type parameters when applying the fix.
+
+3. **Edge case: side-effect predicates**: If the filter predicate has side effects, the rule may still suggest a stream. This is acceptable as the developer should review the suggestion and understand that stream lambdas should be side-effect free.
