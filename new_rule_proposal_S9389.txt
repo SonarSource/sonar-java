@@ -1,0 +1,86 @@
+# Proposed Approach for S9389: Data provider names should be unique within a class
+
+## Summary
+
+This rule detects duplicate `@DataProvider` names within a single test class. When multiple methods are annotated with `@DataProvider(name = "...")` using the same name, TestNG cannot reliably determine which provider to use, leading to unpredictable test behavior. The implementation follows the pattern of `TestsStabilityCheck` for annotation detection and `MembersDifferOnlyByCapitalizationCheck` for duplicate detection within a class scope.
+
+## File Locations
+
+- Rule class: `java-checks/src/main/java/org/sonar/java/checks/tests/DataProviderNameUniquenessCheck.java`
+- Test class: `java-checks/src/test/java/org/sonar/java/checks/tests/DataProviderNameUniquenessCheckTest.java`
+- Test sample: `java-checks-test-sources/default/src/test/java/checks/tests/DataProviderNameUniquenessCheckSample.java`
+
+## Rule Behavior
+
+The rule should detect when two or more `@DataProvider` methods within the same class have the same `name` attribute value. The check should:
+
+1. **Detect**: Methods annotated with `@DataProvider` (from `org.testng.annotations.DataProvider`) that share the same `name` attribute value within the same class.
+2. **Report**: On the duplicate (second occurrence) with a secondary location on the first occurrence.
+3. **Allow**: Unique names, methods without the `name` attribute (uses method name as default), and providers in different classes.
+
+## Proposed Approach
+
+Use `IssuableSubscriptionVisitor` with `Tree.Kind.CLASS` to traverse classes. For each class, collect all `@DataProvider` methods and their names into a map, then report issues for duplicates.
+
+This approach:
+- Follows the pattern established by `TestsStabilityCheck` for TestNG annotation handling
+- Uses the same visitor pattern as other class-scoped checks
+- Leverages the semantic model to resolve the `@DataProvider` annotation type
+- Reports the second (and subsequent) duplicate with a secondary location pointing to the first occurrence
+
+## Algorithm
+
+1. Register to visit `Tree.Kind.CLASS` nodes only.
+2. For each class, iterate over its members to find `MethodTree` nodes.
+3. For each method, check if it has a `@DataProvider` annotation by looking at `method.modifiers().annotations()`.
+4. For each `@DataProvider` annotation, extract the `name` attribute value using `AnnotationTree.arguments()`.
+5. Store each (name, methodTree) pair in a `Map<String, MethodTree>` where the map tracks the first occurrence.
+6. If a name already exists in the map, report an issue on the duplicate method with a secondary location on the original.
+7. Skip methods where the `name` attribute is not explicitly set (TestNG uses the method name as default — these are handled separately by using the method name as the key).
+
+## Recommended Helpers
+
+No new helper classes are needed. The rule can use existing patterns:
+
+- `AnnotationTree.arguments()` — to access annotation arguments
+- `AssignmentExpressionTree` — to parse `name = "value"` syntax
+- `StringLiteralTree` — to extract string literal values
+- `JavaFileScannerContext.Location` — for secondary location reporting
+
+## Test Strategy
+
+The test sample should cover:
+
+### Compliant patterns
+- Each `@DataProvider` has a unique name
+- Methods without the `name` attribute (uses method name)
+- `@DataProvider` in different classes
+- `@DataProvider` without explicit `name` (uses method name as default)
+
+### Noncompliant patterns
+- Two `@DataProvider` methods with the same explicit `name`
+- Three or more `@DataProvider` methods sharing the same name (report each duplicate)
+- Same name used with different casing (should be detected — TestNG names are case-sensitive)
+
+## Expected Cases Covered
+
+### Noncompliant patterns
+- **Duplicate `name` attributes**: Two or more `@DataProvider` methods with `name = "testData"` — report on each duplicate with secondary on first.
+- **Multiple duplicates**: Three methods with the same name — report on the second and third, each with secondary on the first.
+- **Mixed explicit names**: Some methods with `name` attribute, some without — only explicit names are compared.
+- **Nested classes**: Each nested class has its own scope — duplicates are only flagged within the same class.
+
+### Compliant patterns
+- **Unique names**: All `@DataProvider` methods have distinct `name` values.
+- **No explicit name**: Methods using the default method name as provider name (unique method names are fine).
+- **Different classes**: Same provider name in different classes is allowed.
+- **Inherited methods**: `@DataProvider` in a superclass is in a different class scope.
+
+## Expected Accepted FN/FP
+
+### Accepted False Negatives
+- **Inherited providers**: Providers defined in a superclass are not detected because the rule only inspects the current class members. This is acceptable because inheritance of data providers is rare and typically intentional.
+- **Dynamic names**: Providers using a variable or expression for the `name` attribute (e.g., `@DataProvider(name = MY_NAME)`) cannot be resolved statically and are skipped.
+
+### Accepted False Positives
+- **None expected**: The rule operates on explicit string literals and method declarations within a single class, making false positives unlikely.

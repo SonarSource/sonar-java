@@ -1,0 +1,80 @@
+<p>An issue is raised when two or more methods that provide test data use the same identifier value within the same test class scope.</p>
+<p>In Java with TestNG, this specifically refers to methods annotated with <code>@DataProvider</code> using the same <code>name</code> attribute
+value.</p>
+<h2>Why is this an issue?</h2>
+<p>Test framework data provider mechanisms allow you to define methods that supply test data to your test methods. Each data provider is identified by
+its name attribute, which test methods reference using configuration parameters in their test annotations.</p>
+<p>When multiple data provider methods share the same name within a class, the test framework faces ambiguity about which data provider to use. The
+framework’s behavior in this situation is undefined and implementation-dependent. It may:</p>
+<ul>
+  <li>Use the first data provider it encounters</li>
+  <li>Use the last data provider defined</li>
+  <li>Throw an exception at runtime</li>
+  <li>Produce inconsistent results across different test runs</li>
+</ul>
+<p>This ambiguity makes your tests unreliable and unpredictable. A test that passes today might fail tomorrow, or vice versa, without any changes to
+the actual code being tested. This undermines the entire purpose of automated testing.</p>
+<p>Additionally, duplicate names make it difficult for developers to understand which data is being used for which tests, reducing code
+maintainability and making debugging more challenging.</p>
+<p>In TestNG specifically, this refers to the <code>@DataProvider</code> annotation with its <code>name</code> attribute, which test methods reference
+using the <code>dataProvider</code> parameter in the <code>@Test</code> annotation.</p>
+<h3>What is the potential impact?</h3>
+<p>When test data source identifiers are duplicated, test execution becomes unpredictable. Tests may:</p>
+<ul>
+  <li>Receive incorrect test data, causing false positives or false negatives</li>
+  <li>Fail intermittently without clear cause</li>
+  <li>Behave differently across different environments or testing framework versions</li>
+</ul>
+<p>This unreliability can lead to:</p>
+<ul>
+  <li>Bugs slipping through to production because tests didn’t run as intended</li>
+  <li>Wasted developer time debugging test failures that don’t represent real issues</li>
+  <li>Loss of confidence in the test suite, potentially leading teams to ignore test results</li>
+  <li>Difficulty reproducing and fixing genuine test failures</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Ensure each <code>@DataProvider</code> method in a class has a unique <code>name</code> attribute. Choose descriptive names that clearly indicate
+what data each provider supplies.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+@DataProvider(name = "testData")
+public Object[][] provider1() {
+    return new Object[][] {
+        {"value1", 1},
+        {"value2", 2}
+    };
+}
+
+@DataProvider(name = "testData") // Noncompliant
+public Object[][] provider2() {
+    return new Object[][] {
+        {"value3", 3},
+        {"value4", 4}
+    };
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+@DataProvider(name = "testData")
+public Object[][] provider1() {
+    return new Object[][] {
+        {"value1", 1},
+        {"value2", 2}
+    };
+}
+
+@DataProvider(name = "additionalTestData")
+public Object[][] provider2() {
+    return new Object[][] {
+        {"value3", 3},
+        {"value4", 4}
+    };
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>TestNG Documentation - <a href="https://testng.org/doc/documentation-main.html#parameters-dataproviders">Parameters - Data Providers</a></li>
+</ul>
+
