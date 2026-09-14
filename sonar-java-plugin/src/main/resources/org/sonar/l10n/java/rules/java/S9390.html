@@ -1,0 +1,20 @@
+<p>The ternary pattern <code>a != null ? a.equals(b) : b == null</code> is a verbose way to perform null-safe equality checks. Java provides
+<code>Objects.equals(a, b)</code> which handles null values and is clearer to read.</p>
+<h2>Why is this an issue?</h2>
+<p>Manual null-check-then-equals patterns are error-prone and harder to read than the standard library alternative. The
+<code>java.util.Objects.equals()</code> method was introduced in Java 7 specifically to simplify null-safe equality comparisons. Using it makes the
+intent immediately clear and eliminates the risk of mistakes in the null-handling logic.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+boolean equal = a != null ? a.equals(b) : b == null; // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+boolean equal = Objects.equals(a, b);
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Objects.html#equals(java.lang.Object,java.lang.Object)">Objects.equals()</a></li>
+</ul>

@@ -49,10 +49,6 @@ public class ObjectsEqualsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean matchesPattern(ExpressionTree condition, ExpressionTree trueExpr, ExpressionTree falseExpr) {
-    if (!isNotEqualToNull(condition)) {
-      return false;
-    }
-
     ExpressionTree conditionVar = getIdentifierFromNotEqualToNull(condition);
     if (conditionVar == null) {
       return false;
@@ -81,18 +77,8 @@ public class ObjectsEqualsCheck extends IssuableSubscriptionVisitor {
     return SyntacticEquivalence.areEquivalent(conditionVar, receiver);
   }
 
-  private static boolean isNotEqualToNull(ExpressionTree tree) {
-    if (!tree.is(Tree.Kind.NOT_EQUAL_TO)) {
-      return false;
-    }
-    BinaryExpressionTree binary = (BinaryExpressionTree) tree;
-    ExpressionTree left = ExpressionUtils.skipParentheses(binary.leftOperand());
-    ExpressionTree right = ExpressionUtils.skipParentheses(binary.rightOperand());
-    return isNullLiteral(right) || isNullLiteral(left);
-  }
-
   private static ExpressionTree getIdentifierFromNotEqualToNull(ExpressionTree tree) {
-    if (!isNotEqualToNull(tree)) {
+    if (!tree.is(Tree.Kind.NOT_EQUAL_TO)) {
       return null;
     }
     BinaryExpressionTree binary = (BinaryExpressionTree) tree;
@@ -130,11 +116,15 @@ public class ObjectsEqualsCheck extends IssuableSubscriptionVisitor {
       return null;
     }
     MethodInvocationTree mit = (MethodInvocationTree) tree;
-    if (!"equals".equals(mit.methodSymbol().name())) {
+    if (!"equals".equals(ExpressionUtils.methodName(mit).name())) {
       return null;
     }
     List<? extends ExpressionTree> args = mit.arguments();
     if (args.size() != 1) {
+      return null;
+    }
+    if (!mit.methodSymbol().isUnknown() && !mit.methodSymbol().parameterTypes().isEmpty()
+      && !mit.methodSymbol().parameterTypes().get(0).is("java.lang.Object")) {
       return null;
     }
     ExpressionTree receiver = ExpressionUtils.skipParentheses(mit.methodSelect());

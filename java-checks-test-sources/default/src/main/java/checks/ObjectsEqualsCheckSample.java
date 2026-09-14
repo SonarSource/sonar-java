@@ -6,6 +6,7 @@ class ObjectsEqualsCheckSample {
   Object a;
   Object b;
   Object c;
+  Object d;
   Object other;
 
   void testBasicPatterns() {
@@ -146,6 +147,14 @@ class ObjectsEqualsCheckSample {
     }
   }
 
+  void testOverloadedEquals() {
+    TypedClass ta = new TypedClass();
+    TypedClass tb = new TypedClass();
+    if (ta != null ? ta.equals(tb) : tb == null) { // Compliant - overloaded equals(TypedClass), not equals(Object)
+      //
+    }
+  }
+
   void testCompliantVariations() {
     if (a != null && a.equals(b)) { // Compliant - not a ternary
       //
@@ -163,6 +172,12 @@ class ObjectsEqualsCheckSample {
     Object other;
     static Object staticField;
     static Object staticOther;
+  }
+
+  static class TypedClass {
+    boolean equals(TypedClass other) {
+      return true;
+    }
   }
 
   Object getA() { return a; }
