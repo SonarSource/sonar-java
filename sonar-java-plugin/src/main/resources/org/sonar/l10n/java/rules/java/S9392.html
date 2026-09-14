@@ -1,0 +1,46 @@
+<p>This is an issue when a conditional expression contains multiple range checks on the same variable, and one of those checks is already implied by
+another more restrictive check.</p>
+<h2>Why is this an issue?</h2>
+<p>When you write conditional expressions with multiple range checks, each condition should add meaningful information about the valid range. However,
+sometimes one condition is already guaranteed to be true based on another condition in the same expression.</p>
+<p>For example, if you check that <code>x &gt;= 5</code>, you don’t also need to check that <code>x &gt;= 0</code> because any number greater than or
+equal to 5 is automatically greater than or equal to 0. The second check is <em>redundant</em> - it doesn’t add any new information.</p>
+<p>Redundant range checks create several problems:</p>
+<ul>
+  <li><strong>Reduced code clarity</strong>: Extra conditions make it harder to understand the actual valid range at a glance.</li>
+  <li><strong>Maintenance burden</strong>: When updating the logic, developers must change multiple conditions instead of just one, increasing the
+  risk of errors.</li>
+  <li><strong>Hidden intent</strong>: The redundant condition may confuse readers about whether there’s a special reason for the extra check, or if
+  it’s simply a mistake.</li>
+  <li><strong>Potential logic errors</strong>: If the redundant condition differs slightly from what’s implied, it might indicate a misunderstanding
+  of the intended logic.</li>
+</ul>
+<p>These issues don’t cause runtime errors, but they make the codebase harder to work with and more prone to bugs during maintenance.</p>
+<h3>What is the potential impact?</h3>
+<p>This issue affects code maintainability and readability. While it doesn’t cause functional bugs or security vulnerabilities, it makes the code
+harder to understand and modify correctly. Developers may waste time trying to understand why both conditions exist, or they may introduce
+inconsistencies when updating the logic.</p>
+<h2>How to fix it</h2>
+<p>Remove the redundant condition from the expression, keeping only the more restrictive check. When one condition implies another, keep the one that
+defines the actual boundary you care about.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+if (x &gt;= 0 &amp;&amp; x &gt;= 5 &amp;&amp; x &lt;= 100) {  // Noncompliant
+    // Process x in range [5, 100]
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+if (x &gt;= 5 &amp;&amp; x &lt;= 100) {
+    // Process x in range [5, 100]
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/op2.html">Equality, Relational, and Conditional
+  Operators</a></li>
+  <li>Effective Java - <a href="https://www.pearson.com/store/p/effective-java/P100000677537">Item 57: Minimize the scope of local variables</a></li>
+</ul>
+

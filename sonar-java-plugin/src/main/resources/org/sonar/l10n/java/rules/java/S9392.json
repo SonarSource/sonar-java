@@ -1,0 +1,25 @@
+{
+  "title": "Redundant range checks should be removed",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "redundant",
+    "confusing",
+    "clarity"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9392",
+  "sqKey": "S9392",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  }
+}
