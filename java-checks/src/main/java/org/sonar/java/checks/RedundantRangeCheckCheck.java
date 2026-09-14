@@ -21,18 +21,26 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 @Rule(key = "S9392")
 public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
@@ -91,7 +99,7 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
     if (!a.implies(b)) {
       return false;
     }
-    if (a.isIdenticalTo(b)) {
+    if (SyntacticEquivalence.areEquivalent(a.tree, b.tree)) {
       return true;
     }
     return indexB <= indexA;
@@ -120,12 +128,37 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean hasPotentialSideEffects(ExpressionTree expr) {
-    return expr.is(Kind.METHOD_INVOCATION,
-      Kind.ASSIGNMENT, Kind.MULTIPLY_ASSIGNMENT, Kind.DIVIDE_ASSIGNMENT,
-      Kind.REMAINDER_ASSIGNMENT, Kind.PLUS_ASSIGNMENT, Kind.MINUS_ASSIGNMENT,
-      Kind.LEFT_SHIFT_ASSIGNMENT, Kind.RIGHT_SHIFT_ASSIGNMENT, Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
-      Kind.AND_ASSIGNMENT, Kind.XOR_ASSIGNMENT, Kind.OR_ASSIGNMENT,
-      Kind.PREFIX_INCREMENT, Kind.PREFIX_DECREMENT, Kind.POSTFIX_INCREMENT, Kind.POSTFIX_DECREMENT);
+    AtomicBoolean found = new AtomicBoolean(false);
+    expr.accept(new BaseTreeVisitor() {
+      @Override
+      public void visitMethodInvocation(MethodInvocationTree tree) {
+        found.set(true);
+      }
+
+      @Override
+      public void visitMethodReference(MethodReferenceTree tree) {
+        found.set(true);
+      }
+
+      @Override
+      public void visitNewClass(NewClassTree tree) {
+        found.set(true);
+      }
+
+      @Override
+      public void visitUnaryExpression(UnaryExpressionTree tree) {
+        if (tree.is(Kind.PREFIX_INCREMENT, Kind.PREFIX_DECREMENT, Kind.POSTFIX_INCREMENT, Kind.POSTFIX_DECREMENT)) {
+          found.set(true);
+        }
+        super.visitUnaryExpression(tree);
+      }
+
+      @Override
+      public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+        found.set(true);
+      }
+    });
+    return found.get();
   }
 
   private static void tryAddComparison(ExpressionTree expr, Map<Symbol, List<Comparison>> comparisonsByVariable) {
@@ -196,10 +229,6 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
       this.operator = operator;
       this.constant = constant;
       this.tree = tree;
-    }
-
-    boolean isIdenticalTo(Comparison other) {
-      return this.operator.equals(other.operator) && this.constant == other.constant;
     }
 
     boolean implies(Comparison other) {
