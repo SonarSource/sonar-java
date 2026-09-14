@@ -26,7 +26,6 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -43,7 +42,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class ForLoopStreamSuggestionCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private static final String MESSAGE = "Use a stream instead of this loop.";
-  private static final Set<String> ADD_METHODS = Set.of("add", "addFirst", "addLast", "offer", "offerFirst", "offerLast");
+  private static final Set<String> ADD_METHODS = Set.of("add", "addLast", "offer", "offerLast");
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -62,13 +61,16 @@ public class ForLoopStreamSuggestionCheck extends IssuableSubscriptionVisitor im
     if (body == null) {
       return;
     }
-
-    BlockTree loopBody = toBlock(body);
-    if (loopBody == null || loopBody.body().size() != 1) {
-      return;
+    StatementTree singleStmt;
+    if (body.is(Tree.Kind.BLOCK)) {
+      BlockTree loopBody = (BlockTree) body;
+      if (loopBody.body().size() != 1) {
+        return;
+      }
+      singleStmt = loopBody.body().get(0);
+    } else {
+      singleStmt = body;
     }
-
-    StatementTree singleStmt = loopBody.body().get(0);
     Set<Symbol> collectionSymbols = collectCollectionSymbols(forEach);
     if (collectionSymbols.isEmpty()) {
       return;
@@ -91,12 +93,7 @@ public class ForLoopStreamSuggestionCheck extends IssuableSubscriptionVisitor im
     if (ifStmt.elseStatement() != null) {
       return false;
     }
-    StatementTree thenBranch = ifStmt.thenStatement();
-    if (thenBranch == null) {
-      return false;
-    }
-
-    ExpressionTree addExpr = extractSingleExpression(thenBranch);
+    ExpressionTree addExpr = extractSingleExpression(ifStmt.thenStatement());
     if (addExpr == null) {
       return false;
     }
@@ -127,61 +124,36 @@ public class ForLoopStreamSuggestionCheck extends IssuableSubscriptionVisitor im
     return isCollectionTarget(collectionSymbols, mit);
   }
 
-  private Set<Symbol> collectCollectionSymbols(ForEachStatement forEach) {
+  private static Set<Symbol> collectCollectionSymbols(ForEachStatement forEach) {
     Set<Symbol> symbols = new HashSet<>();
     Tree parent = forEach.parent();
     if (!(parent instanceof BlockTree parentBlock)) {
       return symbols;
     }
-    Set<Tree> loopBodyTrees = collectLoopBodyVariables(forEach);
     for (StatementTree stmt : parentBlock.body()) {
       if (stmt == forEach) {
         break;
       }
       if (stmt.is(Tree.Kind.VARIABLE)) {
-        VariableTree varTree = (VariableTree) stmt;
-        addIfCollection(symbols, varTree, loopBodyTrees);
+        addIfCollection(symbols, (VariableTree) stmt);
       }
     }
     return symbols;
   }
 
-  private static Set<Tree> collectLoopBodyVariables(ForEachStatement forEach) {
-    Set<Tree> vars = new HashSet<>();
-    forEach.statement().accept(new BaseTreeVisitor() {
-      @Override
-      public void visitVariable(VariableTree tree) {
-        vars.add(tree);
-        super.visitVariable(tree);
-      }
-    });
-    return vars;
-  }
-
-  private static void addIfCollection(Set<Symbol> symbols, VariableTree varTree, Set<Tree> loopBodyTrees) {
-    if (loopBodyTrees.contains(varTree)) {
-      return;
-    }
+  private static void addIfCollection(Set<Symbol> symbols, VariableTree varTree) {
     ExpressionTree initializer = varTree.initializer();
     if (initializer == null) {
       return;
     }
-    Symbol symbol = varTree.symbol();
     Type type = initializer.symbolType();
     if (isCollectionType(type)) {
-      symbols.add(symbol);
+      symbols.add(varTree.symbol());
     }
-  }
-
-  private static BlockTree toBlock(StatementTree stmt) {
-    if (stmt.is(Tree.Kind.BLOCK)) {
-      return (BlockTree) stmt;
-    }
-    return null;
   }
 
   private static boolean isCollectionType(Type type) {
-    if (type == null || type.isUnknown()) {
+    if (type.isUnknown()) {
       return false;
     }
     return type.isSubtypeOf("java.util.Collection");
