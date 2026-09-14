@@ -21,32 +21,6 @@ class TestNGJavadocTagsCheckSample {
   }
 
   /**
-   * @beforeClass
-   */
-  public void classSetUp() { // Noncompliant {{Replace this "@beforeClass" Javadoc tag with the TestNG "@BeforeClass" annotation.}}
-  }
-
-  /**
-   * @afterClass
-   */
-  public void classTearDown() { // Noncompliant {{Replace this "@afterClass" Javadoc tag with the TestNG "@AfterClass" annotation.}}
-  }
-
-  /**
-   * @dataProvider
-   */
-  public Object[][] provideData() { // Noncompliant {{Replace this "@dataProvider" Javadoc tag with the TestNG "@DataProvider" annotation.}}
-    return new Object[][] {};
-  }
-
-  /**
-   * @factory
-   */
-  public Object[] createInstances() { // Noncompliant {{Replace this "@factory" Javadoc tag with the TestNG "@Factory" annotation.}}
-    return new Object[] {};
-  }
-
-  /**
    * @beforeSuite
    */
   public void suiteSetUp() { // Noncompliant {{Replace this "@beforeSuite" Javadoc tag with the TestNG "@BeforeSuite" annotation.}}
@@ -83,15 +57,17 @@ class TestNGJavadocTagsCheckSample {
   }
 
   /**
-   * @parameters
+   * @dataProvider
    */
-  public void parameterized() { // Noncompliant {{Replace this "@parameters" Javadoc tag with the TestNG "@Parameters" annotation.}}
+  public Object[][] provideData() { // Noncompliant {{Replace this "@dataProvider" Javadoc tag with the TestNG "@DataProvider" annotation.}}
+    return new Object[][] {};
   }
 
   /**
-   * @listeners
+   * @factory
    */
-  public void withListeners() { // Noncompliant {{Replace this "@listeners" Javadoc tag with the TestNG "@Listeners" annotation.}}
+  public Object[] createInstances() { // Noncompliant {{Replace this "@factory" Javadoc tag with the TestNG "@Factory" annotation.}}
+    return new Object[] {};
   }
 
   /**
@@ -120,6 +96,34 @@ class TestNGJavadocTagsCheckSample {
    * @beforeMethod
    */
   public void multipleTestNGTags() { // Noncompliant {{Replace this "@test" Javadoc tag with the TestNG "@Test" annotation.}}
+  }
+
+  /** @test */
+  public void singleLineJavadoc() { // Noncompliant {{Replace this "@test" Javadoc tag with the TestNG "@Test" annotation.}}
+  }
+
+  /**
+   * Example of TestNG usage:
+   * <pre>
+   * @Test
+   * public void exampleTest() {}
+   * </pre>
+   */
+  public void withPreBlock() { // compliant
+  }
+
+  /**
+   * How to use annotations:
+   * {@code @Test public void test() {}}
+   */
+  public void withCodeTag() { // compliant
+  }
+
+  /**
+   * @test
+   * @beforeMethod
+   */
+  public void multipleTagsSecondaryLocation() { // Noncompliant {{Replace this "@test" Javadoc tag with the TestNG "@Test" annotation.}}
   }
 
   // --- Compliant cases ---
@@ -163,5 +167,29 @@ class TestNGJavadocTagsCheckSample {
    * @version 1.0
    */
   public void authorAndVersionTags() { // compliant
+  }
+
+  /**
+   * @listeners - Type-only annotation, not applicable to methods
+   */
+  public void typeOnlyTag() { // compliant
+  }
+
+  /**
+   * @parameters - Type-only annotation, not applicable to methods
+   */
+  public void anotherTypeOnlyTag() { // compliant
+  }
+
+  /**
+   * @beforeClass - Type-only annotation, not applicable to methods
+   */
+  public void beforeClassTag() { // compliant
+  }
+
+  /**
+   * @afterClass - Type-only annotation, not applicable to methods
+   */
+  public void afterClassTag() { // compliant
   }
 }

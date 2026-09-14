@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
@@ -33,14 +34,14 @@ import org.sonarsource.analyzer.commons.collections.MapBuilder;
 @Rule(key = "S9387")
 public class TestNGJavadocTagsCheck extends IssuableSubscriptionVisitor {
 
-  private static final Pattern BLOCK_TAG_PATTERN = Pattern.compile("^\\s*\\*?\\s*@(\\w+)", Pattern.MULTILINE);
+  private static final Pattern BLOCK_TAG_PATTERN = Pattern.compile("(?:^|/\\*\\*)\\s*\\*?\\s*@(\\w+)", Pattern.MULTILINE);
+  private static final Pattern PRE_BLOCK_PATTERN = Pattern.compile("<pre>.*?</pre>", Pattern.DOTALL);
+  private static final Pattern CODE_TAG_PATTERN = Pattern.compile("\\{@code\\s+[^}]*\\}");
 
   private static final Map<String, String> TESTNG_TAGS_TO_ANNOTATIONS = MapBuilder.<String, String>newMap()
     .put("test", "@Test")
     .put("beforemethod", "@BeforeMethod")
     .put("aftermethod", "@AfterMethod")
-    .put("beforeclass", "@BeforeClass")
-    .put("afterclass", "@AfterClass")
     .put("beforesuite", "@BeforeSuite")
     .put("aftersuite", "@AfterSuite")
     .put("beforetest", "@BeforeTest")
@@ -49,8 +50,6 @@ public class TestNGJavadocTagsCheck extends IssuableSubscriptionVisitor {
     .put("aftergroups", "@AfterGroups")
     .put("dataprovider", "@DataProvider")
     .put("factory", "@Factory")
-    .put("parameters", "@Parameters")
-    .put("listeners", "@Listeners")
     .build();
 
   @Override
@@ -62,12 +61,14 @@ public class TestNGJavadocTagsCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     tree.firstToken().trivias().stream()
       .filter(trivia -> trivia.isComment(SyntaxTrivia.CommentKind.JAVADOC))
-      .forEach(trivia -> checkJavadoc(tree, trivia));
+      .forEach(trivia -> checkJavadoc((MethodTree) tree, trivia));
   }
 
-  private void checkJavadoc(Tree tree, SyntaxTrivia trivia) {
+  private void checkJavadoc(MethodTree tree, SyntaxTrivia trivia) {
     String commentText = trivia.comment();
-    Matcher matcher = BLOCK_TAG_PATTERN.matcher(commentText);
+    String textWithoutCodeBlocks = removeCodeBlocks(commentText);
+
+    Matcher matcher = BLOCK_TAG_PATTERN.matcher(textWithoutCodeBlocks);
 
     String firstTagOriginal = null;
     String firstAnnotation = null;
@@ -76,6 +77,7 @@ public class TestNGJavadocTagsCheck extends IssuableSubscriptionVisitor {
     while (matcher.find()) {
       String tagName = matcher.group(1);
       String annotation = TESTNG_TAGS_TO_ANNOTATIONS.get(tagName.toLowerCase(Locale.ROOT));
+
       if (annotation != null) {
         if (firstTagOriginal == null) {
           firstTagOriginal = tagName;
@@ -83,7 +85,7 @@ public class TestNGJavadocTagsCheck extends IssuableSubscriptionVisitor {
         } else {
           secondaryLocations.add(new JavaFileScannerContext.Location(
             String.format("Also replace \"@%s\" with the TestNG \"%s\" annotation.",
-              tagName, TESTNG_TAGS_TO_ANNOTATIONS.get(tagName.toLowerCase(Locale.ROOT))),
+              tagName, annotation),
             tree));
         }
       }
@@ -91,11 +93,14 @@ public class TestNGJavadocTagsCheck extends IssuableSubscriptionVisitor {
 
     if (firstTagOriginal != null) {
       String message = String.format("Replace this \"@%s\" Javadoc tag with the TestNG \"%s\" annotation.", firstTagOriginal, firstAnnotation);
-      if (secondaryLocations.isEmpty()) {
-        reportIssue(tree, message);
-      } else {
-        reportIssue(tree, message, secondaryLocations, null);
-      }
+      reportIssue(tree.simpleName(), message, secondaryLocations, null);
     }
+  }
+
+  private static String removeCodeBlocks(String javadoc) {
+    String result = javadoc;
+    result = PRE_BLOCK_PATTERN.matcher(result).replaceAll(m -> " ".repeat(m.group().length()));
+    result = CODE_TAG_PATTERN.matcher(result).replaceAll(m -> " ".repeat(m.group().length()));
+    return result;
   }
 }
