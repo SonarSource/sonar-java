@@ -48,6 +48,6 @@ class ForLoopStreamSuggestionCheckTest {
       .withCheck(new ForLoopStreamSuggestionCheck())
       .withJavaVersion(8)
       .withoutSemantic()
-      .verifyIssues();
+      .verifyNoIssues();
   }
 }

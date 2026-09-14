@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 
 class ForLoopStreamSuggestionCheckSample {
 
@@ -76,6 +77,14 @@ class ForLoopStreamSuggestionCheckSample {
     }
   }
 
+  void offerSingleArg() {
+    LinkedList<String> result = new LinkedList<>();
+    for (String item : items) { // Noncompliant
+//  ^^^
+      result.offer(item);
+    }
+  }
+
   // === Compliant cases ===
 
   void addFirstMethod() {
@@ -105,6 +114,14 @@ class ForLoopStreamSuggestionCheckSample {
     for (String item : items) { // compliant - multiple statements
       System.out.println(item);
       result.add(item);
+    }
+  }
+
+  void ifWithNonExpressionBody() {
+    List<String> result = new ArrayList<>();
+    for (String item : items) { // compliant - if body is a return statement, not expression
+      if (item != null)
+        return;
     }
   }
 
@@ -197,6 +214,38 @@ class ForLoopStreamSuggestionCheckSample {
       result.add(item);
     }
   }
+
+  void filterCollectPositionalAdd() {
+    List<String> result = new ArrayList<>();
+    for (String item : items) { // compliant - add(int, E) inside filter has no stream equivalent
+      if (item != null) {
+        result.add(0, item);
+      }
+    }
+  }
+
+  void positionalAdd() {
+    List<String> result = new ArrayList<>();
+    for (String item : items) { // compliant - add(int, E) is positional insert, no stream equivalent
+      result.add(0, item);
+    }
+  }
+
+  void offerWithTimeout() throws InterruptedException {
+    LinkedBlockingQueue<String> result = new LinkedBlockingQueue<>();
+    for (String item : items) { // compliant - offer(e, timeout, unit) has 3 args
+      result.offer(item, 1, java.util.concurrent.TimeUnit.SECONDS);
+    }
+  }
+
+  void addWithoutMemberSelect() {
+    List<String> result = new ArrayList<>();
+    for (String item : items) { // compliant - add is a plain method call, not member select
+      add(item);
+    }
+  }
+
+  private void add(String item) { }
 
   void assignmentNotAdd() {
     int[] arr = new int[10];
