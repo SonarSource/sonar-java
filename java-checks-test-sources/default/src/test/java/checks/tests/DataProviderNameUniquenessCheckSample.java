@@ -71,6 +71,20 @@ class OuterClass {
   }
 }
 
+class NonStringNameClass {
+  static final String CONSTANT_NAME = "constantData";
+
+  @DataProvider(name = CONSTANT_NAME)
+  public Object[][] provideWithConstant() {
+    return new Object[][]{{1, 2}};
+  }
+
+  @DataProvider(parallel = true)
+  public Object[][] provideParallelOnly() {
+    return new Object[][]{{1, 2}};
+  }
+}
+
 record DataProviderRecord(int value) {
   @DataProvider(name = "recordData")
   public Object[][] provideRecordData1() {

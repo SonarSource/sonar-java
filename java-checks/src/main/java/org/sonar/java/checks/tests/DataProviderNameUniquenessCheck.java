@@ -74,11 +74,11 @@ public class DataProviderNameUniquenessCheck extends IssuableSubscriptionVisitor
     return null;
   }
 
-  private boolean isDataProviderAnnotation(AnnotationTree annotation) {
+  private static boolean isDataProviderAnnotation(AnnotationTree annotation) {
     return annotation.annotationType().symbolType().is(DATAPROVIDER_ANNOTATION);
   }
 
-  private String extractNameAttribute(AnnotationTree annotation) {
+  private static String extractNameAttribute(AnnotationTree annotation) {
     List<ExpressionTree> arguments = annotation.arguments();
     if (arguments.isEmpty()) {
       return null;
