@@ -37,6 +37,13 @@ class ForLoopStreamSuggestionCheckSample {
     }
   }
 
+  void simpleCollectUnbraced() {
+    List<String> result = new ArrayList<>();
+    for (String item : items) // Noncompliant
+//  ^^^
+      result.add(item);
+  }
+
   void collectToSet() {
     Set<String> result = new HashSet<>();
     for (String item : items) { // Noncompliant
@@ -53,15 +60,45 @@ class ForLoopStreamSuggestionCheckSample {
     }
   }
 
-  void addFirstMethod() {
+  void addLastMethod() {
     LinkedList<String> result = new LinkedList<>();
     for (String item : items) { // Noncompliant
 //  ^^^
-      result.addFirst(item);
+      result.addLast(item);
+    }
+  }
+
+  void offerLastMethod() {
+    LinkedList<String> result = new LinkedList<>();
+    for (String item : items) { // Noncompliant
+//  ^^^
+      result.offerLast(item);
     }
   }
 
   // === Compliant cases ===
+
+  void addFirstMethod() {
+    LinkedList<String> result = new LinkedList<>();
+    for (String item : items) { // compliant - addFirst reverses order, not equivalent to stream
+      result.addFirst(item);
+    }
+  }
+
+  void offerFirstMethod() {
+    LinkedList<String> result = new LinkedList<>();
+    for (String item : items) { // compliant - offerFirst reverses order, not equivalent to stream
+      result.offerFirst(item);
+    }
+  }
+
+  void variableWithoutInitializer() {
+    List<String> result;
+    result = new ArrayList<>();
+    for (String item : items) { // compliant - variable has no initializer at declaration
+      result.add(item);
+    }
+  }
 
   void multipleStatementsInLoop() {
     List<String> result = new ArrayList<>();
