@@ -51,7 +51,7 @@ public class CastDoubleToFloatCheck extends IssuableSubscriptionVisitor {
     boolean negated = false;
     if (expression.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
       negated = expression.is(Tree.Kind.UNARY_MINUS);
-      expression = ((UnaryExpressionTree) expression).expression();
+      expression = ExpressionUtils.skipParentheses(((UnaryExpressionTree) expression).expression());
     }
     if (!expression.is(Tree.Kind.DOUBLE_LITERAL)) {
       return;
@@ -94,7 +94,7 @@ public class CastDoubleToFloatCheck extends IssuableSubscriptionVisitor {
         asDouble = -asDouble;
         asFloat = -asFloat;
       }
-      return asFloat == (float) asDouble;
+      return Float.compare(asFloat, (float) asDouble) == 0;
     } catch (NumberFormatException e) {
       return false;
     }
