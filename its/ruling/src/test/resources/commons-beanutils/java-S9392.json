@@ -1,0 +1,18 @@
+{
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
+924,
+924,
+951,
+951,
+960,
+960,
+983,
+983
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java": [
+767,
+767,
+820,
+820
+]
+}

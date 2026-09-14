@@ -1,0 +1,42 @@
+{
+"com.google.guava:guava:src/com/google/common/base/Ascii.java": [
+652,
+652
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedAsList.java": [
+61,
+61
+],
+"com.google.guava:guava:src/com/google/common/collect/Iterators.java": [
+314,
+314
+],
+"com.google.guava:guava:src/com/google/common/collect/TreeMultiset.java": [
+682,
+682,
+699,
+699,
+728,
+728,
+739,
+739,
+749,
+749,
+760,
+760
+],
+"com.google.guava:guava:src/com/google/common/io/LineBuffer.java": [
+52,
+52
+],
+"com.google.guava:guava:src/com/google/common/net/HostAndPort.java": [
+179,
+179
+],
+"com.google.guava:guava:src/com/google/common/net/InetAddresses.java": [
+981,
+981,
+1004,
+1004
+]
+}
