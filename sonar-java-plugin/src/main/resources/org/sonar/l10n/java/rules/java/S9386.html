@@ -1,0 +1,38 @@
+<h2>Why is this an issue?</h2>
+<p>In Java, decimal number literals without a suffix are treated as <code>double</code> by default. When you need a <code>float</code> value, you have
+two options:</p>
+<ul>
+  <li>Cast the literal: <code>(float) 3.14</code></li>
+  <li>Use a float literal directly: <code>3.14f</code></li>
+</ul>
+<p>Using an explicit cast adds unnecessary complexity to the code. The cast operator signals a type conversion, which typically requires careful
+attention from readers to ensure no precision loss or unexpected behavior occurs. However, when casting a literal value, this concern disappears — the
+value is known at compile time and the compiler folds the cast into a constant.</p>
+<p>Float literals with the <code>f</code> or <code>F</code> suffix were designed specifically for this purpose. They clearly express the intent that
+this is a <code>float</code> value, not a <code>double</code> being converted. This makes the code more readable and idiomatic.</p>
+<h3>What is the potential impact?</h3>
+<p>This issue affects code readability and maintainability. While it does not introduce bugs or security vulnerabilities, it makes the code slightly
+harder to read and understand. The unnecessary type conversion adds visual noise and may cause readers to spend extra time verifying that the
+conversion is intentional and safe.</p>
+<h2>How to fix it</h2>
+<p>Replace the cast expression with a float literal by adding the <code>f</code> suffix to the number and removing the cast operator.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+float value = (float) 3.14; // Noncompliant
+float pi = (float) 3.14159;
+float half = (float) 0.5;
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+float value = 3.14f;
+float pi = 3.14159f;
+float half = 0.5f;
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html">Primitive Data Types</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-3.html#jls-3.10.2">Floating-Point
+  Literals</a></li>
+</ul>
