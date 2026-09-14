@@ -57,6 +57,15 @@ public interface CheckVerifier {
   /**
    * Entry point of check verification. Will return a new instance of verifier to be configured.
    *
+   * Reported issues are checked against remediation metadata on the test classpath, using
+   * {@code /org/sonar/l10n/java/rules/java/<ruleKey>.json} (or the legacy {@code <ruleKey>_java.json}).
+   * Malformed remediation and gaps reported with constant or absent remediation fail verification.
+   * Linear remediation may omit the gap: SonarQube then uses a multiplier of one.
+   * Missing metadata remains supported for custom checks.
+   * <p>
+   * Use {@code // Noncompliant [[effortToFix=42]]} to assert an exact reported gap.
+   * Without this optional expectation, the verifier checks compatibility but cannot infer the correct gap value.
+   *
    * @return the newly instantiated verifier
    */
   static CheckVerifier newVerifier() {

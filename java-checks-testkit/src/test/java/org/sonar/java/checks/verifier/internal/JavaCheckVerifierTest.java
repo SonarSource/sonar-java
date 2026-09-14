@@ -75,6 +75,28 @@ import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TES
 class JavaCheckVerifierTest {
 
   @Test
+  void validates_expected_issue_gap() {
+    @Rule(key = "LinearJSON")
+    class LinearCheck implements JavaFileScanner {
+      int cost = 42;
+
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        context.addIssue(1, this, "message", cost);
+      }
+    }
+
+    LinearCheck check = new LinearCheck();
+    JavaCheckVerifier.newInstance().onFile("src/test/files/testing/NoncompliantWithEffort.java").withCheck(check).verifyIssues();
+    for (int cost : new int[] {41, 0, -1}) {
+      check.cost = cost;
+      assertThatThrownBy(() -> JavaCheckVerifier.newInstance()
+        .onFile("src/test/files/testing/NoncompliantWithEffort.java").withCheck(check).verifyIssues())
+        .isInstanceOf(AssertionError.class).hasMessageContaining("effortToFix");
+    }
+  }
+
+  @Test
   void constant_remediation_function_should_not_report_effort_to_fix() {
     @Rule(key = "ConstantJSON")
     class ConstantCostCheck implements JavaFileScanner {

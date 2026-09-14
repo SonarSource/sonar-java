@@ -171,6 +171,8 @@ public class JavaCheckVerifier implements CheckVerifier {
         verifierIssue = verifier.reportIssue(path, issueMessage).onFile();
       }
 
+      verifierIssue.withGap(issue.getCost());
+
       var quickfixes = scannerContext.getQuickFixes().get(textSpan);
       if (quickfixes != null) {
         for (var qf : quickfixes) {

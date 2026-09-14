@@ -1,0 +1,7 @@
+{
+  "remediation": {
+    "func": "Linear with offset",
+    "linearFactor": "2min",
+    "linearOffset": "5min"
+  }
+}

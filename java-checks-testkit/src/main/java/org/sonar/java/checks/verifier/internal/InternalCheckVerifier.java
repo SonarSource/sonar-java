@@ -346,6 +346,7 @@ public class InternalCheckVerifier implements CheckVerifier {
   }
 
   private void checkIssues(Set<AnalyzerMessage> issues, Map<TextSpan, List<JavaQuickFix>> quickFixes) {
+    issues.forEach(RuleMetadataValidator::validate);
     if (expectations.expectNoIssues()) {
       assertNoIssues(issues);
     } else if (expectations.expectIssueAtFileLevel() || expectations.expectIssueAtProjectLevel()) {
@@ -414,11 +415,11 @@ public class InternalCheckVerifier implements CheckVerifier {
       throw new AssertionError("No issue raised. At least one issue expected");
     }
     List<Integer> unexpectedLines = new LinkedList<>();
-    Expectations.RemediationFunction remediationFunction = Expectations.remediationFunction(issues.iterator().next());
+    Expectations.verifyRuleAnnotation(issues.iterator().next());
     Map<Integer, List<Expectations.Issue>> expected = expectations.issues;
 
     for (AnalyzerMessage issue : issues) {
-      validateIssue(expected, unexpectedLines, issue, remediationFunction);
+      validateIssue(expected, unexpectedLines, issue);
     }
     if (!expected.isEmpty() || !unexpectedLines.isEmpty()) {
       Collections.sort(unexpectedLines);
@@ -439,13 +440,12 @@ public class InternalCheckVerifier implements CheckVerifier {
   private void validateIssue(
     Map<Integer, List<Expectations.Issue>> expected,
     List<Integer> unexpectedLines,
-    AnalyzerMessage issue,
-    @Nullable Expectations.RemediationFunction remediationFunction) {
+    AnalyzerMessage issue) {
 
     Integer line = issue.getLine();
     if (expected.containsKey(line)) {
       Expectations.Issue attrs = expected.get(line).get(0);
-      validateRemediationFunction(attrs, issue, remediationFunction);
+      assertAttributeMatch(issue, issue.getCost(), attrs, EFFORT_TO_FIX);
       validateAnalyzerMessageAttributes(attrs, issue);
       expected.computeIfPresent(line, (l, issues) -> {
         issues.remove(attrs);
@@ -455,22 +455,6 @@ public class InternalCheckVerifier implements CheckVerifier {
     } else {
       unexpectedLines.add(line);
     }
-  }
-
-  private static void validateRemediationFunction(Expectations.Issue attributes, AnalyzerMessage issue, @Nullable Expectations.RemediationFunction remediationFunction) {
-    if (remediationFunction == null) {
-      return;
-    }
-    Double effortToFix = issue.getCost();
-    if (effortToFix != null) {
-      if (remediationFunction == Expectations.RemediationFunction.CONST) {
-        throw new AssertionError("Rule with constant remediation function shall not provide cost");
-      }
-      assertAttributeMatch(issue, effortToFix, attributes, EFFORT_TO_FIX);
-    } else if (remediationFunction == Expectations.RemediationFunction.LINEAR) {
-      throw new AssertionError("A cost should be provided for a rule with linear remediation function");
-    }
-
   }
 
   private void assertSuperfluousFlows() {
@@ -483,8 +467,8 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
   }
 
-  private static void assertAttributeMatch(AnalyzerMessage issue, Object value, Map<Expectations.IssueAttribute, Object> attributes, Expectations.IssueAttribute attribute) {
-    if (attributes.containsKey(attribute) && !value.equals(attribute.get(attributes))) {
+  private static void assertAttributeMatch(AnalyzerMessage issue, @Nullable Object value, Map<Expectations.IssueAttribute, Object> attributes, Expectations.IssueAttribute attribute) {
+    if (attributes.containsKey(attribute) && !Objects.equals(value, attribute.get(attributes))) {
       throw new AssertionError(
         String.format("line %d attribute mismatch for '%s'. Expected: '%s', but was: '%s'",
           issue.getLine(),

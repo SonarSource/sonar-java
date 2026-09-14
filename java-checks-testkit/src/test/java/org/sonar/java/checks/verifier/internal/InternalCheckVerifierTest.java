@@ -311,7 +311,7 @@ class InternalCheckVerifierTest {
 
       assertThat(e)
         .isInstanceOf(AssertionError.class)
-        .hasMessageContaining("Rule with constant remediation function shall not provide cost");
+        .hasMessageContaining("Constant remediation cannot use an issue gap");
     }
 
     @Test
@@ -331,7 +331,7 @@ class InternalCheckVerifierTest {
     }
 
     @Test
-    void borken_rule_metadata_does_not_make_verifier_fail() {
+    void broken_rule_metadata_fails_validation() {
       @Rule(key = "BrokenJSON")
       class BorkenMetadata implements JavaFileScanner {
         @Override
@@ -340,10 +340,10 @@ class InternalCheckVerifierTest {
         }
       }
 
-      InternalCheckVerifier.newInstance()
+      assertThatThrownBy(() -> InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE_NONCOMPLIANT)
         .withCheck(new BorkenMetadata())
-        .verifyIssues();
+        .verifyIssues()).isInstanceOf(AssertionError.class).hasMessageContaining("Failed to read rule metadata");
     }
 
     @Test
@@ -356,10 +356,10 @@ class InternalCheckVerifierTest {
         }
       }
 
-      InternalCheckVerifier.newInstance()
+      assertThatThrownBy(() -> InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE_NONCOMPLIANT)
         .withCheck(new ExponentialRemediationFunctionCheck())
-        .verifyIssues();
+        .verifyIssues()).isInstanceOf(AssertionError.class).hasMessageContaining("unknown remediation function");
     }
 
     @Test
@@ -372,14 +372,14 @@ class InternalCheckVerifierTest {
         }
       }
 
-      InternalCheckVerifier.newInstance()
+      assertThatThrownBy(() -> InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE_NONCOMPLIANT)
         .withCheck(new UndefinedRemediationFunctionCheck())
-        .verifyIssues();
+        .verifyIssues()).isInstanceOf(AssertionError.class).hasMessageContaining("has no remediation function");
     }
 
     @Test
-    void should_fail_when_no_cost() {
+    void linear_remediation_defaults_to_one_when_no_cost() {
       @Rule(key = "LinearJSON")
       class LinearRemediationFunctionCheck implements JavaFileScanner {
         @Override
@@ -388,14 +388,10 @@ class InternalCheckVerifierTest {
         }
       }
 
-      Throwable e = catchThrowable(() -> InternalCheckVerifier.newInstance()
+      InternalCheckVerifier.newInstance()
         .onFile(TEST_FILE_NONCOMPLIANT)
         .withCheck(new LinearRemediationFunctionCheck())
-        .verifyIssues());
-
-      assertThat(e)
-        .isInstanceOf(AssertionError.class)
-        .hasMessage("A cost should be provided for a rule with linear remediation function");
+        .verifyIssues();
     }
 
     @Test
@@ -428,6 +424,28 @@ class InternalCheckVerifierTest {
         .onFile(TEST_FILE_NONCOMPLIANT)
         .withCheck(new DoesntExistsMetadataCheck())
         .verifyIssues();
+    }
+
+    @Test
+    void expected_gap_is_validated_even_without_metadata() {
+      @Rule(key = "MissingMetadata")
+      class MissingMetadataCheck implements JavaFileScanner {
+        int cost = 42;
+
+        @Override
+        public void scanFile(JavaFileScannerContext context) {
+          context.addIssue(1, this, "message", cost);
+        }
+      }
+
+      MissingMetadataCheck check = new MissingMetadataCheck();
+      InternalCheckVerifier.newInstance().onFile("src/test/files/testing/NoncompliantWithEffort.java").withCheck(check).verifyIssues();
+      for (int cost : new int[] {41, 0, -1}) {
+        check.cost = cost;
+        assertThatThrownBy(() -> InternalCheckVerifier.newInstance()
+          .onFile("src/test/files/testing/NoncompliantWithEffort.java").withCheck(check).verifyIssues())
+          .isInstanceOf(AssertionError.class).hasMessageContaining("EFFORT_TO_FIX");
+      }
     }
   }
 

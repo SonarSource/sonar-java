@@ -16,11 +16,30 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.reflect.ClassPath;
+import java.io.IOException;
 import org.junit.jupiter.api.Test;
+import org.sonar.check.Rule;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.TestUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class SunPackagesUsedCheckTest {
+
+  @Test
+  void rule_metadata_is_available_on_test_classpath() throws IOException {
+    var rules = ClassPath.from(getClass().getClassLoader()).getTopLevelClassesRecursive("org.sonar.java.checks").stream()
+      .map(ClassPath.ClassInfo::load)
+      .filter(check -> check.isAnnotationPresent(Rule.class))
+      .toList();
+    assertThat(rules).isNotEmpty();
+    for (Class<?> rule : rules) {
+      String key = rule.getAnnotation(Rule.class).key();
+      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/java/" + key + ".json"))
+        .as("Remediation metadata for %s (%s)", key, rule.getName()).isNotNull();
+    }
+  }
 
   @Test
   void detected() {

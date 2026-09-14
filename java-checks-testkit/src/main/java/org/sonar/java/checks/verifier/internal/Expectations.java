@@ -16,12 +16,6 @@
  */
 package org.sonar.java.checks.verifier.internal;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +47,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.annotations.VisibleForTesting;
-import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
@@ -716,56 +709,9 @@ class Expectations {
     }
   }
 
-  enum RemediationFunction {
-    LINEAR, CONST
-  }
-
-  static class RuleJSON {
-    static class Remediation {
-      String func;
-    }
-
-    Remediation remediation;
-  }
-
-  @CheckForNull
-  static RemediationFunction remediationFunction(AnalyzerMessage issue) {
-    String ruleKey = ruleKey(issue);
-    try {
-      RuleJSON rule = getRuleJSON(ruleKey);
-      if (rule.remediation == null) {
-        return null;
-      }
-      switch (rule.remediation.func) {
-        case "Linear":
-          return RemediationFunction.LINEAR;
-        case "Constant/Issue":
-          return RemediationFunction.CONST;
-        default:
-          return null;
-      }
-    } catch (IOException | JsonParseException e) {
-      // Failed to open JSON file, as this is not part of API yet, we should not fail because of this
-      // Remediation function and cost not provided, "constant" is assumed.
-      return null;
-    }
-  }
-
-  private static RuleJSON getRuleJSON(String ruleKey) throws IOException {
-    String ruleJson = "/org/sonar/l10n/java/rules/java/" + ruleKey + "_java.json";
-    URL resource = CheckVerifier.class.getResource(ruleJson);
-    if (resource == null) {
-      throw new IOException(ruleJson + " not found");
-    }
-    Gson gson = new Gson();
-    return gson.fromJson(new InputStreamReader(resource.openStream(), StandardCharsets.UTF_8), RuleJSON.class);
-  }
-
-  private static String ruleKey(AnalyzerMessage issue) {
+  static void verifyRuleAnnotation(AnalyzerMessage issue) {
     Rule ruleAnnotation = AnnotationUtils.getAnnotation(issue.getCheck().getClass(), Rule.class);
-    if (ruleAnnotation != null) {
-      return ruleAnnotation.key();
-    } else {
+    if (ruleAnnotation == null) {
       throw new AssertionError("Rules should be annotated with '@Rule(key = \"...\")' annotation (org.sonar.check.Rule).");
     }
   }
