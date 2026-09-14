@@ -11,11 +11,13 @@ public class DataProviderNameUniquenessCheckSample {
 
   @DataProvider(name = "testData")
   public Object[][] provideData2() { // Noncompliant {{Rename this data provider to make it unique within this class.}}
+//                  ^^^^^^^^^^^^
     return new Object[][]{{3, 4}};
   }
 
   @DataProvider(name = "testData")
-  public Object[][] provideData3() { // Noncompliant
+  public Object[][] provideData3() { // Noncompliant {{Rename this data provider to make it unique within this class.}}
+//                  ^^^^^^^^^^^^
     return new Object[][]{{5, 6}};
   }
 
@@ -40,7 +42,8 @@ public class DataProviderNameUniquenessCheckSample {
   }
 
   @DataProvider(name = "provideDefaultName")
-  public Object[][] implicitExplicitCollision() { // Noncompliant
+  public Object[][] implicitExplicitCollision() { // Noncompliant {{Rename this data provider to make it unique within this class.}}
+//                  ^^^^^^^^^^^^^^^^^^^^^^^^^
     return new Object[][]{{15, 16}};
   }
 }
@@ -65,7 +68,8 @@ class OuterClass {
     }
 
     @DataProvider(name = "outerData")
-    public Object[][] provideAnother() { // Noncompliant
+    public Object[][] provideAnother() { // Noncompliant {{Rename this data provider to make it unique within this class.}}
+//                    ^^^^^^^^^^^^^^
       return new Object[][]{{21, 22}};
     }
   }
@@ -81,7 +85,8 @@ class ConstantNameClass {
   }
 
   @DataProvider(name = DUPLICATE_CONSTANT)
-  public Object[][] provideWithConstant2() { // Noncompliant
+  public Object[][] provideWithConstant2() { // Noncompliant {{Rename this data provider to make it unique within this class.}}
+//                  ^^^^^^^^^^^^^^^^^^^^
     return new Object[][]{{3, 4}};
   }
 
@@ -106,7 +111,8 @@ record DataProviderRecord(int value) {
   }
 
   @DataProvider(name = "recordData")
-  public Object[][] provideRecordData2() { // Noncompliant
+  public Object[][] provideRecordData2() { // Noncompliant {{Rename this data provider to make it unique within this class.}}
+//                  ^^^^^^^^^^^^^^^^^^
     return new Object[][]{{3, 4}};
   }
 }
