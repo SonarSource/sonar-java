@@ -131,6 +131,16 @@ class RedundantRangeCheckCheckSample {
   void testSideEffects(int size) {
     if (size >= 0 && refresh() && size >= 5) { // compliant - side effects between comparisons
     }
+    if (size >= 0 && !refresh() && size >= 5) { // compliant - nested side effect in negation
+    }
+    if (size++ > 3 && size >= 0) { // compliant - side effect in increment
+    }
+  }
+
+  void testNonSyntacticallyIdentical(int x) {
+    if (x >= 5 && 5 <= x) { // Noncompliant {{Remove this redundant range check.}}
+      System.out.println(x);
+    }
   }
 
   boolean refresh() {
