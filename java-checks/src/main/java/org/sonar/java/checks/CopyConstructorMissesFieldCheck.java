@@ -45,7 +45,7 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-@Rule(key = "S9365")
+@Rule(key = "S9385")
 public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor {
 
   private static final String ISSUE_MESSAGE =
@@ -79,7 +79,6 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
     }
 
     ClassTree classTree = owner.declaration();
-    // Record component fields are initialized implicitly by the canonical constructor.
     if (classTree == null || classTree.is(Tree.Kind.RECORD)) {
       return;
     }
@@ -134,10 +133,6 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
     return result;
   }
 
-  /**
-   * Analyzes explicit field writes performed by a constructor or helper method, including writes reached through
-   * resolvable calls on the current instance. Active methods form the current call chain and prevent infinite recursion.
-   */
   private static AnalysisResult analyzeMethod(MethodTree method, Symbol.TypeSymbol owner, Set<Symbol> eligibleFields,
     Set<Symbol.MethodSymbol> activeMethods) {
     Symbol.MethodSymbol methodSymbol = method.symbol();
@@ -150,12 +145,6 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
     return collector.result();
   }
 
-  /**
-   * Collects explicit writes to eligible fields while following resolvable constructor and helper calls on the current
-   * instance. Eligible fields are instance fields declared by the analyzed class that are neither transient nor already
-   * initialized at their declaration. Active methods are the methods in the current call chain; they are tracked to
-   * detect recursive calls. An analysis is complete only when every followed initialization path can be resolved.
-   */
   private static final class AssignmentCollector extends BaseTreeVisitor {
     private final Symbol.TypeSymbol owner;
     private final Set<Symbol> eligibleFields;
@@ -201,7 +190,6 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
           mergeResolvedTarget(method);
         }
       }
-      // Arguments are executed in the current context and may contain assignments or helper calls.
       super.visitMethodInvocation(tree);
     }
 
@@ -221,7 +209,6 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
         tree.enclosingExpression().accept(this);
       }
       tree.arguments().forEach(argument -> argument.accept(this));
-      // Deliberately do not visit an anonymous class body.
     }
 
     private void mergeResolvedTarget(Symbol.MethodSymbol method) {
@@ -274,7 +261,6 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
         receiver = ExpressionUtils.skipParentheses(cast.expression());
       }
       if (receiver instanceof IdentifierTree identifier) {
-        // An unqualified `this` has no type binding in the syntax tree, but is unambiguous.
         return "this".equals(identifier.name());
       }
       if (!(receiver instanceof MemberSelectExpressionTree qualifiedThis)
