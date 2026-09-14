@@ -1,0 +1,49 @@
+<p><code>Duration.get(TemporalUnit)</code> supports only <code>ChronoUnit.SECONDS</code> and <code>ChronoUnit.NANOS</code>. Passing any other
+<code>TemporalUnit</code> value causes an <code>UnsupportedTemporalTypeException</code> at runtime.</p>
+<h2>Why is this an issue?</h2>
+<p>In the <code>java.time</code> API, a <code>Duration</code> represents an amount of time modeled as a number of seconds and nanoseconds. Although
+<code>Duration</code> implements the <code>TemporalAmount</code> interface, its <code>get(TemporalUnit)</code> method only supports
+<code>ChronoUnit.SECONDS</code> and <code>ChronoUnit.NANOS</code>.</p>
+<p>Developers often assume that passing another unit, such as <code>ChronoUnit.MINUTES</code> or <code>ChronoUnit.MILLIS</code>, converts the duration
+into that unit. However, passing any unit other than <code>SECONDS</code> or <code>NANOS</code> throws an
+<code>UnsupportedTemporalTypeException</code> unconditionally at runtime.</p>
+<h3>Exceptions</h3>
+<p>This rule reports only direct <code>ChronoUnit</code> constants. It does not track a constant stored in a variable.</p>
+<p>Custom <code>TemporalUnit</code> implementations are not reported because <code>Duration</code> delegates the operation to them.</p>
+<h2>How to fix it</h2>
+<p>Use dedicated conversion methods such as <code>toMinutes()</code>, <code>toHours()</code>, <code>toDays()</code>, <code>toMillis()</code>, or
+<code>toNanos()</code> to obtain the total duration in the desired unit. In Java 9 and later, methods like <code>toMinutesPart()</code>,
+<code>toHoursPart()</code>, or <code>toMillisPart()</code> can also be used to extract the corresponding time part. If access to seconds or
+nanoseconds is required, pass <code>ChronoUnit.SECONDS</code> or <code>ChronoUnit.NANOS</code>, or call <code>getSeconds()</code> or
+<code>getNano()</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
+void process(Duration timeout) {
+  long minutes = timeout.get(ChronoUnit.MINUTES); // Noncompliant: "Duration.get()" only supports "SECONDS" and "NANOS"; use dedicated conversion methods instead
+  long millis = timeout.get(ChronoUnit.MILLIS); // Noncompliant: "Duration.get()" only supports "SECONDS" and "NANOS"; use dedicated conversion methods instead
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
+void process(Duration timeout) {
+  long minutes = timeout.toMinutes();
+  long millis = timeout.toMillis();
+  long seconds = timeout.get(ChronoUnit.SECONDS);
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html#get(java.time.temporal.TemporalUnit)"><code>Duration.get(TemporalUnit)</code></a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html#getUnits()"><code>Duration.getUnits()</code></a></li>
+</ul>
+
