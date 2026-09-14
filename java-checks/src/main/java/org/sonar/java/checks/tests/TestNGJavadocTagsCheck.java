@@ -34,9 +34,9 @@ import org.sonarsource.analyzer.commons.collections.MapBuilder;
 @Rule(key = "S9387")
 public class TestNGJavadocTagsCheck extends IssuableSubscriptionVisitor {
 
-  private static final Pattern BLOCK_TAG_PATTERN = Pattern.compile("(?:^|/\\*\\*)\\s*\\*?\\s*@(\\w+)", Pattern.MULTILINE);
+  private static final Pattern BLOCK_TAG_PATTERN = Pattern.compile("(?:^|/\\*\\*)[\\t ]*\\*?[\\t ]*@(\\w+)", Pattern.MULTILINE);
   private static final Pattern PRE_BLOCK_PATTERN = Pattern.compile("<pre>.*?</pre>", Pattern.DOTALL);
-  private static final Pattern CODE_TAG_PATTERN = Pattern.compile("\\{@code\\s+[^}]*\\}");
+  private static final Pattern CODE_TAG_PATTERN = Pattern.compile("\\{@code[\\t ]+[^}]*\\}");
 
   private static final Map<String, String> TESTNG_TAGS_TO_ANNOTATIONS = MapBuilder.<String, String>newMap()
     .put("test", "@Test")
@@ -88,7 +88,7 @@ public class TestNGJavadocTagsCheck extends IssuableSubscriptionVisitor {
           secondaryLocations.add(new JavaFileScannerContext.Location(
             String.format("Also replace \"@%s\" with the TestNG \"%s\" annotation.",
               tagName, annotation),
-            tree));
+            tree.simpleName()));
         }
       }
     }
