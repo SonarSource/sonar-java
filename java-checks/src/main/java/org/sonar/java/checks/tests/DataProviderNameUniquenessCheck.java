@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
-import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -29,7 +29,6 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -64,11 +63,15 @@ public class DataProviderNameUniquenessCheck extends IssuableSubscriptionVisitor
     }
   }
 
-  private String extractDataProviderName(MethodTree method) {
+  @Nullable
+  private static String extractDataProviderName(MethodTree method) {
     for (AnnotationTree annotation : method.modifiers().annotations()) {
       if (isDataProviderAnnotation(annotation)) {
-        String explicitName = extractNameAttribute(annotation);
-        return explicitName != null ? explicitName : method.simpleName().name();
+        ExpressionTree nameExpression = findNameAttribute(annotation);
+        if (nameExpression == null) {
+          return method.simpleName().name();
+        }
+        return nameExpression.asConstant(String.class).orElse(null);
       }
     }
     return null;
@@ -78,27 +81,16 @@ public class DataProviderNameUniquenessCheck extends IssuableSubscriptionVisitor
     return annotation.annotationType().symbolType().is(DATAPROVIDER_ANNOTATION);
   }
 
-  private static String extractNameAttribute(AnnotationTree annotation) {
-    List<ExpressionTree> arguments = annotation.arguments();
-    if (arguments.isEmpty()) {
-      return null;
-    }
-
-    for (ExpressionTree argument : arguments) {
+  @Nullable
+  private static ExpressionTree findNameAttribute(AnnotationTree annotation) {
+    for (ExpressionTree argument : annotation.arguments()) {
       if (argument.is(Tree.Kind.ASSIGNMENT)) {
         AssignmentExpressionTree assignment = (AssignmentExpressionTree) argument;
         String attributeName = ((IdentifierTree) assignment.variable()).name();
         if (NAME_ATTRIBUTE.equals(attributeName)) {
-          return extractStringValue(assignment.expression());
+          return assignment.expression();
         }
       }
-    }
-    return null;
-  }
-
-  private static String extractStringValue(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.STRING_LITERAL)) {
-      return LiteralUtils.trimQuotes(((LiteralTree) expression).value());
     }
     return null;
   }

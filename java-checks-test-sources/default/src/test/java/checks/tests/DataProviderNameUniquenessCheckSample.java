@@ -71,18 +71,32 @@ class OuterClass {
   }
 }
 
-class NonStringNameClass {
+class ConstantNameClass {
   static final String CONSTANT_NAME = "constantData";
+  static final String DUPLICATE_CONSTANT = "constantData";
 
   @DataProvider(name = CONSTANT_NAME)
-  public Object[][] provideWithConstant() {
+  public Object[][] provideWithConstant1() {
     return new Object[][]{{1, 2}};
+  }
+
+  @DataProvider(name = DUPLICATE_CONSTANT)
+  public Object[][] provideWithConstant2() { // Noncompliant
+    return new Object[][]{{3, 4}};
+  }
+
+  static final String UNIQUE_CONSTANT = "uniqueConstantData";
+
+  @DataProvider(name = UNIQUE_CONSTANT)
+  public Object[][] provideWithUniqueConstant() {
+    return new Object[][]{{5, 6}};
   }
 
   @DataProvider(parallel = true)
   public Object[][] provideParallelOnly() {
     return new Object[][]{{1, 2}};
   }
+
 }
 
 record DataProviderRecord(int value) {
