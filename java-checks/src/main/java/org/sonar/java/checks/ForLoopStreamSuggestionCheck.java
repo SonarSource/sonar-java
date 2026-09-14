@@ -118,7 +118,7 @@ public class ForLoopStreamSuggestionCheck extends IssuableSubscriptionVisitor im
       return false;
     }
     MethodInvocationTree mit = (MethodInvocationTree) expr;
-    if (!isAddMethod(mit)) {
+    if (mit.arguments().size() != 1 || !isAddMethod(mit)) {
       return false;
     }
     return isCollectionTarget(collectionSymbols, mit);

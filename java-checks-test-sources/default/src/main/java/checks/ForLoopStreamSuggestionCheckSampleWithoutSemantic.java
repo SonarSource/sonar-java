@@ -7,19 +7,17 @@ class ForLoopStreamSuggestionCheckSampleWithoutSemantic {
 
   private List<String> items = new ArrayList<>();
 
-  void simpleCollect() {
-    List<String> result = new ArrayList<>();
-    for (String item : items) { // Noncompliant
-      result.add(item);
+  void noCollectionDeclared() {
+    for (String item : items) { // compliant - no collection variable before loop
+      System.out.println(item);
     }
   }
 
-  void filterCollect() {
+  void multipleStatementsInLoop() {
     List<String> result = new ArrayList<>();
-    for (String item : items) { // Noncompliant
-      if (item != null) {
-        result.add(item);
-      }
+    for (String item : items) { // compliant - multiple statements
+      System.out.println(item);
+      result.add(item);
     }
   }
 }
