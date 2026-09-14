@@ -44,6 +44,11 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    Tree parent = ExpressionUtils.skipParenthesesUpwards(tree.parent());
+    if (parent != null && parent.is(Kind.CONDITIONAL_AND)) {
+      return;
+    }
+
     Map<Symbol, List<Comparison>> comparisonsByVariable = new LinkedHashMap<>();
     collectComparisons((BinaryExpressionTree) tree, comparisonsByVariable);
 
@@ -52,6 +57,9 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
         Comparison redundant = comparisons.get(i);
         for (int j = 0; j < comparisons.size(); j++) {
           if (i != j && comparisons.get(j).implies(redundant)) {
+            if (redundant.implies(comparisons.get(j)) && j <= i) {
+              continue;
+            }
             reportIssue(redundant.tree, MESSAGE.formatted(comparisons.get(j).toString()));
             break;
           }
@@ -67,28 +75,19 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
     if (left.is(Kind.CONDITIONAL_AND)) {
       collectComparisons((BinaryExpressionTree) left, comparisonsByVariable);
     } else {
-      tryAddComparison(left, right, comparisonsByVariable);
+      tryAddComparison(left, comparisonsByVariable);
     }
 
     if (right.is(Kind.CONDITIONAL_AND)) {
       collectComparisons((BinaryExpressionTree) right, comparisonsByVariable);
     } else {
-      tryAddComparison(right, left, comparisonsByVariable);
+      tryAddComparison(right, comparisonsByVariable);
     }
   }
 
-  private void tryAddComparison(ExpressionTree expr1, ExpressionTree expr2, Map<Symbol, List<Comparison>> comparisonsByVariable) {
-    if (expr1.is(Kind.GREATER_THAN, Kind.GREATER_THAN_OR_EQUAL_TO, Kind.LESS_THAN, Kind.LESS_THAN_OR_EQUAL_TO)) {
-      BinaryExpressionTree comparison = (BinaryExpressionTree) expr1;
-      Comparison comparisonObj = extractComparison(comparison);
-      if (comparisonObj != null) {
-        comparisonsByVariable
-          .computeIfAbsent(comparisonObj.variable, k -> new ArrayList<>())
-          .add(comparisonObj);
-      }
-    } else if (expr2.is(Kind.GREATER_THAN, Kind.GREATER_THAN_OR_EQUAL_TO, Kind.LESS_THAN, Kind.LESS_THAN_OR_EQUAL_TO)) {
-      BinaryExpressionTree comparison = (BinaryExpressionTree) expr2;
-      Comparison comparisonObj = extractComparison(comparison);
+  private void tryAddComparison(ExpressionTree expr, Map<Symbol, List<Comparison>> comparisonsByVariable) {
+    if (expr.is(Kind.GREATER_THAN, Kind.GREATER_THAN_OR_EQUAL_TO, Kind.LESS_THAN, Kind.LESS_THAN_OR_EQUAL_TO)) {
+      Comparison comparisonObj = extractComparison((BinaryExpressionTree) expr);
       if (comparisonObj != null) {
         comparisonsByVariable
           .computeIfAbsent(comparisonObj.variable, k -> new ArrayList<>())
@@ -98,12 +97,13 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
   }
 
   @Nullable
-  private Comparison extractComparison(BinaryExpressionTree comparison) {
+  private static Comparison extractComparison(BinaryExpressionTree comparison) {
     ExpressionTree left = ExpressionUtils.skipParentheses(comparison.leftOperand());
     ExpressionTree right = ExpressionUtils.skipParentheses(comparison.rightOperand());
 
     Symbol variable = null;
-    Integer constant = null;
+    Long constant = null;
+    String operator = comparison.operatorToken().text();
 
     if (left.is(Kind.IDENTIFIER) && right.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
       variable = ((IdentifierTree) left).symbol();
@@ -111,31 +111,41 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
     } else if (right.is(Kind.IDENTIFIER) && left.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
       variable = ((IdentifierTree) right).symbol();
       constant = extractConstantValue(left);
+      operator = flipOperator(operator);
     }
 
-    if (variable != null && constant != null) {
-      return new Comparison(variable, comparison.operatorToken().text(), constant, comparison);
+    if (variable != null && !variable.isUnknown() && constant != null) {
+      return new Comparison(variable, operator, constant, comparison);
     }
     return null;
   }
 
+  private static String flipOperator(String operator) {
+    return switch (operator) {
+      case "<" -> ">";
+      case "<=" -> ">=";
+      case ">" -> "<";
+      case ">=" -> "<=";
+      default -> operator;
+    };
+  }
+
   @Nullable
-  private static Integer extractConstantValue(ExpressionTree tree) {
+  private static Long extractConstantValue(ExpressionTree tree) {
     Integer intValue = LiteralUtils.intLiteralValue(tree);
     if (intValue != null) {
-      return intValue;
+      return intValue.longValue();
     }
-    Long longValue = LiteralUtils.longLiteralValue(tree);
-    return longValue != null ? longValue.intValue() : null;
+    return LiteralUtils.longLiteralValue(tree);
   }
 
   private static class Comparison {
     final Symbol variable;
     final String operator;
-    final int constant;
+    final long constant;
     final Tree tree;
 
-    Comparison(Symbol variable, String operator, int constant, Tree tree) {
+    Comparison(Symbol variable, String operator, long constant, Tree tree) {
       this.variable = variable;
       this.operator = operator;
       this.constant = constant;
