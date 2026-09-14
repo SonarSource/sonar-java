@@ -1,12 +1,13 @@
-<p>This rule raises an issue when a method annotated with TestNG’s <code>@DataProvider</code> returns a type that is not one of the supported return
-types: <code>Object[][]</code>, <code>Iterator&lt;Object[]&gt;</code>, or <code>Object[]</code>.</p>
+<p>This rule raises an issue when a method annotated with TestNG's <code>@DataProvider</code> returns a type that is not one of the supported return
+types: <code>Object[][]</code>, <code>Iterator&lt;Object[]&gt;</code>, <code>Iterator&lt;Object&gt;</code>, or <code>Object[]</code>.</p>
 <h2>Why is this an issue?</h2>
 <p>TestNG relies on the <code>@DataProvider</code> annotation to supply test data for parameterized tests. For TestNG to properly execute these tests,
 <code>@DataProvider</code> methods must return one of the specifically supported types:</p>
 <ul>
   <li><code>Object[][]</code> - a two-dimensional array where each inner array represents parameters for one test invocation</li>
   <li><code>Iterator&lt;Object[]&gt;</code> - an iterator of arrays for lazy evaluation of test data</li>
-  <li><code>Object[]</code> - an array where each element is itself an <code>Object[]</code> (available since TestNG 6.x)</li>
+  <li><code>Iterator&lt;Object&gt;</code> - an iterator of objects for single-parameter test methods (converted internally by TestNG)</li>
+  <li><code>Object[]</code> - an array where each element represents one argument for a single-parameter test method (available since TestNG 6.x)</li>
 </ul>
 <p>When a <code>@DataProvider</code> method returns an incompatible type (such as <code>List</code>, <code>Stream</code>, or a simple array), TestNG
 cannot process the data correctly. This causes test failures at runtime, even though the code may compile successfully.</p>
@@ -69,8 +70,8 @@ public Iterator&lt;Object[]&gt; provideData() {
     ).iterator();
 }
 </pre>
-<p>Use <code>Object[]</code> where each element is itself an <code>Object[]</code> (available since TestNG 6.x). This can be useful when building data
-sets dynamically.</p>
+<p>Use <code>Object[]</code> where each element represents one argument for a single-parameter test method (available since TestNG 6.x). This can be
+useful when building data sets dynamically.</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="3" data-diff-type="noncompliant">
 @DataProvider
@@ -82,11 +83,7 @@ public String[] provideData() {  // Noncompliant
 <pre data-diff-id="3" data-diff-type="compliant">
 @DataProvider
 public Object[] provideData() {
-    return new Object[]{
-        new Object[]{"value1"},
-        new Object[]{"value2"},
-        new Object[]{"value3"}
-    };
+    return new Object[]{"value1", "value2", "value3"};
 }
 </pre>
 <h2>Resources</h2>

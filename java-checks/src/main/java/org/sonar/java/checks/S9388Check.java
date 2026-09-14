@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class S9388Check extends IssuableSubscriptionVisitor {
 
   private static final String DATA_PROVIDER_ANNOTATION = "org.testng.annotations.DataProvider";
-  private static final String MESSAGE = "Change this return type to \"Object[][]\", \"Iterator<Object[]>\", or \"Object[]\".";
+  private static final String MESSAGE = "Change this return type to \"Object[][]\", \"Iterator<Object[]>\", \"Iterator<Object>\", or \"Object[]\".";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -53,7 +53,7 @@ public class S9388Check extends IssuableSubscriptionVisitor {
   private static boolean isValidDataProviderReturnType(Type returnType) {
     return isObjectArray2D(returnType)
       || isObjectArray1D(returnType)
-      || isIteratorOfObjectArray(returnType);
+      || isValidIterator(returnType);
   }
 
   private static boolean isObjectArray2D(Type type) {
@@ -72,16 +72,20 @@ public class S9388Check extends IssuableSubscriptionVisitor {
     return !elementType.isArray() && elementType.is("java.lang.Object");
   }
 
-  private static boolean isIteratorOfObjectArray(Type type) {
-    if (!type.is("java.util.Iterator") || !type.isParameterized()) {
+  private static boolean isValidIterator(Type type) {
+    if (!type.isSubtypeOf("java.util.Iterator")) {
       return false;
+    }
+    if (!type.isParameterized()) {
+      return true;
     }
     List<Type> typeArgs = type.typeArguments();
     if (typeArgs.size() != 1) {
       return false;
     }
     Type typeArg = typeArgs.get(0);
-    return typeArg.isArray() && ((Type.ArrayType) typeArg).elementType().is("java.lang.Object");
+    return typeArg.is("java.lang.Object")
+      || (typeArg.isArray() && ((Type.ArrayType) typeArg).elementType().is("java.lang.Object"));
   }
 
 }

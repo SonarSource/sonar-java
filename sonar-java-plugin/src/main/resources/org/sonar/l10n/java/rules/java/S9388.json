@@ -9,6 +9,7 @@
   "tags": [
     "testng",
     "test",
+    "tests",
     "pitfall"
   ],
   "defaultSeverity": "Critical",
