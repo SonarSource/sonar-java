@@ -17,6 +17,7 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -35,7 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S9392")
 public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
 
-  private static final String MESSAGE = "Remove this redundant range check; it is implied by the \"%s\" check.";
+  private static final String MESSAGE = "Remove this redundant range check.";
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -44,48 +46,89 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    Tree parent = ExpressionUtils.skipParenthesesUpwards(tree.parent());
-    if (parent != null && parent.is(Kind.CONDITIONAL_AND)) {
+    if (isNestedConditionalAnd(tree)) {
       return;
     }
-
     Map<Symbol, List<Comparison>> comparisonsByVariable = new LinkedHashMap<>();
-    collectComparisons((BinaryExpressionTree) tree, comparisonsByVariable);
+    if (collectOperands((BinaryExpressionTree) tree, comparisonsByVariable)) {
+      reportRedundantComparisons(comparisonsByVariable);
+    }
+  }
 
+  private static boolean isNestedConditionalAnd(Tree tree) {
+    Tree parent = ExpressionUtils.skipParenthesesUpwards(tree.parent());
+    return parent != null && parent.is(Kind.CONDITIONAL_AND);
+  }
+
+  private void reportRedundantComparisons(Map<Symbol, List<Comparison>> comparisonsByVariable) {
     for (List<Comparison> comparisons : comparisonsByVariable.values()) {
-      for (int i = 0; i < comparisons.size(); i++) {
-        Comparison redundant = comparisons.get(i);
-        for (int j = 0; j < comparisons.size(); j++) {
-          if (i != j && comparisons.get(j).implies(redundant)) {
-            if (redundant.implies(comparisons.get(j)) && j <= i) {
-              continue;
-            }
-            reportIssue(redundant.tree, MESSAGE.formatted(comparisons.get(j).toString()));
-            break;
-          }
-        }
+      reportRedundantInGroup(comparisons);
+    }
+  }
+
+  private void reportRedundantInGroup(List<Comparison> comparisons) {
+    for (int i = 0; i < comparisons.size(); i++) {
+      findAndReportImplyingComparison(comparisons, i);
+    }
+  }
+
+  private void findAndReportImplyingComparison(List<Comparison> comparisons, int redundantIndex) {
+    Comparison redundant = comparisons.get(redundantIndex);
+    for (int j = 0; j < comparisons.size(); j++) {
+      if (redundantIndex == j) {
+        continue;
+      }
+      Comparison implying = comparisons.get(j);
+      if (implying.implies(redundant) && !shouldSkipMutualImplication(redundant, implying, redundantIndex, j)) {
+        var secondary = new JavaFileScannerContext.Location("Implying check", implying.tree);
+        reportIssue(redundant.tree, MESSAGE, Collections.singletonList(secondary), null);
+        return;
       }
     }
   }
 
-  private void collectComparisons(BinaryExpressionTree andTree, Map<Symbol, List<Comparison>> comparisonsByVariable) {
+  private static boolean shouldSkipMutualImplication(Comparison a, Comparison b, int indexA, int indexB) {
+    if (!a.implies(b)) {
+      return false;
+    }
+    if (a.isIdenticalTo(b)) {
+      return true;
+    }
+    return indexB <= indexA;
+  }
+
+  private static boolean collectOperands(BinaryExpressionTree andTree, Map<Symbol, List<Comparison>> comparisonsByVariable) {
     ExpressionTree left = ExpressionUtils.skipParentheses(andTree.leftOperand());
     ExpressionTree right = ExpressionUtils.skipParentheses(andTree.rightOperand());
 
-    if (left.is(Kind.CONDITIONAL_AND)) {
-      collectComparisons((BinaryExpressionTree) left, comparisonsByVariable);
-    } else {
-      tryAddComparison(left, comparisonsByVariable);
+    if (!collectOperand(left, comparisonsByVariable) || !collectOperand(right, comparisonsByVariable)) {
+      return false;
     }
-
-    if (right.is(Kind.CONDITIONAL_AND)) {
-      collectComparisons((BinaryExpressionTree) right, comparisonsByVariable);
-    } else {
-      tryAddComparison(right, comparisonsByVariable);
-    }
+    return true;
   }
 
-  private void tryAddComparison(ExpressionTree expr, Map<Symbol, List<Comparison>> comparisonsByVariable) {
+  private static boolean collectOperand(ExpressionTree operand, Map<Symbol, List<Comparison>> comparisonsByVariable) {
+    if (operand.is(Kind.CONDITIONAL_AND)) {
+      return collectOperands((BinaryExpressionTree) operand, comparisonsByVariable);
+    }
+    if (hasPotentialSideEffects(operand)) {
+      comparisonsByVariable.clear();
+      return false;
+    }
+    tryAddComparison(operand, comparisonsByVariable);
+    return true;
+  }
+
+  private static boolean hasPotentialSideEffects(ExpressionTree expr) {
+    return expr.is(Kind.METHOD_INVOCATION,
+      Kind.ASSIGNMENT, Kind.MULTIPLY_ASSIGNMENT, Kind.DIVIDE_ASSIGNMENT,
+      Kind.REMAINDER_ASSIGNMENT, Kind.PLUS_ASSIGNMENT, Kind.MINUS_ASSIGNMENT,
+      Kind.LEFT_SHIFT_ASSIGNMENT, Kind.RIGHT_SHIFT_ASSIGNMENT, Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
+      Kind.AND_ASSIGNMENT, Kind.XOR_ASSIGNMENT, Kind.OR_ASSIGNMENT,
+      Kind.PREFIX_INCREMENT, Kind.PREFIX_DECREMENT, Kind.POSTFIX_INCREMENT, Kind.POSTFIX_DECREMENT);
+  }
+
+  private static void tryAddComparison(ExpressionTree expr, Map<Symbol, List<Comparison>> comparisonsByVariable) {
     if (expr.is(Kind.GREATER_THAN, Kind.GREATER_THAN_OR_EQUAL_TO, Kind.LESS_THAN, Kind.LESS_THAN_OR_EQUAL_TO)) {
       Comparison comparisonObj = extractComparison((BinaryExpressionTree) expr);
       if (comparisonObj != null) {
@@ -101,21 +144,24 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
     ExpressionTree left = ExpressionUtils.skipParentheses(comparison.leftOperand());
     ExpressionTree right = ExpressionUtils.skipParentheses(comparison.rightOperand());
 
-    Symbol variable = null;
-    Long constant = null;
     String operator = comparison.operatorToken().text();
 
     if (left.is(Kind.IDENTIFIER) && right.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      variable = ((IdentifierTree) left).symbol();
-      constant = extractConstantValue(right);
+      Symbol variable = ((IdentifierTree) left).symbol();
+      Long constant = extractConstantValue(right);
+      return createComparison(variable, operator, constant, comparison);
     } else if (right.is(Kind.IDENTIFIER) && left.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      variable = ((IdentifierTree) right).symbol();
-      constant = extractConstantValue(left);
-      operator = flipOperator(operator);
+      Symbol variable = ((IdentifierTree) right).symbol();
+      Long constant = extractConstantValue(left);
+      return createComparison(variable, flipOperator(operator), constant, comparison);
     }
+    return null;
+  }
 
-    if (variable != null && !variable.isUnknown() && constant != null) {
-      return new Comparison(variable, operator, constant, comparison);
+  @Nullable
+  private static Comparison createComparison(Symbol variable, String operator, @Nullable Long constant, BinaryExpressionTree tree) {
+    if (!variable.isUnknown() && constant != null) {
+      return new Comparison(variable, operator, constant, tree);
     }
     return null;
   }
@@ -152,34 +198,41 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
       this.tree = tree;
     }
 
+    boolean isIdenticalTo(Comparison other) {
+      return this.operator.equals(other.operator) && this.constant == other.constant;
+    }
+
     boolean implies(Comparison other) {
       if (this.operator.equals(other.operator)) {
-        return switch (this.operator) {
-          case ">=" -> this.constant >= other.constant;
-          case "<=" -> this.constant <= other.constant;
-          case ">" -> this.constant >= other.constant;
-          case "<" -> this.constant <= other.constant;
-          default -> false;
-        };
+        return impliesSameOperator(other);
       }
-      if (this.operator.equals(">") && other.operator.equals(">=")) {
+      return impliesDifferentOperator(other);
+    }
+
+    private boolean impliesSameOperator(Comparison other) {
+      return switch (this.operator) {
+        case ">=" -> this.constant >= other.constant;
+        case "<=" -> this.constant <= other.constant;
+        case ">" -> this.constant >= other.constant;
+        case "<" -> this.constant <= other.constant;
+        default -> false;
+      };
+    }
+
+    private boolean impliesDifferentOperator(Comparison other) {
+      if (">".equals(this.operator) && ">=".equals(other.operator)) {
         return this.constant >= other.constant;
       }
-      if (this.operator.equals(">=") && other.operator.equals(">")) {
+      if (">=".equals(this.operator) && ">".equals(other.operator)) {
         return this.constant > other.constant;
       }
-      if (this.operator.equals("<") && other.operator.equals("<=")) {
+      if ("<".equals(this.operator) && "<=".equals(other.operator)) {
         return this.constant <= other.constant;
       }
-      if (this.operator.equals("<=") && other.operator.equals("<")) {
+      if ("<=".equals(this.operator) && "<".equals(other.operator)) {
         return this.constant < other.constant;
       }
       return false;
-    }
-
-    @Override
-    public String toString() {
-      return variable.name() + " " + operator + " " + constant;
     }
   }
 }
