@@ -101,6 +101,17 @@
   </dependencies>
 
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <directory>../sonar-java-plugin/src/main/resources</directory>
+        <includes>
+          <include>org/sonar/l10n/java/rules/java/*.json</include>
+        </includes>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <groupId>de.thetaphi</groupId>

@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
 import org.sonar.api.batch.sensor.cache.WriteCache;
+import org.sonar.check.Rule;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.caching.DummyCache;
 import org.sonar.java.caching.FileHashingUtils;
@@ -44,6 +45,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
@@ -71,6 +73,24 @@ import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TES
 import static org.sonar.java.checks.verifier.internal.CheckVerifierTestUtils.TEST_FILE_WITH_QUICK_FIX;
 
 class JavaCheckVerifierTest {
+
+  @Test
+  void constant_remediation_function_should_not_report_effort_to_fix() {
+    @Rule(key = "ConstantJSON")
+    class ConstantCostCheck implements JavaFileScanner {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        context.addIssue(1, this, "message", 42);
+      }
+    }
+
+    assertThatThrownBy(() -> JavaCheckVerifier.newInstance()
+      .onFile(TEST_FILE_NONCOMPLIANT)
+      .withCheck(new ConstantCostCheck())
+      .verifyIssues())
+      .isInstanceOf(AssertionError.class)
+      .hasMessage("Rule 'ConstantJSON' uses 'Constant/Issue' remediation but reports effort-to-fix 42.0. Constant remediation cannot use an issue gap.");
+  }
 
   @Test
   void failing_check_should_make_verifier_fail() {

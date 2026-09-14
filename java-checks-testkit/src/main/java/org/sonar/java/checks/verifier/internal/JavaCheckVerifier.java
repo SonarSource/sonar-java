@@ -155,6 +155,7 @@ public class JavaCheckVerifier implements CheckVerifier {
 
   private static void addIssues(JavaFileScannerContextForTests scannerContext, MultiFileVerifier verifier) {
     scannerContext.getIssues().forEach(issue -> {
+      RuleMetadataValidator.validate(issue);
       if (!issue.getInputComponent().isFile()) {
         return;
       }
@@ -397,6 +398,8 @@ public class JavaCheckVerifier implements CheckVerifier {
     if (testModuleScannerContext != null) {
       issues.addAll(testModuleScannerContext.getIssues());
     }
+
+    issues.forEach(RuleMetadataValidator::validate);
 
     if (issues.size() != 1) {
       String issueNumberMessage = issues.isEmpty() ? "none has been raised" : String.format("%d issues have been raised", issues.size());
