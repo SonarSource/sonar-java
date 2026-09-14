@@ -95,11 +95,23 @@ class TestNGJavadocTagsCheckSample {
    * @test
    * @beforeMethod
    */
-  public void multipleTestNGTags() { // Noncompliant {{Replace this "@test" Javadoc tag with the TestNG "@Test" annotation.}}
+  public void multipleTestNGTags() { // Noncompliant {{Replace this "@test" Javadoc tag with the TestNG "@Test" annotation.}} [[secondary=98]]
   }
 
   /** @test */
   public void singleLineJavadoc() { // Noncompliant {{Replace this "@test" Javadoc tag with the TestNG "@Test" annotation.}}
+  }
+
+  /**
+   * @beforeClass
+   */
+  public void classSetUp() { // Noncompliant {{Replace this "@beforeClass" Javadoc tag with the TestNG "@BeforeClass" annotation.}}
+  }
+
+  /**
+   * @afterClass
+   */
+  public void classTearDown() { // Noncompliant {{Replace this "@afterClass" Javadoc tag with the TestNG "@AfterClass" annotation.}}
   }
 
   /**
@@ -172,17 +184,5 @@ class TestNGJavadocTagsCheckSample {
    * @parameters - Type-only annotation, not applicable to methods
    */
   public void anotherTypeOnlyTag() { // compliant
-  }
-
-  /**
-   * @beforeClass
-   */
-  public void classSetUp() { // Noncompliant {{Replace this "@beforeClass" Javadoc tag with the TestNG "@BeforeClass" annotation.}}
-  }
-
-  /**
-   * @afterClass
-   */
-  public void classTearDown() { // Noncompliant {{Replace this "@afterClass" Javadoc tag with the TestNG "@AfterClass" annotation.}}
   }
 }
