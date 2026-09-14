@@ -109,10 +109,7 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
     ExpressionTree left = ExpressionUtils.skipParentheses(andTree.leftOperand());
     ExpressionTree right = ExpressionUtils.skipParentheses(andTree.rightOperand());
 
-    if (!collectOperand(left, comparisonsByVariable) || !collectOperand(right, comparisonsByVariable)) {
-      return false;
-    }
-    return true;
+    return collectOperand(left, comparisonsByVariable) && collectOperand(right, comparisonsByVariable);
   }
 
   private static boolean collectOperand(ExpressionTree operand, Map<Symbol, List<Comparison>> comparisonsByVariable) {
