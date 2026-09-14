@@ -9,14 +9,14 @@ class ObjectsEqualsCheckNoSemanticSample {
   Object other;
 
   void testBasicPatterns() {
-    if (a != null ? a.equals(b) : b == null) { // Noncompliant {{Replace this manual null check with "Objects.equals()".}}
+    if (a != null ? a.equals(b) : b == null) { // Noncompliant {{Replace this manual null check with "Objects.equals()".}} [[sc=8;ec=48]]
       //
     }
-    if (a != null ? a.equals(b) : null == b) { // Noncompliant
+    if (a != null ? a.equals(b) : null == b) { // Noncompliant [[sc=8;ec=48]]
       //
     }
-    Object result = a != null ? a.equals(b) : b == null; // Noncompliant
-    boolean flag = a != null ? a.equals(b) : b == null; // Noncompliant
+    Object result = a != null ? a.equals(b) : b == null; // Noncompliant [[sc=19;ec=54]]
+    boolean flag = a != null ? a.equals(b) : b == null; // Noncompliant [[sc=16;ec=51]]
 
     if (Objects.equals(a, b)) { // Compliant
       //
@@ -60,41 +60,41 @@ class ObjectsEqualsCheckNoSemanticSample {
   }
 
   void testParenthesizedExpressions() {
-    if ((a != null) ? a.equals(b) : b == null) { // Noncompliant
+    if ((a != null) ? a.equals(b) : b == null) { // Noncompliant [[sc=8;ec=49]]
       //
     }
-    if (a != null ? (a.equals(b)) : (b == null)) { // Noncompliant
+    if (a != null ? (a.equals(b)) : (b == null)) { // Noncompliant [[sc=8;ec=51]]
       //
     }
   }
 
   void testQualifiedIdentifiers() {
-    if (this.a != null ? this.a.equals(b) : b == null) { // Noncompliant
+    if (this.a != null ? this.a.equals(b) : b == null) { // Noncompliant [[sc=8;ec=54]]
       //
     }
   }
 
   void testFieldAccess() {
     MyClass obj = new MyClass();
-    if (obj.field != null ? obj.field.equals(other) : other == null) { // Noncompliant
+    if (obj.field != null ? obj.field.equals(other) : other == null) { // Noncompliant [[sc=8;ec=68]]
       //
     }
   }
 
   void testStaticFieldAccess() {
-    if (MyClass.staticField != null ? MyClass.staticField.equals(other) : other == null) { // Noncompliant
+    if (MyClass.staticField != null ? MyClass.staticField.equals(other) : other == null) { // Noncompliant [[sc=8;ec=88]]
       //
     }
   }
 
   void testNestedTernary() {
-    if (a != null ? (b != null ? b.equals(c) : c == null) : c == null) { // Noncompliant
+    if (a != null ? (b != null ? b.equals(c) : c == null) : c == null) { // Noncompliant [[sc=8;ec=66]]
       //
     }
   }
 
   void testNullOnLeftSide() {
-    if (null != a ? a.equals(b) : b == null) { // Noncompliant
+    if (null != a ? a.equals(b) : b == null) { // Noncompliant [[sc=8;ec=48]]
       //
     }
   }
