@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -29,7 +30,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -42,22 +42,22 @@ public class DataProviderNameUniquenessCheck extends IssuableSubscriptionVisitor
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM);
+    return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.RECORD);
   }
 
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    Map<String, Tree> firstOccurrences = new HashMap<>();
+    Map<String, IdentifierTree> firstOccurrences = new HashMap<>();
 
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.METHOD)) {
         MethodTree method = (MethodTree) member;
         String providerName = extractDataProviderName(method);
         if (providerName != null) {
-          Tree previous = firstOccurrences.putIfAbsent(providerName, method);
+          IdentifierTree previous = firstOccurrences.putIfAbsent(providerName, method.simpleName());
           if (previous != null) {
-            reportDuplicate(providerName, method, previous);
+            reportDuplicate(method.simpleName(), previous);
           }
         }
       }
@@ -67,7 +67,8 @@ public class DataProviderNameUniquenessCheck extends IssuableSubscriptionVisitor
   private String extractDataProviderName(MethodTree method) {
     for (AnnotationTree annotation : method.modifiers().annotations()) {
       if (isDataProviderAnnotation(annotation)) {
-        return extractNameAttribute(annotation);
+        String explicitName = extractNameAttribute(annotation);
+        return explicitName != null ? explicitName : method.simpleName().name();
       }
     }
     return null;
@@ -79,14 +80,14 @@ public class DataProviderNameUniquenessCheck extends IssuableSubscriptionVisitor
 
   private String extractNameAttribute(AnnotationTree annotation) {
     List<ExpressionTree> arguments = annotation.arguments();
-    if (arguments == null || arguments.isEmpty()) {
+    if (arguments.isEmpty()) {
       return null;
     }
 
     for (ExpressionTree argument : arguments) {
       if (argument.is(Tree.Kind.ASSIGNMENT)) {
         AssignmentExpressionTree assignment = (AssignmentExpressionTree) argument;
-        String attributeName = getAttributeName(assignment.variable());
+        String attributeName = ((IdentifierTree) assignment.variable()).name();
         if (NAME_ATTRIBUTE.equals(attributeName)) {
           return extractStringValue(assignment.expression());
         }
@@ -95,23 +96,14 @@ public class DataProviderNameUniquenessCheck extends IssuableSubscriptionVisitor
     return null;
   }
 
-  private String getAttributeName(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.IDENTIFIER)) {
-      return ((IdentifierTree) expression).name();
-    } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      return ((MemberSelectExpressionTree) expression).identifier().name();
-    }
-    return null;
-  }
-
-  private String extractStringValue(ExpressionTree expression) {
+  private static String extractStringValue(ExpressionTree expression) {
     if (expression.is(Tree.Kind.STRING_LITERAL)) {
-      return ((LiteralTree) expression).value();
+      return LiteralUtils.trimQuotes(((LiteralTree) expression).value());
     }
     return null;
   }
 
-  private void reportDuplicate(String name, Tree duplicate, Tree first) {
+  private void reportDuplicate(IdentifierTree duplicate, IdentifierTree first) {
     List<JavaFileScannerContext.Location> secondaryLocations = new ArrayList<>();
     secondaryLocations.add(new JavaFileScannerContext.Location(
       "First data provider with this name", first));

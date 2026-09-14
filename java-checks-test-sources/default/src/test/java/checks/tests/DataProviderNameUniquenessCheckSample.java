@@ -9,13 +9,13 @@ public class DataProviderNameUniquenessCheckSample {
     return new Object[][]{{1, 2}};
   }
 
-  @DataProvider(name = "testData") // Noncompliant {{Rename this data provider to make it unique within this class.}}
-  public Object[][] provideData2() {
+  @DataProvider(name = "testData")
+  public Object[][] provideData2() { // Noncompliant {{Rename this data provider to make it unique within this class.}}
     return new Object[][]{{3, 4}};
   }
 
-  @DataProvider(name = "testData") // Noncompliant {{Rename this data provider to make it unique within this class.}}
-  public Object[][] provideData3() {
+  @DataProvider(name = "testData")
+  public Object[][] provideData3() { // Noncompliant
     return new Object[][]{{5, 6}};
   }
 
@@ -38,6 +38,11 @@ public class DataProviderNameUniquenessCheckSample {
   public Object[][] provideBeta() {
     return new Object[][]{{13, 14}};
   }
+
+  @DataProvider(name = "provideDefaultName")
+  public Object[][] implicitExplicitCollision() { // Noncompliant
+    return new Object[][]{{15, 16}};
+  }
 }
 
 class SecondClass {
@@ -59,9 +64,21 @@ class OuterClass {
       return new Object[][]{{19, 20}};
     }
 
-    @DataProvider(name = "outerData") // Noncompliant {{Rename this data provider to make it unique within this class.}}
-    public Object[][] provideAnother() {
+    @DataProvider(name = "outerData")
+    public Object[][] provideAnother() { // Noncompliant
       return new Object[][]{{21, 22}};
     }
+  }
+}
+
+record DataProviderRecord(int value) {
+  @DataProvider(name = "recordData")
+  public Object[][] provideRecordData1() {
+    return new Object[][]{{1, 2}};
+  }
+
+  @DataProvider(name = "recordData")
+  public Object[][] provideRecordData2() { // Noncompliant
+    return new Object[][]{{3, 4}};
   }
 }
