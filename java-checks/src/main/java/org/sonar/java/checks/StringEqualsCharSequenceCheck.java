@@ -50,7 +50,7 @@ public class StringEqualsCharSequenceCheck extends AbstractMethodDetection {
     if (argumentType.isUnknown() || argumentType.isNullType() || argument.is(Tree.Kind.NULL_LITERAL)) {
       return;
     }
-    if (argumentType.isSubtypeOf("java.lang.CharSequence") && !argumentType.is("java.lang.String")) {
+    if (argumentType.isSubtypeOf("java.lang.CharSequence") && !argumentType.isSubtypeOf("java.lang.String")) {
       IdentifierTree methodName = ExpressionUtils.methodName(mit);
       QuickFixHelper.newIssue(context)
         .forRule(this)

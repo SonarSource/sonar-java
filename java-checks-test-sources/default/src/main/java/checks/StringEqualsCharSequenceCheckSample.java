@@ -1,6 +1,7 @@
 package checks;
 
 import java.nio.CharBuffer;
+import java.util.List;
 
 class StringEqualsCharSequenceCheckSample {
 
@@ -42,5 +43,38 @@ class StringEqualsCharSequenceCheckSample {
     boolean c10 = obj.equals(sb);
 
     return b1 && b2 && b3 && b4 && b5 && c1 && c2 && c3 && c4 && c5 && c6 && c7 && c8 && c9 && c10;
+  }
+
+  <T extends String> boolean testGenericString(String str, T genericStr) {
+    return str.equals(genericStr);
+  }
+
+  <T extends CharSequence> boolean testGenericCharSequence(String str, T genericCs) {
+    return str.equals(genericCs); // Noncompliant {{Use "contentEquals()" instead of "equals()" to compare a "String" with a "CharSequence".}} [[quickfixes=qfGeneric]]
+//             ^^^^^^
+    // fix@qfGeneric {{Replace with "contentEquals()"}}
+    // edit@qfGeneric [[sc=16;ec=22]] {{contentEquals}}
+  }
+
+  boolean testWildcard(String str, List<? extends String> stringList, List<? extends CharSequence> csList) {
+    boolean w1 = str.equals(stringList.get(0));
+    boolean w2 = str.equals(csList.get(0)); // Noncompliant {{Use "contentEquals()" instead of "equals()" to compare a "String" with a "CharSequence".}} [[quickfixes=qfWildcard]]
+//                   ^^^^^^
+    // fix@qfWildcard {{Replace with "contentEquals()"}}
+    // edit@qfWildcard [[sc=22;ec=28]] {{contentEquals}}
+    return w1 && w2;
+  }
+
+  static class CustomCharSequence implements CharSequence {
+    @Override public int length() { return 0; }
+    @Override public char charAt(int index) { return 'a'; }
+    @Override public CharSequence subSequence(int start, int end) { return ""; }
+  }
+
+  boolean testCustom(String str, CustomCharSequence custom) {
+    return str.equals(custom); // Noncompliant {{Use "contentEquals()" instead of "equals()" to compare a "String" with a "CharSequence".}} [[quickfixes=qfCustom]]
+//             ^^^^^^
+    // fix@qfCustom {{Replace with "contentEquals()"}}
+    // edit@qfCustom [[sc=16;ec=22]] {{contentEquals}}
   }
 }

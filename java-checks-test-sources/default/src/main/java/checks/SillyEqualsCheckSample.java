@@ -21,6 +21,7 @@ public class SillyEqualsCheckSample {
   Integer integer;
   Integer[] arrayOfIntegers;
   String string;
+  StringBuilder stringBuilder;
   String[] arrayOfStrings;
   Comparable comparable;
   java.io.File file;
@@ -41,6 +42,7 @@ public class SillyEqualsCheckSample {
     object.equals(1); // Compliant
     integer.equals(1); // Compliant
     string.equals(1); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated types always return false.}}
+    string.equals(stringBuilder);
     arrayOfObjects.equals(1); // Noncompliant {{Remove this call to "equals"; comparisons between an array and a type always return false.}}
 
     // arrays vs arrays
