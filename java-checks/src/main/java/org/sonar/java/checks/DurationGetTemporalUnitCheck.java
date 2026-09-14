@@ -17,7 +17,6 @@
 package org.sonar.java.checks;
 
 import java.util.Set;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
@@ -25,6 +24,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -64,27 +64,34 @@ public class DurationGetTemporalUnitCheck extends AbstractMethodDetection implem
       return;
     }
     ExpressionTree argument = mit.arguments().get(0);
-    Symbol symbol = referencedSymbol(ExpressionUtils.skipParentheses(argument));
-    if (isChronoUnitConstant(symbol) && !SUPPORTED_UNITS.contains(symbol.name())) {
+    if (isUnsupportedTemporalUnit(argument)) {
       reportIssue(argument, "\"Duration.get()\" only supports \"SECONDS\" and \"NANOS\"; use dedicated conversion methods instead.");
     }
   }
 
-  private static @Nullable Symbol referencedSymbol(ExpressionTree argument) {
-    if (argument instanceof IdentifierTree identifier) {
-      return identifier.symbol();
+  private static boolean isUnsupportedTemporalUnit(ExpressionTree argument) {
+    ExpressionTree expr = ExpressionUtils.skipParentheses(argument);
+    IdentifierTree identifier = null;
+    if (expr instanceof IdentifierTree id) {
+      identifier = id;
+    } else if (expr instanceof MemberSelectExpressionTree memberSelect) {
+      identifier = memberSelect.identifier();
     }
-    if (argument instanceof MemberSelectExpressionTree memberSelect) {
-      return memberSelect.identifier().symbol();
+    if (identifier == null) {
+      return false;
     }
-    return null;
-  }
-
-  private static boolean isChronoUnitConstant(@Nullable Symbol symbol) {
-    if (symbol == null || symbol.isUnknown() || !symbol.isVariableSymbol() || !symbol.isEnum()) {
+    Symbol symbol = identifier.symbol();
+    if (symbol.isUnknown() || !symbol.isVariableSymbol() || !symbol.isEnum()) {
       return false;
     }
     Symbol owner = symbol.owner();
-    return owner != null && !owner.isUnknown() && owner.type().is(CHRONO_UNIT);
+    if (owner == null || owner.isUnknown()) {
+      return false;
+    }
+    Type ownerType = owner.type();
+    if (ownerType.is(CHRONO_UNIT)) {
+      return !SUPPORTED_UNITS.contains(symbol.name());
+    }
+    return ownerType.isSubtypeOf(TEMPORAL_UNIT);
   }
 }

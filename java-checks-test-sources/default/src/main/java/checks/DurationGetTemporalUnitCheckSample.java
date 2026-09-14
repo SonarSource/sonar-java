@@ -74,8 +74,10 @@ class DurationGetTemporalUnitCheckSample {
 
   long customUnits(Duration duration) {
     long result = 0;
-    result += duration.get(CustomUnit.CUSTOM_MINUTES);
-    result += duration.get(CUSTOM_MINUTES);
+    result += duration.get(CustomUnit.CUSTOM_MINUTES); // Noncompliant {{"Duration.get()" only supports "SECONDS" and "NANOS"; use dedicated conversion methods instead.}}
+//                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+    result += duration.get(CUSTOM_MINUTES); // Noncompliant {{"Duration.get()" only supports "SECONDS" and "NANOS"; use dedicated conversion methods instead.}}
+//                         ^^^^^^^^^^^^^^
     return result;
   }
 

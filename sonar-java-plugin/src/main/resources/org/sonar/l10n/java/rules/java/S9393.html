@@ -8,8 +8,8 @@
 into that unit. However, passing any unit other than <code>SECONDS</code> or <code>NANOS</code> throws an
 <code>UnsupportedTemporalTypeException</code> unconditionally at runtime.</p>
 <h3>Exceptions</h3>
-<p>This rule reports only direct <code>ChronoUnit</code> constants. It does not track a constant stored in a variable.</p>
-<p>Custom <code>TemporalUnit</code> implementations are not reported because <code>Duration</code> delegates the operation to them.</p>
+<p>This rule reports only direct enum constants implementing <code>TemporalUnit</code>. It does not track a constant stored in a variable or returned
+by a method call.</p>
 <h2>How to fix it</h2>
 <p>Use dedicated conversion methods such as <code>toMinutes()</code>, <code>toHours()</code>, <code>toDays()</code>, <code>toMillis()</code>, or
 <code>toNanos()</code> to obtain the total duration in the desired unit. In Java 9 and later, methods like <code>toMinutesPart()</code>,
