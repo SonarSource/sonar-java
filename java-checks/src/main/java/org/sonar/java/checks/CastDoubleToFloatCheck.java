@@ -58,10 +58,10 @@ public class CastDoubleToFloatCheck extends IssuableSubscriptionVisitor {
     }
     String literalValue = ((LiteralTree) expression).value();
     String stripped = stripDoubleSuffix(literalValue);
-    if (!isEquivalentFloatLiteral(stripped, negated)) {
+    if (!isEquivalentFloatLiteral(stripped)) {
       return;
     }
-    String replacement = (negated ? "-" : "") + stripped + "f";
+    String replacement = (negated ? " -" : "") + stripped + "f";
     QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(typeCastTree)
@@ -79,20 +79,13 @@ public class CastDoubleToFloatCheck extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  private static boolean isEquivalentFloatLiteral(String stripped, boolean negated) {
+  private static boolean isEquivalentFloatLiteral(String stripped) {
     String parseable = stripped.replace("_", "");
     try {
       double asDouble = Double.parseDouble(parseable);
       float asFloat = Float.parseFloat(parseable);
-      if (!Float.isFinite(asFloat)) {
+      if (!Float.isFinite(asFloat) || (asFloat == 0.0f && asDouble != 0.0)) {
         return false;
-      }
-      if (asFloat == 0.0f && asDouble != 0.0) {
-        return false;
-      }
-      if (negated) {
-        asDouble = -asDouble;
-        asFloat = -asFloat;
       }
       return Float.compare(asFloat, (float) asDouble) == 0;
     } catch (NumberFormatException e) {

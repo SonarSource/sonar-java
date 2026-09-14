@@ -67,7 +67,7 @@ class CastDoubleToFloatCheckSample {
     float l = (float) -0.5; // Noncompliant [[quickfixes=qf12]]
 //            ^^^^^^^^^^^^
     // fix@qf12 {{Replace with a float literal}}
-    // edit@qf12 [[sc=15;ec=27]] {{-0.5f}}
+    // edit@qf12 [[sc=15;ec=27]] {{ -0.5f}}
 
     float m = (float) +3.14; // Noncompliant [[quickfixes=qf13]]
 //            ^^^^^^^^^^^^^
@@ -77,17 +77,22 @@ class CastDoubleToFloatCheckSample {
     float n = (float) -0.0; // Noncompliant [[quickfixes=qf14]]
 //            ^^^^^^^^^^^^
     // fix@qf14 {{Replace with a float literal}}
-    // edit@qf14 [[sc=15;ec=27]] {{-0.0f}}
+    // edit@qf14 [[sc=15;ec=27]] {{ -0.0f}}
 
     float o = (float) -(0.5); // Noncompliant [[quickfixes=qf15]]
 //            ^^^^^^^^^^^^^^
     // fix@qf15 {{Replace with a float literal}}
-    // edit@qf15 [[sc=15;ec=29]] {{-0.5f}}
+    // edit@qf15 [[sc=15;ec=29]] {{ -0.5f}}
 
     float p = (float) +(3.14); // Noncompliant [[quickfixes=qf16]]
 //            ^^^^^^^^^^^^^^^
     // fix@qf16 {{Replace with a float literal}}
     // edit@qf16 [[sc=15;ec=30]] {{3.14f}}
+
+    float q = -(float) -0.5; // Noncompliant [[quickfixes=qf17]]
+//             ^^^^^^^^^^^^
+    // fix@qf17 {{Replace with a float literal}}
+    // edit@qf17 [[sc=16;ec=28]] {{ -0.5f}}
   }
 
   void compliant() {
