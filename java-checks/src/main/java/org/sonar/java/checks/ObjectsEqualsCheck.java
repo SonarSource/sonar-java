@@ -59,15 +59,8 @@ public class ObjectsEqualsCheck extends IssuableSubscriptionVisitor {
       return false;
     }
 
-    if (!matchesReceiver(conditionVar, equalsCall.receiver)) {
-      return false;
-    }
-
-    if (!isEqualToNull(falseExpr, equalsCall.argument)) {
-      return false;
-    }
-
-    return true;
+    return matchesReceiver(conditionVar, equalsCall.receiver)
+      && isEqualToNull(falseExpr, equalsCall.argument);
   }
 
   private static boolean matchesReceiver(ExpressionTree conditionVar, ExpressionTree receiver) {

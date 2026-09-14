@@ -155,6 +155,38 @@ class ObjectsEqualsCheckSample {
     }
   }
 
+  void testNonEqualsMethod() {
+    String s = "hello";
+    if (s != null ? s.contains("x") : b == null) { // Compliant - not equals method
+      //
+    }
+  }
+
+  void testReceiverIsMethodInvocation() {
+    if (a != null ? getA().equals(b) : b == null) { // Compliant - receiver is a method call
+      //
+    }
+  }
+
+  void testFalseBranchEqualToNonNull() {
+    if (a != null ? a.equals(b) : b == c) { // Compliant - false branch compares two non-null values
+      //
+    }
+  }
+
+  void testEqualsWithMultipleArgs() {
+    MultiArgEquals ma = new MultiArgEquals();
+    if (ma != null ? ma.equals(a, b) : b == null) { // Compliant - equals with 2 args
+      //
+    }
+  }
+
+  void testImplicitThisEquals() {
+    if (this != null ? equals(b) : b == null) { // Compliant - implicit this
+      //
+    }
+  }
+
   void testCompliantVariations() {
     if (a != null && a.equals(b)) { // Compliant - not a ternary
       //
@@ -176,6 +208,12 @@ class ObjectsEqualsCheckSample {
 
   static class TypedClass {
     boolean equals(TypedClass other) {
+      return true;
+    }
+  }
+
+  static class MultiArgEquals {
+    boolean equals(Object a, Object b) {
       return true;
     }
   }
