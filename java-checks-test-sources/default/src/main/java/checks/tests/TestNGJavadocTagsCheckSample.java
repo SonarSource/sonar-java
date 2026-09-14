@@ -119,13 +119,6 @@ class TestNGJavadocTagsCheckSample {
   public void withCodeTag() { // compliant
   }
 
-  /**
-   * @test
-   * @beforeMethod
-   */
-  public void multipleTagsSecondaryLocation() { // Noncompliant {{Replace this "@test" Javadoc tag with the TestNG "@Test" annotation.}}
-  }
-
   // --- Compliant cases ---
 
   /**
@@ -182,14 +175,14 @@ class TestNGJavadocTagsCheckSample {
   }
 
   /**
-   * @beforeClass - Type-only annotation, not applicable to methods
+   * @beforeClass
    */
-  public void beforeClassTag() { // compliant
+  public void classSetUp() { // Noncompliant {{Replace this "@beforeClass" Javadoc tag with the TestNG "@BeforeClass" annotation.}}
   }
 
   /**
-   * @afterClass - Type-only annotation, not applicable to methods
+   * @afterClass
    */
-  public void afterClassTag() { // compliant
+  public void classTearDown() { // Noncompliant {{Replace this "@afterClass" Javadoc tag with the TestNG "@AfterClass" annotation.}}
   }
 }

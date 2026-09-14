@@ -42,6 +42,8 @@ public class TestNGJavadocTagsCheck extends IssuableSubscriptionVisitor {
     .put("test", "@Test")
     .put("beforemethod", "@BeforeMethod")
     .put("aftermethod", "@AfterMethod")
+    .put("beforeclass", "@BeforeClass")
+    .put("afterclass", "@AfterClass")
     .put("beforesuite", "@BeforeSuite")
     .put("aftersuite", "@AfterSuite")
     .put("beforetest", "@BeforeTest")
