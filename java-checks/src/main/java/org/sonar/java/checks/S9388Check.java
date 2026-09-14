@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class S9388Check extends IssuableSubscriptionVisitor {
 
   private static final String DATA_PROVIDER_ANNOTATION = "org.testng.annotations.DataProvider";
+  private static final String JAVA_LANG_OBJECT = "java.lang.Object";
   private static final String MESSAGE = "Change this return type to \"Object[][]\", \"Iterator<Object[]>\", \"Iterator<Object>\", or \"Object[]\".";
 
   @Override
@@ -61,7 +62,7 @@ public class S9388Check extends IssuableSubscriptionVisitor {
       return false;
     }
     Type elementType = ((Type.ArrayType) type).elementType();
-    return elementType.isArray() && ((Type.ArrayType) elementType).elementType().is("java.lang.Object");
+    return elementType.isArray() && ((Type.ArrayType) elementType).elementType().is(JAVA_LANG_OBJECT);
   }
 
   private static boolean isObjectArray1D(Type type) {
@@ -69,7 +70,7 @@ public class S9388Check extends IssuableSubscriptionVisitor {
       return false;
     }
     Type elementType = ((Type.ArrayType) type).elementType();
-    return !elementType.isArray() && elementType.is("java.lang.Object");
+    return !elementType.isArray() && elementType.is(JAVA_LANG_OBJECT);
   }
 
   private static boolean isValidIterator(Type type) {
@@ -84,8 +85,8 @@ public class S9388Check extends IssuableSubscriptionVisitor {
       return false;
     }
     Type typeArg = typeArgs.get(0);
-    return typeArg.is("java.lang.Object")
-      || (typeArg.isArray() && ((Type.ArrayType) typeArg).elementType().is("java.lang.Object"));
+    return typeArg.is(JAVA_LANG_OBJECT)
+      || (typeArg.isArray() && ((Type.ArrayType) typeArg).elementType().is(JAVA_LANG_OBJECT));
   }
 
 }
