@@ -17,21 +17,11 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/PluginDownloader.java": [
 110
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/plugins/PluginReferentialMetadataConverter.java": [
-50
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileExporters.java": [
 97
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileResetImpl.java": [
-59
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/CachingRuleFinder.java": [
-188
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/DefaultRuleFinder.java": [
-125,
-159
+125
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java": [
 201
@@ -42,9 +32,6 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/test/index/TestDoc.java": [
 148,
 156
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/DefaultUserFinder.java": [
-71
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/EnumUtils.java": [
 38
