@@ -151,23 +151,9 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
     secondaries.sort(LOCATION_COMPARATOR);
     return secondaries;
   }
-  private void clearState() {
+  @Override
+  protected void clearState() {
     warnings.clear();
-  }
-
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    clearState();
-    super.setContext(context);
-  }
-
-  @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    try {
-      super.leaveFile(context);
-    } finally {
-      clearState();
-    }
   }
 
 }

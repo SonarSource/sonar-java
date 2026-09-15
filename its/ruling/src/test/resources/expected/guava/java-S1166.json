@@ -13,14 +13,10 @@
 372
 ],
 "com.google.guava:guava:src/com/google/common/base/internal/Finalizer.java": [
-132,
 205
 ],
 "com.google.guava:guava:src/com/google/common/cache/AbstractLoadingCache.java": [
 52
-],
-"com.google.guava:guava:src/com/google/common/cache/CacheBuilderSpec.java": [
-441
 ],
 "com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
 2393,
@@ -42,9 +38,6 @@
 112,
 126,
 128
-],
-"com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
-333
 ],
 "com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java": [
 244
@@ -97,9 +90,6 @@
 3855,
 3864
 ],
-"com.google.guava:guava:src/com/google/common/collect/Queues.java": [
-317
-],
 "com.google.guava:guava:src/com/google/common/collect/RegularContiguousSet.java": [
 124
 ],
@@ -149,26 +139,15 @@
 "com.google.guava:guava:src/com/google/common/io/FileBackedOutputStream.java": [
 106
 ],
-"com.google.guava:guava:src/com/google/common/net/HostAndPort.java": [
-197
-],
 "com.google.guava:guava:src/com/google/common/net/HostSpecifier.java": [
 89,
 143
 ],
 "com.google.guava:guava:src/com/google/common/net/InetAddresses.java": [
-215,
-279,
 518
 ],
 "com.google.guava:guava:src/com/google/common/net/InternetDomainName.java": [
 500
-],
-"com.google.guava:guava:src/com/google/common/primitives/Doubles.java": [
-641
-],
-"com.google.guava:guava:src/com/google/common/primitives/Floats.java": [
-617
 ],
 "com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java": [
 360,
@@ -177,16 +156,14 @@
 ],
 "com.google.guava:guava:src/com/google/common/reflect/ClassPath.java": [
 333,
-345,
-369
+345
 ],
 "com.google.guava:guava:src/com/google/common/reflect/TypeResolver.java": [
 208
 ],
 "com.google.guava:guava:src/com/google/common/reflect/Types.java": [
 362,
-386,
-571
+386
 ],
 "com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
 114,
@@ -222,38 +199,17 @@
 "com.google.guava:guava:src/com/google/common/util/concurrent/JdkFutureAdapters.java": [
 173
 ],
-"com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java": [
-399,
-565,
-589,
-800
-],
 "com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
-215,
 786,
 801,
 804,
 807,
-810,
-827,
-964
+827
 ],
 "com.google.guava:guava:src/com/google/common/util/concurrent/SmoothRateLimiter.java": [
 362
 ],
 "com.google.guava:guava:src/com/google/common/util/concurrent/UncaughtExceptionHandlers.java": [
 68
-],
-"com.google.guava:guava:src/com/google/common/util/concurrent/Uninterruptibles.java": [
-63,
-91,
-114,
-144,
-181,
-211,
-233,
-261,
-288,
-330
 ]
 }

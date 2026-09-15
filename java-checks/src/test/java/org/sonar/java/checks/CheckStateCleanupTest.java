@@ -110,7 +110,8 @@ class CheckStateCleanupTest {
       return methodsNamed(checkClass, "endOfAnalysis", ModuleScannerContext.class);
     }
     if (checkClass.isAssignableTo(IssuableSubscriptionVisitor.class)) {
-      Set<JavaMethod> methods = methodsNamed(checkClass, "setContext", JavaFileScannerContext.class);
+      Set<JavaMethod> methods = noArgMethodsNamed(checkClass, "clearState");
+      methods.addAll(methodsNamed(checkClass, "setContext", JavaFileScannerContext.class));
       methods.addAll(methodsNamed(checkClass, "leaveFile", JavaFileScannerContext.class));
       return methods;
     }
@@ -123,6 +124,16 @@ class CheckStateCleanupTest {
       if (method.getName().equals(name)
         && method.getRawParameterTypes().size() == 1
         && method.getRawParameterTypes().get(0).isEquivalentTo(parameterType)) {
+        methods.add(method);
+      }
+    }
+    return methods;
+  }
+
+  private static Set<JavaMethod> noArgMethodsNamed(JavaClass checkClass, String name) {
+    Set<JavaMethod> methods = new HashSet<>();
+    for (JavaMethod method : checkClass.getMethods()) {
+      if (method.getName().equals(name) && method.getRawParameterTypes().isEmpty()) {
         methods.add(method);
       }
     }

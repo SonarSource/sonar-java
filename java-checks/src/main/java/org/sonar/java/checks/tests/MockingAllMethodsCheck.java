@@ -106,24 +106,10 @@ public class MockingAllMethodsCheck extends AbstractMethodDetection {
     return symbol.isMethodSymbol() && !symbol.isPrivate() && declaration != null
       && !declaration.is(Tree.Kind.CONSTRUCTOR);
   }
-  private void clearState() {
+  @Override
+  protected void clearState() {
     mockedMethodsPerObject.clear();
     whenCalls.clear();
-  }
-
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    clearState();
-    super.setContext(context);
-  }
-
-  @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    try {
-      super.leaveFile(context);
-    } finally {
-      clearState();
-    }
   }
 
 }

@@ -22,29 +22,14 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/ws/ValidateAction.java": [
 101
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/component/ws/ProjectMeasuresQueryFactory.java": [
-150
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluator.java": [
-61
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadReportAnalysisMetadataHolderStep.java": [
 158
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PeriodResolver.java": [
-182
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/debt/DebtModelXMLExporter.java": [
 140
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java": [
-158
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/DefaultNotificationManager.java": [
 97
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/email/EmailNotificationChannel.java": [
-145
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/organization/ws/CreateAction.java": [
 118
@@ -58,29 +43,11 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ServerIdGenerator.java": [
 114
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/ServerIdManager.java": [
-82
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/platform/web/PlatformServletContextListener.java": [
 59
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/IndexAction.java": [
-112
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/project/ws/ProjectsWsSupport.java": [
 62
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/property/ws/IndexAction.java": [
-125
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/DeselectAction.java": [
-96
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/QualityGatesWs.java": [
-92
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/SelectAction.java": [
-134
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileResetImpl.java": [
 72,
@@ -99,15 +66,6 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/SetAction.java": [
 290
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/FloatTypeValidation.java": [
-40
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/IntegerTypeValidation.java": [
-40
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/LongTypeValidation.java": [
-39
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/ObjectInputStreamIterator.java": [
 43
