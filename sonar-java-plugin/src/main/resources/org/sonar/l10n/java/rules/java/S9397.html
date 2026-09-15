@@ -1,0 +1,56 @@
+<p>When <code>String.format()</code> is used with simple <code>%s</code> placeholders, the result can often be achieved more clearly with
+<code>String.valueOf()</code> or string concatenation. These simpler alternatives are easier to read, maintain, and slightly more efficient.</p>
+<h2>Why is this an issue?</h2>
+<h2>Why is this an issue?</h2>
+<p>String formatting utilities like <code>String.format()</code> are powerful mechanisms for creating formatted strings with complex patterns.
+However, they come with overhead: parsing format specifications, identifying placeholders, performing type conversions, and assembling the result.</p>
+<p>When the formatting pattern is simple enough that it can be replaced with a more direct alternative — such as <code>String.valueOf()</code> for a
+single <code>%s</code> placeholder, or plain string concatenation for a few <code>%s</code> placeholders joined by literal text — using a formatting
+utility adds unnecessary complexity.</p>
+<p>This has several drawbacks:</p>
+<ul>
+  <li><strong>Reduced readability</strong>: Simple string operations become obscured behind formatting logic</li>
+  <li><strong>Minor performance cost</strong>: While typically small, the parsing and processing overhead is completely avoidable</li>
+  <li><strong>Maintenance burden</strong>: Other developers must understand formatting syntax for operations that don’t require it</li>
+</ul>
+<p>Using simpler alternatives makes the intent of the code immediately clear without requiring readers to mentally parse a format string.</p>
+<h3>What is the potential impact?</h3>
+<p>This issue primarily affects code maintainability. The code becomes harder to read and understand because string formatting functions signal to
+readers that some formatting is happening, when in fact none is needed.</p>
+<p>There is also a minor performance impact, especially if the redundant call occurs in a loop or frequently executed code path. While the overhead is
+typically small, it’s completely avoidable.</p>
+<h2>How to fix it</h2>
+<p>When the format string contains a single <code>%s</code> placeholder and nothing else, replace <code>String.format()</code> with
+<code>String.valueOf()</code>.</p>
+<p>When the format string contains <code>%s</code> placeholders joined by literal text, replace <code>String.format()</code> with string
+concatenation.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+String name = String.format("%s", user.getName()); // Noncompliant - use String.valueOf()
+String path = String.format("%s/%s", directory, filename); // Noncompliant - use concatenation
+String label = String.format("%s: %s", key, value); // Noncompliant - use concatenation
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+String name = String.valueOf(user.getName());
+String path = directory + "/" + filename;
+String label = key + ": " + value;
+</pre>
+<h4>Compliant solution - complex formats that justify String.format()</h4>
+<p>These usages are compliant because they use format specifiers that have no simple concatenation equivalent:</p>
+<pre>
+String price = String.format("%.2f", amount);                  // Compliant - decimal formatting
+String hex = String.format("0x%08X", value);                   // Compliant - hex with padding
+String table = String.format("%-20s %5d", name, count);        // Compliant - width/alignment
+String date = String.format("%tF %tT", timestamp, timestamp);  // Compliant - date/time formatting
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a
+  href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#format-java.lang.String-java.lang.Object…​-">String (Java Platform SE
+  8)</a></li>
+  <li>Oracle Java Documentation - <a
+  href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#valueOf-java.lang.Object-">String.valueOf()</a></li>
+</ul>
