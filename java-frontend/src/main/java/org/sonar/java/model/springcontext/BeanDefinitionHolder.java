@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import org.sonar.java.reporting.AnalyzerMessage;
 
 /**
  * Immutable representation of a Spring bean definition discovered during project scanning.
@@ -161,5 +162,33 @@ public class BeanDefinitionHolder {
       }
       return holder;
     }
+  }
+
+  /**
+   * A bean definition as collected from a single file, holding no reference to that file.
+   *
+   * <p>This is the form kept by {@link BeanDefinitionGatherer} and written to the cache. Locations are text spans
+   * only, the file they belong to being the one the bean is stored under, which is what makes a cache entry
+   * readable without knowing which file it describes. Pairing it with that file yields the
+   * {@link BeanDefinitionHolder} the model exposes.
+   *
+   * @param beanName      the name the bean is registered under
+   * @param type          fully-qualified name of the bean's type
+   * @param beanPackage   package of the class declaring the bean
+   * @param textSpan      the text span identifying the bean declaration within its own file
+   * @param isPrimary     whether the bean is annotated with {@code @Primary}
+   * @param profiles      the {@code @Profile} expression under which the bean is active, or {@code null} if unconditional
+   * @param dependencies  the bean's dependencies, mapped by required type FQN to the injection points that require them
+   * @param typeHierarchy fully-qualified names of the bean's own type and of all its ancestors and interfaces
+   */
+  public record InputFileData(
+    String beanName,
+    String type,
+    String beanPackage,
+    AnalyzerMessage.TextSpan textSpan,
+    boolean isPrimary,
+    @Nullable String profiles,
+    Map<String, Set<InjectionPoint.InputFileData>> dependencies,
+    Set<String> typeHierarchy) {
   }
 }

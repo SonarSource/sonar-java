@@ -188,6 +188,28 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
   }
 
   @Test
+  void parsed_packages_replace_packages_restored_for_the_same_file() {
+    String filePath = "src/test/files/springcontext/SpringBootAppWithScanBasePackages.java";
+    InputFile inputFile = TestUtils.inputFile(new File(filePath));
+    String cacheKey = "java:spring:component-scan-packages:" + inputFile.key();
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(cacheKey))
+      .thenReturn("{\"version\":1,\"packages\":[\"cached.only\"]}".getBytes(StandardCharsets.UTF_8));
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+
+    scan(filePath);
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactlyInAnyOrder("com.example.service", "com.example.web");
+  }
+
+  @Test
   void scanWithoutParsing_returns_false_on_cache_miss() {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SpringBootAppWithScanBasePackages.java"));
 

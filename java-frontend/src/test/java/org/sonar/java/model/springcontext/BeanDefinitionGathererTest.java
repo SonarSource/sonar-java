@@ -243,6 +243,28 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
   }
 
   @Test
+  void parsed_beans_replace_beans_restored_for_the_same_file() {
+    String filePath = "src/test/files/springcontext/QualifiedFieldDependencies.java";
+    InputFile inputFile = TestUtils.inputFile(new File(filePath));
+    var entry = scanAndCaptureCacheEntry(filePath);
+
+    JavaReadCache readCache = mock(JavaReadCache.class);
+    when(readCache.readBytes(entry.key())).thenReturn(entry.data());
+    CacheContext cacheContext = mockCacheContext(readCache, mock(JavaWriteCache.class));
+    InputFileScannerContext context = mock(InputFileScannerContext.class);
+    when(context.getInputFile()).thenReturn(inputFile);
+    when(context.getCacheContext()).thenReturn(cacheContext);
+
+    gatherer = new BeanDefinitionGatherer();
+    model = new SpringContextModel();
+    assertThat(gatherer.scanWithoutParsing(context)).isTrue();
+
+    scan(filePath);
+
+    assertThat(model.getBeanDefinitionRegistry().getByName("qualifiedFieldDependencies")).hasSize(1);
+  }
+
+  @Test
   void scanWithoutParsing_returns_false_on_cache_miss() {
     InputFile inputFile = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
 

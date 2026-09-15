@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import org.slf4j.Logger;
-import org.sonar.java.model.springcontext.BeanDefinitionGatherer.BeanData;
-import org.sonar.java.serialization.BeanDataTypeAdapter;
+import org.sonar.java.serialization.BeanDefinitionHolderTypeAdapter;
 import org.sonar.java.serialization.InjectionPointTypeAdapter;
 import org.sonar.java.serialization.TextSpanTypeAdapter;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -47,7 +46,7 @@ import static org.sonar.java.serialization.JsonUtils.writeStrings;
  * shape changes invalidates all previously cached entries, which are then recomputed on the next analysis.
  *
  * <p>This class only owns that versioned envelope. The shape of the beans it wraps is defined by
- * {@link BeanDataTypeAdapter}, {@link InjectionPointTypeAdapter} and {@link TextSpanTypeAdapter}.
+ * {@link BeanDefinitionHolderTypeAdapter}, {@link InjectionPointTypeAdapter} and {@link TextSpanTypeAdapter}.
  */
 final class SpringContextCacheHelper {
 
@@ -110,13 +109,12 @@ final class SpringContextCacheHelper {
    * @param log     Logger of the calling gatherer, used to trace ignored duplicate writes.
    * @param beans   The beans collected from this file.
    */
-  static void writeBeanDefinitionsToCache(JavaFileScannerContext context, Logger log, List<BeanData> beans) {
-    var adapter = new BeanDataTypeAdapter(context.getInputFile());
+  static void writeBeanDefinitionsToCache(JavaFileScannerContext context, Logger log, List<BeanDefinitionHolder.InputFileData> beans) {
     String document = writeDocument(CACHE_FORMAT_VERSION, out -> {
       out.name(BEANS);
       out.beginArray();
-      for (BeanData bean : beans) {
-        adapter.write(out, bean);
+      for (BeanDefinitionHolder.InputFileData bean : beans) {
+        BeanDefinitionHolderTypeAdapter.getInstance().write(out, bean);
       }
       out.endArray();
     });
@@ -124,15 +122,14 @@ final class SpringContextCacheHelper {
   }
 
   /**
-   * Restores bean definitions from their JSON representation, associating every location with the current file.
+   * Restores bean definitions from their JSON representation.
    *
    * @param context Context of the file being scanned, used to build the cache key and access the read cache.
    * @param log     Logger of the calling gatherer, used to trace failed accesses to cached data.
    */
-  static Optional<List<BeanData>> readBeanDefinitionsFromCache(InputFileScannerContext context, Logger log) {
+  static Optional<List<BeanDefinitionHolder.InputFileData>> readBeanDefinitionsFromCache(InputFileScannerContext context, Logger log) {
     var cacheKey = cacheKey(BEAN_CACHE_KEY_PREFIX, context);
-    var adapter = new BeanDataTypeAdapter(context.getInputFile());
-    return readFromCache(context, log, cacheKey, content -> deserializeBeans(content, adapter));
+    return readFromCache(context, log, cacheKey, SpringContextCacheHelper::deserializeBeans);
   }
 
   /**
@@ -162,11 +159,11 @@ final class SpringContextCacheHelper {
     return readFromCache(context, log, cacheKey, SpringContextCacheHelper::deserializePackages);
   }
 
-  private static List<BeanData> deserializeBeans(String content, BeanDataTypeAdapter adapter) {
+  private static List<BeanDefinitionHolder.InputFileData> deserializeBeans(String content) {
     var beans = requiredArray(parseDocument(content, CACHE_FORMAT_VERSION), BEANS);
-    List<BeanData> result = new ArrayList<>();
+    List<BeanDefinitionHolder.InputFileData> result = new ArrayList<>();
     for (JsonElement bean : beans) {
-      result.add(adapter.fromJsonTree(bean));
+      result.add(BeanDefinitionHolderTypeAdapter.getInstance().fromJsonTree(bean));
     }
     return result;
   }

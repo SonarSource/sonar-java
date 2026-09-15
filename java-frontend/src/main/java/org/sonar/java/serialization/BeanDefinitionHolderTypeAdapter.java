@@ -24,9 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.model.springcontext.BeanDefinitionGatherer;
-import org.sonar.java.model.springcontext.BeanDefinitionGatherer.BeanData;
+import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.InjectionPoint;
 import org.sonar.java.reporting.AnalyzerMessage;
 
@@ -49,25 +47,22 @@ import static org.sonar.java.serialization.JsonUtils.writeStrings;
 /**
  * JSON representation of a single cached Spring bean definition.
  *
- * <p>The input file of the bean and its {@link BeanData#dependingBeans()} are not serialized: the former is known
- * from the cache entry being read, and the latter is derived from the dependency injection points.
+ * <p>A {@link BeanDefinitionHolder.InputFileData} locates itself by text spans only, so no file needs to be
+ * known to read one back: the gatherer pairs the restored beans with the file the cache entry was read for.
  */
-public final class BeanDataTypeAdapter extends TypeAdapter<BeanData> {
+public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefinitionHolder.InputFileData> {
 
-  private final InputFile inputFile;
-  private final InjectionPointTypeAdapter injectionPointAdapter;
+  private static final BeanDefinitionHolderTypeAdapter INSTANCE = new BeanDefinitionHolderTypeAdapter();
 
-  /**
-   * @param inputFile The file the cache entry belongs to, against which locations are restored when reading. The
-   *                  file is not part of the serialized form, since a cache entry only ever holds one file's data.
-   */
-  public BeanDataTypeAdapter(InputFile inputFile) {
-    this.inputFile = inputFile;
-    this.injectionPointAdapter = new InjectionPointTypeAdapter(inputFile);
+  private BeanDefinitionHolderTypeAdapter() {
+  }
+
+  public static BeanDefinitionHolderTypeAdapter getInstance() {
+    return INSTANCE;
   }
 
   @Override
-  public void write(JsonWriter out, BeanData bean) throws IOException {
+  public void write(JsonWriter out, BeanDefinitionHolder.InputFileData bean) throws IOException {
     out.beginObject();
     out.name(NAME).value(bean.beanName());
     out.name(TYPE).value(bean.type());
@@ -77,14 +72,14 @@ public final class BeanDataTypeAdapter extends TypeAdapter<BeanData> {
     out.name(PRIMARY).value(bean.isPrimary());
     out.name(PROFILES).value(bean.profiles());
     out.name(DEPENDENCIES);
-    writeDependencies(out, bean.dependencyInjectionPoints());
+    writeDependencies(out, bean.dependencies());
     out.name(TYPE_HIERARCHY);
     writeStrings(out, bean.typeHierarchy());
     out.endObject();
   }
 
   @Override
-  public BeanData read(JsonReader in) throws IOException {
+  public BeanDefinitionHolder.InputFileData read(JsonReader in) throws IOException {
     String beanName = null;
     String type = null;
     String beanPackage = null;
@@ -92,7 +87,7 @@ public final class BeanDataTypeAdapter extends TypeAdapter<BeanData> {
     Boolean isPrimary = null;
     String profiles = null;
     boolean profilesRead = false;
-    Map<String, Set<InjectionPoint>> injectionPoints = null;
+    Map<String, Set<InjectionPoint.InputFileData>> dependencies = null;
     Set<String> typeHierarchy = null;
     in.beginObject();
     while (in.hasNext()) {
@@ -106,7 +101,7 @@ public final class BeanDataTypeAdapter extends TypeAdapter<BeanData> {
           profiles = readNullableString(in);
           profilesRead = true;
         }
-        case DEPENDENCIES -> injectionPoints = readDependencies(in);
+        case DEPENDENCIES -> dependencies = readDependencies(in);
         case TYPE_HIERARCHY -> typeHierarchy = readStrings(in);
         default -> in.skipValue();
       }
@@ -115,30 +110,27 @@ public final class BeanDataTypeAdapter extends TypeAdapter<BeanData> {
     if (!profilesRead) {
       throw missingProperty(PROFILES);
     }
-    Map<String, Set<InjectionPoint>> dependencies = required(injectionPoints, DEPENDENCIES);
-    return new BeanData(
+    return new BeanDefinitionHolder.InputFileData(
       required(beanName, NAME),
       required(type, TYPE),
       required(beanPackage, PACKAGE),
-      inputFile,
       required(span, SPAN),
       required(isPrimary, PRIMARY),
       profiles,
-      BeanDefinitionGatherer.projectToNames(dependencies),
-      dependencies,
+      required(dependencies, DEPENDENCIES),
       required(typeHierarchy, TYPE_HIERARCHY)
     );
   }
 
-  private void writeDependencies(JsonWriter out, Map<String, Set<InjectionPoint>> dependencies) throws IOException {
+  private static void writeDependencies(JsonWriter out, Map<String, Set<InjectionPoint.InputFileData>> dependencies) throws IOException {
     out.beginArray();
-    for (Map.Entry<String, Set<InjectionPoint>> dependency : dependencies.entrySet()) {
+    for (Map.Entry<String, Set<InjectionPoint.InputFileData>> dependency : dependencies.entrySet()) {
       out.beginObject();
       out.name(TYPE).value(dependency.getKey());
       out.name(INJECTION_POINTS);
       out.beginArray();
-      for (InjectionPoint injectionPoint : dependency.getValue()) {
-        injectionPointAdapter.write(out, injectionPoint);
+      for (InjectionPoint.InputFileData injectionPoint : dependency.getValue()) {
+        InjectionPointTypeAdapter.getInstance().write(out, injectionPoint);
       }
       out.endArray();
       out.endObject();
@@ -146,12 +138,12 @@ public final class BeanDataTypeAdapter extends TypeAdapter<BeanData> {
     out.endArray();
   }
 
-  private Map<String, Set<InjectionPoint>> readDependencies(JsonReader in) throws IOException {
-    Map<String, Set<InjectionPoint>> dependencies = new LinkedHashMap<>();
+  private static Map<String, Set<InjectionPoint.InputFileData>> readDependencies(JsonReader in) throws IOException {
+    Map<String, Set<InjectionPoint.InputFileData>> dependencies = new LinkedHashMap<>();
     in.beginArray();
     while (in.hasNext()) {
       String type = null;
-      Set<InjectionPoint> injectionPoints = null;
+      Set<InjectionPoint.InputFileData> injectionPoints = null;
       in.beginObject();
       while (in.hasNext()) {
         switch (in.nextName()) {
@@ -167,11 +159,11 @@ public final class BeanDataTypeAdapter extends TypeAdapter<BeanData> {
     return dependencies;
   }
 
-  private Set<InjectionPoint> readInjectionPoints(JsonReader in) throws IOException {
-    Set<InjectionPoint> injectionPoints = new LinkedHashSet<>();
+  private static Set<InjectionPoint.InputFileData> readInjectionPoints(JsonReader in) throws IOException {
+    Set<InjectionPoint.InputFileData> injectionPoints = new LinkedHashSet<>();
     in.beginArray();
     while (in.hasNext()) {
-      injectionPoints.add(injectionPointAdapter.read(in));
+      injectionPoints.add(InjectionPointTypeAdapter.getInstance().read(in));
     }
     in.endArray();
     return injectionPoints;

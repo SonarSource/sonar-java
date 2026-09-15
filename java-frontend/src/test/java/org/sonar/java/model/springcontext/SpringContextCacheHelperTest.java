@@ -37,9 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
-import org.sonar.java.model.springcontext.BeanDefinitionGatherer.BeanData;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
-import org.sonar.java.serialization.BeanDataTypeAdapter;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
@@ -56,7 +54,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.model.springcontext.SpringContextGathererTest.assertInjectionPoint;
 import static org.sonar.java.model.springcontext.SpringContextGathererTest.mockCacheContext;
 
 class SpringContextCacheHelperTest {
@@ -99,18 +96,16 @@ class SpringContextCacheHelperTest {
     }
 
     @Test
-    void the_input_file_is_not_serialized_but_restored_from_the_entry_being_read() {
+    void no_input_file_is_serialized_nor_needed_to_read_an_entry_back() {
       var written = writeBeans(List.of(simpleComponent()));
 
       assertThat(written).doesNotContain(INPUT_FILE.key());
-      assertThat(readBeans(written)).hasValueSatisfying(beans -> assertThat(beans)
-        .extracting(BeanData::inputFile)
-        .containsExactly(INPUT_FILE));
+      assertThat(readBeans(written)).hasValueSatisfying(beans -> assertThat(beans).containsExactly(simpleComponent()));
     }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("beansToRoundTrip")
-    void beans_round_trip_through_the_cache(String description, List<BeanData> beans) {
+    void beans_round_trip_through_the_cache(String description, List<BeanDefinitionHolder.InputFileData> beans) {
       var restored = readBeans(writeBeans(beans));
 
       assertThat(restored).contains(beans);
@@ -126,13 +121,15 @@ class SpringContextCacheHelperTest {
     }
 
     @Test
-    void injection_point_locations_survive_the_round_trip() {
+    void injection_point_spans_survive_the_round_trip() {
       var restored = readBeans(writeBeans(List.of(beanWithDependencies())));
 
       assertThat(restored).hasValueSatisfying(beans -> {
-        var dependencies = beans.getFirst().dependencyInjectionPoints();
-        assertInjectionPoint(dependencies.get("org.springframework.context.ApplicationContext"), "primaryContext", INPUT_FILE, 16);
-        assertInjectionPoint(dependencies.get("org.springframework.core.env.Environment"), "environment", INPUT_FILE, 19);
+        var dependencies = beans.getFirst().dependencies();
+        assertThat(dependencies.get("org.springframework.context.ApplicationContext"))
+          .containsExactly(new InjectionPoint.InputFileData("primaryContext", new TextSpan(16, 2, 16, 55)));
+        assertThat(dependencies.get("org.springframework.core.env.Environment"))
+          .containsExactly(new InjectionPoint.InputFileData("environment", new TextSpan(19, 2, 19, 38)));
       });
     }
 
@@ -228,7 +225,7 @@ class SpringContextCacheHelperTest {
       assertThat(SpringContextCacheHelper.readBeanDefinitionsFromCache(context, LOG)).hasValueSatisfying(beans -> {
         assertThat(beans).hasSize(1);
         assertThat(beans.getFirst().beanName()).isEqualTo("simpleComponent");
-        assertThat(beans.getFirst().dependingBeans().get("T")).containsOnly("t");
+        assertThat(beans.getFirst().dependencies().get("T")).extracting(InjectionPoint.InputFileData::name).containsOnly("t");
       });
       verify(writeCache).copyFromPrevious(BEAN_CACHE_KEY);
     }
@@ -339,50 +336,41 @@ class SpringContextCacheHelperTest {
 
   // ---- Bean fixtures --------------------------------------------------------
 
-  private static BeanData simpleComponent() {
+  private static BeanDefinitionHolder.InputFileData simpleComponent() {
     return beanData("simpleComponent", "checks.spring.context.SimpleComponent", new TextSpan(8, 13, 8, 28), false, null,
       Map.of(), Set.of("checks.spring.context.SimpleComponent"));
   }
 
-  private static BeanData primaryBean() {
+  private static BeanDefinitionHolder.InputFileData primaryBean() {
     return beanData("primaryBean", "checks.spring.context.PrimaryBean", new TextSpan(9, 13, 9, 24), true, null,
       Map.of(), Set.of("checks.spring.context.PrimaryBean", "java.lang.Object"));
   }
 
-  private static BeanData beanWithDependencies() {
-    Map<String, Set<InjectionPoint>> injectionPoints = new LinkedHashMap<>();
+  private static BeanDefinitionHolder.InputFileData beanWithDependencies() {
+    Map<String, Set<InjectionPoint.InputFileData>> injectionPoints = new LinkedHashMap<>();
     injectionPoints.put("org.springframework.context.ApplicationContext",
-      Set.of(injectionPoint("primaryContext", new TextSpan(16, 2, 16, 55))));
+      Set.of(new InjectionPoint.InputFileData("primaryContext", new TextSpan(16, 2, 16, 55))));
     injectionPoints.put("org.springframework.core.env.Environment",
-      Set.of(injectionPoint("environment", new TextSpan(19, 2, 19, 38))));
+      Set.of(new InjectionPoint.InputFileData("environment", new TextSpan(19, 2, 19, 38))));
     return beanData("qualifiedFieldDependencies", "checks.spring.context.QualifiedFieldDependencies",
       new TextSpan(12, 6, 12, 32), false, "prod", injectionPoints,
       Set.of("checks.spring.context.QualifiedFieldDependencies"));
   }
 
-  private static InjectionPoint injectionPoint(String name, TextSpan span) {
-    return new InjectionPoint(name, new BeanLocation(INPUT_FILE, span));
-  }
-
-  /**
-   * Builds a bean the way the gatherer does: {@code dependingBeans} is the name-only projection of the injection
-   * points, which is what {@link BeanDataTypeAdapter} recomputes when reading an entry back rather than serializing it.
-   */
-  private static BeanData beanData(String beanName, String type, TextSpan span, boolean isPrimary, @Nullable String profiles,
-    Map<String, Set<InjectionPoint>> injectionPoints, Set<String> typeHierarchy) {
-    return new BeanData(beanName, type, "checks.spring.context", INPUT_FILE, span, isPrimary, profiles,
-      BeanDefinitionGatherer.projectToNames(injectionPoints), injectionPoints, typeHierarchy);
+  private static BeanDefinitionHolder.InputFileData beanData(String beanName, String type, TextSpan span, boolean isPrimary, @Nullable String profiles,
+    Map<String, Set<InjectionPoint.InputFileData>> injectionPoints, Set<String> typeHierarchy) {
+    return new BeanDefinitionHolder.InputFileData(beanName, type, "checks.spring.context", span, isPrimary, profiles, injectionPoints, typeHierarchy);
   }
 
   // ---- Cache plumbing -------------------------------------------------------
 
-  private static String writeBeans(List<BeanData> beans) {
+  private static String writeBeans(List<BeanDefinitionHolder.InputFileData> beans) {
     JavaWriteCache writeCache = mock(JavaWriteCache.class);
     SpringContextCacheHelper.writeBeanDefinitionsToCache(writeContext(writeCache), LOG, beans);
     return captureWrittenData(writeCache);
   }
 
-  private static Optional<List<BeanData>> readBeans(String content) {
+  private static Optional<List<BeanDefinitionHolder.InputFileData>> readBeans(String content) {
     return SpringContextCacheHelper.readBeanDefinitionsFromCache(
       readContext(content, BEAN_CACHE_KEY, mock(JavaWriteCache.class)), LOG);
   }

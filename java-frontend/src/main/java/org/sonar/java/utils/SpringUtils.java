@@ -27,9 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.InjectionPoint;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -199,23 +197,22 @@ public final class SpringUtils {
    * unannotated ones.
    *
    * @param classTree The class whose members are scanned for dependencies
-   * @param inputFile The file {@code classTree} was parsed from, used to locate each injection point
-   * @return The class's dependencies, mapped by required type FQN to the {@link InjectionPoint}s that require it
+   * @return The class's dependencies, mapped by required type FQN to the {@link InjectionPoint.InputFileData} that require it
    */
-  public static Map<String, Set<InjectionPoint>> collectAutowiredDependenciesOnClass(ClassTree classTree, InputFile inputFile) {
-    Map<String, Set<InjectionPoint>> deps = new LinkedHashMap<>();
+  public static Map<String, Set<InjectionPoint.InputFileData>> collectAutowiredDependenciesOnClass(ClassTree classTree) {
+    Map<String, Set<InjectionPoint.InputFileData>> deps = new LinkedHashMap<>();
     List<MethodTree> unannotatedConstructors = new ArrayList<>();
     boolean hasAutowiredConstructor = false;
     for (Tree member : classTree.members()) {
       if (member instanceof VariableTree field && field.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
         String typeFqn = field.symbol().type().fullyQualifiedName();
         String name = dependencyKey(field.simpleName().name(), SpringUtils.extractQualifierValue(field.symbol().metadata()));
-        var location = new BeanLocation(inputFile, AnalyzerMessage.textSpanFor(field.simpleName()));
-        deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(new InjectionPoint(name, location));
+        var span = AnalyzerMessage.textSpanFor(field.simpleName());
+        deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(new InjectionPoint.InputFileData(name, span));
       } else if (member instanceof MethodTree method) {
         if (method.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
           hasAutowiredConstructor |= method.is(Tree.Kind.CONSTRUCTOR);
-          collectDependenciesOnMethod(method, inputFile).forEach((type, points) -> deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(points));
+          collectDependenciesOnMethod(method).forEach((type, points) -> deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(points));
         } else if (method.is(Tree.Kind.CONSTRUCTOR)) {
           // Held back until the class has been fully scanned, in case an @Autowired constructor appears
           // later among the members and disqualifies the implicit single-constructor rule below.
@@ -224,7 +221,7 @@ public final class SpringUtils {
       }
     }
     if (!hasAutowiredConstructor && unannotatedConstructors.size() == 1) {
-      collectDependenciesOnMethod(unannotatedConstructors.get(0), inputFile).forEach((type, points) -> deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(points));
+      collectDependenciesOnMethod(unannotatedConstructors.get(0)).forEach((type, points) -> deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(points));
     }
     return deps;
   }
@@ -232,18 +229,17 @@ public final class SpringUtils {
   /**
    * Collect the given method's parameters as dependencies.
    *
-   * @param method    Method whose parameters are stored as dependencies, either {@code @Autowired} constructors/setters or
-   *                  {@code @Bean} factory methods
-   * @param inputFile The file {@code method} was parsed from, used to locate each injection point
-   * @return The collected dependencies, mapped by required type FQN to the {@link InjectionPoint}s that require it
+   * @param method Method whose parameters are stored as dependencies, either {@code @Autowired} constructors/setters or
+   *               {@code @Bean} factory methods
+   * @return The collected dependencies, mapped by required type FQN to the {@link InjectionPoint.InputFileData} that require it
    */
-  public static Map<String, Set<InjectionPoint>> collectDependenciesOnMethod(MethodTree method, InputFile inputFile) {
-    Map<String, Set<InjectionPoint>> deps = new LinkedHashMap<>();
+  public static Map<String, Set<InjectionPoint.InputFileData>> collectDependenciesOnMethod(MethodTree method) {
+    Map<String, Set<InjectionPoint.InputFileData>> deps = new LinkedHashMap<>();
     for (var p : method.parameters()) {
       String typeFqn = p.symbol().type().fullyQualifiedName();
       String name = dependencyKey(p.simpleName().name(), SpringUtils.extractQualifierValue(p.symbol().metadata()));
-      var location = new BeanLocation(inputFile, AnalyzerMessage.textSpanFor(p.simpleName()));
-      deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(new InjectionPoint(name, location));
+      var span = AnalyzerMessage.textSpanFor(p.simpleName());
+      deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(new InjectionPoint.InputFileData(name, span));
     }
     return deps;
   }

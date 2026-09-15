@@ -20,8 +20,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.InjectionPoint;
 import org.sonar.java.reporting.AnalyzerMessage;
 
@@ -31,31 +29,30 @@ import static org.sonar.java.serialization.JsonUtils.readString;
 import static org.sonar.java.serialization.JsonUtils.required;
 
 /**
- * JSON representation of an {@link InjectionPoint} within a cached Spring bean definition.
+ * JSON representation of an {@link InjectionPoint.InputFileData} within a cached Spring bean definition.
  */
-public final class InjectionPointTypeAdapter extends TypeAdapter<InjectionPoint> {
+public final class InjectionPointTypeAdapter extends TypeAdapter<InjectionPoint.InputFileData> {
 
-  private final InputFile inputFile;
+  private static final InjectionPointTypeAdapter INSTANCE = new InjectionPointTypeAdapter();
 
-  /**
-   * @param inputFile The file the cache entry belongs to, against which locations are restored when reading. The
-   *                  file is not part of the serialized form, since a cache entry only ever holds one file's data.
-   */
-  public InjectionPointTypeAdapter(InputFile inputFile) {
-    this.inputFile = inputFile;
+  private InjectionPointTypeAdapter() {
+  }
+
+  public static InjectionPointTypeAdapter getInstance() {
+    return INSTANCE;
   }
 
   @Override
-  public void write(JsonWriter out, InjectionPoint injectionPoint) throws IOException {
+  public void write(JsonWriter out, InjectionPoint.InputFileData injectionPoint) throws IOException {
     out.beginObject();
     out.name(NAME).value(injectionPoint.name());
     out.name(SPAN);
-    TextSpanTypeAdapter.getInstance().write(out, injectionPoint.location().mainLocation());
+    TextSpanTypeAdapter.getInstance().write(out, injectionPoint.span());
     out.endObject();
   }
 
   @Override
-  public InjectionPoint read(JsonReader in) throws IOException {
+  public InjectionPoint.InputFileData read(JsonReader in) throws IOException {
     String name = null;
     AnalyzerMessage.TextSpan span = null;
     in.beginObject();
@@ -67,6 +64,6 @@ public final class InjectionPointTypeAdapter extends TypeAdapter<InjectionPoint>
       }
     }
     in.endObject();
-    return new InjectionPoint(required(name, NAME), new BeanLocation(inputFile, required(span, SPAN)));
+    return new InjectionPoint.InputFileData(required(name, NAME), required(span, SPAN));
   }
 }
