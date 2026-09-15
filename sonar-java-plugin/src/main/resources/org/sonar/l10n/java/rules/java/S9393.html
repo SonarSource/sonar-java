@@ -4,9 +4,9 @@
 <p>In the <code>java.time</code> API, a <code>Duration</code> represents an amount of time modeled as a number of seconds and nanoseconds. Although
 <code>Duration</code> implements the <code>TemporalAmount</code> interface, its <code>get(TemporalUnit)</code> method only supports
 <code>ChronoUnit.SECONDS</code> and <code>ChronoUnit.NANOS</code>.</p>
-<p>Developers often assume that passing another unit, such as <code>ChronoUnit.MINUTES</code> or <code>ChronoUnit.MILLIS</code>, converts the duration
-into that unit. However, passing any unit other than <code>SECONDS</code> or <code>NANOS</code> throws an
-<code>UnsupportedTemporalTypeException</code> unconditionally at runtime.</p>
+<p>Unlike dedicated conversion methods, <code>Duration.get(TemporalUnit)</code> does not perform unit conversions. Passing any unit other than
+<code>SECONDS</code> or <code>NANOS</code>, such as <code>ChronoUnit.MINUTES</code> or <code>ChronoUnit.MILLIS</code>, unconditionally throws an
+<code>UnsupportedTemporalTypeException</code> at runtime.</p>
 <h3>Exceptions</h3>
 <p>This rule reports only direct enum constants implementing <code>TemporalUnit</code>. It does not track a constant stored in a variable or returned
 by a method call.</p>
