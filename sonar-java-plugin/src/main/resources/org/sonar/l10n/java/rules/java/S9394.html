@@ -1,5 +1,5 @@
-<p><code>String.equals(Object)</code> requires an argument of type <code>String</code> and always returns <code>false</code> when called with other
-<code>CharSequence</code> implementations. To compare the character sequence of a <code>String</code> with a <code>CharSequence</code>, call
+<p>This rule raises an issue when <code>String.equals(Object)</code> is used to compare a <code>String</code> with a <code>CharSequence</code> that is
+not a <code>String</code>. To compare the character sequence of a <code>String</code> with a <code>CharSequence</code>, call
 <code>contentEquals(CharSequence)</code> instead.</p>
 <h2>Why is this an issue?</h2>
 <p>The <code>String.equals(Object)</code> method explicitly verifies that the argument is an instance of <code>String</code>:</p>
@@ -13,6 +13,9 @@ if (!(anObject instanceof String)) {
 compare a <code>String</code> with a non-<code>String</code> <code>CharSequence</code> is guaranteed to return <code>false</code> at runtime, even
 when both objects represent the exact same sequence of characters.</p>
 <p>This usually indicates a bug where developers intend to compare textual content rather than object type and memory representation.</p>
+<h3>Exceptions</h3>
+<p>This rule does not report calls when the argument is a <code>null</code> literal or has null type, as <code>contentEquals(null)</code> throws a
+<code>NullPointerException</code> at runtime while <code>equals(null)</code> safely evaluates to <code>false</code>.</p>
 <h2>How to fix it</h2>
 <p>Replace the call to <code>equals()</code> with <code>contentEquals()</code>. The <code>contentEquals()</code> method compares the character
 sequence represented by the <code>String</code> with any <code>CharSequence</code>, returning <code>true</code> whenever the characters match.</p>
@@ -44,5 +47,9 @@ boolean checkPrefix(String text, CharSequence prefix) {
   href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html#contentEquals(java.lang.CharSequence)"><code>String.contentEquals(CharSequence)</code></a></li>
   <li>Java Documentation - <a
   href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html#equals(java.lang.Object)"><code>String.equals(Object)</code></a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S2159} - Unnecessary equality checks should not be made</li>
 </ul>
 

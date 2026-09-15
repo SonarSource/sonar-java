@@ -17,7 +17,7 @@
   "quickfix": "covered",
   "code": {
     "impacts": {
-      "RELIABILITY": "HIGH"
+      "RELIABILITY": "MEDIUM"
     },
     "attribute": "LOGICAL"
   }
