@@ -131,7 +131,19 @@ public class ForLoopStreamSuggestionCheck extends IssuableSubscriptionVisitor im
     if (!COLLECTION_ADD_MATCHERS.matches(mit)) {
       return false;
     }
+    if (!isInheritedCollectionMethod(mit)) {
+      return false;
+    }
     return isCollectionTarget(collectionSymbols, mit);
+  }
+
+  private static boolean isInheritedCollectionMethod(MethodInvocationTree mit) {
+    Symbol.MethodSymbol methodSymbol = mit.methodSymbol();
+    if (methodSymbol.owner().type().is(JAVA_UTIL_COLLECTION)) {
+      return true;
+    }
+    return methodSymbol.overriddenSymbols().stream()
+      .anyMatch(sym -> sym.owner().type().isSubtypeOf(JAVA_UTIL_COLLECTION));
   }
 
   private static Set<Symbol> collectCollectionSymbols(ForEachStatement forEach) {
