@@ -5,14 +5,18 @@ objects, but boxing the same primitive value more than once does not always retu
 cached while others may be represented by distinct instances.</p>
 <p>Consequently, an <code>IdentityHashMap</code> with boxed primitive keys can appear to work for some values and fail for others. A lookup can return
 <code>null</code> even when the map contains a key with the same primitive value.</p>
+<h2>How to fix it</h2>
 <p>Use a map implementation that compares keys by value when the key represents a primitive value. If reference equality is required, use key objects
 whose identity is deliberate and stable.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 Map&lt;Integer, UserSession&gt; sessions = new IdentityHashMap&lt;&gt;(); // Noncompliant
 
 sessions.put(500, session);
 UserSession retrieved = sessions.get(500); // May return null
 </pre>
+<h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
 Map&lt;Integer, UserSession&gt; sessions = new HashMap&lt;&gt;();
 

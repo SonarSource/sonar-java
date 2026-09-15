@@ -6,7 +6,8 @@ import java.util.Map;
 class IdentityHashMapBoxedKeyCheckGuavaSample {
 
   void boxedKeys() {
-    Map<Boolean, String> booleans = Maps.newIdentityHashMap(); // Noncompliant
+    Map<Boolean, String> booleans = Maps.newIdentityHashMap(); // Noncompliant {{Use a map that compares keys by value because IdentityHashMap compares keys by reference.}}
+//                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
     Map<Byte, String> bytes = Maps.newIdentityHashMap(); // Noncompliant
     Map<Character, String> characters = Maps.newIdentityHashMap(); // Noncompliant
     Map<Short, String> shorts = Maps.newIdentityHashMap(); // Noncompliant
