@@ -1,0 +1,121 @@
+/*
+ * SonarQube Java
+ * Copyright (C) SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * You can redistribute and/or modify this program under the terms of
+ * the Sonar Source-Available License Version 1, as published by SonarSource Sàrl.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+package org.sonar.java.checks;
+
+import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaCodeUnit;
+import com.tngtech.archunit.core.domain.JavaField;
+import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.domain.JavaMethodCall;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.lang.ArchCondition;
+import com.tngtech.archunit.lang.ConditionEvents;
+import com.tngtech.archunit.lang.SimpleConditionEvent;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
+import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+
+class CheckStateCleanupTest {
+
+  private static final DescribedPredicate<JavaClass> CHECK_CLASSES = new DescribedPredicate<>("check classes") {
+    @Override
+    public boolean test(JavaClass input) {
+      return input.isAnnotatedWith(Rule.class);
+    }
+  };
+
+  private static final ArchCondition<JavaClass> CLEAR_COLLECTION_FIELDS = new ArchCondition<>("clear collection fields at file boundaries") {
+    @Override
+    public void check(JavaClass checkClass, ConditionEvents events) {
+      Set<JavaField> collectionFields = checkClass.getFields().stream()
+        .filter(field -> !Modifier.isStatic(field.reflect().getModifiers()))
+        .filter(CheckStateCleanupTest::isCollectionField)
+        .collect(java.util.stream.Collectors.toSet());
+      for (JavaField field : collectionFields) {
+        for (JavaMethod lifecycleMethod : lifecycleMethods(checkClass)) {
+          if (!clearsField(lifecycleMethod, field, checkClass, new HashSet<>())) {
+            events.add(SimpleConditionEvent.violated(checkClass,
+              checkClass.getFullName() + " does not clear " + field.getName() + " in " + lifecycleMethod.getName()));
+          }
+        }
+      }
+    }
+  };
+
+  @Test
+  void collection_fields_are_cleared_at_file_boundaries() {
+    classes().that(CHECK_CLASSES).should(CLEAR_COLLECTION_FIELDS).check(new ClassFileImporter()
+      .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
+      .importPackages("org.sonar.java.checks"));
+  }
+
+  private static boolean isCollectionField(JavaField field) {
+    return field.getRawType().isAssignableTo(Collection.class) || field.getRawType().isAssignableTo(Map.class);
+  }
+
+  private static Set<JavaMethod> lifecycleMethods(JavaClass checkClass) {
+    if (checkClass.isAssignableTo(IssuableSubscriptionVisitor.class)) {
+      Set<JavaMethod> methods = methodsNamed(checkClass, "setContext", JavaFileScannerContext.class);
+      methods.addAll(methodsNamed(checkClass, "leaveFile", JavaFileScannerContext.class));
+      return methods;
+    }
+    return methodsNamed(checkClass, "scanFile", JavaFileScannerContext.class);
+  }
+
+  private static Set<JavaMethod> methodsNamed(JavaClass checkClass, String name, Class<?> parameterType) {
+    Set<JavaMethod> methods = new HashSet<>();
+    for (JavaMethod method : checkClass.getMethods()) {
+      if (method.getName().equals(name)
+        && method.getRawParameterTypes().size() == 1
+        && method.getRawParameterTypes().get(0).isEquivalentTo(parameterType)) {
+        methods.add(method);
+      }
+    }
+    return methods;
+  }
+
+  private static boolean clearsField(JavaCodeUnit method, JavaField field, JavaClass checkClass, Set<JavaCodeUnit> visited) {
+    if (!visited.add(method)) {
+      return false;
+    }
+    boolean accessesField = field.getAccessesToSelf().stream().anyMatch(access -> access.getOrigin().equals(method));
+    boolean clearsCollection = method.getMethodCallsFromSelf().stream().anyMatch(CheckStateCleanupTest::isClearCall);
+    if (accessesField && clearsCollection) {
+      return true;
+    }
+    return method.getMethodCallsFromSelf().stream()
+      .map(JavaMethodCall::getTarget)
+      .map(target -> target.resolveMember().orElse(null))
+      .filter(javaMethod -> javaMethod != null && javaMethod.getOwner().equals(checkClass))
+      .anyMatch(calledMethod -> clearsField(calledMethod, field, checkClass, visited));
+  }
+
+  private static boolean isClearCall(JavaMethodCall call) {
+    return call.getName().equals("clear")
+      && (call.getTargetOwner().isAssignableTo(Collection.class) || call.getTargetOwner().isAssignableTo(Map.class));
+  }
+}
