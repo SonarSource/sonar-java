@@ -25,6 +25,7 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -33,17 +34,18 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9391")
 public class ForLoopStreamSuggestionCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private static final String MESSAGE = "Use a stream instead of this loop.";
+  private static final String JAVA_UTIL_COLLECTION = "java.util.Collection";
   private static final MethodMatchers COLLECTION_ADD_MATCHERS = MethodMatchers.create()
-    .ofSubTypes("java.util.Collection")
+    .ofSubTypes(JAVA_UTIL_COLLECTION)
     .names("add", "addLast", "offer", "offerLast")
     .addParametersMatcher(MethodMatchers.ANY)
     .build();
@@ -144,9 +146,29 @@ public class ForLoopStreamSuggestionCheck extends IssuableSubscriptionVisitor im
       }
       if (stmt.is(Tree.Kind.VARIABLE)) {
         addIfCollection(symbols, (VariableTree) stmt);
+      } else {
+        excludeMutatedSymbols(symbols, stmt);
       }
     }
     return symbols;
+  }
+
+  private static void excludeMutatedSymbols(Set<Symbol> symbols, StatementTree stmt) {
+    if (symbols.isEmpty() || !stmt.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+      return;
+    }
+    ExpressionTree expr = ((ExpressionStatementTree) stmt).expression();
+    if (!expr.is(Tree.Kind.METHOD_INVOCATION)) {
+      return;
+    }
+    MethodInvocationTree mit = (MethodInvocationTree) expr;
+    ExpressionTree methodSelect = mit.methodSelect();
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      ExpressionTree target = ((MemberSelectExpressionTree) methodSelect).expression();
+      if (target.is(Tree.Kind.IDENTIFIER)) {
+        symbols.remove(((IdentifierTree) target).symbol());
+      }
+    }
   }
 
   private static void addIfCollection(Set<Symbol> symbols, VariableTree varTree) {
@@ -165,11 +187,14 @@ public class ForLoopStreamSuggestionCheck extends IssuableSubscriptionVisitor im
       return false;
     }
     NewClassTree newClass = (NewClassTree) expr;
-    if (!expr.symbolType().isSubtypeOf("java.util.Collection")) {
+    if (!expr.symbolType().isSubtypeOf(JAVA_UTIL_COLLECTION)) {
       return false;
     }
     return newClass.arguments().stream()
-      .noneMatch(arg -> arg.symbolType().isSubtypeOf("java.util.Collection"));
+      .noneMatch(arg -> {
+        Type argType = arg.symbolType();
+        return argType.isUnknown() || argType.isSubtypeOf(JAVA_UTIL_COLLECTION);
+      });
   }
 
   private static void excludeSourceSymbol(ForEachStatement forEach, Set<Symbol> collectionSymbols) {
