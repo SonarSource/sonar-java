@@ -1,0 +1,61 @@
+<p>In Java, arrays are covariant: a <code>String[]</code> is considered an <code>Object[]</code> by the type system. Consequently,
+<code>Arrays.fill(Object[] a, Object val)</code> and its bounded range overload accept any <code>Object</code> value as the filling element. However,
+if the runtime component type of the array cannot hold the provided value, the Java Virtual Machine throws an <code>ArrayStoreException</code> at
+runtime.</p>
+<h2>Why is this an issue?</h2>
+<p>Calling <code>Arrays.fill(Object[] a, Object val)</code> with a value whose type cannot be stored in the target array component type is guaranteed
+to fail at runtime. For example, attempting to fill a <code>String[]</code> with an <code>Integer</code> compiles without error because
+<code>String[]</code> is an <code>Object[]</code> and <code>Integer</code> is an <code>Object</code>. When executed, the method attempts to store each
+element into the array, which immediately throws an <code>ArrayStoreException</code>.</p>
+<p>Similarly, passing a non-null object into an array of a distinct, incompatible class hierarchy causes an immediate runtime failure. This problem
+often arises after refactoring an array type without updating its initialization, or when accidentally confusing the fill value with an index or
+default value from another data structure.</p>
+<p>This rule raises an issue when <code>Arrays.fill()</code> is called with an argument whose static type is incompatible with the component type of
+the array being filled.</p>
+<h2>How to fix it</h2>
+<p>Change the filling value to an instance that is compatible with the array component type, or change the target array type so that it can hold the
+intended value.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import java.util.Arrays;
+
+class ArrayFillExample {
+  void initializeBuffers() {
+    String[] textBuffer = new String[10];
+    Arrays.fill(textBuffer, 42); // Noncompliant: filling an array of type "String[]" with an "Integer" throws ArrayStoreException
+
+    Integer[] numbers = new Integer[5];
+    Arrays.fill(numbers, "default"); // Noncompliant: filling an array of type "Integer[]" with a "String" throws ArrayStoreException
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import java.util.Arrays;
+
+class ArrayFillExample {
+  void initializeBuffers() {
+    String[] textBuffer = new String[10];
+    Arrays.fill(textBuffer, "default");
+
+    Integer[] numbers = new Integer[5];
+    Arrays.fill(numbers, 0);
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Arrays.html#fill(java.lang.Object%5B%5D,java.lang.Object)">Arrays.fill(Object[], Object)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/ArrayStoreException.html">Class
+  ArrayStoreException</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-10.html#jls-10.5">Java Language Specification - Array
+  Stores</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S2175} - Inappropriate "Collection" calls should not be made</li>
+</ul>
+
