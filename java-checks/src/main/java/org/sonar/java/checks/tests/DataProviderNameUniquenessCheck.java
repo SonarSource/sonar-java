@@ -71,7 +71,11 @@ public class DataProviderNameUniquenessCheck extends IssuableSubscriptionVisitor
         if (nameExpression == null) {
           return method.simpleName().name();
         }
-        return nameExpression.asConstant(String.class).orElse(null);
+        String resolvedName = nameExpression.asConstant(String.class).orElse(null);
+        if (resolvedName != null && resolvedName.isEmpty()) {
+          return method.simpleName().name();
+        }
+        return resolvedName;
       }
     }
     return null;

@@ -104,6 +104,29 @@ class ConstantNameClass {
 
 }
 
+class EmptyNameClass {
+  @DataProvider(name = "")
+  public Object[][] emptyName1() {
+    return new Object[][]{{1, 2}};
+  }
+
+  @DataProvider(name = "")
+  public Object[][] emptyName2() {
+    return new Object[][]{{3, 4}};
+  }
+
+  @DataProvider(name = "emptyNameCollision")
+  public Object[][] explicitName() {
+    return new Object[][]{{5, 6}};
+  }
+
+  @DataProvider(name = "")
+  public Object[][] emptyNameCollision() { // Noncompliant {{Rename this data provider to make it unique within this class.}}
+//                  ^^^^^^^^^^^^^^^^^^
+    return new Object[][]{{7, 8}};
+  }
+}
+
 record DataProviderRecord(int value) {
   @DataProvider(name = "recordData")
   public Object[][] provideRecordData1() {
