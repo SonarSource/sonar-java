@@ -16,6 +16,8 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -178,6 +180,25 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
       super.visitMemberSelectExpression(tree);
     }
 
+  }
+
+  private void clearState() {
+    visitedUnaryExpressions.clear();
+  }
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    clearState();
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    try {
+      super.leaveFile(context);
+    } finally {
+      clearState();
+    }
   }
 
 }
