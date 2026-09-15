@@ -88,12 +88,15 @@ public class BoxedBooleanExpressionsCheck extends BaseTreeVisitor implements Jav
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    ifStatementCache.clear();
-    firstNullCheckCache.clear();
-    safeSymbols.clear();
     this.context = context;
-    if (context.getSemanticModel() != null) {
-      scan(context.getTree());
+    try {
+      if (context.getSemanticModel() != null) {
+        scan(context.getTree());
+      }
+    } finally {
+      ifStatementCache.clear();
+      firstNullCheckCache.clear();
+      safeSymbols.clear();
     }
   }
 
