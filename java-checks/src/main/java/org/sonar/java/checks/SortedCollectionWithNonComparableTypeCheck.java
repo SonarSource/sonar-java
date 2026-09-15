@@ -44,17 +44,14 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
     }
     NewClassTree newClassTree = (NewClassTree) tree;
     Type collectionType = newClassTree.symbolType();
-    int orderedTypeIndex = orderedTypeIndex(collectionType);
-    if (orderedTypeIndex < 0 || !usesNaturalOrdering(newClassTree) || !collectionType.isParameterized()) {
+    if (!isSupportedSortedCollection(collectionType) ||
+      !usesNaturalOrdering(newClassTree) ||
+      !collectionType.isParameterized() ||
+      collectionType.typeArguments().isEmpty()) {
       return;
     }
 
-    List<Type> typeArguments = collectionType.typeArguments();
-    if (orderedTypeIndex >= typeArguments.size()) {
-      return;
-    }
-
-    Type orderedType = typeArguments.get(orderedTypeIndex);
+    Type orderedType = collectionType.typeArguments().get(0);
     if (!orderedType.isUnknown() &&
       !orderedType.isTypeVar() &&
       !hasCompatibleNaturalOrdering(orderedType) &&
@@ -63,16 +60,12 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
     }
   }
 
-  private static int orderedTypeIndex(Type type) {
-    if (type.is("java.util.TreeSet") ||
+  private static boolean isSupportedSortedCollection(Type type) {
+    return type.is("java.util.TreeSet") ||
       type.is("java.util.PriorityQueue") ||
-      type.is("java.util.concurrent.ConcurrentSkipListSet")) {
-      return 0;
-    }
-    if (type.is("java.util.TreeMap") || type.is("java.util.concurrent.ConcurrentSkipListMap")) {
-      return 0;
-    }
-    return -1;
+      type.is("java.util.TreeMap") ||
+      type.is("java.util.concurrent.ConcurrentSkipListSet") ||
+      type.is("java.util.concurrent.ConcurrentSkipListMap");
   }
 
   private static boolean usesNaturalOrdering(NewClassTree tree) {
