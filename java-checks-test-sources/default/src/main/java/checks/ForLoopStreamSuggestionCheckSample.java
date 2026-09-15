@@ -1,9 +1,12 @@
 package checks;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -285,6 +288,30 @@ class ForLoopStreamSuggestionCheckSample {
     }
   }
 
+  void offerToQueueInterface() {
+    Queue<String> result = new LinkedList<>();
+    for (String item : items) { // Noncompliant
+//  ^^^
+      result.offer(item);
+    }
+  }
+
+  void addLastToDequeInterface() {
+    Deque<String> result = new ArrayDeque<>();
+    for (String item : items) { // Noncompliant
+//  ^^^
+      result.addLast(item);
+    }
+  }
+
+  void offerLastToDequeInterface() {
+    Deque<String> result = new ArrayDeque<>();
+    for (String item : items) { // Noncompliant
+//  ^^^
+      result.offerLast(item);
+    }
+  }
+
   interface CustomCollectionLike {
     void add(int metric);
   }
@@ -293,6 +320,17 @@ class ForLoopStreamSuggestionCheckSample {
     List<String> result = new ArrayList<>();
     for (String item : items) { // compliant - tracker.add(int) is not Collection.add
       tracker.add(item.length());
+    }
+  }
+
+  static class Metrics extends ArrayList<String> {
+    void add(int metric) { }
+  }
+
+  void nonCollectionAddOverload() {
+    Metrics result = new Metrics();
+    for (String item : items) { // compliant - add(int) is Metrics' own overload, not Collection.add(E)
+      result.add(item.length());
     }
   }
 
