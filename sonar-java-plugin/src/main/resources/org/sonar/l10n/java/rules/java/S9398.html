@@ -17,7 +17,8 @@ bundled with contract definitions.</p>
   <li>Confusion about where to place implementation logic in the codebase</li>
 </ul>
 <p>While nested interfaces within interfaces are acceptable (since both define contracts), concrete classes belong in their own files where their
-implementation purpose is clear.</p>
+implementation purpose is clear. Abstract nested classes are not reported because they still describe a contract rather than a complete
+implementation.</p>
 <h3>What is the potential impact?</h3>
 <p>When concrete classes are declared inside interfaces, the code becomes harder to understand and maintain:</p>
 <ul>
