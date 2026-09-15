@@ -30,7 +30,6 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -96,10 +95,16 @@ public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
   private void checkArguments(Arguments arguments, Symbol.MethodSymbol symbol) {
     if (!symbol.isUnknown()) {
       List<Type> parameterTypes = symbol.parameterTypes();
-      if (arguments.size() == parameterTypes.size()) {
-        for (int i = 0; i < arguments.size(); i++) {
-          checkExpression(parameterTypes.get(i), arguments.get(i));
-        }
+      int fixedCount;
+      if (symbol.isVarArgsMethod()) {
+        fixedCount = parameterTypes.size() - 1;
+      } else if (arguments.size() == parameterTypes.size()) {
+        fixedCount = parameterTypes.size();
+      } else {
+        return;
+      }
+      for (int i = 0; i < fixedCount && i < arguments.size(); i++) {
+        checkExpression(parameterTypes.get(i), arguments.get(i));
       }
     }
   }
@@ -113,7 +118,7 @@ public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
       return;
     }
     Type sourceType = unwrapped.symbolType();
-    if (isLossyWideningConversion(sourceType, targetType) && !isSafeLiteral(unwrapped, targetType)) {
+    if (isLossyWideningConversion(sourceType, targetType) && !isSafeConstant(unwrapped, targetType)) {
       context.reportIssue(this, unwrapped,
         "Explicitly cast this \"" + sourceType.name() + "\" to \"" + targetType.name() + "\" to document potential precision loss.");
     }
@@ -132,41 +137,22 @@ public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
     return sourceType.isPrimitive(Type.Primitives.LONG) && targetType.isPrimitive(Type.Primitives.DOUBLE);
   }
 
-  private static boolean isSafeLiteral(ExpressionTree expr, Type targetType) {
-    if (!expr.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL)) {
-      return false;
+  private static boolean isSafeConstant(ExpressionTree expr, Type targetType) {
+    Object constant = ExpressionUtils.resolveAsConstant(expr);
+    if (constant instanceof Integer intVal) {
+      long absValue = Math.abs((long) intVal);
+      return !targetType.isPrimitive(Type.Primitives.FLOAT) || absValue <= FLOAT_MAX_EXACT_INT;
     }
-    LiteralTree literal = (LiteralTree) expr;
-    try {
-      long value = parseLiteralValue(literal);
-      long absValue = Math.abs(value);
+    if (constant instanceof Long longVal) {
+      long absValue = Math.abs(longVal);
       if (targetType.isPrimitive(Type.Primitives.FLOAT)) {
         return absValue <= FLOAT_MAX_EXACT_INT;
       }
       if (targetType.isPrimitive(Type.Primitives.DOUBLE)) {
         return absValue <= DOUBLE_MAX_EXACT_LONG;
       }
-    } catch (NumberFormatException e) {
-      return false;
     }
     return false;
-  }
-
-  private static long parseLiteralValue(LiteralTree literal) {
-    String text = literal.value().replace("_", "");
-    if (text.endsWith("L") || text.endsWith("l")) {
-      text = text.substring(0, text.length() - 1);
-    }
-    if (text.startsWith("0x") || text.startsWith("0X")) {
-      return Long.parseUnsignedLong(text.substring(2), 16);
-    }
-    if (text.startsWith("0b") || text.startsWith("0B")) {
-      return Long.parseUnsignedLong(text.substring(2), 2);
-    }
-    if (text.startsWith("0") && text.length() > 1) {
-      return Long.parseUnsignedLong(text.substring(1), 8);
-    }
-    return Long.parseLong(text);
   }
 
   private static boolean isFloatingPoint(Type type) {

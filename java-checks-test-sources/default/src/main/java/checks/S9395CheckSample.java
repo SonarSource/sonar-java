@@ -171,5 +171,35 @@ class S9395CheckSample {
     float f2 = 0x1000001; // Noncompliant
 //             ^^^^^^^^^
     float f3 = 0b1; // compliant: 1 is within range
+    int hexMask = 0xFF000000;
+    float f4 = hexMask; // Noncompliant
+//             ^^^^^^^
+    float f5 = 0xFF000000; // compliant: hex literal value -16777216 is representable in float
   }
+
+  void negativeLiterals() {
+    float f1 = -1; // compliant: small negative literal
+    float f2 = -16_777_216; // compliant: exactly -2^24, representable
+    float f3 = -16_777_217; // Noncompliant
+//             ^^^^^^^^^^^
+    double d1 = -42L; // compliant: small negative long literal
+  }
+
+  static final int SMALL_CONSTANT = 100;
+  static final int LARGE_CONSTANT = 20_000_000;
+
+  void namedConstants() {
+    float f1 = SMALL_CONSTANT; // compliant: named compile-time constant within range
+    float f2 = LARGE_CONSTANT; // Noncompliant
+//             ^^^^^^^^^^^^^^
+  }
+
+  void varargs(int intVar) {
+    takeFloatVarargs(intVar, "a", "b"); // Noncompliant
+//                   ^^^^^^
+    takeFloatVarargs(42, "a"); // compliant: small literal
+    takeFloatVarargs((float) intVar, "a"); // compliant: explicit cast
+  }
+
+  void takeFloatVarargs(float f, Object... args) {}
 }
