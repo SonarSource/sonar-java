@@ -45,14 +45,10 @@ class InvalidComparatorMethodReferenceCheckSample {
 //            ^^^^^^^^^^^^
     list.sort(Math::addExact); // Noncompliant {{Replace this method reference; "Math::addExact" does not return a comparison result, violating the "Comparator" contract.}}
 //            ^^^^^^^^^^^^^^
-    list.sort(Math::subtractExact); // Noncompliant {{Replace this method reference; "Math::subtractExact" does not return a comparison result, violating the "Comparator" contract.}}
-//            ^^^^^^^^^^^^^^^^^^^
     list.sort(Math::multiplyExact); // Noncompliant {{Replace this method reference; "Math::multiplyExact" does not return a comparison result, violating the "Comparator" contract.}}
 //            ^^^^^^^^^^^^^^^^^^^
     list.sort(StrictMath::addExact); // Noncompliant {{Replace this method reference; "StrictMath::addExact" does not return a comparison result, violating the "Comparator" contract.}}
 //            ^^^^^^^^^^^^^^^^^^^^
-    list.sort(StrictMath::subtractExact); // Noncompliant {{Replace this method reference; "StrictMath::subtractExact" does not return a comparison result, violating the "Comparator" contract.}}
-//            ^^^^^^^^^^^^^^^^^^^^^^^^^
     list.sort(StrictMath::multiplyExact); // Noncompliant {{Replace this method reference; "StrictMath::multiplyExact" does not return a comparison result, violating the "Comparator" contract.}}
 //            ^^^^^^^^^^^^^^^^^^^^^^^^^
   }

@@ -7,9 +7,7 @@ the first argument is less than, equal to, or greater than the second argument. 
 y)) == -sgn(compare(y, x))</code> for all <code>x</code> and <code>y</code>.</p>
 <p>Methods such as <code>Math.min(a, b)</code> and <code>Integer.max(a, b)</code> return one of their input arguments rather than a comparison result.
 Similarly, arithmetic methods like <code>Integer.sum(a, b)</code>, <code>Math.addExact(a, b)</code>, and <code>Math.multiplyExact(a, b)</code> compute
-values that are symmetric (<code>op(a, b) == op(b, a)</code>), directly violating anti-symmetry. While <code>Math.subtractExact(a, b)</code> changes
-sign when arguments are reversed, it is subject to <code>ArithmeticException</code> on integer overflow and does not fulfill the general comparison
-contract across all input ranges.</p>
+values that are symmetric (<code>op(a, b) == op(b, a)</code>), directly violating anti-symmetry.</p>
 <p>When passed as a method reference (for example, <code>list.sort(Math::min)</code> or <code>stream.sorted(Integer::sum)</code>), these methods do
 not satisfy the mathematical properties of a comparator. Using them as comparators corrupts sorting order or causes sorting algorithms, such as
 <code>TimSort</code>, to throw <code>IllegalArgumentException: Comparison method violates its general contract!</code> at runtime.</p>

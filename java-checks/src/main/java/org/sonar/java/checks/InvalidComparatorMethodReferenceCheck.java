@@ -37,7 +37,7 @@ public class InvalidComparatorMethodReferenceCheck extends IssuableSubscriptionV
       "java.lang.StrictMath",
       "java.lang.Integer"
     )
-    .names("min", "max", "sum", "addExact", "subtractExact", "multiplyExact")
+    .names("min", "max", "sum", "addExact", "multiplyExact")
     .withAnyParameters()
     .build();
 
