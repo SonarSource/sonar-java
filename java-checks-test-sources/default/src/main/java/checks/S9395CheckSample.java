@@ -202,4 +202,34 @@ class S9395CheckSample {
   }
 
   void takeFloatVarargs(float f, Object... args) {}
+
+  float returnWithLambdaInside(int intVar) {
+    Runnable r = () -> {
+      int x = 1;
+    };
+    return intVar; // Noncompliant
+  }
+
+  float returnWithAnonymousClassInside(int intVar) {
+    Object obj = new Object() {
+      int getValue() { return 42; }
+    };
+    return intVar; // Noncompliant
+  }
+
+  void largeLongLiteralToFloat() {
+    float f = 20_000_000L; // Noncompliant
+//            ^^^^^^^^^^^
+  }
+
+  int nonFloatingPointReturn(int intVar) {
+    return intVar; // compliant: return type is int, not float
+  }
+
+  double returnIntAsDoubleFromLambda() {
+    java.util.function.IntToDoubleFunction f = (int x) -> {
+      return x; // compliant: int -> double is not lossy
+    };
+    return 0;
+  }
 }
