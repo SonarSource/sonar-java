@@ -16,7 +16,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -67,14 +66,10 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
     isBlockAlreadyReported = false;
     excludeIssueAtLine = 0;
     this.context = context;
-    if (fileLines != null) {
-      fileLines.clear();
-    }
-    fileLines = new ArrayList<>(context.getFileLines());
+    fileLines = context.getFileLines();
     try {
       scan(context.getTree());
     } finally {
-      fileLines.clear();
       fileLines = null;
     }
   }

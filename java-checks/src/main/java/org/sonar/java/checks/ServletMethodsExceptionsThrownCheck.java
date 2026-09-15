@@ -16,6 +16,8 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -153,6 +155,26 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
       }
     }
     return true;
+  }
+
+  private void clearState() {
+    shouldCheck.clear();
+    tryCatches.clear();
+  }
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    clearState();
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    try {
+      super.leaveFile(context);
+    } finally {
+      clearState();
+    }
   }
 
 }

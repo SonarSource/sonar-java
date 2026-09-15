@@ -20,6 +20,7 @@ import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaCodeUnit;
 import com.tngtech.archunit.core.domain.JavaField;
+import com.tngtech.archunit.core.domain.JavaFieldAccess;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaMethodCall;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
@@ -56,12 +57,19 @@ class CheckStateCleanupTest {
       Set<JavaField> collectionFields = checkClass.getFields().stream()
         .filter(field -> !Modifier.isStatic(field.reflect().getModifiers()))
         .filter(CheckStateCleanupTest::isCollectionField)
+        .filter(field -> !isPropertyCache(field))
         .collect(java.util.stream.Collectors.toSet());
+      Set<JavaMethod> lifecycleMethods = lifecycleMethods(checkClass);
       for (JavaField field : collectionFields) {
-        for (JavaMethod lifecycleMethod : lifecycleMethods(checkClass)) {
-          if (!clearsField(lifecycleMethod, field, checkClass, new HashSet<>())) {
-            events.add(SimpleConditionEvent.violated(checkClass,
-              checkClass.getFullName() + " does not clear " + field.getName() + " in " + lifecycleMethod.getName()));
+        if (lifecycleMethods.isEmpty()) {
+          events.add(SimpleConditionEvent.violated(checkClass,
+            checkClass.getFullName() + " has collection state but no lifecycle method"));
+        } else {
+          for (JavaMethod lifecycleMethod : lifecycleMethods) {
+            if (!clearsField(lifecycleMethod, field, checkClass, new HashSet<>())) {
+              events.add(SimpleConditionEvent.violated(checkClass,
+                checkClass.getFullName() + " does not clear " + field.getName() + " in " + lifecycleMethod.getName()));
+            }
           }
         }
       }
@@ -77,6 +85,23 @@ class CheckStateCleanupTest {
 
   private static boolean isCollectionField(JavaField field) {
     return field.getRawType().isAssignableTo(Collection.class) || field.getRawType().isAssignableTo(Map.class);
+  }
+
+  private static boolean isPropertyCache(JavaField field) {
+    return field.getAllInvolvedRawTypes().stream()
+      .filter(type -> !type.isAssignableTo(Collection.class) && !type.isAssignableTo(Map.class))
+      .allMatch(CheckStateCleanupTest::isPropertyType);
+  }
+
+  private static boolean isPropertyType(JavaClass type) {
+    String name = type.getName();
+    return name.equals(String.class.getName())
+      || name.equals("java.math.BigDecimal")
+      || name.equals("java.util.regex.Pattern")
+      || name.equals("org.sonar.api.utils.WildcardPattern")
+      || name.equals("java.lang.Boolean")
+      || name.endsWith("PrimitiveCheck")
+      || type.isAssignableTo(Number.class);
   }
 
   private static Set<JavaMethod> lifecycleMethods(JavaClass checkClass) {
@@ -107,9 +132,13 @@ class CheckStateCleanupTest {
     if (!visited.add(method)) {
       return false;
     }
-    boolean accessesField = field.getAccessesToSelf().stream().anyMatch(access -> access.getOrigin().equals(method));
-    boolean clearsCollection = method.getMethodCallsFromSelf().stream().anyMatch(CheckStateCleanupTest::isClearCall);
-    if (accessesField && clearsCollection) {
+    boolean clearsField = method.getMethodCallsFromSelf().stream()
+      .filter(CheckStateCleanupTest::isClearCall)
+      .anyMatch(call -> field.getAccessesToSelf().stream()
+        .anyMatch(access -> access.getOrigin().equals(method) && access.getLineNumber() == call.getLineNumber()));
+    boolean resetsField = field.getAccessesToSelf().stream()
+      .anyMatch(access -> access.getOrigin().equals(method) && access.getAccessType() == JavaFieldAccess.AccessType.SET);
+    if (clearsField || resetsField) {
       return true;
     }
     return method.getMethodCallsFromSelf().stream()

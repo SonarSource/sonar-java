@@ -16,6 +16,8 @@
  */
 package org.sonar.java.checks.security;
 
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -130,6 +132,25 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
 
   private boolean enclosingClassExtendsThrowable() {
     return enclosingClass.peek() != null && enclosingClass.peek().type().isSubtypeOf("java.lang.Throwable");
+  }
+
+  private void clearState() {
+    enclosingClass.clear();
+  }
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    clearState();
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    try {
+      super.leaveFile(context);
+    } finally {
+      clearState();
+    }
   }
 
 }

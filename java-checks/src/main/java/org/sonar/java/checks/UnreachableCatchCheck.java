@@ -16,6 +16,8 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -149,4 +151,23 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
     secondaries.sort(LOCATION_COMPARATOR);
     return secondaries;
   }
+  private void clearState() {
+    warnings.clear();
+  }
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    clearState();
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    try {
+      super.leaveFile(context);
+    } finally {
+      clearState();
+    }
+  }
+
 }

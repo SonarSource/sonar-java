@@ -159,4 +159,23 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  private void clearState() {
+    synchronizedStack.clear();
+  }
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    clearState();
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    try {
+      super.leaveFile(context);
+    } finally {
+      clearState();
+    }
+  }
+
 }

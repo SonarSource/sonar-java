@@ -106,10 +106,6 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private void clearState() {
-    if (ignoredAnnotations != null) {
-      ignoredAnnotations.clear();
-      ignoredAnnotations = null;
-    }
     classes.clear();
     assignments.clear();
     unknownIdentifiers.clear();
