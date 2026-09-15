@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -30,7 +29,6 @@ import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 class SpringUtilsTest {
 
@@ -338,20 +336,19 @@ class SpringUtilsTest {
       }
       """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     private final ClassTreeImpl orderService = (ClassTreeImpl) compilationUnit.types().get(0);
-    private final InputFile inputFile = mock(InputFile.class);
-    private final Map<String, Set<InjectionPoint>> dependencies = SpringUtils.collectAutowiredDependenciesOnClass(orderService, inputFile);
+    private final Map<String, Set<InjectionPoint.InputFileData>> dependencies = SpringUtils.collectAutowiredDependenciesOnClass(orderService);
 
     @Test
     void autowired_field_without_qualifier_is_registered_using_its_field_name() {
       assertThat(dependencies.get("PaymentProcessor"))
-        .extracting(InjectionPoint::name)
+        .extracting(InjectionPoint.InputFileData::name)
         .contains("paymentProcessor");
     }
 
     @Test
     void autowired_field_with_qualifier_uses_qualifier_value_instead_of_field_name() {
       assertThat(dependencies.get("PaymentProcessor"))
-        .extracting(InjectionPoint::name)
+        .extracting(InjectionPoint.InputFileData::name)
         .contains("special");
     }
 
@@ -363,15 +360,18 @@ class SpringUtilsTest {
     @Test
     void autowired_setter_parameter_is_registered() {
       assertThat(dependencies.get("EmailService"))
-        .extracting(InjectionPoint::name)
+        .extracting(InjectionPoint.InputFileData::name)
         .containsExactly("emailService");
     }
 
     @Test
-    void injection_points_carry_the_given_input_file() {
-      assertThat(dependencies.values().stream().flatMap(Set::stream))
-        .extracting(point -> point.location().inputFile())
-        .containsOnly(inputFile);
+    void injection_points_are_located_on_the_injected_field_or_parameter() {
+      assertThat(dependencies.get("PaymentProcessor"))
+        .extracting(point -> point.span().startLine)
+        .containsExactlyInAnyOrder(3, 7);
+      assertThat(dependencies.get("EmailService"))
+        .extracting(point -> point.span().startLine)
+        .containsExactly(12);
     }
   }
 
@@ -384,12 +384,10 @@ class SpringUtilsTest {
       }
       """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     var orderService = (ClassTreeImpl) compilationUnit.types().get(0);
-    var inputFile = mock(InputFile.class);
-
-    var dependencies = SpringUtils.collectAutowiredDependenciesOnClass(orderService, inputFile);
+    var dependencies = SpringUtils.collectAutowiredDependenciesOnClass(orderService);
 
     assertThat(dependencies.get("PaymentProcessor"))
-      .extracting(InjectionPoint::name)
+      .extracting(InjectionPoint.InputFileData::name)
       .containsExactly("paymentProcessor");
   }
 
@@ -404,9 +402,7 @@ class SpringUtilsTest {
       }
       """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     var orderService = (ClassTreeImpl) compilationUnit.types().get(0);
-    var inputFile = mock(InputFile.class);
-
-    assertThat(SpringUtils.collectAutowiredDependenciesOnClass(orderService, inputFile)).isEmpty();
+    assertThat(SpringUtils.collectAutowiredDependenciesOnClass(orderService)).isEmpty();
   }
 
   @Test
@@ -421,9 +417,7 @@ class SpringUtilsTest {
       }
       """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     var orderService = (ClassTreeImpl) compilationUnit.types().get(0);
-    var inputFile = mock(InputFile.class);
-
-    var dependencies = SpringUtils.collectAutowiredDependenciesOnClass(orderService, inputFile);
+    var dependencies = SpringUtils.collectAutowiredDependenciesOnClass(orderService);
 
     assertThat(dependencies).containsOnlyKeys("PaymentProcessor");
   }
@@ -444,8 +438,7 @@ class SpringUtilsTest {
       }
       """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     private final MethodTreeImpl createBean = (MethodTreeImpl) ((ClassTreeImpl) compilationUnit.types().get(0)).members().get(0);
-    private final InputFile inputFile = mock(InputFile.class);
-    private final Map<String, Set<InjectionPoint>> dependencies = SpringUtils.collectDependenciesOnMethod(createBean, inputFile);
+    private final Map<String, Set<InjectionPoint.InputFileData>> dependencies = SpringUtils.collectDependenciesOnMethod(createBean);
 
     @Test
     void parameters_are_grouped_by_declared_type() {
@@ -455,22 +448,25 @@ class SpringUtilsTest {
     @Test
     void parameter_without_qualifier_uses_its_own_name() {
       assertThat(dependencies.get("PaymentProcessor"))
-        .extracting(InjectionPoint::name)
+        .extracting(InjectionPoint.InputFileData::name)
         .contains("paymentProcessor");
     }
 
     @Test
     void parameter_with_qualifier_uses_the_qualifier_value() {
       assertThat(dependencies.get("PaymentProcessor"))
-        .extracting(InjectionPoint::name)
+        .extracting(InjectionPoint.InputFileData::name)
         .contains("special");
     }
 
     @Test
-    void injection_points_carry_the_given_input_file() {
-      assertThat(dependencies.values().stream().flatMap(Set::stream))
-        .extracting(point -> point.location().inputFile())
-        .containsOnly(inputFile);
+    void injection_points_are_located_on_the_parameter() {
+      assertThat(dependencies.get("PaymentProcessor"))
+        .extracting(point -> point.span().startLine)
+        .containsExactlyInAnyOrder(4, 5);
+      assertThat(dependencies.get("EmailService"))
+        .extracting(point -> point.span().startLine)
+        .containsExactly(6);
     }
   }
 
@@ -484,9 +480,7 @@ class SpringUtilsTest {
       }
       """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     var createBean = (MethodTreeImpl) ((ClassTreeImpl) compilationUnit.types().get(0)).members().get(0);
-    var inputFile = mock(InputFile.class);
-
-    assertThat(SpringUtils.collectDependenciesOnMethod(createBean, inputFile)).isEmpty();
+    assertThat(SpringUtils.collectDependenciesOnMethod(createBean)).isEmpty();
   }
 
   // ---- extractProfiles --------------------------------------------------

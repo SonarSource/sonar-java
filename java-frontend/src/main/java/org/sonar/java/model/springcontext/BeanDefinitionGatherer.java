@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -77,23 +77,12 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
 
-  private final List<BeanData> collectedBeans = new ArrayList<>();
+  private final Map<InputFile, List<BeanDefinitionHolder.InputFileData>> beansCollectedByFile = new LinkedHashMap<>();
 
-  /** Beans found in the file currently being scanned, used for per-file cache writes. */
-  private final List<BeanData> beansCollectedAtFileLevel = new ArrayList<>();
-
-  record BeanData(
-    String beanName,
-    String type,
-    String beanPackage,
-    InputFile inputFile,
-    AnalyzerMessage.TextSpan textSpan,
-    boolean isPrimary,
-    @Nullable String profiles,
-    Map<String, Set<String>> dependingBeans,
-    Map<String, Set<InjectionPoint>> dependencyInjectionPoints,
-    Set<String> typeHierarchy) {
-  }
+  /**
+   * Beans found in the file currently being scanned, used for per-file cache writes.
+   */
+  private final List<BeanDefinitionHolder.InputFileData> beansCollectedAtFileLevel = new ArrayList<>();
 
   @Override
   public void setContext(JavaFileScannerContext context) {
@@ -108,7 +97,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   /**
    * Visits class nodes and registers all beans defined in the class.
-   *
+   * <p>
    * Registers a bean when the class carries a stereotype annotation ({@code @Component},
    * {@code @Service}, {@code @Repository}, {@code @Controller}, {@code @RestController}, {@code @Configuration}),
    * then registers beans for {@code @Bean} factory methods on that same class.
@@ -128,22 +117,16 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
     if (SpringUtils.STEREOTYPE_ANNOTATIONS.stream().anyMatch(meta::isAnnotatedWith)) {
       String beanName = SpringUtils.extractBeanNameFromAnnotation(meta, classTree.simpleName().name());
-      // collect autowired dependencies as InjectionPoints to store in TypeToDependenciesIndex
-      Map<String, Set<InjectionPoint>> injectionPoints = collectAutowiredDependenciesOnClass(classTree, context.getInputFile());
-      // also collect their names mapped by type to store in dependingBeans
-      Map<String, Set<String>> deps = projectToNames(injectionPoints);
+      Map<String, Set<InjectionPoint.InputFileData>> dependencies = collectAutowiredDependenciesOnClass(classTree);
       Set<String> typeHierarchy = JUtils.collectTypeHierarchy(classTree.symbol());
       String classProfiles = SpringUtils.extractProfiles(meta);
-      var beanData = new BeanData(
+      var beanData = new BeanDefinitionHolder.InputFileData(
         beanName, fqn, pkg,
-        context.getInputFile(),
         AnalyzerMessage.textSpanFor(classTree.simpleName()),
         meta.isAnnotatedWith(PRIMARY_ANNOTATION),
         classProfiles,
-        deps,
-        injectionPoints,
+        dependencies,
         typeHierarchy);
-      collectedBeans.add(beanData);
       beansCollectedAtFileLevel.add(beanData);
 
       for (MethodTree method : SpringUtils.getBeanMethods(classTree)) {
@@ -154,6 +137,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
+    beansCollectedByFile.put(context.getInputFile(), List.copyOf(beansCollectedAtFileLevel));
     if (context.getCacheContext().isCacheEnabled()) {
       SpringContextCacheHelper.writeBeanDefinitionsToCache(context, LOG, beansCollectedAtFileLevel);
     }
@@ -161,52 +145,55 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
   }
 
   /**
-   * Transfers all beans collected across the module into the shared {@link SpringContextModel}.
-   *
+   * Transfers all beans collected across the module into the shared {@link SpringContextModel}, pairing each
+   * bean's spans with the file it was collected from to form the {@link BeanLocation}s the model exposes.
+   * <p>
    * Registers all encountered bean definitions in {@link BeanDefinitionRegistry},
    * their position in every ancestor/interface type in {@link TypeToBeanNamesIndex}, and
    * each of their dependencies by type in {@link TypeToDependenciesIndex}.
    *
-   * @param context Scanner context used here to access the current module key
+   * @param context            Scanner context used here to access the current module key
    * @param springContextModel Shared cross-module Spring context
    */
   @Override
   public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {
-    for (BeanData data : collectedBeans) {
-      var location = new BeanLocation(data.inputFile(), data.textSpan());
-      var holderBuilder = new BeanDefinitionHolder.Builder(
-        data.type(), context.getModuleKey(), data.beanPackage(), location)
-        .dependingBeans(data.dependingBeans())
-        .profiles(data.profiles());
-      if (data.isPrimary()) {
-        holderBuilder.primary();
+    beansCollectedByFile.forEach((inputFile, beans) -> {
+      for (BeanDefinitionHolder.InputFileData data : beans) {
+        var location = new BeanLocation(inputFile, data.textSpan());
+        var holderBuilder = new BeanDefinitionHolder.Builder(
+          data.type(), context.getModuleKey(), data.beanPackage(), location)
+          .dependingBeans(projectToNames(data.dependencies()))
+          .profiles(data.profiles());
+        if (data.isPrimary()) {
+          holderBuilder.primary();
+        }
+        springContextModel.getBeanDefinitionRegistry()
+          .addBeanDefinition(data.beanName(), holderBuilder.build());
+        for (String typeFqn : data.typeHierarchy()) {
+          springContextModel.getTypeToBeanNamesIndex().addBeanForType(typeFqn, data.beanName());
+        }
+        data.dependencies().forEach((typeFqn, points) -> points.forEach(point -> springContextModel.getTypeToDependenciesIndex()
+          .addDependencyForType(typeFqn, point.name(), new BeanLocation(inputFile, point.span()))));
       }
-      springContextModel.getBeanDefinitionRegistry()
-        .addBeanDefinition(data.beanName(), holderBuilder.build());
-      for (String typeFqn : data.typeHierarchy()) {
-        springContextModel.getTypeToBeanNamesIndex().addBeanForType(typeFqn, data.beanName());
-      }
-      data.dependencyInjectionPoints().forEach((typeFqn, points) -> points.forEach(point -> springContextModel.getTypeToDependenciesIndex()
-        .addDependencyForType(typeFqn, point.name(), point.location())));
-    }
+    });
   }
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext ctx) {
     return SpringContextCacheHelper.readBeanDefinitionsFromCache(ctx, LOG).map(beans -> {
-      collectedBeans.addAll(beans);
+      beansCollectedByFile.put(ctx.getInputFile(), List.copyOf(beans));
       return true;
     }).orElse(false);
   }
 
   /**
-   * Collects {@link BeanData} for a bean registered with the {@code @Bean} factory method.
-   *
-   * If multiple aliases are declared (e.g. {@code @Bean({"a", "b"})}), one {@link BeanData} is
+   * Collects {@link BeanDefinitionHolder.InputFileData} for a bean registered with the {@code @Bean} factory method.
+   * <p>
+   * If multiple aliases are declared (e.g. {@code @Bean({"a", "b"})}), one {@link BeanDefinitionHolder.InputFileData} is
    * registered for each alias.
    *
-   * @param method The {@code @Bean} factory method to visit
-   * @param pkg The bean's package (carried through to be stored in BeanData)
+   * @param method        The {@code @Bean} factory method to visit
+   * @param pkg           The bean's package (carried through to be stored in the bean's serializable data)
    * @param classProfiles The {@code @Profile} expression declared on the enclosing class, if any
    */
   private void collectBeanMethod(MethodTree method, String pkg, @Nullable String classProfiles) {
@@ -220,33 +207,31 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
       ? JUtils.collectTypeHierarchy(method.returnType().symbolType().symbol())
       : Set.of();
 
-    var inputFile = context.getInputFile();
     // Unlike class-level beans, a {@code @Bean} method's dependencies come only from its own parameters.
-    Map<String, Set<InjectionPoint>> injectionPoints = collectDependenciesOnMethod(method, inputFile);
-    Map<String, Set<String>> paramDeps = projectToNames(injectionPoints);
+    Map<String, Set<InjectionPoint.InputFileData>> dependencies = collectDependenciesOnMethod(method);
     boolean isPrimary = beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION);
     String ownProfiles = SpringUtils.extractProfiles(beanMeta);
     String profiles = composeProfiles(classProfiles, ownProfiles);
     var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
 
     for (String beanName : beanNames) {
-      var beanData = new BeanData(beanName, returnTypeFqn, pkg, inputFile, textSpan, isPrimary, profiles, paramDeps, injectionPoints, typeHierarchy);
-      collectedBeans.add(beanData);
+      var beanData = new BeanDefinitionHolder.InputFileData(beanName, returnTypeFqn, pkg, textSpan, isPrimary, profiles, dependencies, typeHierarchy);
       beansCollectedAtFileLevel.add(beanData);
     }
   }
 
-  /** Projects each type's injection points down to just their names, discarding location — the flat view stored in {@code BeanDefinitionHolder}.
+  /**
+   * Projects each type's injection points down to just their names, discarding spans — the flat view stored in {@code BeanDefinitionHolder}.
    *
-   * @param injectionPointsByType Injection points mapped by type, as stored in {@link TypeToDependenciesIndex}
-   * @return the name of each dependency, mapped by type */
-  static Map<String, Set<String>> projectToNames(Map<String, Set<InjectionPoint>> injectionPointsByType) {
+   * @param injectionPointsByType Injection points mapped by type, as collected for a bean
+   * @return The name of each dependency, mapped by type.
+   */
+  private static Map<String, Set<String>> projectToNames(Map<String, Set<InjectionPoint.InputFileData>> injectionPointsByType) {
     Map<String, Set<String>> names = new LinkedHashMap<>();
     injectionPointsByType.forEach((typeFqn, points) -> names.put(typeFqn, points.stream()
-      .map(InjectionPoint::name)
+      .map(InjectionPoint.InputFileData::name)
       .collect(Collectors.toCollection(LinkedHashSet::new))));
     return names;
   }
-
 
 }
