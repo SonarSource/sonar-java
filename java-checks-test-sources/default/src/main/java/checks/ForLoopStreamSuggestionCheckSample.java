@@ -334,4 +334,46 @@ class ForLoopStreamSuggestionCheckSample {
     }
   }
 
+  void newCollectionWithInitialCapacity() {
+    List<String> result = new ArrayList<>(16);
+    for (String item : items) { // Noncompliant
+//  ^^^
+      result.add(item);
+    }
+  }
+
+  void assignmentBeforeLoop() {
+    List<String> result = new ArrayList<>();
+    int x = 0;
+    x = 42;
+    for (String item : items) { // Noncompliant
+//  ^^^
+      result.add(item);
+    }
+  }
+
+  void chainedMethodTarget() {
+    List<String> result = new ArrayList<>();
+    for (String item : items) { // compliant - target is method call return, not a tracked variable
+      getList().add(item);
+    }
+  }
+
+  private List<String> getList() { return items; }
+
+  void staticMethodCallBeforeLoop() {
+    List<String> result = new ArrayList<>();
+    System.out.println("start");
+    for (String item : items) { // Noncompliant
+//  ^^^
+      result.add(item);
+    }
+  }
+
+  void fieldTargetNotTracked() {
+    for (String item : items) { // compliant - this.items is a field, not a local fresh collection
+      this.items.add(item);
+    }
+  }
+
 }

@@ -49,9 +49,7 @@ public class ForLoopStreamSuggestionCheck extends IssuableSubscriptionVisitor im
     "java.util.List",
     "java.util.Set",
     "java.util.Queue",
-    "java.util.Deque",
-    "java.util.concurrent.BlockingQueue",
-    "java.util.concurrent.BlockingDeque");
+    "java.util.Deque");
   private static final MethodMatchers COLLECTION_ADD_MATCHERS = MethodMatchers.create()
     .ofSubTypes(JAVA_UTIL_COLLECTION)
     .names("add", "addLast", "offer", "offerLast")
