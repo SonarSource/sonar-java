@@ -79,8 +79,7 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
    */
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    // Explicitly declares the method to make it appears in the IssuableSubscriptionVisitor's members.
-    // Default behaviour is to do nothing
+    clearState();
   }
 
   /**
