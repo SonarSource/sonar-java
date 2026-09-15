@@ -1,3 +1,5 @@
+<p>This rule raises an issue when a sorted collection relies on natural ordering, but its element or key type does not implement a compatible
+<code>Comparable</code> interface. Provide an explicit <code>Comparator</code> or define a natural ordering for the type.</p>
 <h2>Why is this an issue?</h2>
 <p>Sorted collections need an ordering to compare their elements or keys. They can use either the natural ordering defined by <code>Comparable</code>
 or an explicit <code>Comparator</code>.</p>
@@ -7,6 +9,7 @@ operations that compare values can throw a <code>ClassCastException</code> at ru
 <p>Provide a comparator when the element or key type does not have a natural ordering. Alternatively, implement <code>Comparable</code> on the type
 when it has a single meaningful natural ordering.</p>
 <h3>Code examples</h3>
+<p>When the type has no natural ordering, construct the collection with an explicit comparator.</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 class Task {
@@ -33,6 +36,7 @@ Queue&lt;Task&gt; pendingTasks = new PriorityQueue&lt;&gt;(byPriority);
 Set&lt;Task&gt; concurrentTasks = new ConcurrentSkipListSet&lt;&gt;(byPriority);
 Map&lt;Task, String&gt; concurrentAssignments = new ConcurrentSkipListMap&lt;&gt;(byPriority);
 </pre>
+<p>When the type has a single meaningful natural ordering, implement <code>Comparable</code> on that type.</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="2" data-diff-type="noncompliant">
 class Task {
