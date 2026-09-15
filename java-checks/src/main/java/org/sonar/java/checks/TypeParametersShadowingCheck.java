@@ -41,9 +41,6 @@ public class TypeParametersShadowingCheck extends BaseTreeVisitor implements Jav
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    if (currentTypeParametersInScope != null) {
-      currentTypeParametersInScope.clear();
-    }
     currentTypeParametersInScope = new HashMap<>();
     try {
       scan(context.getTree());
