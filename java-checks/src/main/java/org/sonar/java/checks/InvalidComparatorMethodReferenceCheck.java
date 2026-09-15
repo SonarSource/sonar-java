@@ -21,7 +21,6 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
@@ -36,10 +35,7 @@ public class InvalidComparatorMethodReferenceCheck extends IssuableSubscriptionV
     .ofTypes(
       "java.lang.Math",
       "java.lang.StrictMath",
-      "java.lang.Integer",
-      "java.lang.Long",
-      "java.lang.Float",
-      "java.lang.Double"
+      "java.lang.Integer"
     )
     .names("min", "max")
     .withAnyParameters()
@@ -64,16 +60,9 @@ public class InvalidComparatorMethodReferenceCheck extends IssuableSubscriptionV
 
   private static String methodReferenceName(MethodReferenceTree methodReference) {
     Tree expression = methodReference.expression();
-    String expressionName;
-    if (expression.is(Tree.Kind.IDENTIFIER)) {
-      expressionName = ((IdentifierTree) expression).name();
-    } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      expressionName = ((MemberSelectExpressionTree) expression).identifier().name();
-    } else if (expression instanceof ExpressionTree expressionTree) {
-      expressionName = expressionTree.symbolType().name();
-    } else {
-      expressionName = expression.toString();
-    }
+    String expressionName = expression.is(Tree.Kind.MEMBER_SELECT)
+      ? ((MemberSelectExpressionTree) expression).identifier().name()
+      : ((IdentifierTree) expression).name();
     return expressionName + "::" + methodReference.method().name();
   }
 }
