@@ -354,6 +354,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     }
     projectTotalUsageCount = 0;
     projectTotalNoEnumUsageCount = 0;
+    currentFileIssues.clear();
     issuesByFile.clear();
     restoredFiles.clear();
   }

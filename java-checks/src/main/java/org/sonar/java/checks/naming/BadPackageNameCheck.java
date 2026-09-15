@@ -66,6 +66,7 @@ public class BadPackageNameCheck implements JavaFileScanner, EndOfAnalysis {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    badPackageNames.clear();
     var packageDeclaration = context.getTree().packageDeclaration();
     String name = packageDeclaration != null ? PackageUtils.packageName(packageDeclaration, ".") : "";
     if (context.getCacheContext().isCacheEnabled()) {

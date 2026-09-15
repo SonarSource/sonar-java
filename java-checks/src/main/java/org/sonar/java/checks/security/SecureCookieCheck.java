@@ -160,12 +160,21 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    cookieConstructors.forEach(r -> reportIssue(r.identifier(), MESSAGE));
-    deletionCandidateSecureCalls.forEach((symbol, mit) -> {
-      if (!maxAgeZeroSeen.contains(symbol)) {
-        reportIssue(mit.arguments(), MESSAGE);
-      }
-    });
+    try {
+      cookieConstructors.forEach(r -> reportIssue(r.identifier(), MESSAGE));
+      deletionCandidateSecureCalls.forEach((symbol, mit) -> {
+        if (!maxAgeZeroSeen.contains(symbol)) {
+          reportIssue(mit.arguments(), MESSAGE);
+        }
+      });
+    } finally {
+      unsecuredCookies.clear();
+      deletionCandidateCookies.clear();
+      cookieConstructors.clear();
+      maxAgeZeroSeen.clear();
+      deletionCandidateSecureCalls.clear();
+      enclosingClass.clear();
+    }
   }
 
   @Override
