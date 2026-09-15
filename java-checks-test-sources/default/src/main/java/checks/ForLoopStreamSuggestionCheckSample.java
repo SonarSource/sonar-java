@@ -254,4 +254,37 @@ class ForLoopStreamSuggestionCheckSample {
       arr[i++] = item.length();
     }
   }
+
+  void collectFromExistingCollection() {
+    List<String> result = items;
+    for (String item : items) { // compliant - result is not a fresh collection
+      result.add(item);
+    }
+  }
+
+  void collectFromCopiedCollection() {
+    List<String> result = new ArrayList<>(items);
+    for (String item : items) { // compliant - result is pre-populated, not empty
+      result.add(item);
+    }
+  }
+
+  void selfModifyingLoop() {
+    List<String> result = new ArrayList<>();
+    result.add("seed");
+    for (String item : result) { // compliant - source and target are the same collection
+      result.add(item);
+    }
+  }
+
+  interface CustomCollectionLike {
+    void add(int metric);
+  }
+
+  void unrelatedAddOverload(CustomCollectionLike tracker) {
+    List<String> result = new ArrayList<>();
+    for (String item : items) { // compliant - tracker.add(int) is not Collection.add
+      tracker.add(item.length());
+    }
+  }
 }
