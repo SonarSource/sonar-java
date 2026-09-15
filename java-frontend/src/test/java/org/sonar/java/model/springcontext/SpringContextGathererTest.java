@@ -19,12 +19,21 @@ package org.sonar.java.model.springcontext;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import java.io.File;
 import java.util.List;
+import java.util.Set;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.caching.CacheContext;
+import org.sonar.plugins.java.api.caching.JavaReadCache;
+import org.sonar.plugins.java.api.caching.JavaWriteCache;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 abstract class SpringContextGathererTest {
 
@@ -57,5 +66,22 @@ abstract class SpringContextGathererTest {
       visitorsBridge.visitFile(compilationUnit, false);
     }
     visitorsBridge.endOfAnalysis();
+  }
+
+  protected static CacheContext mockCacheContext(JavaReadCache readCache, JavaWriteCache writeCache) {
+    CacheContext cacheContext = mock(CacheContext.class);
+    when(cacheContext.isCacheEnabled()).thenReturn(true);
+    when(cacheContext.getReadCache()).thenReturn(readCache);
+    when(cacheContext.getWriteCache()).thenReturn(writeCache);
+    return cacheContext;
+  }
+
+  protected static void assertInjectionPoint(Set<InjectionPoint> injectionPoints, String expectedName,
+    InputFile expectedInputFile, int expectedLine) {
+    assertThat(injectionPoints).hasSize(1);
+    var point = injectionPoints.iterator().next();
+    assertThat(point.name()).isEqualTo(expectedName);
+    assertThat(point.location().inputFile()).isEqualTo(expectedInputFile);
+    assertThat(point.location().mainLocation().startLine).isEqualTo(expectedLine);
   }
 }

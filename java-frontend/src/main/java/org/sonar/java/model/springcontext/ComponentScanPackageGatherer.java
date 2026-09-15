@@ -17,10 +17,11 @@
 package org.sonar.java.model.springcontext;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -56,16 +57,18 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
 
   private static final Logger LOG = LoggerFactory.getLogger(ComponentScanPackageGatherer.class);
 
-  private static final String CACHE_KEY_PREFIX = "java:spring:component-scan-packages:";
-
   private static final String COMPONENT_SCAN_ANNOTATION = "org.springframework.context.annotation.ComponentScan";
   private static final Set<String> COMPONENT_SCAN_BASE_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "basePackageClasses", "value");
   private static final Set<String> SCAN_BASE_ANNOTATIONS = SetUtils.immutableSetOf("scanBasePackages", "scanBasePackageClasses");
 
-  /** Packages accumulated across all files in the current module. */
-  private final Set<String> collectedPackages = new HashSet<>();
+  /**
+   * Packages accumulated across all files in the current module, mapped by input file key.
+   */
+  private final Map<String, Set<String>> collectedPackagesByFile = new HashMap<>();
 
-  /** Packages found in the file currently being scanned, used for per-file cache writes. */
+  /**
+   * Packages found in the file currently being scanned, used for per-file cache writes.
+   */
   private final Set<String> packagesCollectedAtFileLevel = new HashSet<>();
 
   @Override
@@ -75,8 +78,8 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
-    return readFromCache(inputFileScannerContext).map(packages -> {
-      collectedPackages.addAll(packages);
+    return SpringContextCacheHelper.readComponentScanPackagesFromCache(inputFileScannerContext, LOG).map(packages -> {
+      collectedPackagesByFile.put(inputFileScannerContext.getInputFile().key(), Set.copyOf(packages));
       return true;
     }).orElse(false);
   }
@@ -101,14 +104,17 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
+    collectedPackagesByFile.put(context.getInputFile().key(), Set.copyOf(packagesCollectedAtFileLevel));
     if (context.getCacheContext().isCacheEnabled()) {
-      writeToCache(context, packagesCollectedAtFileLevel);
+      SpringContextCacheHelper.writeComponentScanPackagesToCache(context, LOG, packagesCollectedAtFileLevel);
     }
     packagesCollectedAtFileLevel.clear();
   }
 
   @Override
   public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {
+    Set<String> collectedPackages = new HashSet<>();
+    collectedPackagesByFile.values().forEach(collectedPackages::addAll);
     springContextModel.getProjectPackageScan().addPackages(context.getModuleKey(), collectedPackages);
   }
 
@@ -127,7 +133,6 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
       return;
     }
     var packages = targetedPackages(PackageUtils.packageNameOf(classSymbol), metadata, packagesCollectedAtFileLevel.isEmpty());
-    collectedPackages.addAll(packages);
     packagesCollectedAtFileLevel.addAll(packages);
   }
 
@@ -155,12 +160,10 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
     if (annotationValue.value() instanceof Object[] objects) {
       for (Object o : objects) {
         if (o instanceof String oString && !oString.isBlank()) {
-          collectedPackages.add(oString);
           packagesCollectedAtFileLevel.add(oString);
         } else if (o instanceof Symbol oSymbol) {
           var pkg = PackageUtils.packageNameOf(oSymbol);
           if (!pkg.isBlank()) {
-            collectedPackages.add(pkg);
             packagesCollectedAtFileLevel.add(pkg);
           }
         }
@@ -178,16 +181,4 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
     return Optional.empty();
   }
 
-  private static void writeToCache(InputFileScannerContext context, Set<String> packages) {
-    var cacheKey = SpringContextCacheHelper.cacheKey(CACHE_KEY_PREFIX, context);
-    var data = String.join(";", packages);
-    SpringContextCacheHelper.writeToCache(context, LOG, cacheKey, data);
-  }
-
-  private static Optional<List<String>> readFromCache(InputFileScannerContext context) {
-    var cacheKey = SpringContextCacheHelper.cacheKey(CACHE_KEY_PREFIX, context);
-    return SpringContextCacheHelper.readFromCache(context, LOG, cacheKey, content -> content.isEmpty()
-      ? List.<String>of()
-      : Arrays.asList(content.split(";")));
-  }
 }
