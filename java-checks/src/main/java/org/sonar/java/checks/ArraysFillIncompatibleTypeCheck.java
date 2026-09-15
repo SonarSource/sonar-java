@@ -58,7 +58,7 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
 
     ExpressionTree arrayArg = mit.arguments().get(0);
     Type arrayType = arrayArg.symbolType();
-    if (arrayType.isUnknown() || !arrayType.isArray()) {
+    if (!arrayType.isArray()) {
       return;
     }
 
@@ -78,13 +78,17 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
       ExpressionTree trueExpr = ExpressionUtils.skipParentheses(conditional.trueExpression());
       ExpressionTree falseExpr = ExpressionUtils.skipParentheses(conditional.falseExpression());
 
-      if (isMismatched(componentType, trueExpr)) {
-        reportMismatch(mit, arrayArg, arrayType, trueExpr);
+      if (isNumericConditional(trueExpr, falseExpr)) {
+        if (isMismatched(componentType, unwrappedFillingArg)) {
+          reportMismatch(mit, arrayArg, arrayType, unwrappedFillingArg);
+        }
         return;
       }
-      if (isMismatched(componentType, falseExpr)) {
+
+      if (isMismatched(componentType, trueExpr)) {
+        reportMismatch(mit, arrayArg, arrayType, trueExpr);
+      } else if (isMismatched(componentType, falseExpr)) {
         reportMismatch(mit, arrayArg, arrayType, falseExpr);
-        return;
       }
       return;
     }
@@ -94,6 +98,10 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
     }
   }
 
+  private static boolean isNumericConditional(ExpressionTree trueExpr, ExpressionTree falseExpr) {
+    return trueExpr.symbolType().isNumerical() && falseExpr.symbolType().isNumerical();
+  }
+
   private static boolean isMismatched(Type componentType, ExpressionTree expr) {
     Type fillingType = expr.symbolType();
     if (fillingType.isUnknown() || fillingType.isTypeVar() || fillingType.isNullType()) {
@@ -101,11 +109,11 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
     }
 
     Type effectiveFillingType = fillingType.isPrimitive() ? fillingType.primitiveWrapperType() : fillingType;
-    if (effectiveFillingType == null || effectiveFillingType.isUnknown()) {
-      return false;
-    }
+    return !isCompatible(effectiveFillingType, componentType);
+  }
 
-    return !effectiveFillingType.isSubtypeOf(componentType);
+  private static boolean isCompatible(Type fillingType, Type componentType) {
+    return fillingType.isSubtypeOf(componentType.erasure()) || componentType.isSubtypeOf(fillingType.erasure());
   }
 
   private void reportMismatch(MethodInvocationTree mit, ExpressionTree arrayArg, Type arrayType, ExpressionTree incompatibleArg) {
