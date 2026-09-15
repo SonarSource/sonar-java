@@ -56,18 +56,11 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    if (authorizedNumbersList != null) {
-      authorizedNumbersList.clear();
-    }
     this.authorizedNumbersList = new ArrayList<>();
-    try {
-      for (String s : authorizedNumbers.split(",")) {
-        authorizedNumbersList.add(new BigDecimal(s.trim()));
-      }
-      scan(context.getTree());
-    } finally {
-      authorizedNumbersList.clear();
+    for (String s : authorizedNumbers.split(",")) {
+      authorizedNumbersList.add(new BigDecimal(s.trim()));
     }
+    scan(context.getTree());
   }
 
   @Override

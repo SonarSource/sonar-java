@@ -16,6 +16,8 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -206,4 +208,26 @@ public class UselessImportCheck extends IssuableSubscriptionVisitor {
     }
     return quickFix.build();
   }
+  private void clearState() {
+    imports.clear();
+    importsNames.clear();
+    duplicatedImports.clear();
+    usedInJavaDoc.clear();
+  }
+
+  @Override
+  public void setContext(JavaFileScannerContext context) {
+    clearState();
+    super.setContext(context);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    try {
+      super.leaveFile(context);
+    } finally {
+      clearState();
+    }
+  }
+
 }

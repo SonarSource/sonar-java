@@ -66,19 +66,8 @@ public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements Java
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    if (filteredPatterns != null) {
-      filteredPatterns.clear();
-    }
-    filteredPatterns = null;
-    try {
-      if (context.getSemanticModel() != null) {
-        scan(context.getTree());
-      }
-    } finally {
-      if (filteredPatterns != null) {
-        filteredPatterns.clear();
-      }
-      filteredPatterns = null;
+    if (context.getSemanticModel() != null) {
+      scan(context.getTree());
     }
   }
 

@@ -63,9 +63,6 @@ public class TrailingCommentCheck extends IssuableSubscriptionVisitor {
     if (pattern == null) {
       pattern = Pattern.compile(legalCommentPattern);
     }
-    if (visitedTokens != null) {
-      visitedTokens.clear();
-    }
     visitedTokens = new HashSet<>();
     super.setContext(context);
   }
