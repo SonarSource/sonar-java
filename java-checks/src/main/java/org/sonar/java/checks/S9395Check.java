@@ -16,6 +16,8 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
@@ -27,7 +29,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -45,10 +46,12 @@ public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
   private static final long DOUBLE_MAX_EXACT_LONG = 1L << 53;
 
   private JavaFileScannerContext context;
+  private final Deque<Type> floatingPointReturnTypes = new LinkedList<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
+    floatingPointReturnTypes.clear();
     if (context.getSemanticModel() != null) {
       scan(context.getTree());
     }
@@ -81,15 +84,28 @@ public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
   }
 
   @Override
-  public void visitMethod(MethodTree tree) {
-    if (tree.is(Tree.Kind.METHOD)) {
-      TypeTree returnTypeTree = tree.returnType();
-      Type returnType = returnTypeTree != null ? returnTypeTree.symbolType() : null;
-      if (returnType != null && isFloatingPoint(returnType)) {
-        tree.accept(new ReturnStatementVisitor(returnType));
-      }
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    Type returnType = floatingPointReturnTypes.peek();
+    if (returnType != null) {
+      checkExpression(returnType, tree.expression());
     }
+    super.visitReturnStatement(tree);
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    TypeTree returnTypeTree = tree.returnType();
+    Type returnType = returnTypeTree != null ? returnTypeTree.symbolType() : null;
+    floatingPointReturnTypes.push(returnType != null && isFloatingPoint(returnType) ? returnType : null);
     super.visitMethod(tree);
+    floatingPointReturnTypes.pop();
+  }
+
+  @Override
+  public void visitLambdaExpression(LambdaExpressionTree tree) {
+    floatingPointReturnTypes.push(null);
+    super.visitLambdaExpression(tree);
+    floatingPointReturnTypes.pop();
   }
 
   private void checkArguments(Arguments arguments, Symbol.MethodSymbol symbol) {
@@ -159,26 +175,4 @@ public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
     return type.isPrimitive(Type.Primitives.FLOAT) || type.isPrimitive(Type.Primitives.DOUBLE);
   }
 
-  private class ReturnStatementVisitor extends BaseTreeVisitor {
-    private final Type returnType;
-
-    ReturnStatementVisitor(Type returnType) {
-      this.returnType = returnType;
-    }
-
-    @Override
-    public void visitReturnStatement(ReturnStatementTree tree) {
-      checkExpression(returnType, tree.expression());
-    }
-
-    @Override
-    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-      // skip lambdas
-    }
-
-    @Override
-    public void visitClass(ClassTree tree) {
-      // skip inner classes
-    }
-  }
 }
