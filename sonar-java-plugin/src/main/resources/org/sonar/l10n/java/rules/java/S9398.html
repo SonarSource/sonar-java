@@ -1,0 +1,66 @@
+<p>This rule raises an issue when a concrete class is declared inside a Java interface.</p>
+<p>In Java, interfaces can contain nested types, including classes. While this is syntactically valid, it goes against the fundamental purpose of
+interfaces, which is to define contracts rather than implementations.</p>
+<h2>Why is this an issue?</h2>
+<p>Java interfaces are meant to define contracts - they specify <strong>what</strong> methods should be available without dictating
+<strong>how</strong> those methods work. When you declare a concrete class inside an interface, you’re mixing two different concerns:</p>
+<ul>
+  <li>The interface defines the contract (what should be done)</li>
+  <li>The inner class provides implementation (how it’s done)</li>
+</ul>
+<p>This creates confusion about the role of the interface. Developers reading your code may struggle to understand why implementation details are
+bundled with contract definitions.</p>
+<p>Additionally, this pattern can lead to:</p>
+<ul>
+  <li>Poor separation of concerns, making code harder to maintain</li>
+  <li>Unexpected coupling between the interface contract and specific implementations</li>
+  <li>Confusion about where to place implementation logic in the codebase</li>
+</ul>
+<p>While nested interfaces within interfaces are acceptable (since both define contracts), concrete classes belong in their own files where their
+implementation purpose is clear.</p>
+<h3>What is the potential impact?</h3>
+<p>When concrete classes are declared inside interfaces, the code becomes harder to understand and maintain:</p>
+<ul>
+  <li><strong>Reduced maintainability</strong>: Future developers may struggle to understand why implementation code lives inside a contract
+  definition, slowing down feature development and bug fixes.</li>
+  <li><strong>Poor code organization</strong>: The codebase structure becomes less intuitive, making it difficult to locate and navigate to relevant
+  classes.</li>
+  <li><strong>Harder to test</strong>: Implementation classes embedded in interfaces can be more difficult to test in isolation.</li>
+  <li><strong>Confusion about design intent</strong>: Team members may be unsure whether to add more implementation code to the interface or create
+  separate files, leading to inconsistent patterns across the codebase.</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Move the inner class to a top-level class in its own file. This clearly separates the interface contract from the implementation.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public interface UserService {
+    void createUser(User user);
+
+    class UserValidator { // Noncompliant
+        public boolean isValid(User user) {
+            return user != null &amp;&amp; user.getName() != null;
+        }
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public interface UserService {
+    void createUser(User user);
+}
+
+// In a separate file: UserValidator.java
+public class UserValidator {
+    public boolean isValid(User user) {
+        return user != null &amp;&amp; user.getName() != null;
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/IandI/interfaceDef.html">Defining an Interface</a></li>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html">Nested Classes</a></li>
+</ul>
+
