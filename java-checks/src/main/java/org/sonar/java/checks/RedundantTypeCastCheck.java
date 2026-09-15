@@ -114,9 +114,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private void clearState() {
-    if (warnings != null) {
-      warnings.clear();
-    }
+    warnings = null;
   }
 
   @Override

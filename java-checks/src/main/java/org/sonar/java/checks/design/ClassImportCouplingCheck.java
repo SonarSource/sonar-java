@@ -51,25 +51,11 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    if (imports != null) {
-      imports.clear();
-      imports = null;
-    }
-    if (secondaryLocations != null) {
-      secondaryLocations.clear();
-      secondaryLocations = null;
-    }
     try {
       super.scanFile(context);
     } finally {
-      if (imports != null) {
-        imports.clear();
-        imports = null;
-      }
-      if (secondaryLocations != null) {
-        secondaryLocations.clear();
-        secondaryLocations = null;
-      }
+      imports = null;
+      secondaryLocations = null;
     }
   }
 
