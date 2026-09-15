@@ -88,9 +88,10 @@ class CheckStateCleanupTest {
   }
 
   private static boolean isPropertyCache(JavaField field) {
-    return field.getAllInvolvedRawTypes().stream()
+    var valueTypes = field.getAllInvolvedRawTypes().stream()
       .filter(type -> !type.isAssignableTo(Collection.class) && !type.isAssignableTo(Map.class))
-      .allMatch(CheckStateCleanupTest::isPropertyType);
+      .toList();
+    return !valueTypes.isEmpty() && valueTypes.stream().allMatch(CheckStateCleanupTest::isPropertyType);
   }
 
   private static boolean isPropertyType(JavaClass type) {
