@@ -1,0 +1,71 @@
+<h2>Why is this an issue?</h2>
+<p>Sorted collections need an ordering to compare their elements or keys. They can use either the natural ordering defined by <code>Comparable</code>
+or an explicit <code>Comparator</code>.</p>
+<p>When a collection relies on natural ordering, every element or key must implement a compatible <code>Comparable</code> interface. Otherwise,
+operations that compare values can throw a <code>ClassCastException</code> at runtime.</p>
+<h2>How to fix it</h2>
+<p>Provide a comparator when the element or key type does not have a natural ordering. Alternatively, implement <code>Comparable</code> on the type
+when it has a single meaningful natural ordering.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class Task {
+  int priority;
+}
+
+Set&lt;Task&gt; tasks = new TreeSet&lt;&gt;(); // Noncompliant
+Map&lt;Task, String&gt; assignments = new TreeMap&lt;&gt;(); // Noncompliant
+Queue&lt;Task&gt; pendingTasks = new PriorityQueue&lt;&gt;(); // Noncompliant
+Set&lt;Task&gt; concurrentTasks = new ConcurrentSkipListSet&lt;&gt;(); // Noncompliant
+Map&lt;Task, String&gt; concurrentAssignments = new ConcurrentSkipListMap&lt;&gt;(); // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Task {
+  int priority;
+}
+
+Comparator&lt;Task&gt; byPriority = Comparator.comparingInt(task -&gt; task.priority);
+
+Set&lt;Task&gt; tasks = new TreeSet&lt;&gt;(byPriority);
+Map&lt;Task, String&gt; assignments = new TreeMap&lt;&gt;(byPriority);
+Queue&lt;Task&gt; pendingTasks = new PriorityQueue&lt;&gt;(byPriority);
+Set&lt;Task&gt; concurrentTasks = new ConcurrentSkipListSet&lt;&gt;(byPriority);
+Map&lt;Task, String&gt; concurrentAssignments = new ConcurrentSkipListMap&lt;&gt;(byPriority);
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+class Task {
+  int priority;
+}
+
+Queue&lt;Task&gt; tasks = new PriorityQueue&lt;&gt;(); // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+class Task implements Comparable&lt;Task&gt; {
+  int priority;
+
+  @Override
+  public int compareTo(Task other) {
+    return Integer.compare(priority, other.priority);
+  }
+}
+
+Queue&lt;Task&gt; tasks = new PriorityQueue&lt;&gt;();
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java SE API Specification - <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Comparable.html">Comparable</a></li>
+  <li>Java SE API Specification - <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Comparator.html">Comparator</a></li>
+  <li>Java SE API Specification - <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/TreeSet.html">TreeSet</a></li>
+  <li>Java SE API Specification - <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/TreeMap.html">TreeMap</a></li>
+  <li>Java SE API Specification - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/PriorityQueue.html">PriorityQueue</a></li>
+  <li>Java SE API Specification - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ConcurrentSkipListSet.html">ConcurrentSkipListSet</a></li>
+  <li>Java SE API Specification - <a
+  href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ConcurrentSkipListMap.html">ConcurrentSkipListMap</a></li>
+</ul>
+
