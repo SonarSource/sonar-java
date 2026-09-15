@@ -1,0 +1,30 @@
+{
+  "title": "Numeric values should be explicitly cast when assigned to narrower types",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "cert",
+    "pitfall",
+    "confusing"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9395",
+  "sqKey": "S9395",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  },
+  "securityStandards": {
+    "CERT": [
+      "NUM12-J"
+    ]
+  }
+}

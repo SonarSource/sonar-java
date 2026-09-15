@@ -1,0 +1,73 @@
+<p>An issue is raised when an integer value (int or long) is implicitly converted to a floating-point type (float or double) in a context where
+precision loss is possible.</p>
+<h2>Why is this an issue?</h2>
+<p>Java allows implicit widening conversions from integer types to floating-point types. While these conversions are safe in terms of range (the
+floating-point type can represent larger magnitudes), they can silently lose precision.</p>
+<p>Floating-point types use binary representation with limited precision:</p>
+<ul>
+  <li><code>float</code> (32-bit) can only precisely represent integers up to ±16,777,216 (2^24)</li>
+  <li><code>double</code> (64-bit) can only precisely represent integers up to ±9,007,199,254,740,992 (2^53)</li>
+</ul>
+<p>When you convert larger integer values to these types, the least significant digits may be rounded, resulting in a value that differs from the
+original integer. This happens silently because Java permits the conversion without requiring a cast.</p>
+<p>For example, converting the <code>int</code> value <code>16777217</code> to <code>float</code> results in <code>16777216.0</code> - the original
+value cannot be represented exactly and gets rounded to the nearest representable value.</p>
+<p>This is particularly problematic when:</p>
+<ul>
+  <li>Working with identifiers, timestamps, or exact counts that must remain precise</li>
+  <li>Performing calculations where small precision errors accumulate</li>
+  <li>Comparing values for equality after conversion</li>
+</ul>
+<p>Making these conversions explicit with a cast documents that you are aware of potential precision loss and helps prevent accidental data
+corruption.</p>
+<h3>What is the potential impact?</h3>
+<h3>Data Corruption</h3>
+<p>Precision loss in conversions can lead to incorrect values being stored or processed. When working with identifiers, database keys, or financial
+calculations, even small rounding errors can have serious consequences.</p>
+<h3>Logic Errors</h3>
+<p>Code that compares converted values for equality may produce unexpected results. A value converted to float and back may not equal the original
+integer, breaking assumptions in your logic.</p>
+<h3>Debugging Difficulty</h3>
+<p>Silent precision loss is hard to detect and diagnose. The code compiles without warnings, and the loss may only manifest under specific input
+values, making bugs intermittent and difficult to reproduce.</p>
+<h2>How to fix it</h2>
+<p>When converting <code>int</code> to <code>float</code>, use an explicit cast to document awareness of potential precision loss for large values
+(beyond ±16,777,216).</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class DataProcessor {
+    public void processValue(int id) {
+        float floatId = id; // Noncompliant - implicit conversion may lose precision
+        System.out.println(floatId);
+    }
+
+    public float calculateRatio(int numerator, int denominator) {
+        float ratio = numerator / denominator; // Noncompliant - implicit conversion
+        return ratio;
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class DataProcessor {
+    public void processValue(int id) {
+        float floatId = (float) id; // Explicit cast shows intent
+        System.out.println(floatId);
+    }
+
+    public float calculateRatio(int numerator, int denominator) {
+        float ratio = (float) (numerator / denominator); // Clear conversion
+        return ratio;
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html#jls-5.1.2">Widening Primitive
+  Conversion</a></li>
+  <li>Oracle Java Tutorials - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html">Primitive Data Types</a></li>
+  <li>IEEE 754 Floating Point - <a href="https://en.wikipedia.org/wiki/IEEE_754">IEEE 754 - Wikipedia</a></li>
+</ul>
+
