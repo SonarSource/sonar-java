@@ -14,7 +14,7 @@ class SortedCollectionWithNonComparableTypeCheckSample {
 
   void incompleteSemantic(Comparator<Task> comparator) {
     Set<Task> detected = new TreeSet<>(); // Noncompliant
-//                       ^^^^^^^^^^^^^^^ {{Provide a comparator because this element or key type does not implement "Comparable".}}
+//                       ^^^^^^^^^^^^^^^ {{Provide a comparator because this element type does not implement "Comparable".}}
     Set<UnknownType> unknownType = new TreeSet<UnknownType>();
     Set<UnknownHierarchy> unknownHierarchy = new TreeSet<UnknownHierarchy>();
     Set<Task> unresolvedComparator = new TreeSet<>(missingComparator);

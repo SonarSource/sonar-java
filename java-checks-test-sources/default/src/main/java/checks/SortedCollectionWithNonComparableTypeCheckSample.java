@@ -48,8 +48,8 @@ class SortedCollectionWithNonComparableTypeCheckSample {
   }
 
   void noncompliant(Collection<Task> tasks, Map<Task, String> assignments, PriorityQueue<Task> orderedTasks) {
-    Set<Task> treeSet = new TreeSet<>(); // Noncompliant {{Provide a comparator because this element or key type does not implement "Comparable".}}
-    Map<Task, String> treeMap = new TreeMap<>(); // Noncompliant
+    Set<Task> treeSet = new TreeSet<>(); // Noncompliant {{Provide a comparator because this element type does not implement "Comparable".}}
+    Map<Task, String> treeMap = new TreeMap<>(); // Noncompliant {{Provide a comparator because this key type does not implement "Comparable".}}
     Queue<Task> priorityQueue = new PriorityQueue<>(); // Noncompliant
     Queue<Task> priorityQueueWithCapacity = new PriorityQueue<>(10); // Noncompliant
     Set<Task> skipListSet = new ConcurrentSkipListSet<>(); // Noncompliant

@@ -29,7 +29,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S9402")
 public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscriptionVisitor {
 
-  private static final String MESSAGE = "Provide a comparator because this element or key type does not implement \"Comparable\".";
+  private static final String MESSAGE = "Provide a comparator because this %s type does not implement \"Comparable\".";
   private static final String COMPARABLE = "java.lang.Comparable";
   private static final String COMPARATOR = "java.util.Comparator";
 
@@ -60,7 +60,7 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
       orderedType.isSubtypeOf("java.lang.Object") &&
       !hasCompatibleNaturalOrdering(orderedType) &&
       !JUtils.hasUnknownTypeInHierarchy(orderedType.symbol())) {
-      reportIssue(newClassTree, MESSAGE);
+      reportIssue(newClassTree, MESSAGE.formatted(isMap(collectionType) ? "key" : "element"));
     }
   }
 
@@ -70,6 +70,10 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
       type.is("java.util.TreeMap") ||
       type.is("java.util.concurrent.ConcurrentSkipListSet") ||
       type.is("java.util.concurrent.ConcurrentSkipListMap");
+  }
+
+  private static boolean isMap(Type type) {
+    return type.is("java.util.TreeMap") || type.is("java.util.concurrent.ConcurrentSkipListMap");
   }
 
   private static boolean usesNaturalOrdering(NewClassTree tree) {
