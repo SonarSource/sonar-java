@@ -112,7 +112,7 @@ public class DepthOfInheritanceTreeCheck extends BaseTreeVisitor implements Java
         String.join(",", FRAMEWORK_EXCLUSION_PATTERNS),
         filteredClasses
       );
-      filteredPatterns = new ArrayList<>(Arrays.asList(PatternUtils.createPatterns(permittedPatterns)));
+      filteredPatterns = Arrays.asList(PatternUtils.createPatterns(permittedPatterns));
     }
     return filteredPatterns;
   }

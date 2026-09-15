@@ -64,11 +64,11 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
     } finally {
       if (imports != null) {
         imports.clear();
-      imports = null;
+        imports = null;
       }
       if (secondaryLocations != null) {
         secondaryLocations.clear();
-      secondaryLocations = null;
+        secondaryLocations = null;
       }
     }
   }
