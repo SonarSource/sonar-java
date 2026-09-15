@@ -14,20 +14,20 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.tests;
 
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
-class S9388CheckTest {
+class TestNGDataProviderReturnTypeCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
       .onFile(testCodeSourcesPath("checks/tests/S9388CheckSample.java"))
-      .withCheck(new S9388Check())
+      .withCheck(new TestNGDataProviderReturnTypeCheck())
       .verifyIssues();
   }
 
@@ -35,7 +35,7 @@ class S9388CheckTest {
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(testCodeSourcesPath("checks/tests/S9388CheckSample.java"))
-      .withCheck(new S9388Check())
+      .withCheck(new TestNGDataProviderReturnTypeCheck())
       .withoutSemantic()
       .verifyNoIssues();
   }

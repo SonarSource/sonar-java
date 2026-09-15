@@ -14,7 +14,7 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.tests;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +25,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S9388")
-public class S9388Check extends IssuableSubscriptionVisitor {
+public class TestNGDataProviderReturnTypeCheck extends IssuableSubscriptionVisitor {
 
   private static final String DATA_PROVIDER_ANNOTATION = "org.testng.annotations.DataProvider";
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
@@ -62,7 +62,7 @@ public class S9388Check extends IssuableSubscriptionVisitor {
       return false;
     }
     Type elementType = ((Type.ArrayType) type).elementType();
-    return elementType.isArray() && ((Type.ArrayType) elementType).elementType().is(JAVA_LANG_OBJECT);
+    return elementType.isArray() && ((Type.ArrayType) elementType).elementType().isSubtypeOf(JAVA_LANG_OBJECT);
   }
 
   private static boolean isObjectArray1D(Type type) {
@@ -70,7 +70,7 @@ public class S9388Check extends IssuableSubscriptionVisitor {
       return false;
     }
     Type elementType = ((Type.ArrayType) type).elementType();
-    return !elementType.isArray() && elementType.is(JAVA_LANG_OBJECT);
+    return !elementType.isArray() && elementType.isSubtypeOf(JAVA_LANG_OBJECT);
   }
 
   private static boolean isValidIterator(Type type) {
