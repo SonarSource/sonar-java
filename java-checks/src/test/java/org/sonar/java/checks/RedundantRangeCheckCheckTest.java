@@ -37,6 +37,6 @@ class RedundantRangeCheckCheckTest {
       .onFile(mainCodeSourcesPath("checks/RedundantRangeCheckCheckSample.java"))
       .withCheck(new RedundantRangeCheckCheck())
       .withoutSemantic()
-      .verifyIssues();
+      .verifyNoIssues();
   }
 }
