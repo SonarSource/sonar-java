@@ -1,0 +1,34 @@
+<p>This rule raises an issue when an <code>IdentityHashMap</code> is created with a boxed primitive type as its key type.</p>
+<h2>Why is this an issue?</h2>
+<p><code>IdentityHashMap</code> compares keys by reference instead of calling <code>equals()</code>. Boxed primitive types represent values as
+objects, but boxing the same primitive value more than once does not always return the same object. For example, some <code>Integer</code> values are
+cached while others may be represented by distinct instances.</p>
+<p>Consequently, an <code>IdentityHashMap</code> with boxed primitive keys can appear to work for some values and fail for others. A lookup can return
+<code>null</code> even when the map contains a key with the same primitive value.</p>
+<h2>How to fix it</h2>
+<p>Use a map implementation that compares keys by value when the key represents a primitive value. If reference equality is required, use key objects
+whose identity is deliberate and stable.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+Map&lt;Integer, UserSession&gt; sessions = new IdentityHashMap&lt;&gt;(); // Noncompliant
+
+sessions.put(500, session);
+UserSession retrieved = sessions.get(500); // May return null
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+Map&lt;Integer, UserSession&gt; sessions = new HashMap&lt;&gt;();
+
+sessions.put(500, session);
+UserSession retrieved = sessions.get(500);
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/IdentityHashMap.html"><code>IdentityHashMap</code> class</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Integer.html#valueOf(int)"><code>Integer.valueOf(int)</code>
+  method</a></li>
+</ul>
