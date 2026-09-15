@@ -44,7 +44,14 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
   @Override
   public void scanFile(final JavaFileScannerContext context) {
     this.context = context;
-    scan(context.getTree());
+    outerClasses.clear();
+    atLeastOneReference.clear();
+    try {
+      scan(context.getTree());
+    } finally {
+      outerClasses.clear();
+      atLeastOneReference.clear();
+    }
   }
 
   @Override

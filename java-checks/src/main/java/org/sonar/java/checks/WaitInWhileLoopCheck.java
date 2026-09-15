@@ -37,6 +37,7 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
 
   @Override
   public void setContext(JavaFileScannerContext context) {
+    inWhileLoop.clear();
     inWhileLoop.push(false);
     super.setContext(context);
   }

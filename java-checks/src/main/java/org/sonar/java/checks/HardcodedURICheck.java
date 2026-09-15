@@ -117,7 +117,8 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
       }
     }
 
-    for(VariableData v : hardCodedUri) {
+    try {
+      for(VariableData v : hardCodedUri) {
       // equals to an identifier with unknown semantic, we cannot compare their symbols
       if (idNamesWithoutSemantic.contains(v.identifier())) {
         continue;
@@ -129,6 +130,11 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
         continue;
       }
       reportHardcodedURI(v.initializer());
+      }
+    } finally {
+      annotationsStack.clear();
+      identifiersUsedInAnnotations.clear();
+      hardCodedUri.clear();
     }
   }
 
