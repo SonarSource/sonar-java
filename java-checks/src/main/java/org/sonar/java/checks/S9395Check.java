@@ -1,0 +1,198 @@
+/*
+ * SonarQube Java
+ * Copyright (C) SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * You can redistribute and/or modify this program under the terms of
+ * the Sonar Source-Available License Version 1, as published by SonarSource Sàrl.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+package org.sonar.java.checks;
+
+import java.util.List;
+import javax.annotation.Nullable;
+import org.sonar.check.Rule;
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
+@Rule(key = "S9395")
+public class S9395Check extends BaseTreeVisitor implements JavaFileScanner {
+
+  private static final long FLOAT_MAX_EXACT_INT = 1L << 24;
+  private static final long DOUBLE_MAX_EXACT_LONG = 1L << 53;
+
+  private JavaFileScannerContext context;
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    if (context.getSemanticModel() != null) {
+      scan(context.getTree());
+    }
+  }
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    checkExpression(tree.type().symbolType(), tree.initializer());
+    super.visitVariable(tree);
+  }
+
+  @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    Type targetType = tree.variable().symbolType();
+    ExpressionTree rhs = tree.expression();
+    checkExpression(targetType, rhs);
+    super.visitAssignmentExpression(tree);
+  }
+
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    checkArguments(tree.arguments(), tree.methodSymbol());
+    super.visitMethodInvocation(tree);
+  }
+
+  @Override
+  public void visitNewClass(NewClassTree tree) {
+    checkArguments(tree.arguments(), tree.methodSymbol());
+    super.visitNewClass(tree);
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      TypeTree returnTypeTree = tree.returnType();
+      Type returnType = returnTypeTree != null ? returnTypeTree.symbolType() : null;
+      if (returnType != null && isFloatingPoint(returnType)) {
+        tree.accept(new ReturnStatementVisitor(returnType));
+      }
+    }
+    super.visitMethod(tree);
+  }
+
+  private void checkArguments(Arguments arguments, Symbol.MethodSymbol symbol) {
+    if (!symbol.isUnknown()) {
+      List<Type> parameterTypes = symbol.parameterTypes();
+      if (arguments.size() == parameterTypes.size()) {
+        for (int i = 0; i < arguments.size(); i++) {
+          checkExpression(parameterTypes.get(i), arguments.get(i));
+        }
+      }
+    }
+  }
+
+  private void checkExpression(Type targetType, @Nullable ExpressionTree expr) {
+    if (expr == null) {
+      return;
+    }
+    ExpressionTree unwrapped = ExpressionUtils.skipParentheses(expr);
+    if (unwrapped.is(Tree.Kind.TYPE_CAST)) {
+      return;
+    }
+    Type sourceType = unwrapped.symbolType();
+    if (isLossyWideningConversion(sourceType, targetType) && !isSafeLiteral(unwrapped, targetType)) {
+      context.reportIssue(this, unwrapped,
+        "Explicitly cast this \"" + sourceType.name() + "\" to \"" + targetType.name() + "\" to document potential precision loss.");
+    }
+  }
+
+  private static boolean isLossyWideningConversion(Type sourceType, Type targetType) {
+    if (sourceType.isUnknown() || targetType.isUnknown()) {
+      return false;
+    }
+    if (sourceType.isPrimitive(Type.Primitives.INT) && targetType.isPrimitive(Type.Primitives.FLOAT)) {
+      return true;
+    }
+    if (sourceType.isPrimitive(Type.Primitives.LONG) && targetType.isPrimitive(Type.Primitives.FLOAT)) {
+      return true;
+    }
+    return sourceType.isPrimitive(Type.Primitives.LONG) && targetType.isPrimitive(Type.Primitives.DOUBLE);
+  }
+
+  private static boolean isSafeLiteral(ExpressionTree expr, Type targetType) {
+    if (!expr.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL)) {
+      return false;
+    }
+    LiteralTree literal = (LiteralTree) expr;
+    try {
+      long value = parseLiteralValue(literal);
+      long absValue = Math.abs(value);
+      if (targetType.isPrimitive(Type.Primitives.FLOAT)) {
+        return absValue <= FLOAT_MAX_EXACT_INT;
+      }
+      if (targetType.isPrimitive(Type.Primitives.DOUBLE)) {
+        return absValue <= DOUBLE_MAX_EXACT_LONG;
+      }
+    } catch (NumberFormatException e) {
+      return false;
+    }
+    return false;
+  }
+
+  private static long parseLiteralValue(LiteralTree literal) {
+    String text = literal.value().replace("_", "");
+    if (text.endsWith("L") || text.endsWith("l")) {
+      text = text.substring(0, text.length() - 1);
+    }
+    if (text.startsWith("0x") || text.startsWith("0X")) {
+      return Long.parseUnsignedLong(text.substring(2), 16);
+    }
+    if (text.startsWith("0b") || text.startsWith("0B")) {
+      return Long.parseUnsignedLong(text.substring(2), 2);
+    }
+    if (text.startsWith("0") && text.length() > 1) {
+      return Long.parseUnsignedLong(text.substring(1), 8);
+    }
+    return Long.parseLong(text);
+  }
+
+  private static boolean isFloatingPoint(Type type) {
+    return type.isPrimitive(Type.Primitives.FLOAT) || type.isPrimitive(Type.Primitives.DOUBLE);
+  }
+
+  private class ReturnStatementVisitor extends BaseTreeVisitor {
+    private final Type returnType;
+
+    ReturnStatementVisitor(Type returnType) {
+      this.returnType = returnType;
+    }
+
+    @Override
+    public void visitReturnStatement(ReturnStatementTree tree) {
+      checkExpression(returnType, tree.expression());
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // skip lambdas
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      // skip inner classes
+    }
+  }
+}
