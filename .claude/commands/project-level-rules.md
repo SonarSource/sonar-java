@@ -80,15 +80,15 @@ public class MyCheck extends IssuableSubscriptionVisitor
   }
 
   @Override
-  public byte[] serialize(InputFile inputFile, PerFileData data) {
-    var document = JsonUtils.newDocument(CACHE_FORMAT_VERSION);
-    document.addProperty(COUNT, data.count());
-    return JsonUtils.toBytes(document);
+  public byte[] serialize(PerFileData data) {
+    var document = JsonUtils.writeDocument(CACHE_FORMAT_VERSION,
+      out -> out.name(COUNT).value(data.count()));
+    return document.getBytes(StandardCharsets.UTF_8);
   }
 
   @Override
-  public PerFileData deserialize(InputFile inputFile, byte[] data) {
-    var document = JsonUtils.parseDocument(data, CACHE_FORMAT_VERSION);
+  public PerFileData deserialize(byte[] data) {
+    var document = JsonUtils.parseDocument(new String(data, StandardCharsets.UTF_8), CACHE_FORMAT_VERSION);
     return new PerFileData(JsonUtils.requiredInt(document, COUNT));
   }
 
@@ -120,15 +120,21 @@ instead.
 
 ### Serialization format
 
-Wrap the entry in a versioned document with `JsonUtils` (`org.sonar.java.utils`):
-`newDocument`/`toBytes` to write, `parseDocument` to read back. Bump your `CACHE_FORMAT_VERSION`
-whenever the entry shape changes — old entries are then rejected and recomputed. Every `JsonUtils`
-accessor is strict and throws on anything unexpected, which `readFromCache` turns into a cache miss.
+Wrap the entry in a versioned document with `JsonUtils` (`org.sonar.java.serialization`):
+`writeDocument(version, body)` returns the document as a `String`, `parseDocument(content, version)`
+reads it back, and the check converts to and from `byte[]` in UTF-8 itself. Bump your
+`CACHE_FORMAT_VERSION` whenever the entry shape changes — old entries are then rejected and
+recomputed. Every `JsonUtils` accessor is strict and throws on anything unexpected, which
+`readFromCache` turns into a cache miss.
+
+Several checks sharing one format keep it in a dedicated class rather than in each check — see
+`SpringContextCacheHelper`, which owns the version the Spring gatherers share along with the
+`byte[]` conversions.
 
 Describe anything with structure as a Gson **`TypeAdapter`** rather than assembling the tree by hand —
-see `BeanDataTypeAdapter` and `InjectionPointTypeAdapter`, which read with `JsonUtils.readString`,
-`readNullableString`, `readStrings` and `readInt`. Adapters should skip unknown properties
-(`default -> in.skipValue()`) so a newer entry shape stays readable.
+see `BeanDefinitionHolderTypeAdapter` and `InjectionPointTypeAdapter`, which read with `JsonUtils.readString`,
+`readNullableString` and `readStrings` (`readInt` too, in `TextSpanTypeAdapter`). Adapters should skip
+unknown properties (`default -> in.skipValue()`) so a newer entry shape stays readable.
 
 Never use Gson's reflective object binding (`new Gson().toJson(pojo)`): the plugin is shaded with
 `minimizeJar`, which strips classes reached only by reflection. Explicit `TypeAdapter`s and the tree
@@ -136,13 +142,20 @@ API are both safe.
 
 ### Restoring locations
 
-`TextSpanTypeAdapter.getInstance()` (`org.sonar.java.reporting`) serializes an `AnalyzerMessage.TextSpan`.
+`TextSpanTypeAdapter.getInstance()` (`org.sonar.java.serialization`) serializes an `AnalyzerMessage.TextSpan`.
 
-`serialize` and `deserialize` both receive the `InputFile` the entry belongs to; it needs no
-representation in the payload, since an entry only ever holds one file's data. Anchor every restored
-location to that file rather than to anything recorded when the entry was written — see
-`BeanDefinitionGatherer`. An adapter that needs the file takes it in its constructor
-(`BeanDataTypeAdapter`); a stateless one is a singleton (`TextSpanTypeAdapter`).
+A payload holds **text spans only, never the file they belong to**. File identity lives in the cache key
+(`cacheKeyPrefix() + inputFile.key()`), which is what lets `deserialize(byte[])` read an entry without
+knowing which file it describes. Name a per-file record after that property — see
+`BeanDefinitionHolder.InputFileData`.
+
+`restore(InputFileScannerContext, T)` is the only place the file reaches the check, so store the data
+under it and pair the spans with it when aggregating in `endOfAnalysis`. `BeanDefinitionGatherer` keys
+`beansCollectedByFile` by `InputFile` and builds every `BeanLocation(inputFile, data.textSpan())` in
+`gatherSpringContextData`, from the map key rather than from anything in the payload.
+
+Adapters therefore never need an `InputFile`, and are stateless singletons
+(`BeanDefinitionHolderTypeAdapter`, `TextSpanTypeAdapter`).
 
 ### Sharing an entry between rules
 
@@ -172,12 +185,13 @@ Currently `ProjectEndOfAnalysisSensor` only handles telemetry, not rule issues.
 
 | Rule | Pattern |
 |---|---|
-| `SpringBeansShouldBeAccessibleCheck` (S4605) | Full caching: writes packages per file, aggregates, reports in `endOfAnalysis` |
+| `SpringBeansShouldBeAccessibleCheck` (S4605) | Aggregates packages and reports in `endOfAnalysis`, but predates `FileCachingCheck` and still hand-rolls its own plumbing — not a template |
 | `BrainMethodCheck` (S6541) | No caching: collects candidates, noise-filters and reports in `endOfAnalysis` |
 | `AbstractPackageInfoChecker` (S1228, S4032) | Two rules sharing one cache entry |
 | `ExcessiveContentRequestCheck` (S5693) | Cross-file config aggregation |
 | `DateEnumsCheck` (S8694) | Caches potential issues and rebuilds their quick fixes without the AST |
-| `BeanDefinitionGatherer` | Frontend gatherer; nested payload, locations re-anchored on restore |
+| `BeanDefinitionGatherer` | `FileCachingCheck` reference: nested payload, spans paired with their file at aggregation time |
+| `ComponentScanPackageGatherer` | `FileCachingCheck` reference: flat payload, no locations to restore |
 
 ## Memory warning
 
