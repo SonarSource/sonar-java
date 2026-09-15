@@ -104,6 +104,25 @@ class RedundantRangeCheckCheckSample {
     }
   }
 
+  void testSignedConstants(int x) {
+    if (x >= -10 && x >= -5) { // Noncompliant {{Remove this redundant range check.}}
+//      ^^^^^^^^
+      System.out.println(x);
+    }
+    if (x >= -5 && x >= -10) { // Noncompliant {{Remove this redundant range check.}}
+//                 ^^^^^^^^
+      System.out.println(x);
+    }
+    if (x <= +10 && x <= +5) { // Noncompliant {{Remove this redundant range check.}}
+//      ^^^^^^^^
+      System.out.println(x);
+    }
+    if (x >= -10 && x >= 5) { // Noncompliant {{Remove this redundant range check.}}
+//      ^^^^^^^^
+      System.out.println(x);
+    }
+  }
+
   void testEdgeCases(int x, int y, int min, int max) {
     if (x >= min && x >= max) {
     }

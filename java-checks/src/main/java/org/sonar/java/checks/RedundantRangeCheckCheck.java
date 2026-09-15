@@ -176,11 +176,11 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
 
     String operator = comparison.operatorToken().text();
 
-    if (left.is(Kind.IDENTIFIER) && right.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
+    if (left.is(Kind.IDENTIFIER) && isConstantExpression(right)) {
       Symbol variable = ((IdentifierTree) left).symbol();
       Long constant = extractConstantValue(right);
       return createComparison(variable, operator, constant, comparison);
-    } else if (right.is(Kind.IDENTIFIER) && left.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
+    } else if (right.is(Kind.IDENTIFIER) && isConstantExpression(left)) {
       Symbol variable = ((IdentifierTree) right).symbol();
       Long constant = extractConstantValue(left);
       return createComparison(variable, flipOperator(operator), constant, comparison);
@@ -204,6 +204,16 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
       case ">=" -> "<=";
       default -> operator;
     };
+  }
+
+  private static boolean isConstantExpression(ExpressionTree tree) {
+    if (tree.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
+      return true;
+    }
+    if (tree.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
+      return ((UnaryExpressionTree) tree).expression().is(Kind.INT_LITERAL, Kind.LONG_LITERAL);
+    }
+    return false;
   }
 
   @Nullable
