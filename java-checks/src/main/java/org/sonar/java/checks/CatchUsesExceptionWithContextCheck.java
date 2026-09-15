@@ -112,10 +112,13 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     usageStatusStack = new ArrayDeque<>();
-    if (context.getSemanticModel() != null) {
-      scan(context.getTree());
+    try {
+      if (context.getSemanticModel() != null) {
+        scan(context.getTree());
+      }
+    } finally {
+      excludedCatchTrees.clear();
     }
-    excludedCatchTrees.clear();
   }
 
   @Override

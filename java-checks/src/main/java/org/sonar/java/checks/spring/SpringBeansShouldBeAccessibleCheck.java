@@ -105,6 +105,9 @@ public class SpringBeansShouldBeAccessibleCheck extends IssuableSubscriptionVisi
       // support sub-packages
       .filter(entry -> packagesScannedBySpringAtProjectLevel.stream().noneMatch(entry.getKey()::contains))
       .forEach(entry -> entry.getValue().forEach(defaultContext::reportIssue));
+    messagesPerPackage.clear();
+    packagesScannedBySpringAtProjectLevel.clear();
+    packagesScannedBySpringAtFileLevel.clear();
   }
 
   @Override

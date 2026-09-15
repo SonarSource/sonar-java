@@ -15,7 +15,6 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -137,6 +136,11 @@ public class SelfAssignmentCheck extends IssuableSubscriptionVisitor {
 
   private void updateWarnings(AssignmentExpressionTree tree) {
     warnings.removeIf(warning -> tree.equals(warning.syntaxTree()));
+  }
+
+  @Override
+  protected void clearState() {
+    warnings.clear();
   }
 
 }
