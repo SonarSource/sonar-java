@@ -29,15 +29,15 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S9400")
 public class InvalidComparatorMethodReferenceCheck extends IssuableSubscriptionVisitor {
 
-  private static final String MESSAGE = "Replace this method reference; \"%s\" returns an extremum rather than a comparison result, violating the \"Comparator\" contract.";
+  private static final String MESSAGE = "Replace this method reference; \"%s\" does not return a comparison result, violating the \"Comparator\" contract.";
 
-  private static final MethodMatchers EXTREMUM_METHODS = MethodMatchers.create()
+  private static final MethodMatchers INVALID_METHODS = MethodMatchers.create()
     .ofTypes(
       "java.lang.Math",
       "java.lang.StrictMath",
       "java.lang.Integer"
     )
-    .names("min", "max")
+    .names("min", "max", "sum", "addExact", "subtractExact", "multiplyExact")
     .withAnyParameters()
     .build();
 
@@ -49,7 +49,7 @@ public class InvalidComparatorMethodReferenceCheck extends IssuableSubscriptionV
   @Override
   public void visitNode(Tree tree) {
     MethodReferenceTree methodReference = (MethodReferenceTree) tree;
-    if (EXTREMUM_METHODS.matches(methodReference) && isComparator(methodReference)) {
+    if (INVALID_METHODS.matches(methodReference) && isComparator(methodReference)) {
       reportIssue(methodReference, String.format(MESSAGE, methodReferenceName(methodReference)));
     }
   }

@@ -1,15 +1,18 @@
-<p>This rule raises an issue when a method reference that returns one of its arguments (such as <code>Math::min</code>, <code>Math::max</code>,
-<code>Integer::min</code>, or <code>Integer::max</code>) is used as a <code>Comparator</code>.</p>
+<p>This rule raises an issue when a method reference that performs an operation or returns an extremum (such as <code>Math::min</code>,
+<code>Math::max</code>, <code>Integer::min</code>, <code>Integer::max</code>, <code>Integer::sum</code>, or <code>Math::addExact</code>) is used as a
+<code>Comparator</code>.</p>
 <h2>Why is this an issue?</h2>
 <p>The <code>Comparator</code> interface requires its comparison method to return a negative integer, zero, or a positive integer depending on whether
 the first argument is less than, equal to, or greater than the second argument. Furthermore, the relation must be anti-symmetric: <code>sgn(compare(x,
 y)) == -sgn(compare(y, x))</code> for all <code>x</code> and <code>y</code>.</p>
-<p>Methods like <code>Math.min(a, b)</code>, <code>Math.max(a, b)</code>, <code>Integer.min(a, b)</code>, and <code>Integer.max(a, b)</code> return
-one of their two input arguments rather than a comparison result. When passed as a method reference (for example, <code>list.sort(Math::min)</code> or
-<code>stream.sorted(Integer::max)</code>), they do not satisfy the mathematical properties of a comparator. For instance, <code>Math.min(1, 2)</code>
-evaluates to <code>1</code> (positive), but <code>Math.min(2, 1)</code> also evaluates to <code>1</code> (positive), violating anti-symmetry.</p>
-<p>Using such method references as comparators corrupts sorting order or causes sorting algorithms, such as <code>TimSort</code>, to throw
-<code>IllegalArgumentException: Comparison method violates its general contract!</code> at runtime.</p>
+<p>Methods such as <code>Math.min(a, b)</code> and <code>Integer.max(a, b)</code> return one of their input arguments rather than a comparison result.
+Similarly, arithmetic methods like <code>Integer.sum(a, b)</code>, <code>Math.addExact(a, b)</code>, and <code>Math.multiplyExact(a, b)</code> compute
+values that are symmetric (<code>op(a, b) == op(b, a)</code>), directly violating anti-symmetry. While <code>Math.subtractExact(a, b)</code> changes
+sign when arguments are reversed, it is subject to <code>ArithmeticException</code> on integer overflow and does not fulfill the general comparison
+contract across all input ranges.</p>
+<p>When passed as a method reference (for example, <code>list.sort(Math::min)</code> or <code>stream.sorted(Integer::sum)</code>), these methods do
+not satisfy the mathematical properties of a comparator. Using them as comparators corrupts sorting order or causes sorting algorithms, such as
+<code>TimSort</code>, to throw <code>IllegalArgumentException: Comparison method violates its general contract!</code> at runtime.</p>
 <h2>How to fix it</h2>
 <p>Replace the invalid method reference with an appropriate comparator, such as <code>Comparator.naturalOrder()</code>,
 <code>Comparator.reverseOrder()</code>, or a standard comparison method like <code>Integer::compare</code>.</p>
@@ -19,7 +22,7 @@ evaluates to <code>1</code> (positive), but <code>Math.min(2, 1)</code> also eva
 import java.util.List;
 
 void sortNumbers(List&lt;Integer&gt; numbers) {
-  numbers.sort(Math::min); // Noncompliant: "Math::min" returns an extremum rather than a comparison result
+  numbers.sort(Math::min); // Noncompliant: "Math::min" does not return a comparison result
 }
 </pre>
 <h4>Compliant solution</h4>
@@ -37,7 +40,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 List&lt;Integer&gt; getSorted(Stream&lt;Integer&gt; stream) {
-  return stream.sorted(Integer::max).toList(); // Noncompliant: "Integer::max" returns an extremum rather than a comparison result
+  return stream.sorted(Integer::max).toList(); // Noncompliant: "Integer::max" does not return a comparison result
 }
 </pre>
 <h4>Compliant solution</h4>
@@ -55,7 +58,7 @@ List&lt;Integer&gt; getSorted(Stream&lt;Integer&gt; stream) {
 import java.util.List;
 
 void sortByPrimitiveValue(List&lt;Integer&gt; list) {
-  list.sort(Integer::min); // Noncompliant: "Integer::min" returns an extremum rather than a comparison result
+  list.sort(Integer::sum); // Noncompliant: "Integer::sum" does not return a comparison result
 }
 </pre>
 <h4>Compliant solution</h4>
