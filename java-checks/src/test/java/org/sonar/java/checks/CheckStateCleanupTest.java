@@ -36,6 +36,8 @@ import org.junit.jupiter.api.Test;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.ModuleScannerContext;
+import org.sonar.plugins.java.api.internal.EndOfAnalysis;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
@@ -78,6 +80,9 @@ class CheckStateCleanupTest {
   }
 
   private static Set<JavaMethod> lifecycleMethods(JavaClass checkClass) {
+    if (checkClass.isAssignableTo(EndOfAnalysis.class)) {
+      return methodsNamed(checkClass, "endOfAnalysis", ModuleScannerContext.class);
+    }
     if (checkClass.isAssignableTo(IssuableSubscriptionVisitor.class)) {
       Set<JavaMethod> methods = methodsNamed(checkClass, "setContext", JavaFileScannerContext.class);
       methods.addAll(methodsNamed(checkClass, "leaveFile", JavaFileScannerContext.class));

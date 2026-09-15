@@ -313,10 +313,17 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
-    scan(context.getTree());
-    dataPropagationGraph.reportMutableStoreReachableByOutsideCall(context, this);
-    dataPropagationGraph.reportMutableFieldReachingToOutside(context, this);
-    dataPropagationGraph.clear();
+    parametersStack.clear();
+    methodSignatureStack.clear();
+    try {
+      scan(context.getTree());
+      dataPropagationGraph.reportMutableStoreReachableByOutsideCall(context, this);
+      dataPropagationGraph.reportMutableFieldReachingToOutside(context, this);
+    } finally {
+      parametersStack.clear();
+      methodSignatureStack.clear();
+      dataPropagationGraph.clear();
+    }
   }
 
   @Override

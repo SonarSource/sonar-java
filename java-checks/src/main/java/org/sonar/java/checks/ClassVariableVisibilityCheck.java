@@ -43,7 +43,12 @@ public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements Jav
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    scan(context.getTree());
+    isClassStack.clear();
+    try {
+      scan(context.getTree());
+    } finally {
+      isClassStack.clear();
+    }
   }
 
   @Override
