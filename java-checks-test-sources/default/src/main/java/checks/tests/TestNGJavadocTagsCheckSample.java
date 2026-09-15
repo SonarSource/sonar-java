@@ -149,6 +149,16 @@ class TestNGJavadocTagsCheckSample {
   public void withCodeTag() { // compliant
   }
 
+  /**
+   * How to use annotations:
+   * {@code
+   * @Test
+   * void example() {}
+   * }
+   */
+  public void withMultilineCodeTag() { // compliant
+  }
+
   // --- Compliant cases ---
 
   /**

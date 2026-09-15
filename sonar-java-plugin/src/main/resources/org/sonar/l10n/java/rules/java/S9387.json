@@ -13,7 +13,7 @@
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-9387",
   "sqKey": "S9387",
-  "scope": "All",
+  "scope": "Tests",
   "quickfix": "unknown",
   "code": {
     "impacts": {
