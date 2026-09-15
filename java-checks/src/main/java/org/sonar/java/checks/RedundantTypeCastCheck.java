@@ -15,9 +15,6 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks;
-
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -113,23 +110,9 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     return tree.equals(warningTree);
   }
 
-  private void clearState() {
+  @Override
+  protected void clearState() {
     warnings = null;
-  }
-
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    clearState();
-    super.setContext(context);
-  }
-
-  @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    try {
-      super.leaveFile(context);
-    } finally {
-      clearState();
-    }
   }
 
 }

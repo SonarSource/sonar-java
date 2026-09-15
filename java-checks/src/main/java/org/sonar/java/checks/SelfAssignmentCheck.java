@@ -15,9 +15,6 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks;
-
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -141,25 +138,9 @@ public class SelfAssignmentCheck extends IssuableSubscriptionVisitor {
     warnings.removeIf(warning -> tree.equals(warning.syntaxTree()));
   }
 
-  private void clearState() {
-    if (warnings != null) {
-      warnings.clear();
-    }
-  }
-
   @Override
-  public void setContext(JavaFileScannerContext context) {
-    clearState();
-    super.setContext(context);
-  }
-
-  @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    try {
-      super.leaveFile(context);
-    } finally {
-      clearState();
-    }
+  protected void clearState() {
+    warnings.clear();
   }
 
 }
