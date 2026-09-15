@@ -1,0 +1,56 @@
+<p>This is an issue when instance-level member data is protected by a class-level lock or synchronized using a shared field that is common to all
+instances of the class.</p>
+<h2>Why is this an issue?</h2>
+<p>Locks in multi-threaded programming control access to shared data. When a lock protects a field, both the lock and the field must have the same
+scope.</p>
+<p>A class-level lock (also called a static lock) is shared across all instances of a class. It should only guard class-level fields (static fields)
+that are shared across all instances.</p>
+<p>An instance-level lock belongs to a specific object instance. It should guard instance fields that are specific to that object.</p>
+<p>When you use a class-level lock to guard an instance field, the lock provides no real protection. Different object instances will compete for the
+same lock even though they’re accessing different data. This creates unnecessary contention and can cause performance problems.</p>
+<p>In Java, class-level locks are implemented using <code>static</code> fields:</p>
+<pre>
+private static final Object LOCK = new Object();
+</pre>
+<p>This creates a lock that is shared across all instances of the class.</p>
+<h3>What is the potential impact?</h3>
+<p>This synchronization mismatch can cause race conditions leading to data corruption, incorrect calculations, or inconsistent object state. In
+multi-threaded applications, this can manifest as intermittent bugs that are difficult to reproduce and diagnose.</p>
+<h2>How to fix it</h2>
+<p>Use an instance-level lock to guard instance fields. This ensures each object instance has its own lock, properly protecting its own state.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class Counter {
+    private static final Object LOCK = new Object();
+    private int count = 0;
+
+    public void increment() {
+        synchronized(LOCK) {  // Noncompliant
+            count++;
+        }
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Counter {
+    private final Object lock = new Object();
+    private int count = 0;
+
+    public void increment() {
+        synchronized(lock) {
+            count++;
+        }
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html">Synchronized Methods</a></li>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/essential/concurrency/locksync.html">Intrinsic Locks and
+  Synchronization</a></li>
+  <li>Java Concurrency in Practice - <a href="https://jcip.net/">Guarding State with Locks</a></li>
+</ul>
+
