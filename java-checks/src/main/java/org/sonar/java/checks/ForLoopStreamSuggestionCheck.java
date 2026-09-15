@@ -44,6 +44,14 @@ public class ForLoopStreamSuggestionCheck extends IssuableSubscriptionVisitor im
 
   private static final String MESSAGE = "Use a stream instead of this loop.";
   private static final String JAVA_UTIL_COLLECTION = "java.util.Collection";
+  private static final Set<String> COLLECTION_API_TYPES = Set.of(
+    JAVA_UTIL_COLLECTION,
+    "java.util.List",
+    "java.util.Set",
+    "java.util.Queue",
+    "java.util.Deque",
+    "java.util.concurrent.BlockingQueue",
+    "java.util.concurrent.BlockingDeque");
   private static final MethodMatchers COLLECTION_ADD_MATCHERS = MethodMatchers.create()
     .ofSubTypes(JAVA_UTIL_COLLECTION)
     .names("add", "addLast", "offer", "offerLast")
@@ -139,11 +147,15 @@ public class ForLoopStreamSuggestionCheck extends IssuableSubscriptionVisitor im
 
   private static boolean isInheritedCollectionMethod(MethodInvocationTree mit) {
     Symbol.MethodSymbol methodSymbol = mit.methodSymbol();
-    if (methodSymbol.owner().type().is(JAVA_UTIL_COLLECTION)) {
+    if (isCollectionApiType(methodSymbol.owner().type())) {
       return true;
     }
     return methodSymbol.overriddenSymbols().stream()
-      .anyMatch(sym -> sym.owner().type().isSubtypeOf(JAVA_UTIL_COLLECTION));
+      .anyMatch(sym -> isCollectionApiType(sym.owner().type()));
+  }
+
+  private static boolean isCollectionApiType(Type type) {
+    return COLLECTION_API_TYPES.stream().anyMatch(type::is);
   }
 
   private static Set<Symbol> collectCollectionSymbols(ForEachStatement forEach) {
