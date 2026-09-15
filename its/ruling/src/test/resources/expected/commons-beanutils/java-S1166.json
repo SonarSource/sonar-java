@@ -7,28 +7,16 @@
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanComparator.java": [
 168,
-171,
-174
+171
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanIntrospectionData.java": [
 121
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java": [
-826
-],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
-284,
-363,
-394,
-901,
-939,
-1057,
-1110
+1057
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConstructorUtils.java": [
-307,
 391,
-396,
 424
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ContextClassLoaderLocal.java": [
@@ -48,15 +36,10 @@
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java": [
 105,
 111,
-488,
 515,
 524
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java": [
-738,
-843,
-887,
-967,
 1075
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
@@ -66,16 +49,12 @@
 960,
 1342,
 1344,
-1346,
 1388,
 1390,
-1392,
 1431,
 1433,
-1435,
 1477,
 1479,
-1481,
 1530,
 1707
 ],
@@ -97,15 +76,5 @@
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/expression/DefaultResolver.java": [
 99
-],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java": [
-675,
-731
-],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/BigDecimalLocaleConverter.java": [
-227
-],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/BigIntegerLocaleConverter.java": [
-232
 ]
 }

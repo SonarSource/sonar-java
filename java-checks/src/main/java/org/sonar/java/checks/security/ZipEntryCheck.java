@@ -15,9 +15,6 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks.security;
-
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -110,23 +107,9 @@ public class ZipEntryCheck extends IssuableSubscriptionVisitor {
   private void report(MethodInvocationTree mit) {
     reportIssue(ExpressionUtils.methodName(mit), ISSUE_MESSAGE);
   }
-  private void clearState() {
+  @Override
+  protected void clearState() {
     calls.clear();
-  }
-
-  @Override
-  public void setContext(JavaFileScannerContext context) {
-    clearState();
-    super.setContext(context);
-  }
-
-  @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    try {
-      super.leaveFile(context);
-    } finally {
-      clearState();
-    }
   }
 
 }
