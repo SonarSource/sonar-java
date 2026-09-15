@@ -57,7 +57,7 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
     Type orderedType = typeArguments.get(orderedTypeIndex);
     if (!orderedType.isUnknown() &&
       !orderedType.isTypeVar() &&
-      !orderedType.isSubtypeOf(COMPARABLE) &&
+      !hasCompatibleNaturalOrdering(orderedType) &&
       !JUtils.hasUnknownTypeInHierarchy(orderedType.symbol())) {
       reportIssue(newClassTree, MESSAGE);
     }
@@ -76,7 +76,8 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
   }
 
   private static boolean usesNaturalOrdering(NewClassTree tree) {
-    return tree.methodSymbol().parameterTypes().stream().noneMatch(SortedCollectionWithNonComparableTypeCheck::providesOrdering);
+    return tree.methodSymbol().parameterTypes().stream().noneMatch(SortedCollectionWithNonComparableTypeCheck::providesOrdering) &&
+      tree.arguments().stream().map(argument -> argument.symbolType()).noneMatch(SortedCollectionWithNonComparableTypeCheck::providesOrdering);
   }
 
   private static boolean providesOrdering(Type parameterType) {
@@ -84,5 +85,11 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
       parameterType.isSubtypeOf("java.util.SortedSet") ||
       parameterType.isSubtypeOf("java.util.SortedMap") ||
       parameterType.isSubtypeOf("java.util.PriorityQueue");
+  }
+
+  private static boolean hasCompatibleNaturalOrdering(Type orderedType) {
+    return orderedType.symbol().superTypes().stream()
+      .filter(superType -> superType.is(COMPARABLE))
+      .anyMatch(comparableType -> comparableType.typeArguments().isEmpty() || orderedType.isSubtypeOf(comparableType.typeArguments().get(0)));
   }
 }
