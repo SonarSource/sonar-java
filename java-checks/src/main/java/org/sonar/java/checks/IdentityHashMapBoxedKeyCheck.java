@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class IdentityHashMapBoxedKeyCheck extends IssuableSubscriptionVisitor {
 
   private static final String IDENTITY_HASH_MAP = "java.util.IdentityHashMap";
-  private static final String MESSAGE = "Use a non-boxed key type because IdentityHashMap compares keys by reference.";
+  private static final String MESSAGE = "Use a map that compares keys by value because IdentityHashMap compares keys by reference.";
   private static final Set<String> BOXED_TYPES = Set.of(
     "java.lang.Boolean",
     "java.lang.Byte",

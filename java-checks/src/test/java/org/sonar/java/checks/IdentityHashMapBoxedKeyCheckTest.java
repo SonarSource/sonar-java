@@ -16,14 +16,8 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Maps;
-import java.io.File;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
-import org.sonar.java.test.classpath.TestClasspathUtils;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
@@ -47,13 +41,10 @@ class IdentityHashMapBoxedKeyCheckTest {
   }
 
   @Test
-  void test_guava() throws URISyntaxException {
-    List<File> classPath = new ArrayList<>(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
-    classPath.add(new File(Maps.class.getProtectionDomain().getCodeSource().getLocation().toURI()));
+  void test_guava() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/IdentityHashMapBoxedKeyCheckGuavaSample.java"))
       .withCheck(new IdentityHashMapBoxedKeyCheck())
-      .withClassPath(classPath)
       .verifyIssues();
   }
 

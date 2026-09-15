@@ -1,3 +1,4 @@
+<p>This rule raises an issue when an <code>IdentityHashMap</code> is created with a boxed primitive type as its key type.</p>
 <h2>Why is this an issue?</h2>
 <p><code>IdentityHashMap</code> compares keys by reference instead of calling <code>equals()</code>. Boxed primitive types represent values as
 objects, but boxing the same primitive value more than once does not always return the same object. For example, some <code>Integer</code> values are

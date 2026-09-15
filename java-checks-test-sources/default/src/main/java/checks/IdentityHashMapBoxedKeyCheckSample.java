@@ -17,7 +17,7 @@ class IdentityHashMapBoxedKeyCheckSample {
     Map<Double, String> doubles = new IdentityHashMap<>(); // Noncompliant
     Map<Integer, String> explicit = new IdentityHashMap<Integer, String>(); // Noncompliant
     Map<Integer, String> copied = new IdentityHashMap<>(source); // Noncompliant
-    var inferred = new IdentityHashMap<Integer, String>(); // Noncompliant {{Use a non-boxed key type because IdentityHashMap compares keys by reference.}}
+    var inferred = new IdentityHashMap<Integer, String>(); // Noncompliant {{Use a map that compares keys by value because IdentityHashMap compares keys by reference.}}
 //                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   }
 
