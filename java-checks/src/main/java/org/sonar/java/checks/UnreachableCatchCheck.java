@@ -16,8 +16,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
