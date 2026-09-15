@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -44,7 +45,8 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
     }
     NewClassTree newClassTree = (NewClassTree) tree;
     Type collectionType = newClassTree.symbolType();
-    if (!isSupportedSortedCollection(collectionType) ||
+    if (newClassTree.methodSymbol().isUnknown() ||
+      !isSupportedSortedCollection(collectionType) ||
       !usesNaturalOrdering(newClassTree) ||
       !collectionType.isParameterized() ||
       collectionType.typeArguments().isEmpty()) {
@@ -53,7 +55,9 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
 
     Type orderedType = collectionType.typeArguments().get(0);
     if (!orderedType.isUnknown() &&
+      !orderedType.symbol().isUnknown() &&
       !orderedType.isTypeVar() &&
+      orderedType.isSubtypeOf("java.lang.Object") &&
       !hasCompatibleNaturalOrdering(orderedType) &&
       !JUtils.hasUnknownTypeInHierarchy(orderedType.symbol())) {
       reportIssue(newClassTree, MESSAGE);
@@ -69,8 +73,7 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
   }
 
   private static boolean usesNaturalOrdering(NewClassTree tree) {
-    return tree.methodSymbol().parameterTypes().stream().noneMatch(SortedCollectionWithNonComparableTypeCheck::providesOrdering) &&
-      tree.arguments().stream().map(argument -> argument.symbolType()).noneMatch(SortedCollectionWithNonComparableTypeCheck::providesOrdering);
+    return tree.methodSymbol().parameterTypes().stream().noneMatch(SortedCollectionWithNonComparableTypeCheck::providesOrdering);
   }
 
   private static boolean providesOrdering(Type parameterType) {
@@ -81,7 +84,7 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
   }
 
   private static boolean hasCompatibleNaturalOrdering(Type orderedType) {
-    return orderedType.symbol().superTypes().stream()
+    return Stream.concat(Stream.of(orderedType), orderedType.symbol().superTypes().stream())
       .filter(superType -> superType.is(COMPARABLE))
       .anyMatch(comparableType -> comparableType.typeArguments().isEmpty() || orderedType.isSubtypeOf(comparableType.typeArguments().get(0)));
   }

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.nonCompilingTestSourcesPath;
 
 class SortedCollectionWithNonComparableTypeCheckTest {
 
@@ -40,5 +41,13 @@ class SortedCollectionWithNonComparableTypeCheckTest {
       .withCheck(new SortedCollectionWithNonComparableTypeCheck())
       .withoutSemantic()
       .verifyNoIssues();
+  }
+
+  @Test
+  void test_incomplete_semantic() {
+    CheckVerifier.newVerifier()
+      .onFile(nonCompilingTestSourcesPath(SAMPLE))
+      .withCheck(new SortedCollectionWithNonComparableTypeCheck())
+      .verifyIssues();
   }
 }

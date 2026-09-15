@@ -40,7 +40,14 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     }
   }
 
-  void noncompliant(Collection<Task> tasks, Map<Task, String> assignments) {
+  static class RawComparableTask implements Comparable {
+    @Override
+    public int compareTo(Object other) {
+      return 0;
+    }
+  }
+
+  void noncompliant(Collection<Task> tasks, Map<Task, String> assignments, PriorityQueue<Task> orderedTasks) {
     Set<Task> treeSet = new TreeSet<>(); // Noncompliant {{Provide a comparator because this element or key type does not implement "Comparable".}}
     Map<Task, String> treeMap = new TreeMap<>(); // Noncompliant
     Queue<Task> priorityQueue = new PriorityQueue<>(); // Noncompliant
@@ -53,6 +60,7 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     Set<Task> skipListSetFromCollection = new ConcurrentSkipListSet<>(tasks); // Noncompliant
     Map<Task, String> skipListMapFromMap = new ConcurrentSkipListMap<>(assignments); // Noncompliant
     Set<IncompatiblyComparableTask> incompatibleComparable = new TreeSet<>(); // Noncompliant
+    Set<Task> treeSetFromPriorityQueue = new TreeSet<>(orderedTasks); // Noncompliant
   }
 
   void compliant(
@@ -76,6 +84,8 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     Map<ComparableTask, String> comparableTreeMap = new TreeMap<>();
     Queue<ComparableTask> comparableQueue = new PriorityQueue<>();
     Set<BroadlyComparableTask> broadlyComparableTreeSet = new TreeSet<>();
+    Set<RawComparableTask> rawComparableTreeSet = new TreeSet<>();
+    Set<Comparable<Object>> comparableInterfaceTreeSet = new TreeSet<>();
 
     TreeSet rawTreeSet = new TreeSet();
   }
