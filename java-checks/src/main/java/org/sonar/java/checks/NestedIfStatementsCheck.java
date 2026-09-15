@@ -53,6 +53,9 @@ public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFile
   @Override
   public void scanFile(final JavaFileScannerContext context) {
     this.context = context;
+    if (nestingLevel != null) {
+      nestingLevel.clear();
+    }
     this.nestingLevel = new ArrayDeque<>();
     try {
       scan(context.getTree());
