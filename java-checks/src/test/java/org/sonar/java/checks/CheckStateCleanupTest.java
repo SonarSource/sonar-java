@@ -64,13 +64,9 @@ class CheckStateCleanupTest {
         if (lifecycleMethods.isEmpty()) {
           events.add(SimpleConditionEvent.violated(checkClass,
             checkClass.getFullName() + " has collection state but no lifecycle method"));
-        } else {
-          for (JavaMethod lifecycleMethod : lifecycleMethods) {
-            if (!clearsField(lifecycleMethod, field, checkClass, new HashSet<>())) {
-              events.add(SimpleConditionEvent.violated(checkClass,
-                checkClass.getFullName() + " does not clear " + field.getName() + " in " + lifecycleMethod.getName()));
-            }
-          }
+        } else if (lifecycleMethods.stream().noneMatch(m -> clearsField(m, field, checkClass, new HashSet<>()))) {
+          events.add(SimpleConditionEvent.violated(checkClass,
+            checkClass.getFullName() + " does not clear " + field.getName() + " in any lifecycle method"));
         }
       }
     }
