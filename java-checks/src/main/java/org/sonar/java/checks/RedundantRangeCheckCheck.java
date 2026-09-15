@@ -54,7 +54,7 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (isNestedConditionalAnd(tree)) {
+    if (context.getSemanticModel() == null || isNestedConditionalAnd(tree)) {
       return;
     }
     Map<Symbol, List<Comparison>> comparisonsByVariable = new LinkedHashMap<>();
