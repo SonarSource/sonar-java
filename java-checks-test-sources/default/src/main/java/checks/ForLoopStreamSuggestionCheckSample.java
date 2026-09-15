@@ -277,6 +277,14 @@ class ForLoopStreamSuggestionCheckSample {
     }
   }
 
+  void preLoopMutation() {
+    List<String> result = new ArrayList<>();
+    result.add("seed");
+    for (String item : items) { // compliant - collection is mutated before the loop
+      result.add(item);
+    }
+  }
+
   interface CustomCollectionLike {
     void add(int metric);
   }
@@ -287,4 +295,5 @@ class ForLoopStreamSuggestionCheckSample {
       tracker.add(item.length());
     }
   }
+
 }

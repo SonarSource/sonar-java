@@ -20,4 +20,22 @@ class ForLoopStreamSuggestionCheckSampleWithoutSemantic {
       result.add(item);
     }
   }
+
+  void simpleCollectWithoutSemantic() {
+    List<String> result = new ArrayList<>();
+    for (String item : items) { // Noncompliant {{Use a stream instead of this loop.}}
+//  ^^^
+      result.add(item);
+    }
+  }
+
+  void filterCollectWithoutSemantic() {
+    List<String> result = new ArrayList<>();
+    for (String item : items) { // Noncompliant {{Use a stream instead of this loop.}}
+//  ^^^
+      if (item != null) {
+        result.add(item);
+      }
+    }
+  }
 }
