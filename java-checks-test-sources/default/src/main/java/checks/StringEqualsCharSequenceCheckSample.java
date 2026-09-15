@@ -46,7 +46,7 @@ class StringEqualsCharSequenceCheckSample {
   }
 
   <T extends String> boolean testGenericString(String str, T genericStr) {
-    return str.equals(genericStr);
+    return str.equals(genericStr); // Compliant
   }
 
   <T extends CharSequence> boolean testGenericCharSequence(String str, T genericCs) {
@@ -57,12 +57,33 @@ class StringEqualsCharSequenceCheckSample {
   }
 
   boolean testWildcard(String str, List<? extends String> stringList, List<? extends CharSequence> csList) {
-    boolean w1 = str.equals(stringList.get(0));
+    boolean w1 = str.equals(stringList.get(0)); // Compliant
     boolean w2 = str.equals(csList.get(0)); // Noncompliant {{Use "contentEquals()" instead of "equals()" to compare a "String" with a "CharSequence".}} [[quickfixes=qfWildcard]]
 //                   ^^^^^^
     // fix@qfWildcard {{Replace with "contentEquals()"}}
     // edit@qfWildcard [[sc=22;ec=28]] {{contentEquals}}
     return w1 && w2;
+  }
+
+  <T extends String> boolean testReceiverGenericString(T genericStr, StringBuilder sb, CharSequence cs) {
+    boolean r1 = genericStr.equals(sb); // Noncompliant {{Use "contentEquals()" instead of "equals()" to compare a "String" with a "CharSequence".}} [[quickfixes=qfRecGen1]]
+//                          ^^^^^^
+    // fix@qfRecGen1 {{Replace with "contentEquals()"}}
+    // edit@qfRecGen1 [[sc=29;ec=35]] {{contentEquals}}
+
+    boolean r2 = genericStr.equals(cs); // Noncompliant {{Use "contentEquals()" instead of "equals()" to compare a "String" with a "CharSequence".}} [[quickfixes=qfRecGen2]]
+//                          ^^^^^^
+    // fix@qfRecGen2 {{Replace with "contentEquals()"}}
+    // edit@qfRecGen2 [[sc=29;ec=35]] {{contentEquals}}
+
+    return r1 && r2;
+  }
+
+  boolean testReceiverWildcard(List<? extends String> stringList, StringBuilder sb) {
+    return stringList.get(0).equals(sb); // Noncompliant {{Use "contentEquals()" instead of "equals()" to compare a "String" with a "CharSequence".}} [[quickfixes=qfRecWildcard]]
+//                           ^^^^^^
+    // fix@qfRecWildcard {{Replace with "contentEquals()"}}
+    // edit@qfRecWildcard [[sc=30;ec=36]] {{contentEquals}}
   }
 
   static class CustomCharSequence implements CharSequence {

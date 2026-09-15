@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class StringEqualsCharSequenceCheck extends AbstractMethodDetection {
 
   private static final MethodMatchers EQUALS_MATCHER = MethodMatchers.create()
-    .ofTypes("java.lang.String")
+    .ofSubTypes("java.lang.String")
     .names("equals")
     .addParametersMatcher("java.lang.Object")
     .build();

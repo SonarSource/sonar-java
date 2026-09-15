@@ -82,12 +82,16 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
   private void checkWhenOwnerIsNotArray(IdentifierTree methodInvocationName, Type ownerType, Type argumentType) {
     if (argumentType.isArray() && !ownerType.is(JAVA_LANG_OBJECT)) {
       reportIssue(methodInvocationName, "Remove this call to \"equals\"; comparisons between a type and an array always return false.");
-    } else if (ownerType.is("java.lang.String") && argumentType.isSubtypeOf("java.lang.CharSequence")) {
-      return;
-    } else if (argumentType.isClass() && areNotRelated(ownerType, argumentType)
+    } else if (argumentType.isClass()
+      && !isStringEqualsCharSequence(ownerType, argumentType)
+      && areNotRelated(ownerType, argumentType)
       && (areTypesFinalClassAndInterface(ownerType, argumentType) || areNeitherInterfaces(ownerType, argumentType))) {
       reportIssue(methodInvocationName, MESSAGE);
     }
+  }
+
+  private static boolean isStringEqualsCharSequence(Type ownerType, Type argumentType) {
+    return ownerType.is("java.lang.String") && argumentType.isSubtypeOf("java.lang.CharSequence");
   }
 
   private static boolean areNeitherInterfaces(Type ownerType, Type argumentType) {

@@ -42,7 +42,7 @@ public class SillyEqualsCheckSample {
     object.equals(1); // Compliant
     integer.equals(1); // Compliant
     string.equals(1); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated types always return false.}}
-    string.equals(stringBuilder);
+    string.equals(stringBuilder); // Compliant, reported by S9394 instead
     arrayOfObjects.equals(1); // Noncompliant {{Remove this call to "equals"; comparisons between an array and a type always return false.}}
 
     // arrays vs arrays
@@ -107,6 +107,7 @@ public class SillyEqualsCheckSample {
 
   public <T extends String> void parameterizedMethod2(T o) {
     equals(o); // False negative, String and MyClass are unrelated
+    o.equals(stringBuilder); // Compliant, reported by S9394 instead
   }
 
   public <T> List<T> getList() {
