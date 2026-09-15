@@ -1,0 +1,70 @@
+<p>This rule raises an issue when a class defined within another class declares a field with the same name as a field in its enclosing outer
+class.</p>
+<h2>Why is this an issue?</h2>
+<p>When a nested scope declares a variable with the same name as a variable in its containing scope, the nested variable <em>shadows</em> or
+<em>hides</em> the containing scope’s variable. This creates ambiguity about which variable is being referenced in the nested scope’s code.</p>
+<p>In languages with nested scopes that allow access to containing scope members, when a variable name is reused, the nested scope’s variable takes
+precedence within that nested scope. To access the containing scope’s variable, you must use qualified syntax that explicitly references the outer
+scope, which is often overlooked.</p>
+<p>This shadowing pattern creates several problems:</p>
+<ul>
+  <li><strong>Confusion</strong>: Developers reading the code may not immediately realize that two different variables exist with the same name.</li>
+  <li><strong>Maintenance errors</strong>: When modifying code, developers might accidentally use the wrong variable, leading to subtle bugs.</li>
+  <li><strong>Reduced readability</strong>: Code becomes harder to understand because variable references are ambiguous without careful context
+  analysis.</li>
+</ul>
+<p>Variable shadowing is particularly problematic in larger nested structures where the relationship between nested and containing scope variables is
+not immediately visible. It violates the principle of least surprise and makes the code more error-prone.</p>
+<p>In Java inner classes, when a field has the same name as a field in the outer class, the inner class field shadows the outer class field. To access
+the outer class field from within the inner class, you must use the qualified syntax <code>OuterClassName.this.fieldName</code>, which is easy to
+overlook and makes the code harder to understand.</p>
+<h3>What is the potential impact?</h3>
+<p>The main impact is on code maintainability and reliability:</p>
+<ul>
+  <li><strong>Bugs from incorrect field access</strong>: Developers may inadvertently modify or read the wrong field, causing logic errors that are
+  difficult to trace.</li>
+  <li><strong>Increased cognitive load</strong>: Code reviewers and maintainers must constantly track which field is in scope, slowing down
+  development.</li>
+  <li><strong>Harder debugging</strong>: When issues arise, identifying whether the correct field is being accessed requires careful analysis of
+  scope.</li>
+</ul>
+<p>While this issue doesn’t typically cause runtime exceptions, it can lead to incorrect program behavior that manifests as data corruption or
+unexpected results.</p>
+<h2>How to fix it</h2>
+<p>The recommended fix is to rename the inner class field to have a distinct name. This eliminates ambiguity and makes the code’s intent clear.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+class Outer {
+    private int count = 0;
+
+    class Inner {
+        private int count = 0;  // Noncompliant
+
+        void increment() {
+            count++;  // Which count is being incremented?
+        }
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+class Outer {
+    private int count = 0;
+
+    class Inner {
+        private int innerCount = 0;
+
+        void increment() {
+            innerCount++;  // Clear which field is being modified
+        }
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html">Nested Classes</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html#jls-6.4.1">Shadowing and Obscuring</a></li>
+</ul>
+

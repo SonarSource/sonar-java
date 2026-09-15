@@ -102,7 +102,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     clearState();
   }
 
-  private void clearState() {
+  protected void clearState() {
     classes.clear();
     assignments.clear();
     unknownIdentifiers.clear();
