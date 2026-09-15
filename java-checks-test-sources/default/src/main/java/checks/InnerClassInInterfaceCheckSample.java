@@ -72,6 +72,10 @@ interface WithDefaultMethod {
   }
 }
 
+@interface AnnotationWithClass {
+  class Helper {} // Compliant - annotation types are not interfaces
+}
+
 interface WithNestedClassHierarchy {
   class Outer { // Noncompliant
 //      ^^^^^
