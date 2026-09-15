@@ -19,12 +19,10 @@ package org.sonar.java.checks.security;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
@@ -34,6 +32,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonarsource.analyzer.commons.appsec.CryptographicKeySizeConfiguration;
 
 import static org.sonar.java.model.ExpressionUtils.getAssignedSymbol;
 import static org.sonar.java.model.ExpressionUtils.isInvocationOnVariable;
@@ -47,16 +46,21 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
   private static final String GET_INSTANCE_METHOD = "getInstance";
   private static final String STRING = "java.lang.String";
 
-  private static final int EC_MIN_KEY = 224;
-  private static final Pattern EC_KEY_PATTERN = Pattern.compile("^(secp|prime|sect|c2tnb)(\\d+)");
+  @RuleProperty(
+    key = "minimumKeySizes",
+    description = "Comma-separated list of algorithm:minKeySize pairs (e.g. \"RSA:4096,AES:256\"). " +
+      "Patches the default minimum key sizes — only the listed algorithms are overridden; others keep their defaults.",
+    defaultValue = CryptographicKeySizeConfiguration.DEFAULT_KEY_SIZES)
+  public String minimumKeySizes = CryptographicKeySizeConfiguration.DEFAULT_KEY_SIZES;
 
-  private static final Map<String, Integer> ALGORITHM_KEY_SIZE_MAP = MapBuilder.<String, Integer>newMap()
-    .put("RSA", 2048)
-    .put("DH", 2048)
-    .put("DIFFIEHELLMAN", 2048)
-    .put("DSA", 2048)
-    .put("AES", 128)
-    .build();
+  private Map<String, Integer> effectiveKeySizeMap;
+
+  private Map<String, Integer> getEffectiveKeySizeMap() {
+    if (effectiveKeySizeMap == null) {
+      effectiveKeySizeMap = CryptographicKeySizeConfiguration.effectiveKeySizes(minimumKeySizes);
+    }
+    return effectiveKeySizeMap;
+  }
 
   private static final MethodMatchers KEY_GEN = MethodMatchers.or(
     MethodMatchers.create()
@@ -69,7 +73,7 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
       .names("initialize")
       .addParametersMatcher("int")
       .addParametersMatcher("int", "java.security.SecureRandom")
-      .build()) ;
+      .build());
 
   @Override
   protected MethodMatchers getMethodInvocationMatchers() {
@@ -101,9 +105,13 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
   protected void onConstructorFound(NewClassTree newClassTree) {
     String firstArgument = ExpressionsHelper.getConstantValueAsString(newClassTree.arguments().get(0)).value();
     if (firstArgument != null) {
-      Matcher matcher = EC_KEY_PATTERN.matcher(firstArgument);
-      if (matcher.find() && Integer.valueOf(matcher.group(2)) < EC_MIN_KEY) {
-        reportIssue(newClassTree, "Use a key length of at least " + EC_MIN_KEY + " bits for EC cipher algorithm.");
+      Integer ecMinKey = getEffectiveKeySizeMap().get("EC");
+      if (ecMinKey != null) {
+        CryptographicKeySizeConfiguration.extractEcKeySize(firstArgument).ifPresent(keySize -> {
+          if (keySize < ecMinKey) {
+            reportIssue(newClassTree, "Use a key length of at least " + ecMinKey + " bits for EC cipher algorithm.");
+          }
+        });
       }
     }
   }
@@ -116,7 +124,7 @@ public class CryptographicKeySizeCheck extends AbstractMethodDetection {
 
     public MethodVisitor(String getInstanceArg, @Nullable Symbol variable) {
       this.algorithm = getInstanceArg;
-      this.minKeySize = ALGORITHM_KEY_SIZE_MAP.get(this.algorithm.toUpperCase(Locale.ENGLISH));
+      this.minKeySize = getEffectiveKeySizeMap().get(this.algorithm.toUpperCase(Locale.ROOT));
       this.variable = variable;
     }
 
