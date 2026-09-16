@@ -146,12 +146,11 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
       .build());
 
   @Override
-  public void setContext(JavaFileScannerContext context) {
+  protected void clearState() {
     ignoredVariables.clear();
     symbolConstructorMapToReport.clear();
     settersToReport.clear();
     newClassToReport.clear();
-    super.setContext(context);
   }
 
   @Override
@@ -167,10 +166,7 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
         reportIssue(typeTree, MESSAGE);
       }
     } finally {
-      ignoredVariables.clear();
-      symbolConstructorMapToReport.clear();
-      settersToReport.clear();
-      newClassToReport.clear();
+      super.leaveFile(context);
     }
   }
 

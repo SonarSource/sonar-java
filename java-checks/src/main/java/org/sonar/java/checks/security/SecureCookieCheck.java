@@ -148,14 +148,13 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void setContext(JavaFileScannerContext context) {
+  protected void clearState() {
     unsecuredCookies.clear();
     deletionCandidateCookies.clear();
     cookieConstructors.clear();
     maxAgeZeroSeen.clear();
     deletionCandidateSecureCalls.clear();
     enclosingClass.clear();
-    super.setContext(context);
   }
 
   @Override
@@ -168,12 +167,7 @@ public class SecureCookieCheck extends IssuableSubscriptionVisitor {
         }
       });
     } finally {
-      unsecuredCookies.clear();
-      deletionCandidateCookies.clear();
-      cookieConstructors.clear();
-      maxAgeZeroSeen.clear();
-      deletionCandidateSecureCalls.clear();
-      enclosingClass.clear();
+      super.leaveFile(context);
     }
   }
 

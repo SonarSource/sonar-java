@@ -55,21 +55,18 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
   }
 
   @Override
-  public void setContext(JavaFileScannerContext context) {
+  protected void clearState() {
     classWithSynchronizedMethod.clear();
     withinStaticInitializer.clear();
     methodUsesLocks.clear();
-    classWithSynchronizedMethod.push(false);
-    withinStaticInitializer.push(false);
-    methodUsesLocks.push(false);
-    super.setContext(context);
   }
 
   @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    withinStaticInitializer.clear();
-    methodUsesLocks.clear();
-    classWithSynchronizedMethod.clear();
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    classWithSynchronizedMethod.push(false);
+    withinStaticInitializer.push(false);
+    methodUsesLocks.push(false);
   }
 
   @Override
