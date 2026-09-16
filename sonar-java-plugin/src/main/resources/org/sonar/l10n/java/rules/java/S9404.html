@@ -1,0 +1,42 @@
+<p>This rule raises an issue when a method returns an <code>Optional</code> that wraps a collection, map, or array.</p>
+<p>It applies when the type argument of <code>java.util.Optional</code> is an array or a subtype of <code>java.util.Collection</code> or
+<code>java.util.Map</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>Collections, maps, and arrays can represent no result with an empty value. Callers can iterate over or query an empty container without first
+checking an <code>Optional</code>.</p>
+<p>Wrapping these types in <code>Optional</code> creates two ways to represent no result: <code>Optional.empty()</code> and an empty container. This
+makes the API harder to use and may lead callers to handle equivalent cases differently.</p>
+<p>Return the collection, map, or array directly, and return an empty value when no elements, mappings, or values are available.</p>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+Optional&lt;List&lt;String&gt;&gt; findNames() { // Noncompliant
+  return Optional.empty();
+}
+
+Optional&lt;Map&lt;String, String&gt;&gt; findHeaders() { // Noncompliant
+  return Optional.empty();
+}
+
+Optional&lt;byte[]&gt; readBytes() { // Noncompliant
+  return Optional.empty();
+}
+</pre>
+<pre data-diff-id="1" data-diff-type="compliant">
+List&lt;String&gt; findNames() {
+  return Collections.emptyList();
+}
+
+Map&lt;String, String&gt; findHeaders() {
+  return Collections.emptyMap();
+}
+
+byte[] readBytes() {
+  return new byte[0];
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html">Optional (Java SE 21 &amp;
+  JDK 21)</a></li>
+</ul>
+
