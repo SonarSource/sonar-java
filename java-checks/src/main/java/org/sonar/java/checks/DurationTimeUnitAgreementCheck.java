@@ -16,7 +16,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import org.sonar.check.Rule;
@@ -74,12 +73,7 @@ public class DurationTimeUnitAgreementCheck extends IssuableSubscriptionVisitor 
   }
 
   private void checkArgumentPair(ExpressionTree durationArg, ExpressionTree timeUnitArg) {
-    Type durationArgType = durationArg.symbolType();
-    Type timeUnitArgType = timeUnitArg.symbolType();
-    if (durationArgType.isUnknown() || timeUnitArgType.isUnknown()) {
-      return;
-    }
-    if (!isLongType(durationArgType) || !isTimeUnitType(timeUnitArgType)) {
+    if (!durationArg.symbolType().isPrimitive(Type.Primitives.LONG) || !timeUnitArg.symbolType().is(JAVA_UTIL_CONCURRENT_TIME_UNIT)) {
       return;
     }
     String argumentUnit = getTimeUnitConstantName(timeUnitArg);
@@ -90,21 +84,13 @@ public class DurationTimeUnitAgreementCheck extends IssuableSubscriptionVisitor 
     if (conversionUnit == null || conversionUnit.equals(argumentUnit)) {
       return;
     }
-    String message = String.format("Change this TimeUnit to \"%s\" or convert the duration to %s.", conversionUnit, getUnitDescription(argumentUnit));
+    String message = String.format("Change this TimeUnit to \"%s\" or convert the duration to %s.", conversionUnit, argumentUnit.toLowerCase(Locale.ROOT));
     QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(timeUnitArg)
       .withMessage(message)
       .withQuickFix(() -> createQuickFix(timeUnitArg, conversionUnit))
       .report();
-  }
-
-  private static boolean isLongType(Type type) {
-    return type.isPrimitive(Type.Primitives.LONG) || type.is("java.lang.Long");
-  }
-
-  private static boolean isTimeUnitType(Type type) {
-    return type.is(JAVA_UTIL_CONCURRENT_TIME_UNIT);
   }
 
   private static String getDurationConversionUnit(ExpressionTree expr) {
@@ -127,7 +113,7 @@ public class DurationTimeUnitAgreementCheck extends IssuableSubscriptionVisitor 
         default -> null;
       };
     }
-    if (TIME_UNIT_CONVERT.matches(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+    if (TIME_UNIT_CONVERT.matches(mit)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
       return getTimeUnitConstantName(mse.expression());
     }
@@ -142,26 +128,10 @@ public class DurationTimeUnitAgreementCheck extends IssuableSubscriptionVisitor 
     } else if (unwrapped.is(Tree.Kind.MEMBER_SELECT)) {
       symbol = ((MemberSelectExpressionTree) unwrapped).identifier().symbol();
     }
-    if (symbol != null && !symbol.isUnknown() && symbol.isVariableSymbol() && symbol.isEnum()) {
-      Symbol owner = symbol.owner();
-      if (owner != null && owner.type().is(JAVA_UTIL_CONCURRENT_TIME_UNIT)) {
-        return symbol.name();
-      }
+    if (symbol != null && symbol.isEnum() && symbol.owner().type().is(JAVA_UTIL_CONCURRENT_TIME_UNIT)) {
+      return symbol.name();
     }
     return null;
-  }
-
-  private static String getUnitDescription(String timeUnitConstant) {
-    return switch (timeUnitConstant) {
-      case "NANOSECONDS" -> "nanoseconds";
-      case "MICROSECONDS" -> "microseconds";
-      case "MILLISECONDS" -> "milliseconds";
-      case "SECONDS" -> "seconds";
-      case "MINUTES" -> "minutes";
-      case "HOURS" -> "hours";
-      case "DAYS" -> "days";
-      default -> timeUnitConstant.toLowerCase(Locale.ROOT);
-    };
   }
 
   private JavaQuickFix createQuickFix(ExpressionTree timeUnitArg, String conversionUnit) {
@@ -182,9 +152,7 @@ public class DurationTimeUnitAgreementCheck extends IssuableSubscriptionVisitor 
   private static List<ExpressionTree> getArguments(Tree tree) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       return ((MethodInvocationTree) tree).arguments();
-    } else if (tree.is(Tree.Kind.NEW_CLASS)) {
-      return ((NewClassTree) tree).arguments();
     }
-    return Collections.emptyList();
+    return ((NewClassTree) tree).arguments();
   }
 }

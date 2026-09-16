@@ -65,8 +65,13 @@ class DurationTimeUnitAgreementCheckSample {
     f.get(d.toMillis() * 1000, TimeUnit.SECONDS);
     f.get(i.toEpochMilli(), TimeUnit.SECONDS);
     customMethod(d.toMillis(), MyCustomEnum.SECONDS);
+    f.get(d.toMillis(), getUnit());
 
     new CustomTimeout(d.toMillis(), TimeUnit.MILLISECONDS);
+  }
+
+  TimeUnit getUnit() {
+    return TimeUnit.SECONDS;
   }
 
   void noncompliantCases(Future<String> f, Duration d) throws Exception {
