@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-jasper</artifactId>
-      <version>9.0.121</version>
+      <version>9.0.122</version>
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.jdt</groupId>
