@@ -128,7 +128,7 @@ jobs:
         with:
           name: ${{ matrix.item.runner }}_${{ matrix.item.profile }}
           it-dir: its/ruling
-          expected-dir: src/test/resources
+          expected-dir: src/test/resources/expected/java
           actual-dir: target/actual
 
   ruling-update-notify:
