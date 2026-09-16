@@ -66,10 +66,14 @@ public class UselessIncrementCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkLambda(LambdaExpressionTree lambda) {
-    if (!isPostfix(lambda.body())) {
+    Tree body = lambda.body();
+    if (body instanceof ExpressionTree expressionTree) {
+      body = ExpressionUtils.skipParentheses(expressionTree);
+    }
+    if (!isPostfix(body)) {
       return;
     }
-    UnaryExpressionTree unary = (UnaryExpressionTree) lambda.body();
+    UnaryExpressionTree unary = (UnaryExpressionTree) body;
     Symbol.MethodSymbol lambdaSymbol = lambda.symbol();
     if (lambdaSymbol.isUnknown()) {
       return;

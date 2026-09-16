@@ -51,7 +51,9 @@ class UselessIncrementCheck {
 //                                                         ^^
     BiFunction<Integer, Integer, Integer> bf2 = (x, y) -> y--; // Noncompliant {{Remove this increment or correct the code not to waste it.}}
 //                                                         ^^
-    UnaryOperator<Integer> paren = x -> (x)++; // Noncompliant {{Remove this increment or correct the code not to waste it.}}
+    UnaryOperator<Integer> paren1 = x -> (x)++; // Noncompliant {{Remove this increment or correct the code not to waste it.}}
+//                                          ^^
+    UnaryOperator<Integer> paren2 = x -> (x++); // Noncompliant {{Remove this increment or correct the code not to waste it.}}
 //                                         ^^
 
     IntUnaryOperator prefixInc = value -> ++value;
