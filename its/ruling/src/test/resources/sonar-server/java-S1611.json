@@ -1,0 +1,36 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/ce/ws/TaskFormatterTest.java": [
+81
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ComponentImplTest.java": [
+95,
+110
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ComponentRootBuilderTest.java": [
+55,
+65,
+83,
+84,
+86,
+271,
+286,
+301,
+315,
+403,
+404,
+405,
+463,
+464,
+466,
+468
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java": [
+232
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/ws/template/DeleteTemplateActionTest.java": [
+92,
+109,
+131,
+152
+]
+}

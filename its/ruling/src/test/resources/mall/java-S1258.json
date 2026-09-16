@@ -1,0 +1,342 @@
+{
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/OmsMoneyInfoParam.java": [
+15
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/OmsOrderDeliveryParam.java": [
+13
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/OmsOrderDetail.java": [
+16
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/OmsOrderQueryParam.java": [
+13
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/OmsOrderReturnApplyResult.java": [
+13
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/OmsReceiverInfoParam.java": [
+13
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/OmsReturnApplyQueryParam.java": [
+13
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/OmsUpdateStatusParam.java": [
+15
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/PmsProductAttributeCategoryItem.java": [
+15
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/PmsProductCategoryWithChildrenItem.java": [
+14
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/PmsProductResult.java": [
+11
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/SmsCouponParam.java": [
+16
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/SmsFlashPromotionProduct.java": [
+13
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/SmsFlashPromotionSessionDetail.java": [
+12
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/UmsAdminParam.java": [
+16
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/UmsMenuNode.java": [
+16
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/dto/UpdateAdminPasswordParam.java": [
+15
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/validator/FlagValidatorClass.java": [
+10
+],
+"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/api/CommonPage.java": [
+12
+],
+"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/dto/PmsBrandDto.java": [
+13
+],
+"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/validator/FlagValidatorClass.java": [
+9
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelp.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpCategory.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsMemberReport.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceArea.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaProductRelation.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubject.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCategory.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectComment.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectProductRelation.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopic.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCategory.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicComment.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCartItem.java": [
+8
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCompanyAddress.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrder.java": [
+8
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderItem.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderOperateHistory.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnApply.java": [
+8
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnReason.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderSetting.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbum.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumPic.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsBrand.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsComment.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentReplay.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsFeightTemplate.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsMemberPrice.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProduct.java": [
+8
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttribute.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeCategory.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeValue.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategory.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryAttributeRelation.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductFullReduction.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductLadder.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductOperateLog.java": [
+8
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductVertifyRecord.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsSkuStock.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCoupon.java": [
+8
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponHistory.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductCategoryRelation.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductRelation.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotion.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionLog.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionProductRelation.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionSession.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeAdvertise.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeBrand.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeNewProduct.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendProduct.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendSubject.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdmin.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminLoginLog.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminPermissionRelation.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminRoleRelation.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsGrowthChangeHistory.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationChangeHistory.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationConsumeSetting.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMember.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLevel.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLoginLog.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberMemberTagRelation.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberProductCategoryRelation.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberReceiveAddress.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberRuleSetting.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberStatisticsInfo.java": [
+8
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTag.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTask.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMenu.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsPermission.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResource.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceCategory.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRole.java": [
+7
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleMenuRelation.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelation.java": [
+6
+],
+"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelation.java": [
+6
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/config/AlipayConfig.java": [
+18
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/CartProduct.java": [
+18
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/CartPromotionItem.java": [
+16
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/ConfirmOrderResult.java": [
+18,
+34
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/FlashPromotionProduct.java": [
+16
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/HomeContentResult.java": [
+19
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/HomeFlashPromotion.java": [
+16
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/MemberBrandAttention.java": [
+18
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/MemberProductCollection.java": [
+18
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/MemberReadHistory.java": [
+18
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/OmsOrderDetail.java": [
+17
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/OmsOrderReturnApplyParam.java": [
+15
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/PmsPortalProductDetail.java": [
+16
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/PmsProductCategoryNode.java": [
+16
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/PromotionProduct.java": [
+18
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/domain/SmsCouponHistoryDetail.java": [
+19
+]
+}

@@ -1,0 +1,65 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ComponentImplTest.java": [
+99,
+114
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/component/ComponentRootBuilderTest.java": [
+90
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/event/EventRepositoryImplTest.java": [
+77
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/filemove/MutableMovedFilesRepositoryImplTest.java": [
+72
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ComputeQProfileMeasureStepTest.java": [
+142
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/step/PersistProjectLinksStepTest.java": [
+209
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/step/ComputationStepExecutorTest.java": [
+137
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/index/IssueIndexTest.java": [
+1301
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/DefaultOrganizationProviderImplTest.java": [
+123
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/OrganizationCreationImplTest.java": [
+160
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/GroupPermissionChangerTest.java": [
+92,
+322,
+339,
+356
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/ws/AddGroupActionTest.java": [
+378
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/ws/template/DeleteTemplateActionTest.java": [
+134,
+155
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/web/requestid/RequestIdFilterTest.java": [
+84
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/project/ws/UpdateVisibilityActionTest.java": [
+157,
+195
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/user/DoPrivilegedTest.java": [
+69
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/user/UserSessionFilterTest.java": [
+116,
+142,
+159,
+172,
+198,
+215,
+228
+]
+}
