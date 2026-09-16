@@ -93,8 +93,7 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
   private final List<VariableData> hardCodedUri = new ArrayList<>();
 
   @Override
-  public void setContext(JavaFileScannerContext context) {
-    super.setContext(context);
+  protected void clearState() {
     annotationsStack.clear();
     identifiersUsedInAnnotations.clear();
     hardCodedUri.clear();
@@ -131,9 +130,7 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
       reportHardcodedURI(v.initializer());
       }
     } finally {
-      annotationsStack.clear();
-      identifiersUsedInAnnotations.clear();
-      hardCodedUri.clear();
+      super.leaveFile(context);
     }
   }
 
