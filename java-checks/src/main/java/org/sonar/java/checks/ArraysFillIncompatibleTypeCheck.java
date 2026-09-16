@@ -58,11 +58,11 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
 
     ExpressionTree arrayArg = mit.arguments().get(0);
     Type arrayType = arrayArg.symbolType();
-    Type componentType = ((Type.ArrayType) arrayType).elementType();
-    if (componentType.isTypeVar()) {
+    if (!arrayType.isArray()) {
       return;
     }
 
+    Type componentType = ((Type.ArrayType) arrayType).elementType();
     ExpressionTree fillingArg = mit.arguments().get(mit.arguments().size() - 1);
     checkFillingArgument(mit, arrayArg, arrayType, componentType, fillingArg);
   }
@@ -92,7 +92,7 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
 
   private static boolean isMismatched(Type componentType, ExpressionTree expr) {
     Type fillingType = expr.symbolType();
-    if (fillingType.isUnknown() || fillingType.isTypeVar() || fillingType.isNullType()) {
+    if (fillingType.isNullType()) {
       return false;
     }
 
@@ -101,6 +101,9 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
   }
 
   private static boolean isCompatible(Type fillingType, Type componentType) {
+    if (fillingType.isUnknown() || componentType.isUnknown() || fillingType.isTypeVar() || componentType.isTypeVar()) {
+      return true;
+    }
     if (fillingType.isSubtypeOf(componentType.erasure()) || componentType.isSubtypeOf(fillingType.erasure())) {
       return true;
     }

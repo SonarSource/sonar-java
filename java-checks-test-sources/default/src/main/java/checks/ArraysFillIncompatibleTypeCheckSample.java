@@ -17,6 +17,7 @@ class ArraysFillIncompatibleTypeCheckSample {
     Arrays.fill(textBuffer, "default"); // Compliant
     Arrays.fill(textBuffer, 0, 5, "default"); // Compliant
     Arrays.fill(textBuffer, null); // Compliant: null can be stored in reference array
+    Arrays.fill(null, "x"); // Compliant: first argument is null, not an array
     Arrays.fill(numbers, 0); // Compliant: primitive int boxed to Integer
     Arrays.fill(numBuffer, 42); // Compliant: Integer is a Number
     Arrays.fill(objBuffer, 42); // Compliant: Integer is an Object
