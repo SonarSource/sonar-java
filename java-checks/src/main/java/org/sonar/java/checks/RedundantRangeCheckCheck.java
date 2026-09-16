@@ -58,9 +58,8 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
       return;
     }
     Map<Symbol, List<Comparison>> comparisonsByVariable = new LinkedHashMap<>();
-    if (collectOperands((BinaryExpressionTree) tree, comparisonsByVariable)) {
-      reportRedundantComparisons(comparisonsByVariable);
-    }
+    collectOperands((BinaryExpressionTree) tree, comparisonsByVariable);
+    reportRedundantComparisons(comparisonsByVariable);
   }
 
   private static boolean isNestedConditionalAnd(Tree tree) {
@@ -117,7 +116,6 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
       return collectOperands((BinaryExpressionTree) operand, comparisonsByVariable);
     }
     if (hasPotentialSideEffects(operand)) {
-      comparisonsByVariable.clear();
       return false;
     }
     tryAddComparison(operand, comparisonsByVariable);
