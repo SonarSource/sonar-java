@@ -23,9 +23,10 @@ import org.sonar.java.reporting.AnalyzerMessage;
  *
  * @param name     the dependency name, either the field/parameter name at the injection point or the value of
  *                 the {@code @Qualifier} annotation if present
+ * @param module   the module key of the bean that declares this injection point
  * @param location the source location of the injection point
  */
-public record InjectionPoint(String name, BeanLocation location) {
+public record InjectionPoint(String name, String module, BeanLocation location) {
 
   /**
    * An injection point as collected from a single file, holding no reference to that file.

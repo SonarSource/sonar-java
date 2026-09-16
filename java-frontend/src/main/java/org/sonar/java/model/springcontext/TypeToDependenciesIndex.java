@@ -44,9 +44,9 @@ public class TypeToDependenciesIndex {
    * @param dependencyName the dependency name to associate with that type
    * @param location       the source location of the injection point
    */
-  public void addDependencyForType(String dependencyType, String dependencyName, BeanLocation location) {
+  public void addDependencyForType(String dependencyType, String dependencyName, String module, BeanLocation location) {
     injectionPointsByType.computeIfAbsent(dependencyType, k -> new HashSet<>())
-      .add(new InjectionPoint(dependencyName, location));
+      .add(new InjectionPoint(dependencyName, module, location));
   }
 
   /**

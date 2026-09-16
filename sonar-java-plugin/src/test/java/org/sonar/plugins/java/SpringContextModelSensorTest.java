@@ -100,13 +100,13 @@ class SpringContextModelSensorTest {
     BeanLocation location = new BeanLocation(inputFile, new TextSpan(startLine, startCharacter, endLine, endCharacter));
     model.getBeanDefinitionRegistry().addBeanDefinition(beanName,
       new BeanDefinitionHolder.Builder(type, MODULE_KEY, PACKAGE, location).build());
-    model.getTypeToBeanNamesIndex().addBeanForType(type, beanName);
+    model.getTypeToBeanNamesIndex().addBeanForType(type, beanName, MODULE_KEY, PACKAGE);
   }
 
   private static void registerDependency(SpringContextModel model, String type, String dependencyName, InputFile inputFile,
     int startLine, int startCharacter, int endLine, int endCharacter) {
     BeanLocation location = new BeanLocation(inputFile, new TextSpan(startLine, startCharacter, endLine, endCharacter));
-    model.getTypeToDependenciesIndex().addDependencyForType(type, dependencyName, location);
+    model.getTypeToDependenciesIndex().addDependencyForType(type, dependencyName, MODULE_KEY, location);
   }
 
   private static InputFile fakeInputFile(SensorContextTester context, String fileName) {
