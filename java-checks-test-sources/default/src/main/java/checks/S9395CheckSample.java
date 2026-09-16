@@ -212,7 +212,7 @@ class S9395CheckSample {
 
   float returnWithAnonymousClassInside(int intVar) {
     Object obj = new Object() {
-      int getValue() { return 42; }
+      int getValue() { return intVar; } // compliant: enclosing float return type must not apply here
     };
     return intVar; // Noncompliant
   }
@@ -231,5 +231,12 @@ class S9395CheckSample {
       return x; // compliant: int -> double is not lossy
     };
     return 0;
+  }
+
+  float returnLongFromLambdaInside(long longVar) {
+    java.util.function.LongSupplier s = () -> {
+      return longVar; // compliant: lambda return type is long, not the enclosing float
+    };
+    return 0f;
   }
 }
