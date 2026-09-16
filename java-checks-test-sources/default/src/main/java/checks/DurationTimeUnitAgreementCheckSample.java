@@ -66,9 +66,12 @@ class DurationTimeUnitAgreementCheckSample {
     f.get(i.toEpochMilli(), TimeUnit.SECONDS);
     customMethod(d.toMillis(), MyCustomEnum.SECONDS);
     f.get(d.toMillis(), getUnit());
+    customMethodWithName("timeout", TimeUnit.SECONDS);
 
     new CustomTimeout(d.toMillis(), TimeUnit.MILLISECONDS);
   }
+
+  void customMethodWithName(String name, TimeUnit unit) {}
 
   TimeUnit getUnit() {
     return TimeUnit.SECONDS;

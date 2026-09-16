@@ -113,7 +113,7 @@ public class DurationTimeUnitAgreementCheck extends IssuableSubscriptionVisitor 
         default -> null;
       };
     }
-    if (TIME_UNIT_CONVERT.matches(mit)) {
+    if (TIME_UNIT_CONVERT.matches(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
       return getTimeUnitConstantName(mse.expression());
     }
