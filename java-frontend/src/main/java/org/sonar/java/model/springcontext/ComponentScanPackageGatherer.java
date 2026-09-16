@@ -25,8 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.java.caching.FileCachingCheck;
 import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -53,9 +52,9 @@ import org.sonarsource.analyzer.commons.collections.SetUtils;
  * <p>Packages are grouped by module and written to {@link org.sonar.java.model.springcontext.ProjectPackageScan}
  * at the end of each module's analysis. Per-file results are cached to speed up incremental analyses.
  */
-public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
+public class ComponentScanPackageGatherer extends SpringContextModelGatherer implements FileCachingCheck<Set<String>> {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ComponentScanPackageGatherer.class);
+  private static final String CACHE_KEY_PREFIX = "java:spring:component-scan-packages:";
 
   private static final String COMPONENT_SCAN_ANNOTATION = "org.springframework.context.annotation.ComponentScan";
   private static final Set<String> COMPONENT_SCAN_BASE_ARGUMENTS = SetUtils.immutableSetOf("basePackages", "basePackageClasses", "value");
@@ -78,10 +77,27 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
-    return SpringContextCacheHelper.readComponentScanPackagesFromCache(inputFileScannerContext, LOG).map(packages -> {
-      collectedPackagesByFile.put(inputFileScannerContext.getInputFile().key(), Set.copyOf(packages));
-      return true;
-    }).orElse(false);
+    return restoreFromCache(inputFileScannerContext);
+  }
+
+  @Override
+  public String cacheKeyPrefix() {
+    return CACHE_KEY_PREFIX;
+  }
+
+  @Override
+  public byte[] serialize(Set<String> packages) {
+    return SpringContextCacheHelper.serializeComponentScanPackages(packages);
+  }
+
+  @Override
+  public Set<String> deserialize(byte[] data) {
+    return SpringContextCacheHelper.deserializeComponentScanPackages(data);
+  }
+
+  @Override
+  public void restore(InputFileScannerContext context, Set<String> packages) {
+    collectedPackagesByFile.put(context.getInputFile().key(), Set.copyOf(packages));
   }
 
   @Override
@@ -104,10 +120,9 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer {
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    collectedPackagesByFile.put(context.getInputFile().key(), Set.copyOf(packagesCollectedAtFileLevel));
-    if (context.getCacheContext().isCacheEnabled()) {
-      SpringContextCacheHelper.writeComponentScanPackagesToCache(context, LOG, packagesCollectedAtFileLevel);
-    }
+    var packages = Set.copyOf(packagesCollectedAtFileLevel);
+    collectedPackagesByFile.put(context.getInputFile().key(), packages);
+    writeToCache(context, packages);
     packagesCollectedAtFileLevel.clear();
   }
 
