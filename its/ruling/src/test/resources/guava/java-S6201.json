@@ -1,0 +1,241 @@
+{
+"com.google.guava:guava:src/com/google/common/base/Ascii.java": [
+463,
+512
+],
+"com.google.guava:guava:src/com/google/common/base/CaseFormat.java": [
+198
+],
+"com.google.guava:guava:src/com/google/common/base/CharMatcher.java": [
+373
+],
+"com.google.guava:guava:src/com/google/common/base/Joiner.java": [
+448
+],
+"com.google.guava:guava:src/com/google/common/base/Predicates.java": [
+502,
+538,
+656
+],
+"com.google.guava:guava:src/com/google/common/cache/CacheStats.java": [
+251
+],
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+2200
+],
+"com.google.guava:guava:src/com/google/common/collect/Count.java": [
+67
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableClassToInstanceMap.java": [
+150
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSet.java": [
+243
+],
+"com.google.guava:guava:src/com/google/common/collect/Lists.java": [
+718,
+723
+],
+"com.google.guava:guava:src/com/google/common/escape/Escapers.java": [
+184,
+186
+],
+"com.google.guava:guava:src/com/google/common/eventbus/Subscriber.java": [
+101,
+122
+],
+"com.google.guava:guava:src/com/google/common/eventbus/SubscriberRegistry.java": [
+252
+],
+"com.google.guava:guava:src/com/google/common/hash/BloomFilterStrategies.java": [
+205
+],
+"com.google.guava:guava:src/com/google/common/hash/Funnels.java": [
+110
+],
+"com.google.guava:guava:src/com/google/common/hash/HashCode.java": [
+390
+],
+"com.google.guava:guava:src/com/google/common/hash/Hashing.java": [
+544
+],
+"com.google.guava:guava:src/com/google/common/hash/Murmur3_128HashFunction.java": [
+68
+],
+"com.google.guava:guava:src/com/google/common/hash/Murmur3_32HashFunction.java": [
+74
+],
+"com.google.guava:guava:src/com/google/common/hash/SipHashFunction.java": [
+82
+],
+"com.google.guava:guava:src/com/google/common/io/AppendableWriter.java": [
+64,
+71
+],
+"com.google.guava:guava:src/com/google/common/io/ByteSink.java": [
+86
+],
+"com.google.guava:guava:src/com/google/common/io/ByteSource.java": [
+100
+],
+"com.google.guava:guava:src/com/google/common/io/ByteStreams.java": [
+122
+],
+"com.google.guava:guava:src/com/google/common/io/CharSink.java": [
+80
+],
+"com.google.guava:guava:src/com/google/common/io/CharSource.java": [
+93
+],
+"com.google.guava:guava:src/com/google/common/io/CharStreams.java": [
+252,
+262,
+278
+],
+"com.google.guava:guava:src/com/google/common/io/LineReader.java": [
+57
+],
+"com.google.guava:guava:src/com/google/common/net/HostAndPort.java": [
+280
+],
+"com.google.guava:guava:src/com/google/common/net/HostSpecifier.java": [
+154
+],
+"com.google.guava:guava:src/com/google/common/net/InetAddresses.java": [
+870
+],
+"com.google.guava:guava:src/com/google/common/net/InternetDomainName.java": [
+535
+],
+"com.google.guava:guava:src/com/google/common/net/MediaType.java": [
+702
+],
+"com.google.guava:guava:src/com/google/common/primitives/Booleans.java": [
+319,
+390,
+397,
+409,
+442
+],
+"com.google.guava:guava:src/com/google/common/primitives/Bytes.java": [
+233,
+304,
+310,
+322,
+355
+],
+"com.google.guava:guava:src/com/google/common/primitives/Chars.java": [
+433,
+504,
+511,
+523,
+556
+],
+"com.google.guava:guava:src/com/google/common/primitives/Doubles.java": [
+421,
+495,
+502,
+514,
+547
+],
+"com.google.guava:guava:src/com/google/common/primitives/Floats.java": [
+417,
+491,
+497,
+509,
+542
+],
+"com.google.guava:guava:src/com/google/common/primitives/Ints.java": [
+482,
+553,
+559,
+571,
+604
+],
+"com.google.guava:guava:src/com/google/common/primitives/Longs.java": [
+518,
+589,
+595,
+607,
+640
+],
+"com.google.guava:guava:src/com/google/common/primitives/Shorts.java": [
+481,
+552,
+558,
+570,
+603
+],
+"com.google.guava:guava:src/com/google/common/primitives/UnsignedInteger.java": [
+238
+],
+"com.google.guava:guava:src/com/google/common/primitives/UnsignedLong.java": [
+249
+],
+"com.google.guava:guava:src/com/google/common/reflect/ClassPath.java": [
+197,
+390
+],
+"com.google.guava:guava:src/com/google/common/reflect/Element.java": [
+154
+],
+"com.google.guava:guava:src/com/google/common/reflect/Parameter.java": [
+126
+],
+"com.google.guava:guava:src/com/google/common/reflect/TypeResolver.java": [
+161,
+163,
+165,
+393,
+397,
+404,
+463
+],
+"com.google.guava:guava:src/com/google/common/reflect/TypeToken.java": [
+280,
+319,
+370,
+390,
+474,
+482,
+492,
+498,
+500,
+865,
+881,
+900,
+900
+],
+"com.google.guava:guava:src/com/google/common/reflect/TypeVisitor.java": [
+79,
+81,
+85
+],
+"com.google.guava:guava:src/com/google/common/reflect/Types.java": [
+71,
+253,
+435,
+477
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java": [
+470,
+472,
+569,
+692
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/Futures.java": [
+2046
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/FuturesGetChecked.java": [
+201
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
+481,
+483,
+510
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/SimpleTimeLimiter.java": [
+158,
+161
+]
+}

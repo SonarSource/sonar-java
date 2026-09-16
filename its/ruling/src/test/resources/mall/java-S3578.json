@@ -1,0 +1,11 @@
+{
+"com.macro.mall:mall:mall-demo/src/test/java/com/macro/mall/demo/MallDemoApplicationTests.java": [
+14
+],
+"com.macro.mall:mall:mall-portal/src/test/java/com/macro/mall/portal/MallPortalApplicationTests.java": [
+10
+],
+"com.macro.mall:mall:mall-search/src/test/java/com/macro/mall/search/MallSearchApplicationTests.java": [
+22
+]
+}

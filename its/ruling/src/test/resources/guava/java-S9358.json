@@ -1,0 +1,12 @@
+{
+"com.google.guava:guava:src/com/google/common/collect/RegularImmutableTable.java": [
+151,
+155
+],
+"com.google.guava:guava:src/com/google/common/collect/TreeMultiset.java": [
+91
+],
+"com.google.guava:guava:src/com/google/common/hash/MessageDigestHashFunction.java": [
+156
+]
+}

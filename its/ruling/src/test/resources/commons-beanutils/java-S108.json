@@ -1,0 +1,9 @@
+{
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MappedPropertyTestCase.java": [
+290,
+320
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/bugs/Jira347TestCase.java": [
+114
+]
+}

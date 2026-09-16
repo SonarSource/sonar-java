@@ -1,0 +1,18 @@
+{
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtils.java": [
+149,
+206,
+261,
+319,
+378,
+432,
+487,
+512
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtils2TestCase.java": [
+57
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/WrapDynaBeanTestCase.java": [
+75
+]
+}
