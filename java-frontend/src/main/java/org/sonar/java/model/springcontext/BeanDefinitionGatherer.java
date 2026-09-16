@@ -24,9 +24,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.caching.FileCachingCheck;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.utils.PackageUtils;
@@ -71,11 +70,11 @@ import static org.sonar.java.utils.SpringUtils.composeProfiles;
  *   <li>{@link TypeToDependenciesIndex} with all the dependencies collected by type</li>
  * </ul>
  */
-public class BeanDefinitionGatherer extends SpringContextModelGatherer {
-
-  private static final Logger LOG = LoggerFactory.getLogger(BeanDefinitionGatherer.class);
+public class BeanDefinitionGatherer extends SpringContextModelGatherer
+  implements FileCachingCheck<List<BeanDefinitionHolder.InputFileData>> {
 
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
+  private static final String CACHE_KEY_PREFIX = "java:spring:bean-definitions:";
 
   private final Map<InputFile, List<BeanDefinitionHolder.InputFileData>> beansCollectedByFile = new LinkedHashMap<>();
 
@@ -137,11 +136,30 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    beansCollectedByFile.put(context.getInputFile(), List.copyOf(beansCollectedAtFileLevel));
-    if (context.getCacheContext().isCacheEnabled()) {
-      SpringContextCacheHelper.writeBeanDefinitionsToCache(context, LOG, beansCollectedAtFileLevel);
-    }
+    var beans = List.copyOf(beansCollectedAtFileLevel);
+    beansCollectedByFile.put(context.getInputFile(), beans);
+    writeToCache(context, beans);
     beansCollectedAtFileLevel.clear();
+  }
+
+  @Override
+  public String cacheKeyPrefix() {
+    return CACHE_KEY_PREFIX;
+  }
+
+  @Override
+  public byte[] serialize(List<BeanDefinitionHolder.InputFileData> beans) {
+    return SpringContextCacheHelper.serializeBeans(beans);
+  }
+
+  @Override
+  public List<BeanDefinitionHolder.InputFileData> deserialize(byte[] data) {
+    return SpringContextCacheHelper.deserializeBeans(data);
+  }
+
+  @Override
+  public void restore(InputFileScannerContext context, List<BeanDefinitionHolder.InputFileData> beans) {
+    beansCollectedByFile.put(context.getInputFile(), List.copyOf(beans));
   }
 
   /**
@@ -180,10 +198,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer {
 
   @Override
   public boolean scanWithoutParsing(InputFileScannerContext ctx) {
-    return SpringContextCacheHelper.readBeanDefinitionsFromCache(ctx, LOG).map(beans -> {
-      beansCollectedByFile.put(ctx.getInputFile(), List.copyOf(beans));
-      return true;
-    }).orElse(false);
+    return restoreFromCache(ctx);
   }
 
   /**

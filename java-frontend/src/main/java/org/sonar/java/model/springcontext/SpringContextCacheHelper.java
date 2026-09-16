@@ -17,18 +17,15 @@
 package org.sonar.java.model.springcontext;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import org.slf4j.Logger;
+import java.util.Set;
 import org.sonar.java.serialization.BeanDefinitionHolderTypeAdapter;
 import org.sonar.java.serialization.InjectionPointTypeAdapter;
 import org.sonar.java.serialization.TextSpanTypeAdapter;
-import org.sonar.plugins.java.api.InputFileScannerContext;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 import static org.sonar.java.serialization.JsonUtils.BEANS;
 import static org.sonar.java.serialization.JsonUtils.PACKAGES;
@@ -39,77 +36,25 @@ import static org.sonar.java.serialization.JsonUtils.writeDocument;
 import static org.sonar.java.serialization.JsonUtils.writeStrings;
 
 /**
- * Shared per-file caching mechanics for Spring context gatherers.
+ * Format of the cache entries the Spring context gatherers keep for each file.
  *
- * <p>Every cache entry is a JSON object carrying a {@code version} field, currently
+ * <p>Every entry is a JSON object carrying a {@code version} field, currently
  * {@value #CACHE_FORMAT_VERSION}. The version is shared by all gatherers: bumping it whenever any entry's
  * shape changes invalidates all previously cached entries, which are then recomputed on the next analysis.
  *
  * <p>This class only owns that versioned envelope. The shape of the beans it wraps is defined by
- * {@link BeanDefinitionHolderTypeAdapter}, {@link InjectionPointTypeAdapter} and {@link TextSpanTypeAdapter}.
+ * {@link BeanDefinitionHolderTypeAdapter}, {@link InjectionPointTypeAdapter} and {@link TextSpanTypeAdapter}, while
+ * reading and writing the entries themselves is handled by
+ * {@link org.sonar.java.caching.FileCachingCheck}, which the gatherers implement.
  */
 final class SpringContextCacheHelper {
 
   private static final int CACHE_FORMAT_VERSION = 1;
-  private static final String BEAN_CACHE_KEY_PREFIX = "java:spring:bean-definitions:";
-  private static final String COMPONENT_SCAN_CACHE_KEY_PREFIX = "java:spring:component-scan-packages:";
 
   private SpringContextCacheHelper() {
   }
 
-  /**
-   * Builds the per-file cache key used to store/retrieve a gatherer's data for the file currently being scanned.
-   */
-  private static String cacheKey(String cacheKeyPrefix, InputFileScannerContext context) {
-    return cacheKeyPrefix + context.getInputFile().key();
-  }
-
-  /**
-   * Writes a serialized entry to the write cache. A second write under the same key within the same analysis
-   * is silently ignored: only the first write for a given file is kept.
-   */
-  private static void writeToCache(InputFileScannerContext context, Logger log, String cacheKey, String data) {
-    try {
-      context.getCacheContext().getWriteCache().write(cacheKey, data.getBytes(StandardCharsets.UTF_8));
-    } catch (IllegalArgumentException e) {
-      log.trace("Tried to write multiple times to cache key '{}'. Ignoring writes after the first.", cacheKey);
-    }
-  }
-
-  /**
-   * Reads and deserializes an entry written during a prior analysis.
-   *
-   * <p>Any {@link RuntimeException} thrown by {@code deserializer} is treated as a cache miss. The entry is
-   * carried over to the write cache via {@code copyFromPrevious} only on successful deserialization, so a
-   * corrupt entry is deliberately dropped and rewritten once the file has been re-parsed.
-   *
-   * @return The deserialized data, or {@link Optional#empty()} if there is no entry or it could not be read.
-   */
-  private static <T> Optional<T> readFromCache(InputFileScannerContext context, Logger log, String cacheKey, Function<String, T> deserializer) {
-    var bytes = context.getCacheContext().getReadCache().readBytes(cacheKey);
-    if (bytes == null) {
-      return Optional.empty();
-    }
-    String content = new String(bytes, StandardCharsets.UTF_8);
-    try {
-      T result = deserializer.apply(content);
-      context.getCacheContext().getWriteCache().copyFromPrevious(cacheKey);
-      return Optional.of(result);
-    } catch (RuntimeException e) {
-      log.trace("Failed to deserialize cached data for '{}', will re-parse.", cacheKey, e);
-      return Optional.empty();
-    }
-  }
-
-  /**
-   * Serializes and writes this file's beans to the write cache, for reuse by {@link #readBeanDefinitionsFromCache}
-   * during the next incremental analysis.
-   *
-   * @param context Context of the file being scanned, used to build the cache key and access the write cache.
-   * @param log     Logger of the calling gatherer, used to trace ignored duplicate writes.
-   * @param beans   The beans collected from this file.
-   */
-  static void writeBeanDefinitionsToCache(JavaFileScannerContext context, Logger log, List<BeanDefinitionHolder.InputFileData> beans) {
+  static byte[] serializeBeans(List<BeanDefinitionHolder.InputFileData> beans) {
     String document = writeDocument(CACHE_FORMAT_VERSION, out -> {
       out.name(BEANS);
       out.beginArray();
@@ -118,49 +63,11 @@ final class SpringContextCacheHelper {
       }
       out.endArray();
     });
-    writeToCache(context, log, cacheKey(BEAN_CACHE_KEY_PREFIX, context), document);
+    return toBytes(document);
   }
 
-  /**
-   * Restores bean definitions from their JSON representation.
-   *
-   * @param context Context of the file being scanned, used to build the cache key and access the read cache.
-   * @param log     Logger of the calling gatherer, used to trace failed accesses to cached data.
-   */
-  static Optional<List<BeanDefinitionHolder.InputFileData>> readBeanDefinitionsFromCache(InputFileScannerContext context, Logger log) {
-    var cacheKey = cacheKey(BEAN_CACHE_KEY_PREFIX, context);
-    return readFromCache(context, log, cacheKey, SpringContextCacheHelper::deserializeBeans);
-  }
-
-  /**
-   * Serializes and writes the packages covered by component scan annotations found in this file to the write cache, for reuse by
-   * {@link #readComponentScanPackagesFromCache} during the next incremental analysis.
-   *
-   * @param context  Context of the file being scanned, used to build the cache key and access the write cache.
-   * @param log      Logger of the calling gatherer, used to trace ignored duplicate writes.
-   * @param packages The package names collected from this file.
-   */
-  static void writeComponentScanPackagesToCache(InputFileScannerContext context, Logger log, Collection<String> packages) {
-    String document = writeDocument(CACHE_FORMAT_VERSION, out -> {
-      out.name(PACKAGES);
-      writeStrings(out, packages);
-    });
-    writeToCache(context, log, cacheKey(COMPONENT_SCAN_CACHE_KEY_PREFIX, context), document);
-  }
-
-  /**
-   * Restores package names from their JSON representation.
-   *
-   * @param context Context of the file being scanned, used to build the cache key and access the read cache.
-   * @param log     Logger of the calling gatherer, used to trace failed accesses to cached data.
-   */
-  static Optional<List<String>> readComponentScanPackagesFromCache(InputFileScannerContext context, Logger log) {
-    var cacheKey = cacheKey(COMPONENT_SCAN_CACHE_KEY_PREFIX, context);
-    return readFromCache(context, log, cacheKey, SpringContextCacheHelper::deserializePackages);
-  }
-
-  private static List<BeanDefinitionHolder.InputFileData> deserializeBeans(String content) {
-    var beans = requiredArray(parseDocument(content, CACHE_FORMAT_VERSION), BEANS);
+  static List<BeanDefinitionHolder.InputFileData> deserializeBeans(byte[] data) {
+    var beans = requiredArray(readDocument(data), BEANS);
     List<BeanDefinitionHolder.InputFileData> result = new ArrayList<>();
     for (JsonElement bean : beans) {
       result.add(BeanDefinitionHolderTypeAdapter.getInstance().fromJsonTree(bean));
@@ -168,7 +75,23 @@ final class SpringContextCacheHelper {
     return result;
   }
 
-  private static List<String> deserializePackages(String content) {
-    return List.copyOf(deserializeStrings(requiredArray(parseDocument(content, CACHE_FORMAT_VERSION), PACKAGES)));
+  static byte[] serializeComponentScanPackages(Collection<String> packages) {
+    String document = writeDocument(CACHE_FORMAT_VERSION, out -> {
+      out.name(PACKAGES);
+      writeStrings(out, packages);
+    });
+    return toBytes(document);
+  }
+
+  static Set<String> deserializeComponentScanPackages(byte[] data) {
+    return deserializeStrings(requiredArray(readDocument(data), PACKAGES));
+  }
+
+  private static byte[] toBytes(String document) {
+    return document.getBytes(StandardCharsets.UTF_8);
+  }
+
+  private static JsonObject readDocument(byte[] data) {
+    return parseDocument(new String(data, StandardCharsets.UTF_8), CACHE_FORMAT_VERSION);
   }
 }

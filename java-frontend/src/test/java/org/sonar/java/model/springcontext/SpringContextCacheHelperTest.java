@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -32,49 +31,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentCaptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.TestUtils;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
-import org.sonar.plugins.java.api.InputFileScannerContext;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.caching.CacheContext;
-import org.sonar.plugins.java.api.caching.JavaReadCache;
-import org.sonar.plugins.java.api.caching.JavaWriteCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.sonar.java.model.springcontext.SpringContextGathererTest.mockCacheContext;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SpringContextCacheHelperTest {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SpringContextCacheHelperTest.class);
-
   private static final InputFile INPUT_FILE = TestUtils.inputFile(new File("src/test/files/springcontext/SimpleComponent.java"));
-  private static final String BEAN_CACHE_KEY = "java:spring:bean-definitions:" + INPUT_FILE.key();
-  private static final String PACKAGES_CACHE_KEY = "java:spring:component-scan-packages:" + INPUT_FILE.key();
 
   @Nested
   class BeanDefinitions {
-
-    @Test
-    void write_uses_the_bean_definitions_cache_key() {
-      JavaWriteCache writeCache = mock(JavaWriteCache.class);
-
-      SpringContextCacheHelper.writeBeanDefinitionsToCache(writeContext(writeCache), LOG, List.of(simpleComponent()));
-
-      verify(writeCache).write(eq(BEAN_CACHE_KEY), any(byte[].class));
-    }
 
     @Test
     void writes_beans_in_the_documented_json_shape() {
@@ -100,7 +69,7 @@ class SpringContextCacheHelperTest {
       var written = writeBeans(List.of(simpleComponent()));
 
       assertThat(written).doesNotContain(INPUT_FILE.key());
-      assertThat(readBeans(written)).hasValueSatisfying(beans -> assertThat(beans).containsExactly(simpleComponent()));
+      assertThat(readBeans(written)).containsExactly(simpleComponent());
     }
 
     @ParameterizedTest(name = "{0}")
@@ -108,7 +77,7 @@ class SpringContextCacheHelperTest {
     void beans_round_trip_through_the_cache(String description, List<BeanDefinitionHolder.InputFileData> beans) {
       var restored = readBeans(writeBeans(beans));
 
-      assertThat(restored).contains(beans);
+      assertThat(restored).isEqualTo(beans);
     }
 
     static Stream<Arguments> beansToRoundTrip() {
@@ -124,44 +93,23 @@ class SpringContextCacheHelperTest {
     void injection_point_spans_survive_the_round_trip() {
       var restored = readBeans(writeBeans(List.of(beanWithDependencies())));
 
-      assertThat(restored).hasValueSatisfying(beans -> {
-        var dependencies = beans.getFirst().dependencies();
-        assertThat(dependencies.get("org.springframework.context.ApplicationContext"))
-          .containsExactly(new InjectionPoint.InputFileData("primaryContext", new TextSpan(16, 2, 16, 55)));
-        assertThat(dependencies.get("org.springframework.core.env.Environment"))
-          .containsExactly(new InjectionPoint.InputFileData("environment", new TextSpan(19, 2, 19, 38)));
-      });
+      var dependencies = restored.getFirst().dependencies();
+      assertThat(dependencies.get("org.springframework.context.ApplicationContext"))
+        .containsExactly(new InjectionPoint.InputFileData("primaryContext", new TextSpan(16, 2, 16, 55)));
+      assertThat(dependencies.get("org.springframework.core.env.Environment"))
+        .containsExactly(new InjectionPoint.InputFileData("environment", new TextSpan(19, 2, 19, 38)));
     }
 
-    @Test
-    void read_copies_the_entry_forward_on_success() {
-      JavaWriteCache writeCache = mock(JavaWriteCache.class);
-      var context = readContext("{\"version\":1,\"beans\":[]}", BEAN_CACHE_KEY, writeCache);
-
-      assertThat(SpringContextCacheHelper.readBeanDefinitionsFromCache(context, LOG)).isPresent();
-
-      verify(writeCache).copyFromPrevious(BEAN_CACHE_KEY);
-    }
-
-    @Test
-    void read_returns_empty_when_there_is_no_entry() {
-      JavaWriteCache writeCache = mock(JavaWriteCache.class);
-      var context = readContext(null, BEAN_CACHE_KEY, writeCache);
-
-      assertThat(SpringContextCacheHelper.readBeanDefinitionsFromCache(context, LOG)).isEmpty();
-
-      verify(writeCache, never()).copyFromPrevious(anyString());
-    }
-
+    /**
+     * Rejecting a corrupted entry is what {@link org.sonar.java.caching.FileCachingCheck#readFromCache} turns into a
+     * cache miss. It catches every {@link RuntimeException}, which is what these inputs produce: our own
+     * {@link IllegalArgumentException}, Gson's {@code JsonParseException}, or an {@link ArithmeticException} for a
+     * number that is not an exact {@code int}.
+     */
     @ParameterizedTest(name = "{0}")
     @MethodSource("corruptedEntries")
-    void read_returns_empty_on_corrupted_entry(String description, String content) {
-      JavaWriteCache writeCache = mock(JavaWriteCache.class);
-      var context = readContext(content, BEAN_CACHE_KEY, writeCache);
-
-      assertThat(SpringContextCacheHelper.readBeanDefinitionsFromCache(context, LOG)).isEmpty();
-
-      verify(writeCache, never()).copyFromPrevious(BEAN_CACHE_KEY);
+    void deserialize_rejects_a_corrupted_entry(String description, String content) {
+      assertThatThrownBy(() -> readBeans(content)).isInstanceOf(RuntimeException.class);
     }
 
     static Stream<Arguments> corruptedEntries() {
@@ -219,39 +167,17 @@ class SpringContextCacheHelperTest {
         "dependencies":[{"type":"T","injectionPoints":[{"name":"t","span":{"startLine":9,"startCharacter":2,"endLine":9,"endCharacter":5},\
         "unknown":{}}],"unknown":0}],"typeHierarchy":[],"unknown":"ignored"}],"unknown":true}
         """;
-      JavaWriteCache writeCache = mock(JavaWriteCache.class);
-      var context = readContext(content, BEAN_CACHE_KEY, writeCache);
 
-      assertThat(SpringContextCacheHelper.readBeanDefinitionsFromCache(context, LOG)).hasValueSatisfying(beans -> {
-        assertThat(beans).hasSize(1);
-        assertThat(beans.getFirst().beanName()).isEqualTo("simpleComponent");
-        assertThat(beans.getFirst().dependencies().get("T")).extracting(InjectionPoint.InputFileData::name).containsOnly("t");
-      });
-      verify(writeCache).copyFromPrevious(BEAN_CACHE_KEY);
-    }
+      var restored = readBeans(content);
 
-    @Test
-    void second_write_under_the_same_key_is_ignored() {
-      JavaWriteCache writeCache = mock(JavaWriteCache.class);
-      doThrow(new IllegalArgumentException("duplicate key")).when(writeCache).write(anyString(), any(byte[].class));
-      var context = writeContext(writeCache);
-
-      assertThatCode(() -> SpringContextCacheHelper.writeBeanDefinitionsToCache(context, LOG, List.of(simpleComponent())))
-        .doesNotThrowAnyException();
+      assertThat(restored).hasSize(1);
+      assertThat(restored.getFirst().beanName()).isEqualTo("simpleComponent");
+      assertThat(restored.getFirst().dependencies().get("T")).extracting(InjectionPoint.InputFileData::name).containsOnly("t");
     }
   }
 
   @Nested
   class ComponentScanPackages {
-
-    @Test
-    void write_uses_the_component_scan_packages_cache_key() {
-      JavaWriteCache writeCache = mock(JavaWriteCache.class);
-
-      SpringContextCacheHelper.writeComponentScanPackagesToCache(writeContext(writeCache), LOG, Set.of("com.example.service"));
-
-      verify(writeCache).write(eq(PACKAGES_CACHE_KEY), any(byte[].class));
-    }
 
     @Test
     void writes_packages_in_the_documented_json_shape() {
@@ -268,7 +194,7 @@ class SpringContextCacheHelperTest {
     void packages_round_trip_through_the_cache(String description, List<String> packages) {
       var restored = readPackages(writePackages(packages));
 
-      assertThat(restored).contains(packages);
+      assertThat(restored).containsExactlyElementsOf(packages);
     }
 
     static Stream<Arguments> packagesToRoundTrip() {
@@ -278,35 +204,10 @@ class SpringContextCacheHelperTest {
         Arguments.of("several packages", List.of("com.example.service", "com.example.web", "checks.spring.context")));
     }
 
-    @Test
-    void read_copies_the_entry_forward_on_success() {
-      JavaWriteCache writeCache = mock(JavaWriteCache.class);
-      var context = readContext("{\"version\":1,\"packages\":[]}", PACKAGES_CACHE_KEY, writeCache);
-
-      assertThat(SpringContextCacheHelper.readComponentScanPackagesFromCache(context, LOG)).isPresent();
-
-      verify(writeCache).copyFromPrevious(PACKAGES_CACHE_KEY);
-    }
-
-    @Test
-    void read_returns_empty_when_there_is_no_entry() {
-      JavaWriteCache writeCache = mock(JavaWriteCache.class);
-      var context = readContext(null, PACKAGES_CACHE_KEY, writeCache);
-
-      assertThat(SpringContextCacheHelper.readComponentScanPackagesFromCache(context, LOG)).isEmpty();
-
-      verify(writeCache, never()).copyFromPrevious(anyString());
-    }
-
     @ParameterizedTest(name = "{0}")
     @MethodSource("corruptedEntries")
-    void read_returns_empty_on_corrupted_entry(String description, String content) {
-      JavaWriteCache writeCache = mock(JavaWriteCache.class);
-      var context = readContext(content, PACKAGES_CACHE_KEY, writeCache);
-
-      assertThat(SpringContextCacheHelper.readComponentScanPackagesFromCache(context, LOG)).isEmpty();
-
-      verify(writeCache, never()).copyFromPrevious(PACKAGES_CACHE_KEY);
+    void deserialize_rejects_a_corrupted_entry(String description, String content) {
+      assertThatThrownBy(() -> readPackages(content)).isInstanceOf(RuntimeException.class);
     }
 
     static Stream<Arguments> corruptedEntries() {
@@ -321,16 +222,6 @@ class SpringContextCacheHelperTest {
         Arguments.of("packages not an array", "{\"version\":1,\"packages\":\"com.example.service\"}"),
         Arguments.of("package not a string", "{\"version\":1,\"packages\":[1]}"),
         Arguments.of("package given as an object", "{\"version\":1,\"packages\":[{\"name\":\"com.example.service\"}]}"));
-    }
-
-    @Test
-    void second_write_under_the_same_key_is_ignored() {
-      JavaWriteCache writeCache = mock(JavaWriteCache.class);
-      doThrow(new IllegalArgumentException("duplicate key")).when(writeCache).write(anyString(), any(byte[].class));
-      var context = writeContext(writeCache);
-
-      assertThatCode(() -> SpringContextCacheHelper.writeComponentScanPackagesToCache(context, LOG, Set.of("com.example.service")))
-        .doesNotThrowAnyException();
     }
   }
 
@@ -362,53 +253,21 @@ class SpringContextCacheHelperTest {
     return new BeanDefinitionHolder.InputFileData(beanName, type, "checks.spring.context", span, isPrimary, profiles, injectionPoints, typeHierarchy);
   }
 
-  // ---- Cache plumbing -------------------------------------------------------
+  // ---- Serialization plumbing ----------------------------------------------
 
   private static String writeBeans(List<BeanDefinitionHolder.InputFileData> beans) {
-    JavaWriteCache writeCache = mock(JavaWriteCache.class);
-    SpringContextCacheHelper.writeBeanDefinitionsToCache(writeContext(writeCache), LOG, beans);
-    return captureWrittenData(writeCache);
+    return new String(SpringContextCacheHelper.serializeBeans(beans), StandardCharsets.UTF_8);
   }
 
-  private static Optional<List<BeanDefinitionHolder.InputFileData>> readBeans(String content) {
-    return SpringContextCacheHelper.readBeanDefinitionsFromCache(
-      readContext(content, BEAN_CACHE_KEY, mock(JavaWriteCache.class)), LOG);
+  private static List<BeanDefinitionHolder.InputFileData> readBeans(String content) {
+    return SpringContextCacheHelper.deserializeBeans(content.getBytes(StandardCharsets.UTF_8));
   }
 
   private static String writePackages(List<String> packages) {
-    JavaWriteCache writeCache = mock(JavaWriteCache.class);
-    SpringContextCacheHelper.writeComponentScanPackagesToCache(writeContext(writeCache), LOG, packages);
-    return captureWrittenData(writeCache);
+    return new String(SpringContextCacheHelper.serializeComponentScanPackages(packages), StandardCharsets.UTF_8);
   }
 
-  private static Optional<List<String>> readPackages(String content) {
-    return SpringContextCacheHelper.readComponentScanPackagesFromCache(
-      readContext(content, PACKAGES_CACHE_KEY, mock(JavaWriteCache.class)), LOG);
-  }
-
-  private static String captureWrittenData(JavaWriteCache writeCache) {
-    var dataCaptor = ArgumentCaptor.forClass(byte[].class);
-    verify(writeCache).write(anyString(), dataCaptor.capture());
-    return new String(dataCaptor.getValue(), StandardCharsets.UTF_8);
-  }
-
-  private static JavaFileScannerContext writeContext(JavaWriteCache writeCache) {
-    CacheContext cacheContext = mockCacheContext(mock(JavaReadCache.class), writeCache);
-    var context = mock(JavaFileScannerContext.class);
-    when(context.getInputFile()).thenReturn(INPUT_FILE);
-    when(context.getCacheContext()).thenReturn(cacheContext);
-    return context;
-  }
-
-  private static InputFileScannerContext readContext(@Nullable String content, String cacheKey, JavaWriteCache writeCache) {
-    JavaReadCache readCache = mock(JavaReadCache.class);
-    if (content != null) {
-      when(readCache.readBytes(cacheKey)).thenReturn(content.getBytes(StandardCharsets.UTF_8));
-    }
-    CacheContext cacheContext = mockCacheContext(readCache, writeCache);
-    var context = mock(InputFileScannerContext.class);
-    when(context.getInputFile()).thenReturn(INPUT_FILE);
-    when(context.getCacheContext()).thenReturn(cacheContext);
-    return context;
+  private static Set<String> readPackages(String content) {
+    return SpringContextCacheHelper.deserializeComponentScanPackages(content.getBytes(StandardCharsets.UTF_8));
   }
 }
