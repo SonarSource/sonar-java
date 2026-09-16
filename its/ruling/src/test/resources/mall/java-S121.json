@@ -1,0 +1,11 @@
+{
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/SmsHomeAdvertiseController.java": [
+31,
+41,
+51,
+69
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/component/DynamicSecurityMetadataSource.java": [
+44
+]
+}

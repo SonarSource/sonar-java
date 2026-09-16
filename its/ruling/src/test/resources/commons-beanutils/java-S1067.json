@@ -1,0 +1,15 @@
+{
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java": [
+436
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaBean.java": [
+848,
+929
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java": [
+1067
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/converters/StringLocaleConverter.java": [
+236
+]
+}

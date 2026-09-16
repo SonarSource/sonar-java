@@ -1,0 +1,19 @@
+{
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/config/MallSecurityConfig.java": [
+25,
+27
+],
+"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/config/SecurityConfig.java": [
+31
+],
+"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/config/MallSecurityConfig.java": [
+17
+],
+"com.macro.mall:mall:mall-security/src/main/java/com/macro/mall/security/config/SecurityConfig.java": [
+29,
+31,
+33,
+35,
+37
+]
+}

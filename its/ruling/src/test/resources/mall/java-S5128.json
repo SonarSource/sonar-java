@@ -1,0 +1,43 @@
+{
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/PmsBrandController.java": [
+38,
+53
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductAttributeController.java": [
+47,
+59
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/PmsProductCategoryController.java": [
+32,
+46
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/controller/UmsAdminController.java": [
+49,
+60,
+147
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsBrandServiceImpl.java": [
+36,
+47
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductAttributeServiceImpl.java": [
+42,
+58
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/PmsProductCategoryServiceImpl.java": [
+38,
+70
+],
+"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/UmsAdminServiceImpl.java": [
+79,
+242
+],
+"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/controller/DemoController.java": [
+41,
+57
+],
+"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/service/impl/DemoServiceImpl.java": [
+30,
+37
+]
+}

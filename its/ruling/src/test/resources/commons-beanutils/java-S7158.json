@@ -1,0 +1,46 @@
+{
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueChangeClosure.java": [
+137
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicate.java": [
+167
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanToPropertyValueTransformer.java": [
+122
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/JDBCDynaClass.java": [
+193
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MappedPropertyDescriptor.java": [
+90,
+157,
+203,
+326
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
+477,
+833,
+1578,
+1963
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/CharacterConverter.java": [
+72
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/DateTimeConverter.java": [
+329
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/converters/NumberConverter.java": [
+261
+],
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/expression/DefaultResolver.java": [
+80,
+93,
+118,
+144,
+167,
+182,
+205,
+228,
+266
+]
+}
