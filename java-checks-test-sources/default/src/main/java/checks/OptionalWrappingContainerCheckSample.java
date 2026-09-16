@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 class OptionalWrappingContainerCheckSample {
 
-  Optional<Collection<String>> collection() { // Noncompliant {{Return an empty collection or array instead of wrapping it in Optional.}}
+  Optional<Collection<String>> collection() { // Noncompliant {{Return an empty collection instead of wrapping it in Optional.}}
 //^^^^^^^^
     return Optional.empty();
   }
@@ -28,7 +28,7 @@ class OptionalWrappingContainerCheckSample {
     return Optional.empty();
   }
 
-  Optional<Map<String, String>> map() { // Noncompliant
+  Optional<Map<String, String>> map() { // Noncompliant {{Return an empty map instead of wrapping it in Optional.}}
 //^^^^^^^^
     return Optional.empty();
   }
@@ -43,7 +43,7 @@ class OptionalWrappingContainerCheckSample {
     return Optional.empty();
   }
 
-  Optional<String[]> objectArray() { // Noncompliant
+  Optional<String[]> objectArray() { // Noncompliant {{Return an empty array instead of wrapping it in Optional.}}
 //^^^^^^^^
     return Optional.empty();
   }

@@ -17,6 +17,7 @@
 package org.sonar.java.checks;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -31,7 +32,6 @@ public class OptionalWrappingContainerCheck extends IssuableSubscriptionVisitor 
   private static final String JAVA_UTIL_OPTIONAL = "java.util.Optional";
   private static final String JAVA_UTIL_COLLECTION = "java.util.Collection";
   private static final String JAVA_UTIL_MAP = "java.util.Map";
-  private static final String MESSAGE = "Return an empty collection or array instead of wrapping it in Optional.";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -55,12 +55,23 @@ public class OptionalWrappingContainerCheck extends IssuableSubscriptionVisitor 
     }
 
     Type wrappedType = returnType.typeArguments().get(0);
-    if (isContainer(wrappedType)) {
-      reportIssue(((ParameterizedTypeTree) returnTypeTree).type(), MESSAGE);
+    String containerType = containerType(wrappedType);
+    if (containerType != null) {
+      reportIssue(((ParameterizedTypeTree) returnTypeTree).type(), "Return an empty " + containerType + " instead of wrapping it in Optional.");
     }
   }
 
-  private static boolean isContainer(Type type) {
-    return type.isArray() || type.isSubtypeOf(JAVA_UTIL_COLLECTION) || type.isSubtypeOf(JAVA_UTIL_MAP);
+  @Nullable
+  private static String containerType(Type type) {
+    if (type.isArray()) {
+      return "array";
+    }
+    if (type.isSubtypeOf(JAVA_UTIL_COLLECTION)) {
+      return "collection";
+    }
+    if (type.isSubtypeOf(JAVA_UTIL_MAP)) {
+      return "map";
+    }
+    return null;
   }
 }
