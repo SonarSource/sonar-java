@@ -78,9 +78,23 @@ class ProfileExpressionParserTest {
   // ---- Round-trip ---------------------------------------------------------
 
   @ParameterizedTest
-  @MethodSource("parses_valid_expressions")
+  @MethodSource
   void canonical_form_round_trips(ProfileExpression expected) {
     assertThat(ProfileExpressionParser.parse(expected.toCanonicalString())).isEqualTo(expected);
+  }
+
+  static Stream<Arguments> canonical_form_round_trips() {
+    return Stream.of(
+      Arguments.of(profile("dev")),
+      Arguments.of(not(profile("dev"))),
+      Arguments.of(not(not(profile("dev")))),
+      Arguments.of(and(List.of(profile("dev"), not(profile("test"))))),
+      Arguments.of(and(List.of(profile("a"), profile("b"), profile("c")))),
+      Arguments.of(or(List.of(profile("a"), profile("b"), profile("c")))),
+      Arguments.of(or(List.of(and(List.of(profile("a"), profile("b"))), profile("c")))),
+      Arguments.of(and(List.of(profile("a"), or(List.of(profile("b"), profile("c")))))),
+      Arguments.of(not(or(List.of(profile("dev"), profile("test"))))),
+      Arguments.of(not(and(List.of(profile("a"), not(or(List.of(profile("b"), profile("c")))))))));
   }
 
   @Test
