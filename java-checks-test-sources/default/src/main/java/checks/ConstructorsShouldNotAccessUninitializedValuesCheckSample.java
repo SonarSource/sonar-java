@@ -126,6 +126,51 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
     }
   }
 
+  record WithInnerClass(String name) {
+    WithInnerClass {
+      class LocalClass {
+        void localMethod() {
+          name(); // Compliant
+        }
+      }
+    }
+  }
+
+  record WithLambda(String name) {
+    WithLambda {
+      Runnable r = () -> name(); // Compliant
+    }
+  }
+
+  record WithCastAndParens(String name) {
+    WithCastAndParens {
+      // Noncompliant@+1 {{Remove this use of the uninitialized value "name()".}}
+      if (((WithCastAndParens) (this)).name().isBlank()) {
+//                                     ^^^^
+        throw new IllegalArgumentException();
+      }
+    }
+  }
+
+  record OtherMethodWithParams(String name) {
+    OtherMethodWithParams {
+      compute(1); // Compliant
+    }
+
+    void compute(int x) {
+    }
+  }
+
+  class EnclosingClass {
+    record Nested(String name) {
+      Nested {
+        if (EnclosingClass.this.toString().isEmpty()) { // Compliant
+          throw new IllegalArgumentException();
+        }
+      }
+    }
+  }
+
   record NoComponents() {
     NoComponents {
       // Compliant

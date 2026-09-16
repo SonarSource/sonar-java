@@ -88,28 +88,26 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheck extends Issuabl
 
     @Override
     public void visitClass(ClassTree tree) {
-      // Skip inner and anonymous classes
+      // Do not visit local/anonymous classes
     }
 
     @Override
     public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-      // Skip lambdas
+      // Do not visit lambdas
     }
 
     @Override
     public void visitNewClass(NewClassTree tree) {
-      // Skip local/anonymous class definitions in new class
+      // Do not visit anonymous class body in new class expressions
     }
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (isInvocationOnThis(tree)) {
+      if (isInvocationOnRecordInstance(tree)) {
         Symbol methodSymbol = tree.methodSymbol();
         if (!methodSymbol.isUnknown()
-          && methodSymbol.isMethodSymbol()
           && recordSymbol.equals(methodSymbol.owner())
           && tree.arguments().isEmpty()
-          && ((Symbol.MethodSymbol) methodSymbol).parameterTypes().isEmpty()
           && componentNames.contains(methodSymbol.name())
           && ((Symbol.MethodSymbol) methodSymbol).declaration() == null) {
           reportIssue(ExpressionUtils.methodName(tree),
@@ -119,30 +117,26 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheck extends Issuabl
       super.visitMethodInvocation(tree);
     }
 
-    private boolean isInvocationOnThis(MethodInvocationTree invocation) {
+    private boolean isInvocationOnRecordInstance(MethodInvocationTree invocation) {
       ExpressionTree methodSelect = invocation.methodSelect();
       if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-        return !"super".equals(((IdentifierTree) methodSelect).name());
+        return true;
       }
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
-        return isCurrentInstance(memberSelect.expression());
-      }
-      return false;
-    }
-
-    private boolean isCurrentInstance(ExpressionTree expression) {
-      ExpressionTree receiver = ExpressionUtils.skipParentheses(expression);
-      while (receiver instanceof TypeCastTree cast) {
-        receiver = ExpressionUtils.skipParentheses(cast.expression());
-      }
-      if (receiver instanceof IdentifierTree identifier) {
-        return "this".equals(identifier.name());
-      }
-      if (receiver instanceof MemberSelectExpressionTree qualifiedThis
-        && ExpressionUtils.isThis(qualifiedThis.identifier())) {
-        Symbol thisSymbol = qualifiedThis.identifier().symbol();
-        return !thisSymbol.isUnknown() && recordSymbol.equals(thisSymbol.enclosingClass());
+        ExpressionTree receiver = ExpressionUtils.skipParentheses(((MemberSelectExpressionTree) methodSelect).expression());
+        while (receiver.is(Tree.Kind.TYPE_CAST)) {
+          receiver = ExpressionUtils.skipParentheses(((TypeCastTree) receiver).expression());
+        }
+        if (ExpressionUtils.isThis(receiver)) {
+          return true;
+        }
+        if (receiver.is(Tree.Kind.MEMBER_SELECT)) {
+          MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) receiver;
+          if (ExpressionUtils.isThis(memberSelect.identifier())) {
+            Symbol thisSymbol = memberSelect.identifier().symbol();
+            return !thisSymbol.isUnknown() && recordSymbol.equals(thisSymbol.enclosingClass());
+          }
+        }
       }
       return false;
     }
