@@ -4,9 +4,16 @@ import java.util.Arrays;
 
 class ArraysFillIncompatibleTypeCheckSample {
 
+  interface InterfaceA {}
+  interface InterfaceB {}
+  static class NonFinalBase {}
+  static class UnrelatedClass {}
+
   void compliantExamples(String[] textBuffer, Integer[] numbers, Number[] numBuffer, Object[] objBuffer,
       CharSequence charSeq, Object objVal, java.util.List<String>[] listArray, java.util.List<Integer> intList,
-      short s, int i, Long[] longs, Long longObj, Short shortObj, boolean flag) {
+      short s, int i, Long[] longs, Long longObj, Short shortObj, boolean flag, boolean outer,
+      InterfaceA[] ifaceAArray, InterfaceB ifaceB, InterfaceB[] ifaceBArray, InterfaceA[][] ifaceA2D,
+      NonFinalBase nonFinalBase, NonFinalBase[] nonFinalBaseArray, NonFinalBase[][] nonFinalBase2D) {
     Arrays.fill(textBuffer, "default"); // Compliant
     Arrays.fill(textBuffer, 0, 5, "default"); // Compliant
     Arrays.fill(textBuffer, null); // Compliant: null can be stored in reference array
@@ -28,12 +35,25 @@ class ArraysFillIncompatibleTypeCheckSample {
     Arrays.fill(longs, flag ? 0 : longObj); // Compliant: promoted to long, which boxes to Long
     Arrays.fill(numbers, flag ? shortObj : i); // Compliant: promoted to int, which boxes to Integer
 
+    // Overlapping interfaces and non-final classes
+    Arrays.fill(ifaceAArray, ifaceB); // Compliant: unrelated interfaces can share an implementation
+    Arrays.fill(nonFinalBaseArray, ifaceB); // Compliant: non-final class subclass can implement interface
+    Arrays.fill(ifaceAArray, nonFinalBase); // Compliant: non-final class subclass can implement interface
+    Arrays.fill(ifaceA2D, ifaceBArray); // Compliant: array component types can share implementation
+    Arrays.fill(nonFinalBase2D, ifaceBArray); // Compliant: array component types can share implementation
+
+    // Nested reference and primitive ternaries
+    Arrays.fill(textBuffer, flag ? (outer ? "a" : "b") : "c"); // Compliant: all branches compatible
+    Arrays.fill(numbers, flag ? (outer ? s : i) : 42); // Compliant: promoted numeric ternary inside reference ternary
+
     int[] primitiveInts = new int[5];
     Arrays.fill(primitiveInts, 10); // Compliant: primitive array overload
     Arrays.fill(primitiveInts, 0, 2, 10); // Compliant: primitive array overload
   }
 
-  void noncompliantExamples(String[] textBuffer, Integer[] numbers, Number[] numBuffer) {
+  void noncompliantExamples(String[] textBuffer, Integer[] numbers, Number[] numBuffer,
+      boolean flag, boolean outer, boolean inner, InterfaceA[] ifaceAArray, InterfaceB ifaceB,
+      InterfaceB[] ifaceBArray, NonFinalBase[] nonFinalBaseArray, UnrelatedClass unrelatedVal, String[][] str2D) {
     Arrays.fill(textBuffer, 42); // Noncompliant {{An array of type "String[]" cannot be filled with a value of type "int".}}
 //         ^^^^ ^^^^^^^^^^<
     Arrays.fill(textBuffer, 0, 5, 42); // Noncompliant {{An array of type "String[]" cannot be filled with a value of type "int".}}
@@ -49,6 +69,18 @@ class ArraysFillIncompatibleTypeCheckSample {
     Arrays.fill(textBuffer, true ? 456 : "b"); // Noncompliant {{An array of type "String[]" cannot be filled with a value of type "int".}}
 //         ^^^^ ^^^^^^^^^^<
     Arrays.fill(textBuffer, true ? 123 : 456); // Noncompliant {{An array of type "String[]" cannot be filled with a value of type "int".}}
+//         ^^^^ ^^^^^^^^^^<
+    Arrays.fill(textBuffer, ifaceB); // Noncompliant {{An array of type "String[]" cannot be filled with a value of type "InterfaceB".}}
+//         ^^^^ ^^^^^^^^^^<
+    Arrays.fill(ifaceAArray, "string"); // Noncompliant {{An array of type "InterfaceA[]" cannot be filled with a value of type "String".}}
+//         ^^^^ ^^^^^^^^^^^<
+    Arrays.fill(nonFinalBaseArray, unrelatedVal); // Noncompliant {{An array of type "NonFinalBase[]" cannot be filled with a value of type "UnrelatedClass".}}
+//         ^^^^ ^^^^^^^^^^^^^^^^^<
+    Arrays.fill(str2D, ifaceBArray); // Noncompliant {{An array of type "String[][]" cannot be filled with a value of type "InterfaceB[]".}}
+//         ^^^^ ^^^^^<
+    Arrays.fill(textBuffer, flag ? (outer ? 42 : "ok") : "ok"); // Noncompliant {{An array of type "String[]" cannot be filled with a value of type "int".}}
+//         ^^^^ ^^^^^^^^^^<
+    Arrays.fill(textBuffer, flag ? "ok" : (inner ? 42 : "ok")); // Noncompliant {{An array of type "String[]" cannot be filled with a value of type "int".}}
 //         ^^^^ ^^^^^^^^^^<
   }
 

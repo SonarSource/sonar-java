@@ -71,31 +71,27 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
     checkFillingArgument(mit, arrayArg, arrayType, componentType, fillingArg);
   }
 
-  private void checkFillingArgument(MethodInvocationTree mit, ExpressionTree arrayArg, Type arrayType, Type componentType, ExpressionTree fillingArg) {
+  private boolean checkFillingArgument(MethodInvocationTree mit, ExpressionTree arrayArg, Type arrayType, Type componentType, ExpressionTree fillingArg) {
     ExpressionTree unwrappedFillingArg = ExpressionUtils.skipParentheses(fillingArg);
     if (unwrappedFillingArg.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
       if (unwrappedFillingArg.symbolType().isPrimitive()) {
         if (isMismatched(componentType, unwrappedFillingArg)) {
           reportMismatch(mit, arrayArg, arrayType, unwrappedFillingArg);
+          return true;
         }
-        return;
+        return false;
       }
 
       ConditionalExpressionTree conditional = (ConditionalExpressionTree) unwrappedFillingArg;
-      ExpressionTree trueExpr = ExpressionUtils.skipParentheses(conditional.trueExpression());
-      ExpressionTree falseExpr = ExpressionUtils.skipParentheses(conditional.falseExpression());
-
-      if (isMismatched(componentType, trueExpr)) {
-        reportMismatch(mit, arrayArg, arrayType, trueExpr);
-      } else if (isMismatched(componentType, falseExpr)) {
-        reportMismatch(mit, arrayArg, arrayType, falseExpr);
-      }
-      return;
+      return checkFillingArgument(mit, arrayArg, arrayType, componentType, conditional.trueExpression())
+        || checkFillingArgument(mit, arrayArg, arrayType, componentType, conditional.falseExpression());
     }
 
     if (isMismatched(componentType, unwrappedFillingArg)) {
       reportMismatch(mit, arrayArg, arrayType, unwrappedFillingArg);
+      return true;
     }
+    return false;
   }
 
   private static boolean isMismatched(Type componentType, ExpressionTree expr) {
@@ -109,7 +105,32 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
   }
 
   private static boolean isCompatible(Type fillingType, Type componentType) {
-    return fillingType.isSubtypeOf(componentType.erasure()) || componentType.isSubtypeOf(fillingType.erasure());
+    if (fillingType.isUnknown() || fillingType.isTypeVar() || componentType.isUnknown() || componentType.isTypeVar()) {
+      return true;
+    }
+    if (fillingType.isSubtypeOf(componentType.erasure()) || componentType.isSubtypeOf(fillingType.erasure())) {
+      return true;
+    }
+    if (fillingType.isArray() || componentType.isArray()) {
+      if (fillingType.isArray() && componentType.isArray()) {
+        return isCompatible(((Type.ArrayType) fillingType).elementType(), ((Type.ArrayType) componentType).elementType());
+      }
+      return false;
+    }
+    return canTypesOverlap(fillingType, componentType);
+  }
+
+  private static boolean canTypesOverlap(Type type1, Type type2) {
+    if (type1.isPrimitive() || type2.isPrimitive()) {
+      return false;
+    }
+    if (type1.symbol() == null || type2.symbol() == null) {
+      return false;
+    }
+    if (!type1.symbol().isInterface() && !type2.symbol().isInterface()) {
+      return false;
+    }
+    return !type1.symbol().isFinal() && !type2.symbol().isFinal();
   }
 
   private void reportMismatch(MethodInvocationTree mit, ExpressionTree arrayArg, Type arrayType, ExpressionTree incompatibleArg) {
