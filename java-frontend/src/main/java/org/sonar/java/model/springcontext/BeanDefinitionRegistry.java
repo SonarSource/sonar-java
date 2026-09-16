@@ -17,6 +17,7 @@
 package org.sonar.java.model.springcontext;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,5 +45,9 @@ public class BeanDefinitionRegistry {
 
   public void addBeanDefinition(String beanName, BeanDefinitionHolder beanDefinition) {
     beanDefinitions.computeIfAbsent(beanName, k -> new ArrayList<>()).add(beanDefinition);
+  }
+
+  public List<BeanDefinitionHolder> getAllDefinitions() {
+    return beanDefinitions.values().stream().flatMap(Collection::stream).toList();
   }
 }
