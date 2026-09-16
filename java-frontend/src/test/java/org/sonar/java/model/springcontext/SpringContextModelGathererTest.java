@@ -88,7 +88,7 @@ class SpringContextModelGathererTest {
 
     @Override
     public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {
-      springContextModel.getTypeToBeanNamesIndex().addBeanForType("com.example.MyService", "myServiceBean");
+      springContextModel.getTypeToBeanNamesIndex().addBeanForType("com.example.MyService", "myServiceBean", context.getModuleKey(), "com.example");
     }
 
     @Override
