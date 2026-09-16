@@ -154,6 +154,9 @@ class RedundantRangeCheckCheckSample {
     }
     if (size++ > 3 && size >= 0) { // compliant - side effect in increment
     }
+    if (size >= 0 && size >= 5 && refresh()) { // Noncompliant {{Remove this redundant range check.}}
+//      ^^^^^^^^^
+    }
   }
 
   void testNonSyntacticallyIdentical(int x) {
