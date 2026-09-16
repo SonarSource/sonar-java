@@ -157,7 +157,7 @@ public class JavaRulingTest {
   }
 
   private static void prepareDumpOldFolder() throws Exception {
-    Path allRulesFolder = Paths.get("src/test/resources");
+    Path allRulesFolder = Paths.get("src/test/resources/expected/java");
     if (SUBSET_OF_ENABLED_RULES.isEmpty()) {
       effectiveDumpOldFolder = allRulesFolder.toAbsolutePath();
     } else {
