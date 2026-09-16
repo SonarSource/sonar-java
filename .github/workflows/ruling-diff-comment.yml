@@ -53,7 +53,7 @@ jobs:
           repository: ${{ github.repository }}
           base-sha: ${{ inputs.base-sha || github.event.pull_request.base.sha }}
           head-sha: ${{ inputs.head-sha || github.event.pull_request.head.sha }}
-          ruling-root: 'its/ruling/src/test/resources'
+          ruling-root: 'its/ruling/src/test/resources/expected/java'
           sources-root: 'its/sources'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
