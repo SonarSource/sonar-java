@@ -1,0 +1,19 @@
+<h2>Why is this an issue?</h2>
+<p>Constructors should not access the values of fields that haven’t yet been initialized.</p>
+<h3>Noncompliant code example</h3>
+<pre>
+public abstract class MyAbstractClass() {
+
+  String name;
+  String fname;
+  int hashCode;
+
+  public abstract String getValue();
+
+  public MyAbstractClass(String name) {
+    this.fname = this.name.split()[0];  // Noncompliant; this.name not assigned yet
+    this.hashCode = getValue().hashCode();  // Noncompliant; child class constructor hasn't run yet
+  }
+}
+</pre>
+

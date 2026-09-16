@@ -1,0 +1,15 @@
+{
+  "title": "Constructors should not access uninitialized values",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "tags": [],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3037",
+  "sqKey": "S3037",
+  "scope": "Main",
+  "quickfix": "unknown"
+}
