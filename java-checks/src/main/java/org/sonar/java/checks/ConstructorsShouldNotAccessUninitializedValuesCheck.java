@@ -98,7 +98,9 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheck extends Issuabl
 
     @Override
     public void visitNewClass(NewClassTree tree) {
-      // Do not visit anonymous class body in new class expressions
+      scan(tree.enclosingExpression());
+      scan(tree.typeArguments());
+      scan(tree.arguments());
     }
 
     @Override

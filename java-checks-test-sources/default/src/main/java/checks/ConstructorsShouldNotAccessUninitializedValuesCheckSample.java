@@ -161,13 +161,11 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
     }
   }
 
-  class EnclosingClass {
-    record Nested(String name) {
-      Nested {
-        if (EnclosingClass.this.toString().isEmpty()) { // Compliant
-          throw new IllegalArgumentException();
-        }
-      }
+  record InNewClassArgument(String name) {
+    InNewClassArgument {
+      // Noncompliant@+1 {{Remove this use of the uninitialized value "name()".}}
+      throw new IllegalArgumentException("bad name: " + name());
+//                                                      ^^^^
     }
   }
 
