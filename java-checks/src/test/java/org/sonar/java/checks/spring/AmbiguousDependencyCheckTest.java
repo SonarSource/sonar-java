@@ -137,8 +137,8 @@ class AmbiguousDependencyCheckTest {
     registerBean(model, "paymentGatewayB", type, "module-b", "com.b", fileB);
     registerBean(model, "consumerA", "com.a.ConsumerA", "module-a", "com.a", consumerFileA);
     registerBean(model, "consumerB", "com.b.ConsumerB", "module-b", "com.b", consumerFileB);
-    registerInjectionPoint(model, type, "paymentGateway", consumerFileA);
-    registerInjectionPoint(model, type, "paymentGateway", consumerFileB);
+    registerInjectionPoint(model, type, "paymentGateway", "module-a", consumerFileA);
+    registerInjectionPoint(model, type, "paymentGateway", "module-b", consumerFileB);
 
     assertThat(check.execute(model)).isEmpty();
   }
@@ -154,7 +154,7 @@ class AmbiguousDependencyCheckTest {
     registerBean(model, "paymentGatewayImplA", type, "module-a", "com.a", fileA);
     registerBean(model, "paymentGatewayImplB", type, "module-a", "com.a", fileB);
     registerBean(model, "consumer", "com.a.Consumer", "module-a", "com.a", consumerFile);
-    registerInjectionPoint(model, type, "paymentGateway", consumerFile);
+    registerInjectionPoint(model, type, "paymentGateway", "module-a", consumerFile);
 
     assertThat(check.execute(model)).hasSize(1);
   }
@@ -170,7 +170,7 @@ class AmbiguousDependencyCheckTest {
     registerBean(model, "paymentGatewayA", type, "module-a", "com.a", fileA);
     registerBean(model, "paymentGatewayB", type, "module-b", "com.b", fileB);
     registerBean(model, "consumer", "com.a.Consumer", "module-a", "com.a", consumerFile);
-    registerInjectionPoint(model, type, "paymentGateway", consumerFile);
+    registerInjectionPoint(model, type, "paymentGateway", "module-a", consumerFile);
     model.getProjectPackageScan().addPackages("module-a", List.of("com.a", "com.b"));
 
     assertThat(check.execute(model)).hasSize(1);
@@ -181,11 +181,12 @@ class AmbiguousDependencyCheckTest {
     var location = new BeanLocation(file, new AnalyzerMessage.TextSpan(1));
     model.getBeanDefinitionRegistry().addBeanDefinition(beanName,
       new BeanDefinitionHolder.Builder(type, module, beanPackage, location).build());
-    model.getTypeToBeanNamesIndex().addBeanForType(type, beanName);
+    model.getTypeToBeanNamesIndex().addBeanForType(type, beanName, module, beanPackage);
   }
 
-  private static void registerInjectionPoint(SpringContextModel model, String type, String fieldName, InputFile consumerFile) {
-    model.getTypeToDependenciesIndex().addDependencyForType(type, fieldName,
+  private static void registerInjectionPoint(SpringContextModel model, String type, String fieldName,
+    String module, InputFile consumerFile) {
+    model.getTypeToDependenciesIndex().addDependencyForType(type, fieldName, module,
       new BeanLocation(consumerFile, new AnalyzerMessage.TextSpan(5)));
   }
 
