@@ -84,9 +84,15 @@ class ArraysFillIncompatibleTypeCheckSample {
 //         ^^^^ ^^^^^^^^^^<
   }
 
-  <T> void generics(T[] array, T value, String[] stringArray) {
+  <T> void generics(T[] array, T value, String[] stringArray, T[][] array2D, T[] valueArray) {
     Arrays.fill(array, value); // Compliant: type variable
     Arrays.fill(array, "test"); // Compliant: type variable array
     Arrays.fill(stringArray, value); // Compliant: filling type is type variable
+    Arrays.fill(array2D, valueArray); // Compliant: type variable element
+  }
+
+  void primitive2D(int[][] a, String[] v) {
+    Arrays.fill(a, v); // Noncompliant {{An array of type "int[][]" cannot be filled with a value of type "String[]".}}
+//         ^^^^ ^<
   }
 }

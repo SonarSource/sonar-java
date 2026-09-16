@@ -124,9 +124,6 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
     if (type1.isPrimitive() || type2.isPrimitive()) {
       return false;
     }
-    if (type1.symbol() == null || type2.symbol() == null) {
-      return false;
-    }
     if (!type1.symbol().isInterface() && !type2.symbol().isInterface()) {
       return false;
     }
