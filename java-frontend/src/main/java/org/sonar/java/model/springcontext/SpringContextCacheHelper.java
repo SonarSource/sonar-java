@@ -17,6 +17,7 @@
 package org.sonar.java.model.springcontext;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,7 +67,7 @@ final class SpringContextCacheHelper {
   }
 
   static List<BeanDefinitionHolder.InputFileData> deserializeBeans(byte[] data) {
-    var beans = requiredArray(parseDocument(toContent(data), CACHE_FORMAT_VERSION), BEANS);
+    var beans = requiredArray(readDocument(data), BEANS);
     List<BeanDefinitionHolder.InputFileData> result = new ArrayList<>();
     for (JsonElement bean : beans) {
       result.add(BeanDefinitionHolderTypeAdapter.getInstance().fromJsonTree(bean));
@@ -83,14 +84,14 @@ final class SpringContextCacheHelper {
   }
 
   static Set<String> deserializeComponentScanPackages(byte[] data) {
-    return deserializeStrings(requiredArray(parseDocument(toContent(data), CACHE_FORMAT_VERSION), PACKAGES));
+    return deserializeStrings(requiredArray(readDocument(data), PACKAGES));
   }
 
   private static byte[] toBytes(String document) {
     return document.getBytes(StandardCharsets.UTF_8);
   }
 
-  private static String toContent(byte[] data) {
-    return new String(data, StandardCharsets.UTF_8);
+  private static JsonObject readDocument(byte[] data) {
+    return parseDocument(new String(data, StandardCharsets.UTF_8), CACHE_FORMAT_VERSION);
   }
 }
