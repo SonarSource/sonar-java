@@ -61,7 +61,7 @@ class DurationTimeUnitAgreementCheckSample {
 
     TimeUnit unit = TimeUnit.SECONDS;
     f.get(d.toMillis(), unit);
-    f.get((long) d.toMillis(), TimeUnit.SECONDS);
+    f.get((long) d.toMillis(), TimeUnit.MILLISECONDS);
     f.get(d.toMillis() * 1000, TimeUnit.SECONDS);
     f.get(i.toEpochMilli(), TimeUnit.SECONDS);
     customMethod(d.toMillis(), MyCustomEnum.SECONDS);
@@ -70,8 +70,10 @@ class DurationTimeUnitAgreementCheckSample {
   }
 
   void noncompliantCases(Future<String> f, Duration d) throws Exception {
-    f.get(d.toMillis(), TimeUnit.SECONDS); // Noncompliant {{Change this TimeUnit to "MILLISECONDS" or convert the duration to seconds.}}
+    f.get(d.toMillis(), TimeUnit.SECONDS); // Noncompliant {{Change this TimeUnit to "MILLISECONDS" or convert the duration to seconds.}} [[quickfixes=qf1]]
 //                      ^^^^^^^^^^^^^^^^
+    // fix@qf1 {{Change TimeUnit to "MILLISECONDS"}}
+    // edit@qf1 [[sc=34;ec=41]] {{MILLISECONDS}}
     f.get(d.toNanos(), TimeUnit.MILLISECONDS); // Noncompliant {{Change this TimeUnit to "NANOSECONDS" or convert the duration to milliseconds.}}
 //                     ^^^^^^^^^^^^^^^^^^^^^
     f.get(d.toSeconds(), TimeUnit.MINUTES); // Noncompliant {{Change this TimeUnit to "SECONDS" or convert the duration to minutes.}}
@@ -87,10 +89,15 @@ class DurationTimeUnitAgreementCheckSample {
     f.get(TimeUnit.SECONDS.convert(d), TimeUnit.MINUTES); // Noncompliant {{Change this TimeUnit to "SECONDS" or convert the duration to minutes.}}
 //                                     ^^^^^^^^^^^^^^^^
 
-    f.get(d.toMillis(), SECONDS); // Noncompliant {{Change this TimeUnit to "MILLISECONDS" or convert the duration to seconds.}}
+    f.get(d.toMillis(), SECONDS); // Noncompliant {{Change this TimeUnit to "MILLISECONDS" or convert the duration to seconds.}} [[quickfixes=qf2]]
 //                      ^^^^^^^
+    // fix@qf2 {{Change TimeUnit to "MILLISECONDS"}}
+    // edit@qf2 [[sc=25;ec=32]] {{TimeUnit.MILLISECONDS}}
     f.get(d.toNanos(), MILLISECONDS); // Noncompliant {{Change this TimeUnit to "NANOSECONDS" or convert the duration to milliseconds.}}
 //                     ^^^^^^^^^^^^
+
+    f.get((long) d.toMillis(), TimeUnit.SECONDS); // Noncompliant {{Change this TimeUnit to "MILLISECONDS" or convert the duration to seconds.}}
+//                             ^^^^^^^^^^^^^^^^
 
     new CustomTimeout(d.toMillis(), TimeUnit.SECONDS); // Noncompliant {{Change this TimeUnit to "MILLISECONDS" or convert the duration to seconds.}}
 //                                  ^^^^^^^^^^^^^^^^

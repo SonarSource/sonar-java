@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import org.sonar.check.Rule;
@@ -27,13 +28,13 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 @Rule(key = "S9366")
 public class DurationTimeUnitAgreementCheck extends IssuableSubscriptionVisitor {
@@ -63,8 +64,8 @@ public class DurationTimeUnitAgreementCheck extends IssuableSubscriptionVisitor 
     if (context.getSemanticModel() == null) {
       return;
     }
-    Arguments arguments = getArguments(tree);
-    if (arguments == null || arguments.size() < 2) {
+    List<ExpressionTree> arguments = getArguments(tree);
+    if (arguments.size() < 2) {
       return;
     }
     for (int i = 0; i < arguments.size() - 1; i++) {
@@ -108,6 +109,9 @@ public class DurationTimeUnitAgreementCheck extends IssuableSubscriptionVisitor 
 
   private static String getDurationConversionUnit(ExpressionTree expr) {
     ExpressionTree unwrapped = ExpressionUtils.skipParentheses(expr);
+    while (unwrapped.is(Tree.Kind.TYPE_CAST)) {
+      unwrapped = ExpressionUtils.skipParentheses(((TypeCastTree) unwrapped).expression());
+    }
     if (!unwrapped.is(Tree.Kind.METHOD_INVOCATION)) {
       return null;
     }
@@ -175,12 +179,12 @@ public class DurationTimeUnitAgreementCheck extends IssuableSubscriptionVisitor 
     return builder.build();
   }
 
-  private static Arguments getArguments(Tree tree) {
+  private static List<ExpressionTree> getArguments(Tree tree) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       return ((MethodInvocationTree) tree).arguments();
     } else if (tree.is(Tree.Kind.NEW_CLASS)) {
       return ((NewClassTree) tree).arguments();
     }
-    return null;
+    return Collections.emptyList();
   }
 }

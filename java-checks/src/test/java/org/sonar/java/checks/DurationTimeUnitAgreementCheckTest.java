@@ -24,11 +24,20 @@ import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 class DurationTimeUnitAgreementCheckTest {
 
   private static final String SAMPLE = "checks/DurationTimeUnitAgreementCheckSample.java";
+  private static final String SAMPLE_WITH_IMPORT = "checks/DurationTimeUnitAgreementCheckWithImportSample.java";
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath(SAMPLE))
+      .withCheck(new DurationTimeUnitAgreementCheck())
+      .verifyIssues();
+  }
+
+  @Test
+  void test_quick_fix_with_import() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath(SAMPLE_WITH_IMPORT))
       .withCheck(new DurationTimeUnitAgreementCheck())
       .verifyIssues();
   }
