@@ -53,7 +53,8 @@ class ArraysFillIncompatibleTypeCheckSample {
 
   void noncompliantExamples(String[] textBuffer, Integer[] numbers, Number[] numBuffer,
       boolean flag, boolean outer, boolean inner, InterfaceA[] ifaceAArray, InterfaceB ifaceB,
-      InterfaceB[] ifaceBArray, NonFinalBase[] nonFinalBaseArray, UnrelatedClass unrelatedVal, String[][] str2D) {
+      InterfaceB[] ifaceBArray, NonFinalBase[] nonFinalBaseArray, UnrelatedClass unrelatedVal, String[][] str2D,
+      int[] intArray) {
     Arrays.fill(textBuffer, 42); // Noncompliant {{An array of type "String[]" cannot be filled with a value of type "int".}}
 //         ^^^^ ^^^^^^^^^^<
     Arrays.fill(textBuffer, 0, 5, 42); // Noncompliant {{An array of type "String[]" cannot be filled with a value of type "int".}}
@@ -77,6 +78,12 @@ class ArraysFillIncompatibleTypeCheckSample {
     Arrays.fill(nonFinalBaseArray, unrelatedVal); // Noncompliant {{An array of type "NonFinalBase[]" cannot be filled with a value of type "UnrelatedClass".}}
 //         ^^^^ ^^^^^^^^^^^^^^^^^<
     Arrays.fill(str2D, ifaceBArray); // Noncompliant {{An array of type "String[][]" cannot be filled with a value of type "InterfaceB[]".}}
+//         ^^^^ ^^^^^<
+    Arrays.fill(str2D, "hello"); // Noncompliant {{An array of type "String[][]" cannot be filled with a value of type "String".}}
+//         ^^^^ ^^^^^<
+    Arrays.fill(textBuffer, ifaceBArray); // Noncompliant {{An array of type "String[]" cannot be filled with a value of type "InterfaceB[]".}}
+//         ^^^^ ^^^^^^^^^^<
+    Arrays.fill(str2D, intArray); // Noncompliant {{An array of type "String[][]" cannot be filled with a value of type "int[]".}}
 //         ^^^^ ^^^^^<
     Arrays.fill(textBuffer, flag ? (outer ? 42 : "ok") : "ok"); // Noncompliant {{An array of type "String[]" cannot be filled with a value of type "int".}}
 //         ^^^^ ^^^^^^^^^^<

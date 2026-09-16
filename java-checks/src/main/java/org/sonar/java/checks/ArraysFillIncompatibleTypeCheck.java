@@ -58,12 +58,8 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
 
     ExpressionTree arrayArg = mit.arguments().get(0);
     Type arrayType = arrayArg.symbolType();
-    if (!arrayType.isArray()) {
-      return;
-    }
-
     Type componentType = ((Type.ArrayType) arrayType).elementType();
-    if (componentType.isUnknown() || componentType.isTypeVar()) {
+    if (componentType.isTypeVar()) {
       return;
     }
 
@@ -105,16 +101,13 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
   }
 
   private static boolean isCompatible(Type fillingType, Type componentType) {
-    if (fillingType.isUnknown() || fillingType.isTypeVar() || componentType.isUnknown() || componentType.isTypeVar()) {
-      return true;
-    }
     if (fillingType.isSubtypeOf(componentType.erasure()) || componentType.isSubtypeOf(fillingType.erasure())) {
       return true;
     }
+    if (fillingType.isArray() && componentType.isArray()) {
+      return isCompatible(((Type.ArrayType) fillingType).elementType(), ((Type.ArrayType) componentType).elementType());
+    }
     if (fillingType.isArray() || componentType.isArray()) {
-      if (fillingType.isArray() && componentType.isArray()) {
-        return isCompatible(((Type.ArrayType) fillingType).elementType(), ((Type.ArrayType) componentType).elementType());
-      }
       return false;
     }
     return canTypesOverlap(fillingType, componentType);
