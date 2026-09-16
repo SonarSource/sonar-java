@@ -16,26 +16,29 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Arrays;
+import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
-
-import java.util.Arrays;
-import java.util.List;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S2123")
 public class UselessIncrementCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.RETURN_STATEMENT, Tree.Kind.ASSIGNMENT);
+    return Arrays.asList(Tree.Kind.RETURN_STATEMENT, Tree.Kind.ASSIGNMENT, Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
@@ -49,7 +52,7 @@ public class UselessIncrementCheck extends IssuableSubscriptionVisitor {
           reportIssue(unaryExpression);
         }
       }
-    } else {
+    } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
       AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
       if (isPostfix(aet.expression())) {
         UnaryExpressionTree postfix = (UnaryExpressionTree) aet.expression();
@@ -57,6 +60,41 @@ public class UselessIncrementCheck extends IssuableSubscriptionVisitor {
           reportIssue(postfix);
         }
       }
+    } else if (tree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+      checkLambda((LambdaExpressionTree) tree);
+    }
+  }
+
+  private void checkLambda(LambdaExpressionTree lambda) {
+    if (!isPostfix(lambda.body())) {
+      return;
+    }
+    UnaryExpressionTree unary = (UnaryExpressionTree) lambda.body();
+    Symbol.MethodSymbol lambdaSymbol = lambda.symbol();
+    if (lambdaSymbol.isUnknown()) {
+      return;
+    }
+    Symbol.TypeSymbol returnTypeSymbol = lambdaSymbol.returnType();
+    if (returnTypeSymbol == null || returnTypeSymbol.isUnknown()) {
+      return;
+    }
+    Type returnType = returnTypeSymbol.type();
+    if (returnType.isUnknown() || returnType.isVoid()) {
+      return;
+    }
+    ExpressionTree operand = ExpressionUtils.skipParentheses(unary.expression());
+    if (!operand.is(Tree.Kind.IDENTIFIER)) {
+      return;
+    }
+    Symbol operandSymbol = ((IdentifierTree) operand).symbol();
+    if (operandSymbol.isUnknown()) {
+      return;
+    }
+    boolean isParameter = lambda.parameters().stream()
+      .map(VariableTree::symbol)
+      .anyMatch(operandSymbol::equals);
+    if (isParameter) {
+      reportIssue(unary);
     }
   }
 
@@ -64,7 +102,7 @@ public class UselessIncrementCheck extends IssuableSubscriptionVisitor {
     reportIssue(expression.operatorToken(), "Remove this increment or correct the code not to waste it.");
   }
 
-  private static boolean isPostfix(ExpressionTree tree) {
+  private static boolean isPostfix(Tree tree) {
     return tree.is(Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.POSTFIX_DECREMENT);
   }
 
