@@ -123,6 +123,13 @@ class AmbiguousDependencyCheckTest {
   }
 
   @Test
+  void candidate_profiled_with_an_operator_expression_is_excluded_like_a_simply_profiled_one() {
+    SpringContextModel model = buildModel(
+      "PlainEnvironmentComponentA.java", "PlainEnvironmentComponentB.java", "ExpressionProfiledEnvironmentComponent.java", "EnvironmentConsumer.java");
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  @Test
   void qualifier_towards_profiled_candidate_is_not_flagged_as_ambiguous() {
     SpringContextModel model = buildModel(
       "PlainEventPublisherComponentA.java", "PlainEventPublisherComponentB.java", "ProfiledEventPublisherComponent.java",

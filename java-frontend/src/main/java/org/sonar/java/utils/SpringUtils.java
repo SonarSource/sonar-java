@@ -29,6 +29,8 @@ import javax.annotation.Nullable;
 
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.springcontext.InjectionPoint;
+import org.sonar.java.model.springcontext.ProfileExpression;
+import org.sonar.java.model.springcontext.ProfileExpressionParser;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -63,9 +65,6 @@ public final class SpringUtils {
   public static final String SPRING_BOOT_TEST_ANNOTATION = "org.springframework.boot.test.context.SpringBootTest";
 
   private static final String VALUE_ATTRIBUTE = "value";
-  private static final String PROFILE_SEPARATOR = ",";
-  /** Joins the class-level and method-level {@code @Profile} expressions of a {@code @Bean} method, which are AND-ed together by Spring. */
-  private static final String PROFILE_AND_SEPARATOR = ";";
 
   public static final List<String> STEREOTYPE_ANNOTATIONS = List.of(
     COMPONENT_ANNOTATION,
@@ -249,44 +248,35 @@ public final class SpringUtils {
   }
 
   /**
-   * Reads the {@code @Profile} annotation's "value" attribute, joining every profile name it lists with ",".
+   * Reads the condition a {@code @Profile} annotation places on the class or {@code @Bean} method it annotates.
    *
-   * @param metadata The symbol metadata of the class or {@code @Bean} method to check for a {@code @Profile}
-   * @return The joined profile expression, or {@code null} if none is declared
+   * <p>The elements of the annotation's "value" array are OR-ed, as Spring does: {@code @Profile({"a", "b"})}
+   * matches as soon as either profile is active. Each element is parsed on its own, so an element using
+   * operators contributes the expression it declares.
+   *
+   * <p>A declared {@code @Profile} never yields {@link ProfileExpression#UNCONDITIONAL} — that value is
+   * reserved for the absence of the annotation. An annotation whose value cannot be read at all, because it
+   * is empty, blank or not resolvable to strings, therefore yields {@link ProfileExpression#UNKNOWN}: a bean
+   * we know to be conditional but cannot reason about.
+   *
+   * @param metadata The symbol metadata of the class or {@code @Bean} method to check for a {@code @Profile}.
+   * @return The condition under which the annotated bean is active, never null.
    */
-  @Nullable
-  public static String extractProfiles(SymbolMetadata metadata) {
+  public static ProfileExpression extractProfileExpression(SymbolMetadata metadata) {
     List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(PROFILE_ANNOTATION);
-    List<String> profiles = attrs == null ? List.of() : attrs.stream()
+    if (attrs == null) {
+      return ProfileExpression.UNCONDITIONAL;
+    }
+    List<ProfileExpression> expressions = attrs.stream()
       .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()))
       .filter(attr -> attr.value() instanceof Object[])
       .flatMap(attr -> Arrays.stream((Object[]) attr.value()))
       .filter(String.class::isInstance)
       .map(String.class::cast)
       .filter(profile -> !profile.isBlank())
+      .map(ProfileExpressionParser::parse)
       .toList();
-    return profiles.isEmpty() ? null : String.join(PROFILE_SEPARATOR, profiles);
-  }
-
-  /**
-   * Combines a {@code @Bean} method's own {@code @Profile} with the one declared on its enclosing class.
-   *
-   * Spring requires both to match for the bean to be active, so the two expressions are AND-ed rather
-   * than one overriding the other.
-   *
-   * @param classProfiles Profile(s) of the enclosing class
-   * @param ownProfiles Profile(s) defined on the bean itself
-   * @return a semicolon-separated list of all the profiles
-   */
-  @Nullable
-  public static String composeProfiles(@Nullable String classProfiles, @Nullable String ownProfiles) {
-    if (classProfiles == null) {
-      return ownProfiles;
-    }
-    if (ownProfiles == null) {
-      return classProfiles;
-    }
-    return classProfiles + PROFILE_AND_SEPARATOR + ownProfiles;
+    return expressions.isEmpty() ? ProfileExpression.UNKNOWN : ProfileExpression.or(expressions);
   }
 
 }
