@@ -74,16 +74,16 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
   private void checkFillingArgument(MethodInvocationTree mit, ExpressionTree arrayArg, Type arrayType, Type componentType, ExpressionTree fillingArg) {
     ExpressionTree unwrappedFillingArg = ExpressionUtils.skipParentheses(fillingArg);
     if (unwrappedFillingArg.is(Tree.Kind.CONDITIONAL_EXPRESSION)) {
-      ConditionalExpressionTree conditional = (ConditionalExpressionTree) unwrappedFillingArg;
-      ExpressionTree trueExpr = ExpressionUtils.skipParentheses(conditional.trueExpression());
-      ExpressionTree falseExpr = ExpressionUtils.skipParentheses(conditional.falseExpression());
-
-      if (isNumericConditional(trueExpr, falseExpr)) {
+      if (unwrappedFillingArg.symbolType().isPrimitive()) {
         if (isMismatched(componentType, unwrappedFillingArg)) {
           reportMismatch(mit, arrayArg, arrayType, unwrappedFillingArg);
         }
         return;
       }
+
+      ConditionalExpressionTree conditional = (ConditionalExpressionTree) unwrappedFillingArg;
+      ExpressionTree trueExpr = ExpressionUtils.skipParentheses(conditional.trueExpression());
+      ExpressionTree falseExpr = ExpressionUtils.skipParentheses(conditional.falseExpression());
 
       if (isMismatched(componentType, trueExpr)) {
         reportMismatch(mit, arrayArg, arrayType, trueExpr);
@@ -96,10 +96,6 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
     if (isMismatched(componentType, unwrappedFillingArg)) {
       reportMismatch(mit, arrayArg, arrayType, unwrappedFillingArg);
     }
-  }
-
-  private static boolean isNumericConditional(ExpressionTree trueExpr, ExpressionTree falseExpr) {
-    return trueExpr.symbolType().isNumerical() && falseExpr.symbolType().isNumerical();
   }
 
   private static boolean isMismatched(Type componentType, ExpressionTree expr) {

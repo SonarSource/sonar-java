@@ -6,7 +6,7 @@ class ArraysFillIncompatibleTypeCheckSample {
 
   void compliantExamples(String[] textBuffer, Integer[] numbers, Number[] numBuffer, Object[] objBuffer,
       CharSequence charSeq, Object objVal, java.util.List<String>[] listArray, java.util.List<Integer> intList,
-      short s, int i) {
+      short s, int i, Long[] longs, Long longObj, Short shortObj, boolean flag) {
     Arrays.fill(textBuffer, "default"); // Compliant
     Arrays.fill(textBuffer, 0, 5, "default"); // Compliant
     Arrays.fill(textBuffer, null); // Compliant: null can be stored in reference array
@@ -25,6 +25,8 @@ class ArraysFillIncompatibleTypeCheckSample {
 
     // Numeric ternary promotion
     Arrays.fill(numbers, true ? s : i); // Compliant: ternary promoted to int, which boxes to Integer
+    Arrays.fill(longs, flag ? 0 : longObj); // Compliant: promoted to long, which boxes to Long
+    Arrays.fill(numbers, flag ? shortObj : i); // Compliant: promoted to int, which boxes to Integer
 
     int[] primitiveInts = new int[5];
     Arrays.fill(primitiveInts, 10); // Compliant: primitive array overload
