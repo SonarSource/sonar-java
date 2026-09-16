@@ -71,18 +71,29 @@ class DurationTimeUnitAgreementCheckSample {
 
   void noncompliantCases(Future<String> f, Duration d) throws Exception {
     f.get(d.toMillis(), TimeUnit.SECONDS); // Noncompliant {{Change this TimeUnit to "MILLISECONDS" or convert the duration to seconds.}}
+//                      ^^^^^^^^^^^^^^^^
     f.get(d.toNanos(), TimeUnit.MILLISECONDS); // Noncompliant {{Change this TimeUnit to "NANOSECONDS" or convert the duration to milliseconds.}}
+//                     ^^^^^^^^^^^^^^^^^^^^^
     f.get(d.toSeconds(), TimeUnit.MINUTES); // Noncompliant {{Change this TimeUnit to "SECONDS" or convert the duration to minutes.}}
+//                       ^^^^^^^^^^^^^^^^
     f.get(d.getSeconds(), TimeUnit.MINUTES); // Noncompliant {{Change this TimeUnit to "SECONDS" or convert the duration to minutes.}}
+//                        ^^^^^^^^^^^^^^^^
     f.get(d.toMinutes(), TimeUnit.SECONDS); // Noncompliant {{Change this TimeUnit to "MINUTES" or convert the duration to seconds.}}
+//                       ^^^^^^^^^^^^^^^^
     f.get(d.toHours(), TimeUnit.DAYS); // Noncompliant {{Change this TimeUnit to "HOURS" or convert the duration to days.}}
+//                     ^^^^^^^^^^^^^
     f.get(d.toDays(), TimeUnit.HOURS); // Noncompliant {{Change this TimeUnit to "DAYS" or convert the duration to hours.}}
+//                    ^^^^^^^^^^^^^^
     f.get(TimeUnit.SECONDS.convert(d), TimeUnit.MINUTES); // Noncompliant {{Change this TimeUnit to "SECONDS" or convert the duration to minutes.}}
+//                                     ^^^^^^^^^^^^^^^^
 
     f.get(d.toMillis(), SECONDS); // Noncompliant {{Change this TimeUnit to "MILLISECONDS" or convert the duration to seconds.}}
+//                      ^^^^^^^
     f.get(d.toNanos(), MILLISECONDS); // Noncompliant {{Change this TimeUnit to "NANOSECONDS" or convert the duration to milliseconds.}}
+//                     ^^^^^^^^^^^^
 
     new CustomTimeout(d.toMillis(), TimeUnit.SECONDS); // Noncompliant {{Change this TimeUnit to "MILLISECONDS" or convert the duration to seconds.}}
+//                                  ^^^^^^^^^^^^^^^^
   }
 
   void customMethod(long timeout, MyCustomEnum unit) {}
