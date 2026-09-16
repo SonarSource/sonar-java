@@ -17,13 +17,18 @@
 package org.sonar.java.checks.spring;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.check.Rule;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanDefinitionRegistry;
 import org.sonar.java.model.springcontext.InjectionPoint;
+import org.sonar.java.model.springcontext.ProjectPackageScan;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.model.springcontext.TypeToBeanNamesIndex;
 import org.sonar.java.model.springcontext.TypeToDependenciesIndex;
@@ -57,22 +62,65 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
     BeanDefinitionRegistry registry = model.getBeanDefinitionRegistry();
     TypeToBeanNamesIndex typeToBeanNamesIndex = model.getTypeToBeanNamesIndex();
     TypeToDependenciesIndex typeToDependenciesIndex = model.getTypeToDependenciesIndex();
+    ProjectPackageScan projectPackageScan = model.getProjectPackageScan();
+
+    Map<InputFile, String> fileToModule = buildFileToModuleMap(registry);
 
     List<SpringContextIssue> issues = new ArrayList<>();
     for (String type : typeToBeanNamesIndex.getKeys()) {
-      Set<String> candidates = typeToBeanNamesIndex.getNamesForType(type);
-      if (hasUniqueOrPrimaryCandidate(candidates, registry)) {
-        continue;
-      }
-      Set<InjectionPoint> injectionPoints = typeToDependenciesIndex.getDependenciesForType(type);
-      Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
-      if (!hasUniqueOrPrimaryCandidate(effectiveCandidates, registry)) {
-        for (InjectionPoint unresolvedInjectionPoint : findInjectionPointsNotMatchingCandidateByName(candidates, injectionPoints)) {
-          issues.add(new SpringContextIssue(unresolvedInjectionPoint.location(), message(effectiveCandidates)));
+      Set<String> allCandidates = typeToBeanNamesIndex.getNamesForType(type);
+      Set<InjectionPoint> allInjectionPoints = typeToDependenciesIndex.getDependenciesForType(type);
+
+      Map<String, Set<InjectionPoint>> injectionPointsByModule = groupByModule(allInjectionPoints, fileToModule);
+      for (Map.Entry<String, Set<InjectionPoint>> entry : injectionPointsByModule.entrySet()) {
+        String consumerModule = entry.getKey();
+        Set<InjectionPoint> moduleInjectionPoints = entry.getValue();
+
+        Set<String> candidates = candidatesVisibleFrom(consumerModule, allCandidates, registry, projectPackageScan);
+        if (hasUniqueOrPrimaryCandidate(candidates, registry)) {
+          continue;
+        }
+        Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
+        if (!hasUniqueOrPrimaryCandidate(effectiveCandidates, registry)) {
+          for (InjectionPoint unresolvedInjectionPoint : findInjectionPointsNotMatchingCandidateByName(candidates, moduleInjectionPoints)) {
+            issues.add(new SpringContextIssue(unresolvedInjectionPoint.location(), message(effectiveCandidates)));
+          }
         }
       }
     }
     return issues;
+  }
+
+  private static Map<InputFile, String> buildFileToModuleMap(BeanDefinitionRegistry registry) {
+    Map<InputFile, String> fileToModule = new HashMap<>();
+    for (BeanDefinitionHolder holder : registry.getAllDefinitions()) {
+      fileToModule.put(holder.getLocation().inputFile(), holder.getModule());
+    }
+    return fileToModule;
+  }
+
+  private static Map<String, Set<InjectionPoint>> groupByModule(Set<InjectionPoint> injectionPoints, Map<InputFile, String> fileToModule) {
+    Map<String, Set<InjectionPoint>> byModule = new HashMap<>();
+    for (InjectionPoint point : injectionPoints) {
+      String module = fileToModule.getOrDefault(point.location().inputFile(), "");
+      byModule.computeIfAbsent(module, k -> new HashSet<>()).add(point);
+    }
+    return byModule;
+  }
+
+  private static Set<String> candidatesVisibleFrom(String consumerModule, Set<String> allCandidates,
+    BeanDefinitionRegistry registry, ProjectPackageScan projectPackageScan) {
+    Set<String> scannedPackages = projectPackageScan.getPackagesForModule(consumerModule);
+    return allCandidates.stream()
+      .filter(candidate -> isBeanVisibleFrom(candidate, consumerModule, scannedPackages, registry))
+      .collect(Collectors.toUnmodifiableSet());
+  }
+
+  private static boolean isBeanVisibleFrom(String beanName, String consumerModule, Set<String> scannedPackages,
+    BeanDefinitionRegistry registry) {
+    return registry.getByName(beanName).stream().anyMatch(holder ->
+      holder.getModule().equals(consumerModule)
+        || scannedPackages.stream().anyMatch(holder.getBeanPackage()::startsWith));
   }
 
   private static boolean hasUniqueOrPrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry) {
