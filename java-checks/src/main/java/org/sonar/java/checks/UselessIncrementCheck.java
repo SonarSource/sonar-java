@@ -23,7 +23,6 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -60,7 +59,7 @@ public class UselessIncrementCheck extends IssuableSubscriptionVisitor {
           reportIssue(postfix);
         }
       }
-    } else if (tree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+    } else {
       checkLambda((LambdaExpressionTree) tree);
     }
   }
@@ -74,16 +73,7 @@ public class UselessIncrementCheck extends IssuableSubscriptionVisitor {
       return;
     }
     UnaryExpressionTree unary = (UnaryExpressionTree) body;
-    Symbol.MethodSymbol lambdaSymbol = lambda.symbol();
-    if (lambdaSymbol.isUnknown()) {
-      return;
-    }
-    Symbol.TypeSymbol returnTypeSymbol = lambdaSymbol.returnType();
-    if (returnTypeSymbol == null || returnTypeSymbol.isUnknown()) {
-      return;
-    }
-    Type returnType = returnTypeSymbol.type();
-    if (returnType.isUnknown() || returnType.isVoid()) {
+    if (lambda.symbol().returnType().type().isVoid()) {
       return;
     }
     ExpressionTree operand = ExpressionUtils.skipParentheses(unary.expression());
@@ -91,9 +81,6 @@ public class UselessIncrementCheck extends IssuableSubscriptionVisitor {
       return;
     }
     Symbol operandSymbol = ((IdentifierTree) operand).symbol();
-    if (operandSymbol.isUnknown()) {
-      return;
-    }
     boolean isParameter = lambda.parameters().stream()
       .map(VariableTree::symbol)
       .anyMatch(operandSymbol::equals);
