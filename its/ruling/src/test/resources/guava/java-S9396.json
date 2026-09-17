@@ -1,0 +1,98 @@
+{
+"com.google.guava:guava:src/com/google/common/base/Splitter.java": [
+547,
+548,
+564
+],
+"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+4575,
+4576,
+4577,
+4578,
+4579,
+4580,
+4581,
+4582,
+4583,
+4584,
+4585
+],
+"com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java": [
+289,
+401
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableEnumMap.java": [
+107
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableEnumSet.java": [
+132
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableMap.java": [
+627
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableMapKeySet.java": [
+74
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableMapValues.java": [
+98
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableRangeSet.java": [
+533,
+617
+],
+"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java": [
+439,
+763
+],
+"com.google.guava:guava:src/com/google/common/collect/LinkedListMultimap.java": [
+144,
+145
+],
+"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+3905,
+3906,
+3907,
+3908,
+3909,
+3910,
+3911,
+3912,
+3913
+],
+"com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java": [
+178
+],
+"com.google.guava:guava:src/com/google/common/collect/RegularContiguousSet.java": [
+180
+],
+"com.google.guava:guava:src/com/google/common/collect/TreeRangeSet.java": [
+259,
+650
+],
+"com.google.guava:guava:src/com/google/common/hash/BloomFilter.java": [
+462,
+463,
+464
+],
+"com.google.guava:guava:src/com/google/common/hash/MessageDigestHashFunction.java": [
+97,
+98,
+122
+],
+"com.google.guava:guava:src/com/google/common/hash/SipHashFunction.java": [
+101,
+103
+],
+"com.google.guava:guava:src/com/google/common/reflect/ClassPath.java": [
+417
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java": [
+644
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/RateLimiter.java": [
+417
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+715
+]
+}
