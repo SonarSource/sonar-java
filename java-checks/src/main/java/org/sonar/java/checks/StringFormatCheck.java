@@ -63,8 +63,13 @@ public class StringFormatCheck extends AbstractMethodDetection {
     if (placeholders <= 0 || invocation.arguments().size() != formatIndex + placeholders + 1) {
       return;
     }
-    ExpressionTree lastArgument = invocation.arguments().get(invocation.arguments().size() - 1);
-    if (lastArgument.symbolType().isArray()) {
+    List<ExpressionTree> valueArguments = invocation.arguments().subList(formatIndex + 1, invocation.arguments().size());
+    for (ExpressionTree arg : valueArguments) {
+      if (arg.symbolType().isArray()) {
+        return;
+      }
+    }
+    if (hasLocale && valueArguments.stream().anyMatch(arg -> arg.symbolType().isSubtypeOf("java.util.Formattable"))) {
       return;
     }
     reportIssue(invocation.methodSelect(), "Use String.valueOf() or string concatenation instead of String.format().");
@@ -72,14 +77,18 @@ public class StringFormatCheck extends AbstractMethodDetection {
 
   private static int countSimplePlaceholders(String value) {
     int placeholders = 0;
-    for (int index = 0; index < value.length(); index++) {
+    int index = 0;
+    while (index < value.length()) {
       if (value.charAt(index) != '%') {
+        index++;
         continue;
       }
-      if (index + 1 >= value.length()) {
+      index++;
+      if (index >= value.length()) {
         return -1;
       }
-      char conversion = value.charAt(++index);
+      char conversion = value.charAt(index);
+      index++;
       if (conversion == 's') {
         placeholders++;
       } else if (conversion != '%') {

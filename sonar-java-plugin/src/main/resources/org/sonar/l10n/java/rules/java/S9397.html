@@ -22,7 +22,8 @@ typically small, it’s completely avoidable.</p>
 <p>When the format string contains a single <code>%s</code> placeholder and nothing else, replace <code>String.format()</code> with
 <code>String.valueOf()</code>.</p>
 <p>When the format string contains <code>%s</code> placeholders joined by literal text, replace <code>String.format()</code> with string
-concatenation.</p>
+concatenation. Note that <code>%%</code> in format strings represents a literal <code>%</code> character; when switching to concatenation, replace
+<code>%%</code> with a single <code>%</code>. For example, <code>String.format("100%%: %s", value)</code> becomes <code>"100%: " + value</code>.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">

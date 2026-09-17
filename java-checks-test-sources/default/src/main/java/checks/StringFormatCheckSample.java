@@ -1,5 +1,6 @@
 package checks;
 
+import java.util.Formattable;
 import java.util.Locale;
 
 class StringFormatCheckSample {
@@ -130,5 +131,17 @@ class StringFormatCheckSample {
 
   String localizedTrailingPercent() {
     return String.format(Locale.ROOT, "value%"); // compliant
+  }
+
+  String localizedFormattable(Formattable value) {
+    return String.format(Locale.ROOT, "%s", value); // compliant
+  }
+
+  String localizedFormattableConcat(String prefix, Formattable value) {
+    return String.format(Locale.ROOT, "%s/%s", prefix, value); // compliant
+  }
+
+  String nonLocalizedFormattable(Formattable value) {
+    return String.format("%s", value); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
   }
 }
