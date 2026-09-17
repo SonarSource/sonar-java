@@ -66,7 +66,7 @@ import static org.sonar.java.utils.SpringUtils.composeProfiles;
  *
  * <p>Also populates:
  * <ul>
- *   <li>{@link TypeToBeanNamesIndex} with the full type hierarchy of each bean</li>
+ *   <li>{@link TypeToBeansIndex} with the full type hierarchy of each bean</li>
  *   <li>{@link TypeToDependenciesIndex} with all the dependencies collected by type</li>
  * </ul>
  */
@@ -167,7 +167,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
    * bean's spans with the file it was collected from to form the {@link BeanLocation}s the model exposes.
    * <p>
    * Registers all encountered bean definitions in {@link BeanDefinitionRegistry},
-   * their position in every ancestor/interface type in {@link TypeToBeanNamesIndex}, and
+   * their position in every ancestor/interface type in {@link TypeToBeansIndex}, and
    * each of their dependencies by type in {@link TypeToDependenciesIndex}.
    *
    * @param context            Scanner context used here to access the current module key
@@ -188,7 +188,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
         springContextModel.getBeanDefinitionRegistry()
           .addBeanDefinition(data.beanName(), holderBuilder.build());
         for (String typeFqn : data.typeHierarchy()) {
-          springContextModel.getTypeToBeanNamesIndex().addBeanForType(typeFqn, data.beanName(), context.getModuleKey(), data.beanPackage());
+          springContextModel.getTypeToBeansIndex().addBeanForType(typeFqn, data.beanName(), context.getModuleKey(), data.beanPackage());
         }
         data.dependencies().forEach((typeFqn, points) -> points.forEach(point -> springContextModel.getTypeToDependenciesIndex()
           .addDependencyForType(typeFqn, point.name(), context.getModuleKey(), new BeanLocation(inputFile, point.span()))));

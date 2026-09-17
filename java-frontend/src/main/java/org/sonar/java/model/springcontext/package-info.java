@@ -27,7 +27,7 @@
  * which aggregates the following indexes:
  * <ul>
  *   <li>{@link org.sonar.java.model.springcontext.BeanDefinitionRegistry} — bean definitions by name</li>
- *   <li>{@link org.sonar.java.model.springcontext.TypeToBeanNamesIndex} — bean names by type</li>
+ *   <li>{@link org.sonar.java.model.springcontext.TypeToBeansIndex} — beans by type</li>
  *   <li>{@link org.sonar.java.model.springcontext.ProjectPackageScan} — component-scan packages by module</li>
  *   <li>{@link org.sonar.java.model.springcontext.EntityClassToPropertiesIndex} — JPA {@code @Entity} properties</li>
  * </ul>

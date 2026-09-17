@@ -181,7 +181,7 @@ class AmbiguousDependencyCheckTest {
     var location = new BeanLocation(file, new AnalyzerMessage.TextSpan(1));
     model.getBeanDefinitionRegistry().addBeanDefinition(beanName,
       new BeanDefinitionHolder.Builder(type, module, beanPackage, location).build());
-    model.getTypeToBeanNamesIndex().addBeanForType(type, beanName, module, beanPackage);
+    model.getTypeToBeansIndex().addBeanForType(type, beanName, module, beanPackage);
   }
 
   private static void registerInjectionPoint(SpringContextModel model, String type, String fieldName,

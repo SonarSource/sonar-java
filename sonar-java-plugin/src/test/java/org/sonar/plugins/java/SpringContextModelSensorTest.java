@@ -100,7 +100,7 @@ class SpringContextModelSensorTest {
     BeanLocation location = new BeanLocation(inputFile, new TextSpan(startLine, startCharacter, endLine, endCharacter));
     model.getBeanDefinitionRegistry().addBeanDefinition(beanName,
       new BeanDefinitionHolder.Builder(type, MODULE_KEY, PACKAGE, location).build());
-    model.getTypeToBeanNamesIndex().addBeanForType(type, beanName, MODULE_KEY, PACKAGE);
+    model.getTypeToBeansIndex().addBeanForType(type, beanName, MODULE_KEY, PACKAGE);
   }
 
   private static void registerDependency(SpringContextModel model, String type, String dependencyName, InputFile inputFile,

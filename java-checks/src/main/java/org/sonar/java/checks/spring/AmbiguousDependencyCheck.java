@@ -17,7 +17,9 @@
 package org.sonar.java.checks.spring;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
@@ -26,7 +28,7 @@ import org.sonar.java.model.springcontext.BeanDefinitionRegistry;
 import org.sonar.java.model.springcontext.InjectionPoint;
 import org.sonar.java.model.springcontext.ProjectPackageScan;
 import org.sonar.java.model.springcontext.SpringContextModel;
-import org.sonar.java.model.springcontext.TypeToBeanNamesIndex;
+import org.sonar.java.model.springcontext.TypeToBeansIndex;
 import org.sonar.java.model.springcontext.TypeToDependenciesIndex;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -55,15 +57,16 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
   @Override
   public List<SpringContextIssue> execute(SpringContextModel model) {
     BeanDefinitionRegistry registry = model.getBeanDefinitionRegistry();
-    TypeToBeanNamesIndex typeToBeanNamesIndex = model.getTypeToBeanNamesIndex();
+    TypeToBeansIndex typeToBeansIndex = model.getTypeToBeansIndex();
     TypeToDependenciesIndex typeToDependenciesIndex = model.getTypeToDependenciesIndex();
     ProjectPackageScan projectPackageScan = model.getProjectPackageScan();
 
     List<SpringContextIssue> issues = new ArrayList<>();
-    for (String type : typeToBeanNamesIndex.getKeys()) {
+    for (String type : typeToBeansIndex.getKeys()) {
+      Map<String, Set<String>> candidatesByModule = new HashMap<>();
       for (InjectionPoint point : typeToDependenciesIndex.getDependenciesForType(type)) {
-        Set<String> candidates = typeToBeanNamesIndex.getNamesForType(
-          type, point.module(), projectPackageScan.getPackagesForModule(point.module()));
+        Set<String> candidates = candidatesByModule.computeIfAbsent(point.module(),
+          module -> typeToBeansIndex.getNamesForType(type, module, projectPackageScan.getPackagesForModule(module)));
         if (hasUniqueOrPrimaryCandidate(candidates, registry)) {
           continue;
         }
