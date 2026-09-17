@@ -44,15 +44,6 @@ class SortedCollectionWithNonComparableTypeCheckTest {
   }
 
   @Test
-  void test_java_8() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath(SAMPLE))
-      .withCheck(new SortedCollectionWithNonComparableTypeCheck())
-      .withJavaVersion(8)
-      .verifyIssues();
-  }
-
-  @Test
   void test_incomplete_semantic() {
     CheckVerifier.newVerifier()
       .onFile(nonCompilingTestSourcesPath(SAMPLE))

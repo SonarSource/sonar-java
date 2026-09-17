@@ -17,6 +17,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 class SortedCollectionWithNonComparableTypeCheckSample {
 
+  Set<Task> escaped;
+
   static class Task {
     int priority;
   }
@@ -71,6 +73,7 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     Set<Task> skipListSetFromCollection = new ConcurrentSkipListSet<>(tasks); // Noncompliant
     Map<Task, String> skipListMapFromMap = new ConcurrentSkipListMap<>(assignments); // Noncompliant
     Set<Task> treeSetFromPriorityQueue = new TreeSet<>(orderedTasks); // Noncompliant
+    Set<IncompatiblyComparableTask> incompatibleComparableTreeSet = new TreeSet<>(); // Noncompliant
   }
 
   void compliant(
@@ -95,7 +98,6 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     Queue<ComparableTask> comparableQueue = new PriorityQueue<>();
     Set<BroadlyComparableTask> broadlyComparableTreeSet = new TreeSet<>();
     Set<RawComparableTask> rawComparableTreeSet = new TreeSet<>();
-    Set<IncompatiblyComparableTask> incompatibleComparableTreeSet = new TreeSet<>();
     Set<Comparable<Object>> comparableInterfaceTreeSet = new TreeSet<>();
 
     Set<Object> objectTreeSet = new TreeSet<>();
@@ -129,6 +131,7 @@ class SortedCollectionWithNonComparableTypeCheckSample {
 
   void handledComparisonFailure(Collection<Task> tasks) {
     Set<Task> unhandled = new TreeSet<>(tasks); // Noncompliant
+    Set<Task> outer;
     try {
       Set<Task> handled = new TreeSet<>(tasks);
     } catch (ClassCastException e) {
@@ -144,6 +147,17 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     try {
       Set<Task> noArgConstructor = new TreeSet<>(); // Noncompliant
     } catch (ClassCastException e) {
+    }
+    try {
+      escaped = new TreeSet<>(tasks); // Noncompliant
+      outer = new TreeSet<>(tasks); // Noncompliant
+    } catch (ClassCastException e) {
+    }
+    try {
+    } catch (ClassCastException e) {
+      Set<Task> inCatch = new TreeSet<>(tasks); // Noncompliant
+    } finally {
+      Set<Task> inFinally = new TreeSet<>(tasks); // Noncompliant
     }
   }
 

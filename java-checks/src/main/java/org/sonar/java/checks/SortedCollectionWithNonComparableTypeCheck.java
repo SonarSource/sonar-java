@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -99,13 +100,21 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
       type.isSubtypeOf("java.lang.Object") &&
       !type.symbol().isInterface() &&
       !type.symbol().isAbstract() &&
-      !type.isSubtypeOf(COMPARABLE) &&
+      !hasCompatibleNaturalOrdering(type) &&
       !JUtils.hasUnknownTypeInHierarchy(type.symbol());
+  }
+
+  private static boolean hasCompatibleNaturalOrdering(Type type) {
+    return Stream.concat(Stream.of(type), type.symbol().superTypes().stream())
+      .filter(superType -> superType.is(COMPARABLE))
+      .anyMatch(comparableType -> comparableType.typeArguments().isEmpty()
+        || comparableType.typeArguments().get(0).isUnknown()
+        || type.erasure().isSubtypeOf(comparableType.typeArguments().get(0).erasure()));
   }
 
   private static Type contextualOrderedType(NewClassTree tree, Type collectionType) {
     return targetOrderedType(tree, isMap(collectionType))
-      .filter(type -> !type.isUnknown() && !type.symbol().isUnknown() && type.isSubtypeOf(COMPARABLE))
+      .filter(type -> !type.isUnknown() && !type.symbol().isUnknown() && hasCompatibleNaturalOrdering(type))
       .orElseGet(() -> collectionType.typeArguments().get(0));
   }
 
@@ -149,7 +158,10 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
     while (ancestor != null && !ancestor.is(Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION) && !(ancestor instanceof ClassTree)) {
       if (ancestor.is(Tree.Kind.TRY_STATEMENT)) {
         TryStatementTree tryStatement = (TryStatementTree) ancestor;
-        if (child == tryStatement.block() && tryStatement.catches().stream().anyMatch(SortedCollectionWithNonComparableTypeCheck::catchesClassCastException)) {
+        if (child == tryStatement.block() &&
+          tree.parent() instanceof VariableTree variableTree &&
+          variableTree.symbol().usages().isEmpty() &&
+          tryStatement.catches().stream().anyMatch(SortedCollectionWithNonComparableTypeCheck::catchesClassCastException)) {
           return true;
         }
       }
