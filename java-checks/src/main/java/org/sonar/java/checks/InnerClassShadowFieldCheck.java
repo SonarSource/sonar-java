@@ -25,7 +25,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,11 +33,11 @@ import java.util.Set;
 public class InnerClassShadowFieldCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Rename \"%s\" which hides the field declared in \"%s\".";
-  private static final Set<String> IGNORED_FIELDS = Collections.singleton("serialVersionUID");
+  private static final Set<String> IGNORED_FIELDS = Set.of("serialVersionUID");
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Collections.singletonList(Kind.CLASS);
+    return Kind.CLASS_KINDS;
   }
 
   @Override
@@ -46,7 +45,6 @@ public class InnerClassShadowFieldCheck extends IssuableSubscriptionVisitor {
     ClassTree classTree = (ClassTree) tree;
     Symbol.TypeSymbol classSymbol = classTree.symbol();
 
-    // Skip top-level classes (outermost class is the same as the current class)
     if (classSymbol.outermostClass().equals(classSymbol)) {
       return;
     }
@@ -59,21 +57,19 @@ public class InnerClassShadowFieldCheck extends IssuableSubscriptionVisitor {
     for (Tree member : classTree.members()) {
       if (member.is(Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) member;
-        Symbol.VariableSymbol fieldSymbol = (Symbol.VariableSymbol) variableTree.symbol();
+        Symbol fieldSymbol = variableTree.symbol();
         if (!fieldSymbol.isStatic() && !IGNORED_FIELDS.contains(fieldSymbol.name())) {
-          IdentifierTree fieldSimpleName = variableTree.simpleName();
-          checkEnclosingClasses(enclosingClass, fieldSymbol, fieldSimpleName);
+          checkEnclosingClasses(enclosingClass, fieldSymbol, variableTree.simpleName());
         }
       }
     }
   }
 
-  private void checkEnclosingClasses(Symbol.TypeSymbol enclosingClass, Symbol.VariableSymbol field, 
+  private void checkEnclosingClasses(Symbol.TypeSymbol enclosingClass, Symbol field,
       IdentifierTree fieldSimpleName) {
-    Set<String> visitedClasses = new HashSet<>();
+    Set<Symbol.TypeSymbol> visitedClasses = new HashSet<>();
     Symbol.TypeSymbol current = enclosingClass;
-    while (current != null && !visitedClasses.contains(current.name())) {
-      visitedClasses.add(current.name());
+    while (current != null && visitedClasses.add(current)) {
       for (Symbol symbol : current.memberSymbols()) {
         if (symbol.isVariableSymbol() && !symbol.isStatic() && symbol.name().equals(field.name())) {
           reportIssue(fieldSimpleName, String.format(MESSAGE, field.name(), current.name()));
