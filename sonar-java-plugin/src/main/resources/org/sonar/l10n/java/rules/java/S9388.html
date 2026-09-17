@@ -1,15 +1,15 @@
-<p>This rule raises an issue when a method annotated with TestNG's <code>@DataProvider</code> returns a type that is not one of the supported return
-types: <code>Object[][]</code>, <code>Iterator&lt;Object[]&gt;</code>, <code>Iterator&lt;Object&gt;</code>, or <code>Object[]</code>.</p>
+<p>This rule raises an issue when a method annotated with TestNG's <code>@DataProvider</code> returns a type that is not compatible with TestNG's
+expected return types.</p>
 <h2>Why is this an issue?</h2>
 <p>TestNG relies on the <code>@DataProvider</code> annotation to supply test data for parameterized tests. For TestNG to properly execute these tests,
-<code>@DataProvider</code> methods must return one of the specifically supported types:</p>
+<code>@DataProvider</code> methods must return one of the following types (or a covariant subtype):</p>
 <ul>
-  <li><code>Object[][]</code> - a two-dimensional array where each inner array represents parameters for one test invocation</li>
-  <li><code>Iterator&lt;Object[]&gt;</code> - an iterator of arrays for lazy evaluation of test data</li>
+  <li><code>Object[][]</code> - a two-dimensional array where each inner array represents parameters for one test invocation (any reference-type 2D array such as <code>String[][]</code> is also accepted)</li>
+  <li><code>Iterator&lt;Object[]&gt;</code> - an iterator of arrays for lazy evaluation of test data (any <code>Iterator</code> subtype is accepted)</li>
   <li><code>Iterator&lt;Object&gt;</code> - an iterator of objects for single-parameter test methods (converted internally by TestNG)</li>
-  <li><code>Object[]</code> - an array where each element represents one argument for a single-parameter test method (available since TestNG 6.x)</li>
+  <li><code>Object[]</code> - an array where each element represents one argument for a single-parameter test method (any reference-type array such as <code>String[]</code> is also accepted, available since TestNG 6.x)</li>
 </ul>
-<p>When a <code>@DataProvider</code> method returns an incompatible type (such as <code>List</code>, <code>Stream</code>, or a simple array), TestNG
+<p>When a <code>@DataProvider</code> method returns an incompatible type (such as <code>List</code>, <code>Stream</code>, or a primitive array), TestNG
 cannot process the data correctly. This causes test failures at runtime, even though the code may compile successfully.</p>
 <p>Using the wrong return type breaks the contract between your test code and the TestNG framework, leading to:</p>
 <ul>
@@ -70,20 +70,19 @@ public Iterator&lt;Object[]&gt; provideData() {
     ).iterator();
 }
 </pre>
-<p>Use <code>Object[]</code> where each element represents one argument for a single-parameter test method (available since TestNG 6.x). This can be
-useful when building data sets dynamically.</p>
+<p>Primitive arrays are not compatible with TestNG's data provider contract because they cannot be assigned to <code>Object[]</code>.</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="3" data-diff-type="noncompliant">
 @DataProvider
-public String[] provideData() {  // Noncompliant
-    return new String[]{"value1", "value2", "value3"};
+public int[][] provideData() {  // Noncompliant
+    return new int[][] {{1, 2}, {3, 4}};
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="3" data-diff-type="compliant">
 @DataProvider
-public Object[] provideData() {
-    return new Object[]{"value1", "value2", "value3"};
+public Object[][] provideData() {
+    return new Object[][] {{1, 2}, {3, 4}};
 }
 </pre>
 <h2>Resources</h2>

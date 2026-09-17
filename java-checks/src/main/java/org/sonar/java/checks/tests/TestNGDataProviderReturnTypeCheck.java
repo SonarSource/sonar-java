@@ -74,19 +74,7 @@ public class TestNGDataProviderReturnTypeCheck extends IssuableSubscriptionVisit
   }
 
   private static boolean isValidIterator(Type type) {
-    if (!type.isSubtypeOf("java.util.Iterator")) {
-      return false;
-    }
-    if (!type.isParameterized()) {
-      return true;
-    }
-    List<Type> typeArgs = type.typeArguments();
-    if (typeArgs.size() != 1) {
-      return false;
-    }
-    Type typeArg = typeArgs.get(0);
-    return typeArg.isSubtypeOf(JAVA_LANG_OBJECT)
-      || (typeArg.isArray() && ((Type.ArrayType) typeArg).elementType().isSubtypeOf(JAVA_LANG_OBJECT));
+    return type.isSubtypeOf("java.util.Iterator");
   }
 
 }
