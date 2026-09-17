@@ -1,5 +1,6 @@
 package checks;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
@@ -47,6 +48,9 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     }
   }
 
+  static class ComparableTaskChild extends ComparableTask {
+  }
+
   void noncompliant(Collection<Task> tasks, Map<Task, String> assignments, PriorityQueue<Task> orderedTasks) {
     Set<Task> treeSet = new TreeSet<>(); // Noncompliant {{Provide a comparator because this element type does not implement "Comparable".}}
     Map<Task, String> treeMap = new TreeMap<>(); // Noncompliant {{Provide a comparator because this key type does not implement "Comparable".}}
@@ -87,7 +91,36 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     Set<RawComparableTask> rawComparableTreeSet = new TreeSet<>();
     Set<Comparable<Object>> comparableInterfaceTreeSet = new TreeSet<>();
 
+    Map<String, Object> stringKeys = new TreeMap<>();
+    Map<Integer, Object> integerKeys = new TreeMap<>();
+    Map<Long, Object> longKeys = new TreeMap<>();
+    Map<Character, Object> characterKeys = new TreeMap<>();
+    Map<Path, Object> pathKeys = new TreeMap<>();
+    Map<ComparableTaskChild, Object> inheritedComparableKeys = new TreeMap<>();
+    TreeMap<String, Object> explicitStringKeys = new TreeMap<String, Object>();
+    Map<String, Object> parenthesizedStringKeys = (new TreeMap<>());
+
     TreeSet rawTreeSet = new TreeSet();
+  }
+
+  void handledComparisonFailure(Collection<Task> tasks) {
+    Set<Task> unhandled = new TreeSet<>(tasks); // Noncompliant
+    try {
+      Set<Task> handled = new TreeSet<>(tasks);
+    } catch (ClassCastException e) {
+    }
+    try {
+      Set<Task> handledByMultiCatch = new TreeSet<>(tasks);
+    } catch (ClassCastException | IllegalArgumentException e) {
+    }
+    try {
+      Set<Task> notHandled = new TreeSet<>(tasks); // Noncompliant
+    } catch (IllegalArgumentException e) {
+    }
+    try {
+      Set<Task> noArgConstructor = new TreeSet<>(); // Noncompliant
+    } catch (ClassCastException e) {
+    }
   }
 
   <T> void generic() {

@@ -1,7 +1,9 @@
 package checks;
 
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 class SortedCollectionWithNonComparableTypeCheckSample {
@@ -19,5 +21,6 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     Set<UnknownHierarchy> unknownHierarchy = new TreeSet<UnknownHierarchy>();
     Set<Task> unresolvedComparator = new TreeSet<>(missingComparator);
     Set<Task> resolvedComparator = new TreeSet<>(comparator);
+    Map<String, UnknownType> comparableKeyWithUnknownValue = new TreeMap<>();
   }
 }
