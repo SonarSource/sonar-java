@@ -2,6 +2,7 @@ package checks;
 
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -51,6 +52,12 @@ class SortedCollectionWithNonComparableTypeCheckSample {
   static class ComparableTaskChild extends ComparableTask {
   }
 
+  interface NonComparableContract {
+  }
+
+  abstract static class AbstractTask {
+  }
+
   void noncompliant(Collection<Task> tasks, Map<Task, String> assignments, PriorityQueue<Task> orderedTasks) {
     Set<Task> treeSet = new TreeSet<>(); // Noncompliant {{Provide a comparator because this element type does not implement "Comparable".}}
     Map<Task, String> treeMap = new TreeMap<>(); // Noncompliant {{Provide a comparator because this key type does not implement "Comparable".}}
@@ -63,7 +70,6 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     Queue<Task> priorityQueueFromCollection = new PriorityQueue<>(tasks); // Noncompliant
     Set<Task> skipListSetFromCollection = new ConcurrentSkipListSet<>(tasks); // Noncompliant
     Map<Task, String> skipListMapFromMap = new ConcurrentSkipListMap<>(assignments); // Noncompliant
-    Set<IncompatiblyComparableTask> incompatibleComparable = new TreeSet<>(); // Noncompliant
     Set<Task> treeSetFromPriorityQueue = new TreeSet<>(orderedTasks); // Noncompliant
   }
 
@@ -89,7 +95,19 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     Queue<ComparableTask> comparableQueue = new PriorityQueue<>();
     Set<BroadlyComparableTask> broadlyComparableTreeSet = new TreeSet<>();
     Set<RawComparableTask> rawComparableTreeSet = new TreeSet<>();
+    Set<IncompatiblyComparableTask> incompatibleComparableTreeSet = new TreeSet<>();
     Set<Comparable<Object>> comparableInterfaceTreeSet = new TreeSet<>();
+
+    Set<Object> objectTreeSet = new TreeSet<>();
+    Map<Object, Object> objectTreeMap = new TreeMap<>();
+    Queue<Object> objectPriorityQueue = new PriorityQueue<>();
+    Set<Object> objectSkipListSet = new ConcurrentSkipListSet<>();
+    Map<Object, Object> objectSkipListMap = new ConcurrentSkipListMap<>();
+    Set<NonComparableContract> interfaceTreeSet = new TreeSet<>();
+    Set<AbstractTask> abstractTreeSet = new TreeSet<>();
+    Set<?> wildcardTreeSet = new TreeSet<>();
+    Set<Object> emptyObjectTreeSet = new TreeSet<>(Collections.emptyList());
+    SortedMap<Object, Object> emptyUnmodifiableTreeMap = Collections.unmodifiableSortedMap(new TreeMap<>());
 
     Map<String, Object> stringKeys = new TreeMap<>();
     Map<Integer, Object> integerKeys = new TreeMap<>();
@@ -101,6 +119,12 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     Map<String, Object> parenthesizedStringKeys = (new TreeMap<>());
 
     TreeSet rawTreeSet = new TreeSet();
+    TreeMap rawTreeMap = new TreeMap();
+    PriorityQueue rawPriorityQueue = new PriorityQueue();
+  }
+
+  Map<Object, Object> objectMapFactory() {
+    return new TreeMap<>();
   }
 
   void handledComparisonFailure(Collection<Task> tasks) {

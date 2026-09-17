@@ -19,7 +19,6 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -64,12 +63,7 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
     }
 
     Type orderedType = contextualOrderedType(newClassTree, collectionType);
-    if (!orderedType.isUnknown() &&
-      !orderedType.symbol().isUnknown() &&
-      !orderedType.isTypeVar() &&
-      orderedType.isSubtypeOf("java.lang.Object") &&
-      !hasCompatibleNaturalOrdering(orderedType) &&
-      !JUtils.hasUnknownTypeInHierarchy(orderedType.symbol())) {
+    if (isConcreteNonComparable(orderedType)) {
       reportIssue(newClassTree, MESSAGE.formatted(isMap(collectionType) ? "key" : "element"));
     }
   }
@@ -97,15 +91,21 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
       parameterType.isSubtypeOf("java.util.PriorityQueue");
   }
 
-  private static boolean hasCompatibleNaturalOrdering(Type orderedType) {
-    return Stream.concat(Stream.of(orderedType), orderedType.symbol().superTypes().stream())
-      .filter(superType -> superType.is(COMPARABLE))
-      .anyMatch(comparableType -> comparableType.typeArguments().isEmpty() || orderedType.isSubtypeOf(comparableType.typeArguments().get(0)));
+  private static boolean isConcreteNonComparable(Type type) {
+    return !type.isUnknown() &&
+      !type.symbol().isUnknown() &&
+      !type.isTypeVar() &&
+      !type.is("java.lang.Object") &&
+      type.isSubtypeOf("java.lang.Object") &&
+      !type.symbol().isInterface() &&
+      !type.symbol().isAbstract() &&
+      !type.isSubtypeOf(COMPARABLE) &&
+      !JUtils.hasUnknownTypeInHierarchy(type.symbol());
   }
 
   private static Type contextualOrderedType(NewClassTree tree, Type collectionType) {
     return targetOrderedType(tree, isMap(collectionType))
-      .filter(type -> !type.isUnknown() && !type.symbol().isUnknown() && hasCompatibleNaturalOrdering(type))
+      .filter(type -> !type.isUnknown() && !type.symbol().isUnknown() && type.isSubtypeOf(COMPARABLE))
       .orElseGet(() -> collectionType.typeArguments().get(0));
   }
 
