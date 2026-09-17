@@ -273,7 +273,7 @@ public class JavaRulingTest {
 
     final var prBranch = "eclipse-jetty-same-issues-as-main";
 
-    MavenBuild prBuild = test_existing_project("org.eclipse.jetty:jetty-project", prSourceCode)
+    MavenBuild prBuild = test_existing_project("https://github.com/SonarSource/ruling_java/tree/85d8a90d7dfa711f91388a0c869f89eb434b04d3", prSourceCode)
       // re-define binaries from initial maven build
       .setProperty("sonar.java.binaries", prBinaries)
       .setProperty("sonar.exclusions", "jetty-server/src/main/java/org/eclipse/jetty/server/HttpInput.java," +
