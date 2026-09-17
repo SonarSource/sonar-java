@@ -1,13 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluatorTest.java": [
-69,
-77,
-85
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/debt/DebtModelPluginRepositoryTest.java": [
-94
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/platform/db/EmbeddedDatabaseTest.java": [
-166
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S3658","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/qualitygate\/ConditionEvaluatorTest.java"},"region":{"startLine":69,"endLine":69}}}]},{"ruleId":"java:S3658","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/qualitygate\/ConditionEvaluatorTest.java"},"region":{"startLine":77,"endLine":77}}}]},{"ruleId":"java:S3658","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/qualitygate\/ConditionEvaluatorTest.java"},"region":{"startLine":85,"endLine":85}}}]},{"ruleId":"java:S3658","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/debt\/DebtModelPluginRepositoryTest.java"},"region":{"startLine":94,"endLine":94}}}]},{"ruleId":"java:S3658","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/platform\/db\/EmbeddedDatabaseTest.java"},"region":{"startLine":166,"endLine":166}}}]}]}]}

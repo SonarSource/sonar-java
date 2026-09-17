@@ -1,10 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/authentication/JwtSerializer.java": [
-101
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/measure/index/ProjectMeasuresQuery.java": [
-80,
-89,
-98
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S9404","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/authentication\/JwtSerializer.java"},"region":{"startLine":101,"endLine":101}}}]},{"ruleId":"java:S9404","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/measure\/index\/ProjectMeasuresQuery.java"},"region":{"startLine":80,"endLine":80}}}]},{"ruleId":"java:S9404","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/measure\/index\/ProjectMeasuresQuery.java"},"region":{"startLine":89,"endLine":89}}}]},{"ruleId":"java:S9404","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/measure\/index\/ProjectMeasuresQuery.java"},"region":{"startLine":98,"endLine":98}}}]}]}]}

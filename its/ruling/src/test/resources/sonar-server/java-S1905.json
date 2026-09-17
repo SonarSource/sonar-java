@@ -1,15 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueCounter.java": [
-198,
-210
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitymodel/MaintainabilityMeasuresVisitor.java": [
-122
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComputeMeasureVariationsStep.java": [
-124
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/AbstractChangeTagsAction.java": [
-58
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S1905","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/issue\/IssueCounter.java"},"region":{"startLine":198,"endLine":198}}}]},{"ruleId":"java:S1905","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/issue\/IssueCounter.java"},"region":{"startLine":210,"endLine":210}}}]},{"ruleId":"java:S1905","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/qualitymodel\/MaintainabilityMeasuresVisitor.java"},"region":{"startLine":122,"endLine":122}}}]},{"ruleId":"java:S1905","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/step\/ComputeMeasureVariationsStep.java"},"region":{"startLine":124,"endLine":124}}}]},{"ruleId":"java:S1905","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/issue\/AbstractChangeTagsAction.java"},"region":{"startLine":58,"endLine":58}}}]}]}]}

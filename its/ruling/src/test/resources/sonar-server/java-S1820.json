@@ -1,9 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssueQuery.java": [
-38,
-245
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/index/RuleQuery.java": [
-34
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S1820","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/issue\/IssueQuery.java"},"region":{"startLine":38,"endLine":38}}}]},{"ruleId":"java:S1820","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/issue\/IssueQuery.java"},"region":{"startLine":245,"endLine":245}}}]},{"ruleId":"java:S1820","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/rule\/index\/RuleQuery.java"},"region":{"startLine":34,"endLine":34}}}]}]}]}
