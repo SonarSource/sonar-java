@@ -80,6 +80,10 @@ public class TypeToBeansIndex {
     return Collections.unmodifiableSet(entriesByType.keySet());
   }
 
+  Map<String, Set<BeanEntry>> entriesByType() {
+    return entriesByType;
+  }
+
   private static boolean isVisible(BeanEntry entry, String consumerModule, Set<String> scannedPackages) {
     return entry.module().equals(consumerModule)
       || scannedPackages.stream().anyMatch(scanned -> isWithinPackage(entry.beanPackage(), scanned));

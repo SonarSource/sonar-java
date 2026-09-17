@@ -30,7 +30,9 @@ import java.util.Set;
  * Lookup returns an empty set for entity classes that have no registered properties.
  */
 public class EntityClassToPropertiesIndex {
-  /** Properties indexed by fully-qualified {@code @Entity} class name. */
+  /**
+   * Properties indexed by fully-qualified {@code @Entity} class name.
+   */
   private final Map<String, Set<Map.Entry<String, String>>> propertiesByEntityClass = new HashMap<>();
 
   /**
@@ -52,5 +54,12 @@ public class EntityClassToPropertiesIndex {
    */
   public Set<Map.Entry<String, String>> getPropertiesForEntity(String entityClass) {
     return Collections.unmodifiableSet(propertiesByEntityClass.getOrDefault(entityClass, Set.of()));
+  }
+
+  /**
+   * @return The backing index, for accounting purposes only. The map is not a defensive copy and must not be modified.
+   */
+  Map<String, Set<Map.Entry<String, String>>> propertiesByEntityClass() {
+    return propertiesByEntityClass;
   }
 }

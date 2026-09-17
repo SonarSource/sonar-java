@@ -29,7 +29,9 @@ import java.util.Set;
  * collected during project analysis. Each module may declare multiple scanned packages.
  */
 public class ProjectPackageScan {
-  /** Scanned package names indexed by module name. */
+  /**
+   * Scanned package names indexed by module name.
+   */
   private final Map<String, Set<String>> packagesScannedBySpringPerModule = new HashMap<>();
 
   /**
@@ -69,5 +71,12 @@ public class ProjectPackageScan {
    */
   public Set<String> getModules() {
     return packagesScannedBySpringPerModule.keySet();
+  }
+
+  /**
+   * @return The backing index, for accounting purposes only. The map is not a defensive copy and must not be modified.
+   */
+  Map<String, Set<String>> packagesScannedBySpringPerModule() {
+    return packagesScannedBySpringPerModule;
   }
 }
