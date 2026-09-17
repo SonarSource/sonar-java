@@ -19,18 +19,19 @@ package org.sonar.java.checks.synchronization;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import static org.sonar.java.model.ExpressionUtils.getEnclosingTree;
 import static org.sonar.java.model.ExpressionUtils.isThis;
 import static org.sonar.java.model.ExpressionUtils.skipParentheses;
 
@@ -45,11 +46,15 @@ public class S9399Check extends IssuableSubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     SynchronizedStatementTree sst = (SynchronizedStatementTree) tree;
-    Symbol lockSymbol = resolveFieldSymbol(sst.expression());
-    if (lockSymbol == null || !lockSymbol.isStatic()) {
+    if (!isStaticLock(sst.expression())) {
       return;
     }
-    InstanceFieldAccessVisitor visitor = new InstanceFieldAccessVisitor(lockSymbol.owner());
+    Tree enclosingClassTree = getEnclosingTree(sst, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.RECORD);
+    if (enclosingClassTree == null) {
+      return;
+    }
+    Symbol enclosingClassSymbol = ((ClassTree) enclosingClassTree).symbol();
+    InstanceFieldAccessVisitor visitor = new InstanceFieldAccessVisitor(enclosingClassSymbol);
     sst.block().accept(visitor);
     List<IdentifierTree> instanceFieldAccesses = visitor.getInstanceFieldAccesses();
     if (!instanceFieldAccesses.isEmpty()) {
@@ -60,19 +65,20 @@ public class S9399Check extends IssuableSubscriptionVisitor {
     }
   }
 
-  @CheckForNull
-  private static Symbol resolveFieldSymbol(ExpressionTree expression) {
+  private static boolean isStaticLock(ExpressionTree expression) {
     ExpressionTree expr = skipParentheses(expression);
+    if (expr.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
+      if ("class".equals(mse.identifier().name())) {
+        return true;
+      }
+      return isStaticLock(mse.identifier());
+    }
     if (expr.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) expr).symbol();
-      if (!symbol.isUnknown() && symbol.owner().isTypeSymbol()) {
-        return symbol;
-      }
-    } else if (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-      return resolveFieldSymbol(mse.identifier());
+      return !symbol.isUnknown() && symbol.owner().isTypeSymbol() && symbol.isStatic();
     }
-    return null;
+    return false;
   }
 
   private static class InstanceFieldAccessVisitor extends BaseTreeVisitor {

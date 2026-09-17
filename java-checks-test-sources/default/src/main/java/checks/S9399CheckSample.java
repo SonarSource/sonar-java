@@ -164,3 +164,48 @@ class S9399_SeparateClass {
     }
   }
 }
+
+class S9399_ClassLiteralLock {
+  private int count;
+  private static int staticCount;
+
+  void classLiteralLockOnInstanceField() {
+    synchronized (S9399_ClassLiteralLock.class) { // Noncompliant {{Use an instance-level lock to guard instance fields.}}
+//                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      count++;
+    }
+  }
+
+  void classLiteralLockOnStaticField() {
+    synchronized (S9399_ClassLiteralLock.class) { // Compliant - static lock guards static field
+      staticCount++;
+    }
+  }
+}
+
+class S9399_ExternalLockHolder {
+  static final Object SHARED_LOCK = new Object();
+}
+
+class S9399_ExternalLockUser {
+  private int value;
+
+  void externalStaticLockOnInstanceField() {
+    synchronized (S9399_ExternalLockHolder.SHARED_LOCK) { // Noncompliant
+      value++;
+    }
+  }
+}
+
+enum S9399_EnumWithLock {
+  INSTANCE;
+
+  private static final Object LOCK = new Object();
+  private int count;
+
+  void lockedMethod() {
+    synchronized (LOCK) { // Noncompliant
+      count++;
+    }
+  }
+}
