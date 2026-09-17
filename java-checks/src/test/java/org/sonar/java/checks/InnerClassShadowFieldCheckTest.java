@@ -37,6 +37,6 @@ class InnerClassShadowFieldCheckTest {
       .onFile(mainCodeSourcesPath("checks/InnerClassShadowFieldCheckSample.java"))
       .withCheck(new InnerClassShadowFieldCheck())
       .withoutSemantic()
-      .verifyIssues();
+      .verifyNoIssues();
   }
 }
