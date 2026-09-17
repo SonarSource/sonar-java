@@ -1,5 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java": [
-351
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S135","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/rule\/RegisterRules.java"},"region":{"startLine":351,"endLine":351}}}]}]}]}

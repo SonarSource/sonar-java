@@ -1,7 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/notification/email/EmailNotificationChannel.java": [
-190,
-197,
-198
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S5527","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/notification\/email\/EmailNotificationChannel.java"},"region":{"startLine":190,"endLine":190}}}]},{"ruleId":"java:S5527","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/notification\/email\/EmailNotificationChannel.java"},"region":{"startLine":197,"endLine":197}}}]},{"ruleId":"java:S5527","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/notification\/email\/EmailNotificationChannel.java"},"region":{"startLine":198,"endLine":198}}}]}]}]}

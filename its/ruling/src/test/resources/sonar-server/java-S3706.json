@@ -1,12 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/permission/ws/template/SearchTemplatesDataLoader.java": [
-96
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/ShowAction.java": [
-140
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/qualityprofile/RuleActivatorTest.java": [
-863,
-898
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S3706","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/permission\/ws\/template\/SearchTemplatesDataLoader.java"},"region":{"startLine":96,"endLine":96}}}]},{"ruleId":"java:S3706","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/rule\/ws\/ShowAction.java"},"region":{"startLine":140,"endLine":140}}}]},{"ruleId":"java:S3706","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/qualityprofile\/RuleActivatorTest.java"},"region":{"startLine":863,"endLine":863}}}]},{"ruleId":"java:S3706","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/qualityprofile\/RuleActivatorTest.java"},"region":{"startLine":898,"endLine":898}}}]}]}]}

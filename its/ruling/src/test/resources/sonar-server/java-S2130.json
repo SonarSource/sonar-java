@@ -1,5 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/projectlink/ws/CreateActionTest.java": [
-265
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S2130","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/projectlink\/ws\/CreateActionTest.java"},"region":{"startLine":265,"endLine":265}}}]}]}]}

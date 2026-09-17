@@ -1,9 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/issue/ScmAccountToUserLoaderTest.java": [
-92
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/util/ObjectInputStreamIteratorTest.java": [
-52,
-71
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S108","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/issue\/ScmAccountToUserLoaderTest.java"},"region":{"startLine":92,"endLine":92}}}]},{"ruleId":"java:S108","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/util\/ObjectInputStreamIteratorTest.java"},"region":{"startLine":52,"endLine":52}}}]},{"ruleId":"java:S108","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/util\/ObjectInputStreamIteratorTest.java"},"region":{"startLine":71,"endLine":71}}}]}]}]}

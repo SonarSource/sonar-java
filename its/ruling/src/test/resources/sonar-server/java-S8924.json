@@ -1,8 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/ce/log/CeLoggingTest.java": [
-64
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/ws/ShowActionTest.java": [
-150
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S8924","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/ce\/log\/CeLoggingTest.java"},"region":{"startLine":64,"endLine":64}}}]},{"ruleId":"java:S8924","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/rule\/ws\/ShowActionTest.java"},"region":{"startLine":150,"endLine":150}}}]}]}]}

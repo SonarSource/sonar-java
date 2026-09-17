@@ -1,9 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortCalculator.java": [
-55
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/IssuesFinderSort.java": [
-89,
-142
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S1604","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/issue\/NewEffortCalculator.java"},"region":{"startLine":55,"endLine":55}}}]},{"ruleId":"java:S1604","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/issue\/IssuesFinderSort.java"},"region":{"startLine":89,"endLine":89}}}]},{"ruleId":"java:S1604","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/issue\/IssuesFinderSort.java"},"region":{"startLine":142,"endLine":142}}}]}]}]}
