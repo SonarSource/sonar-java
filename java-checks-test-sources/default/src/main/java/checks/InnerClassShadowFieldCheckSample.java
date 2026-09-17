@@ -34,7 +34,8 @@ public class InnerClassShadowFieldCheckSample {
   }
 
   public class InnerWithStaticOuter {
-    private String staticOuterField;
+    private String staticOuterField; // Noncompliant {{Rename "staticOuterField" which hides the field declared in "InnerClassShadowFieldCheckSample".}}
+//                 ^^^^^^^^^^^^^^^^
   }
 
   public class InnerWithSerialVersionUID {
@@ -43,6 +44,10 @@ public class InnerClassShadowFieldCheckSample {
 
   public class InnerWithStaticField {
     private static String outerField;
+  }
+
+  public static class StaticNested {
+    private String outerField; // Compliant - static nested class has no enclosing instance
   }
 
   public class DeepNesting {
