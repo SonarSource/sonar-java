@@ -151,6 +151,8 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     try {
       escaped = new TreeSet<>(tasks); // Noncompliant
       outer = new TreeSet<>(tasks); // Noncompliant
+      Set<Task> used = new TreeSet<>(tasks); // Noncompliant
+      used.clear();
     } catch (ClassCastException e) {
     }
     try {
