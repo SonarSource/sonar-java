@@ -27,7 +27,7 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
  * <ul>
  *   <li>{@link BeanDefinitionRegistry} — bean definitions indexed by bean name</li>
  *   <li>{@link ProjectPackageScan} — packages registered for component scanning, per module</li>
- *   <li>{@link TypeToBeanNamesIndex} — bean names indexed by type</li>
+ *   <li>{@link TypeToBeansIndex} — bean names indexed by type</li>
  *   <li>{@link EntityClassToPropertiesIndex} — JPA {@code @Entity} class properties</li>
  * </ul>
  */
@@ -41,7 +41,7 @@ public class SpringContextModel {
   private final ProjectPackageScan projectPackageScan = new ProjectPackageScan();
 
   /** Index for resolving bean names by their fully-qualified type. */
-  private final TypeToBeanNamesIndex typeToBeanNamesIndex = new TypeToBeanNamesIndex();
+  private final TypeToBeansIndex typeToBeansIndex = new TypeToBeansIndex();
 
   /** Index for storing injected dependencies by their fully-qualified type. */
   private final TypeToDependenciesIndex typeToDependenciesIndex = new TypeToDependenciesIndex();
@@ -57,8 +57,8 @@ public class SpringContextModel {
     return projectPackageScan;
   }
 
-  public TypeToBeanNamesIndex getTypeToBeanNamesIndex() {
-    return typeToBeanNamesIndex;
+  public TypeToBeansIndex getTypeToBeansIndex() {
+    return typeToBeansIndex;
   }
 
   public TypeToDependenciesIndex getTypeToDependenciesIndex() {

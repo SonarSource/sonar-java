@@ -46,7 +46,7 @@ class SpringContextModelGathererTest {
   @Test
   void testGatherSpringContextData() {
     scanFile("src/test/files/model/SimpleClass.java", new SampleGatherer(), TestClasspathUtils.DEFAULT_MODULE.getClassPath());
-    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("com.example.MyService")).containsExactly("myServiceBean");
+    assertThat(model.getTypeToBeansIndex().getNamesForType("com.example.MyService", "", Set.of())).containsExactly("myServiceBean");
   }
 
   // ---- isCompatibleWithDependencies -----------------------------------------
@@ -88,7 +88,7 @@ class SpringContextModelGathererTest {
 
     @Override
     public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {
-      springContextModel.getTypeToBeanNamesIndex().addBeanForType("com.example.MyService", "myServiceBean", context.getModuleKey(), "com.example");
+      springContextModel.getTypeToBeansIndex().addBeanForType("com.example.MyService", "myServiceBean", context.getModuleKey(), "com.example");
     }
 
     @Override
