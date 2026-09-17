@@ -23,6 +23,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.sonar.java.model.springcontext.ProfileExpression.UNCONDITIONAL;
 import static org.sonar.java.model.springcontext.ProfileExpression.UNKNOWN;
 import static org.sonar.java.model.springcontext.ProfileExpression.and;
@@ -86,13 +87,13 @@ class ProfileExpressionTest {
   void and_drops_unconditional_operands() {
     assertThat(and(List.of(UNCONDITIONAL, profile("dev")))).isEqualTo(profile("dev"));
     assertThat(and(List.of(UNCONDITIONAL, profile("dev"), profile("test"))))
-      .isEqualTo(new ProfileExpression.And(List.of(profile("dev"), profile("test"))));
+      .isEqualTo(new ProfileExpression.And(Set.of(profile("dev"), profile("test"))));
   }
 
   @Test
   void and_flattens_nested_conjunctions() {
     assertThat(and(List.of(and(List.of(profile("a"), profile("b"))), profile("c"))))
-      .isEqualTo(new ProfileExpression.And(List.of(profile("a"), profile("b"), profile("c"))));
+      .isEqualTo(new ProfileExpression.And(Set.of(profile("a"), profile("b"), profile("c"))));
   }
 
   @Test
@@ -106,6 +107,23 @@ class ProfileExpressionTest {
     assertThat(and(List.of(profile("dev")))).isEqualTo(profile("dev"));
   }
 
+  @Test
+  void and_deduplicates_and_orders_operands() {
+    ProfileExpression expression = and(List.of(profile("c"), profile("a"), profile("b"), profile("a")));
+
+    assertThat(expression).isInstanceOfSatisfying(ProfileExpression.And.class,
+      conjunction -> assertThat(conjunction.operands()).containsExactly(profile("a"), profile("b"), profile("c")));
+  }
+
+  @Test
+  void and_is_commutative_for_equality_and_canonical_form() {
+    ProfileExpression aAndB = and(List.of(profile("a"), profile("b")));
+    ProfileExpression bAndA = and(List.of(profile("b"), profile("a")));
+
+    assertThat(aAndB).isEqualTo(bAndA);
+    assertThat(aAndB.toCanonicalString()).isEqualTo(bAndA.toCanonicalString()).isEqualTo("(a & b)");
+  }
+
   // ---- Or -----------------------------------------------------------------
 
   @Test
@@ -116,12 +134,14 @@ class ProfileExpressionTest {
   @Test
   void or_is_unconditional_when_any_operand_is_unconditional() {
     assertThat(or(List.of(profile("dev"), UNCONDITIONAL)).isUnconditional()).isTrue();
+    assertThat(or(List.of(UNKNOWN, UNCONDITIONAL)).isUnconditional()).isTrue();
+    assertThat(or(List.of(UNCONDITIONAL, UNKNOWN)).isUnconditional()).isTrue();
   }
 
   @Test
   void or_flattens_nested_disjunctions() {
     assertThat(or(List.of(or(List.of(profile("a"), profile("b"))), profile("c"))))
-      .isEqualTo(new ProfileExpression.Or(List.of(profile("a"), profile("b"), profile("c"))));
+      .isEqualTo(new ProfileExpression.Or(Set.of(profile("a"), profile("b"), profile("c"))));
   }
 
   @Test
@@ -134,14 +154,31 @@ class ProfileExpressionTest {
     assertThat(or(List.of(profile("dev")))).isEqualTo(profile("dev"));
   }
 
+  @Test
+  void or_deduplicates_and_orders_operands() {
+    ProfileExpression expression = or(List.of(profile("c"), profile("a"), profile("b"), profile("a")));
+
+    assertThat(expression).isInstanceOfSatisfying(ProfileExpression.Or.class,
+      disjunction -> assertThat(disjunction.operands()).containsExactly(profile("a"), profile("b"), profile("c")));
+  }
+
+  @Test
+  void compound_operands_are_immutable() {
+    ProfileExpression.And expression = (ProfileExpression.And) and(List.of(profile("a"), profile("b")));
+
+    Set<ProfileExpression> compoundOperands = expression.operands();
+    ProfileExpression profileExpr = profile("c");
+    assertThatThrownBy(() -> compoundOperands.add(profileExpr)).isInstanceOf(UnsupportedOperationException.class);
+  }
+
   // ---- profileNames -------------------------------------------------------
 
   @Test
-  void profile_names_are_collected_in_declaration_order_without_duplicates() {
+  void profile_names_are_collected_in_lexicographic_order_without_duplicates() {
     assertThat(profile("dev").profileNames()).containsExactly("dev");
     assertThat(not(profile("dev")).profileNames()).containsExactly("dev");
     assertThat(and(List.of(profile("dev"), not(profile("test")))).profileNames()).containsExactly("dev", "test");
-    assertThat(or(List.of(profile("b"), profile("a"), profile("b"))).profileNames()).containsExactly("b", "a");
+    assertThat(or(List.of(profile("b"), profile("a"), profile("b"))).profileNames()).containsExactly("a", "b");
   }
 
   @Test

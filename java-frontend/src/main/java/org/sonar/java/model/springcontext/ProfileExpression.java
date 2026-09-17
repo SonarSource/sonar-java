@@ -17,7 +17,9 @@
 package org.sonar.java.model.springcontext;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,10 +73,16 @@ public sealed interface ProfileExpression {
   record Not(ProfileExpression operand) implements ProfileExpression {
   }
 
-  record And(List<ProfileExpression> operands) implements ProfileExpression {
+  record And(Set<ProfileExpression> operands) implements ProfileExpression {
+    public And {
+      operands = lexicographicallyOrdered(operands);
+    }
   }
 
-  record Or(List<ProfileExpression> operands) implements ProfileExpression {
+  record Or(Set<ProfileExpression> operands) implements ProfileExpression {
+    public Or {
+      operands = lexicographicallyOrdered(operands);
+    }
   }
 
   /**
@@ -113,13 +121,13 @@ public sealed interface ProfileExpression {
    * @return {@link #UNKNOWN} if any operand is unknown; otherwise the conjunction of the operands, with
    * {@link #UNCONDITIONAL} operands dropped and nested conjunctions flattened.
    */
-  static ProfileExpression and(List<ProfileExpression> operands) {
+  static ProfileExpression and(Collection<? extends ProfileExpression> operands) {
     List<ProfileExpression> flattened = new ArrayList<>();
     for (ProfileExpression operand : operands) {
       if (operand.isUnknown()) {
         return UNKNOWN;
       }
-      if (operand instanceof And(List<ProfileExpression> otherOperands)) {
+      if (operand instanceof And(Set<ProfileExpression> otherOperands)) {
         flattened.addAll(otherOperands);
       } else if (!operand.isUnconditional()) {
         flattened.add(operand);
@@ -132,33 +140,25 @@ public sealed interface ProfileExpression {
    * Disjunction, as declared by {@code |} or by the elements of a {@code @Profile} array.
    *
    * @param operands The expressions of which at least one must match.
-   * @return {@link #UNKNOWN} if any operand is unknown, {@link #UNCONDITIONAL} if any operand is
-   * unconditional; otherwise the disjunction of the operands, with nested disjunctions flattened.
+   * @return {@link #UNCONDITIONAL} if any operand is unconditional, otherwise {@link #UNKNOWN} if any
+   * operand is unknown; otherwise the disjunction of the operands, with nested disjunctions flattened.
    */
-  static ProfileExpression or(List<ProfileExpression> operands) {
+  static ProfileExpression or(Collection<? extends ProfileExpression> operands) {
+    if (operands.stream().anyMatch(ProfileExpression::isUnconditional)) {
+      return UNCONDITIONAL;
+    }
+    if (operands.stream().anyMatch(ProfileExpression::isUnknown)) {
+      return UNKNOWN;
+    }
     List<ProfileExpression> flattened = new ArrayList<>();
     for (ProfileExpression operand : operands) {
-      if (operand.isUnknown()) {
-        return UNKNOWN;
-      }
-      if (operand.isUnconditional()) {
-        return UNCONDITIONAL;
-      }
-      if (operand instanceof Or(List<ProfileExpression> otherOperands)) {
+      if (operand instanceof Or(Set<ProfileExpression> otherOperands)) {
         flattened.addAll(otherOperands);
       } else {
         flattened.add(operand);
       }
     }
     return simplify(flattened, Or::new);
-  }
-
-  private static ProfileExpression simplify(List<ProfileExpression> operands, Function<List<ProfileExpression>, ProfileExpression> factory) {
-    return switch (operands.size()) {
-      case 0 -> UNCONDITIONAL;
-      case 1 -> operands.getFirst();
-      default -> factory.apply(List.copyOf(operands));
-    };
   }
 
   /**
@@ -176,7 +176,7 @@ public sealed interface ProfileExpression {
   }
 
   /**
-   * @return Every profile name this expression refers to, in declaration order; empty for both
+   * @return Every profile name this expression refers to, in lexicographic order; empty for both
    * {@link UNCONDITIONAL} and {@link UNKNOWN}.
    */
   default Set<String> profileNames() {
@@ -185,15 +185,9 @@ public sealed interface ProfileExpression {
       case Unknown() -> Set.of();
       case Profile(String name) -> Set.of(name);
       case Not(ProfileExpression operand) -> operand.profileNames();
-      case And(List<ProfileExpression> operands) -> namesOf(operands);
-      case Or(List<ProfileExpression> operands) -> namesOf(operands);
+      case And(Set<ProfileExpression> operands) -> namesOf(operands);
+      case Or(Set<ProfileExpression> operands) -> namesOf(operands);
     };
-  }
-
-  private static Set<String> namesOf(List<ProfileExpression> operands) {
-    Set<String> names = new LinkedHashSet<>();
-    operands.forEach(operand -> names.addAll(operand.profileNames()));
-    return Collections.unmodifiableSet(names);
   }
 
   /**
@@ -217,8 +211,8 @@ public sealed interface ProfileExpression {
       case Unknown() -> true;
       case Profile(String name) -> activeProfiles.contains(name);
       case Not(ProfileExpression operand) -> !operand.isActiveUnder(activeProfiles);
-      case And(List<ProfileExpression> operands) -> operands.stream().allMatch(operand -> operand.isActiveUnder(activeProfiles));
-      case Or(List<ProfileExpression> operands) -> operands.stream().anyMatch(operand -> operand.isActiveUnder(activeProfiles));
+      case And(Set<ProfileExpression> operands) -> operands.stream().allMatch(operand -> operand.isActiveUnder(activeProfiles));
+      case Or(Set<ProfileExpression> operands) -> operands.stream().anyMatch(operand -> operand.isActiveUnder(activeProfiles));
     };
   }
 
@@ -239,12 +233,35 @@ public sealed interface ProfileExpression {
       case Unknown() -> UNKNOWN_CANONICAL_FORM;
       case Profile(String name) -> name;
       case Not(ProfileExpression operand) -> "!" + operand.toCanonicalString();
-      case And(List<ProfileExpression> operands) -> join(operands, " & ");
-      case Or(List<ProfileExpression> operands) -> join(operands, " | ");
+      case And(Set<ProfileExpression> operands) -> join(operands, " & ");
+      case Or(Set<ProfileExpression> operands) -> join(operands, " | ");
     };
   }
 
-  private static String join(List<ProfileExpression> operands, String separator) {
+  private static ProfileExpression simplify(Collection<? extends ProfileExpression> operands, Function<Set<ProfileExpression>, ProfileExpression> factory) {
+    Set<ProfileExpression> normalized = lexicographicallyOrdered(operands);
+    return switch (normalized.size()) {
+      case 0 -> UNCONDITIONAL;
+      case 1 -> normalized.iterator().next();
+      default -> factory.apply(normalized);
+    };
+  }
+
+  private static Set<ProfileExpression> lexicographicallyOrdered(Collection<? extends ProfileExpression> operands) {
+    Set<ProfileExpression> ordered = operands.stream()
+      .sorted(Comparator.comparing(ProfileExpression::toCanonicalString))
+      .collect(Collectors.toCollection(LinkedHashSet::new));
+    return Collections.unmodifiableSet(ordered);
+  }
+
+  private static Set<String> namesOf(Set<ProfileExpression> operands) {
+    Set<String> names = new LinkedHashSet<>();
+    operands.forEach(operand -> names.addAll(operand.profileNames()));
+    Set<String> orderedNames = names.stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
+    return Collections.unmodifiableSet(orderedNames);
+  }
+
+  private static String join(Set<ProfileExpression> operands, String separator) {
     return operands.stream().map(ProfileExpression::toCanonicalString).collect(Collectors.joining(separator, "(", ")"));
   }
 }
