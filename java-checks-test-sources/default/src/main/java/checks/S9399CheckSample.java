@@ -245,3 +245,67 @@ enum S9399_EnumWithLock {
     }
   }
 }
+
+class S9399_OuterWithInnerLock {
+  static class Inner {
+    static final Object INNER_LOCK = new Object();
+  }
+
+  private int value;
+
+  void nestedMemberSelectLock() {
+    synchronized (S9399_OuterWithInnerLock.Inner.INNER_LOCK) { // Noncompliant
+      value++;
+    }
+  }
+
+  void nestedMemberSelectLockOnStaticField() {
+    synchronized (Inner.INNER_LOCK) { // Compliant - static lock guards static field
+      staticField++;
+    }
+  }
+
+  private static int staticField;
+}
+
+class S9399_DeeplyNestedClass {
+  private static final Object LOCK = new Object();
+
+  class Level1 {
+    class Level2 {
+      private int deepField;
+
+      void deepNesting() {
+        synchronized (LOCK) { // Noncompliant
+          deepField++;
+        }
+      }
+
+      void accessOuterField() {
+        synchronized (LOCK) { // Noncompliant
+          outerField++;
+        }
+      }
+    }
+
+    private int level1Field;
+
+    void level1Access() {
+      synchronized (LOCK) { // Noncompliant
+        level1Field++;
+      }
+    }
+  }
+
+  private int outerField;
+}
+
+interface S9399_InterfaceWithDefault {
+  Object LOCK = new Object();
+
+  default void defaultMethod() {
+    synchronized (LOCK) { // Compliant - inside interface, no instance fields
+      System.out.println("locked");
+    }
+  }
+}
