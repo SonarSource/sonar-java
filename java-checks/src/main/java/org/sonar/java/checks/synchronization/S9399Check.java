@@ -110,9 +110,10 @@ public class S9399Check extends IssuableSubscriptionVisitor {
     }
 
     private boolean isOwnedBySameOrEnclosingClass(Symbol symbol) {
-      Symbol current = symbol.owner();
-      while (current != null && current.isTypeSymbol()) {
-        if (current.equals(ownerType)) {
+      Symbol fieldOwner = symbol.owner();
+      Symbol current = ownerType;
+      while (current != null && !current.isPackageSymbol()) {
+        if (current.isTypeSymbol() && current.type().isSubtypeOf(fieldOwner.type().fullyQualifiedName())) {
           return true;
         }
         current = current.owner();

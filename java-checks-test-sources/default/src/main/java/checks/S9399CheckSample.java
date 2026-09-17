@@ -145,6 +145,14 @@ class S9399CheckSample {
       InnerClass inner = new InnerClass();
     }
   }
+
+  class InnerClassAccessingOuterField {
+    void accessOuterField() {
+      synchronized (STATIC_LOCK) { // Noncompliant
+        count++;
+      }
+    }
+  }
 }
 
 class S9399_SeparateClass {
@@ -194,6 +202,34 @@ class S9399_ExternalLockUser {
     synchronized (S9399_ExternalLockHolder.SHARED_LOCK) { // Noncompliant
       value++;
     }
+  }
+}
+
+class S9399_BaseClass {
+  protected int baseField;
+}
+
+class S9399_SubClass extends S9399_BaseClass {
+  private static final Object LOCK = new Object();
+
+  void accessInheritedField() {
+    synchronized (LOCK) { // Noncompliant
+      baseField++;
+    }
+  }
+}
+
+class S9399_MethodCallLock {
+  private int count;
+
+  void synchronizedOnMethodCall() {
+    synchronized (getObject()) { // Compliant - not a static lock
+      count++;
+    }
+  }
+
+  private Object getObject() {
+    return new Object();
   }
 }
 
