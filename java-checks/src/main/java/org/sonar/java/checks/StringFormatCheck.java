@@ -31,7 +31,6 @@ public class StringFormatCheck extends AbstractMethodDetection {
 
   private static final String STRING = "java.lang.String";
   private static final String LOCALE = "java.util.Locale";
-  private static final String OBJECT_ARRAY = "java.lang.Object[]";
   private static final MethodMatchers STRING_FORMAT = MethodMatchers.create()
     .ofTypes(STRING)
     .names("format")
@@ -54,8 +53,7 @@ public class StringFormatCheck extends AbstractMethodDetection {
       return;
     }
     int formatIndex = hasLocale ? 1 : 0;
-    if (invocation.arguments().size() <= formatIndex || invocation.arguments().get(formatIndex).is(Tree.Kind.IDENTIFIER)
-      && invocation.arguments().get(formatIndex).symbolType().isUnknown()) {
+    if (invocation.arguments().size() <= formatIndex) {
       return;
     }
     ExpressionTree formatArgument = invocation.arguments().get(formatIndex);
@@ -64,11 +62,11 @@ public class StringFormatCheck extends AbstractMethodDetection {
     }
     LiteralTree literal = (LiteralTree) formatArgument;
     int placeholders = countSimplePlaceholders(literal.value());
-    if (placeholders == 0 || placeholders < 0 || invocation.arguments().size() != formatIndex + placeholders + 1) {
+    if (placeholders <= 0 || invocation.arguments().size() != formatIndex + placeholders + 1) {
       return;
     }
     ExpressionTree lastArgument = invocation.arguments().get(invocation.arguments().size() - 1);
-    if (lastArgument.symbolType().isArray() && lastArgument.symbolType().is(OBJECT_ARRAY)) {
+    if (lastArgument.symbolType().isArray()) {
       return;
     }
     reportIssue(invocation.methodSelect(), "Use String.valueOf() or string concatenation instead of String.format().");

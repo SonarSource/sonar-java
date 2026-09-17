@@ -1,7 +1,6 @@
+<h2>Why is this an issue?</h2>
 <p>When <code>String.format()</code> is used with simple <code>%s</code> placeholders, the result can often be achieved more clearly with
 <code>String.valueOf()</code> or string concatenation. These simpler alternatives are easier to read, maintain, and slightly more efficient.</p>
-<h2>Why is this an issue?</h2>
-<h2>Why is this an issue?</h2>
 <p>String formatting utilities like <code>String.format()</code> are powerful mechanisms for creating formatted strings with complex patterns.
 However, they come with overhead: parsing format specifications, identifying placeholders, performing type conversions, and assembling the result.</p>
 <p>When the formatting pattern is simple enough that it can be replaced with a more direct alternative — such as <code>String.valueOf()</code> for a
@@ -49,7 +48,7 @@ String date = String.format("%tF %tT", timestamp, timestamp);  // Compliant - da
 <h3>Documentation</h3>
 <ul>
   <li>Oracle Java Documentation - <a
-  href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#format-java.lang.String-java.lang.Object…​-">String (Java Platform SE
+  href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#format-java.lang.String-java.lang.Object...-">String (Java Platform SE
   8)</a></li>
   <li>Oracle Java Documentation - <a
   href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#valueOf-java.lang.Object-">String.valueOf()</a></li>

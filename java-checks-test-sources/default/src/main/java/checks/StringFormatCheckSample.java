@@ -1,3 +1,5 @@
+package checks;
+
 import java.util.Locale;
 
 class StringFormatCheckSample {
@@ -68,5 +70,33 @@ class StringFormatCheckSample {
 
   String array(Object[] values) {
     return String.format("%s", values); // compliant
+  }
+
+  String stringArray(String[] values) {
+    return String.format("%s", values); // compliant
+  }
+
+  String charArray(char[] values) {
+    return String.format("%s", values); // compliant
+  }
+
+  String intArray(int[] values) {
+    return String.format("%s", values); // compliant
+  }
+
+  String emptyFormat() {
+    return String.format(""); // compliant
+  }
+
+  String noPlaceholders() {
+    return String.format("hello"); // compliant
+  }
+
+  String trailingPercent() {
+    return String.format("value%"); // compliant
+  }
+
+  String localizedConcat(String a, String b) {
+    return String.format(Locale.ROOT, "%s/%s", a, b); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
   }
 }
