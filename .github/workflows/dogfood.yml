@@ -10,6 +10,10 @@ on:
 #    branches:
 #      - 'dogfood/**'
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   dogfood_merge:
     runs-on: warp-custom-ubuntu-24-04
