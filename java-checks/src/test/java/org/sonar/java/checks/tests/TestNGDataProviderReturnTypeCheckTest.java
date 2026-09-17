@@ -26,7 +26,7 @@ class TestNGDataProviderReturnTypeCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/S9388CheckSample.java"))
+      .onFile(testCodeSourcesPath("checks/tests/TestNGDataProviderReturnTypeCheckSample.java"))
       .withCheck(new TestNGDataProviderReturnTypeCheck())
       .verifyIssues();
   }
@@ -34,7 +34,7 @@ class TestNGDataProviderReturnTypeCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(testCodeSourcesPath("checks/tests/S9388CheckSample.java"))
+      .onFile(testCodeSourcesPath("checks/tests/TestNGDataProviderReturnTypeCheckSample.java"))
       .withCheck(new TestNGDataProviderReturnTypeCheck())
       .withoutSemantic()
       .verifyNoIssues();

@@ -85,8 +85,8 @@ public class TestNGDataProviderReturnTypeCheck extends IssuableSubscriptionVisit
       return false;
     }
     Type typeArg = typeArgs.get(0);
-    return typeArg.is(JAVA_LANG_OBJECT)
-      || (typeArg.isArray() && ((Type.ArrayType) typeArg).elementType().is(JAVA_LANG_OBJECT));
+    return typeArg.isSubtypeOf(JAVA_LANG_OBJECT)
+      || (typeArg.isArray() && ((Type.ArrayType) typeArg).elementType().isSubtypeOf(JAVA_LANG_OBJECT));
   }
 
 }

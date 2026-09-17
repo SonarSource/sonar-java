@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.testng.annotations.DataProvider;
 
-class S9388CheckSample {
+class TestNGDataProviderReturnTypeCheckSample {
 
   @DataProvider
   public Object[][] validTwoDimensionalArray() { // Compliant
@@ -37,8 +37,7 @@ class S9388CheckSample {
   }
 
   @DataProvider
-  public String[] returnsStringArray() { // Noncompliant {{Change this return type to "Object[][]", "Iterator<Object[]>", "Iterator<Object>", or "Object[]".}}
-//       ^^^^^^^^
+  public String[] returnsStringArray() { // Compliant - String[] is assignable to Object[] at runtime
     return new String[] {"a", "b"};
   }
 
@@ -49,14 +48,12 @@ class S9388CheckSample {
   }
 
   @DataProvider
-  public String[][] returnsStringArray2D() { // Noncompliant {{Change this return type to "Object[][]", "Iterator<Object[]>", "Iterator<Object>", or "Object[]".}}
-//       ^^^^^^^^^^
+  public String[][] returnsStringArray2D() { // Compliant - String[][] is assignable to Object[][] at runtime
     return new String[][] {{"a"}, {"b"}};
   }
 
   @DataProvider
-  public Iterator<String> returnsIteratorOfString() { // Noncompliant {{Change this return type to "Object[][]", "Iterator<Object[]>", "Iterator<Object>", or "Object[]".}}
-//       ^^^^^^^^^^^^^^^^
+  public Iterator<String> returnsIteratorOfString() { // Compliant - Iterator<String> works at runtime via TestNG
     return Arrays.asList("a", "b").iterator();
   }
 
