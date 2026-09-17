@@ -99,4 +99,36 @@ class StringFormatCheckSample {
   String localizedConcat(String a, String b) {
     return String.format(Locale.ROOT, "%s/%s", a, b); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
   }
+
+  String multipleEscapedPercents(String value) {
+    return String.format("%%:%s:%%", value); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
+  }
+
+  String threeArguments(String a, String b, String c) {
+    return String.format("%s-%s-%s", a, b, c); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
+  }
+
+  String localizedNoArgs() {
+    return String.format(Locale.ROOT, "hello"); // compliant
+  }
+
+  String localizedArray(Object[] values) {
+    return String.format(Locale.ROOT, "%s", values); // compliant
+  }
+
+  String localizedMissing() {
+    return String.format(Locale.ROOT, "%s"); // compliant
+  }
+
+  String localizedExtra(Object value, Object unused) {
+    return String.format(Locale.ROOT, "%s", value, unused); // compliant
+  }
+
+  String localizedNumeric(double value) {
+    return String.format(Locale.ROOT, "%.2f", value); // compliant
+  }
+
+  String localizedTrailingPercent() {
+    return String.format(Locale.ROOT, "value%"); // compliant
+  }
 }

@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -45,11 +46,8 @@ public class StringFormatCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree invocation) {
     List<Type> parameterTypes = invocation.methodSymbol().parameterTypes();
-    if (parameterTypes.size() != 2 && parameterTypes.size() != 3) {
-      return;
-    }
     boolean hasLocale = parameterTypes.size() == 3 && parameterTypes.get(0).is(LOCALE);
-    if (!hasLocale && parameterTypes.size() != 2 || hasLocale && !parameterTypes.get(1).is(STRING)) {
+    if (!hasLocale && parameterTypes.size() != 2) {
       return;
     }
     int formatIndex = hasLocale ? 1 : 0;
@@ -61,7 +59,7 @@ public class StringFormatCheck extends AbstractMethodDetection {
       return;
     }
     LiteralTree literal = (LiteralTree) formatArgument;
-    int placeholders = countSimplePlaceholders(literal.value());
+    int placeholders = countSimplePlaceholders(LiteralUtils.trimQuotes(literal.value()));
     if (placeholders <= 0 || invocation.arguments().size() != formatIndex + placeholders + 1) {
       return;
     }
