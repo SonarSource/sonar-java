@@ -98,6 +98,38 @@ class S9399CheckSample {
     }
   }
 
+  void staticLockWithInstanceMethodCall() {
+    synchronized (STATIC_LOCK) { // Compliant - instance method call, not direct field access
+      helper();
+    }
+  }
+
+  private void helper() {
+    count++;
+  }
+
+  void staticLockWithNonIdentifierQualifier(S9399CheckSample other) {
+    synchronized (STATIC_LOCK) { // Compliant - field access on result of method call, not on this instance
+      getOther().count++;
+    }
+  }
+
+  private S9399CheckSample getOther() {
+    return new S9399CheckSample();
+  }
+
+  void staticLockWithParenthesizedExpression() {
+    synchronized ((STATIC_LOCK)) { // Noncompliant
+      count++;
+    }
+  }
+
+  void staticLockWithCastQualifier(Object o) {
+    synchronized (STATIC_LOCK) { // Compliant - field access on cast expression, not on this instance
+      ((S9399CheckSample) o).count++;
+    }
+  }
+
   class InnerClass {
     private int innerField;
 
@@ -107,6 +139,12 @@ class S9399CheckSample {
       }
     }
   }
+
+  void staticLockWithInnerClassInstantiation() {
+    synchronized (STATIC_LOCK) { // Compliant - no instance field access
+      InnerClass inner = new InnerClass();
+    }
+  }
 }
 
 class S9399_SeparateClass {
@@ -114,7 +152,7 @@ class S9399_SeparateClass {
   private int value;
 
   void compliantWithLocalVariable() {
-    synchronized (LOCK) { // Compliant - parameter used, not instance field
+    synchronized (LOCK) { // Compliant - only a local variable is used, no instance field
       int temp = 5;
       System.out.println(temp);
     }

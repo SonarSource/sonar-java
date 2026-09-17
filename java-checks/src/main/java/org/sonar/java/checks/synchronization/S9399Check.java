@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.model.ExpressionUtils.isThis;
+import static org.sonar.java.model.ExpressionUtils.skipParentheses;
 
 @Rule(key = "S9399")
 public class S9399Check extends IssuableSubscriptionVisitor {
@@ -61,13 +62,14 @@ public class S9399Check extends IssuableSubscriptionVisitor {
 
   @CheckForNull
   private static Symbol resolveFieldSymbol(ExpressionTree expression) {
-    if (expression.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = ((IdentifierTree) expression).symbol();
+    ExpressionTree expr = skipParentheses(expression);
+    if (expr.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = ((IdentifierTree) expr).symbol();
       if (!symbol.isUnknown() && symbol.owner().isTypeSymbol()) {
         return symbol;
       }
-    } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expression;
+    } else if (expr.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
       return resolveFieldSymbol(mse.identifier());
     }
     return null;
@@ -85,7 +87,7 @@ public class S9399Check extends IssuableSubscriptionVisitor {
     @Override
     public void visitIdentifier(IdentifierTree tree) {
       Symbol symbol = tree.symbol();
-      if (!symbol.isUnknown() && symbol.owner().isTypeSymbol() && !symbol.isStatic()
+      if (!symbol.isUnknown() && symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !symbol.isStatic()
         && isOwnedBySameOrEnclosingClass(symbol)) {
         instanceFieldAccesses.add(tree);
       }
@@ -96,8 +98,8 @@ public class S9399Check extends IssuableSubscriptionVisitor {
       ExpressionTree expression = tree.expression();
       if (isThis(expression)) {
         visitIdentifier(tree.identifier());
-      } else if (!expression.is(Tree.Kind.IDENTIFIER) || isThis(expression)) {
-        super.visitMemberSelectExpression(tree);
+      } else {
+        scan(expression);
       }
     }
 
