@@ -119,7 +119,8 @@ public sealed interface ProfileExpression {
    *
    * @param operands The expressions that must all match.
    * @return {@link #UNKNOWN} if any operand is unknown; otherwise the conjunction of the operands, with
-   * {@link #UNCONDITIONAL} operands dropped and nested conjunctions flattened.
+   * {@link #UNCONDITIONAL} operands dropped, nested conjunctions flattened, duplicates removed, and the
+   * remaining operands ordered lexicographically by their {@link #toCanonicalString() canonical form}.
    */
   static ProfileExpression and(Collection<? extends ProfileExpression> operands) {
     List<ProfileExpression> flattened = new ArrayList<>();
@@ -141,7 +142,9 @@ public sealed interface ProfileExpression {
    *
    * @param operands The expressions of which at least one must match.
    * @return {@link #UNCONDITIONAL} if any operand is unconditional, otherwise {@link #UNKNOWN} if any
-   * operand is unknown; otherwise the disjunction of the operands, with nested disjunctions flattened.
+   * operand is unknown; otherwise the disjunction of the operands, with nested disjunctions flattened,
+   * duplicates removed, and the remaining operands ordered lexicographically by their
+   * {@link #toCanonicalString() canonical form}.
    */
   static ProfileExpression or(Collection<? extends ProfileExpression> operands) {
     if (operands.stream().anyMatch(ProfileExpression::isUnconditional)) {
