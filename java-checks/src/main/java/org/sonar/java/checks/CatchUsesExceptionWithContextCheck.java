@@ -106,7 +106,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   private Deque<UsageStatus> usageStatusStack;
   private Set<String> exceptions;
   private Set<String> exceptionIdentifiers;
-  private Set<CatchTree> excludedCatchTrees = new HashSet<>();
+  private final Set<CatchTree> excludedCatchTrees = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
