@@ -19,14 +19,14 @@ package org.sonar.java.checks.tests;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
-import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+import static org.sonar.java.checks.verifier.TestUtils.testCodeSourcesPath;
 
 class TestNGJavadocTagsCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/tests/TestNGJavadocTagsCheckSample.java"))
+      .onFile(testCodeSourcesPath("checks/tests/TestNGJavadocTagsCheckSample.java"))
       .withCheck(new TestNGJavadocTagsCheck())
       .verifyIssues();
   }
@@ -34,7 +34,7 @@ class TestNGJavadocTagsCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/tests/TestNGJavadocTagsCheckSample.java"))
+      .onFile(testCodeSourcesPath("checks/tests/TestNGJavadocTagsCheckSample.java"))
       .withCheck(new TestNGJavadocTagsCheck())
       .withoutSemantic()
       .verifyIssues();
