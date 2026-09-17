@@ -1,8 +1,10 @@
+<p>This rule raises an issue when <code>Arrays.fill()</code> is called with an argument whose static type is incompatible with the component type of
+the array being filled.</p>
+<h2>Why is this an issue?</h2>
 <p>In Java, arrays are covariant: a <code>String[]</code> is considered an <code>Object[]</code> by the type system. Consequently,
 <code>Arrays.fill(Object[] a, Object val)</code> and its bounded range overload accept any <code>Object</code> value as the filling element. However,
 if the runtime component type of the array cannot hold the provided value, the Java Virtual Machine throws an <code>ArrayStoreException</code> at
 runtime.</p>
-<h2>Why is this an issue?</h2>
 <p>Calling <code>Arrays.fill(Object[] a, Object val)</code> with a value whose type cannot be stored in the target array component type is guaranteed
 to fail at runtime. For example, attempting to fill a <code>String[]</code> with an <code>Integer</code> compiles without error because
 <code>String[]</code> is an <code>Object[]</code> and <code>Integer</code> is an <code>Object</code>. When executed, the method attempts to store each
@@ -10,8 +12,6 @@ element into the array, which immediately throws an <code>ArrayStoreException</c
 <p>Similarly, passing a non-null object into an array of a distinct, incompatible class hierarchy causes an immediate runtime failure. This problem
 often arises after refactoring an array type without updating its initialization, or when accidentally confusing the fill value with an index or
 default value from another data structure.</p>
-<p>This rule raises an issue when <code>Arrays.fill()</code> is called with an argument whose static type is incompatible with the component type of
-the array being filled.</p>
 <h2>How to fix it</h2>
 <p>Change the filling value to an instance that is compatible with the array component type, or change the target array type so that it can hold the
 intended value.</p>
