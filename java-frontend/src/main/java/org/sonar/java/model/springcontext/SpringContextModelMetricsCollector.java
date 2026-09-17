@@ -22,23 +22,29 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.LongConsumer;
 import javax.annotation.Nullable;
 
 /**
- * Estimates the heap memory retained by a {@link SpringContextModel}, in bytes.
+ * Computes all the {@link SpringContextModelMetrics} of a {@link SpringContextModel} in a single walk of its indexes:
+ * the counters, which are accumulated in the fields below as the walk progresses, and the estimated heap memory
+ * retained by the model, in bytes.
  *
- * <p>The figure is an <strong>estimate</strong>, not a measurement. It is computed by walking the model's indexes and
- * summing shallow object sizes derived from the JVM layout constants below, which assume a 64-bit HotSpot JVM with
- * compressed object pointers and 8-byte object alignment. Strings are assumed to use the Latin-1 coder, which holds for
- * the fully-qualified type names, bean names and package names the model stores. Immutable collections
- * ({@code Set.copyOf}, {@code Collectors.toUnmodifiableMap}) are accounted for with the {@link java.util.HashMap}
- * formulas; their real layout differs in detail.
+ * <p>The counters count occurrences, while the size counts distinct instances: an object reachable through several
+ * entries is counted once per occurrence but charged only once, see {@link #charge(Object)}.
+ *
+ * <p>The size figure is an <strong>estimate</strong>, not a measurement. It is computed by summing shallow object sizes
+ * derived from the JVM layout constants below, which assume a 64-bit HotSpot JVM with compressed object pointers and
+ * 8-byte object alignment. Strings are assumed to use the Latin-1 coder, which holds for the fully-qualified type
+ * names, bean names and package names the model stores. Immutable collections ({@code Set.copyOf},
+ * {@code Collectors.toUnmodifiableMap}) are accounted for with the {@link java.util.HashMap} formulas; their real
+ * layout differs in detail.
  *
  * <p>The result is a deterministic, self-consistent indicator suitable for comparing projects and tracking growth over
  * time. It is accurate to an order of magnitude and must not be read as an exact retained size; establishing that
  * requires a heap dump.
  */
-final class SpringContextModelSizeEstimator {
+final class SpringContextModelMetricsCollector {
 
   private static final int OBJECT_HEADER = 12;
   private static final int ARRAY_HEADER = 16;
@@ -50,23 +56,43 @@ final class SpringContextModelSizeEstimator {
   private static final int HASH_TABLE_MIN_CAPACITY = 16;
   private static final int HASH_TABLE_MAX_CAPACITY = 1 << 30;
 
+  private static final LongConsumer NOT_COUNTED = elementCount -> {
+  };
+
   private final Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
 
-  private SpringContextModelSizeEstimator() {
+  private long beanCount;
+  private long beanNameCount;
+  private long injectionPointCount;
+  private long componentScanPackageCount;
+
+  private SpringContextModelMetricsCollector() {
   }
 
-  static long estimate(SpringContextModel model) {
-    var estimator = new SpringContextModelSizeEstimator();
-    return estimator.sizeOfBeanDefinitions(model.getBeanDefinitionRegistry().beanDefinitions())
-      + estimator.sizeOfBeanEntriesByString(model.getTypeToBeansIndex().entriesByType())
-      + estimator.sizeOfInjectionPointsByString(model.getTypeToDependenciesIndex().injectionPointsByType())
-      + estimator.sizeOfEntriesByString(model.getEntityClassToPropertiesIndex().propertiesByEntityClass())
-      + estimator.sizeOfStringsByString(model.getProjectPackageScan().packagesScannedBySpringPerModule());
+  static SpringContextModelMetrics collect(SpringContextModel model) {
+    var collector = new SpringContextModelMetricsCollector();
+    long estimatedSizeInBytes = collector.walk(model);
+    return new SpringContextModelMetrics(
+      collector.beanCount,
+      collector.beanNameCount,
+      collector.injectionPointCount,
+      collector.componentScanPackageCount,
+      estimatedSizeInBytes);
   }
 
-  private long sizeOfBeanDefinitions(Map<String, List<BeanDefinitionHolder>> beanDefinitions) {
+  private long walk(SpringContextModel model) {
+    return walkBeanDefinitions(model.getBeanDefinitionRegistry().beanDefinitions())
+      + walkBeanEntriesByString(model.getTypeToBeansIndex().entriesByType())
+      + walkInjectionPointsByString(model.getTypeToDependenciesIndex().injectionPointsByType())
+      + walkEntriesByString(model.getEntityClassToPropertiesIndex().propertiesByEntityClass())
+      + walkStringsByString(model.getProjectPackageScan().packagesScannedBySpringPerModule(), packageCount -> componentScanPackageCount += packageCount);
+  }
+
+  private long walkBeanDefinitions(Map<String, List<BeanDefinitionHolder>> beanDefinitions) {
+    beanNameCount = beanDefinitions.size();
     long size = shallowSizeOfMap(beanDefinitions.size());
     for (var entry : beanDefinitions.entrySet()) {
+      beanCount += entry.getValue().size();
       size += sizeOfString(entry.getKey()) + shallowSizeOfList(entry.getValue().size());
       for (var holder : entry.getValue()) {
         size += sizeOfBeanDefinitionHolder(holder);
@@ -75,15 +101,16 @@ final class SpringContextModelSizeEstimator {
     return size;
   }
 
-  private long sizeOfStringsByString(Map<String, Set<String>> index) {
+  private long walkStringsByString(Map<String, Set<String>> index, LongConsumer elementCounter) {
     long size = shallowSizeOfMap(index.size());
     for (var entry : index.entrySet()) {
+      elementCounter.accept(entry.getValue().size());
       size += sizeOfString(entry.getKey()) + sizeOfStringSet(entry.getValue());
     }
     return size;
   }
 
-  private long sizeOfBeanEntriesByString(Map<String, Set<TypeToBeansIndex.BeanEntry>> index) {
+  private long walkBeanEntriesByString(Map<String, Set<TypeToBeansIndex.BeanEntry>> index) {
     long size = shallowSizeOfMap(index.size());
     for (var entry : index.entrySet()) {
       size += sizeOfString(entry.getKey()) + shallowSizeOfSet(entry.getValue().size());
@@ -99,9 +126,10 @@ final class SpringContextModelSizeEstimator {
     return size;
   }
 
-  private long sizeOfInjectionPointsByString(Map<String, Set<InjectionPoint>> index) {
+  private long walkInjectionPointsByString(Map<String, Set<InjectionPoint>> index) {
     long size = shallowSizeOfMap(index.size());
     for (var entry : index.entrySet()) {
+      injectionPointCount += entry.getValue().size();
       size += sizeOfString(entry.getKey()) + shallowSizeOfSet(entry.getValue().size());
       for (var injectionPoint : entry.getValue()) {
         size += sizeOfInjectionPoint(injectionPoint);
@@ -110,7 +138,7 @@ final class SpringContextModelSizeEstimator {
     return size;
   }
 
-  private long sizeOfEntriesByString(Map<String, Set<Map.Entry<String, String>>> index) {
+  private long walkEntriesByString(Map<String, Set<Map.Entry<String, String>>> index) {
     long size = shallowSizeOfMap(index.size());
     for (var entry : index.entrySet()) {
       size += sizeOfString(entry.getKey()) + shallowSizeOfSet(entry.getValue().size());
@@ -135,10 +163,7 @@ final class SpringContextModelSizeEstimator {
       + sizeOfBeanLocation(holder.getLocation());
     var dependingBeans = holder.getDependingBeans();
     if (charge(dependingBeans)) {
-      size += shallowSizeOfMap(dependingBeans.size());
-      for (var entry : dependingBeans.entrySet()) {
-        size += sizeOfString(entry.getKey()) + sizeOfStringSet(entry.getValue());
-      }
+      size += walkStringsByString(dependingBeans, NOT_COUNTED);
     }
     return size;
   }

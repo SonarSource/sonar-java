@@ -26,6 +26,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SpringContextModelMetricsTest {
 
+  /**
+   * An empty model holds its five indexes, each an empty {@link java.util.HashMap} with no backing table yet:
+   * 5 × align(12 + 8 × 4) = 5 × 48 bytes. Pinned exactly, rather than as a lower bound, so that a change to the
+   * estimator's layout constants or to the number of indexes has to be acknowledged instead of silently shifting the
+   * size reported as telemetry.
+   */
   private static final long EMPTY_MODEL_SIZE = 240L;
 
   @Test
@@ -94,6 +100,51 @@ class SpringContextModelMetricsTest {
   }
 
   @Test
+  void bean_names_by_type_are_not_counted_as_component_scan_packages() {
+    var model = new SpringContextModel();
+    model.getTypeToBeansIndex().addBeanForType("com.acme.MyBean", "myBean", "module-a", "com.acme");
+    model.getTypeToBeansIndex().addBeanForType("com.acme.MyBean", "myOtherBean", "module-a", "com.acme");
+
+    var metrics = SpringContextModelMetrics.of(model);
+
+    assertThat(metrics.componentScanPackageCount()).isZero();
+    assertThat(metrics.estimatedSizeInBytes()).isGreaterThan(EMPTY_MODEL_SIZE);
+  }
+
+  @Test
+  void depending_beans_are_not_counted_as_component_scan_packages() {
+    var model = new SpringContextModel();
+    var holder = new BeanDefinitionHolder.Builder("com.acme.MyBean", "module-a", "com.acme", newLocation())
+      .dependingBeans(Map.of("com.acme.Collaborator", Set.of("collaborator", "otherCollaborator")))
+      .build();
+    model.getBeanDefinitionRegistry().addBeanDefinition("myBean", holder);
+
+    var metrics = SpringContextModelMetrics.of(model);
+
+    assertThat(metrics.beanCount()).isEqualTo(1);
+    assertThat(metrics.componentScanPackageCount()).isZero();
+  }
+
+  @Test
+  void shared_bean_definition_instance_is_counted_per_occurrence_but_charged_once() {
+    var sharedHolder = newHolder("com.acme.MyBean");
+    var sharing = new SpringContextModel();
+    sharing.getBeanDefinitionRegistry().addBeanDefinition("myBean", sharedHolder);
+    sharing.getBeanDefinitionRegistry().addBeanDefinition("myOtherBean", sharedHolder);
+
+    var duplicating = new SpringContextModel();
+    duplicating.getBeanDefinitionRegistry().addBeanDefinition("myBean", newHolder("com.acme.MyBean"));
+    duplicating.getBeanDefinitionRegistry().addBeanDefinition("myOtherBean", newHolder("com.acme.MyBean"));
+
+    var metrics = SpringContextModelMetrics.of(sharing);
+
+    assertThat(metrics.beanCount()).isEqualTo(2);
+    assertThat(metrics.beanNameCount()).isEqualTo(2);
+    assertThat(metrics.estimatedSizeInBytes())
+      .isLessThan(SpringContextModelMetrics.of(duplicating).estimatedSizeInBytes());
+  }
+
+  @Test
   void entity_properties_contribute_to_the_size_but_to_no_counter() {
     var model = new SpringContextModel();
     long emptySize = SpringContextModelMetrics.of(model).estimatedSizeInBytes();
@@ -151,13 +202,15 @@ class SpringContextModelMetricsTest {
   }
 
   @Test
-  void estimate_is_stable_across_repeated_walks() {
+  void metrics_are_stable_across_repeated_walks() {
     var model = new SpringContextModel();
     model.getBeanDefinitionRegistry().addBeanDefinition("myBean", newHolder("com.acme.MyBean"));
+    model.getTypeToBeansIndex().addBeanForType("com.acme.MyBean", "myBean", "module-a", "com.acme");
     model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", newLocation());
+    model.getEntityClassToPropertiesIndex().addProperty("com.acme.MyEntity", "table", "my_entity");
+    model.getProjectPackageScan().addPackage("module-a", "com.acme");
 
-    assertThat(SpringContextModelMetrics.of(model).estimatedSizeInBytes())
-      .isEqualTo(SpringContextModelMetrics.of(model).estimatedSizeInBytes());
+    assertThat(SpringContextModelMetrics.of(model)).isEqualTo(SpringContextModelMetrics.of(model));
   }
 
   private static BeanDefinitionHolder newHolder(String type) {
