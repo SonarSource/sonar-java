@@ -17,15 +17,18 @@
 package org.sonar.java.checks.spring;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanDefinitionRegistry;
 import org.sonar.java.model.springcontext.InjectionPoint;
+import org.sonar.java.model.springcontext.ProjectPackageScan;
 import org.sonar.java.model.springcontext.SpringContextModel;
-import org.sonar.java.model.springcontext.TypeToBeanNamesIndex;
+import org.sonar.java.model.springcontext.TypeToBeansIndex;
 import org.sonar.java.model.springcontext.TypeToDependenciesIndex;
 import org.sonar.plugins.java.api.JavaCheck;
 
@@ -41,34 +44,35 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
     + " disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".";
 
   /** Creates the list of issues using the spring context model.
-   * For each bean type in the project, gets the names of beans of this type (candidates) and the dependencies
-   * (injection points) that require this type, then check if there are ambiguous dependencies of this type:
-   * a single candidate, or a single one marked {@code @Primary}, is unambiguous, whether it has a
-   * profile. Otherwise, candidates with a profile are excluded as potentially mutually exclusive, and the
-   * same unique/{@code @Primary} check is re-applied to the remaining candidates; if multiple still remain,
-   * an issue is created for each injection point that does not match one of the <em>full</em> set of candidates
-   * by name — an injection point explicitly qualified towards a profiled bean is already disambiguated and must
-   * not be flagged, even though that bean was excluded from the uniqueness/{@code @Primary} heuristic above.
+   * For each injection point, retrieves the beans of the required type that are visible within the
+   * consumer's own Spring context (same module, or in a package covered by its {@code @ComponentScan}),
+   * then checks for ambiguity: a single candidate, or a single one marked {@code @Primary}, is unambiguous.
+   * Candidates with a profile are then excluded as potentially mutually exclusive, and the same
+   * unique/{@code @Primary} check is re-applied; if multiple still remain, an issue is raised for
+   * each injection point that does not match one of the <em>full</em> context-scoped candidate set by name —
+   * an injection point explicitly qualified towards a profiled bean is already disambiguated.
    *
    * @param model the Spring context model of the project
    */
   @Override
   public List<SpringContextIssue> execute(SpringContextModel model) {
     BeanDefinitionRegistry registry = model.getBeanDefinitionRegistry();
-    TypeToBeanNamesIndex typeToBeanNamesIndex = model.getTypeToBeanNamesIndex();
+    TypeToBeansIndex typeToBeansIndex = model.getTypeToBeansIndex();
     TypeToDependenciesIndex typeToDependenciesIndex = model.getTypeToDependenciesIndex();
+    ProjectPackageScan projectPackageScan = model.getProjectPackageScan();
 
     List<SpringContextIssue> issues = new ArrayList<>();
-    for (String type : typeToBeanNamesIndex.getKeys()) {
-      Set<String> candidates = typeToBeanNamesIndex.getNamesForType(type);
-      if (hasUniqueOrPrimaryCandidate(candidates, registry)) {
-        continue;
-      }
-      Set<InjectionPoint> injectionPoints = typeToDependenciesIndex.getDependenciesForType(type);
-      Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
-      if (!hasUniqueOrPrimaryCandidate(effectiveCandidates, registry)) {
-        for (InjectionPoint unresolvedInjectionPoint : findInjectionPointsNotMatchingCandidateByName(candidates, injectionPoints)) {
-          issues.add(new SpringContextIssue(unresolvedInjectionPoint.location(), message(effectiveCandidates)));
+    for (String type : typeToBeansIndex.getKeys()) {
+      Map<String, Set<String>> candidatesByModule = new HashMap<>();
+      for (InjectionPoint point : typeToDependenciesIndex.getDependenciesForType(type)) {
+        Set<String> candidates = candidatesByModule.computeIfAbsent(point.module(),
+          module -> typeToBeansIndex.getNamesForType(type, module, projectPackageScan.getPackagesForModule(module)));
+        if (hasUniqueOrPrimaryCandidate(candidates, registry)) {
+          continue;
+        }
+        Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
+        if (!hasUniqueOrPrimaryCandidate(effectiveCandidates, registry) && !candidates.contains(point.name())) {
+          issues.add(new SpringContextIssue(point.location(), message(effectiveCandidates)));
         }
       }
     }
@@ -78,10 +82,6 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
   private static boolean hasUniqueOrPrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry) {
     return candidates.size() <= 1
       || hasExactlyOnePrimaryCandidate(candidates, registry);
-  }
-
-  private static Set<InjectionPoint> findInjectionPointsNotMatchingCandidateByName(Set<String> candidates, Set<InjectionPoint> injectionPointNames) {
-    return injectionPointNames.stream().filter(injectionPoint -> !candidates.contains(injectionPoint.name())).collect(Collectors.toSet());
   }
 
   private static boolean hasExactlyOnePrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry) {

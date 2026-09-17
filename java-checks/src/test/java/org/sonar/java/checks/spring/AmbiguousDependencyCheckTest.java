@@ -32,7 +32,10 @@ import org.sonar.java.model.JParser;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.model.springcontext.BeanDefinitionGatherer;
+import org.sonar.java.model.springcontext.BeanDefinitionHolder;
+import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -117,6 +120,78 @@ class AmbiguousDependencyCheckTest {
       "PlainEventPublisherComponentA.java", "PlainEventPublisherComponentB.java", "ProfiledEventPublisherComponent.java",
       "EventPublisherQualifierConsumer.java");
     assertThat(check.execute(model)).isEmpty();
+  }
+
+  // ---- Multi-module context scoping -----------------------------------------
+
+  @Test
+  void beans_in_separate_modules_are_not_ambiguous_for_each_other() {
+    String type = "com.example.PaymentGateway";
+    InputFile fileA = dummyInputFile("com/a/PaymentGatewayImpl.java");
+    InputFile fileB = dummyInputFile("com/b/PaymentGatewayImpl.java");
+    InputFile consumerFileA = dummyInputFile("com/a/ConsumerA.java");
+    InputFile consumerFileB = dummyInputFile("com/b/ConsumerB.java");
+
+    SpringContextModel model = new SpringContextModel();
+    registerBean(model, "paymentGatewayA", type, "module-a", "com.a", fileA);
+    registerBean(model, "paymentGatewayB", type, "module-b", "com.b", fileB);
+    registerBean(model, "consumerA", "com.a.ConsumerA", "module-a", "com.a", consumerFileA);
+    registerBean(model, "consumerB", "com.b.ConsumerB", "module-b", "com.b", consumerFileB);
+    registerInjectionPoint(model, type, "paymentGateway", "module-a", consumerFileA);
+    registerInjectionPoint(model, type, "paymentGateway", "module-b", consumerFileB);
+
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void within_same_module_ambiguity_is_still_detected() {
+    String type = "com.example.PaymentGateway";
+    InputFile fileA = dummyInputFile("com/a/PaymentGatewayImplA.java");
+    InputFile fileB = dummyInputFile("com/a/PaymentGatewayImplB.java");
+    InputFile consumerFile = dummyInputFile("com/a/Consumer.java");
+
+    SpringContextModel model = new SpringContextModel();
+    registerBean(model, "paymentGatewayImplA", type, "module-a", "com.a", fileA);
+    registerBean(model, "paymentGatewayImplB", type, "module-a", "com.a", fileB);
+    registerBean(model, "consumer", "com.a.Consumer", "module-a", "com.a", consumerFile);
+    registerInjectionPoint(model, type, "paymentGateway", "module-a", consumerFile);
+
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  @Test
+  void component_scan_cross_module_package_makes_bean_visible() {
+    String type = "com.example.PaymentGateway";
+    InputFile fileA = dummyInputFile("com/a/PaymentGatewayImpl.java");
+    InputFile fileB = dummyInputFile("com/b/PaymentGatewayImpl.java");
+    InputFile consumerFile = dummyInputFile("com/a/Consumer.java");
+
+    SpringContextModel model = new SpringContextModel();
+    registerBean(model, "paymentGatewayA", type, "module-a", "com.a", fileA);
+    registerBean(model, "paymentGatewayB", type, "module-b", "com.b", fileB);
+    registerBean(model, "consumer", "com.a.Consumer", "module-a", "com.a", consumerFile);
+    registerInjectionPoint(model, type, "paymentGateway", "module-a", consumerFile);
+    model.getProjectPackageScan().addPackages("module-a", List.of("com.a", "com.b"));
+
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  private static void registerBean(SpringContextModel model, String beanName, String type, String module,
+    String beanPackage, InputFile file) {
+    var location = new BeanLocation(file, new AnalyzerMessage.TextSpan(1));
+    model.getBeanDefinitionRegistry().addBeanDefinition(beanName,
+      new BeanDefinitionHolder.Builder(type, module, beanPackage, location).build());
+    model.getTypeToBeansIndex().addBeanForType(type, beanName, module, beanPackage);
+  }
+
+  private static void registerInjectionPoint(SpringContextModel model, String type, String fieldName,
+    String module, InputFile consumerFile) {
+    model.getTypeToDependenciesIndex().addDependencyForType(type, fieldName, module,
+      new BeanLocation(consumerFile, new AnalyzerMessage.TextSpan(5)));
+  }
+
+  private static InputFile dummyInputFile(String path) {
+    return new TestInputFileBuilder("", path).setLanguage("java").setType(InputFile.Type.MAIN).build();
   }
 
   /**
