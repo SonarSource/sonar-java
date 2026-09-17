@@ -42,6 +42,7 @@ public class TypeToDependenciesIndex {
    *
    * @param dependencyType fully-qualified name of the dependency's type
    * @param dependencyName the dependency name to associate with that type
+   * @param module         the module key in which the consuming bean is declared
    * @param location       the source location of the injection point
    */
   public void addDependencyForType(String dependencyType, String dependencyName, String module, BeanLocation location) {
