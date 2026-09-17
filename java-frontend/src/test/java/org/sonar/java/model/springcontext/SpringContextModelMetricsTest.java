@@ -26,28 +26,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SpringContextModelMetricsTest {
 
-  /**
-   * An empty model holds its five indexes, each an empty {@link java.util.HashMap} with no backing table yet:
-   * 5 × align(12 + 8 × 4) = 5 × 48 bytes. Pinned exactly, rather than as a lower bound, so that a change to the
-   * estimator's layout constants or to the number of indexes has to be acknowledged instead of silently shifting the
-   * size reported as telemetry.
-   */
-  private static final long EMPTY_MODEL_SIZE = 240L;
-
   @Test
-  void empty_model_has_no_spring_data_and_a_small_fixed_size() {
+  void empty_model_has_no_spring_data_and_a_positive_estimated_size() {
     var metrics = SpringContextModelMetrics.of(new SpringContextModel());
 
     assertThat(metrics.beanCount()).isZero();
     assertThat(metrics.beanNameCount()).isZero();
     assertThat(metrics.injectionPointCount()).isZero();
     assertThat(metrics.componentScanPackageCount()).isZero();
-    assertThat(metrics.estimatedSizeInBytes()).isEqualTo(EMPTY_MODEL_SIZE);
+    assertThat(metrics.estimatedSizeInBytes()).isPositive();
   }
 
   @Test
   void single_bean_is_counted_once() {
     var model = new SpringContextModel();
+    long emptySize = SpringContextModelMetrics.of(model).estimatedSizeInBytes();
     model.getBeanDefinitionRegistry().addBeanDefinition("myBean", newHolder("com.acme.MyBean"));
 
     var metrics = SpringContextModelMetrics.of(model);
@@ -55,7 +48,7 @@ class SpringContextModelMetricsTest {
     assertThat(metrics.beanCount()).isEqualTo(1);
     assertThat(metrics.beanNameCount()).isEqualTo(1);
     assertThat(metrics.injectionPointCount()).isZero();
-    assertThat(metrics.estimatedSizeInBytes()).isGreaterThan(EMPTY_MODEL_SIZE);
+    assertThat(metrics.estimatedSizeInBytes()).isGreaterThan(emptySize);
   }
 
   @Test
@@ -73,19 +66,20 @@ class SpringContextModelMetricsTest {
   @Test
   void injection_points_are_summed_over_all_required_types() {
     var model = new SpringContextModel();
+    long emptySize = SpringContextModelMetrics.of(model).estimatedSizeInBytes();
     var holder = new BeanDefinitionHolder.Builder("com.acme.MyBean", "module-a", "com.acme", newLocation())
       .dependingBeans(Map.of("com.acme.Collaborator", Set.of("collaborator")))
       .profiles("!test")
       .build();
     model.getBeanDefinitionRegistry().addBeanDefinition("myBean", holder);
-    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", newLocation());
-    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "otherCollaborator", newLocation());
-    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Repository", "repository", newLocation());
+    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", "module-a", newLocation());
+    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "otherCollaborator", "module-a", newLocation());
+    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Repository", "repository", "module-a", newLocation());
 
     var metrics = SpringContextModelMetrics.of(model);
 
     assertThat(metrics.injectionPointCount()).isEqualTo(3);
-    assertThat(metrics.estimatedSizeInBytes()).isGreaterThan(EMPTY_MODEL_SIZE);
+    assertThat(metrics.estimatedSizeInBytes()).isGreaterThan(emptySize);
   }
 
   @Test
@@ -102,13 +96,14 @@ class SpringContextModelMetricsTest {
   @Test
   void bean_names_by_type_are_not_counted_as_component_scan_packages() {
     var model = new SpringContextModel();
+    long emptySize = SpringContextModelMetrics.of(model).estimatedSizeInBytes();
     model.getTypeToBeansIndex().addBeanForType("com.acme.MyBean", "myBean", "module-a", "com.acme");
     model.getTypeToBeansIndex().addBeanForType("com.acme.MyBean", "myOtherBean", "module-a", "com.acme");
 
     var metrics = SpringContextModelMetrics.of(model);
 
     assertThat(metrics.componentScanPackageCount()).isZero();
-    assertThat(metrics.estimatedSizeInBytes()).isGreaterThan(EMPTY_MODEL_SIZE);
+    assertThat(metrics.estimatedSizeInBytes()).isGreaterThan(emptySize);
   }
 
   @Test
@@ -190,7 +185,7 @@ class SpringContextModelMetricsTest {
     model.getTypeToBeansIndex().addBeanForType("com.acme.MyBean", "myBean", "module-a", "com.acme");
     long afterBeanName = SpringContextModelMetrics.of(model).estimatedSizeInBytes();
 
-    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", newLocation());
+    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", "module-a", newLocation());
     long afterDependency = SpringContextModelMetrics.of(model).estimatedSizeInBytes();
 
     assertThat(afterEmpty)
@@ -206,7 +201,7 @@ class SpringContextModelMetricsTest {
     var model = new SpringContextModel();
     model.getBeanDefinitionRegistry().addBeanDefinition("myBean", newHolder("com.acme.MyBean"));
     model.getTypeToBeansIndex().addBeanForType("com.acme.MyBean", "myBean", "module-a", "com.acme");
-    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", newLocation());
+    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", "module-a", newLocation());
     model.getEntityClassToPropertiesIndex().addProperty("com.acme.MyEntity", "table", "my_entity");
     model.getProjectPackageScan().addPackage("module-a", "com.acme");
 

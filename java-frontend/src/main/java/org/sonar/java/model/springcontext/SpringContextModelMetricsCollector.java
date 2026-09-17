@@ -52,7 +52,7 @@ final class SpringContextModelMetricsCollector {
   private static final int INT = 4;
   private static final int ALIGNMENT = 8;
 
-  private static final float HASH_TABLE_LOAD_FACTOR = 0.75f;
+  private static final double HASH_TABLE_LOAD_FACTOR = 0.75d;
   private static final int HASH_TABLE_MIN_CAPACITY = 16;
   private static final int HASH_TABLE_MAX_CAPACITY = 1 << 30;
 
@@ -172,8 +172,9 @@ final class SpringContextModelMetricsCollector {
     if (!charge(injectionPoint)) {
       return 0;
     }
-    return align(OBJECT_HEADER + 2L * REFERENCE)
+    return align(OBJECT_HEADER + 3L * REFERENCE)
       + sizeOfString(injectionPoint.name())
+      + sizeOfString(injectionPoint.module())
       + sizeOfBeanLocation(injectionPoint.location());
   }
 

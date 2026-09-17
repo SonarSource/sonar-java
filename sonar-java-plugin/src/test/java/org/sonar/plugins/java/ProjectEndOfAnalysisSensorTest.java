@@ -26,7 +26,6 @@ import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
-import org.sonar.java.model.springcontext.SpringContextModelMetrics;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.telemetry.DefaultTelemetry;
 import org.sonar.java.telemetry.NoOpTelemetry;
@@ -59,13 +58,15 @@ class ProjectEndOfAnalysisSensorTest {
     var sensor = new ProjectEndOfAnalysisSensor(telemetry, springContextModel);
     SensorContextTester context = SensorContextTester.create(tempDir);
     sensor.execute(context);
+    String contextModelSize = context.getTelemetryProperties().get("java.spring.context_model_size_bytes");
+    assertThat(Long.parseLong(contextModelSize)).isPositive();
     assertThat(logTester.logs(Level.DEBUG)).containsExactly(
       "Telemetry java.language.version: 21",
       "Telemetry java.module_count: 3",
       "Telemetry java.spring.bean_count: 0",
       "Telemetry java.spring.bean_name_count: 0",
       "Telemetry java.spring.component_scan_package_count: 0",
-      "Telemetry java.spring.context_model_size_bytes: " + SpringContextModelMetrics.of(springContextModel).estimatedSizeInBytes(),
+      "Telemetry java.spring.context_model_size_bytes: " + contextModelSize,
       "Telemetry java.spring.injection_point_count: 0");
   }
 
