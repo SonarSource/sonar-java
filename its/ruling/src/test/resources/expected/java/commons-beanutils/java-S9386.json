@@ -1,0 +1,83 @@
+{
+"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BasicDynaBean.java": [
+167
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java": [
+112,
+508,
+509,
+882,
+887
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
+284,
+285,
+772,
+774,
+830,
+831
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BenchBean.java": [
+78
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
+164,
+165,
+169,
+170,
+258,
+435,
+436,
+440,
+441
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
+119,
+372,
+374,
+503,
+816,
+818,
+869,
+870
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
+114,
+194,
+213,
+215,
+268,
+994,
+1260,
+1261,
+2106,
+2113,
+2400,
+2407
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
+264,
+282,
+283,
+336,
+1500,
+2032,
+3383,
+3390,
+3677,
+3684
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java": [
+215
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java": [
+182
+],
+"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java": [
+302,
+485,
+486,
+490,
+491
+]
+}
