@@ -41,6 +41,8 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
   private static final String MESSAGE = "Provide a comparator because this %s type does not implement \"Comparable\".";
   private static final String COMPARABLE = "java.lang.Comparable";
   private static final String COMPARATOR = "java.util.Comparator";
+  private static final String COLLECTION = "java.util.Collection";
+  private static final String MAP = "java.util.Map";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -142,11 +144,11 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
   }
 
   private static boolean isMapType(Type type) {
-    return type.is("java.util.Map") || type.isSubtypeOf("java.util.Map");
+    return type.is(MAP) || type.isSubtypeOf(MAP);
   }
 
   private static boolean isCollectionType(Type type) {
-    return type.is("java.util.Collection") || type.isSubtypeOf("java.util.Collection");
+    return type.is(COLLECTION) || type.isSubtypeOf(COLLECTION);
   }
 
   private static boolean isComparisonFailureHandled(NewClassTree tree) {
@@ -172,7 +174,7 @@ public class SortedCollectionWithNonComparableTypeCheck extends IssuableSubscrip
   }
 
   private static boolean isCollectionOrMap(Type type) {
-    return type.isSubtypeOf("java.util.Collection") || type.isSubtypeOf("java.util.Map");
+    return type.isSubtypeOf(COLLECTION) || type.isSubtypeOf(MAP);
   }
 
   private static boolean catchesClassCastException(CatchTree catchTree) {
