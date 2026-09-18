@@ -39,7 +39,9 @@ public class TypeToBeansIndex {
   record BeanEntry(String name, String module, String beanPackage) {
   }
 
-  /** Bean entries indexed by fully-qualified type name. */
+  /**
+   * Bean entries indexed by fully-qualified type name.
+   */
   private final Map<String, Set<BeanEntry>> entriesByType = new HashMap<>();
 
   /**
@@ -80,6 +82,9 @@ public class TypeToBeansIndex {
     return Collections.unmodifiableSet(entriesByType.keySet());
   }
 
+  /**
+   * @return The backing index, for accounting purposes only. The map is not a defensive copy and must not be modified.
+   */
   Map<String, Set<BeanEntry>> entriesByType() {
     return entriesByType;
   }

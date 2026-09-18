@@ -75,7 +75,7 @@ class ProjectEndOfAnalysisSensorTest {
     var springContextModel = new SpringContextModel();
     springContextModel.getBeanDefinitionRegistry().addBeanDefinition("myBean", newHolder("com.acme.MyBean"));
     springContextModel.getBeanDefinitionRegistry().addBeanDefinition("myOtherBean", newHolder("com.acme.MyOtherBean"));
-    springContextModel.getTypeToDependenciesIndex().addDependencyForType("com.acme.MyBean", "myBean", newLocation());
+    springContextModel.getTypeToDependenciesIndex().addDependencyForType("com.acme.MyBean", "myBean", "module-a", newLocation());
     springContextModel.getProjectPackageScan().addPackage("module-a", "com.acme");
 
     var sensor = new ProjectEndOfAnalysisSensor(new DefaultTelemetry(), springContextModel);
