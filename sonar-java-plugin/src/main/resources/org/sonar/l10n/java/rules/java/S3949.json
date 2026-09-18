@@ -1,0 +1,29 @@
+{
+  "title": "Calculations should not overflow",
+  "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "overflow",
+    "symbolic-execution"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3949",
+  "sqKey": "S3949",
+  "scope": "All",
+  "securityStandards": {
+    "STIG ASD_V5R3": [
+      "V-222612"
+    ]
+  },
+  "quickfix": "infeasible"
+}
