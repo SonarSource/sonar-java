@@ -117,12 +117,6 @@
 86,
 90
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/SkippedTestRule.java": [
-52
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/commonrule/TestErrorRule.java": [
-57
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/filter/IssueFilter.java": [
 116,
 118
@@ -215,8 +209,7 @@
 97
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ValidateProjectStep.java": [
-130,
-184
+130
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/webhook/WebhookCallerImpl.java": [
 107,
@@ -593,8 +586,6 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleCreator.java": [
 76,
 78,
-104,
-147,
 206,
 213
 ],
@@ -624,9 +615,6 @@
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/UpdateAction.java": [
 230,
 275
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/SetAction.java": [
-291
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/setting/ws/SettingValidations.java": [
 136
@@ -683,9 +671,6 @@
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/MetricKeyValidator.java": [
 55
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/MetricLevelTypeValidation.java": [
-41
 ],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/OkHttpClientProvider.java": [
 64
@@ -751,14 +736,6 @@
 101,
 104,
 125
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/measure/custom/ws/SearchActionTest.java": [
-309,
-313
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/measure/custom/ws/UpdateActionTest.java": [
-166,
-167
 ],
 "org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/ws/AddMemberActionTest.java": [
 176
