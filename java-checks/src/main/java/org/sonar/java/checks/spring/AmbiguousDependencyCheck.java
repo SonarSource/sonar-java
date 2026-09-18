@@ -18,15 +18,15 @@ package org.sonar.java.checks.spring;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
-import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanDefinitionRegistry;
 import org.sonar.java.model.springcontext.InjectionPoint;
-import org.sonar.java.model.springcontext.ProfileExpression;
 import org.sonar.java.model.springcontext.ProjectPackageScan;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.model.springcontext.TypeToBeansIndex;
@@ -48,11 +48,9 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
    * Creates the list of issues using the spring context model.
    * For each injection point, retrieves the beans of the required type that are visible within the
    * consumer's own Spring context (same module, or in a package covered by its {@code @ComponentScan}),
-   * then checks for ambiguity: a single candidate, or a single one marked {@code @Primary}, is unambiguous.
-   * Candidates with a profile are then excluded as potentially mutually exclusive, and the same
-   * unique/{@code @Primary} check is re-applied; if multiple still remain, an issue is raised for
-   * each injection point that does not match one of the <em>full</em> context-scoped candidate set by name —
-   * an injection point explicitly qualified towards a profiled bean is already disambiguated.
+   * then evaluates the candidates under every combination of profiles named by their profile expressions.
+   * An issue is raised if at least one combination activates multiple candidates without activating exactly
+   * one {@code @Primary} candidate, unless the injection point matches a candidate by name.
    *
    * @param model the Spring context model of the project
    */
@@ -66,44 +64,66 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
     List<SpringContextIssue> issues = new ArrayList<>();
     for (String type : typeToBeansIndex.getKeys()) {
       Map<String, Set<String>> candidatesByModule = new HashMap<>();
+      Map<String, Optional<Set<String>>> ambiguousCandidatesByModule = new HashMap<>();
       for (InjectionPoint point : typeToDependenciesIndex.getDependenciesForType(type)) {
         Set<String> candidates = candidatesByModule.computeIfAbsent(point.module(),
           module -> typeToBeansIndex.getNamesForType(type, module, projectPackageScan.getPackagesForModule(module)));
-        if (hasUniqueOrPrimaryCandidate(candidates, registry)) {
+        if (candidates.contains(point.name())) {
           continue;
         }
-        Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
-        if (!hasUniqueOrPrimaryCandidate(effectiveCandidates, registry) && !candidates.contains(point.name())) {
-          issues.add(new SpringContextIssue(point.location(), message(effectiveCandidates)));
-        }
+        ambiguousCandidatesByModule.computeIfAbsent(point.module(), module -> findAmbiguousCandidates(candidates, registry))
+          .ifPresent(ambiguousCandidates -> issues.add(new SpringContextIssue(point.location(), message(ambiguousCandidates))));
       }
     }
     return issues;
   }
 
-  private static boolean hasUniqueOrPrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry) {
-    return candidates.size() <= 1
-      || hasExactlyOnePrimaryCandidate(candidates, registry);
+  private static Optional<Set<String>> findAmbiguousCandidates(Set<String> candidates, BeanDefinitionRegistry registry) {
+    List<String> profileNames = candidates.stream()
+      .flatMap(candidate -> registry.getByName(candidate).stream())
+      .flatMap(bean -> bean.getProfileExpression().profileNames().stream())
+      .distinct()
+      .sorted()
+      .toList();
+    Set<String> activeProfiles = new HashSet<>();
+    do {
+      Set<String> activeCandidates = candidates.stream()
+        .filter(candidate -> isActive(registry, candidate, activeProfiles))
+        .collect(Collectors.toUnmodifiableSet());
+      if (!hasUniqueOrPrimaryCandidate(activeCandidates, registry, activeProfiles)) {
+        return Optional.of(activeCandidates);
+      }
+    } while (activateNextProfileCombination(profileNames, activeProfiles));
+    return Optional.empty();
   }
 
-  private static boolean hasExactlyOnePrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry) {
-    return candidates.stream().filter(candidate -> isPrimary(registry, candidate)).count() == 1;
+  private static boolean activateNextProfileCombination(List<String> profileNames, Set<String> activeProfiles) {
+    for (String profileName : profileNames) {
+      if (activeProfiles.remove(profileName)) {
+        continue;
+      }
+      activeProfiles.add(profileName);
+      return true;
+    }
+    return false;
   }
 
-  private static Set<String> excludeCandidatesWithProfile(Set<String> candidates, BeanDefinitionRegistry registry) {
-    return candidates.stream().filter(candidate -> !hasProfile(registry, candidate)).collect(Collectors.toUnmodifiableSet());
+  private static boolean hasUniqueOrPrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry, Set<String> activeProfiles) {
+    return candidates.size() <= 1 || hasExactlyOnePrimaryCandidate(candidates, registry, activeProfiles);
   }
 
-  private static boolean isPrimary(BeanDefinitionRegistry registry, String beanName) {
-    return registry.getByName(beanName).stream().anyMatch(BeanDefinitionHolder::isPrimary);
+  private static boolean hasExactlyOnePrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry, Set<String> activeProfiles) {
+    return candidates.stream().filter(candidate -> isPrimary(registry, candidate, activeProfiles)).count() == 1;
   }
 
-  private static boolean hasProfile(BeanDefinitionRegistry registry, String beanName) {
+  private static boolean isActive(BeanDefinitionRegistry registry, String beanName, Set<String> activeProfiles) {
     return registry.getByName(beanName).stream()
-      .anyMatch(bean -> {
-        ProfileExpression expression = bean.getProfileExpression();
-        return !expression.isUnconditional() && !expression.isUnknown();
-      });
+      .anyMatch(bean -> bean.getProfileExpression().isActiveUnder(activeProfiles));
+  }
+
+  private static boolean isPrimary(BeanDefinitionRegistry registry, String beanName, Set<String> activeProfiles) {
+    return registry.getByName(beanName).stream()
+      .anyMatch(bean -> bean.isPrimary() && bean.getProfileExpression().isActiveUnder(activeProfiles));
   }
 
   private static String message(Set<String> candidates) {
