@@ -227,6 +227,20 @@ class AmbiguousDependencyCheckTest {
       .contains("(always, disabledInDev)"));
   }
 
+  @Test
+  void twelve_profile_names_are_enumerated() {
+    SpringContextModel model = ambiguousModelWithProfileNames(12);
+
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  @Test
+  void more_than_twelve_profile_names_are_not_enumerated() {
+    SpringContextModel model = ambiguousModelWithProfileNames(13);
+
+    assertThat(check.execute(model)).isEmpty();
+  }
+
   // ---- Multi-module context scoping -----------------------------------------
 
   @Test
@@ -281,6 +295,34 @@ class AmbiguousDependencyCheckTest {
     assertThat(check.execute(model)).hasSize(1);
   }
 
+  @Test
+  void same_named_bean_in_another_module_does_not_affect_profile_activation() {
+    String type = "com.example.ProfiledService";
+    SpringContextModel model = new SpringContextModel();
+    registerBean(model, "service", type, "module-a", "com.a", dummyInputFile("com/a/Service.java"),
+      ProfileExpression.profile("dev"), false);
+    registerBean(model, "otherService", type, "module-a", "com.a", dummyInputFile("com/a/OtherService.java"),
+      ProfileExpression.not(ProfileExpression.profile("dev")), false);
+    registerBean(model, "service", type, "module-b", "com.b", dummyInputFile("com/b/Service.java"),
+      ProfileExpression.profile("prod"), false);
+    registerInjectionPoint(model, type, "dependency", "module-a", dummyInputFile("com/a/Consumer.java"));
+
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void same_named_primary_bean_in_another_module_does_not_resolve_ambiguity() {
+    String type = "com.example.Service";
+    SpringContextModel model = new SpringContextModel();
+    registerBean(model, "service", type, "module-a", "com.a", dummyInputFile("com/a/Service.java"));
+    registerBean(model, "otherService", type, "module-a", "com.a", dummyInputFile("com/a/OtherService.java"));
+    registerBean(model, "service", type, "module-b", "com.b", dummyInputFile("com/b/Service.java"),
+      ProfileExpression.UNCONDITIONAL, true);
+    registerInjectionPoint(model, type, "dependency", "module-a", dummyInputFile("com/a/Consumer.java"));
+
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
   private static void registerBean(SpringContextModel model, String beanName, String type, String module,
     String beanPackage, InputFile file) {
     registerBean(model, beanName, type, module, beanPackage, file, ProfileExpression.UNCONDITIONAL, false);
@@ -309,6 +351,17 @@ class AmbiguousDependencyCheckTest {
     }
     registerInjectionPoint(model, type, "dependency", module, dummyInputFile("com/example/Consumer.java"));
     return model;
+  }
+
+  private static SpringContextModel ambiguousModelWithProfileNames(int profileNameCount) {
+    Candidate[] candidates = new Candidate[profileNameCount + 2];
+    candidates[0] = candidate("alwaysFirst", ProfileExpression.UNCONDITIONAL);
+    candidates[1] = candidate("alwaysSecond", ProfileExpression.UNCONDITIONAL);
+    for (int i = 0; i < profileNameCount; i++) {
+      String profileName = "profile" + i;
+      candidates[i + 2] = candidate(profileName, ProfileExpression.profile(profileName));
+    }
+    return modelWithCandidates(candidates);
   }
 
   private static Candidate candidate(String name, ProfileExpression profileExpression) {

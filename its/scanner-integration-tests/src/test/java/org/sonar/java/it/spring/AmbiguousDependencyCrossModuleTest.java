@@ -18,10 +18,9 @@ package org.sonar.java.it.spring;
 
 import com.sonarsource.scanner.integrationtester.dsl.issue.TextRange;
 import com.sonarsource.scanner.integrationtester.dsl.issue.TextRangeIssue;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.it.ScannerIntegrationAbstractTest;
-
-import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,16 +30,26 @@ class AmbiguousDependencyCrossModuleTest extends ScannerIntegrationAbstractTest 
   void test() {
     var issues = analyze(Path.of("ambiguous-dependencies-should-be-resolved"), "S9352");
     assertThat(issues)
-      .hasSize(2)
+      .hasSize(4)
       .contains(new TextRangeIssue(
-        "app/src/main/java/com/example/app/PaymentConsumer.java",
-        "java:S9352",
-        "Multiple beans match this dependency (creditCardPaymentGateway, digitalWalletPaymentGateway); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
-        new TextRange(15, 15, 27, 41)),
+          "app/src/main/java/com/example/app/PaymentConsumer.java",
+          "java:S9352",
+          "Multiple beans match this dependency (creditCardPaymentGateway, digitalWalletPaymentGateway); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
+          new TextRange(15, 15, 27, 41)),
         new TextRangeIssue(
           "app/src/main/java/com/example/app/InventoryConsumer.java",
           "java:S9352",
           "Multiple beans match this dependency (storeInventoryService, warehouseInventoryService); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
-          new TextRange(12, 12, 29, 45)));
+          new TextRange(12, 12, 29, 45)),
+        new TextRangeIssue(
+          "app/src/main/java/com/example/app/FeatureToggleConsumer.java",
+          "java:S9352",
+          "Multiple beans match this dependency (defaultFeatureToggleService, prodFeatureToggleService); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
+          new TextRange(16, 16, 33, 53)),
+        new TextRangeIssue(
+          "app/src/main/java/com/example/app/AuditLoggerConsumer.java",
+          "java:S9352",
+          "Multiple beans match this dependency (defaultAuditLogger, stagingAuditLogger); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
+          new TextRange(16, 16, 24, 35)));
   }
 }
