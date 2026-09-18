@@ -146,24 +146,27 @@ public class CookieHttpOnlyCheck extends IssuableSubscriptionVisitor {
       .build());
 
   @Override
-  public void setContext(JavaFileScannerContext context) {
+  protected void clearState() {
     ignoredVariables.clear();
     symbolConstructorMapToReport.clear();
     settersToReport.clear();
     newClassToReport.clear();
-    super.setContext(context);
   }
 
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    for (TypeTree typeTree : symbolConstructorMapToReport.values()) {
-      reportIssue(typeTree, MESSAGE);
-    }
-    for (MethodInvocationTree mit : settersToReport) {
-      reportIssue(mit.arguments(), MESSAGE);
-    }
-    for (TypeTree typeTree : newClassToReport) {
-      reportIssue(typeTree, MESSAGE);
+    try {
+      for (TypeTree typeTree : symbolConstructorMapToReport.values()) {
+        reportIssue(typeTree, MESSAGE);
+      }
+      for (MethodInvocationTree mit : settersToReport) {
+        reportIssue(mit.arguments(), MESSAGE);
+      }
+      for (TypeTree typeTree : newClassToReport) {
+        reportIssue(typeTree, MESSAGE);
+      }
+    } finally {
+      super.leaveFile(context);
     }
   }
 
