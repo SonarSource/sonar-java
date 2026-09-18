@@ -1,17 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/component/ComponentServiceUpdateKeyTest.java": [
-207
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoImplTest.java": [
-132
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/issue/ws/AssignActionTest.java": [
-268
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/notification/email/AlertsEmailTemplateTest.java": [
-120
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/permission/ws/template/SearchTemplatesActionTest.java": [
-65
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S1488","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/component\/ComponentServiceUpdateKeyTest.java"},"region":{"startLine":207,"endLine":207}}}]},{"ruleId":"java:S1488","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/scm\/ScmInfoImplTest.java"},"region":{"startLine":132,"endLine":132}}}]},{"ruleId":"java:S1488","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/issue\/ws\/AssignActionTest.java"},"region":{"startLine":268,"endLine":268}}}]},{"ruleId":"java:S1488","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/notification\/email\/AlertsEmailTemplateTest.java"},"region":{"startLine":120,"endLine":120}}}]},{"ruleId":"java:S1488","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/permission\/ws\/template\/SearchTemplatesActionTest.java"},"region":{"startLine":65,"endLine":65}}}]}]}]}

@@ -121,7 +121,7 @@ jobs:
           if [[ "${RUNNER_OS}" != "Windows" ]]; then
             extra_args+=(-Dparallel=methods -DuseUnlimitedThreads=true)
           fi
-          mvn package ${MAVEN_OUTPUT_ARGS} "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dmaven.test.redirectTestOutputToFile=false "${extra_args[@]}"
+          mvn package ${MAVEN_OUTPUT_ARGS} "-Pit-ruling,${{ matrix.item.profile }}" -Dsonar.runtimeVersion=${{ matrix.item.sq_version }} -Dsonar.lits.version=0.13.0.6082 -Dmaven.test.redirectTestOutputToFile=false "${extra_args[@]}"
       - name: Upload Actual Results On Failure
         if: failure()
         uses: ./.github/actions/upload-actual
