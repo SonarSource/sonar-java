@@ -22,6 +22,7 @@ import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -106,7 +107,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     // Anonymous class (no simpleName) should be skipped — it would not be registered as a bean
     // SpringBootApplication itself is not a stereotype bean
     assertThat(model.getBeanDefinitionRegistry().getByName("")).isEmpty();
-    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("")).isEmpty();
+    assertThat(model.getTypeToBeansIndex().getNamesForType("", "", Set.of())).isEmpty();
   }
 
   @Test
@@ -232,7 +233,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(beans).hasSize(1);
     assertThat(beans.get(0).getType()).isEqualTo("checks.spring.context.QualifiedFieldDependencies");
     assertThat(beans.get(0).getProfiles()).isEqualTo("prod");
-    assertThat(model.getTypeToBeanNamesIndex().getNamesForType("checks.spring.context.QualifiedFieldDependencies"))
+    assertThat(model.getTypeToBeansIndex().getNamesForType("checks.spring.context.QualifiedFieldDependencies", "", Set.of()))
       .containsExactly("qualifiedFieldDependencies");
     assertInjectionPoint(
       model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.context.ApplicationContext"),

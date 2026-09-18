@@ -40,7 +40,7 @@ class SpringContextModelTest {
 
     assertNotNull(model.getBeanDefinitionRegistry(), "BeanDefinitionRegistry should be initialized");
     assertNotNull(model.getProjectPackageScan(), "ProjectPackageScan should be initialized");
-    assertNotNull(model.getTypeToBeanNamesIndex(), "TypeToBeanNamesIndex should be initialized");
+    assertNotNull(model.getTypeToBeansIndex(), "TypeToBeansIndex should be initialized");
     assertNotNull(model.getEntityClassToPropertiesIndex(), "EntityClassToPropertiesIndex should be initialized");
   }
 

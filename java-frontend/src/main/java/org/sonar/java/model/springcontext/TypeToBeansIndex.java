@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  *
  * <p>Lookup returns an empty set for types with no registered beans.
  */
-public class TypeToBeanNamesIndex {
+public class TypeToBeansIndex {
 
   /**
    * Per-type metadata for a registered bean: its name, the module it was declared in, and its declaring package.
@@ -55,24 +55,12 @@ public class TypeToBeanNamesIndex {
   }
 
   /**
-   * Returns an immutable set of all bean names registered for the given type, regardless of module.
-   *
-   * @param beanType fully-qualified class name of the bean's type
-   * @return an unmodifiable set of bean names, or an empty set if none were registered
-   */
-  public Set<String> getNamesForType(String beanType) {
-    return entriesByType.getOrDefault(beanType, Set.of()).stream()
-      .map(BeanEntry::name)
-      .collect(Collectors.toUnmodifiableSet());
-  }
-
-  /**
    * Returns bean names visible to a consumer in {@code consumerModule}, scoped to its Spring context.
    *
    * <p>A bean is considered visible if:
    * <ul>
    *   <li>it is declared in the same module as the consumer, or</li>
-   *   <li>its declaring package starts with one of the packages in {@code scannedPackages}
+   *   <li>its declaring package equals or is a subpackage of one of the packages in {@code scannedPackages}
    *       (covering cross-module {@code @ComponentScan}).</li>
    * </ul>
    *
@@ -94,6 +82,10 @@ public class TypeToBeanNamesIndex {
 
   private static boolean isVisible(BeanEntry entry, String consumerModule, Set<String> scannedPackages) {
     return entry.module().equals(consumerModule)
-      || scannedPackages.stream().anyMatch(entry.beanPackage()::startsWith);
+      || scannedPackages.stream().anyMatch(scanned -> isWithinPackage(entry.beanPackage(), scanned));
+  }
+
+  private static boolean isWithinPackage(String beanPackage, String scannedPackage) {
+    return beanPackage.equals(scannedPackage) || beanPackage.startsWith(scannedPackage + ".");
   }
 }
