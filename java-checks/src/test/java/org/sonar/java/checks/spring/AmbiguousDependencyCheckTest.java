@@ -34,6 +34,7 @@ import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.model.springcontext.BeanDefinitionGatherer;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanLocation;
+import org.sonar.java.model.springcontext.ProfileExpression;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.test.classpath.TestClasspathUtils;
@@ -94,28 +95,28 @@ class AmbiguousDependencyCheckTest {
   // ---- @Profile -------------------------------------------------------------
 
   @Test
-  void unprofiled_primary_resolves_ambiguity_despite_a_competing_profiled_primary() {
+  void competing_primary_candidates_are_ambiguous_when_the_profiled_one_is_active() {
     SpringContextModel model = buildModel(
       "UnprofiledPrimaryComponent.java", "ProfiledPrimaryComponent.java", "PlainMessageSourceComponent.java", "MessageSourceConsumer.java");
-    assertThat(check.execute(model)).isEmpty();
+    assertThat(check.execute(model)).hasSize(1);
   }
 
   @Test
-  void excluding_profiled_candidate_still_leaves_ambiguity_between_the_rest() {
+  void profiled_candidate_is_considered_with_unprofiled_candidates() {
     SpringContextModel model = buildModel(
       "PlainEventPublisherComponentA.java", "PlainEventPublisherComponentB.java", "ProfiledEventPublisherComponent.java", "EventPublisherConsumer.java");
     assertThat(check.execute(model)).hasSize(1);
   }
 
   @Test
-  void profiled_primary_resolves_ambiguity_on_the_raw_candidate_set() {
+  void profiled_primary_does_not_resolve_ambiguity_when_its_profile_is_inactive() {
     SpringContextModel model = buildModel(
       "ProfiledPrimaryClassLoaderComponent.java", "PlainClassLoaderComponentA.java", "PlainClassLoaderComponentB.java", "ClassLoaderConsumer.java");
-    assertThat(check.execute(model)).isEmpty();
+    assertThat(check.execute(model)).hasSize(1);
   }
 
   @Test
-  void candidate_profiled_with_an_operator_expression_is_excluded_like_a_simply_profiled_one() {
+  void candidate_profiled_with_an_operator_expression_is_evaluated_with_unprofiled_candidates() {
     SpringContextModel model = buildModel(
       "PlainEnvironmentComponentA.java", "PlainEnvironmentComponentB.java", "ExpressionProfiledEnvironmentComponent.java", "EnvironmentConsumer.java");
     assertThat(check.execute(model)).hasSize(1);
@@ -126,6 +127,117 @@ class AmbiguousDependencyCheckTest {
     SpringContextModel model = buildModel(
       "PlainEventPublisherComponentA.java", "PlainEventPublisherComponentB.java", "ProfiledEventPublisherComponent.java",
       "EventPublisherQualifierConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void candidates_with_the_same_profile_are_ambiguous() {
+    SpringContextModel model = modelWithCandidates(
+      candidate("first", ProfileExpression.profile("dev")),
+      candidate("second", ProfileExpression.profile("dev")));
+
+    assertThat(check.execute(model)).singleElement().satisfies(issue -> assertThat(issue.message())
+      .isEqualTo("Multiple beans match this dependency (first, second); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\"."));
+  }
+
+  @Test
+  void mutually_exclusive_profile_expressions_are_not_ambiguous() {
+    SpringContextModel model = modelWithCandidates(
+      candidate("enabledInDev", ProfileExpression.profile("dev")),
+      candidate("disabledInDev", ProfileExpression.not(ProfileExpression.profile("dev"))));
+
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void different_profiles_can_be_active_together() {
+    SpringContextModel model = modelWithCandidates(
+      candidate("devCandidate", ProfileExpression.profile("dev")),
+      candidate("prodCandidate", ProfileExpression.profile("prod")));
+
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  @Test
+  void mutually_exclusive_compound_profile_expressions_are_not_ambiguous() {
+    SpringContextModel model = modelWithCandidates(
+      candidate("notTest", ProfileExpression.and(List.of(
+        ProfileExpression.profile("dev"), ProfileExpression.not(ProfileExpression.profile("test"))))),
+      candidate("test", ProfileExpression.profile("test")));
+
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void overlapping_compound_profile_expressions_are_ambiguous() {
+    SpringContextModel model = modelWithCandidates(
+      candidate("devWithoutTest", ProfileExpression.and(List.of(
+        ProfileExpression.profile("dev"), ProfileExpression.not(ProfileExpression.profile("test"))))),
+      candidate("devOrTest", ProfileExpression.or(List.of(
+        ProfileExpression.profile("dev"), ProfileExpression.profile("test")))));
+
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  @Test
+  void unconditional_candidate_is_ambiguous_with_a_profiled_candidate_when_that_profile_is_active() {
+    SpringContextModel model = modelWithCandidates(
+      candidate("always", ProfileExpression.UNCONDITIONAL),
+      candidate("dev", ProfileExpression.profile("dev")));
+
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  @Test
+  void unknown_profile_expression_is_conservatively_considered_active() {
+    SpringContextModel model = modelWithCandidates(
+      candidate("always", ProfileExpression.UNCONDITIONAL),
+      candidate("unknown", ProfileExpression.UNKNOWN));
+
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  @Test
+  void primary_candidate_only_resolves_ambiguity_in_profiles_where_it_is_active() {
+    SpringContextModel model = modelWithCandidates(
+      candidate("first", ProfileExpression.UNCONDITIONAL),
+      candidate("second", ProfileExpression.UNCONDITIONAL),
+      primaryCandidate("primary", ProfileExpression.profile("prod")));
+
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  @Test
+  void active_primary_candidate_resolves_ambiguity() {
+    SpringContextModel model = modelWithCandidates(
+      candidate("regular", ProfileExpression.profile("prod")),
+      primaryCandidate("primary", ProfileExpression.profile("prod")));
+
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void issue_message_only_lists_candidates_active_in_the_same_profile_configuration() {
+    SpringContextModel model = modelWithCandidates(
+      candidate("always", ProfileExpression.UNCONDITIONAL),
+      candidate("enabledInDev", ProfileExpression.profile("dev")),
+      candidate("disabledInDev", ProfileExpression.not(ProfileExpression.profile("dev"))));
+
+    assertThat(check.execute(model)).singleElement().satisfies(issue -> assertThat(issue.message())
+      .contains("(always, disabledInDev)"));
+  }
+
+  @Test
+  void twelve_profile_names_are_enumerated() {
+    SpringContextModel model = ambiguousModelWithProfileNames(12);
+
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  @Test
+  void more_than_twelve_profile_names_are_not_enumerated() {
+    SpringContextModel model = ambiguousModelWithProfileNames(13);
+
     assertThat(check.execute(model)).isEmpty();
   }
 
@@ -183,12 +295,84 @@ class AmbiguousDependencyCheckTest {
     assertThat(check.execute(model)).hasSize(1);
   }
 
+  @Test
+  void same_named_bean_in_another_module_does_not_affect_profile_activation() {
+    String type = "com.example.ProfiledService";
+    SpringContextModel model = new SpringContextModel();
+    registerBean(model, "service", type, "module-a", "com.a", dummyInputFile("com/a/Service.java"),
+      ProfileExpression.profile("dev"), false);
+    registerBean(model, "otherService", type, "module-a", "com.a", dummyInputFile("com/a/OtherService.java"),
+      ProfileExpression.not(ProfileExpression.profile("dev")), false);
+    registerBean(model, "service", type, "module-b", "com.b", dummyInputFile("com/b/Service.java"),
+      ProfileExpression.profile("prod"), false);
+    registerInjectionPoint(model, type, "dependency", "module-a", dummyInputFile("com/a/Consumer.java"));
+
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void same_named_primary_bean_in_another_module_does_not_resolve_ambiguity() {
+    String type = "com.example.Service";
+    SpringContextModel model = new SpringContextModel();
+    registerBean(model, "service", type, "module-a", "com.a", dummyInputFile("com/a/Service.java"));
+    registerBean(model, "otherService", type, "module-a", "com.a", dummyInputFile("com/a/OtherService.java"));
+    registerBean(model, "service", type, "module-b", "com.b", dummyInputFile("com/b/Service.java"),
+      ProfileExpression.UNCONDITIONAL, true);
+    registerInjectionPoint(model, type, "dependency", "module-a", dummyInputFile("com/a/Consumer.java"));
+
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
   private static void registerBean(SpringContextModel model, String beanName, String type, String module,
     String beanPackage, InputFile file) {
+    registerBean(model, beanName, type, module, beanPackage, file, ProfileExpression.UNCONDITIONAL, false);
+  }
+
+  private static void registerBean(SpringContextModel model, String beanName, String type, String module,
+    String beanPackage, InputFile file, ProfileExpression profileExpression, boolean primary) {
     var location = new BeanLocation(file, new AnalyzerMessage.TextSpan(1));
-    model.getBeanDefinitionRegistry().addBeanDefinition(beanName,
-      new BeanDefinitionHolder.Builder(type, module, beanPackage, location).build());
+    var builder = new BeanDefinitionHolder.Builder(type, module, beanPackage, location)
+      .profileExpression(profileExpression);
+    if (primary) {
+      builder.primary();
+    }
+    model.getBeanDefinitionRegistry().addBeanDefinition(beanName, builder.build());
     model.getTypeToBeansIndex().addBeanForType(type, beanName, module, beanPackage);
+  }
+
+  private static SpringContextModel modelWithCandidates(Candidate... candidates) {
+    String type = "com.example.ProfiledService";
+    String module = "module";
+    String beanPackage = "com.example";
+    SpringContextModel model = new SpringContextModel();
+    for (Candidate candidate : candidates) {
+      registerBean(model, candidate.name(), type, module, beanPackage,
+        dummyInputFile(beanPackage.replace('.', '/') + "/" + candidate.name() + ".java"), candidate.profileExpression(), candidate.primary());
+    }
+    registerInjectionPoint(model, type, "dependency", module, dummyInputFile("com/example/Consumer.java"));
+    return model;
+  }
+
+  private static SpringContextModel ambiguousModelWithProfileNames(int profileNameCount) {
+    Candidate[] candidates = new Candidate[profileNameCount + 2];
+    candidates[0] = candidate("alwaysFirst", ProfileExpression.UNCONDITIONAL);
+    candidates[1] = candidate("alwaysSecond", ProfileExpression.UNCONDITIONAL);
+    for (int i = 0; i < profileNameCount; i++) {
+      String profileName = "profile" + i;
+      candidates[i + 2] = candidate(profileName, ProfileExpression.profile(profileName));
+    }
+    return modelWithCandidates(candidates);
+  }
+
+  private static Candidate candidate(String name, ProfileExpression profileExpression) {
+    return new Candidate(name, profileExpression, false);
+  }
+
+  private static Candidate primaryCandidate(String name, ProfileExpression profileExpression) {
+    return new Candidate(name, profileExpression, true);
+  }
+
+  private record Candidate(String name, ProfileExpression profileExpression, boolean primary) {
   }
 
   private static void registerInjectionPoint(SpringContextModel model, String type, String fieldName,
