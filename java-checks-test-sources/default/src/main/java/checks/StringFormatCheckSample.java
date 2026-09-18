@@ -142,6 +142,14 @@ class StringFormatCheckSample {
   }
 
   String nonLocalizedFormattable(Formattable value) {
-    return String.format("%s", value); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
+    return String.format("%s", value); // compliant
+  }
+
+  String nonLocalizedFormattableConcat(String prefix, Formattable value) {
+    return String.format("%s/%s", prefix, value); // compliant
+  }
+
+  String escapeSequenceInFormat(int value) {
+    return String.format("\045s", value); // compliant
   }
 }

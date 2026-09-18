@@ -59,7 +59,11 @@ public class StringFormatCheck extends AbstractMethodDetection {
       return;
     }
     LiteralTree literal = (LiteralTree) formatArgument;
-    int placeholders = countSimplePlaceholders(LiteralUtils.trimQuotes(literal.value()));
+    String rawValue = LiteralUtils.trimQuotes(literal.value());
+    if (rawValue.contains("\\")) {
+      return;
+    }
+    int placeholders = countSimplePlaceholders(rawValue);
     if (placeholders <= 0 || invocation.arguments().size() != formatIndex + placeholders + 1) {
       return;
     }
@@ -69,7 +73,7 @@ public class StringFormatCheck extends AbstractMethodDetection {
         return;
       }
     }
-    if (hasLocale && valueArguments.stream().anyMatch(arg -> arg.symbolType().isSubtypeOf("java.util.Formattable"))) {
+    if (valueArguments.stream().anyMatch(arg -> arg.symbolType().isSubtypeOf("java.util.Formattable"))) {
       return;
     }
     reportIssue(invocation.methodSelect(), "Use String.valueOf() or string concatenation instead of String.format().");
