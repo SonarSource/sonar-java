@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanDefinitionRegistry;
 import org.sonar.java.model.springcontext.InjectionPoint;
+import org.sonar.java.model.springcontext.ProfileExpression;
 import org.sonar.java.model.springcontext.ProjectPackageScan;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.model.springcontext.TypeToBeansIndex;
@@ -98,7 +99,11 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
   }
 
   private static boolean hasProfile(BeanDefinitionRegistry registry, String beanName) {
-    return registry.getByName(beanName).stream().anyMatch(bean -> !bean.getProfileExpression().isUnconditional());
+    return registry.getByName(beanName).stream()
+      .anyMatch(bean -> {
+        ProfileExpression expression = bean.getProfileExpression();
+        return !expression.isUnconditional() && !expression.isUnknown();
+      });
   }
 
   private static String message(Set<String> candidates) {
