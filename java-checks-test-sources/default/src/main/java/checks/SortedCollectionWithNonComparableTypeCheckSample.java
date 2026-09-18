@@ -1,6 +1,8 @@
 package checks;
 
+import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -14,6 +16,8 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 class SortedCollectionWithNonComparableTypeCheckSample {
+
+  Set<Task> escaped;
 
   static class Task {
     int priority;
@@ -47,6 +51,15 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     }
   }
 
+  static class ComparableTaskChild extends ComparableTask {
+  }
+
+  interface NonComparableContract {
+  }
+
+  abstract static class AbstractTask {
+  }
+
   void noncompliant(Collection<Task> tasks, Map<Task, String> assignments, PriorityQueue<Task> orderedTasks) {
     Set<Task> treeSet = new TreeSet<>(); // Noncompliant {{Provide a comparator because this element type does not implement "Comparable".}}
     Map<Task, String> treeMap = new TreeMap<>(); // Noncompliant {{Provide a comparator because this key type does not implement "Comparable".}}
@@ -59,8 +72,8 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     Queue<Task> priorityQueueFromCollection = new PriorityQueue<>(tasks); // Noncompliant
     Set<Task> skipListSetFromCollection = new ConcurrentSkipListSet<>(tasks); // Noncompliant
     Map<Task, String> skipListMapFromMap = new ConcurrentSkipListMap<>(assignments); // Noncompliant
-    Set<IncompatiblyComparableTask> incompatibleComparable = new TreeSet<>(); // Noncompliant
     Set<Task> treeSetFromPriorityQueue = new TreeSet<>(orderedTasks); // Noncompliant
+    Set<IncompatiblyComparableTask> incompatibleComparableTreeSet = new TreeSet<>(); // Noncompliant
   }
 
   void compliant(
@@ -87,7 +100,67 @@ class SortedCollectionWithNonComparableTypeCheckSample {
     Set<RawComparableTask> rawComparableTreeSet = new TreeSet<>();
     Set<Comparable<Object>> comparableInterfaceTreeSet = new TreeSet<>();
 
+    Set<Object> objectTreeSet = new TreeSet<>();
+    Map<Object, Object> objectTreeMap = new TreeMap<>();
+    Queue<Object> objectPriorityQueue = new PriorityQueue<>();
+    Set<Object> objectSkipListSet = new ConcurrentSkipListSet<>();
+    Map<Object, Object> objectSkipListMap = new ConcurrentSkipListMap<>();
+    Set<NonComparableContract> interfaceTreeSet = new TreeSet<>();
+    Set<AbstractTask> abstractTreeSet = new TreeSet<>();
+    Set<?> wildcardTreeSet = new TreeSet<>();
+    Set<Object> emptyObjectTreeSet = new TreeSet<>(Collections.emptyList());
+    SortedMap<Object, Object> emptyUnmodifiableTreeMap = Collections.unmodifiableSortedMap(new TreeMap<>());
+
+    Map<String, Object> stringKeys = new TreeMap<>();
+    Map<Integer, Object> integerKeys = new TreeMap<>();
+    Map<Long, Object> longKeys = new TreeMap<>();
+    Map<Character, Object> characterKeys = new TreeMap<>();
+    Map<Path, Object> pathKeys = new TreeMap<>();
+    Map<ComparableTaskChild, Object> inheritedComparableKeys = new TreeMap<>();
+    TreeMap<String, Object> explicitStringKeys = new TreeMap<String, Object>();
+    Map<String, Object> parenthesizedStringKeys = (new TreeMap<>());
+
     TreeSet rawTreeSet = new TreeSet();
+    TreeMap rawTreeMap = new TreeMap();
+    PriorityQueue rawPriorityQueue = new PriorityQueue();
+  }
+
+  Map<Object, Object> objectMapFactory() {
+    return new TreeMap<>();
+  }
+
+  void handledComparisonFailure(Collection<Task> tasks) {
+    Set<Task> unhandled = new TreeSet<>(tasks); // Noncompliant
+    Set<Task> outer;
+    try {
+      Set<Task> handled = new TreeSet<>(tasks);
+    } catch (ClassCastException e) {
+    }
+    try {
+      Set<Task> handledByMultiCatch = new TreeSet<>(tasks);
+    } catch (ClassCastException | IllegalArgumentException e) {
+    }
+    try {
+      Set<Task> notHandled = new TreeSet<>(tasks); // Noncompliant
+    } catch (IllegalArgumentException e) {
+    }
+    try {
+      Set<Task> noArgConstructor = new TreeSet<>(); // Noncompliant
+    } catch (ClassCastException e) {
+    }
+    try {
+      escaped = new TreeSet<>(tasks); // Noncompliant
+      outer = new TreeSet<>(tasks); // Noncompliant
+      Set<Task> used = new TreeSet<>(tasks); // Noncompliant
+      used.clear();
+    } catch (ClassCastException e) {
+    }
+    try {
+    } catch (ClassCastException e) {
+      Set<Task> inCatch = new TreeSet<>(tasks); // Noncompliant
+    } finally {
+      Set<Task> inFinally = new TreeSet<>(tasks); // Noncompliant
+    }
   }
 
   <T> void generic() {
