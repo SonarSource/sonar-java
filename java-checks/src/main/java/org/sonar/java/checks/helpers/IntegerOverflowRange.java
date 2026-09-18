@@ -75,11 +75,11 @@ public final class IntegerOverflowRange {
         case MULTIPLY -> left.multiply(right);
         default -> throw new IllegalStateException();
       };
-      return mathematical.wrapIfSingleton(tree.symbolType());
+      return mathematical.runtimeRange(tree.symbolType());
     }
     if (tree.is(Tree.Kind.UNARY_MINUS)) {
       Range operand = rangeOf(((UnaryExpressionTree) tree).expression(), depth + 1);
-      return operand == null ? null : operand.negate().wrapIfSingleton(tree.symbolType());
+      return operand == null ? null : operand.negate().runtimeRange(tree.symbolType());
     }
     return null;
   }
@@ -167,9 +167,13 @@ public final class IntegerOverflowRange {
       return low.compareTo(minimum) < 0 || high.compareTo(maximum) > 0;
     }
 
-    private Range wrapIfSingleton(Type type) {
-      if (!low.equals(high)) {
+    @CheckForNull
+    private Range runtimeRange(Type type) {
+      if (!exceeds(type)) {
         return this;
+      }
+      if (!low.equals(high)) {
+        return null;
       }
       int bits = type.isPrimitive(Type.Primitives.LONG) ? Long.SIZE : Integer.SIZE;
       BigInteger modulus = BigInteger.ONE.shiftLeft(bits);
