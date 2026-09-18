@@ -74,7 +74,7 @@ class S3949CheckSample {
 
   int unknown(int left, int right) {
     int arbitrary = left + right;
-    int member = new LongHolder(0L).value + 1;
+    long member = new LongHolder(0L).value + 1;
     return arbitrary;
   }
 
