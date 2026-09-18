@@ -162,6 +162,15 @@ class CryptographicKeySizeCheckAES {
   }
 }
 
+class CryptographicKeySizeCheckECInt {
+  public void key_variable() throws NoSuchAlgorithmException {
+    KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC");
+    keyGen.initialize(192); // Noncompliant {{Use a key length of at least 224 bits for EC cipher algorithm.}}
+//  ^^^^^^^^^^^^^^^^^^^^^^
+    keyGen.initialize(224); // Compliant
+  }
+}
+
 class CryptographicKeySizeCheckEC {
   public void key_EC() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
     KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("EC");
