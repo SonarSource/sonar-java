@@ -65,7 +65,11 @@ public class S3949Check extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (context.getSemanticModel() == null || !(tree instanceof ExpressionTree expression) || !isIntOrLong(expression.symbolType())) {
+    if (context.getSemanticModel() == null) {
+      return;
+    }
+    ExpressionTree expression = (ExpressionTree) tree;
+    if (!isIntOrLong(expression.symbolType())) {
       return;
     }
     if (tree.is(Tree.Kind.PLUS) && isUnsafeMidpoint((BinaryExpressionTree) tree)) {
@@ -88,15 +92,20 @@ public class S3949Check extends IssuableSubscriptionVisitor {
     if (left == null || right == null) {
       return;
     }
-    Range result = switch (tree.kind()) {
-      case PLUS -> left.add(right);
-      case MINUS -> left.subtract(right);
-      case MULTIPLY -> left.multiply(right);
-      default -> throw new IllegalStateException();
-    };
+    Range result = resultRange(tree, left, right);
     if (result.exceeds(tree.symbolType())) {
       reportIssue(tree, MESSAGE);
     }
+  }
+
+  private static Range resultRange(BinaryExpressionTree tree, Range left, Range right) {
+    if (tree.is(Tree.Kind.PLUS)) {
+      return left.add(right);
+    }
+    if (tree.is(Tree.Kind.MINUS)) {
+      return left.subtract(right);
+    }
+    return left.multiply(right);
   }
 
   private void checkNegation(UnaryExpressionTree tree) {
@@ -110,6 +119,9 @@ public class S3949Check extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isUnsafeMidpoint(BinaryExpressionTree addition) {
+    if (!addition.symbolType().isPrimitive(Type.Primitives.INT)) {
+      return false;
+    }
     Tree parent = ExpressionUtils.skipParenthesesUpwards(addition.parent());
     if (!(parent instanceof BinaryExpressionTree division) || !division.is(Tree.Kind.DIVIDE)
       || ExpressionUtils.skipParentheses(division.leftOperand()) != addition) {
@@ -141,7 +153,7 @@ public class S3949Check extends IssuableSubscriptionVisitor {
     Tree result = tree;
     Tree parent = result.parent();
     while (parent != null && (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)
-      || parent.is(Tree.Kind.TYPE_CAST) && ((TypeCastTree) parent).type().symbolType().isPrimitive(Type.Primitives.INT))) {
+      || (parent.is(Tree.Kind.TYPE_CAST) && ((TypeCastTree) parent).type().symbolType().isPrimitive(Type.Primitives.INT)))) {
       result = parent;
       parent = parent.parent();
     }
@@ -157,7 +169,7 @@ public class S3949Check extends IssuableSubscriptionVisitor {
 
   private static boolean isWidenedSink(ExpressionTree expression) {
     Tree parent = ExpressionUtils.skipParenthesesUpwards(expression.parent());
-    if (parent instanceof VariableTree variable && variable.initializer() != null) {
+    if (parent instanceof VariableTree variable) {
       return isWider(variable.type().symbolType(), expression.symbolType());
     }
     if (parent instanceof AssignmentExpressionTree assignment && assignment.is(Tree.Kind.ASSIGNMENT)) {
@@ -176,22 +188,22 @@ public class S3949Check extends IssuableSubscriptionVisitor {
         return isWiderArgument(arguments, newClass.methodSymbol(), expression);
       }
     }
-    if (parent instanceof MethodInvocationTree invocation) {
-      return isWiderArgument(invocation.arguments(), invocation.methodSymbol(), expression);
-    }
-    if (parent instanceof NewClassTree newClass) {
-      return isWiderArgument(newClass.arguments(), newClass.methodSymbol(), expression);
-    }
     return false;
   }
 
   private static boolean isTimestampCast(ExpressionTree expression) {
+    if (!expression.symbolType().isPrimitive(Type.Primitives.INT)) {
+      return false;
+    }
     Tree parent = ExpressionUtils.skipParenthesesUpwards(expression.parent());
     if (!(parent instanceof TypeCastTree cast) || !cast.type().symbolType().isPrimitive(Type.Primitives.LONG)) {
       return false;
     }
     Tree argumentsTree = ExpressionUtils.skipParenthesesUpwards(cast.parent());
     if (!(argumentsTree instanceof Arguments arguments)) {
+      return false;
+    }
+    if (arguments.isEmpty() || ExpressionUtils.skipParentheses(arguments.get(0)) != cast) {
       return false;
     }
     Tree invocation = arguments.parent();

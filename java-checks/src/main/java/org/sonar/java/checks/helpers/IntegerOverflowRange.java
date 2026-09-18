@@ -18,6 +18,7 @@ package org.sonar.java.checks.helpers;
 
 import java.math.BigInteger;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -69,12 +70,7 @@ public final class IntegerOverflowRange {
       if (left == null || right == null) {
         return null;
       }
-      Range mathematical = switch (tree.kind()) {
-        case PLUS -> left.add(right);
-        case MINUS -> left.subtract(right);
-        case MULTIPLY -> left.multiply(right);
-        default -> throw new IllegalStateException();
-      };
+      Range mathematical = arithmeticRange(binary, left, right);
       return mathematical.runtimeRange(tree.symbolType());
     }
     if (tree.is(Tree.Kind.UNARY_MINUS)) {
@@ -84,54 +80,102 @@ public final class IntegerOverflowRange {
     return null;
   }
 
+  private static Range arithmeticRange(BinaryExpressionTree tree, Range left, Range right) {
+    if (tree.is(Tree.Kind.PLUS)) {
+      return left.add(right);
+    }
+    if (tree.is(Tree.Kind.MINUS)) {
+      return left.subtract(right);
+    }
+    return left.multiply(right);
+  }
+
   @CheckForNull
   private static Range leafRange(ExpressionTree tree, int depth) {
+    Range range = constantRange(tree);
+    if (range != null) {
+      return range;
+    }
+    range = arrayLengthRange(tree);
+    if (range != null) {
+      return range;
+    }
+    range = methodInvocationRange(tree);
+    if (range != null) {
+      return range;
+    }
+    range = bitwiseAndRange(tree, depth);
+    if (range != null) {
+      return range;
+    }
+    return identifierRange(tree, depth);
+  }
+
+  @CheckForNull
+  private static Range constantRange(ExpressionTree tree) {
+    if (tree.is(Tree.Kind.PLUS, Tree.Kind.MINUS, Tree.Kind.MULTIPLY, Tree.Kind.UNARY_MINUS)) {
+      return null;
+    }
     Integer intValue = tree.asConstant(Integer.class).orElse(null);
-    if (intValue != null && !tree.is(Tree.Kind.PLUS, Tree.Kind.MINUS, Tree.Kind.MULTIPLY, Tree.Kind.UNARY_MINUS)) {
+    if (intValue != null) {
       return Range.exact(BigInteger.valueOf(intValue));
     }
     Long longValue = tree.asConstant(Long.class).orElse(null);
-    if (longValue != null && !tree.is(Tree.Kind.PLUS, Tree.Kind.MINUS, Tree.Kind.MULTIPLY, Tree.Kind.UNARY_MINUS)) {
-      return Range.exact(BigInteger.valueOf(longValue));
-    }
-    if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree select = (MemberSelectExpressionTree) tree;
-      if (select.expression().symbolType().isArray() && "length".equals(select.identifier().name())) {
-        return NON_NEGATIVE_INT;
-      }
-    }
-    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree invocation = (MethodInvocationTree) tree;
-      if (NON_NEGATIVE_INT_METHODS.matches(invocation)) {
-        return NON_NEGATIVE_INT;
-      }
-      if (BIT_COUNT_32.matches(invocation)) {
-        return new Range(BigInteger.ZERO, BigInteger.valueOf(32));
-      }
-      if (BIT_COUNT_64.matches(invocation)) {
-        return new Range(BigInteger.ZERO, BigInteger.valueOf(64));
-      }
-    }
-    if (tree.is(Tree.Kind.AND)) {
-      BinaryExpressionTree and = (BinaryExpressionTree) tree;
-      Range left = rangeOf(and.leftOperand(), depth + 1);
-      Range right = rangeOf(and.rightOperand(), depth + 1);
-      Range mask = exactNonNegative(left) ? left : right;
-      if (exactNonNegative(mask)) {
-        return new Range(BigInteger.ZERO, mask.high);
-      }
-    }
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = ((IdentifierTree) tree).symbol();
-      if (!symbol.isUnknown() && ExpressionsHelper.isNotReassigned(symbol)) {
-        ExpressionTree value = ExpressionsHelper.getSingleWriteUsage(symbol);
-        return value == null ? null : rangeOf(value, depth + 1);
-      }
-    }
-    return null;
+    return longValue == null ? null : Range.exact(BigInteger.valueOf(longValue));
   }
 
-  private static boolean exactNonNegative(Range range) {
+  @CheckForNull
+  private static Range arrayLengthRange(ExpressionTree tree) {
+    if (!tree.is(Tree.Kind.MEMBER_SELECT)) {
+      return null;
+    }
+    MemberSelectExpressionTree select = (MemberSelectExpressionTree) tree;
+    return select.expression().symbolType().isArray() && "length".equals(select.identifier().name()) ? NON_NEGATIVE_INT : null;
+  }
+
+  @CheckForNull
+  private static Range methodInvocationRange(ExpressionTree tree) {
+    if (!tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      return null;
+    }
+    MethodInvocationTree invocation = (MethodInvocationTree) tree;
+    if (NON_NEGATIVE_INT_METHODS.matches(invocation)) {
+      return NON_NEGATIVE_INT;
+    }
+    if (BIT_COUNT_32.matches(invocation)) {
+      return new Range(BigInteger.ZERO, BigInteger.valueOf(32));
+    }
+    return BIT_COUNT_64.matches(invocation) ? new Range(BigInteger.ZERO, BigInteger.valueOf(64)) : null;
+  }
+
+  @CheckForNull
+  private static Range bitwiseAndRange(ExpressionTree tree, int depth) {
+    if (!tree.is(Tree.Kind.AND)) {
+      return null;
+    }
+    BinaryExpressionTree and = (BinaryExpressionTree) tree;
+    Range left = rangeOf(and.leftOperand(), depth + 1);
+    if (exactNonNegative(left)) {
+      return new Range(BigInteger.ZERO, left.high);
+    }
+    Range right = rangeOf(and.rightOperand(), depth + 1);
+    return exactNonNegative(right) ? new Range(BigInteger.ZERO, right.high) : null;
+  }
+
+  @CheckForNull
+  private static Range identifierRange(ExpressionTree tree, int depth) {
+    if (!tree.is(Tree.Kind.IDENTIFIER)) {
+      return null;
+    }
+    Symbol symbol = ((IdentifierTree) tree).symbol();
+    if (symbol.isUnknown() || !ExpressionsHelper.isNotReassigned(symbol)) {
+      return null;
+    }
+    ExpressionTree value = ExpressionsHelper.getSingleWriteUsage(symbol);
+    return value == null ? null : rangeOf(value, depth + 1);
+  }
+
+  private static boolean exactNonNegative(@Nullable Range range) {
     return range != null && range.low.equals(range.high) && range.low.signum() >= 0;
   }
 
@@ -162,9 +206,23 @@ public final class IntegerOverflowRange {
     }
 
     public boolean exceeds(Type type) {
-      BigInteger minimum = type.isPrimitive(Type.Primitives.LONG) ? BigInteger.valueOf(Long.MIN_VALUE) : BigInteger.valueOf(Integer.MIN_VALUE);
-      BigInteger maximum = type.isPrimitive(Type.Primitives.LONG) ? BigInteger.valueOf(Long.MAX_VALUE) : BigInteger.valueOf(Integer.MAX_VALUE);
+      BigInteger minimum = minimumValue(type);
+      BigInteger maximum = maximumValue(type);
       return low.compareTo(minimum) < 0 || high.compareTo(maximum) > 0;
+    }
+
+    private static BigInteger minimumValue(Type type) {
+      if (type.isPrimitive(Type.Primitives.LONG)) {
+        return BigInteger.valueOf(Long.MIN_VALUE);
+      }
+      return BigInteger.valueOf(Integer.MIN_VALUE);
+    }
+
+    private static BigInteger maximumValue(Type type) {
+      if (type.isPrimitive(Type.Primitives.LONG)) {
+        return BigInteger.valueOf(Long.MAX_VALUE);
+      }
+      return BigInteger.valueOf(Integer.MAX_VALUE);
     }
 
     @CheckForNull

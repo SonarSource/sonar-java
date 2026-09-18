@@ -33,11 +33,13 @@ long size = 1_000_000L * 10_000;
 </pre>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="4" data-diff-type="noncompliant">
-int opposite = -Integer.MIN_VALUE; // Noncompliant
+final int value = Integer.MIN_VALUE;
+int opposite = -value; // Noncompliant
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="4" data-diff-type="compliant">
-long opposite = -(long) Integer.MIN_VALUE;
+final int value = Integer.MIN_VALUE;
+long opposite = -(long) value;
 </pre>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="5" data-diff-type="noncompliant">
@@ -49,10 +51,12 @@ int midpoint = low + (high - low) / 2;
 </pre>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="6" data-diff-type="noncompliant">
+final int increment = 1;
 int next = Integer.MAX_VALUE + increment; // Noncompliant
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="6" data-diff-type="compliant">
+final int increment = 1;
 int next = Math.addExact(Integer.MAX_VALUE, increment);
 </pre>
 <h2>Resources</h2>
