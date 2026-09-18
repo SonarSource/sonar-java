@@ -1,0 +1,29 @@
+<h2>Why is this an issue?</h2>
+<p>Constructors should not access the values of fields that haven’t yet been initialized.</p>
+<p>In Java records, a compact constructor runs before the record components are implicitly assigned to their corresponding backing fields. When a component’s accessor method is invoked on the record instance inside a compact constructor, it reads the uninitialized field rather than the constructor argument, returning its default value (such as <code>null</code>, <code>0</code>, or <code>false</code>). This can silently corrupt validation logic or lead to unexpected runtime exceptions.</p>
+<p>This rule raises an issue when a record component accessor is invoked on the record instance inside a compact constructor.</p>
+
+<h2>How to fix it</h2>
+<p>Reference the constructor parameter directly instead of calling the component accessor method.</p>
+
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+record User(String name) {
+  User {
+    if (name().isBlank()) { // Noncompliant: name() is called before the field is initialized and returns null
+      throw new IllegalArgumentException("Name cannot be blank");
+    }
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+record User(String name) {
+  User {
+    if (name.isBlank()) { // Compliant: direct parameter access
+      throw new IllegalArgumentException("Name cannot be blank");
+    }
+  }
+}
+</pre>
