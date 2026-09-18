@@ -1,0 +1,24 @@
+{
+  "title": "\"String.format()\" should not be used when simpler alternatives exist",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "tags": [
+    "confusing",
+    "clumsy"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9397",
+  "sqKey": "S9397",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  }
+}
