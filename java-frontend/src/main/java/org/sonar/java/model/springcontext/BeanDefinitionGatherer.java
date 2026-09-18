@@ -109,7 +109,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
    * @param tree The class tree to visit
    */
   @Override
-  public void visitNode(Tree tree) {
+  protected void visitSpringNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (classTree.simpleName() == null) {
       return;
@@ -140,7 +140,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
   }
 
   @Override
-  public void leaveFile(JavaFileScannerContext context) {
+  protected void leaveSpringFile(JavaFileScannerContext context) {
     var beans = List.copyOf(beansCollectedAtFileLevel);
     beansCollectedByFile.put(context.getInputFile(), beans);
     writeToCache(context, beans);
@@ -202,7 +202,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
   }
 
   @Override
-  public boolean scanWithoutParsing(InputFileScannerContext ctx) {
+  protected boolean scanSpringFileWithoutParsing(InputFileScannerContext ctx) {
     return restoreFromCache(ctx);
   }
 

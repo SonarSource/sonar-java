@@ -81,7 +81,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
   }
 
   @Override
-  public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
+  protected boolean scanSpringFileWithoutParsing(InputFileScannerContext inputFileScannerContext) {
     return restoreFromCache(inputFileScannerContext);
   }
 
@@ -112,7 +112,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
   }
 
   @Override
-  public void visitNode(Tree tree) {
+  protected void visitSpringNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (classTree.simpleName() == null) {
       return;
@@ -124,7 +124,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
   }
 
   @Override
-  public void leaveFile(JavaFileScannerContext context) {
+  protected void leaveSpringFile(JavaFileScannerContext context) {
     var packages = Set.copyOf(packagesCollectedAtFileLevel);
     collectedPackagesByFile.put(context.getInputFile().key(), packages);
     writeToCache(context, packages);
