@@ -28,6 +28,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.caching.FileCachingCheck;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -82,6 +83,10 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
    * Beans found in the file currently being scanned, used for per-file cache writes.
    */
   private final List<BeanDefinitionHolder.InputFileData> beansCollectedAtFileLevel = new ArrayList<>();
+
+  public BeanDefinitionGatherer(Telemetry telemetry) {
+    super(telemetry);
+  }
 
   @Override
   public void setContext(JavaFileScannerContext context) {

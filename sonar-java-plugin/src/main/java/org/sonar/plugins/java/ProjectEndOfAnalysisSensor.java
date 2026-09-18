@@ -18,6 +18,7 @@ package org.sonar.plugins.java;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
@@ -33,6 +34,7 @@ import org.sonar.java.telemetry.TelemetryKey;
  * Telemetry data is collected by several JavaSensor executions, one for each project's module, and aggregated in a shared Telemetry object.
  */
 @Phase(name = Phase.Name.POST)
+@DependsUpon(value = "CollectSpringContextBeforeSendingTelemetry")
 public class ProjectEndOfAnalysisSensor implements ProjectSensor {
 
   private static final Logger LOG = LoggerFactory.getLogger(ProjectEndOfAnalysisSensor.class);
@@ -69,6 +71,8 @@ public class ProjectEndOfAnalysisSensor implements ProjectSensor {
     telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_BEAN_NAME_COUNT, metrics.beanNameCount());
     telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_INJECTION_POINT_COUNT, metrics.injectionPointCount());
     telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_COMPONENT_SCAN_PACKAGE_COUNT, metrics.componentScanPackageCount());
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_CONTEXT_MODEL_GATHERING_TIME_MS, 0L);
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_CONTEXT_CHECKS_TIME_MS, 0L);
     telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_CONTEXT_MODEL_SIZE_BYTES, metrics.estimatedSizeInBytes());
   }
 

@@ -17,8 +17,11 @@
 package org.sonar.java.model.springcontext;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import org.sonar.java.model.DefaultModuleScannerContext;
+import org.sonar.java.telemetry.Telemetry;
+import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.ModuleScannerContext;
@@ -40,6 +43,12 @@ import org.sonar.plugins.java.api.internal.EndOfAnalysis;
  */
 public abstract class SpringContextModelGatherer extends IssuableSubscriptionVisitor implements EndOfAnalysis, DependencyVersionAware {
 
+  private final Telemetry telemetry;
+
+  protected SpringContextModelGatherer(Telemetry telemetry) {
+    this.telemetry = telemetry;
+  }
+
   @Override
   public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
     return dependencyFinder.apply("spring-context")
@@ -52,7 +61,14 @@ public abstract class SpringContextModelGatherer extends IssuableSubscriptionVis
   @Override
   public final void endOfAnalysis(ModuleScannerContext context) {
     var defaultModuleContext = (DefaultModuleScannerContext) context;
-    gatherSpringContextData(context, defaultModuleContext.getSpringContextModel());
+    long startTime = System.nanoTime();
+    try {
+      gatherSpringContextData(context, defaultModuleContext.getSpringContextModel());
+    } finally {
+      telemetry.aggregateAsCounter(
+        TelemetryKey.JAVA_SPRING_CONTEXT_MODEL_GATHERING_TIME_MS,
+        TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime));
+    }
   }
 
   /**

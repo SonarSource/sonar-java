@@ -33,6 +33,8 @@ class SpringTelemetryTest extends ScannerIntegrationAbstractTest {
     assertThat(telemetryValue(project, "java.spring.bean_name_count")).isEqualTo("20");
     assertThat(telemetryValue(project, "java.spring.injection_point_count")).isEqualTo("6");
     assertThat(telemetryValue(project, "java.spring.component_scan_package_count")).isEqualTo("1");
+    assertThat(telemetryValue(project, "java.spring.context_model_gathering_time_ms")).matches("\\d+");
+    assertThat(telemetryValue(project, "java.spring.context_checks_time_ms")).matches("\\d+");
     assertThat(Long.parseLong(telemetryValue(project, "java.spring.context_model_size_bytes"))).isPositive();
   }
 

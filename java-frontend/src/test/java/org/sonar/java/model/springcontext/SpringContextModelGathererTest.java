@@ -30,6 +30,9 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.telemetry.DefaultTelemetry;
+import org.sonar.java.telemetry.NoOpTelemetry;
+import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.ModuleScannerContext;
@@ -45,8 +48,10 @@ class SpringContextModelGathererTest {
 
   @Test
   void testGatherSpringContextData() {
-    scanFile("src/test/files/model/SimpleClass.java", new SampleGatherer(), TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var telemetry = new DefaultTelemetry();
+    scanFile("src/test/files/model/SimpleClass.java", new SampleGatherer(telemetry), TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     assertThat(model.getTypeToBeansIndex().getNamesForType("com.example.MyService", "", Set.of())).containsExactly("myServiceBean");
+    assertThat(telemetry.toMap().get("java.spring.context_model_gathering_time_ms")).matches("\\d+");
   }
 
   // ---- isCompatibleWithDependencies -----------------------------------------
@@ -54,12 +59,12 @@ class SpringContextModelGathererTest {
   @ParameterizedTest
   @ValueSource(strings = {"spring-context", "spring-beans", "spring-boot-starter", "spring-boot-starter-web"})
   void isCompatibleWithDependencies_true_when_spring_dependency_is_present(String dependency) {
-    assertThat(new SampleGatherer().isCompatibleWithDependencies(finderFor(dependency))).isTrue();
+    assertThat(new SampleGatherer(new NoOpTelemetry()).isCompatibleWithDependencies(finderFor(dependency))).isTrue();
   }
 
   @Test
   void isCompatibleWithDependencies_false_when_no_spring_dependency_is_present() {
-    assertThat(new SampleGatherer().isCompatibleWithDependencies(finderFor())).isFalse();
+    assertThat(new SampleGatherer(new NoOpTelemetry()).isCompatibleWithDependencies(finderFor())).isFalse();
   }
 
   // ---- Helpers --------------------------------------------------------------
@@ -85,6 +90,10 @@ class SpringContextModelGathererTest {
   }
 
   static class SampleGatherer extends SpringContextModelGatherer {
+
+    SampleGatherer(Telemetry telemetry) {
+      super(telemetry);
+    }
 
     @Override
     public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {

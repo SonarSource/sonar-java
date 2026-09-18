@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.java.caching.FileCachingCheck;
+import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -69,6 +70,10 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
    * Packages found in the file currently being scanned, used for per-file cache writes.
    */
   private final Set<String> packagesCollectedAtFileLevel = new HashSet<>();
+
+  public ComponentScanPackageGatherer(Telemetry telemetry) {
+    super(telemetry);
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

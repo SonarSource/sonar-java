@@ -54,6 +54,8 @@ class ProjectEndOfAnalysisSensorTest {
     var telemetry = new DefaultTelemetry();
     telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_LANGUAGE_VERSION, "21");
     telemetry.aggregateAsSortedSet(TelemetryKey.JAVA_MODULE_COUNT, "3");
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_CONTEXT_MODEL_GATHERING_TIME_MS, 12L);
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_CONTEXT_CHECKS_TIME_MS, 34L);
     var springContextModel = new SpringContextModel();
     var sensor = new ProjectEndOfAnalysisSensor(telemetry, springContextModel);
     SensorContextTester context = SensorContextTester.create(tempDir);
@@ -66,6 +68,8 @@ class ProjectEndOfAnalysisSensorTest {
       "Telemetry java.spring.bean_count: 0",
       "Telemetry java.spring.bean_name_count: 0",
       "Telemetry java.spring.component_scan_package_count: 0",
+      "Telemetry java.spring.context_checks_time_ms: 34",
+      "Telemetry java.spring.context_model_gathering_time_ms: 12",
       "Telemetry java.spring.context_model_size_bytes: " + contextModelSize,
       "Telemetry java.spring.injection_point_count: 0");
   }
@@ -86,7 +90,9 @@ class ProjectEndOfAnalysisSensorTest {
       .containsEntry("java.spring.bean_count", "2")
       .containsEntry("java.spring.bean_name_count", "2")
       .containsEntry("java.spring.injection_point_count", "1")
-      .containsEntry("java.spring.component_scan_package_count", "1");
+      .containsEntry("java.spring.component_scan_package_count", "1")
+      .containsEntry("java.spring.context_model_gathering_time_ms", "0")
+      .containsEntry("java.spring.context_checks_time_ms", "0");
     assertThat(Long.parseLong(context.getTelemetryProperties().get("java.spring.context_model_size_bytes"))).isPositive();
   }
 
