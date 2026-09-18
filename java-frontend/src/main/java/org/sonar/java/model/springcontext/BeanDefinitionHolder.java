@@ -20,20 +20,19 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.sonar.java.reporting.AnalyzerMessage;
 
 /**
  * Immutable representation of a Spring bean definition discovered during project scanning.
  *
  * <p>Captures the bean's fully-qualified type, the module and package it belongs to,
- * its source {@link BeanLocation location}, and optional metadata such as active profiles,
- * dependency names, and whether the bean is marked as {@code @Primary}.
+ * its source {@link BeanLocation location}, the {@link ProfileExpression condition} under which it is
+ * active, its dependency names, and whether the bean is marked as {@code @Primary}.
  *
  * <p>Use {@link Builder} to construct instances:
  * <pre>{@code
  * BeanDefinitionHolder bean = new BeanDefinitionHolder.Builder(type, module, pkg, location)
- *     .profiles("prod")
+ *     .profileExpression(ProfileExpression.profile("prod"))
  *     .primary()
  *     .build();
  * }</pre>
@@ -42,16 +41,24 @@ import org.sonar.java.reporting.AnalyzerMessage;
  * @see BeanLocation
  */
 public class BeanDefinitionHolder {
-  /** Fully-qualified class name of the bean. */
+  /**
+   * Fully-qualified class name of the bean.
+   */
   private final String type;
 
-  /** Module in which the bean is declared. */
+  /**
+   * Module in which the bean is declared.
+   */
   private final String module;
 
-  /** Package of the bean's declaring class. */
+  /**
+   * Package of the bean's declaring class.
+   */
   private final String beanPackage;
 
-  /** Source location where the bean definition appears. */
+  /**
+   * Source location where the bean definition appears.
+   */
   private final BeanLocation location;
 
   /**
@@ -61,15 +68,16 @@ public class BeanDefinitionHolder {
   private Map<String, Set<String>> dependingBeans;
 
   /**
-   * Spring profile expression under which this bean is active, or {@code null} if unconditional.
-   * Comma-separated values within one {@code @Profile} annotation are OR-ed (as Spring does);
-   * a class-level and a {@code @Bean} method-level {@code @Profile} are AND-ed by joining their
-   * (already OR-ed) expressions with a semicolon, since Spring requires both to match.
+   * Condition under which this bean is active, as declared by {@code @Profile}. A bean carrying no
+   * {@code @Profile} holds {@link ProfileExpression#UNCONDITIONAL}, so this is never null. For a
+   * {@code @Bean} method, the class-level and method-level expressions are already composed here, since
+   * Spring requires both to match.
    */
-  @Nullable
-  private String profiles;
+  private ProfileExpression profileExpression = ProfileExpression.UNCONDITIONAL;
 
-  /** Whether the bean is marked as {@code @Primary}, making it the preferred candidate for autowiring. */
+  /**
+   * Whether the bean is marked as {@code @Primary}, making it the preferred candidate for autowiring.
+   */
   private boolean isPrimary = false;
 
   private BeanDefinitionHolder(String type, String module, String beanPackage, BeanLocation location) {
@@ -83,8 +91,8 @@ public class BeanDefinitionHolder {
     this.dependingBeans = beans;
   }
 
-  private void setProfiles(@Nullable String profiles) {
-    this.profiles = profiles;
+  private void setProfileExpression(ProfileExpression profileExpression) {
+    this.profileExpression = profileExpression;
   }
 
   private void setPrimary() {
@@ -111,9 +119,8 @@ public class BeanDefinitionHolder {
     return dependingBeans;
   }
 
-  @Nullable
-  public String getProfiles() {
-    return profiles;
+  public ProfileExpression getProfileExpression() {
+    return profileExpression;
   }
 
   public boolean isPrimary() {
@@ -126,8 +133,7 @@ public class BeanDefinitionHolder {
     private final String beanPackage;
     private final BeanLocation location;
     private Map<String, Set<String>> dependingBeans = new LinkedHashMap<>();
-    @Nullable
-    private String profiles;
+    private ProfileExpression profileExpression = ProfileExpression.UNCONDITIONAL;
     private boolean isPrimary = false;
 
     public Builder(String type, String module, String beanPackage, BeanLocation location) {
@@ -142,8 +148,8 @@ public class BeanDefinitionHolder {
       return this;
     }
 
-    public Builder profiles(@Nullable String profiles) {
-      this.profiles = profiles;
+    public Builder profileExpression(ProfileExpression profileExpression) {
+      this.profileExpression = profileExpression;
       return this;
     }
 
@@ -156,7 +162,7 @@ public class BeanDefinitionHolder {
       BeanDefinitionHolder holder = new BeanDefinitionHolder(type, module, beanPackage, location);
       holder.setDependingBeans(dependingBeans.entrySet().stream()
         .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, e -> Set.copyOf(e.getValue()))));
-      holder.setProfiles(profiles);
+      holder.setProfileExpression(profileExpression);
       if (isPrimary) {
         holder.setPrimary();
       }
@@ -172,14 +178,14 @@ public class BeanDefinitionHolder {
    * readable without knowing which file it describes. Pairing it with that file yields the
    * {@link BeanDefinitionHolder} the model exposes.
    *
-   * @param beanName      the name the bean is registered under
-   * @param type          fully-qualified name of the bean's type
-   * @param beanPackage   package of the class declaring the bean
-   * @param textSpan      the text span identifying the bean declaration within its own file
-   * @param isPrimary     whether the bean is annotated with {@code @Primary}
-   * @param profiles      the {@code @Profile} expression under which the bean is active, or {@code null} if unconditional
-   * @param dependencies  the bean's dependencies, mapped by required type FQN to the injection points that require them
-   * @param typeHierarchy fully-qualified names of the bean's own type and of all its ancestors and interfaces
+   * @param beanName          The name the bean is registered under.
+   * @param type              The fully-qualified name of the bean's type.
+   * @param beanPackage       The package of the class declaring the bean.
+   * @param textSpan          The text span identifying the bean declaration within its own file.
+   * @param isPrimary         Whether the bean is annotated with {@code @Primary}.
+   * @param profileExpression The condition under which the bean is active, {@link ProfileExpression#UNCONDITIONAL} if it carries no {@code @Profile}.
+   * @param dependencies      The bean's dependencies, mapped by required type FQN to the injection points that require them.
+   * @param typeHierarchy     The fully-qualified names of the bean's own type and of all its ancestors and interfaces.
    */
   public record InputFileData(
     String beanName,
@@ -187,7 +193,7 @@ public class BeanDefinitionHolder {
     String beanPackage,
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
-    @Nullable String profiles,
+    ProfileExpression profileExpression,
     Map<String, Set<InjectionPoint.InputFileData>> dependencies,
     Set<String> typeHierarchy) {
   }

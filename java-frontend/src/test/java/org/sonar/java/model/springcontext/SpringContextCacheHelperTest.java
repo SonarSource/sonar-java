@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -86,7 +85,32 @@ class SpringContextCacheHelperTest {
         Arguments.of("bean without profiles nor dependencies", List.of(simpleComponent())),
         Arguments.of("bean with profiles and dependencies", List.of(beanWithDependencies())),
         Arguments.of("primary bean", List.of(primaryBean())),
+        Arguments.of("bean whose profile expression uses operators", List.of(beanWithExpressionProfile())),
+        Arguments.of("bean whose profile expression could not be parsed", List.of(beanWithUnknownProfile())),
         Arguments.of("several beans defined in the same file", List.of(simpleComponent(), primaryBean(), beanWithDependencies())));
+    }
+
+    @Test
+    void a_compound_profile_expression_is_written_as_its_canonical_form() {
+      var written = writeBeans(List.of(beanWithExpressionProfile()));
+
+      var bean = JsonParser.parseString(written).getAsJsonObject().getAsJsonArray("beans").get(0).getAsJsonObject();
+      assertThat(bean.get("profiles").getAsString()).isEqualTo("(!test & dev)");
+    }
+
+    @Test
+    void an_unconditional_bean_is_written_with_a_null_profile() {
+      var written = writeBeans(List.of(simpleComponent()));
+
+      var bean = JsonParser.parseString(written).getAsJsonObject().getAsJsonArray("beans").get(0).getAsJsonObject();
+      assertThat(bean.get("profiles").isJsonNull()).isTrue();
+    }
+
+    @Test
+    void a_profile_expression_that_cannot_be_parsed_is_restored_as_unknown() {
+      String entry = writeBeans(List.of(simpleComponent())).replace("\"profiles\":null", "\"profiles\":\"a & b | c\"");
+
+      assertThat(readBeans(entry)).singleElement().satisfies(bean -> assertThat(bean.profileExpression().isUnknown()).isTrue());
     }
 
     @Test
@@ -228,13 +252,24 @@ class SpringContextCacheHelperTest {
   // ---- Bean fixtures --------------------------------------------------------
 
   private static BeanDefinitionHolder.InputFileData simpleComponent() {
-    return beanData("simpleComponent", "checks.spring.context.SimpleComponent", new TextSpan(8, 13, 8, 28), false, null,
+    return beanData("simpleComponent", "checks.spring.context.SimpleComponent", new TextSpan(8, 13, 8, 28), false, ProfileExpression.UNCONDITIONAL,
       Map.of(), Set.of("checks.spring.context.SimpleComponent"));
   }
 
   private static BeanDefinitionHolder.InputFileData primaryBean() {
-    return beanData("primaryBean", "checks.spring.context.PrimaryBean", new TextSpan(9, 13, 9, 24), true, null,
+    return beanData("primaryBean", "checks.spring.context.PrimaryBean", new TextSpan(9, 13, 9, 24), true, ProfileExpression.UNCONDITIONAL,
       Map.of(), Set.of("checks.spring.context.PrimaryBean", "java.lang.Object"));
+  }
+
+  private static BeanDefinitionHolder.InputFileData beanWithExpressionProfile() {
+    return beanData("expressionProfiledComponent", "checks.spring.context.ExpressionProfiledComponent", new TextSpan(10, 13, 10, 40), false,
+      ProfileExpression.and(List.of(ProfileExpression.profile("dev"), ProfileExpression.not(ProfileExpression.profile("test")))),
+      Map.of(), Set.of("checks.spring.context.ExpressionProfiledComponent"));
+  }
+
+  private static BeanDefinitionHolder.InputFileData beanWithUnknownProfile() {
+    return beanData("malformedProfileComponent", "checks.spring.context.MalformedProfileComponent", new TextSpan(10, 13, 10, 38), false,
+      ProfileExpression.UNKNOWN, Map.of(), Set.of("checks.spring.context.MalformedProfileComponent"));
   }
 
   private static BeanDefinitionHolder.InputFileData beanWithDependencies() {
@@ -244,13 +279,14 @@ class SpringContextCacheHelperTest {
     injectionPoints.put("org.springframework.core.env.Environment",
       Set.of(new InjectionPoint.InputFileData("environment", new TextSpan(19, 2, 19, 38))));
     return beanData("qualifiedFieldDependencies", "checks.spring.context.QualifiedFieldDependencies",
-      new TextSpan(12, 6, 12, 32), false, "prod", injectionPoints,
+      new TextSpan(12, 6, 12, 32), false, ProfileExpression.profile("prod"), injectionPoints,
       Set.of("checks.spring.context.QualifiedFieldDependencies"));
   }
 
-  private static BeanDefinitionHolder.InputFileData beanData(String beanName, String type, TextSpan span, boolean isPrimary, @Nullable String profiles,
-    Map<String, Set<InjectionPoint.InputFileData>> injectionPoints, Set<String> typeHierarchy) {
-    return new BeanDefinitionHolder.InputFileData(beanName, type, "checks.spring.context", span, isPrimary, profiles, injectionPoints, typeHierarchy);
+  private static BeanDefinitionHolder.InputFileData beanData(String beanName, String type, TextSpan span, boolean isPrimary,
+    ProfileExpression profileExpression, Map<String, Set<InjectionPoint.InputFileData>> injectionPoints, Set<String> typeHierarchy) {
+    return new BeanDefinitionHolder.InputFileData(beanName, type, "checks.spring.context", span, isPrimary, profileExpression, injectionPoints,
+      typeHierarchy);
   }
 
   // ---- Serialization plumbing ----------------------------------------------
