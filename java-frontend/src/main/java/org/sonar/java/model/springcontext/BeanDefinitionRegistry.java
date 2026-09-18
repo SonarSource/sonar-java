@@ -45,4 +45,11 @@ public class BeanDefinitionRegistry {
   public void addBeanDefinition(String beanName, BeanDefinitionHolder beanDefinition) {
     beanDefinitions.computeIfAbsent(beanName, k -> new ArrayList<>()).add(beanDefinition);
   }
+
+  /**
+   * @return The backing index, for accounting purposes only. The map is not a defensive copy and must not be modified.
+   */
+  Map<String, List<BeanDefinitionHolder>> beanDefinitions() {
+    return beanDefinitions;
+  }
 }

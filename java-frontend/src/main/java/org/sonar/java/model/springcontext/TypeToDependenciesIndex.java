@@ -34,7 +34,9 @@ import java.util.Set;
  */
 public class TypeToDependenciesIndex {
 
-  /** Dependencies indexed by fully-qualified required type. */
+  /**
+   * Dependencies indexed by fully-qualified required type.
+   */
   private final Map<String, Set<InjectionPoint>> injectionPointsByType = new HashMap<>();
 
   /**
@@ -58,5 +60,12 @@ public class TypeToDependenciesIndex {
    */
   public Set<InjectionPoint> getDependenciesForType(String dependencyType) {
     return Collections.unmodifiableSet(injectionPointsByType.getOrDefault(dependencyType, Set.of()));
+  }
+
+  /**
+   * @return the backing index, for accounting purposes only. The map is not a defensive copy and must not be modified.
+   */
+  Map<String, Set<InjectionPoint>> injectionPointsByType() {
+    return injectionPointsByType;
   }
 }

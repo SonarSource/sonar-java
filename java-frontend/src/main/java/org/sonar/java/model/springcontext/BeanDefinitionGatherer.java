@@ -28,6 +28,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.caching.FileCachingCheck;
 import org.sonar.java.model.JUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -83,6 +84,10 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
    */
   private final List<BeanDefinitionHolder.InputFileData> beansCollectedAtFileLevel = new ArrayList<>();
 
+  public BeanDefinitionGatherer(Telemetry telemetry) {
+    super(telemetry);
+  }
+
   @Override
   public void setContext(JavaFileScannerContext context) {
     beansCollectedAtFileLevel.clear();
@@ -104,7 +109,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
    * @param tree The class tree to visit
    */
   @Override
-  public void visitNode(Tree tree) {
+  protected void visitSpringNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (classTree.simpleName() == null) {
       return;
@@ -135,7 +140,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
   }
 
   @Override
-  public void leaveFile(JavaFileScannerContext context) {
+  protected void leaveSpringFile(JavaFileScannerContext context) {
     var beans = List.copyOf(beansCollectedAtFileLevel);
     beansCollectedByFile.put(context.getInputFile(), beans);
     writeToCache(context, beans);
@@ -197,7 +202,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
   }
 
   @Override
-  public boolean scanWithoutParsing(InputFileScannerContext ctx) {
+  protected boolean scanSpringFileWithoutParsing(InputFileScannerContext ctx) {
     return restoreFromCache(ctx);
   }
 

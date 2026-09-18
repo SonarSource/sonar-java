@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.java.caching.FileCachingCheck;
+import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.utils.PackageUtils;
 import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
@@ -70,13 +71,17 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
    */
   private final Set<String> packagesCollectedAtFileLevel = new HashSet<>();
 
+  public ComponentScanPackageGatherer(Telemetry telemetry) {
+    super(telemetry);
+  }
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE);
   }
 
   @Override
-  public boolean scanWithoutParsing(InputFileScannerContext inputFileScannerContext) {
+  protected boolean scanSpringFileWithoutParsing(InputFileScannerContext inputFileScannerContext) {
     return restoreFromCache(inputFileScannerContext);
   }
 
@@ -107,7 +112,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
   }
 
   @Override
-  public void visitNode(Tree tree) {
+  protected void visitSpringNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (classTree.simpleName() == null) {
       return;
@@ -119,7 +124,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
   }
 
   @Override
-  public void leaveFile(JavaFileScannerContext context) {
+  protected void leaveSpringFile(JavaFileScannerContext context) {
     var packages = Set.copyOf(packagesCollectedAtFileLevel);
     collectedPackagesByFile.put(context.getInputFile().key(), packages);
     writeToCache(context, packages);

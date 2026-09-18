@@ -24,6 +24,7 @@ import com.sonarsource.scanner.integrationtester.dsl.EngineVersion;
 import com.sonarsource.scanner.integrationtester.dsl.Log;
 import com.sonarsource.scanner.integrationtester.dsl.RuleKey;
 import com.sonarsource.scanner.integrationtester.dsl.ScannerInput;
+import com.sonarsource.scanner.integrationtester.dsl.ScannerOutputReader;
 import com.sonarsource.scanner.integrationtester.dsl.ScannerResult;
 import com.sonarsource.scanner.integrationtester.dsl.ScannerResultSuccess;
 import com.sonarsource.scanner.integrationtester.dsl.SonarProjectContext;
@@ -47,6 +48,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.io.TempDir;
 import org.sonar.java.test.classpath.TestClasspathUtils;
@@ -70,6 +72,16 @@ public abstract class ScannerIntegrationAbstractTest {
   }
 
   protected List<FileIssue> analyze(Path projectDir, String... ruleKeys) {
+    return analyzeProject(projectDir, ruleKeys).getFiles().stream()
+      .flatMap(file -> file.getIssues().stream())
+      .toList();
+  }
+
+  /**
+   * Runs the same analysis as {@link #analyze(Path, String...)} but returns the whole scanner output, giving access to
+   * project-level data such as telemetry in addition to the issues.
+   */
+  protected ScannerOutputReader analyzeProject(Path projectDir, String... ruleKeys) {
     Path resourceDir = resolveResourceDir(projectDir);
 
     copyProjectTree(resourceDir);
@@ -102,9 +114,7 @@ public abstract class ScannerIntegrationAbstractTest {
       throw new AssertionError(buildFailureMessage(result, scannerProperties));
     }
 
-    return ((ScannerResultSuccess) result).scannerOutputReader().getFiles().stream()
-      .flatMap(file -> file.getIssues().stream())
-      .toList();
+    return ((ScannerResultSuccess) result).scannerOutputReader();
   }
 
   private static Path resolveResourceDir(Path relativePath) {
@@ -169,8 +179,7 @@ public abstract class ScannerIntegrationAbstractTest {
     }
   }
 
-  private Map<String, String> buildScannerProperties(Map<String, List<Path>> moduleFiles,
-                                                     @javax.annotation.Nullable MavenBuildHelper mavenHelper) {
+  private Map<String, String> buildScannerProperties(Map<String, List<Path>> moduleFiles, @Nullable MavenBuildHelper mavenHelper) {
     var properties = new LinkedHashMap<String, String>();
     properties.put("sonar.modules", String.join(",", moduleFiles.keySet()));
 
