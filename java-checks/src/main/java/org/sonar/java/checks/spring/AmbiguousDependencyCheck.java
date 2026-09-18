@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
@@ -68,7 +67,7 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
     List<SpringContextIssue> issues = new ArrayList<>();
     for (String type : typeToBeansIndex.getKeys()) {
       Map<String, Set<String>> candidatesByModule = new HashMap<>();
-      Map<String, Optional<Set<String>>> ambiguousCandidatesByModule = new HashMap<>();
+      Map<String, Set<String>> ambiguousCandidatesByModule = new HashMap<>();
       for (InjectionPoint point : typeToDependenciesIndex.getDependenciesForType(type)) {
         String module = point.module();
         Set<String> scannedPackages = projectPackageScan.getPackagesForModule(module);
@@ -76,15 +75,16 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
         if (candidates.contains(point.name())) {
           continue;
         }
-        ambiguousCandidatesByModule.computeIfAbsent(module, key -> findAmbiguousCandidates(candidates, registry, key, scannedPackages))
-          .ifPresent(ambiguousCandidates -> issues.add(new SpringContextIssue(point.location(), message(ambiguousCandidates))));
+        Set<String> ambiguousCandidates = ambiguousCandidatesByModule.computeIfAbsent(module, key -> findAmbiguousCandidates(candidates, registry, key, scannedPackages));
+        if (!ambiguousCandidates.isEmpty()) {
+          issues.add(new SpringContextIssue(point.location(), message(ambiguousCandidates)));
+        }
       }
     }
     return issues;
   }
 
-  private static Optional<Set<String>> findAmbiguousCandidates(Set<String> candidates, BeanDefinitionRegistry registry,
-    String module, Set<String> scannedPackages) {
+  private static Set<String> findAmbiguousCandidates(Set<String> candidates, BeanDefinitionRegistry registry, String module, Set<String> scannedPackages) {
     Map<String, List<BeanDefinitionHolder>> holdersByCandidate = candidates.stream()
       .collect(Collectors.toUnmodifiableMap(candidate -> candidate, candidate -> visibleHolders(registry, candidate, module, scannedPackages)));
     List<String> profileNames = holdersByCandidate.values().stream()
@@ -94,7 +94,7 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
       .sorted()
       .toList();
     if (profileNames.size() > MAX_ENUMERATED_PROFILE_NAMES) {
-      return Optional.empty();
+      return Set.of();
     }
     Set<String> activeProfiles = new HashSet<>();
     do {
@@ -102,10 +102,10 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
         .filter(candidate -> isActive(holdersByCandidate.get(candidate), activeProfiles))
         .collect(Collectors.toUnmodifiableSet());
       if (!hasUniqueOrPrimaryCandidate(activeCandidates, holdersByCandidate, activeProfiles)) {
-        return Optional.of(activeCandidates);
+        return activeCandidates;
       }
     } while (activateNextProfileCombination(profileNames, activeProfiles));
-    return Optional.empty();
+    return Set.of();
   }
 
   private static boolean activateNextProfileCombination(List<String> profileNames, Set<String> activeProfiles) {
