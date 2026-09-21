@@ -101,6 +101,14 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
   }
 
   @Test
+  void springBootApplication_in_default_package_collects_empty_package() {
+    scan("src/test/files/springcontext/SpringBootAppInDefaultPackage.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactly("");
+  }
+
+  @Test
   void springBootApplication_scanBasePackages_are_collected() {
     scan("src/test/files/springcontext/SpringBootAppWithScanBasePackages.java");
 

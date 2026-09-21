@@ -206,6 +206,7 @@ class SpringContextCacheHelperTest {
     static Stream<Arguments> packagesToRoundTrip() {
       return Stream.of(
         Arguments.of("no package at all", List.of()),
+        Arguments.of("the default package", List.of("")),
         Arguments.of("a single package", List.of("com.example.service")),
         Arguments.of("several packages", List.of("com.example.service", "com.example.web", "checks.spring.context")));
     }

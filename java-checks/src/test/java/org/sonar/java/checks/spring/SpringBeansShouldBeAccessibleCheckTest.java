@@ -51,6 +51,16 @@ class SpringBeansShouldBeAccessibleCheckTest {
   }
 
   @Test
+  void default_package_scan_covers_beans_in_all_packages() {
+    SpringContextModel model = new SpringContextModel();
+    model.getProjectPackageScan().addPackage("application", "");
+    registerBean(model, "defaultPackageComponent", "DefaultPackageComponent", "components", "", 1);
+    registerBean(model, "packagedComponent", "com.example.MyComponent", "components", "com.example", 2);
+
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
   void uncovered_bean_creates_issue_at_bean_location() {
     SpringContextModel model = new SpringContextModel();
     model.getProjectPackageScan().addPackage("application", "com.example.app");

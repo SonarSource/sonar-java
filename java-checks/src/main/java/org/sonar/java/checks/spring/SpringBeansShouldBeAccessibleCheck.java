@@ -54,7 +54,7 @@ public class SpringBeansShouldBeAccessibleCheck implements JavaCheck, SpringCont
   }
 
   private static boolean isWithinPackage(String beanPackage, String scannedPackage) {
-    return beanPackage.equals(scannedPackage) || beanPackage.startsWith(scannedPackage + ".");
+    return scannedPackage.isEmpty() || beanPackage.equals(scannedPackage) || beanPackage.startsWith(scannedPackage + ".");
   }
 
   private static SpringContextIssue issue(BeanDefinitionHolder bean) {

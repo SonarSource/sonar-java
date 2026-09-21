@@ -166,7 +166,7 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
     if (scanBaseValues.isEmpty()) {
       // Without explicit scan attributes, @SpringBootApplication scans its own package — but only if
       // no packages were already collected via @ComponentScan on the same class.
-      return (useOwnPackageAsFallback && !classPackageName.isBlank()) ? Collections.singletonList(classPackageName) : List.of();
+      return useOwnPackageAsFallback ? Collections.singletonList(classPackageName) : List.of();
     }
     return packages;
   }
