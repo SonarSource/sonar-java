@@ -100,6 +100,14 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
   }
 
   @Test
+  void springBootApplication_in_default_package_collects_empty_package() {
+    scan("src/test/files/springcontext/SpringBootAppInDefaultPackage.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactly("");
+  }
+
+  @Test
   void springBootApplication_scanBasePackages_are_collected() {
     scan("src/test/files/springcontext/SpringBootAppWithScanBasePackages.java");
 
@@ -113,6 +121,14 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
 
     assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
       .containsExactly("checks.spring.context");
+  }
+
+  @Test
+  void springBootApplication_mixed_scan_attributes_and_constants_are_collected() {
+    scan("src/test/files/springcontext/SpringBootAppWithMixedScanAttributes.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactlyInAnyOrder("com.example.extra", "com.example.controller", "checks.spring.context");
   }
 
   @Test

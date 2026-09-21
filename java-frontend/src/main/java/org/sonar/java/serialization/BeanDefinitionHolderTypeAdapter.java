@@ -27,6 +27,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
+import org.sonar.java.model.springcontext.BeanDefinitionKind;
 import org.sonar.java.model.springcontext.InjectionPoint;
 import org.sonar.java.model.springcontext.ProfileExpression;
 import org.sonar.java.model.springcontext.ProfileExpressionParser;
@@ -34,6 +35,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 
 import static org.sonar.java.serialization.JsonUtils.DEPENDENCIES;
 import static org.sonar.java.serialization.JsonUtils.INJECTION_POINTS;
+import static org.sonar.java.serialization.JsonUtils.KIND;
 import static org.sonar.java.serialization.JsonUtils.NAME;
 import static org.sonar.java.serialization.JsonUtils.PACKAGE;
 import static org.sonar.java.serialization.JsonUtils.PRIMARY;
@@ -73,6 +75,7 @@ public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefin
     out.beginObject();
     out.name(NAME).value(bean.beanName());
     out.name(TYPE).value(bean.type());
+    out.name(KIND).value(bean.kind().name());
     out.name(PACKAGE).value(bean.beanPackage());
     out.name(SPAN);
     TextSpanTypeAdapter.getInstance().write(out, bean.textSpan());
@@ -91,6 +94,7 @@ public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefin
   public BeanDefinitionHolder.InputFileData read(JsonReader in) throws IOException {
     String beanName = null;
     String type = null;
+    BeanDefinitionKind kind = null;
     String beanPackage = null;
     AnalyzerMessage.TextSpan span = null;
     Boolean isPrimary = null;
@@ -104,6 +108,7 @@ public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefin
       switch (in.nextName()) {
         case NAME -> beanName = readString(in);
         case TYPE -> type = readString(in);
+        case KIND -> kind = BeanDefinitionKind.valueOf(readString(in));
         case PACKAGE -> beanPackage = readString(in);
         case SPAN -> span = TextSpanTypeAdapter.getInstance().read(in);
         case PRIMARY -> isPrimary = in.nextBoolean();
@@ -124,6 +129,7 @@ public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefin
     return new BeanDefinitionHolder.InputFileData(
       required(beanName, NAME),
       required(type, TYPE),
+      required(kind, KIND),
       required(beanPackage, PACKAGE),
       required(span, SPAN),
       required(isPrimary, PRIMARY),
