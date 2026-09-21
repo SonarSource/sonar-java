@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.sonar.java.telemetry.SizeEstimable;
+import org.sonar.java.telemetry.SizeEstimator;
 
 /**
  * Index mapping fully-qualified bean type names to the names of all dependencies of that type
@@ -32,7 +34,7 @@ import java.util.Set;
  * <p>Dependencies are represented by a name (either the field/parameter name at the injection point or the value of
  * the `@Qualifier` annotation if present)
  */
-public class TypeToDependenciesIndex {
+public class TypeToDependenciesIndex implements SizeEstimable {
 
   /**
    * Dependencies indexed by fully-qualified required type.
@@ -62,10 +64,19 @@ public class TypeToDependenciesIndex {
     return Collections.unmodifiableSet(injectionPointsByType.getOrDefault(dependencyType, Set.of()));
   }
 
-  /**
-   * @return the backing index, for accounting purposes only. The map is not a defensive copy and must not be modified.
-   */
-  Map<String, Set<InjectionPoint>> injectionPointsByType() {
-    return injectionPointsByType;
+  long injectionPointCount() {
+    return injectionPointsByType.values().stream().mapToLong(Set::size).sum();
+  }
+
+  @Override
+  public long estimateSize(SizeEstimator estimator) {
+    long size = estimator.estimateMap(injectionPointsByType);
+    for (var entry : injectionPointsByType.entrySet()) {
+      size += estimator.estimateString(entry.getKey()) + estimator.estimateSet(entry.getValue());
+      for (var injectionPoint : entry.getValue()) {
+        size += estimator.estimate(injectionPoint);
+      }
+    }
+    return size;
   }
 }

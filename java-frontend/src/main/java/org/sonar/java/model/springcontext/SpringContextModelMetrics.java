@@ -16,6 +16,8 @@
  */
 package org.sonar.java.model.springcontext;
 
+import org.sonar.java.telemetry.SizeEstimator;
+
 /**
  * Aggregate figures describing how much Spring-specific data a project's {@link SpringContextModel} holds, reported as
  * telemetry at the end of a project's analysis.
@@ -24,7 +26,7 @@ package org.sonar.java.model.springcontext;
  * @param beanNameCount             The number of distinct bean names.
  * @param injectionPointCount       The number of injection points discovered across all required types.
  * @param componentScanPackageCount The number of component-scanned packages, summed over all modules.
- * @param estimatedSizeInBytes      The estimated heap memory retained by the model, see {@link SpringContextModelMetricsCollector}.
+ * @param estimatedSizeInBytes      The estimated heap memory retained by the model.
  */
 public record SpringContextModelMetrics(
   long beanCount,
@@ -35,9 +37,22 @@ public record SpringContextModelMetrics(
 ) {
 
   /**
-   * Walks the given model once and computes all its metrics.
+   * Computes all metrics exposed by the given model's components.
    */
   public static SpringContextModelMetrics of(SpringContextModel model) {
-    return SpringContextModelMetricsCollector.collect(model);
+    var beanDefinitions = model.getBeanDefinitionRegistry();
+    var dependencies = model.getTypeToDependenciesIndex();
+    var packageScan = model.getProjectPackageScan();
+    return new SpringContextModelMetrics(
+      beanDefinitions.beanCount(),
+      beanDefinitions.beanNameCount(),
+      dependencies.injectionPointCount(),
+      packageScan.packageCount(),
+      SizeEstimator.estimate(
+        beanDefinitions,
+        model.getTypeToBeansIndex(),
+        dependencies,
+        model.getEntityClassToPropertiesIndex(),
+        packageScan));
   }
 }

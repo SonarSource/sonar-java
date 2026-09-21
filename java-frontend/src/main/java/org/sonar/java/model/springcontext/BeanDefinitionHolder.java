@@ -22,6 +22,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.telemetry.SizeEstimable;
+import org.sonar.java.telemetry.SizeEstimator;
 
 /**
  * Immutable representation of a Spring bean definition discovered during project scanning.
@@ -41,17 +43,25 @@ import org.sonar.java.reporting.AnalyzerMessage;
  * @see BeanDefinitionRegistry
  * @see BeanLocation
  */
-public class BeanDefinitionHolder {
-  /** Fully-qualified class name of the bean. */
+public class BeanDefinitionHolder implements SizeEstimable {
+  /**
+   * Fully-qualified class name of the bean.
+   */
   private final String type;
 
-  /** Module in which the bean is declared. */
+  /**
+   * Module in which the bean is declared.
+   */
   private final String module;
 
-  /** Package of the bean's declaring class. */
+  /**
+   * Package of the bean's declaring class.
+   */
   private final String beanPackage;
 
-  /** Source location where the bean definition appears. */
+  /**
+   * Source location where the bean definition appears.
+   */
   private final BeanLocation location;
 
   /**
@@ -69,7 +79,9 @@ public class BeanDefinitionHolder {
   @Nullable
   private String profiles;
 
-  /** Whether the bean is marked as {@code @Primary}, making it the preferred candidate for autowiring. */
+  /**
+   * Whether the bean is marked as {@code @Primary}, making it the preferred candidate for autowiring.
+   */
   private boolean isPrimary = false;
 
   private BeanDefinitionHolder(String type, String module, String beanPackage, BeanLocation location) {
@@ -118,6 +130,24 @@ public class BeanDefinitionHolder {
 
   public boolean isPrimary() {
     return isPrimary;
+  }
+
+  @Override
+  public long estimateSize(SizeEstimator estimator) {
+    long size = estimator.estimateShallowObject(this, 6, 1)
+      + estimator.estimateString(type)
+      + estimator.estimateString(module)
+      + estimator.estimateString(beanPackage)
+      + estimator.estimateString(profiles)
+      + estimator.estimate(location)
+      + estimator.estimateMap(dependingBeans);
+    for (var entry : dependingBeans.entrySet()) {
+      size += estimator.estimateString(entry.getKey()) + estimator.estimateSet(entry.getValue());
+      for (var dependencyName : entry.getValue()) {
+        size += estimator.estimateString(dependencyName);
+      }
+    }
+    return size;
   }
 
   public static class Builder {
