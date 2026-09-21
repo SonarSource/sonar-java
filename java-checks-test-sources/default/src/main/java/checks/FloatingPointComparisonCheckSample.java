@@ -258,6 +258,61 @@ class FloatingPointComparisonCheckSample {
     }
   }
 
+  // === Compliant: subtraction used with Float.compare/Double.compare ===
+
+  static class DifferenceWithFloatCompare implements Comparable<DifferenceWithFloatCompare> {
+    private float a;
+    private float b;
+
+    @Override
+    public int compareTo(DifferenceWithFloatCompare other) {
+      float d1 = this.a - this.b; // Compliant - result flows into Float.compare
+      float d2 = other.a - other.b;
+      return Float.compare(d1, d2);
+    }
+  }
+
+  static class DifferenceWithDoubleCompare implements Comparable<DifferenceWithDoubleCompare> {
+    private double x;
+    private double y;
+
+    @Override
+    public int compareTo(DifferenceWithDoubleCompare other) {
+      double d1 = this.x - this.y; // Compliant - result flows into Double.compare
+      double d2 = other.x - other.y;
+      return Double.compare(d1, d2);
+    }
+  }
+
+  // === Noncompliant: subtraction with Float.compare but also relational operators ===
+
+  static class MixedSubtractionAndRelational implements Comparable<MixedSubtractionAndRelational> {
+    private float a;
+    private float b;
+
+    @Override
+    public int compareTo(MixedSubtractionAndRelational other) {
+      float d1 = this.a - this.b; // Compliant - method uses Float.compare
+      float d2 = other.a - other.b;
+      if (d1 > d2) { // Noncompliant
+//           ^
+        return 1;
+      }
+      return Float.compare(d1, d2);
+    }
+  }
+
+  // === Compliant: subtraction in Comparator lambda with Double.compare ===
+
+  void lambdaSubtractionWithCompare() {
+    List<double[]> list = null;
+    list.sort((a, b) -> {
+      double diff1 = a[0] - a[1]; // Compliant - method uses Double.compare
+      double diff2 = b[0] - b[1];
+      return Double.compare(diff1, diff2);
+    });
+  }
+
   // === Compliant: methods which only look like comparison methods ===
 
   static class LookAlikeMethods {
