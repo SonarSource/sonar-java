@@ -16,16 +16,21 @@
  */
 package org.sonar.java.checks;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ComparisonMethodUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9148")
 public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
@@ -45,19 +50,19 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ComparisonMethodUtils.visitComparisonNode(context, tree,
       methodTree -> {
-        boolean usesProperCompare = containsFloatOrDoubleCompare(methodTree.block());
-        methodTree.block().accept(new FloatingPointComparisonVisitor(usesProperCompare));
+        Set<Tree> suppressedSubtractions = collectSuppressedSubtractions(methodTree.block());
+        methodTree.block().accept(new FloatingPointComparisonVisitor(suppressedSubtractions));
       },
       lambda -> {
-        boolean usesProperCompare = containsFloatOrDoubleCompare(lambda.body());
-        lambda.body().accept(new FloatingPointComparisonVisitor(usesProperCompare));
+        Set<Tree> suppressedSubtractions = collectSuppressedSubtractions(lambda.body());
+        lambda.body().accept(new FloatingPointComparisonVisitor(suppressedSubtractions));
       });
   }
 
-  private static boolean containsFloatOrDoubleCompare(Tree tree) {
-    var detector = new FloatDoubleCompareDetector();
-    tree.accept(detector);
-    return detector.found;
+  private static Set<Tree> collectSuppressedSubtractions(Tree tree) {
+    var collector = new CompareArgumentCollector();
+    tree.accept(collector);
+    return collector.suppressedSubtractions;
   }
 
   private static boolean hasFloatingType(ExpressionTree tree) {
@@ -65,24 +70,48 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
       || tree.symbolType().isPrimitive(Type.Primitives.DOUBLE);
   }
 
-  private static class FloatDoubleCompareDetector extends ComparisonMethodUtils.SkipNestedTypesVisitor {
-    boolean found = false;
+  private static class CompareArgumentCollector extends ComparisonMethodUtils.SkipNestedTypesVisitor {
+    final Set<Tree> suppressedSubtractions = new HashSet<>();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (FLOAT_DOUBLE_COMPARE.matches(tree)) {
-        found = true;
+        for (ExpressionTree argument : tree.arguments()) {
+          collectSubtractionFromArgument(argument);
+        }
       }
       super.visitMethodInvocation(tree);
+    }
+
+    private void collectSubtractionFromArgument(ExpressionTree argument) {
+      if (argument.is(Tree.Kind.MINUS)) {
+        suppressedSubtractions.add(argument);
+      } else if (argument.is(Tree.Kind.IDENTIFIER)) {
+        Tree initializer = getVariableInitializer((IdentifierTree) argument);
+        if (initializer != null && initializer.is(Tree.Kind.MINUS)) {
+          suppressedSubtractions.add(initializer);
+        }
+      }
+    }
+
+    private static Tree getVariableInitializer(IdentifierTree identifier) {
+      Symbol symbol = identifier.symbol();
+      if (symbol.isVariableSymbol()) {
+        Tree declaration = symbol.declaration();
+        if (declaration instanceof VariableTree variableTree) {
+          return variableTree.initializer();
+        }
+      }
+      return null;
     }
   }
 
   private class FloatingPointComparisonVisitor extends ComparisonMethodUtils.SkipNestedTypesVisitor {
 
-    private final boolean usesProperCompare;
+    private final Set<Tree> suppressedSubtractions;
 
-    FloatingPointComparisonVisitor(boolean usesProperCompare) {
-      this.usesProperCompare = usesProperCompare;
+    FloatingPointComparisonVisitor(Set<Tree> suppressedSubtractions) {
+      this.suppressedSubtractions = suppressedSubtractions;
     }
 
     @Override
@@ -98,7 +127,7 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
         Tree.Kind.LESS_THAN_OR_EQUAL_TO, Tree.Kind.GREATER_THAN_OR_EQUAL_TO)) {
         return true;
       }
-      return tree.is(Tree.Kind.MINUS) && !usesProperCompare;
+      return tree.is(Tree.Kind.MINUS) && !suppressedSubtractions.contains(tree);
     }
 
     private boolean hasFloatingOperand(BinaryExpressionTree tree) {

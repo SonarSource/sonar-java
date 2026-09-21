@@ -292,7 +292,7 @@ class FloatingPointComparisonCheckSample {
 
     @Override
     public int compareTo(MixedSubtractionAndRelational other) {
-      float d1 = this.a - this.b; // Compliant - method uses Float.compare
+      float d1 = this.a - this.b; // Compliant - result flows into Float.compare
       float d2 = other.a - other.b;
       if (d1 > d2) { // Noncompliant
 //           ^
@@ -307,10 +307,65 @@ class FloatingPointComparisonCheckSample {
   void lambdaSubtractionWithCompare() {
     List<double[]> list = null;
     list.sort((a, b) -> {
-      double diff1 = a[0] - a[1]; // Compliant - method uses Double.compare
+      double diff1 = a[0] - a[1]; // Compliant - result flows into Double.compare
       double diff2 = b[0] - b[1];
       return Double.compare(diff1, diff2);
     });
+  }
+
+  // === Noncompliant: Float.compare used for one field, raw subtraction for another ===
+
+  static class PartialCompare implements Comparable<PartialCompare> {
+    private float a;
+    private float x;
+
+    @Override
+    public int compareTo(PartialCompare other) {
+      int c = Float.compare(this.a, other.a);
+      if (c != 0) return c;
+      return (int) (this.x - other.x); // Noncompliant
+    }
+  }
+
+  // === Noncompliant: Double.compare called conditionally, subtraction returned directly ===
+
+  static class ConditionalCompare implements Comparable<ConditionalCompare> {
+    private double a;
+    private double b;
+
+    @Override
+    public int compareTo(ConditionalCompare other) {
+      if (this.a != other.a) {
+        return Double.compare(this.a, other.a);
+      }
+      return (int) (this.b - other.b); // Noncompliant
+    }
+  }
+
+  // === Noncompliant: subtraction in ternary, compare call elsewhere ===
+
+  static class TernaryWithCompare implements Comparable<TernaryWithCompare> {
+    private double x;
+    private double y;
+
+    @Override
+    public int compareTo(TernaryWithCompare other) {
+      double diff = this.x - other.x; // Noncompliant
+//                         ^
+      return diff != 0 ? (int) diff : Double.compare(this.y, other.y);
+    }
+  }
+
+  // === Compliant: subtraction used as direct argument to Float.compare ===
+
+  static class DirectSubtractionArgument implements Comparable<DirectSubtractionArgument> {
+    private float a;
+    private float b;
+
+    @Override
+    public int compareTo(DirectSubtractionArgument other) {
+      return Float.compare(this.a - this.b, other.a - other.b); // Compliant
+    }
   }
 
   // === Compliant: methods which only look like comparison methods ===
