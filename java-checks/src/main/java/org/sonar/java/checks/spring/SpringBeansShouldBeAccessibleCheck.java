@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
+import org.sonar.java.model.springcontext.BeanDefinitionKind;
 import org.sonar.java.model.springcontext.ProjectPackageScan;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -35,6 +36,7 @@ public class SpringBeansShouldBeAccessibleCheck implements JavaCheck, SpringCont
   public List<SpringContextIssue> execute(SpringContextModel model) {
     Set<String> scannedPackages = allScannedPackages(model.getProjectPackageScan());
     return model.getBeanDefinitionRegistry().getAllBeanDefinitions().stream()
+      .filter(bean -> bean.getKind() == BeanDefinitionKind.STEREOTYPE)
       .filter(bean -> isUncovered(bean, scannedPackages))
       .map(SpringBeansShouldBeAccessibleCheck::issue)
       .distinct()

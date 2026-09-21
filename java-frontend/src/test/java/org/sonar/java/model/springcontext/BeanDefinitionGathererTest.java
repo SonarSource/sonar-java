@@ -57,24 +57,32 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
   // ---- Stereotype annotations -----------------------------------------------
 
   @ParameterizedTest(name = "{0}")
-  @MethodSource("stereotypeAnnotationArguments")
-  void stereotype_annotation_registers_bean(String filePath, String expectedBeanName, String expectedType) {
+  @MethodSource("beanDefinitionArguments")
+  void bean_definition_kind_is_captured(String filePath, String expectedBeanName, String expectedType, BeanDefinitionKind expectedKind) {
     scan(filePath);
 
     var beans = model.getBeanDefinitionRegistry().getByName(expectedBeanName);
     assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getType()).isEqualTo(expectedType);
+    assertThat(beans.getFirst().getType()).isEqualTo(expectedType);
+    assertThat(beans.getFirst().getKind()).isEqualTo(expectedKind);
   }
 
-  static Stream<Arguments> stereotypeAnnotationArguments() {
+  static Stream<Arguments> beanDefinitionArguments() {
     return Stream.of(
-      Arguments.of("src/test/files/springcontext/SimpleComponent.java", "simpleComponent", "checks.spring.context.SimpleComponent"),
-      Arguments.of("src/test/files/springcontext/SimpleService.java", "simpleService", "checks.spring.context.SimpleService"),
-      Arguments.of("src/test/files/springcontext/SimpleRepository.java", "simpleRepository", "checks.spring.context.SimpleRepository"),
-      Arguments.of("src/test/files/springcontext/SimpleController.java", "simpleController", "checks.spring.context.SimpleController"),
-      Arguments.of("src/test/files/springcontext/SimpleRestController.java", "simpleRestController", "checks.spring.context.SimpleRestController"),
-      Arguments.of("src/test/files/springcontext/SimpleConfiguration.java", "simpleConfiguration", "checks.spring.context.SimpleConfiguration"),
-      Arguments.of("src/test/files/springcontext/ConfigurationWithBeanMethods.java", "simpleServiceBean", "org.springframework.context.ApplicationContext")
+      Arguments.of("src/test/files/springcontext/SimpleComponent.java", "simpleComponent", "checks.spring.context.SimpleComponent",
+        BeanDefinitionKind.STEREOTYPE),
+      Arguments.of("src/test/files/springcontext/SimpleService.java", "simpleService", "checks.spring.context.SimpleService",
+        BeanDefinitionKind.STEREOTYPE),
+      Arguments.of("src/test/files/springcontext/SimpleRepository.java", "simpleRepository", "checks.spring.context.SimpleRepository",
+        BeanDefinitionKind.STEREOTYPE),
+      Arguments.of("src/test/files/springcontext/SimpleController.java", "simpleController", "checks.spring.context.SimpleController",
+        BeanDefinitionKind.STEREOTYPE),
+      Arguments.of("src/test/files/springcontext/SimpleRestController.java", "simpleRestController", "checks.spring.context.SimpleRestController",
+        BeanDefinitionKind.STEREOTYPE),
+      Arguments.of("src/test/files/springcontext/SimpleConfiguration.java", "simpleConfiguration", "checks.spring.context.SimpleConfiguration",
+        BeanDefinitionKind.CONFIGURATION),
+      Arguments.of("src/test/files/springcontext/ConfigurationWithBeanMethods.java", "simpleServiceBean", "org.springframework.context.ApplicationContext",
+        BeanDefinitionKind.FACTORY_METHOD)
     );
   }
 
@@ -86,7 +94,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var beans = model.getBeanDefinitionRegistry().getByName("primaryBean");
     assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).isPrimary()).isTrue();
+    assertThat(beans.getFirst().isPrimary()).isTrue();
   }
 
   @Test
@@ -95,7 +103,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var beans = model.getBeanDefinitionRegistry().getByName("simpleComponent");
     assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).isPrimary()).isFalse();
+    assertThat(beans.getFirst().isPrimary()).isFalse();
   }
 
   // ---- Anonymous / no annotation --------------------------------------------
@@ -152,7 +160,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var beans = model.getBeanDefinitionRegistry().getByName("orderService");
     assertThat(beans).hasSize(1);
-    var deps = beans.get(0).getDependingBeans();
+    var deps = beans.getFirst().getDependingBeans();
     // @Qualifier("paypal") takes precedence over the parameter name "paymentProcessor"
     // Note: PaymentProcessor resolves without package since it's not on the compiled classpath
     assertThat(deps).containsOnlyKeys("PaymentProcessor");
@@ -167,7 +175,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var beans = model.getBeanDefinitionRegistry().getByName("simpleComponent");
     assertThat(beans).hasSize(1);
-    var location = beans.get(0).getLocation();
+    var location = beans.getFirst().getLocation();
     assertThat(location).isNotNull();
     assertThat(location.inputFile()).isNotNull();
     assertThat(location.mainLocation()).isNotNull();
@@ -181,7 +189,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var beans = model.getBeanDefinitionRegistry().getByName("simpleComponent");
     assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getBeanPackage()).isEqualTo("checks.spring.context");
+    assertThat(beans.getFirst().getBeanPackage()).isEqualTo("checks.spring.context");
   }
 
   // ---- Caching: what the gatherer collects reaches the cache and comes back ----
@@ -196,6 +204,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
       .getAsJsonObject().getAsJsonArray("beans").get(0).getAsJsonObject();
     assertThat(bean.get("name").getAsString()).isEqualTo("qualifiedFieldDependencies");
     assertThat(bean.get("type").getAsString()).isEqualTo("checks.spring.context.QualifiedFieldDependencies");
+    assertThat(bean.get("kind").getAsString()).isEqualTo("STEREOTYPE");
     assertThat(bean.get("package").getAsString()).isEqualTo("checks.spring.context");
     assertThat(bean.get("primary").getAsBoolean()).isFalse();
     assertThat(bean.get("profiles").getAsString()).isEqualTo("prod");
@@ -231,8 +240,9 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var beans = model.getBeanDefinitionRegistry().getByName("qualifiedFieldDependencies");
     assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getType()).isEqualTo("checks.spring.context.QualifiedFieldDependencies");
-    assertThat(beans.get(0).getProfiles()).isEqualTo("prod");
+    assertThat(beans.getFirst().getType()).isEqualTo("checks.spring.context.QualifiedFieldDependencies");
+    assertThat(beans.getFirst().getKind()).isEqualTo(BeanDefinitionKind.STEREOTYPE);
+    assertThat(beans.getFirst().getProfiles()).isEqualTo("prod");
     assertThat(model.getTypeToBeansIndex().getNamesForType("checks.spring.context.QualifiedFieldDependencies", "", Set.of()))
       .containsExactly("qualifiedFieldDependencies");
     assertInjectionPoint(

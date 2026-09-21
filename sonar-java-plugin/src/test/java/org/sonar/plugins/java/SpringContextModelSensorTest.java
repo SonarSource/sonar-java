@@ -25,6 +25,7 @@ import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
+import org.sonar.java.model.springcontext.BeanDefinitionKind;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
@@ -120,7 +121,7 @@ class SpringContextModelSensorTest {
     int startLine, int startCharacter, int endLine, int endCharacter) {
     BeanLocation location = new BeanLocation(inputFile, new TextSpan(startLine, startCharacter, endLine, endCharacter));
     model.getBeanDefinitionRegistry().addBeanDefinition(beanName,
-      new BeanDefinitionHolder.Builder(type, MODULE_KEY, PACKAGE, location).build());
+      new BeanDefinitionHolder.Builder(type, BeanDefinitionKind.STEREOTYPE, MODULE_KEY, PACKAGE, location).build());
     model.getTypeToBeansIndex().addBeanForType(type, beanName, MODULE_KEY, PACKAGE);
   }
 

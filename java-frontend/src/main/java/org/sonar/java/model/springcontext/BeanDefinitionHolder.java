@@ -32,7 +32,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
  *
  * <p>Use {@link Builder} to construct instances:
  * <pre>{@code
- * BeanDefinitionHolder bean = new BeanDefinitionHolder.Builder(type, module, pkg, location)
+ * BeanDefinitionHolder bean = new BeanDefinitionHolder.Builder(type, BeanDefinitionKind.STEREOTYPE, module, pkg, location)
  *     .profiles("prod")
  *     .primary()
  *     .build();
@@ -44,6 +44,8 @@ import org.sonar.java.reporting.AnalyzerMessage;
 public class BeanDefinitionHolder {
   /** Fully-qualified class name of the bean. */
   private final String type;
+  
+  private final BeanDefinitionKind kind;
 
   /** Module in which the bean is declared. */
   private final String module;
@@ -72,8 +74,9 @@ public class BeanDefinitionHolder {
   /** Whether the bean is marked as {@code @Primary}, making it the preferred candidate for autowiring. */
   private boolean isPrimary = false;
 
-  private BeanDefinitionHolder(String type, String module, String beanPackage, BeanLocation location) {
+  private BeanDefinitionHolder(String type, BeanDefinitionKind kind, String module, String beanPackage, BeanLocation location) {
     this.type = type;
+    this.kind = kind;
     this.module = module;
     this.beanPackage = beanPackage;
     this.location = location;
@@ -93,6 +96,10 @@ public class BeanDefinitionHolder {
 
   public String getType() {
     return type;
+  }
+
+  public BeanDefinitionKind getKind() {
+    return kind;
   }
 
   public String getModule() {
@@ -122,6 +129,7 @@ public class BeanDefinitionHolder {
 
   public static class Builder {
     private final String type;
+    private final BeanDefinitionKind kind;
     private final String module;
     private final String beanPackage;
     private final BeanLocation location;
@@ -130,8 +138,9 @@ public class BeanDefinitionHolder {
     private String profiles;
     private boolean isPrimary = false;
 
-    public Builder(String type, String module, String beanPackage, BeanLocation location) {
+    public Builder(String type, BeanDefinitionKind kind, String module, String beanPackage, BeanLocation location) {
       this.type = type;
+      this.kind = kind;
       this.module = module;
       this.beanPackage = beanPackage;
       this.location = location;
@@ -153,7 +162,7 @@ public class BeanDefinitionHolder {
     }
 
     public BeanDefinitionHolder build() {
-      BeanDefinitionHolder holder = new BeanDefinitionHolder(type, module, beanPackage, location);
+      BeanDefinitionHolder holder = new BeanDefinitionHolder(type, kind, module, beanPackage, location);
       holder.setDependingBeans(dependingBeans.entrySet().stream()
         .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, e -> Set.copyOf(e.getValue()))));
       holder.setProfiles(profiles);
@@ -174,6 +183,7 @@ public class BeanDefinitionHolder {
    *
    * @param beanName      the name the bean is registered under
    * @param type          fully-qualified name of the bean's type
+   * @param kind          how the bean definition was declared
    * @param beanPackage   package of the class declaring the bean
    * @param textSpan      the text span identifying the bean declaration within its own file
    * @param isPrimary     whether the bean is annotated with {@code @Primary}
@@ -184,6 +194,7 @@ public class BeanDefinitionHolder {
   public record InputFileData(
     String beanName,
     String type,
+    BeanDefinitionKind kind,
     String beanPackage,
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,

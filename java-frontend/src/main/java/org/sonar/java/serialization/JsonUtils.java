@@ -48,6 +48,7 @@ public final class JsonUtils {
   // Spring beans properties:
   public static final String NAME = "name";
   public static final String TYPE = "type";
+  public static final String KIND = "kind";
   public static final String PACKAGE = "package";
   public static final String SPAN = "span";
   public static final String PRIMARY = "primary";

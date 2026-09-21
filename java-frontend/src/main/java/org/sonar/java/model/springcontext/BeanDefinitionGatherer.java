@@ -119,8 +119,11 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
       Map<String, Set<InjectionPoint.InputFileData>> dependencies = collectAutowiredDependenciesOnClass(classTree);
       Set<String> typeHierarchy = JUtils.collectTypeHierarchy(classTree.symbol());
       String classProfiles = SpringUtils.extractProfiles(meta);
+      BeanDefinitionKind kind = meta.isAnnotatedWith(SpringUtils.CONFIGURATION_ANNOTATION)
+        ? BeanDefinitionKind.CONFIGURATION
+        : BeanDefinitionKind.STEREOTYPE;
       var beanData = new BeanDefinitionHolder.InputFileData(
-        beanName, fqn, pkg,
+        beanName, fqn, kind, pkg,
         AnalyzerMessage.textSpanFor(classTree.simpleName()),
         meta.isAnnotatedWith(PRIMARY_ANNOTATION),
         classProfiles,
@@ -179,7 +182,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
       for (BeanDefinitionHolder.InputFileData data : beans) {
         var location = new BeanLocation(inputFile, data.textSpan());
         var holderBuilder = new BeanDefinitionHolder.Builder(
-          data.type(), context.getModuleKey(), data.beanPackage(), location)
+          data.type(), data.kind(), context.getModuleKey(), data.beanPackage(), location)
           .dependingBeans(projectToNames(data.dependencies()))
           .profiles(data.profiles());
         if (data.isPrimary()) {
@@ -230,7 +233,17 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
     var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
 
     for (String beanName : beanNames) {
-      var beanData = new BeanDefinitionHolder.InputFileData(beanName, returnTypeFqn, pkg, textSpan, isPrimary, profiles, dependencies, typeHierarchy);
+      var beanData = new BeanDefinitionHolder.InputFileData(
+        beanName,
+        returnTypeFqn,
+        BeanDefinitionKind.FACTORY_METHOD,
+        pkg,
+        textSpan,
+        isPrimary,
+        profiles,
+        dependencies,
+        typeHierarchy
+      );
       beansCollectedAtFileLevel.add(beanData);
     }
   }

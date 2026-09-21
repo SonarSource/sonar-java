@@ -33,6 +33,7 @@ import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.model.springcontext.BeanDefinitionGatherer;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
+import org.sonar.java.model.springcontext.BeanDefinitionKind;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -180,7 +181,7 @@ class AmbiguousDependencyCheckTest {
     String beanPackage, InputFile file) {
     var location = new BeanLocation(file, new AnalyzerMessage.TextSpan(1));
     model.getBeanDefinitionRegistry().addBeanDefinition(beanName,
-      new BeanDefinitionHolder.Builder(type, module, beanPackage, location).build());
+      new BeanDefinitionHolder.Builder(type, BeanDefinitionKind.STEREOTYPE, module, beanPackage, location).build());
     model.getTypeToBeansIndex().addBeanForType(type, beanName, module, beanPackage);
   }
 

@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
+import org.sonar.java.model.springcontext.BeanDefinitionKind;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage;
@@ -111,6 +112,20 @@ class SpringBeansShouldBeAccessibleCheckTest {
   }
 
   @Test
+  void configuration_and_factory_method_beans_are_ignored() {
+    SpringContextModel model = new SpringContextModel();
+    InputFile inputFile = dummyInputFile("com/example/MyConfiguration.java");
+    registerBean(model, "myConfiguration", "com.example.MyConfiguration", "components", "com.example",
+      BeanDefinitionKind.CONFIGURATION, new BeanLocation(inputFile, new AnalyzerMessage.TextSpan(5)));
+    registerBean(model, "dataSource", "javax.sql.DataSource", "components", "com.example",
+      BeanDefinitionKind.FACTORY_METHOD, new BeanLocation(inputFile, new AnalyzerMessage.TextSpan(8)));
+    registerBean(model, "unresolved", "", "components", "com.example",
+      BeanDefinitionKind.FACTORY_METHOD, new BeanLocation(inputFile, new AnalyzerMessage.TextSpan(11)));
+
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
   void nested_class_message_uses_simple_name() {
     SpringContextModel model = new SpringContextModel();
     registerBean(model, "inner", "com.example.Outer$MyComponent", "components", "com.example", 1);
@@ -126,7 +141,12 @@ class SpringBeansShouldBeAccessibleCheckTest {
   }
 
   private static BeanDefinitionHolder registerBean(SpringContextModel model, String beanName, String type, String module, String beanPackage, BeanLocation location) {
-    BeanDefinitionHolder bean = new BeanDefinitionHolder.Builder(type, module, beanPackage, location).build();
+    return registerBean(model, beanName, type, module, beanPackage, BeanDefinitionKind.STEREOTYPE, location);
+  }
+
+  private static BeanDefinitionHolder registerBean(SpringContextModel model, String beanName, String type, String module, String beanPackage,
+    BeanDefinitionKind kind, BeanLocation location) {
+    BeanDefinitionHolder bean = new BeanDefinitionHolder.Builder(type, kind, module, beanPackage, location).build();
     model.getBeanDefinitionRegistry().addBeanDefinition(beanName, bean);
     return bean;
   }
