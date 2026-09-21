@@ -12,22 +12,6 @@
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/MappedResource.java": [
 99
 ],
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/PathMappingsTest.java": [
-39
-],
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/RegexPathSpecTest.java": [
-33,
-39
-],
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/ServletPathSpecTest.java": [
-48,
-54
-],
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/UriTemplatePathSpecTest.java": [
-39,
-50,
-56
-],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java": [
 462
 ],
@@ -126,9 +110,5 @@
 ],
 "org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
 396
-],
-"org.eclipse.jetty:jetty-project:tests/jetty-http-tools/src/main/java/org/eclipse/jetty/http/tools/HttpTester.java": [
-557,
-598
 ]
 }
