@@ -38,6 +38,7 @@ class SpringContextModelSensorTest {
 
   private static final String MODULE_KEY = "module";
   private static final String PACKAGE = "checks.spring.s9352";
+  private static final RuleKey S4605_RULE_KEY = RuleKey.of("java", "S4605");
   private static final RuleKey S9352_RULE_KEY = RuleKey.of("java", "S9352");
 
   @Test
@@ -52,7 +53,7 @@ class SpringContextModelSensorTest {
   @Test
   void reports_an_issue_for_an_ambiguous_dependency() {
     SensorContextTester context = SensorContextTester.create(new File(""));
-    context.setActiveRules(activeRulesWithS9352());
+    context.setActiveRules(activeRulesWith(S9352_RULE_KEY));
     SpringContextModel model = new SpringContextModel();
     InputFile inputFile = fakeInputFile(context, "UnresolvedConsumer.java");
     String type = "org.springframework.context.ApplicationContextAware";
@@ -73,6 +74,26 @@ class SpringContextModelSensorTest {
   }
 
   @Test
+  void reports_an_issue_for_an_uncovered_spring_bean() {
+    SensorContextTester context = SensorContextTester.create(new File(""));
+    context.setActiveRules(activeRulesWith(S4605_RULE_KEY));
+    SpringContextModel model = new SpringContextModel();
+    InputFile inputFile = fakeInputFile(context, "MyComponent.java");
+
+    registerBean(model, "checks.spring.s4605.MyComponent", "myComponent", inputFile, 6, 13, 6, 24);
+
+    new SpringContextModelSensor(model).execute(context);
+
+    assertThat(context.allIssues()).hasSize(1);
+    Issue issue = context.allIssues().iterator().next();
+    assertThat(issue.ruleKey()).isEqualTo(S4605_RULE_KEY);
+    assertThat(issue.primaryLocation().message())
+      .isEqualTo("'MyComponent' is not reachable by @ComponentScan or @SpringBootApplication. "
+        + "Either move it to a package configured in @ComponentScan or update your @ComponentScan configuration.");
+    assertThat(issue.primaryLocation().textRange().start().line()).isEqualTo(6);
+  }
+
+  @Test
   void does_not_report_issues_when_rule_is_not_active() {
     SensorContextTester context = SensorContextTester.create(new File(""));
     // No active rules registered: S9352 is not in the quality profile.
@@ -89,9 +110,9 @@ class SpringContextModelSensorTest {
     assertThat(context.allIssues()).isEmpty();
   }
 
-  private static ActiveRules activeRulesWithS9352() {
+  private static ActiveRules activeRulesWith(RuleKey ruleKey) {
     return new ActiveRulesBuilder()
-      .addRule(new NewActiveRule.Builder().setRuleKey(S9352_RULE_KEY).build())
+      .addRule(new NewActiveRule.Builder().setRuleKey(ruleKey).build())
       .build();
   }
 

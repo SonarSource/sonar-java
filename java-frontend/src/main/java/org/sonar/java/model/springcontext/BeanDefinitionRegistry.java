@@ -17,6 +17,7 @@
 package org.sonar.java.model.springcontext;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,12 @@ public class BeanDefinitionRegistry {
 
   public List<BeanDefinitionHolder> getByName(String beanName) {
     return beanDefinitions.getOrDefault(beanName, List.of());
+  }
+
+  public Collection<BeanDefinitionHolder> getAllBeanDefinitions() {
+    return beanDefinitions.values().stream()
+      .flatMap(List::stream)
+      .toList();
   }
 
   public void addBeanDefinition(String beanName, BeanDefinitionHolder beanDefinition) {

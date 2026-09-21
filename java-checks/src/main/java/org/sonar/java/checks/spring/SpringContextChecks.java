@@ -34,6 +34,7 @@ public final class SpringContextChecks {
    */
   public static List<SpringContextCheck> getAllChecks() {
     return List.of(
+      new SpringBeansShouldBeAccessibleCheck(),
       new AmbiguousDependencyCheck()
     );
   }

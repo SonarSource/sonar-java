@@ -66,6 +66,14 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
       );
   }
 
+  @Test
+  void componentScan_on_interface_is_collected() {
+    scan("src/test/files/springcontext/ComponentScanOnInterface.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactly("checks.spring.context");
+  }
+
   // ---- @SpringBootApplication -----------------------------------------------
 
   @Test
@@ -106,6 +114,14 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
 
     assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
       .containsExactly("checks.spring.context");
+  }
+
+  @Test
+  void springBootApplication_mixed_scan_attributes_and_constants_are_collected() {
+    scan("src/test/files/springcontext/SpringBootAppWithMixedScanAttributes.java");
+
+    assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
+      .containsExactlyInAnyOrder("com.example.extra", "com.example.controller", "checks.spring.context");
   }
 
   @Test
