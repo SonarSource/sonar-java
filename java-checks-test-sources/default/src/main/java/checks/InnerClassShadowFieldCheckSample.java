@@ -76,12 +76,20 @@ public class InnerClassShadowFieldCheckSample {
 
   enum InnerEnum {
     A, B;
-    private String outerField; // Noncompliant {{Rename "outerField" which hides the field declared in "InnerClassShadowFieldCheckSample".}}
-//                 ^^^^^^^^^^
+    private String outerField; // Compliant - nested enums are implicitly static
     private int enumOnlyField;
   }
 
-  record InnerRecord(int recordComp) {
+  record InnerRecord(String outerField) { // Compliant - nested records are implicitly static
+  }
+
+  static void staticMethod() {
+    class LocalInStatic {
+      private String outerField; // Compliant - local class in static method has no enclosing instance
+    }
+    new Object() {
+      private String outerField; // Compliant - anonymous class in static method has no enclosing instance
+    };
   }
 
   class OuterA {

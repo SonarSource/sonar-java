@@ -62,7 +62,7 @@ public class InnerClassShadowFieldCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    if (isExplicitlyStatic(classSymbol)) {
+    if (classSymbol.isStatic() || isInStaticContext(classSymbol)) {
       return;
     }
 
@@ -93,17 +93,15 @@ public class InnerClassShadowFieldCheck extends IssuableSubscriptionVisitor {
           return;
         }
       }
-      if (isExplicitlyStatic(current)) {
+      if (current.isStatic()) {
         break;
       }
       current = current.enclosingClass();
     }
   }
 
-  private static boolean isExplicitlyStatic(Symbol.TypeSymbol typeSymbol) {
-    ClassTree declaration = typeSymbol.declaration();
-    return declaration != null
-      && declaration.is(Kind.CLASS, Kind.INTERFACE, Kind.ANNOTATION_TYPE)
-      && typeSymbol.isStatic();
+  private static boolean isInStaticContext(Symbol.TypeSymbol typeSymbol) {
+    Symbol owner = typeSymbol.owner();
+    return owner != null && owner.isMethodSymbol() && owner.isStatic();
   }
 }
