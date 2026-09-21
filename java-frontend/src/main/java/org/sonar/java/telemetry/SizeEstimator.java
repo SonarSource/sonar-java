@@ -44,7 +44,8 @@ public final class SizeEstimator {
   private static final int HASH_TABLE_MIN_CAPACITY = 16;
   private static final int HASH_TABLE_MAX_CAPACITY = 1 << 30;
 
-  private final Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+  private final Set<SizeEstimable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+  private final Set<Object> charged = Collections.newSetFromMap(new IdentityHashMap<>());
 
   private SizeEstimator() {
   }
@@ -86,7 +87,7 @@ public final class SizeEstimator {
    * @return The estimated shallow size in bytes, or zero for a previously visited instance.
    */
   public long estimateShallowObject(Object object, int referenceCount, int primitiveSize) {
-    return visited.add(object) ? shallowSizeOfObject(referenceCount, primitiveSize) : 0;
+    return charged.add(object) ? shallowSizeOfObject(referenceCount, primitiveSize) : 0;
   }
 
   /**
@@ -96,7 +97,7 @@ public final class SizeEstimator {
    * @return The estimated size in bytes, or zero for a null or previously visited instance.
    */
   public long estimateString(@Nullable String value) {
-    if (value == null || !visited.add(value)) {
+    if (value == null || !charged.add(value)) {
       return 0;
     }
     return shallowSizeOfObject(1, INT + 2) + align((long) ARRAY_HEADER + value.length());
@@ -109,7 +110,7 @@ public final class SizeEstimator {
    * @return The estimated size in bytes, or zero for a previously visited instance.
    */
   public long estimateMap(Map<?, ?> map) {
-    return visited.add(map) ? shallowSizeOfMap(map.size()) : 0;
+    return charged.add(map) ? shallowSizeOfMap(map.size()) : 0;
   }
 
   /**
@@ -119,7 +120,7 @@ public final class SizeEstimator {
    * @return The estimated size in bytes, or zero for a previously visited instance.
    */
   public long estimateSet(Set<?> set) {
-    return visited.add(set) ? shallowSizeOfSet(set.size()) : 0;
+    return charged.add(set) ? shallowSizeOfSet(set.size()) : 0;
   }
 
   /**
@@ -129,7 +130,7 @@ public final class SizeEstimator {
    * @return The estimated size in bytes, or zero for a previously visited instance.
    */
   public long estimateList(List<?> list) {
-    return visited.add(list) ? shallowSizeOfList(list.size()) : 0;
+    return charged.add(list) ? shallowSizeOfList(list.size()) : 0;
   }
 
   private static long shallowSizeOfObject(int referenceCount, int primitiveSize) {

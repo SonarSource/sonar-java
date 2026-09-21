@@ -81,8 +81,8 @@ public class ComponentScanPackageGatherer extends SpringContextModelGatherer imp
   }
 
   @Override
-  protected boolean scanSpringFileWithoutParsing(InputFileScannerContext inputFileScannerContext) {
-    return restoreFromCache(inputFileScannerContext);
+  protected boolean scanSpringFileWithoutParsing(InputFileScannerContext context) {
+    return restoreFromCache(context);
   }
 
   @Override

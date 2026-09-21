@@ -202,8 +202,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
   }
 
   @Override
-  protected boolean scanSpringFileWithoutParsing(InputFileScannerContext ctx) {
-    return restoreFromCache(ctx);
+  protected boolean scanSpringFileWithoutParsing(InputFileScannerContext context) {
+    return restoreFromCache(context);
   }
 
   /**
