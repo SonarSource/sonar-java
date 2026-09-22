@@ -28,6 +28,8 @@ import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
+import org.sonar.java.telemetry.DefaultTelemetry;
+import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.scanner.plugin.api.impl.rule.ActiveRulesBuilder;
 import org.sonar.scanner.plugin.api.impl.rule.NewActiveRule;
 import org.sonar.scanner.plugin.api.impl.sensor.DefaultSensorDescriptor;
@@ -43,7 +45,7 @@ class SpringContextModelSensorTest {
   @Test
   void test_toString() {
     DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
-    SpringContextModelSensor sensor = new SpringContextModelSensor(new SpringContextModel());
+    SpringContextModelSensor sensor = new SpringContextModelSensor(new SpringContextModel(), new NoOpTelemetry());
     sensor.describe(descriptor);
     assertThat(descriptor.name()).isEqualTo("Java SpringContextModelSensor");
     assertThat(descriptor.languages()).containsExactly("java", "jsp");
@@ -61,7 +63,8 @@ class SpringContextModelSensorTest {
     registerBean(model, type, "componentTwo", inputFile, 6, 0, 6, 12);
     registerDependency(model, type, "contextAware", inputFile, 13, 13, 13, 25);
 
-    new SpringContextModelSensor(model).execute(context);
+    var telemetry = new DefaultTelemetry();
+    new SpringContextModelSensor(model, telemetry).execute(context);
 
     assertThat(context.allIssues()).hasSize(1);
     Issue issue = context.allIssues().iterator().next();
@@ -70,6 +73,7 @@ class SpringContextModelSensorTest {
       .isEqualTo("Multiple beans match this dependency"
         + " (componentOne, componentTwo); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".");
     assertThat(issue.primaryLocation().textRange().start().line()).isEqualTo(13);
+    assertThat(telemetry.toMap().get("java.spring.context_checks_time_ms")).matches("\\d+");
   }
 
   @Test
@@ -84,9 +88,11 @@ class SpringContextModelSensorTest {
     registerBean(model, type, "componentTwo", inputFile, 6, 0, 6, 12);
     registerDependency(model, type, "contextAware", inputFile, 13, 13, 13, 25);
 
-    new SpringContextModelSensor(model).execute(context);
+    var telemetry = new DefaultTelemetry();
+    new SpringContextModelSensor(model, telemetry).execute(context);
 
     assertThat(context.allIssues()).isEmpty();
+    assertThat(telemetry.toMap().get("java.spring.context_checks_time_ms")).matches("\\d+");
   }
 
   private static ActiveRules activeRulesWithS9352() {

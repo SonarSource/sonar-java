@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.sonar.java.telemetry.SizeEstimable;
+import org.sonar.java.telemetry.SizeEstimator;
 
 /**
  * Index mapping fully-qualified bean type names to the beans of that type discovered during Spring context scanning.
@@ -31,15 +33,25 @@ import java.util.stream.Collectors;
  *
  * <p>Lookup returns an empty set for types with no registered beans.
  */
-public class TypeToBeansIndex {
+public class TypeToBeansIndex implements SizeEstimable {
 
   /**
    * Per-type metadata for a registered bean: its name, the module it was declared in, and its declaring package.
    */
-  record BeanEntry(String name, String module, String beanPackage) {
+  record BeanEntry(String name, String module, String beanPackage) implements SizeEstimable {
+
+    @Override
+    public long estimateSize(SizeEstimator estimator) {
+      return estimator.estimateShallowObject(this, 3, 0)
+        + estimator.estimateString(name)
+        + estimator.estimateString(module)
+        + estimator.estimateString(beanPackage);
+    }
   }
 
-  /** Bean entries indexed by fully-qualified type name. */
+  /**
+   * Bean entries indexed by fully-qualified type name.
+   */
   private final Map<String, Set<BeanEntry>> entriesByType = new HashMap<>();
 
   /**
@@ -78,6 +90,18 @@ public class TypeToBeansIndex {
 
   public Set<String> getKeys() {
     return Collections.unmodifiableSet(entriesByType.keySet());
+  }
+
+  @Override
+  public long estimateSize(SizeEstimator estimator) {
+    long size = estimator.estimateShallowObject(this, 1, 0) + estimator.estimateMap(entriesByType);
+    for (var entry : entriesByType.entrySet()) {
+      size += estimator.estimateString(entry.getKey()) + estimator.estimateSet(entry.getValue());
+      for (var beanEntry : entry.getValue()) {
+        size += estimator.estimateObject(beanEntry);
+      }
+    }
+    return size;
   }
 
   private static boolean isVisible(BeanEntry entry, String consumerModule, Set<String> scannedPackages) {

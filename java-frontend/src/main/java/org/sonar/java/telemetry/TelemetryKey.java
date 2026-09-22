@@ -53,7 +53,15 @@ public enum TelemetryKey {
 
   JAVA_FEATURE_MODULE_IMPORT("java.feature.module_import"),
   JAVA_FEATURE_COMPACT_SOURCE_FILES("java.feature.compact_source_files"),
-  JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY("java.feature.flexible_constructor_body");
+  JAVA_FEATURE_FLEXIBLE_CONSTRUCTOR_BODY("java.feature.flexible_constructor_body"),
+
+  JAVA_SPRING_BEAN_COUNT("java.spring.bean_count"),
+  JAVA_SPRING_BEAN_NAME_COUNT("java.spring.bean_name_count"),
+  JAVA_SPRING_INJECTION_POINT_COUNT("java.spring.injection_point_count"),
+  JAVA_SPRING_COMPONENT_SCAN_PACKAGE_COUNT("java.spring.component_scan_package_count"),
+  JAVA_SPRING_CONTEXT_MODEL_GATHERING_TIME_MS("java.spring.context_model_gathering_time_ms"),
+  JAVA_SPRING_CONTEXT_CHECKS_TIME_MS("java.spring.context_checks_time_ms"),
+  JAVA_SPRING_CONTEXT_MODEL_SIZE_BYTES("java.spring.context_model_size_bytes");
 
   public interface SpeedKeys {
     TelemetryKey sizeCharsKey();

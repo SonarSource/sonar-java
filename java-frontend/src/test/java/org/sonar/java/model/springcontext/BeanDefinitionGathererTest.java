@@ -33,6 +33,7 @@ import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.TestUtils;
+import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
@@ -50,7 +51,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
   @BeforeEach
   void setUp() {
-    gatherer = new BeanDefinitionGatherer();
+    gatherer = new BeanDefinitionGatherer(new NoOpTelemetry());
     model = new SpringContextModel();
   }
 
@@ -220,7 +221,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getCacheContext()).thenReturn(cacheContext);
 
-    gatherer = new BeanDefinitionGatherer();
+    gatherer = new BeanDefinitionGatherer(new NoOpTelemetry());
     model = new SpringContextModel();
     assertThat(gatherer.scanWithoutParsing(context)).isTrue();
     verify(writeCache).copyFromPrevious(entry.key());
@@ -256,7 +257,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getCacheContext()).thenReturn(cacheContext);
 
-    gatherer = new BeanDefinitionGatherer();
+    gatherer = new BeanDefinitionGatherer(new NoOpTelemetry());
     model = new SpringContextModel();
     assertThat(gatherer.scanWithoutParsing(context)).isTrue();
 

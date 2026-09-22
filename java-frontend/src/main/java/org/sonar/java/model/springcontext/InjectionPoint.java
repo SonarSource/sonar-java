@@ -17,6 +17,8 @@
 package org.sonar.java.model.springcontext;
 
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.telemetry.SizeEstimable;
+import org.sonar.java.telemetry.SizeEstimator;
 
 /**
  * A single point in the source where a dependency is injected, as registered in {@link TypeToDependenciesIndex}.
@@ -26,7 +28,15 @@ import org.sonar.java.reporting.AnalyzerMessage;
  * @param module   the module key of the bean that declares this injection point
  * @param location the source location of the injection point
  */
-public record InjectionPoint(String name, String module, BeanLocation location) {
+public record InjectionPoint(String name, String module, BeanLocation location) implements SizeEstimable {
+
+  @Override
+  public long estimateSize(SizeEstimator estimator) {
+    return estimator.estimateShallowObject(this, 3, 0)
+      + estimator.estimateString(name)
+      + estimator.estimateString(module)
+      + estimator.estimateObject(location);
+  }
 
   /**
    * An injection point as collected from a single file, holding no reference to that file.

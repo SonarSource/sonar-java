@@ -16,6 +16,8 @@
  */
 package org.sonar.plugins.java;
 
+import java.util.concurrent.TimeUnit;
+import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
@@ -31,6 +33,8 @@ import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.telemetry.Telemetry;
+import org.sonar.java.telemetry.TelemetryKey;
 
 /**
  * A post-phase {@link ProjectSensor} that holds the shared {@link SpringContextModel} built during analysis.
@@ -43,12 +47,15 @@ import org.sonar.java.reporting.AnalyzerMessage;
  * components that need access to Spring context information (bean definitions, component-scan packages, etc.).
  */
 @Phase(name = Phase.Name.POST)
+@DependedUpon(value = "CollectSpringContextBeforeSendingTelemetry")
 public class SpringContextModelSensor implements ProjectSensor {
 
   private final SpringContextModel springContextModel;
+  private final Telemetry telemetry;
 
-  public SpringContextModelSensor(SpringContextModel springContextModel) {
+  public SpringContextModelSensor(SpringContextModel springContextModel, Telemetry telemetry) {
     this.springContextModel = springContextModel;
+    this.telemetry = telemetry;
   }
 
   @Override
@@ -58,8 +65,15 @@ public class SpringContextModelSensor implements ProjectSensor {
 
   @Override
   public void execute(SensorContext context) {
-    for (SpringContextCheck check : SpringContextChecks.getAllChecks()) {
-      reportIssues(context, check);
+    long startTime = System.nanoTime();
+    try {
+      for (SpringContextCheck check : SpringContextChecks.getAllChecks()) {
+        reportIssues(context, check);
+      }
+    } finally {
+      telemetry.aggregateAsCounter(
+        TelemetryKey.JAVA_SPRING_CONTEXT_CHECKS_TIME_MS,
+        TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime));
     }
   }
 
@@ -81,4 +95,3 @@ public class SpringContextModelSensor implements ProjectSensor {
     }
   }
 }
-

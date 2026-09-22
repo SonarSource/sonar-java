@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.sonar.java.telemetry.SizeEstimable;
+import org.sonar.java.telemetry.SizeEstimator;
 
 /**
  * Tracks the packages registered for Spring component scanning, grouped by module.
@@ -28,8 +30,10 @@ import java.util.Set;
  * <p>Corresponds to packages declared via {@code @ComponentScan} (or equivalent) and
  * collected during project analysis. Each module may declare multiple scanned packages.
  */
-public class ProjectPackageScan {
-  /** Scanned package names indexed by module name. */
+public class ProjectPackageScan implements SizeEstimable {
+  /**
+   * Scanned package names indexed by module name.
+   */
   private final Map<String, Set<String>> packagesScannedBySpringPerModule = new HashMap<>();
 
   /**
@@ -69,5 +73,21 @@ public class ProjectPackageScan {
    */
   public Set<String> getModules() {
     return packagesScannedBySpringPerModule.keySet();
+  }
+
+  long packageCount() {
+    return packagesScannedBySpringPerModule.values().stream().mapToLong(Set::size).sum();
+  }
+
+  @Override
+  public long estimateSize(SizeEstimator estimator) {
+    long size = estimator.estimateShallowObject(this, 1, 0) + estimator.estimateMap(packagesScannedBySpringPerModule);
+    for (var entry : packagesScannedBySpringPerModule.entrySet()) {
+      size += estimator.estimateString(entry.getKey()) + estimator.estimateSet(entry.getValue());
+      for (var packageName : entry.getValue()) {
+        size += estimator.estimateString(packageName);
+      }
+    }
+    return size;
   }
 }

@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.sonar.java.telemetry.SizeEstimable;
+import org.sonar.java.telemetry.SizeEstimator;
 
 /**
  * Tracks {@link BeanDefinitionHolder bean definitions} collected during Spring context scanning,
@@ -30,7 +32,7 @@ import java.util.Map;
  *
  * @see BeanDefinitionHolder
  */
-public class BeanDefinitionRegistry {
+public class BeanDefinitionRegistry implements SizeEstimable {
   /**
    * Maps bean names to their corresponding list of {@link BeanDefinitionHolder} instances.
    * A list is used as the value to capture duplicate bean definitions under the same name,
@@ -44,5 +46,25 @@ public class BeanDefinitionRegistry {
 
   public void addBeanDefinition(String beanName, BeanDefinitionHolder beanDefinition) {
     beanDefinitions.computeIfAbsent(beanName, k -> new ArrayList<>()).add(beanDefinition);
+  }
+
+  long beanCount() {
+    return beanDefinitions.values().stream().mapToLong(List::size).sum();
+  }
+
+  int beanNameCount() {
+    return beanDefinitions.size();
+  }
+
+  @Override
+  public long estimateSize(SizeEstimator estimator) {
+    long size = estimator.estimateShallowObject(this, 1, 0) + estimator.estimateMap(beanDefinitions);
+    for (var entry : beanDefinitions.entrySet()) {
+      size += estimator.estimateString(entry.getKey()) + estimator.estimateList(entry.getValue());
+      for (var holder : entry.getValue()) {
+        size += estimator.estimateObject(holder);
+      }
+    }
+    return size;
   }
 }

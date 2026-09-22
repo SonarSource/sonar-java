@@ -17,13 +17,14 @@
 package org.sonar.java.model.springcontext;
 
 import java.util.List;
+import org.sonar.java.telemetry.Telemetry;
 import org.sonar.plugins.java.api.JavaCheck;
 
 /**
  * Registry of all {@link SpringContextModelGatherer} visitors that populate the {@link SpringContextModel}
  * during a module analysis.
  *
- * <p>Use {@link #getAllGatherers()} to obtain the full list of gatherers to be registered with the scanner.
+ * <p>Use {@link #getAllGatherers(Telemetry)} to obtain the full list of gatherers to be registered with the scanner.
  * New gatherers should be added here as the set of Spring context data we collect grows.
  */
 public class SpringContextModelGatherers {
@@ -37,10 +38,10 @@ public class SpringContextModelGatherers {
    *
    * @return a list of {@link JavaCheck} instances, each implementing {@link SpringContextModelGatherer}
    */
-  public static List<JavaCheck> getAllGatherers() {
+  public static List<JavaCheck> getAllGatherers(Telemetry telemetry) {
     return List.of(
-      new ComponentScanPackageGatherer(),
-      new BeanDefinitionGatherer()
+      new ComponentScanPackageGatherer(telemetry),
+      new BeanDefinitionGatherer(telemetry)
     );
   }
 

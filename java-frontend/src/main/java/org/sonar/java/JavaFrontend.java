@@ -98,8 +98,8 @@ public class JavaFrontend {
     if (sonarComponents.getSpringContextModel() != null) {
       // Call SpringContextModelGatherers.getAllGatherers twice to have separate gatherer
       // instances between the main and test scanners to avoid duplicating the issues
-      codeVisitors.addAll(SpringContextModelGatherers.getAllGatherers());
-      testCodeVisitors.addAll(SpringContextModelGatherers.getAllGatherers());
+      codeVisitors.addAll(SpringContextModelGatherers.getAllGatherers(telemetry));
+      testCodeVisitors.addAll(SpringContextModelGatherers.getAllGatherers(telemetry));
     }
 
     if (!sonarComponents.isSonarLintContext()) {
