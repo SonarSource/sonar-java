@@ -27,12 +27,15 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.model.ExpressionUtils.getEnclosingTree;
 import static org.sonar.java.model.ExpressionUtils.isThis;
+import static org.sonar.java.model.ExpressionUtils.isThisOrSuper;
 import static org.sonar.java.model.ExpressionUtils.skipParentheses;
 
 @Rule(key = "S9399")
@@ -92,6 +95,9 @@ public class S9399Check extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
+      if (isThisOrSuper(tree.name())) {
+        return;
+      }
       Symbol symbol = tree.symbol();
       if (!symbol.isUnknown() && symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !symbol.isStatic()
         && isOwnedBySameOrEnclosingClass(symbol)) {
@@ -102,11 +108,31 @@ public class S9399Check extends IssuableSubscriptionVisitor {
     @Override
     public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
       ExpressionTree expression = tree.expression();
-      if (isThis(expression)) {
+      if (isThis(expression) || isQualifiedThis(expression)) {
         visitIdentifier(tree.identifier());
       } else {
         scan(expression);
       }
+    }
+
+    @Override
+    public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+      // Do not traverse into lambda bodies: they execute after the lock is released
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      scan(tree.arguments());
+      // Do not traverse into anonymous class bodies: their methods execute after the lock is released
+    }
+
+    private static boolean isQualifiedThis(ExpressionTree expression) {
+      ExpressionTree expr = skipParentheses(expression);
+      if (expr.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
+        return "this".equals(mse.identifier().name()) || "super".equals(mse.identifier().name());
+      }
+      return false;
     }
 
     private boolean isOwnedBySameOrEnclosingClass(Symbol symbol) {

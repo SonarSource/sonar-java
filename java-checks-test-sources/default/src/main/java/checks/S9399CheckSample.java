@@ -152,7 +152,51 @@ class S9399CheckSample {
         count++;
       }
     }
+
+    void accessOuterFieldViaQualifiedThis() {
+      synchronized (STATIC_LOCK) { // Noncompliant
+        S9399CheckSample.this.count++;
+      }
+    }
   }
+
+  void staticLockWithLambdaAccessingField() {
+    synchronized (STATIC_LOCK) { // Compliant - field access is inside lambda, runs after lock is released
+      Runnable r = () -> count++;
+    }
+  }
+
+  void staticLockWithAnonymousClassAccessingField() {
+    synchronized (STATIC_LOCK) { // Compliant - field access is inside anonymous class method
+      Runnable r = new Runnable() {
+        @Override
+        public void run() {
+          count++;
+        }
+      };
+    }
+  }
+
+  void staticLockWithLambdaAndDirectAccess() {
+    synchronized (STATIC_LOCK) { // Noncompliant
+      count++;
+      Runnable r = () -> name = "value";
+    }
+  }
+
+  void staticLockWithThisPassedToMethod() {
+    synchronized (STATIC_LOCK) { // Compliant - this is not a field access
+      consume(this);
+    }
+  }
+
+  void staticLockWithSuperCall() {
+    synchronized (STATIC_LOCK) { // Compliant - super.toString() is not a field access
+      super.toString();
+    }
+  }
+
+  private static void consume(Object o) {}
 }
 
 class S9399_SeparateClass {
