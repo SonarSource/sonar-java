@@ -150,11 +150,12 @@ public class BeanDefinitionHolder implements SizeEstimable {
 
   @Override
   public long estimateSize(SizeEstimator estimator) {
-    long size = estimator.estimateShallowObject(this, 6, 1)
+    long size = estimator.estimateShallowObject(this, 7, 1)
       + estimator.estimateString(type)
       + estimator.estimateString(module)
       + estimator.estimateString(beanPackage)
       + estimator.estimateString(profiles)
+      + estimator.estimateString(qualifier)
       + estimator.estimateObject(location)
       + estimator.estimateMap(dependingBeans);
     for (var entry : dependingBeans.entrySet()) {
