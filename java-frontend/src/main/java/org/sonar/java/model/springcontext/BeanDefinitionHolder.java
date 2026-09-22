@@ -139,7 +139,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
       + estimator.estimateString(module)
       + estimator.estimateString(beanPackage)
       + estimator.estimateString(profiles)
-      + estimator.estimate(location)
+      + estimator.estimateObject(location)
       + estimator.estimateMap(dependingBeans);
     for (var entry : dependingBeans.entrySet()) {
       size += estimator.estimateString(entry.getKey()) + estimator.estimateSet(entry.getValue());

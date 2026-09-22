@@ -58,11 +58,11 @@ public class BeanDefinitionRegistry implements SizeEstimable {
 
   @Override
   public long estimateSize(SizeEstimator estimator) {
-    long size = estimator.estimateMap(beanDefinitions);
+    long size = estimator.estimateShallowObject(this, 1, 0) + estimator.estimateMap(beanDefinitions);
     for (var entry : beanDefinitions.entrySet()) {
       size += estimator.estimateString(entry.getKey()) + estimator.estimateList(entry.getValue());
       for (var holder : entry.getValue()) {
-        size += estimator.estimate(holder);
+        size += estimator.estimateObject(holder);
       }
     }
     return size;

@@ -51,18 +51,14 @@ public final class SizeEstimator {
   }
 
   /**
-   * Estimates several roots as one object graph, charging shared instances once.
+   * Estimates a root object and its object graph, charging shared instances once.
    *
-   * @param values The roots to estimate.
+   * @param value The root to estimate.
    * @return The estimated size in bytes.
    */
-  public static long estimate(SizeEstimable... values) {
+  public static long estimate(@Nullable SizeEstimable value) {
     var estimator = new SizeEstimator();
-    long size = 0;
-    for (var value : values) {
-      size += estimator.estimate(value);
-    }
-    return size;
+    return estimator.estimateObject(value);
   }
 
   /**
@@ -71,7 +67,7 @@ public final class SizeEstimator {
    * @param value The object to estimate.
    * @return The estimated size in bytes, or zero for a null or previously visited instance.
    */
-  public long estimate(@Nullable SizeEstimable value) {
+  public long estimateObject(@Nullable SizeEstimable value) {
     if (value == null || !visited.add(value)) {
       return 0;
     }

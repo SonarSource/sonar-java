@@ -114,9 +114,8 @@ class SizeEstimatorTest {
   }
 
   @Test
-  void handles_empty_and_null_roots_and_null_strings() {
-    assertThat(SizeEstimator.estimate()).isZero();
-    assertThat(SizeEstimator.estimate(new SizeEstimable[]{null})).isZero();
+  void handles_null_roots_and_null_strings() {
+    assertThat(SizeEstimator.estimate(null)).isZero();
     assertThat(estimate(estimator -> estimator.estimateString(null))).isZero();
   }
 
@@ -159,11 +158,14 @@ class SizeEstimatorTest {
     second.child = shared;
     shared.child = first;
 
-    assertThat(SizeEstimator.estimate(first, first, second)).isEqualTo(48);
+    assertThat(SizeEstimator.estimate(estimator -> estimator.estimateObject(first)
+      + estimator.estimateObject(first)
+      + estimator.estimateObject(second)))
+      .isEqualTo(48);
   }
 
   private static long estimate(ToLongFunction<SizeEstimator> estimation) {
-    return SizeEstimator.estimate(new SizeEstimable[]{estimation::applyAsLong});
+    return SizeEstimator.estimate(estimation::applyAsLong);
   }
 
   private static Map<Integer, Integer> mapWithSize(int size) {
@@ -180,7 +182,7 @@ class SizeEstimatorTest {
 
     @Override
     public long estimateSize(SizeEstimator estimator) {
-      return estimator.estimateShallowObject(this, 1, 0) + estimator.estimate(child);
+      return estimator.estimateShallowObject(this, 1, 0) + estimator.estimateObject(child);
     }
   }
 }

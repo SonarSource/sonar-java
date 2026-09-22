@@ -94,11 +94,11 @@ public class TypeToBeansIndex implements SizeEstimable {
 
   @Override
   public long estimateSize(SizeEstimator estimator) {
-    long size = estimator.estimateMap(entriesByType);
+    long size = estimator.estimateShallowObject(this, 1, 0) + estimator.estimateMap(entriesByType);
     for (var entry : entriesByType.entrySet()) {
       size += estimator.estimateString(entry.getKey()) + estimator.estimateSet(entry.getValue());
       for (var beanEntry : entry.getValue()) {
-        size += estimator.estimate(beanEntry);
+        size += estimator.estimateObject(beanEntry);
       }
     }
     return size;

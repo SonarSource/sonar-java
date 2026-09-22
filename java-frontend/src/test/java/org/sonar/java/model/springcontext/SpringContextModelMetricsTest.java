@@ -26,15 +26,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SpringContextModelMetricsTest {
 
+  private static final long EMPTY_CONTEXT_MODEL_SIZE_BYTES = 352L;
+
   @Test
-  void empty_model_has_no_spring_data_and_a_positive_estimated_size() {
+  void empty_model_has_no_spring_data_and_estimates_all_empty_components() {
     var metrics = SpringContextModelMetrics.of(new SpringContextModel());
 
     assertThat(metrics.beanCount()).isZero();
     assertThat(metrics.beanNameCount()).isZero();
     assertThat(metrics.injectionPointCount()).isZero();
     assertThat(metrics.componentScanPackageCount()).isZero();
-    assertThat(metrics.estimatedSizeInBytes()).isPositive();
+    assertThat(metrics.estimatedSizeInBytes()).isEqualTo(EMPTY_CONTEXT_MODEL_SIZE_BYTES);
   }
 
   @Test

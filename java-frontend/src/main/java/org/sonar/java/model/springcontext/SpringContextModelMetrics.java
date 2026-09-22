@@ -48,11 +48,6 @@ public record SpringContextModelMetrics(
       beanDefinitions.beanNameCount(),
       dependencies.injectionPointCount(),
       packageScan.packageCount(),
-      SizeEstimator.estimate(
-        beanDefinitions,
-        model.getTypeToBeansIndex(),
-        dependencies,
-        model.getEntityClassToPropertiesIndex(),
-        packageScan));
+      SizeEstimator.estimate(model));
   }
 }

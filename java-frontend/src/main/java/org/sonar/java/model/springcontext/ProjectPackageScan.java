@@ -81,7 +81,7 @@ public class ProjectPackageScan implements SizeEstimable {
 
   @Override
   public long estimateSize(SizeEstimator estimator) {
-    long size = estimator.estimateMap(packagesScannedBySpringPerModule);
+    long size = estimator.estimateShallowObject(this, 1, 0) + estimator.estimateMap(packagesScannedBySpringPerModule);
     for (var entry : packagesScannedBySpringPerModule.entrySet()) {
       size += estimator.estimateString(entry.getKey()) + estimator.estimateSet(entry.getValue());
       for (var packageName : entry.getValue()) {

@@ -35,7 +35,7 @@ public record InjectionPoint(String name, String module, BeanLocation location) 
     return estimator.estimateShallowObject(this, 3, 0)
       + estimator.estimateString(name)
       + estimator.estimateString(module)
-      + estimator.estimate(location);
+      + estimator.estimateObject(location);
   }
 
   /**

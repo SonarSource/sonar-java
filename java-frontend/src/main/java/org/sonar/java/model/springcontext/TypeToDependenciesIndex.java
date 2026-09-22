@@ -70,11 +70,11 @@ public class TypeToDependenciesIndex implements SizeEstimable {
 
   @Override
   public long estimateSize(SizeEstimator estimator) {
-    long size = estimator.estimateMap(injectionPointsByType);
+    long size = estimator.estimateShallowObject(this, 1, 0) + estimator.estimateMap(injectionPointsByType);
     for (var entry : injectionPointsByType.entrySet()) {
       size += estimator.estimateString(entry.getKey()) + estimator.estimateSet(entry.getValue());
       for (var injectionPoint : entry.getValue()) {
-        size += estimator.estimate(injectionPoint);
+        size += estimator.estimateObject(injectionPoint);
       }
     }
     return size;

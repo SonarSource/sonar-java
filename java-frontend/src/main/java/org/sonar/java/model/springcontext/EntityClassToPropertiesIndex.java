@@ -60,7 +60,7 @@ public class EntityClassToPropertiesIndex implements SizeEstimable {
 
   @Override
   public long estimateSize(SizeEstimator estimator) {
-    long size = estimator.estimateMap(propertiesByEntityClass);
+    long size = estimator.estimateShallowObject(this, 1, 0) + estimator.estimateMap(propertiesByEntityClass);
     for (var entry : propertiesByEntityClass.entrySet()) {
       size += estimator.estimateString(entry.getKey()) + estimator.estimateSet(entry.getValue());
       for (var property : entry.getValue()) {
