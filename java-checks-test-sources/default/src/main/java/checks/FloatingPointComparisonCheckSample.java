@@ -292,8 +292,10 @@ class FloatingPointComparisonCheckSample {
 
     @Override
     public int compareTo(MixedSubtractionAndRelational other) {
-      float d1 = this.a - this.b; // Compliant - result flows into Float.compare
-      float d2 = other.a - other.b;
+      float d1 = this.a - this.b; // Noncompliant
+//                      ^
+      float d2 = other.a - other.b; // Noncompliant
+//                       ^
       if (d1 > d2) { // Noncompliant
 //           ^
         return 1;
@@ -389,6 +391,71 @@ class FloatingPointComparisonCheckSample {
 
     double compare(Double a, Double b) {
       return a - b; // Compliant - does not return an int
+    }
+  }
+
+  // === Compliant: parenthesized subtraction in Float.compare ===
+
+  static class ParenthesizedSubtractionInCompare implements Comparable<ParenthesizedSubtractionInCompare> {
+    private float a;
+    private float b;
+
+    @Override
+    public int compareTo(ParenthesizedSubtractionInCompare other) {
+      return Float.compare((this.a - this.b), (other.a - other.b)); // Compliant
+    }
+  }
+
+  // === Compliant: cast subtraction in Double.compare ===
+
+  static class CastSubtractionInCompare implements Comparable<CastSubtractionInCompare> {
+    private float x;
+    private float y;
+
+    @Override
+    public int compareTo(CastSubtractionInCompare other) {
+      return Double.compare((double) (this.x - this.y), (double) (other.x - other.y)); // Compliant
+    }
+  }
+
+  // === Compliant: chained subtraction in Double.compare ===
+
+  static class ChainedSubtractionInCompare implements Comparable<ChainedSubtractionInCompare> {
+    private double a;
+    private double b;
+    private double c;
+
+    @Override
+    public int compareTo(ChainedSubtractionInCompare other) {
+      return Double.compare(this.a - this.b - this.c, other.a - other.b - other.c); // Compliant
+    }
+  }
+
+  // === Compliant: parenthesized initializer variable in Float.compare ===
+
+  static class ParenthesizedInitializerInCompare implements Comparable<ParenthesizedInitializerInCompare> {
+    private float a;
+    private float b;
+
+    @Override
+    public int compareTo(ParenthesizedInitializerInCompare other) {
+      float d1 = (this.a - this.b); // Compliant - result flows into Float.compare
+      float d2 = (other.a - other.b);
+      return Float.compare(d1, d2);
+    }
+  }
+
+  // === Noncompliant: variable used in compare AND truncated ===
+
+  static class VariableUsedOutsideCompare implements Comparable<VariableUsedOutsideCompare> {
+    private double x;
+
+    @Override
+    public int compareTo(VariableUsedOutsideCompare other) {
+      double d = this.x - other.x; // Noncompliant
+//                      ^
+      if (Double.compare(d, 0) == 0) return 0;
+      return (int) d;
     }
   }
 }

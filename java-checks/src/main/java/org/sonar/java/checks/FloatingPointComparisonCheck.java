@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ComparisonMethodUtils;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -30,6 +31,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9148")
@@ -84,25 +86,52 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
     }
 
     private void collectSubtractionFromArgument(ExpressionTree argument) {
-      if (argument.is(Tree.Kind.MINUS)) {
-        suppressedSubtractions.add(argument);
-      } else if (argument.is(Tree.Kind.IDENTIFIER)) {
-        Tree initializer = getVariableInitializer((IdentifierTree) argument);
-        if (initializer != null && initializer.is(Tree.Kind.MINUS)) {
-          suppressedSubtractions.add(initializer);
+      ExpressionTree expr = skipParenthesesAndCasts(argument);
+      if (expr.is(Tree.Kind.IDENTIFIER)) {
+        Symbol symbol = ((IdentifierTree) expr).symbol();
+        if (symbol.isVariableSymbol() && allUsagesAreCompareArguments(symbol)) {
+          Tree declaration = symbol.declaration();
+          if (declaration instanceof VariableTree variableTree && variableTree.initializer() != null) {
+            expr = skipParenthesesAndCasts(variableTree.initializer());
+          }
         }
+      }
+      addNestedSubtractions(expr);
+    }
+
+    private boolean allUsagesAreCompareArguments(Symbol symbol) {
+      for (IdentifierTree usage : symbol.usages()) {
+        Tree parent = usage.parent();
+        if (parent == null) {
+          return false;
+        }
+        if (parent.is(Tree.Kind.ARGUMENTS)) {
+          Tree grandParent = parent.parent();
+          if (grandParent instanceof MethodInvocationTree mit && FLOAT_DOUBLE_COMPARE.matches(mit)) {
+            continue;
+          }
+        }
+        return false;
+      }
+      return true;
+    }
+
+    private void addNestedSubtractions(ExpressionTree expr) {
+      ExpressionTree unwrapped = skipParenthesesAndCasts(expr);
+      if (unwrapped.is(Tree.Kind.MINUS)) {
+        suppressedSubtractions.add(unwrapped);
+        BinaryExpressionTree binary = (BinaryExpressionTree) unwrapped;
+        addNestedSubtractions(binary.leftOperand());
+        addNestedSubtractions(binary.rightOperand());
       }
     }
 
-    private static Tree getVariableInitializer(IdentifierTree identifier) {
-      Symbol symbol = identifier.symbol();
-      if (symbol.isVariableSymbol()) {
-        Tree declaration = symbol.declaration();
-        if (declaration instanceof VariableTree variableTree) {
-          return variableTree.initializer();
-        }
+    private static ExpressionTree skipParenthesesAndCasts(ExpressionTree tree) {
+      ExpressionTree result = ExpressionUtils.skipParentheses(tree);
+      while (result.is(Tree.Kind.TYPE_CAST)) {
+        result = ExpressionUtils.skipParentheses(((TypeCastTree) result).expression());
       }
-      return null;
+      return result;
     }
   }
 
