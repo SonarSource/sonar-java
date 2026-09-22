@@ -71,12 +71,25 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
           continue;
         }
         Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
-        if (!hasUniqueOrPrimaryCandidate(effectiveCandidates, registry) && !candidates.contains(point.name())) {
+        if (!hasUniqueOrPrimaryCandidate(effectiveCandidates, registry) && !matchesByNameOrQualifier(candidates, point.name(), registry)) {
           issues.add(new SpringContextIssue(point.location(), message(effectiveCandidates)));
         }
       }
     }
     return issues;
+  }
+
+  private static boolean matchesByNameOrQualifier(Set<String> candidates, String dependencyName, BeanDefinitionRegistry registry) {
+    return candidates.contains(dependencyName)
+      || candidates.stream().filter(candidate -> dependencyName.equals(getBeanQualifier(registry, candidate))).count() == 1;
+  }
+
+  private static String getBeanQualifier(BeanDefinitionRegistry registry, String beanName) {
+    return registry.getByName(beanName).stream()
+      .map(BeanDefinitionHolder::getQualifier)
+      .filter(q -> q != null)
+      .findFirst()
+      .orElse(null);
   }
 
   private static boolean hasUniqueOrPrimaryCandidate(Set<String> candidates, BeanDefinitionRegistry registry) {

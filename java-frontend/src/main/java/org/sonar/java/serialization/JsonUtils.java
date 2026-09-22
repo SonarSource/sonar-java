@@ -52,6 +52,7 @@ public final class JsonUtils {
   public static final String SPAN = "span";
   public static final String PRIMARY = "primary";
   public static final String PROFILES = "profiles";
+  public static final String QUALIFIER = "qualifier";
   public static final String DEPENDENCIES = "dependencies";
   public static final String INJECTION_POINTS = "injectionPoints";
   public static final String TYPE_HIERARCHY = "typeHierarchy";
