@@ -17,6 +17,8 @@
 package org.sonar.java.model.springcontext;
 
 import org.sonar.api.scanner.ScannerSide;
+import org.sonar.java.telemetry.SizeEstimable;
+import org.sonar.java.telemetry.SizeEstimator;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**
@@ -33,20 +35,30 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
  */
 @ScannerSide
 @SonarLintSide
-public class SpringContextModel {
-  /** Registry of all bean definitions discovered during scanning. */
+public class SpringContextModel implements SizeEstimable {
+  /**
+   * Registry of all bean definitions discovered during scanning.
+   */
   private final BeanDefinitionRegistry beanDefinitionRegistry = new BeanDefinitionRegistry();
 
-  /** Packages registered for Spring component scanning, grouped by module. */
+  /**
+   * Packages registered for Spring component scanning, grouped by module.
+   */
   private final ProjectPackageScan projectPackageScan = new ProjectPackageScan();
 
-  /** Index for resolving bean names by their fully-qualified type. */
+  /**
+   * Index for resolving bean names by their fully-qualified type.
+   */
   private final TypeToBeansIndex typeToBeansIndex = new TypeToBeansIndex();
 
-  /** Index for storing injected dependencies by their fully-qualified type. */
+  /**
+   * Index for storing injected dependencies by their fully-qualified type.
+   */
   private final TypeToDependenciesIndex typeToDependenciesIndex = new TypeToDependenciesIndex();
 
-  /** Index of properties associated with Spring Data / Hibernate {@code @Entity} classes. */
+  /**
+   * Index of properties associated with Spring Data / Hibernate {@code @Entity} classes.
+   */
   private final EntityClassToPropertiesIndex entityClassToPropertiesIndex = new EntityClassToPropertiesIndex();
 
   public BeanDefinitionRegistry getBeanDefinitionRegistry() {
@@ -67,5 +79,15 @@ public class SpringContextModel {
 
   public EntityClassToPropertiesIndex getEntityClassToPropertiesIndex() {
     return entityClassToPropertiesIndex;
+  }
+
+  @Override
+  public long estimateSize(SizeEstimator estimator) {
+    return estimator.estimateShallowObject(this, 5, 0)
+      + estimator.estimateObject(beanDefinitionRegistry)
+      + estimator.estimateObject(projectPackageScan)
+      + estimator.estimateObject(typeToBeansIndex)
+      + estimator.estimateObject(typeToDependenciesIndex)
+      + estimator.estimateObject(entityClassToPropertiesIndex);
   }
 }
