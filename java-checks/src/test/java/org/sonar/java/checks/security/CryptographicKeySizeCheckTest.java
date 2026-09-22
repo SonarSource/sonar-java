@@ -39,4 +39,14 @@ class CryptographicKeySizeCheckTest {
       .withoutSemantic()
       .verifyIssues();
   }
+
+  @Test
+  void test_custom_key_sizes() {
+    CryptographicKeySizeCheck check = new CryptographicKeySizeCheck();
+    check.minimumKeySizes = "RSA:4096,AES:64";
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/security/CryptographicKeySizeCheckCustom.java"))
+      .withCheck(check)
+      .verifyIssues();
+  }
 }
