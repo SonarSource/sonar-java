@@ -143,6 +143,15 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
   // ---- @Qualifier handling --------------------------------------------------
 
   @Test
+  void qualifier_on_bean_method_is_captured() {
+    scan("src/test/files/springcontext/QualifiedBeanMethod.java");
+
+    var beans = model.getBeanDefinitionRegistry().getByName("myBean");
+    assertThat(beans).hasSize(1);
+    assertThat(beans.get(0).getQualifier()).isEqualTo("myAlias");
+  }
+
+  @Test
   void qualifier_selects_specific_bean_among_multiple_candidates() {
     scan(
       "src/test/files/springcontext/PaymentProcessor.java",

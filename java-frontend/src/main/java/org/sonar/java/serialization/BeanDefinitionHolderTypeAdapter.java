@@ -34,6 +34,7 @@ import static org.sonar.java.serialization.JsonUtils.NAME;
 import static org.sonar.java.serialization.JsonUtils.PACKAGE;
 import static org.sonar.java.serialization.JsonUtils.PRIMARY;
 import static org.sonar.java.serialization.JsonUtils.PROFILES;
+import static org.sonar.java.serialization.JsonUtils.QUALIFIER;
 import static org.sonar.java.serialization.JsonUtils.SPAN;
 import static org.sonar.java.serialization.JsonUtils.TYPE;
 import static org.sonar.java.serialization.JsonUtils.TYPE_HIERARCHY;
@@ -71,6 +72,7 @@ public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefin
     TextSpanTypeAdapter.getInstance().write(out, bean.textSpan());
     out.name(PRIMARY).value(bean.isPrimary());
     out.name(PROFILES).value(bean.profiles());
+    out.name(QUALIFIER).value(bean.qualifier());
     out.name(DEPENDENCIES);
     writeDependencies(out, bean.dependencies());
     out.name(TYPE_HIERARCHY);
@@ -87,6 +89,7 @@ public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefin
     Boolean isPrimary = null;
     String profiles = null;
     boolean profilesRead = false;
+    String qualifier = null;
     Map<String, Set<InjectionPoint.InputFileData>> dependencies = null;
     Set<String> typeHierarchy = null;
     in.beginObject();
@@ -101,6 +104,7 @@ public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefin
           profiles = readNullableString(in);
           profilesRead = true;
         }
+        case QUALIFIER -> qualifier = readNullableString(in);
         case DEPENDENCIES -> dependencies = readDependencies(in);
         case TYPE_HIERARCHY -> typeHierarchy = readStrings(in);
         default -> in.skipValue();
@@ -117,6 +121,7 @@ public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefin
       required(span, SPAN),
       required(isPrimary, PRIMARY),
       profiles,
+      qualifier,
       required(dependencies, DEPENDENCIES),
       required(typeHierarchy, TYPE_HIERARCHY)
     );

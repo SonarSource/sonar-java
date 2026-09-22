@@ -113,7 +113,7 @@ class SpringContextCacheHelperTest {
     }
 
     static Stream<Arguments> corruptedEntries() {
-      String bean = "{\"name\":\"n\",\"type\":\"t\",\"package\":\"p\",\"span\":%s,\"primary\":%s,\"profiles\":null,"
+      String bean = "{\"name\":\"n\",\"type\":\"t\",\"package\":\"p\",\"span\":%s,\"primary\":%s,\"profiles\":null,\"qualifier\":null,"
         + "\"dependencies\":[],\"typeHierarchy\":[]}";
       String span = "{\"startLine\":1,\"startCharacter\":0,\"endLine\":1,\"endCharacter\":5}";
       return Stream.of(
@@ -163,7 +163,7 @@ class SpringContextCacheHelperTest {
     void read_ignores_unknown_properties() {
       String content = """
         {"version":1,"beans":[{"name":"simpleComponent","type":"checks.spring.context.SimpleComponent","package":"checks.spring.context",\
-        "span":{"startLine":8,"startCharacter":13,"endLine":8,"endCharacter":28,"unknown":[]},"primary":false,"profiles":null,\
+        "span":{"startLine":8,"startCharacter":13,"endLine":8,"endCharacter":28,"unknown":[]},"primary":false,"profiles":null,"qualifier":null,\
         "dependencies":[{"type":"T","injectionPoints":[{"name":"t","span":{"startLine":9,"startCharacter":2,"endLine":9,"endCharacter":5},\
         "unknown":{}}],"unknown":0}],"typeHierarchy":[],"unknown":"ignored"}],"unknown":true}
         """;
@@ -250,7 +250,7 @@ class SpringContextCacheHelperTest {
 
   private static BeanDefinitionHolder.InputFileData beanData(String beanName, String type, TextSpan span, boolean isPrimary, @Nullable String profiles,
     Map<String, Set<InjectionPoint.InputFileData>> injectionPoints, Set<String> typeHierarchy) {
-    return new BeanDefinitionHolder.InputFileData(beanName, type, "checks.spring.context", span, isPrimary, profiles, injectionPoints, typeHierarchy);
+    return new BeanDefinitionHolder.InputFileData(beanName, type, "checks.spring.context", span, isPrimary, profiles, null, injectionPoints, typeHierarchy);
   }
 
   // ---- Serialization plumbing ----------------------------------------------
