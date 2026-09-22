@@ -84,6 +84,13 @@ public class BeanDefinitionHolder implements SizeEstimable {
    */
   private boolean isPrimary = false;
 
+  /**
+   * The value of the {@code @Qualifier} annotation on the bean definition, if present.
+   * Allows consumers to select this bean by qualifier value rather than by bean name.
+   */
+  @Nullable
+  private String qualifier;
+
   private BeanDefinitionHolder(String type, String module, String beanPackage, BeanLocation location) {
     this.type = type;
     this.module = module;
@@ -101,6 +108,10 @@ public class BeanDefinitionHolder implements SizeEstimable {
 
   private void setPrimary() {
     this.isPrimary = true;
+  }
+
+  private void setQualifier(@Nullable String qualifier) {
+    this.qualifier = qualifier;
   }
 
   public String getType() {
@@ -132,6 +143,11 @@ public class BeanDefinitionHolder implements SizeEstimable {
     return isPrimary;
   }
 
+  @Nullable
+  public String getQualifier() {
+    return qualifier;
+  }
+
   @Override
   public long estimateSize(SizeEstimator estimator) {
     long size = estimator.estimateShallowObject(this, 6, 1)
@@ -159,6 +175,8 @@ public class BeanDefinitionHolder implements SizeEstimable {
     @Nullable
     private String profiles;
     private boolean isPrimary = false;
+    @Nullable
+    private String qualifier;
 
     public Builder(String type, String module, String beanPackage, BeanLocation location) {
       this.type = type;
@@ -182,6 +200,11 @@ public class BeanDefinitionHolder implements SizeEstimable {
       return this;
     }
 
+    public Builder qualifier(@Nullable String qualifier) {
+      this.qualifier = qualifier;
+      return this;
+    }
+
     public BeanDefinitionHolder build() {
       BeanDefinitionHolder holder = new BeanDefinitionHolder(type, module, beanPackage, location);
       holder.setDependingBeans(dependingBeans.entrySet().stream()
@@ -190,6 +213,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
       if (isPrimary) {
         holder.setPrimary();
       }
+      holder.setQualifier(qualifier);
       return holder;
     }
   }
@@ -218,6 +242,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
     @Nullable String profiles,
+    @Nullable String qualifier,
     Map<String, Set<InjectionPoint.InputFileData>> dependencies,
     Set<String> typeHierarchy) {
   }
