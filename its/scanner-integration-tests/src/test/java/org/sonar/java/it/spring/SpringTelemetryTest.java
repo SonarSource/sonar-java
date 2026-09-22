@@ -46,6 +46,32 @@ class SpringTelemetryTest extends ScannerIntegrationAbstractTest {
   private static final long BEAN_DEFINITION_HOLDER_SHALLOW_SIZE_BYTES = 40L;
   private static final long UPPER_BOUND_HEADROOM_MULTIPLIER = 3L;
 
+  /**
+   * Structural lower bound for the estimated size of the {@code SpringContextModel} built from the {@code ambiguous-dependencies-should-be-resolved} IT project.
+   * Strings, file locations, and other payload excluded from the per-object shallow sizes are accounted for by the {@code ×3} {@code MAXIMUM_EXPECTED_CONTEXT_MODEL_SIZE_BYTES}
+   * upper bound.
+   *
+   * <p>Each summand corresponds to a specific element in the model:
+   * <ul>
+   *   <li>{@code SPRING_CONTEXT_MODEL_SHALLOW_SIZE_BYTES} — the {@code SpringContextModel} object itself (5 reference fields, no primitives)</li>
+   *   <li>{@code 5 × MODEL_COMPONENT_SHALLOW_SIZE_BYTES} — the 5 sub-model objects ({@code BeanDefinitionRegistry}, {@code TypeToBeansIndex}, {@code TypeToDependenciesIndex},
+   *       {@code ProjectPackageScan}, {@code EntityClassToPropertiesIndex}), each holding a single map field</li>
+   *   <li>{@code 20 × BEAN_DEFINITION_HOLDER_SHALLOW_SIZE_BYTES} — one {@code BeanDefinitionHolder} per registered bean name</li>
+   *   <li>{@code EMPTY_HASH_MAP_SIZE_BYTES} — {@code EntityClassToPropertiesIndex}'s map (no {@code @Entity} classes in this project)</li>
+   *   <li>{@code SINGLE_ELEMENT_HASH_MAP_SIZE_BYTES} — {@code ProjectPackageScan}'s map: 1 module → 1 scanned package
+   *       ({@code @SpringBootApplication(scanBasePackages = "com.example")})</li>
+   *   <li>{@code SIX_ELEMENT_HASH_MAP_SIZE_BYTES} — {@code TypeToDependenciesIndex}'s map: 6 distinct injected types (AuditLogger, DiscountService, FeatureToggleService,
+   *   InventoryService, PaymentGateway, ShippingCarrier)</li>
+   *   <li>{@code TWENTY_ELEMENT_HASH_MAP_SIZE_BYTES} — {@code BeanDefinitionRegistry}'s map: 20 bean names each pointing to a list of holders</li>
+   *   <li>{@code TWENTY_FOUR_ELEMENT_HASH_MAP_SIZE_BYTES} — {@code TypeToBeansIndex}'s map: 24 type FQNs (6 consumers + 2 config classes + 10 concrete implementations, all with
+   *       1 entry each, plus 6 shared interface types with 2 entries each)</li>
+   *   <li>{@code 20 × SINGLE_ELEMENT_LIST_SIZE_BYTES} — one single-element {@code ArrayList} per bean name in {@code BeanDefinitionRegistry}</li>
+   *   <li>{@code 25 × SINGLE_ELEMENT_HASH_SET_SIZE_BYTES} — single-element sets: 18 in {@code TypeToBeansIndex} (per-type entry sets with 1 bean each), 6 in
+   *       {@code TypeToDependenciesIndex} (per-type injection-point sets with 1 point each), and 1 in {@code ProjectPackageScan} (1 module's package set)</li>
+   *   <li>{@code 6 × TWO_ELEMENT_HASH_SET_SIZE_BYTES} — two-element sets in {@code TypeToBeansIndex}: one per shared interface type, each holding the 2 competing
+   *       implementations from module-a and module-b</li>
+   * </ul>
+   */
   private static final long MINIMUM_EXPECTED_CONTEXT_MODEL_SIZE_BYTES =
     SPRING_CONTEXT_MODEL_SHALLOW_SIZE_BYTES
       + EXPECTED_CONTEXT_COMPONENT_COUNT * MODEL_COMPONENT_SHALLOW_SIZE_BYTES
