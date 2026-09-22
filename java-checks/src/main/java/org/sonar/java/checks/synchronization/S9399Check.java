@@ -34,7 +34,6 @@ import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.java.model.ExpressionUtils.getEnclosingTree;
-import static org.sonar.java.model.ExpressionUtils.isThis;
 import static org.sonar.java.model.ExpressionUtils.isThisOrSuper;
 import static org.sonar.java.model.ExpressionUtils.skipParentheses;
 
@@ -107,8 +106,9 @@ public class S9399Check extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      ExpressionTree expression = tree.expression();
-      if (isThis(expression) || isQualifiedThis(expression)) {
+      ExpressionTree expression = skipParentheses(tree.expression());
+      boolean isBareThisOrSuper = expression.is(Tree.Kind.IDENTIFIER) && isThisOrSuper(((IdentifierTree) expression).name());
+      if (isBareThisOrSuper || isQualifiedThis(expression)) {
         visitIdentifier(tree.identifier());
       } else {
         scan(expression);
@@ -117,13 +117,24 @@ public class S9399Check extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-      // Do not traverse into lambda bodies: they execute after the lock is released
+      if (isPassedAsArgument(lambdaExpressionTree)) {
+        scan(lambdaExpressionTree.body());
+      }
+    }
+
+    private static boolean isPassedAsArgument(LambdaExpressionTree lambda) {
+      Tree parent = lambda.parent();
+      return parent != null && parent.is(Tree.Kind.ARGUMENTS);
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
     }
 
     @Override
     public void visitNewClass(NewClassTree tree) {
+      scan(tree.enclosingExpression());
       scan(tree.arguments());
-      // Do not traverse into anonymous class bodies: their methods execute after the lock is released
     }
 
     private static boolean isQualifiedThis(ExpressionTree expression) {

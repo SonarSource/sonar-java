@@ -196,6 +196,47 @@ class S9399CheckSample {
     }
   }
 
+  void staticLockWithLambdaPassedToForEach(java.util.List<Integer> list) {
+    synchronized (STATIC_LOCK) { // Noncompliant
+      list.forEach(x -> count += x);
+    }
+  }
+
+  void staticLockWithLambdaPassedToRemoveIf(java.util.List<Integer> list) {
+    synchronized (STATIC_LOCK) { // Noncompliant
+      list.removeIf(x -> x == count);
+    }
+  }
+
+  void staticLockWithLocalClassAccessingField() {
+    synchronized (STATIC_LOCK) { // Compliant - field access is inside local class method
+      class R implements Runnable {
+        public void run() {
+          count++;
+        }
+      }
+    }
+  }
+
+  void staticLockWithLocalClassAndDirectAccess() {
+    synchronized (STATIC_LOCK) { // Noncompliant
+      count++;
+      class R implements Runnable {
+        public void run() {
+          name = "value";
+        }
+      }
+    }
+  }
+
+  private S9399_Holder holder;
+
+  void staticLockWithQualifiedNewExpression() {
+    synchronized (STATIC_LOCK) { // Noncompliant
+      holder.new InnerHolder();
+    }
+  }
+
   private static void consume(Object o) {}
 }
 
@@ -259,6 +300,12 @@ class S9399_SubClass extends S9399_BaseClass {
   void accessInheritedField() {
     synchronized (LOCK) { // Noncompliant
       baseField++;
+    }
+  }
+
+  void accessInheritedFieldViaSuperKeyword() {
+    synchronized (LOCK) { // Noncompliant
+      super.baseField++;
     }
   }
 }
@@ -351,5 +398,10 @@ interface S9399_InterfaceWithDefault {
     synchronized (LOCK) { // Compliant - inside interface, no instance fields
       System.out.println("locked");
     }
+  }
+}
+
+class S9399_Holder {
+  class InnerHolder {
   }
 }
