@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
@@ -77,6 +78,12 @@ class AmbiguousDependencyCheckTest {
   @Test
   void qualifier_resolves_ambiguity() {
     SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "QualifierConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void qualifier_on_bean_definition_resolves_ambiguity() {
+    SpringContextModel model = buildModel("QualifiedBeanDefinitionConfig.java", "QualifiedBeanDefinitionConsumer.java");
     assertThat(check.execute(model)).isEmpty();
   }
 
@@ -177,11 +184,32 @@ class AmbiguousDependencyCheckTest {
     assertThat(check.execute(model)).hasSize(1);
   }
 
+  @Test
+  void duplicate_qualifier_on_two_beans_still_raises_issue() {
+    String type = "com.example.Svc";
+    InputFile fileA = dummyInputFile("com/a/SvcImplA.java");
+    InputFile fileB = dummyInputFile("com/a/SvcImplB.java");
+    InputFile consumerFile = dummyInputFile("com/a/Consumer.java");
+
+    SpringContextModel model = new SpringContextModel();
+    registerBeanWithQualifier(model, "svcImplA", type, "module-a", "com.a", fileA, "shared");
+    registerBeanWithQualifier(model, "svcImplB", type, "module-a", "com.a", fileB, "shared");
+    registerBean(model, "consumer", "com.a.Consumer", "module-a", "com.a", consumerFile);
+    registerInjectionPoint(model, type, "shared", "module-a", consumerFile);
+
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
   private static void registerBean(SpringContextModel model, String beanName, String type, String module,
     String beanPackage, InputFile file) {
+    registerBeanWithQualifier(model, beanName, type, module, beanPackage, file, null);
+  }
+
+  private static void registerBeanWithQualifier(SpringContextModel model, String beanName, String type, String module,
+    String beanPackage, InputFile file, @Nullable String qualifier) {
     var location = new BeanLocation(file, new AnalyzerMessage.TextSpan(1));
     model.getBeanDefinitionRegistry().addBeanDefinition(beanName,
-      new BeanDefinitionHolder.Builder(type, module, beanPackage, location).build());
+      new BeanDefinitionHolder.Builder(type, module, beanPackage, location).qualifier(qualifier).build());
     model.getTypeToBeansIndex().addBeanForType(type, beanName, module, beanPackage);
   }
 
