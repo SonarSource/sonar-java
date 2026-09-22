@@ -36,8 +36,8 @@ import org.sonar.java.model.springcontext.BeanDefinitionGatherer;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
-import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -126,7 +126,12 @@ class AmbiguousDependencyCheckTest {
   void candidate_profiled_with_an_operator_expression_is_excluded_like_a_simply_profiled_one() {
     SpringContextModel model = buildModel(
       "PlainEnvironmentComponentA.java", "PlainEnvironmentComponentB.java", "ExpressionProfiledEnvironmentComponent.java", "EnvironmentConsumer.java");
-    assertThat(check.execute(model)).hasSize(1);
+    assertThat(check.execute(model))
+      .singleElement()
+      .extracting(SpringContextIssue::message)
+      .asString()
+      .contains("plainEnvironmentComponentA", "plainEnvironmentComponentB")
+      .doesNotContain("expressionProfiledEnvironmentComponent");
   }
 
   @Test
