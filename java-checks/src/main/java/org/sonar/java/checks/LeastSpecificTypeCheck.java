@@ -93,7 +93,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       && !leastSpecificType.is("java.lang.Object")) {
 
       String suggestedType = getSuggestedType(springInjectionAnnotated, leastSpecificType);
-      String message = String.format("Use '%s' here; it is a more general type than '%s'.", suggestedType, parameterType.erasure().name());
+      String message = "Use '" + suggestedType + "' here; it is a more general type than '" + parameterType.erasure().name() + "'.";
       reportIssue(parameter.declaration(), message);
     }
   }

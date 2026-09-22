@@ -108,15 +108,15 @@ public class ConfusingVarargCheck extends IssuableSubscriptionVisitor {
   }
 
   private static String message(Type varargParameter, Type varargArgument) {
-    String message = "Cast this argument to '%s' to pass a single element to the vararg method.";
     Type parameterType = ((Type.ArrayType) varargParameter).elementType();
     if (parameterType.isPrimitive()) {
-      message = "Remove this argument or pass an empty '%s' array to the vararg method.";
-    } else if (isPrimitiveArray(varargArgument)) {
-      Type argumentType = ((Type.ArrayType) varargArgument).elementType();
-      return String.format("Use an array of '%s' instead of an array of '%s'.", argumentType.primitiveWrapperType().name(), argumentType.name());
+      return "Remove this argument or pass an empty '" + parameterType.name() + "' array to the vararg method.";
     }
-    return String.format(message, parameterType.name());
+    if (isPrimitiveArray(varargArgument)) {
+      Type argumentType = ((Type.ArrayType) varargArgument).elementType();
+      return "Use an array of '" + argumentType.primitiveWrapperType().name() + "' instead of an array of '" + argumentType.name() + "'.";
+    }
+    return "Cast this argument to '" + parameterType.name() + "' to pass a single element to the vararg method.";
   }
 
 }

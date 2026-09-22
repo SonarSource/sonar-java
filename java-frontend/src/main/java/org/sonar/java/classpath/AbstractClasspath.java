@@ -57,6 +57,7 @@ public abstract class AbstractClasspath {
 
   private static final char UNIX_SEPARATOR = '/';
   private static final char WINDOWS_SEPARATOR = '\\';
+  private static final String MISSING_PROPERTY_MESSAGE_PREFIX = "Missing '";
   private static final Logger LOG = LoggerFactory.getLogger(AbstractClasspath.class);
   protected final Configuration settings;
   protected final FileSystem fs;
@@ -111,11 +112,12 @@ public abstract class AbstractClasspath {
     boolean missingBinary = !settings.hasKey(binariesProperty) && hasMoreThanOneJavaFile();
     boolean missingLibraries = !settings.hasKey(librariesProperty) && hasJavaFiles();
     if (missingBinary && missingLibraries) {
-      classpathWarnings.add(String.format("Missing '%s' and '%s' properties. You might end up with less precise analysis results.", binariesProperty, librariesProperty));
+      classpathWarnings.add(MISSING_PROPERTY_MESSAGE_PREFIX + binariesProperty + "' and '" + librariesProperty + "' properties. You might end up with less precise analysis " +
+        "results.");
     } else if (missingBinary) {
-      classpathWarnings.add(String.format("Missing '%s' property. You might end up with less precise analysis results.", binariesProperty));
+      classpathWarnings.add(MISSING_PROPERTY_MESSAGE_PREFIX + binariesProperty + "' property. You might end up with less precise analysis results.");
     } else if (missingLibraries) {
-      classpathWarnings.add(String.format("Missing '%s' property. You might end up with less precise analysis results.", librariesProperty));
+      classpathWarnings.add(MISSING_PROPERTY_MESSAGE_PREFIX + librariesProperty + "' property. You might end up with less precise analysis results.");
     }
   }
 
@@ -131,9 +133,11 @@ public abstract class AbstractClasspath {
 
   static void logResolvedFiles(String property, Collection<File> files) {
     if (LOG.isDebugEnabled()) {
-      LOG.debug(String.format("Property '%s' resolved with: %s", property, files.stream()
-        .map(File::getAbsolutePath)
-        .collect(Collectors.joining(",", "[", "]"))));
+      LOG.debug("Property '{}' resolved with: {}",
+        property,
+        files.stream()
+          .map(File::getAbsolutePath)
+          .collect(Collectors.joining(",", "[", "]")));
     }
   }
 
@@ -141,7 +145,7 @@ public abstract class AbstractClasspath {
     LOG.debug("Property '{}' set with: {}", ClasspathProperties.SONAR_JAVA_JDK_HOME, path);
     File file = new File(path);
     if (!file.exists() || !file.isDirectory()) {
-      classpathWarnings.add(String.format("Invalid value '%s' for '%s' property, defaulting to runtime JDK.", file.getAbsolutePath(), ClasspathProperties.SONAR_JAVA_JDK_HOME));
+      classpathWarnings.add("Invalid value '" + file.getAbsolutePath() + "' for '" + ClasspathProperties.SONAR_JAVA_JDK_HOME + "' property, defaulting to runtime JDK.");
       return Optional.empty();
     }
     return Optional.of(file);
@@ -167,7 +171,7 @@ public abstract class AbstractClasspath {
       for (String pathPattern : fileNames) {
         Set<File> libraryFilesForPattern = getFilesForPattern(baseDir.toPath(), pathPattern, isLibraryProperty);
         if (validateLibraries && libraryFilesForPattern.isEmpty() && hasJavaFiles) {
-          classpathWarnings.add(String.format("Invalid value for '%s', no files nor directories matching '%s'.", property, pathPattern));
+          classpathWarnings.add("Invalid value for '" + property + "', no files nor directories matching '" + pathPattern + "'.");
         }
         validateLibraries = validateLibs;
         result.addAll(libraryFilesForPattern);

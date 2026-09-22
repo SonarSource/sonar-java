@@ -73,7 +73,7 @@ public class StringLiteralInsideEqualsCheck extends IssuableSubscriptionVisitor 
 
   private JavaQuickFix computeQuickFix(LiteralTree equalsArgument, ExpressionTree leftSideMember) {
     String equalsParameterValue = QuickFixHelper.contentForTree(equalsArgument, context);
-    String quickFixMessage = String.format("Move %s on the left side of .equals", cutTooLongString(equalsParameterValue));
+    String quickFixMessage = "Move " + cutTooLongString(equalsParameterValue) + " on the left side of .equals";
     return JavaQuickFix.newQuickFix(quickFixMessage)
       .addTextEdit(JavaTextEdit.replaceTree(equalsArgument, QuickFixHelper.contentForTree(leftSideMember, context)))
       .addTextEdit(JavaTextEdit.replaceTree(leftSideMember, equalsParameterValue))

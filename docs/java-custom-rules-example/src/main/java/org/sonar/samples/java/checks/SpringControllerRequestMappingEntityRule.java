@@ -41,7 +41,7 @@ public class SpringControllerRequestMappingEntityRule extends BaseTreeVisitor im
       for (VariableTree param : tree.parameters()) {
         TypeTree typeOfParam = param.type();
         if (typeOfParam.symbolType().symbol().metadata().isAnnotatedWith("javax.persistence.Entity")) {
-          context.reportIssue(this, typeOfParam, String.format("Don't use %s here because it's an @Entity", typeOfParam.symbolType().name()));
+          context.reportIssue(this, typeOfParam, "Don't use " + typeOfParam.symbolType().name() + " here because it's an @Entity");
         }
       }
 

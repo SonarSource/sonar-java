@@ -98,10 +98,12 @@ public class AssertJChainSimplificationIndex {
   private static final String ENDS_WITH = "endsWith";
   private static final String HAS_SAME_SIZE_AS = "hasSameSizeAs";
   private static final String LENGTH = "length";
+  private static final String ASSERT_THAT_ACTUAL = "assertThat(actual).";
+  private static final String EXPECTED_ARGUMENT = "(expected)";
 
   private static final WithContextSimplification OPTIONAL_PRESENT_REPLACEMENT = msgWithActual(IS_PRESENT);
   private static final WithContextSimplification OPTIONAL_EMPTY_REPLACEMENT =
-    new WithContextSimplification(String.format("assertThat(actual).%s() or assertThat(actual).%s()", IS_NOT_PRESENT, IS_EMPTY));
+    new WithContextSimplification(ASSERT_THAT_ACTUAL + IS_NOT_PRESENT + "() or " + ASSERT_THAT_ACTUAL + IS_EMPTY + "()");
 
   /**
    * Stores multiple lists of simplifiers which are mapped to by a key. The key is the method name of the predicate
@@ -576,7 +578,6 @@ public class AssertJChainSimplificationIndex {
   }
 
   static class WithContextSimplification extends Simplification {
-    private static final String MESSAGE_ACTUAL_EXPECTED = "assertThat(actual).%s(expected)";
     AssertJChainSimplificationQuickFix buildQuickFix;
 
     WithContextSimplification(String replacement) {
@@ -598,7 +599,7 @@ public class AssertJChainSimplificationIndex {
      * Quick fix of the form: assertThat(x.y(a)).z(b); or assertThat(x.y).z(b); --> assertThat(x).predicateName();
      */
     static WithContextSimplification msgWithActual(String predicateName) {
-      String replacement = String.format("assertThat(actual).%s()", predicateName);
+      String replacement = ASSERT_THAT_ACTUAL + predicateName + "()";
       return new WithContextSimplification(replacement, new ActualExpectedInPredicateQuickFix(replacement, predicateName, false));
     }
 
@@ -607,7 +608,7 @@ public class AssertJChainSimplificationIndex {
      * No quick fix for now, should be done case by case
      */
     static WithContextSimplification msgWithActualExpected(String predicateName) {
-      return new WithContextSimplification(String.format(MESSAGE_ACTUAL_EXPECTED, predicateName));
+      return new WithContextSimplification(ASSERT_THAT_ACTUAL + predicateName + EXPECTED_ARGUMENT);
     }
 
     /**
@@ -615,7 +616,7 @@ public class AssertJChainSimplificationIndex {
      * Quick fix of the form: assertThat(x.y(a)).y(); --> by assertThat(x).predicateName(a);
      */
     static WithContextSimplification msgWithActualExpectedInSubject(String predicateName) {
-      String replacement = String.format(MESSAGE_ACTUAL_EXPECTED, predicateName);
+      String replacement = ASSERT_THAT_ACTUAL + predicateName + EXPECTED_ARGUMENT;
       return new WithContextSimplification(replacement, new ActualExpectedInSubjectQuickFix(replacement, predicateName));
     }
 
@@ -624,7 +625,7 @@ public class AssertJChainSimplificationIndex {
      * Quick fix of the form: assertThat(x.y(a)).z(b); or assertThat(x.y).z(b); --> assertThat(x).predicateName(b);
      */
     static WithContextSimplification msgWithActualExpectedInPredicate(String predicateName) {
-      String replacement = String.format(MESSAGE_ACTUAL_EXPECTED, predicateName);
+      String replacement = ASSERT_THAT_ACTUAL + predicateName + EXPECTED_ARGUMENT;
       return new WithContextSimplification(replacement, new ActualExpectedInPredicateQuickFix(replacement, predicateName, true));
     }
 
@@ -634,7 +635,7 @@ public class AssertJChainSimplificationIndex {
      */
     static WithContextSimplification msgWithActualCustom(String predicateName, String predicateArg) {
       // Providing quick fixes for such issues should be done in case by case, it is an important effort for little value, it seems reasonable to not suggest them.
-      return new WithContextSimplification(String.format("assertThat(actual).%s(%s)", predicateName, predicateArg));
+      return new WithContextSimplification(ASSERT_THAT_ACTUAL + predicateName + "(" + predicateArg + ")");
     }
   }
 }

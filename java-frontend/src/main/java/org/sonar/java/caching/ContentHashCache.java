@@ -29,8 +29,8 @@ import org.sonar.java.SonarComponents;
 public class ContentHashCache {
 
   private static final Logger LOG = LoggerFactory.getLogger(ContentHashCache.class);
-  private static final String CONTENT_HASH_KEY = String.format("java:contentHash:%s:", FileHashingUtils.HASH_ALGORITHM);
-  private static final String HASH_COMPUTE_FAIL_MSG = "Failed to compute content hash for file %s";
+  private static final String CONTENT_HASH_KEY = "java:contentHash:" + FileHashingUtils.HASH_ALGORITHM + ":";
+  private static final String HASH_COMPUTE_FAIL_MSG = "Failed to compute content hash for file {}";
 
   private ReadCache readCache;
   private WriteCache writeCache;
@@ -72,7 +72,7 @@ public class ContentHashCache {
       LOG.debug("Could not find key {} in the cache", cacheKey);
       writeToCache(inputFile);
     } catch (IOException | NoSuchAlgorithmException e) {
-      LOG.warn(String.format(HASH_COMPUTE_FAIL_MSG, inputFile.key()));
+      LOG.warn(HASH_COMPUTE_FAIL_MSG, inputFile.key());
     }
     return false;
   }
@@ -96,9 +96,9 @@ public class ContentHashCache {
       writeCache.write(cacheKey, FileHashingUtils.inputFileContentHash(inputFile));
       return true;
     } catch (IllegalArgumentException e) {
-      LOG.trace(String.format("Tried to write multiple times to cache key %s. Ignoring writes after the first.", cacheKey));
+      LOG.trace("Tried to write multiple times to cache key {}. Ignoring writes after the first.", cacheKey);
     } catch (IOException | NoSuchAlgorithmException e) {
-      LOG.warn(String.format(HASH_COMPUTE_FAIL_MSG, inputFile.key()));
+      LOG.warn(HASH_COMPUTE_FAIL_MSG, inputFile.key());
     }
     return false;
   }

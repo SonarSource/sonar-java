@@ -46,7 +46,7 @@ public class AvoidAnnotationRule extends BaseTreeVisitor implements JavaFileScan
       if (annotationType.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) annotationType;
         if (identifier.name().equals(name)) {
-          context.reportIssue(this, identifier, String.format("Avoid using annotation @%s", name));
+          context.reportIssue(this, identifier, "Avoid using annotation @" + name);
         }
       }
     }

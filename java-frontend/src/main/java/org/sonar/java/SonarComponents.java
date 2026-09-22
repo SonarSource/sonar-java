@@ -458,7 +458,7 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     try {
       return inputFile.contents();
     } catch (IOException e) {
-      throw new AnalysisException(String.format("Unable to read file '%s'", inputFile), e);
+      throw new AnalysisException("Unable to read file '" + inputFile + "'", e);
     }
   }
 

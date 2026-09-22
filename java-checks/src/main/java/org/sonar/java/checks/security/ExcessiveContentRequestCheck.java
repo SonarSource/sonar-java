@@ -311,7 +311,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     try {
       writeCache.copyFromPrevious(computeCacheKey(inputFile));
     } catch (IllegalArgumentException e) {
-      String message = String.format("Failed to copy from previous cache for file %s", inputFile);
+      String message = "Failed to copy from previous cache for file " + inputFile;
       LOGGER.trace(message);
       throw new AnalysisException(message, e);
     }
@@ -322,7 +322,7 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
     try {
       writeCache.write(computeCacheKey(inputFile), toBytes(new CachedResult(instantiates, setsMaximumSize)));
     } catch (IllegalArgumentException e) {
-      String message = String.format("Failed to write to cache for file %s", inputFile);
+      String message = "Failed to write to cache for file " + inputFile;
       LOGGER.trace(message);
       throw new AnalysisException(message, e);
     }

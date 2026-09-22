@@ -49,7 +49,7 @@ public class InternalWriteCache implements WriteCache {
   @Override
   public void write(String key, byte[] data) {
     if (this.data.containsKey(key)) {
-      throw new IllegalArgumentException(String.format("Same key cannot be written to multiple times (%s)", key));
+      throw new IllegalArgumentException("Same key cannot be written to multiple times (" + key + ")");
     }
     this.data.put(key, data);
   }
