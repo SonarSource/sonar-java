@@ -67,9 +67,8 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
 
   private static final String SCHEME = "[a-zA-Z][a-zA-Z\\+\\.\\-]+";
   private static final String FOLDER_NAME = "[^/?%*:\\\\|\"<>]+";
-  private static final String URI_REGEX = String.format("^%s://.+", SCHEME);
-  private static final String LOCAL_URI = String.format("^(~/|/|//[\\w-]+/|%s:/)(%s/)*%s/?",
-    SCHEME, FOLDER_NAME, FOLDER_NAME);
+  private static final String URI_REGEX = "^" + SCHEME + "://.+";
+  private static final String LOCAL_URI = String.format("^(~/|/|//[\\w-]+/|%s:/)(%s/)*%s/?", SCHEME, FOLDER_NAME, FOLDER_NAME);
   private static final String BACKSLASH_LOCAL_URI = String.format("^(~\\\\\\\\|\\\\\\\\\\\\\\\\[\\w-]+\\\\\\\\|%s:\\\\\\\\)(%s\\\\\\\\)*%s(\\\\\\\\)?",
     SCHEME, FOLDER_NAME, FOLDER_NAME);
   private static final String DISK_URI = "^[A-Za-z]:(/|\\\\)";
@@ -117,7 +116,7 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
       }
     }
 
-    for(VariableData v : hardCodedUri) {
+    for (VariableData v : hardCodedUri) {
       // equals to an identifier with unknown semantic, we cannot compare their symbols
       if (idNamesWithoutSemantic.contains(v.identifier())) {
         continue;

@@ -164,7 +164,7 @@ class Expectations {
       Integer otherOrder = ORDER.get(other.attributes);
       if (thisOrder != null && otherOrder != null) {
         if(thisOrder.equals(otherOrder)) {
-          throw new AssertionError(String.format("Same explicit ORDER=%s provided for two comments.%n%s%n%s", thisOrder, this, other));
+          throw new AssertionError("Same explicit ORDER=" + thisOrder + " provided for two comments." + System.lineSeparator() + this + System.lineSeparator() + other);
         }
         return thisOrder.compareTo(otherOrder);
       }
@@ -172,7 +172,7 @@ class Expectations {
         int compareLines = Integer.compare(line, other.line);
         return compareLines != 0 ? compareLines : Integer.compare(startColumn, other.startColumn);
       }
-      throw new AssertionError(String.format("Mixed explicit and implicit order in same flow.%n%s%n%s", this, other));
+      throw new AssertionError("Mixed explicit and implicit order in same flow." + System.lineSeparator() + this + System.lineSeparator() + other);
     }
 
     @CheckForNull
@@ -481,7 +481,7 @@ class Expectations {
       AnalyzerMessage.TextSpan textSpan = edit.getTextSpan(issueTextSpan.startLine);
       String replacement = edit.replacement();
       if (textSpan.isEmpty() && replacement.isEmpty()) {
-        throw new AssertionError(String.format("Unnecessary edit for quick fix id %s. TextEdits should not have empty range and text.", quickFixId));
+        throw new AssertionError("Unnecessary edit for quick fix id " + quickFixId + ". TextEdits should not have empty range and text.");
       }
       return JavaTextEdit.replaceTextSpan(textSpan, replacement);
     }
@@ -631,7 +631,7 @@ class Expectations {
         scanner.useDelimiter("[=]+");
         String name = scanner.next();
         if (!ATTRIBUTE_MAP.containsKey(name)) {
-          throw new AssertionError(String.format("// Noncompliant attributes not valid: '%s'", attribute));
+          throw new AssertionError("// Noncompliant attributes not valid: '" + attribute + "'");
         }
         IssueAttribute key = ATTRIBUTE_MAP.get(name);
         Object value = key.setter.apply(scanner.hasNext() ? scanner.next() : null);

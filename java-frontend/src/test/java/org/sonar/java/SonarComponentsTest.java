@@ -1203,7 +1203,7 @@ class SonarComponentsTest {
         .doesNotContain("- Z cannot be resolved to a type");
       for (int i = 0; i < 26; i++) {
         char typeName = (char) ('A' + i);
-        assertThat(list).contains(String.format("- The import org.package%s cannot be resolved", formatter.format(i + 1)));
+        assertThat(list).contains("- The import org.package" + formatter.format(i + 1) + " cannot be resolved");
         if (typeName < 'Y') {
           assertThat(list).contains(String.format("- %c cannot be resolved to a type", typeName));
         }

@@ -566,11 +566,7 @@ class VisitorsBridgeTest {
         .hasMessage("Failing check")
         .isInstanceOf(AnalysisException.class);
 
-      String expectedLogMessage = String.format(
-        "Scan without parsing of file %s failed for scanner %s.",
-        inputFile.toString(),
-        scanner.getClass().getCanonicalName()
-      );
+      String expectedLogMessage = "Scan without parsing of file " + inputFile + " failed for scanner " + scanner.getClass().getCanonicalName() + ".";
 
       assertThat(logTester.logs(Level.WARN)).containsExactly(expectedLogMessage);
     }

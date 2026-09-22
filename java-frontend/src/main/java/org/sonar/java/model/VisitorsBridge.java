@@ -214,11 +214,7 @@ public class VisitorsBridge {
         } catch (Exception e) {
           exceptionIsBlownUp = true;
           allScansSucceeded = false;
-          String failureMessage = String.format(
-            "Scan without parsing of file %s failed for scanner %s.",
-            inputFile,
-            scanner.getClass().getCanonicalName()
-          );
+          String failureMessage = "Scan without parsing of file " + inputFile + " failed for scanner " + scanner.getClass().getCanonicalName() + ".";
           LOG.warn(failureMessage);
           interruptIfFailFast(new CheckFailureException(failureMessage, e));
           exceptionIsBlownUp = false;
@@ -301,10 +297,8 @@ public class VisitorsBridge {
         throw e;
       }
 
-      String message = String.format(
-        "Unable to run check %s - %s on file '%s', To help improve the SonarSource Java Analyzer, please report this problem to SonarSource: see https://community.sonarsource" +
-          ".com/",
-        scanner.getClass(), ruleKey(scanner), currentFile);
+      String message = "Unable to run check " + scanner.getClass() + " - " + ruleKey(scanner) + " on file '" + currentFile
+        + "', To help improve the SonarSource Java Analyzer, please report this problem to SonarSource: see https://community.sonarsource.com/";
 
       LOG.error(message, e);
 
@@ -421,11 +415,7 @@ public class VisitorsBridge {
           allScansSucceeded &= visitor.scanWithoutParsing(fileScannerContext);
         } catch (Exception e) {
           allScansSucceeded = false;
-          String failureMessage = String.format(
-            "Scan without parsing of file %s failed for scanner %s.",
-            fileScannerContext.getInputFile(),
-            visitor.getClass().getCanonicalName()
-          );
+          String failureMessage = "Scan without parsing of file " + fileScannerContext.getInputFile() + " failed for scanner " + visitor.getClass().getCanonicalName() + ".";
           LOG.warn(failureMessage);
           interruptIfFailFast(new CheckFailureException(failureMessage, e));
         } finally {

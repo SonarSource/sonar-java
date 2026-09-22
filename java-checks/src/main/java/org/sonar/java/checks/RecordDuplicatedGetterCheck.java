@@ -123,7 +123,7 @@ public class RecordDuplicatedGetterCheck extends IssuableSubscriptionVisitor {
   }
 
   private static String issueMessage(MethodTree getter, Symbol.VariableSymbol component) {
-    return String.format("Remove this getter '%s()' from record and override an existing one '%s()'.", getter.simpleName().name(), component.name());
+    return "Remove this getter '" + getter.simpleName().name() + "()' from record and override an existing one '" + component.name() + "()'.";
   }
 
   private static List<Symbol.VariableSymbol> recordComponents(Symbol.TypeSymbol recordSymbol) {

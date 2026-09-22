@@ -316,7 +316,7 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
     name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
     TypeTree typeInDeclaration = ((VariableTree) identifier.symbol().declaration()).type();
     String type = QuickFixHelper.contentForTree(typeInDeclaration, context);
-    return String.format("%s valueFormerlyAssignedTo%s = ", type, name);
+    return type + " valueFormerlyAssignedTo" + name + " = ";
   }
 
   private static Optional<SyntaxToken> getPrecedingComma(VariableTree variable) {

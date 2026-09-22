@@ -549,7 +549,7 @@ public class JavaRulingTest {
       .orElse(null);
 
     if (StringUtils.isEmpty(profileKey)) {
-      LOG.error("Could not retrieve profile key : Template rule " + ruleTemplateKey + " has not been activated");
+      LOG.error("Could not retrieve profile key : Template rule {} has not been activated", ruleTemplateKey);
     } else {
       String ruleKey = "java:" + instantiationKey;
       newAdminWsClient(ORCHESTRATOR).qualityprofiles()
@@ -558,7 +558,7 @@ public class JavaRulingTest {
           .setRule(ruleKey)
           .setSeverity("INFO")
           .setParams(Collections.emptyList()));
-      LOG.info(String.format("Successfully activated template rule '%s'", ruleKey));
+      LOG.info("Successfully activated template rule '{}'", ruleKey);
     }
   }
 

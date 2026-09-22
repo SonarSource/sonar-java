@@ -71,7 +71,7 @@ public class KnownCapacityHashBasedCollectionCheck extends AbstractMethodDetecti
 
   private static String getIssueMessage(NewClassTree newClassTree) {
     String replacementMethod = TYPES_TO_METHODS.get(newClassTree.symbolType().name());
-    return String.format("Replace this call to the constructor with the better suited static method %s", replacementMethod);
+    return "Replace this call to the constructor with the better suited static method " + replacementMethod;
   }
 
   private static JavaQuickFix computeQuickFix(NewClassTree newClassTree) {

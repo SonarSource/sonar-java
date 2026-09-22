@@ -86,7 +86,7 @@ public class SpringComponentSpecializationCheck extends IssuableSubscriptionVisi
     String suggestedAnnotation = getSuggestedAnnotation(className);
 
     if (suggestedAnnotation != null && shouldRaise(suggestedAnnotation, classTree)) {
-      reportIssue(componentAnnotation.get(), String.format("Use @%s instead of @Component, or rename this type if the @Component annotation is intentional", suggestedAnnotation));
+      reportIssue(componentAnnotation.get(), "Use @" + suggestedAnnotation + " instead of @Component, or rename this type if the @Component annotation is intentional");
     }
   }
 

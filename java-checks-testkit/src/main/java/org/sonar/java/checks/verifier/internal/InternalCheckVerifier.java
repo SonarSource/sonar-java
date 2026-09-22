@@ -218,7 +218,7 @@ public class InternalCheckVerifier implements CheckVerifier {
 
     files.forEach(inputFile -> {
       if (filesToAddStrings.contains(inputFile.toString())) {
-        throw new IllegalArgumentException(String.format("File %s was already added.", inputFile));
+        throw new IllegalArgumentException("File " + inputFile + " was already added.");
       }
     });
 
@@ -364,7 +364,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
     String issuesAsString = issues.stream()
       .sorted(issueLineSorter())
-      .map(issue -> String.format("'%s' in %s%s", issue.getMessage(), issue.getInputComponent(), (issue.getLine() == null ? "" : (":" + issue.getLine()))))
+      .map(issue -> "'" + issue.getMessage() + "' in " + issue.getInputComponent() + (issue.getLine() == null ? "" : (":" + issue.getLine())))
       .collect(Collectors.joining("\n--> ", "\n--> ", ""));
     throw new AssertionError(String.format("No issues expected but got %d issue(s):%s", issues.size(), issuesAsString));
   }
@@ -394,7 +394,7 @@ public class InternalCheckVerifier implements CheckVerifier {
 
     if (issues.size() != 1) {
       String issueNumberMessage = issues.isEmpty() ? "none has been raised" : String.format("%d issues have been raised", issues.size());
-      throw new AssertionError(String.format("A single issue is expected on the %s, but %s", component, issueNumberMessage));
+      throw new AssertionError("A single issue is expected on the " + component + ", but " + issueNumberMessage);
     }
     AnalyzerMessage issue = issues.iterator().next();
     if (issue.getLine() != null) {
@@ -402,10 +402,11 @@ public class InternalCheckVerifier implements CheckVerifier {
     }
     if ((expectations.expectIssueAtProjectLevel() && issue.getInputComponent().isFile())
       || (expectations.expectIssueAtFileLevel() && !issue.getInputComponent().isFile())) {
-      throw new AssertionError(String.format("Expected the issue to be raised at %s level, not at %s level", component, otherComponent));
+      throw new AssertionError("Expected the issue to be raised at " + component + " level, not at " + otherComponent + " level");
     }
     if (!Objects.equals(expectedMessage, issue.getMessage())) {
-      throw new AssertionError(String.format("Expected the issue message to be:%n\t\"%s\"%nbut was:%n\t\"%s\"", expectedMessage, issue.getMessage()));
+      throw new AssertionError("Expected the issue message to be:" + System.lineSeparator() + "\t\"" + expectedMessage + "\"" + System.lineSeparator()
+        + "but was:" + System.lineSeparator() + "\t\"" + issue.getMessage() + "\"");
     }
   }
 
@@ -424,9 +425,9 @@ public class InternalCheckVerifier implements CheckVerifier {
       Collections.sort(unexpectedLines);
       List<Integer> expectedLines = expected.keySet().stream().sorted().toList();
       throw new AssertionError(new StringBuilder()
-        .append(expectedLines.isEmpty() ? "" : String.format("Expected at %s", expectedLines))
+        .append(expectedLines.isEmpty() ? "" : ("Expected at " + expectedLines))
         .append(expectedLines.isEmpty() || unexpectedLines.isEmpty() ? "" : ", ")
-        .append(unexpectedLines.isEmpty() ? "" : String.format("Unexpected at %s", unexpectedLines))
+        .append(unexpectedLines.isEmpty() ? "" : ("Unexpected at " + unexpectedLines))
         .toString());
     }
     assertSuperfluousFlows();
@@ -479,7 +480,7 @@ public class InternalCheckVerifier implements CheckVerifier {
       .collect(Collectors.toMap(Function.identity(), expectations::flowToLines));
 
     if (!unseenFlowWithLines.isEmpty()) {
-      throw new AssertionError(String.format("Following flow comments were observed, but not referenced by any issue: %s", unseenFlowWithLines));
+      throw new AssertionError("Following flow comments were observed, but not referenced by any issue: " + unseenFlowWithLines);
     }
   }
 
@@ -559,11 +560,11 @@ public class InternalCheckVerifier implements CheckVerifier {
       .map(InternalCheckVerifier::flowToString)
       .collect(Collectors.joining("\n"));
 
-    String missingMsg = expectedFlowIds.stream().map(fid -> String.format("%s [%s]", fid, expectations.flowToLines(fid))).collect(Collectors.joining(","));
+    String missingMsg = expectedFlowIds.stream().map(fid -> fid + " [" + expectations.flowToLines(fid) + "]").collect(Collectors.joining(","));
 
     if (!unexpectedMsg.isEmpty() || !missingMsg.isEmpty()) {
-      unexpectedMsg = unexpectedMsg.isEmpty() ? "" : String.format("Unexpected flows: %s. ", unexpectedMsg);
-      missingMsg = missingMsg.isEmpty() ? "" : String.format("Missing flows: %s.", missingMsg);
+      unexpectedMsg = unexpectedMsg.isEmpty() ? "" : ("Unexpected flows: " + unexpectedMsg + ". ");
+      missingMsg = missingMsg.isEmpty() ? "" : ("Missing flows: " + missingMsg + ".");
       throw new AssertionError(unexpectedMsg + missingMsg);
     }
   }
@@ -573,7 +574,7 @@ public class InternalCheckVerifier implements CheckVerifier {
     List<Integer> expectedLines = expected.stream().map(flow -> flow.line).toList();
     List<Integer> actualLines = actualFlow.stream().map(AnalyzerMessage::getLine).toList();
     if (!actualLines.equals(expectedLines)) {
-      throw new AssertionError(String.format("Flow %s has line differences. Expected: %s but was: %s", expectedId, expectedLines, actualLines));
+      throw new AssertionError("Flow " + expectedId + " has line differences. Expected: " + expectedLines + " but was: " + actualLines);
     }
   }
 
@@ -615,17 +616,13 @@ public class InternalCheckVerifier implements CheckVerifier {
 
     expectedMessages = replaceExpectedNullWithActual(actualMessages, expectedMessages);
     if (!actualMessages.equals(expectedMessages)) {
-      throw new AssertionError(
-        String.format("Wrong messages in flow %s [%s]. Expected: %s but was: %s",
-          flowId,
-          expectations.flowToLines(flowId),
-          expectedMessages,
-          actualMessages));
+      throw new AssertionError("Wrong messages in flow " + flowId + " [" + expectations.flowToLines(flowId) + "]. Expected: " + expectedMessages
+        + " but was: " + actualMessages);
     }
   }
 
   private static String addQuotes(@Nullable String s) {
-    return s != null ? String.format("\"%s\"", s) : s;
+    return s != null ? ("\"" + s + "\"") : s;
   }
 
   private static List<String> replaceExpectedNullWithActual(List<String> actualMessages, List<String> expectedMessages) {

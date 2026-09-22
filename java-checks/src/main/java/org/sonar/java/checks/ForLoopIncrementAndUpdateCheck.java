@@ -66,7 +66,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
   }
 
   private static String getMessage(Set<Symbol> updates) {
-    return String.format("Move the update of %s into this loop's update clause.", symbolNames(updates));
+    return "Move the update of " + symbolNames(updates) + " into this loop's update clause.";
   }
 
   private static Collection<Symbol> symbolsFromConditionsNotUpdated(ForStatementTree forStatementTree) {
