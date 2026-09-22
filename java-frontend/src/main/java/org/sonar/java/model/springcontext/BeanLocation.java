@@ -18,6 +18,8 @@ package org.sonar.java.model.springcontext;
 
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.telemetry.SizeEstimable;
+import org.sonar.java.telemetry.SizeEstimator;
 
 /**
  * Source location of a Spring bean definition within the project.
@@ -25,5 +27,11 @@ import org.sonar.java.reporting.AnalyzerMessage;
  * @param inputFile    the file in which the bean is declared
  * @param mainLocation the precise text span of the bean declaration, used for reporting issues
  */
-public record BeanLocation(InputFile inputFile, AnalyzerMessage.TextSpan mainLocation) {
+public record BeanLocation(InputFile inputFile, AnalyzerMessage.TextSpan mainLocation) implements SizeEstimable {
+
+  @Override
+  public long estimateSize(SizeEstimator estimator) {
+    return estimator.estimateShallowObject(this, 2, 0)
+      + estimator.estimateShallowObject(mainLocation, 0, 4 * Integer.BYTES);
+  }
 }

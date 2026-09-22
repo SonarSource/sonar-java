@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.sonar.java.telemetry.SizeEstimable;
+import org.sonar.java.telemetry.SizeEstimator;
 
 /**
  * Index mapping JPA / Hibernate {@code @Entity} class names to their associated
@@ -29,8 +31,10 @@ import java.util.Set;
  * <p>Multiple properties can be registered for the same entity class.
  * Lookup returns an empty set for entity classes that have no registered properties.
  */
-public class EntityClassToPropertiesIndex {
-  /** Properties indexed by fully-qualified {@code @Entity} class name. */
+public class EntityClassToPropertiesIndex implements SizeEstimable {
+  /**
+   * Properties indexed by fully-qualified {@code @Entity} class name.
+   */
   private final Map<String, Set<Map.Entry<String, String>>> propertiesByEntityClass = new HashMap<>();
 
   /**
@@ -52,5 +56,19 @@ public class EntityClassToPropertiesIndex {
    */
   public Set<Map.Entry<String, String>> getPropertiesForEntity(String entityClass) {
     return Collections.unmodifiableSet(propertiesByEntityClass.getOrDefault(entityClass, Set.of()));
+  }
+
+  @Override
+  public long estimateSize(SizeEstimator estimator) {
+    long size = estimator.estimateShallowObject(this, 1, 0) + estimator.estimateMap(propertiesByEntityClass);
+    for (var entry : propertiesByEntityClass.entrySet()) {
+      size += estimator.estimateString(entry.getKey()) + estimator.estimateSet(entry.getValue());
+      for (var property : entry.getValue()) {
+        size += estimator.estimateShallowObject(property, 2, 0)
+          + estimator.estimateString(property.getKey())
+          + estimator.estimateString(property.getValue());
+      }
+    }
+    return size;
   }
 }
