@@ -35,6 +35,7 @@ import org.sonar.java.model.springcontext.BeanDefinitionGatherer;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextModel;
+import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -213,7 +214,7 @@ class AmbiguousDependencyCheckTest {
     SpringContextModel model = new SpringContextModel();
     sonarComponents.setSpringContextModel(model);
 
-    BeanDefinitionGatherer gatherer = new BeanDefinitionGatherer();
+    BeanDefinitionGatherer gatherer = new BeanDefinitionGatherer(new NoOpTelemetry());
     VisitorsBridge visitorsBridge = new VisitorsBridge(List.of((JavaCheck) gatherer), classpath, sonarComponents);
     for (String filePath : filePaths) {
       File file = new File(filePath);

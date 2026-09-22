@@ -26,6 +26,7 @@ import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.TestUtils;
+import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
@@ -45,7 +46,7 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
 
   @BeforeEach
   void setUp() {
-    gatherer = new ComponentScanPackageGatherer();
+    gatherer = new ComponentScanPackageGatherer(new NoOpTelemetry());
     model = new SpringContextModel();
   }
 
