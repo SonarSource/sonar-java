@@ -18,11 +18,14 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.StreamSupport;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.AbstractForLoopRule.ForLoopIncrement;
 import org.sonar.java.checks.AbstractForLoopRule.ForLoopInitializer;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -40,27 +43,33 @@ import org.sonar.plugins.java.api.tree.Tree;
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
 @Rule(key = "S9411")
-public class S9411Check extends IssuableSubscriptionVisitor {
+public class S9411Check extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private static final String MESSAGE = "Replace this loop with \"List.replaceAll()\".";
+  private static final String LIST_TYPE = "java.util.List";
 
   private static final MethodMatchers LIST_SET = MethodMatchers.create()
-    .ofSubTypes("java.util.List")
+    .ofSubTypes(LIST_TYPE)
     .names("set")
     .addParametersMatcher("int", ANY)
     .build();
 
   private static final MethodMatchers LIST_GET = MethodMatchers.create()
-    .ofSubTypes("java.util.List")
+    .ofSubTypes(LIST_TYPE)
     .names("get")
     .addParametersMatcher("int")
     .build();
 
   private static final MethodMatchers LIST_SIZE = MethodMatchers.create()
-    .ofSubTypes("java.util.List")
+    .ofSubTypes(LIST_TYPE)
     .names("size")
     .addWithoutParametersMatcher()
     .build();
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava8Compatible();
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -100,10 +109,9 @@ public class S9411Check extends IssuableSubscriptionVisitor {
 
   @CheckForNull
   private static ForLoopInitializer extractSingleInitializer(ForStatementTree forStatement) {
-    List<ForLoopInitializer> initializers = new java.util.ArrayList<>();
-    for (ForLoopInitializer init : ForLoopInitializer.list(forStatement)) {
-      initializers.add(init);
-    }
+    List<ForLoopInitializer> initializers = StreamSupport
+      .stream(ForLoopInitializer.list(forStatement).spliterator(), false)
+      .toList();
     if (initializers.size() != 1) {
       return null;
     }
@@ -185,13 +193,14 @@ public class S9411Check extends IssuableSubscriptionVisitor {
   private static boolean containsListGetWithSameIndexAndList(ExpressionTree expression, Symbol listSymbol, ForLoopInitializer initializer) {
     ListGetFinder finder = new ListGetFinder(listSymbol, initializer);
     expression.accept(finder);
-    return finder.found;
+    return finder.found && !finder.indexUsedElsewhere;
   }
 
   private static class ListGetFinder extends BaseTreeVisitor {
     private final Symbol listSymbol;
     private final ForLoopInitializer initializer;
     private boolean found = false;
+    private boolean indexUsedElsewhere = false;
 
     ListGetFinder(Symbol listSymbol, ForLoopInitializer initializer) {
       this.listSymbol = listSymbol;
@@ -204,9 +213,19 @@ public class S9411Check extends IssuableSubscriptionVisitor {
         Symbol receiver = extractReceiverSymbol(tree);
         if (listSymbol.equals(receiver) && initializer.hasSameIdentifier(tree.arguments().get(0))) {
           found = true;
+          scan(tree.methodSelect());
+          return;
         }
       }
       super.visitMethodInvocation(tree);
+    }
+
+    @Override
+    public void visitIdentifier(IdentifierTree tree) {
+      if (initializer.hasSameIdentifier(tree)) {
+        indexUsedElsewhere = true;
+      }
+      super.visitIdentifier(tree);
     }
   }
 }

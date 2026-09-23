@@ -28,6 +28,7 @@ class S9411CheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/S9411CheckSample.java"))
       .withCheck(new S9411Check())
+      .withJavaVersion(8)
       .verifyIssues();
   }
 
@@ -38,5 +39,14 @@ class S9411CheckTest {
       .withCheck(new S9411Check())
       .withoutSemantic()
       .verifyIssues();
+  }
+
+  @Test
+  void test_java7() {
+    CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/S9411CheckSample.java"))
+      .withCheck(new S9411Check())
+      .withJavaVersion(7)
+      .verifyNoIssues();
   }
 }

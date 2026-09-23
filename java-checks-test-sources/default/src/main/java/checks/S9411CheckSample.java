@@ -155,6 +155,24 @@ class S9411CheckSample {
     }
   }
 
+  void compliantIndexUsedInArithmetic(List<Integer> list) {
+    for (int i = 0; i < list.size(); i++) {
+      list.set(i, list.get(i) + i); // compliant - index used in arithmetic
+    }
+  }
+
+  void compliantIndexUsedInAnotherGet(List<Integer> list, List<Integer> weights) {
+    for (int i = 0; i < list.size(); i++) {
+      list.set(i, list.get(i) * weights.get(i)); // compliant - index used in another list access
+    }
+  }
+
+  void compliantNonMatchingGetIndex(List<Integer> list) {
+    for (int i = 0; i < list.size(); i++) {
+      list.set(i, list.get(i) + list.get(i - 1)); // compliant - list.get(i-1) is not list.get(i)
+    }
+  }
+
   private static String transform(String s) {
     return s.trim().toLowerCase();
   }
