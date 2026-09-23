@@ -166,24 +166,29 @@ public class S9410Check extends IssuableSubscriptionVisitor {
     if (constructor) {
       return false;
     }
-    for (Type superType : targetType.symbol().superTypes()) {
-      if (superType.isUnknown()) {
-        return true;
-      }
-      if (matchesMethodInType(superType, name, signature, staticLookup, false)) {
-        return true;
-      }
+    if (matchesInSuperTypes(targetType.symbol().superTypes(), name, signature, staticLookup)) {
+      return true;
     }
     if (targetType.symbol().isInterface()) {
       Type objectType = targetType.symbol().superClass();
-      if (objectType != null && !objectType.isUnknown()) {
-        return matchesMethodInType(objectType, name, signature, staticLookup, false);
+      return objectType != null && !objectType.isUnknown() && matchesMethodInType(objectType, name, signature, staticLookup, false);
+    }
+    return false;
+  }
+
+  private static boolean matchesInSuperTypes(Iterable<Type> superTypes, String name, MethodSignature signature, boolean staticLookup) {
+    for (Type superType : superTypes) {
+      if (superType.isUnknown() || matchesMethodInType(superType, name, signature, staticLookup, false)) {
+        return true;
       }
     }
     return false;
   }
 
-  private static boolean matchesMethodInType(Type type, String symbolName, MethodSignature signature, boolean staticLookup, boolean constructor) {
+  private static boolean matchesMethodInType(@javax.annotation.Nullable Type type, String symbolName, MethodSignature signature, boolean staticLookup, boolean constructor) {
+    if (type == null) {
+      return false;
+    }
     return type.symbol().lookupSymbols(symbolName).stream()
       .filter(Symbol.MethodSymbol.class::isInstance)
       .map(Symbol.MethodSymbol.class::cast)
@@ -206,10 +211,7 @@ public class S9410Check extends IssuableSubscriptionVisitor {
       return true;
     }
     for (Type superType : targetType.symbol().superTypes()) {
-      if (superType.isUnknown()) {
-        return true;
-      }
-      if (matchesFieldInType(superType, name, requestedType, staticLookup)) {
+      if (superType.isUnknown() || matchesFieldInType(superType, name, requestedType, staticLookup)) {
         return true;
       }
     }

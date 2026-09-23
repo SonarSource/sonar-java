@@ -181,6 +181,29 @@ class S9410CheckSample {
     VarHandle genericField = lookup.findVarHandle(GenericHolder.class, "value", Object.class);
   }
 
+  static void primitiveAndArrayTargets(MethodHandles.Lookup lookup) throws Throwable {
+    // Primitive type target — targetType.isClass() returns false, so ignored
+    lookup.findStatic(int.class, "valueOf", MethodType.methodType(int.class, String.class));
+
+    // Array type target — targetType.isClass() returns false, so ignored
+    lookup.findVirtual(int[].class, "clone", MethodType.methodType(Object.class));
+
+    // Primitive target for field — targetType.isClass() returns false, so ignored
+    lookup.findStaticVarHandle(int.class, "MAX_VALUE", int.class);
+
+    // Non-existent field on class (not inherited) — covers findField returning false
+    VarHandle noSuchField = lookup.findVarHandle(UserService.class, "nonExistent", int.class); // Noncompliant
+
+    // Static field with wrong type — covers field type mismatch
+    VarHandle wrongStaticType = lookup.findStaticVarHandle(UserService.class, "version", int.class); // Noncompliant
+
+    // findStatic on non-static method — noncompliant (covers static mismatch in matchesMethod)
+    MethodHandle wrongStatic = lookup.findStatic(UserService.class, "updateUser", MethodType.methodType(int.class, int.class, String.class)); // Noncompliant
+
+    // findVirtual on static method — noncompliant (covers static mismatch in matchesMethod)
+    MethodHandle wrongVirtual = lookup.findVirtual(UserService.class, "format", MethodType.methodType(String.class, String.class)); // Noncompliant
+  }
+
   private static String getMethodName() {
     return "updateUser";
   }
