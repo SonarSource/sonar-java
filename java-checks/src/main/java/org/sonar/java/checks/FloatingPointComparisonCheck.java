@@ -99,7 +99,7 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
       addNestedSubtractions(expr);
     }
 
-    private boolean allUsagesAreCompareArguments(Symbol symbol) {
+    private static boolean allUsagesAreCompareArguments(Symbol symbol) {
       for (IdentifierTree usage : symbol.usages()) {
         Tree parent = usage.parent();
         if (parent == null) {
