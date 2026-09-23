@@ -78,9 +78,9 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
 
     Assertion(String namePostfix, String actionDescription) {
       this.methodName = "assert" + namePostfix;
-      this.useInsteadMessage = String.format("Use %s instead.", methodName);
+      this.useInsteadMessage = "Use " + methodName + " instead.";
       this.secondaryExplanationMessage =
-        String.format("%s is performed here, which is better expressed with %s.", actionDescription, methodName);
+        actionDescription + " is performed here, which is better expressed with " + methodName + ".";
     }
   }
 

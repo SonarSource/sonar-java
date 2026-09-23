@@ -89,7 +89,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
   private static String reportMessage(List<InterfaceTreeAndStringPairReport> interfacesToBeReported) {
     String functionalInterfaces = interfacesToBeReported.stream().map(x -> x.reportString)
       .collect(Collectors.joining("', '", (interfacesToBeReported.size() > 1 ? "s '" : " '"), "'"));
-    return String.format("Refactor this code to use the more specialised Functional Interface%s", functionalInterfaces);
+    return "Refactor this code to use the more specialised Functional Interface" + functionalInterfaces;
   }
 
   private static boolean isAnonymousClass(ExpressionTree initializeTree) {
@@ -197,7 +197,7 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     ParameterTypeNameAndTreeType firstArgument = new ParameterTypeNameAndTreeType(parametrizedType, 0);
     ParameterTypeNameAndTreeType secondArgument = new ParameterTypeNameAndTreeType(parametrizedType, 1);
     if (secondArgument.paramTypeName != null && !firstArgument.paramType.isPrimitiveWrapper()) {
-      return Optional.of(String.format("Obj%sConsumer<%s>", secondArgument.paramTypeName, firstArgument.paramType));
+      return Optional.of("Obj" + secondArgument.paramTypeName + "Consumer<" + firstArgument.paramType + ">");
     }
     return Optional.empty();
   }

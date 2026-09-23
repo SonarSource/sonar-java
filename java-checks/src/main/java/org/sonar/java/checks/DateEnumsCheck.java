@@ -56,6 +56,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   private static final String JAVA_TIME_LOCAL_DATE_TIME = "java.time.LocalDateTime";
   private static final String JAVA_TIME_YEAR_MONTH = "java.time.YearMonth";
   private static final String JAVA_TIME_MONTH_DAY = "java.time.MonthDay";
+  private static final String DOT_EQUALS_OPENING_PARENTHESIS = ".equals(";
   private static final int RAISED_PERCENTAGE_THRESHOLD = 80;
   private static final String CACHE_KEY_PREFIX = "java:S8694:";
 
@@ -342,7 +343,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
 
   private static JavaQuickFix buildQuickFix(CachedIssue issue) {
     var span = new AnalyzerMessage.TextSpan(issue.startLine(), issue.startCol(), issue.endLine(), issue.endCol());
-    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix(String.format("Replace with %s.", issue.replacement()))
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix("Replace with " + issue.replacement() + ".")
       .addTextEdit(JavaTextEdit.replaceTextSpan(span, issue.replacement()));
     if (issue.importEdit() != null) {
       ImportEditData ie = issue.importEdit();
@@ -369,16 +370,16 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     ExpressionTree receiver = ((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression();
     String receiverText = QuickFixHelper.contentForTree(receiver, context);
     String enumName = getMonthEnumName(literal);
-    String replacement = isReversed ? (String.format("%s.equals(%s.getMonth())", enumName, receiverText))
-      : (String.format("%s.getMonth().equals(%s)", receiverText, enumName));
+    String replacement = isReversed ? (enumName + DOT_EQUALS_OPENING_PARENTHESIS + receiverText + ".getMonth())")
+      : (receiverText + ".getMonth()" + DOT_EQUALS_OPENING_PARENTHESIS + enumName + ")");
     return binaryExpressionTree.is(Tree.Kind.NOT_EQUAL_TO) ? ("!" + replacement) : replacement;
   }
 
   private String getValueReplacement(MethodInvocationTree methodInvocationSide, BinaryExpressionTree binaryExpressionTree, String enumName, boolean isReversed) {
     ExpressionTree receiver = ((MemberSelectExpressionTree) methodInvocationSide.methodSelect()).expression();
     String receiverText = QuickFixHelper.contentForTree(receiver, context);
-    String replacement = isReversed ? (String.format("%s.equals(%s)", enumName, receiverText))
-      : (String.format("%s.equals(%s)", receiverText, enumName));
+    String replacement = isReversed ? (enumName + DOT_EQUALS_OPENING_PARENTHESIS + receiverText + ")")
+      : (receiverText + DOT_EQUALS_OPENING_PARENTHESIS + enumName + ")");
     return binaryExpressionTree.is(Tree.Kind.NOT_EQUAL_TO) ? ("!" + replacement) : replacement;
   }
 

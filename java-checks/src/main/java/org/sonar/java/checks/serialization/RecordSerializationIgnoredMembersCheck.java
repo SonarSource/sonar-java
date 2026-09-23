@@ -88,7 +88,7 @@ public class RecordSerializationIgnoredMembersCheck extends IssuableSubscription
   }
 
   private static String issueMessage(String tree) {
-    return String.format("Remove this %s that will be ignored during record serialization.", tree);
+    return "Remove this " + tree + " that will be ignored during record serialization.";
   }
 
   private static MethodMatchers methodMatcher(String methodName, String ... parameterTypes) {

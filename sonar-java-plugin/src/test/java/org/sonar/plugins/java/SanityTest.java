@@ -205,7 +205,7 @@ class SanityTest {
         // FIXME initialize a new template rule with some default parameter ?!
       } else {
         assertThatCode(() -> javaChecks.add(checkClass.getConstructor().newInstance()))
-          .withFailMessage(String.format("Unable to initialize rule %s", ruleKey))
+          .withFailMessage("Unable to initialize rule " + ruleKey)
           .doesNotThrowAnyException();
       }
     }
@@ -262,7 +262,7 @@ class SanityTest {
     private final String failingCheck;
 
     public SanityCheckException(InputFile inputFile, Throwable analysisException) {
-      super(String.format("Unable to analyse file %s", inputFile.filename()), analysisException);
+      super("Unable to analyse file " + inputFile.filename(), analysisException);
       this.inputFile = inputFile;
       this.realCause = analysisException.getCause();
       this.failingCheck = parseStackForCheck(realCause);
@@ -309,7 +309,7 @@ class SanityTest {
         .setLanguage("java")
         .build();
     } catch (Exception e) {
-      throw new IllegalStateException(String.format("Unable to lead file '%s", file.getAbsolutePath()));
+      throw new IllegalStateException("Unable to lead file '" + file.getAbsolutePath());
     }
   }
 }

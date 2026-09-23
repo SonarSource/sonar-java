@@ -90,15 +90,13 @@ public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor
       if (!reported.contains(fullyQualifiedName)) {
         String superTypeName = isSubclassOfAny(exceptionType, thrownList);
         if (superTypeName != null && !exceptionType.isSubtypeOf("java.lang.RuntimeException")) {
-          reportIssueWithQuickfix(methodTree, typeTree, String.format(
-            "Remove the declaration of thrown exception '%s' which is a subclass of '%s'.", fullyQualifiedName, superTypeName));
+          reportIssueWithQuickfix(methodTree, typeTree,
+            "Remove the declaration of thrown exception '" + fullyQualifiedName + "' which is a subclass of '" + superTypeName + "'.");
         } else if (declaredMoreThanOnce(fullyQualifiedName, thrownList)) {
-          reportIssueWithQuickfix(methodTree, typeTree, String.format(
-            "Remove the redundant '%s' thrown exception declaration(s).", fullyQualifiedName));
+          reportIssueWithQuickfix(methodTree, typeTree, "Remove the redundant '" + fullyQualifiedName + "' thrown exception declaration(s).");
         } else if (canNotBeThrown(methodTree, exceptionType, thrownExceptions) && (!isOverridableMethod || undocumentedExceptionNames.contains(exceptionType.name()))) {
-          reportIssueWithQuickfix(methodTree, typeTree, String.format(
-            "Remove the declaration of thrown exception '%s', as it cannot be thrown from %s's body.", fullyQualifiedName,
-            methodTreeType(methodTree)));
+          reportIssueWithQuickfix(methodTree, typeTree,
+            "Remove the declaration of thrown exception '" + fullyQualifiedName + "', as it cannot be thrown from " + methodTreeType(methodTree) + "'s body.");
         }
         reported.add(fullyQualifiedName);
       }

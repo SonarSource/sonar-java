@@ -51,7 +51,7 @@ public class LambdaTypeParameterCheck extends IssuableSubscriptionVisitor {
       .collect(Collectors.joining(", "));
 
     if (!missingTypeParameters.isEmpty()) {
-      reportIssue(parameters.get(0), ListUtils.getLast(parameters), String.format("Specify a type for: %s", missingTypeParameters));
+      reportIssue(parameters.get(0), ListUtils.getLast(parameters), "Specify a type for: " + missingTypeParameters);
     }
   }
 }

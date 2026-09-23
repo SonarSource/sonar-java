@@ -177,7 +177,7 @@ public class FilterVerifier {
     SonarComponents sonarComponents = new SonarComponents(null, context.fileSystem(), null, null, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
-        throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));
+        throw new AssertionError("Should not fail analysis (" + re.getMessage() + ")");
       }
     };
     sonarComponents.setSensorContext(context);

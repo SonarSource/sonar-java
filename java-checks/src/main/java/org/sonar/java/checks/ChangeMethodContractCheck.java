@@ -124,9 +124,7 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     Optional<String> otherAsString = nullabilityAsString(overrideeNullability);
     if (overrideeAsString.isPresent() && otherAsString.isPresent()) {
       reportIssue(reportLocation,
-        String.format("Fix the incompatibility of the annotation %s to honor %s of the overridden method.",
-          overrideeAsString.get(),
-          otherAsString.get()),
+        "Fix the incompatibility of the annotation " + overrideeAsString.get() + " to honor " + otherAsString.get() + " of the overridden method.",
         getSecondariesForAnnotations(otherNullability, overrideeNullability),
         null);
     }

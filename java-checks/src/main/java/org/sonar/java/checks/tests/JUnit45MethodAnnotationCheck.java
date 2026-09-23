@@ -105,9 +105,8 @@ public class JUnit45MethodAnnotationCheck extends IssuableSubscriptionVisitor {
 
     if (jUnitVersion == 5 && isAnnotatedWithJUnit4 && !isAnnotatedWithJUnit5) {
       String jUnit4Annotation = junit4Annotation.get();
-      reportIssue(methodTree.simpleName(), String.format("Annotate this method with JUnit5 '@%s' instead of JUnit4 '@%s'.",
-        JUNIT4_TO_JUNIT5.get(jUnit4Annotation),
-        jUnit4Annotation.substring(jUnit4Annotation.lastIndexOf('.') + 1)));
+      reportIssue(methodTree.simpleName(), "Annotate this method with JUnit5 '@" + JUNIT4_TO_JUNIT5.get(jUnit4Annotation)
+        + "' instead of JUnit4 '@" + jUnit4Annotation.substring(jUnit4Annotation.lastIndexOf('.') + 1) + "'.");
     } else if (!isAnnotatedWithJUnit4 && !isAnnotatedWithJUnit5) {
       reportIssue(methodTree.simpleName(), String.format("Annotate this method with JUnit%d '@%s' or rename it to avoid confusion.",
         jUnitVersion,

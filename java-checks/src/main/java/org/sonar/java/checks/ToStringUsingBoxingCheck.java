@@ -118,15 +118,15 @@ public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
     QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(mit)
-      .withMessage(String.format("Call the static method %s.%s(...) instead of instantiating a temporary object.", boxedType, replacementMethod))
+      .withMessage("Call the static method " + boxedType + "." + replacementMethod + "(...) instead of instantiating a temporary object.")
       .withQuickFix(quickFix)
       .report();
   }
 
   private static Supplier<JavaQuickFix> toStringQuickFix(MethodInvocationTree mit, String boxedType, Tree argument) {
-    String replacement = String.format("%s.toString(", boxedType);
+    String replacement = boxedType + ".toString(";
     return () ->
-      JavaQuickFix.newQuickFix(String.format("Use %s...) instead", replacement))
+      JavaQuickFix.newQuickFix("Use " + replacement + "...) instead")
         .addTextEdit(
           JavaTextEdit.replaceTextSpan(textSpanBetween(mit, true, argument, false), replacement),
           JavaTextEdit.replaceTextSpan(textSpanBetween(argument, false, mit, true), ")")
@@ -136,16 +136,16 @@ public class ToStringUsingBoxingCheck extends IssuableSubscriptionVisitor {
 
   private static Supplier<JavaQuickFix> toStringWithArgumentQuickFix(ExpressionTree memberSelectExpression, String type) {
     return () ->
-      JavaQuickFix.newQuickFix(String.format("Use %s.toString(...) instead", type))
+      JavaQuickFix.newQuickFix("Use " + type + ".toString(...) instead")
         .addTextEdit(
           JavaTextEdit.replaceTree(memberSelectExpression, type)
         ).build();
   }
 
   private static Supplier<JavaQuickFix> compareToQuickFix(MethodInvocationTree mit, String type, Tree firstArgument, Tree secondArgument) {
-    String replacement = String.format("%s.compare(", type);
+    String replacement = type + ".compare(";
     return () ->
-      JavaQuickFix.newQuickFix(String.format("Use %s...) instead", replacement))
+      JavaQuickFix.newQuickFix("Use " + replacement + "...) instead")
         .addTextEdit(
           JavaTextEdit.replaceTextSpan(textSpanBetween(mit, true, firstArgument, false), replacement),
           JavaTextEdit.replaceTextSpan(textSpanBetween(firstArgument, false, secondArgument, false), ", ")
