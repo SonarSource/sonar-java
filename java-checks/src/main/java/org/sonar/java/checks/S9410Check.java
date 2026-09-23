@@ -32,12 +32,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 public class S9410Check extends IssuableSubscriptionVisitor {
 
   private static final MethodMatchers LOOKUP_METHODS = MethodMatchers.create()
-    .ofTypes("java.lang.invoke.MethodHandles.Lookup")
+    .ofTypes("java.lang.invoke.MethodHandles$Lookup")
     .names("findVirtual", "findStatic", "findSpecial", "findConstructor")
     .withAnyParameters()
     .build();
   private static final MethodMatchers VAR_HANDLE_METHODS = MethodMatchers.create()
-    .ofTypes("java.lang.invoke.MethodHandles")
+    .ofTypes("java.lang.invoke.MethodHandles$Lookup")
     .names("findVarHandle", "findStaticVarHandle")
     .withAnyParameters()
     .build();
@@ -58,37 +58,15 @@ public class S9410Check extends IssuableSubscriptionVisitor {
     if (context.getSemanticModel() == null) {
       return;
     }
-    if (hasKnownReceiver(invocation) && (LOOKUP_METHODS.matches(invocation) || isLookupInvocation(invocation))) {
+    if (LOOKUP_METHODS.matches(invocation)) {
       checkMethodLookup(invocation);
-    } else if (hasKnownReceiver(invocation) && (VAR_HANDLE_METHODS.matches(invocation) || isVarHandleInvocation(invocation))) {
+    } else if (VAR_HANDLE_METHODS.matches(invocation)) {
       checkFieldLookup(invocation);
     }
   }
 
-  private static boolean hasKnownReceiver(MethodInvocationTree invocation) {
-    return invocation.methodSelect() instanceof MemberSelectExpressionTree select && !select.expression().symbolType().isUnknown();
-  }
-
   private static String invocationName(MethodInvocationTree invocation) {
     return invocation.methodSelect() instanceof MemberSelectExpressionTree select ? select.identifier().name() : "";
-  }
-
-  private static boolean isLookupInvocation(MethodInvocationTree invocation) {
-    if (!(invocation.methodSelect() instanceof MemberSelectExpressionTree select)) {
-      return false;
-    }
-    String methodName = invocationName(invocation);
-    return select.expression().symbolType().name().equals("Lookup")
-      && ("findVirtual".equals(methodName) || "findStatic".equals(methodName) || "findSpecial".equals(methodName) || "findConstructor".equals(methodName));
-  }
-
-  private static boolean isVarHandleInvocation(MethodInvocationTree invocation) {
-    if (!(invocation.methodSelect() instanceof MemberSelectExpressionTree select)) {
-      return false;
-    }
-    String methodName = invocationName(invocation);
-    return (select.expression().symbolType().is("java.lang.invoke.MethodHandles") || select.expression().symbolType().name().equals("Lookup"))
-      && ("findVarHandle".equals(methodName) || "findStaticVarHandle".equals(methodName));
   }
 
   private void checkMethodLookup(MethodInvocationTree invocation) {
@@ -179,15 +157,33 @@ public class S9410Check extends IssuableSubscriptionVisitor {
 
   private static boolean findMethod(Type targetType, String name, MethodSignature signature, boolean staticLookup, boolean constructor) {
     String symbolName = constructor ? "<init>" : name;
-    for (Symbol symbol : targetType.symbol().lookupSymbols(symbolName)) {
+    if (matchesMethodInType(targetType, symbolName, signature, staticLookup, constructor)) {
+      return true;
+    }
+    if (constructor) {
+      return false;
+    }
+    for (Type superType : targetType.symbol().superTypes()) {
+      if (superType.isUnknown()) {
+        return true;
+      }
+      if (matchesMethodInType(superType, symbolName, signature, staticLookup, false)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean matchesMethodInType(Type type, String symbolName, MethodSignature signature, boolean staticLookup, boolean constructor) {
+    for (Symbol symbol : type.symbol().lookupSymbols(symbolName)) {
       if (!(symbol instanceof Symbol.MethodSymbol method) || method.isUnknown()) {
-        continue;
+        return true;
       }
       if (method.isStatic() != staticLookup || !sameTypes(method.parameterTypes(), signature.parameters)) {
         continue;
       }
       Type returnType = method.returnType().type();
-      if (constructor ? signature.returnType.isVoid() : returnType.equals(signature.returnType)) {
+      if (constructor ? signature.returnType.isVoid() : sameErasure(returnType, signature.returnType)) {
         return true;
       }
     }
@@ -195,8 +191,23 @@ public class S9410Check extends IssuableSubscriptionVisitor {
   }
 
   private static boolean findField(Type targetType, String name, Type requestedType, boolean staticLookup) {
-    for (Symbol symbol : targetType.symbol().lookupSymbols(name)) {
-      if (symbol.isVariableSymbol() && symbol.isStatic() == staticLookup && symbol.type().equals(requestedType)) {
+    if (matchesFieldInType(targetType, name, requestedType, staticLookup)) {
+      return true;
+    }
+    for (Type superType : targetType.symbol().superTypes()) {
+      if (superType.isUnknown()) {
+        return true;
+      }
+      if (matchesFieldInType(superType, name, requestedType, staticLookup)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean matchesFieldInType(Type type, String name, Type requestedType, boolean staticLookup) {
+    for (Symbol symbol : type.symbol().lookupSymbols(name)) {
+      if (symbol.isVariableSymbol() && symbol.isStatic() == staticLookup && sameErasure(symbol.type(), requestedType)) {
         return true;
       }
     }
@@ -208,11 +219,18 @@ public class S9410Check extends IssuableSubscriptionVisitor {
       return false;
     }
     for (int i = 0; i < actual.size(); i++) {
-      if (!actual.get(i).equals(expected.get(i))) {
+      if (!sameErasure(actual.get(i), expected.get(i))) {
         return false;
       }
     }
     return true;
+  }
+
+  private static boolean sameErasure(Type declared, Type requested) {
+    if (declared.isUnknown() || requested.isUnknown() || declared.isTypeVar()) {
+      return true;
+    }
+    return declared.erasure().fullyQualifiedName().equals(requested.erasure().fullyQualifiedName());
   }
 
   private record MethodSignature(Type returnType, List<Type> parameters) {

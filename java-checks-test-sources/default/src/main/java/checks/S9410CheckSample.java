@@ -4,6 +4,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
+import java.util.List;
 
 class S9410CheckSample {
 
@@ -35,11 +36,20 @@ class S9410CheckSample {
 
     VarHandle validField = lookup.findVarHandle(UserService.class, "count", int.class);
     VarHandle wrongField = lookup.findVarHandle(UserService.class, "count", Integer.class); // Noncompliant {{Use the declared type of the target field.}}
-    VarHandle validStaticField = MethodHandles.findStaticVarHandle(UserService.class, "version", String.class);
-    VarHandle wrongStaticField = MethodHandles.findStaticVarHandle(UserService.class, "version", Object.class); // Noncompliant
+    VarHandle validStaticField = lookup.findStaticVarHandle(UserService.class, "version", String.class);
+    VarHandle wrongStaticField = lookup.findStaticVarHandle(UserService.class, "version", Object.class); // Noncompliant
     String fieldName = "count";
     lookup.findVarHandle(UserService.class, fieldName, String.class);
     MethodType dynamicType = MethodType.methodType(Object.class, String.class);
     lookup.findVirtual(UserService.class, "updateUser", dynamicType);
+
+    // Inherited method lookups (should not raise issues)
+    MethodHandle inheritedHashCode = lookup.findVirtual(UserService.class, "hashCode", MethodType.methodType(int.class));
+    MethodHandle inheritedToString = lookup.findVirtual(UserService.class, "toString", MethodType.methodType(String.class));
+    MethodHandle childInherited = lookup.findVirtual(Child.class, "updateUser", MethodType.methodType(int.class, int.class, String.class));
+
+    // Generic type lookups (should not raise issues due to type erasure)
+    MethodHandle listGet = lookup.findVirtual(List.class, "get", MethodType.methodType(Object.class, int.class));
+    MethodHandle listAdd = lookup.findVirtual(List.class, "add", MethodType.methodType(boolean.class, Object.class));
   }
 }
