@@ -173,6 +173,63 @@ class S9411CheckSample {
     }
   }
 
+  void noncompliantGreaterThan(List<String> list) {
+    for (int i = 0; list.size() > i; i++) {
+      list.set(i, list.get(i).toUpperCase()); // Noncompliant
+    }
+  }
+
+  void compliantNoCondition(List<String> list) {
+    for (int i = 0; ; i++) { // compliant - no condition
+      if (i >= list.size()) break;
+      list.set(i, list.get(i).toUpperCase());
+    }
+  }
+
+  void compliantNonListSizeCall(List<String> list) {
+    int n = list.size();
+    for (int i = 0; i < n; i++) {
+      list.set(i, list.get(i).toUpperCase()); // compliant - condition is not list.size()
+    }
+  }
+
+  void compliantChainedReceiver(List<String> list) {
+    for (int i = 0; i < getList().size(); i++) {
+      getList().set(i, getList().get(i).toUpperCase()); // compliant - receiver is method call, not identifier
+    }
+  }
+
+  void compliantBodyNotBlock(List<String> list, String val) {
+    for (int i = 0; i < list.size(); i++)
+      list.set(i, val); // compliant - no list.get()
+  }
+
+  void compliantBodyDeclaration(List<String> list) {
+    for (int i = 0; i < list.size(); i++) {
+      String s = list.get(i).toUpperCase(); // compliant - body is not a set call
+    }
+  }
+
+  void compliantSetNotOnList(List<String> list) {
+    for (int i = 0; i < list.size(); i++) {
+      set(i, list.get(i).toUpperCase()); // compliant - set is not on a list
+    }
+  }
+
+  void compliantIncrementNotMatching(List<String> list) {
+    int j = 0;
+    for (int i = 0; i < list.size(); j++) { // compliant - increment is on j, not i
+      list.set(i, list.get(i).toUpperCase());
+    }
+  }
+
+  private List<String> getList() {
+    return new ArrayList<>();
+  }
+
+  private void set(int i, String val) {
+  }
+
   private static String transform(String s) {
     return s.trim().toLowerCase();
   }
