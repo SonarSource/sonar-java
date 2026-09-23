@@ -1072,7 +1072,7 @@ class InternalCheckVerifierTest {
     assertThatThrownBy(() -> {
       checkVerifier.addFiles(InputFile.Status.ADDED, TEST_FILE);
     }).isInstanceOf(IllegalArgumentException.class)
-      .hasMessageContaining(String.format("File %s was already added.", Path.of(TEST_FILE)));
+      .hasMessageContaining("File " + Path.of(TEST_FILE) + " was already added.");
   }
 
   @Test

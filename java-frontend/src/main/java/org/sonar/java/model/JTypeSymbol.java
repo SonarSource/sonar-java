@@ -16,27 +16,24 @@
  */
 package org.sonar.java.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.eclipse.jdt.core.dom.IMethodBinding;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 

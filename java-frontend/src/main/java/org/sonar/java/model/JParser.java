@@ -854,11 +854,10 @@ public class JParser {
 
   private ClassTreeImpl convertEnumDeclaration(EnumDeclaration e, ModifiersTreeImpl modifiers, IdentifierTreeImpl name,
                                                InternalSyntaxToken openBraceToken, List<Tree> members, InternalSyntaxToken closeBraceToken) {
-    List<Tree> enumConstants = new ArrayList<>();
-    for (Object o : e.enumConstants()) {
-      // introduced as first members
-      enumConstants.add(processEnumConstantDeclaration((EnumConstantDeclaration) o));
-    }
+    List<Tree> enumConstants = ((List<?>) e.enumConstants()).stream()
+      .map(EnumConstantDeclaration.class::cast)
+      .<Tree>map(this::processEnumConstantDeclaration)
+      .toList();
     members.addAll(0, enumConstants);
 
     InternalSyntaxToken declarationKeyword = firstTokenBefore(e.getName(), TerminalToken.TokenNameenum);
@@ -1625,10 +1624,10 @@ public class JParser {
           body = StatementListTreeImpl.emptyList();
         }
 
-        List<ExpressionTree> expressions = new ArrayList<>();
-        for (Object oo : c.expressions()) {
-          expressions.add(convertExpressionFromCase((Expression) oo));
-        }
+        List<ExpressionTree> expressions = ((List<?>) c.expressions()).stream()
+          .map(Expression.class::cast)
+          .map(this::convertExpressionFromCase)
+          .toList();
 
         caselabels.add(new CaseLabelTreeImpl(
           firstTokenIn(c, c.isDefault() ? TerminalToken.TokenNamedefault : TerminalToken.TokenNamecase),
@@ -2081,14 +2080,14 @@ public class JParser {
   }
 
   private NewArrayTreeImpl convertArrayCreation(ArrayCreation e) {
-    List<ArrayDimensionTree> dimensions = new ArrayList<>();
-    for (Object o : e.dimensions()) {
-      dimensions.add(new ArrayDimensionTreeImpl(
-        firstTokenBefore((Expression) o, TerminalToken.TokenNameLBRACKET),
-        convertExpression((Expression) o),
-        firstTokenAfter((Expression) o, TerminalToken.TokenNameRBRACKET)
-      ));
-    }
+    List<ArrayDimensionTree> dimensions = ((List<?>) e.dimensions()).stream()
+      .map(Expression.class::cast)
+      .<ArrayDimensionTree>map(dimension -> new ArrayDimensionTreeImpl(
+        firstTokenBefore(dimension, TerminalToken.TokenNameLBRACKET),
+        convertExpression(dimension),
+        firstTokenAfter(dimension, TerminalToken.TokenNameRBRACKET)
+      ))
+      .collect(Collectors.toCollection(ArrayList::new));
     InitializerListTreeImpl initializers = InitializerListTreeImpl.emptyList();
     if (e.getInitializer() != null) {
       assert dimensions.isEmpty();
@@ -2640,10 +2639,10 @@ public class JParser {
   }
 
   private JavaTree.AnnotatedTypeTree convertSimpleType(SimpleType e) {
-    List<AnnotationTree> annotations = new ArrayList<>();
-    for (Object o : e.annotations()) {
-      annotations.add((AnnotationTree) convertExpression(((Annotation) o)));
-    }
+    List<AnnotationTree> annotations = ((List<?>) e.annotations()).stream()
+      .map(Annotation.class::cast)
+      .map(annotation -> (AnnotationTree) convertExpression(annotation))
+      .toList();
     JavaTree.AnnotatedTypeTree t = e.isVar() ? convertVarType(e) : (JavaTree.AnnotatedTypeTree) convertExpression(e.getName());
     t.complete(annotations);
     // typeBinding is assigned by convertVarType or convertExpression

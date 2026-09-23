@@ -78,7 +78,7 @@ public class AssertionInTryCatchCheck extends IssuableSubscriptionVisitor {
       if (COMMON_ASSERTION_MATCHER.matches(methodInvocation)) {
         IdentifierTree identifier = ExpressionUtils.methodName(methodInvocation);
         reportIssue(identifier,
-          String.format("Don't use %s() inside a try-catch catching an AssertionError.", identifier.name()),
+          "Don't use " + identifier.name() + "() inside a try-catch catching an AssertionError.",
           secondaryLocation,
           null);
       }
