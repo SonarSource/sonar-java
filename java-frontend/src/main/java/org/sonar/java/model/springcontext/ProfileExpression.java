@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.sonar.java.telemetry.SizeEstimable;
+import org.sonar.java.telemetry.SizeEstimator;
 
 /**
  * A condition under which a Spring bean is active, as declared by a {@code @Profile} annotation.
@@ -34,7 +36,7 @@ import java.util.stream.Collectors;
  * invariant that a {@link Profile} name is non-blank, trimmed and free of the operator characters
  * {@code ( ) & | !}.
  */
-public sealed interface ProfileExpression {
+public sealed interface ProfileExpression extends SizeEstimable {
 
   /**
    * Characters that carry meaning in a profile expression and can therefore not appear in a profile name.
@@ -241,6 +243,18 @@ public sealed interface ProfileExpression {
     };
   }
 
+  @Override
+  default long estimateSize(SizeEstimator estimator) {
+    return switch (this) {
+      case Unconditional() -> estimator.estimateShallowObject(this, 0, 0);
+      case Unknown() -> estimator.estimateShallowObject(this, 0, 0);
+      case Profile(String name) -> estimator.estimateShallowObject(this, 1, 0) + estimator.estimateString(name);
+      case Not(ProfileExpression operand) -> estimator.estimateShallowObject(this, 1, 0) + estimator.estimateObject(operand);
+      case And(Set<ProfileExpression> operands) -> estimateCompound(estimator, this, operands);
+      case Or(Set<ProfileExpression> operands) -> estimateCompound(estimator, this, operands);
+    };
+  }
+
   private static ProfileExpression simplify(Collection<? extends ProfileExpression> operands, Function<Set<ProfileExpression>, ProfileExpression> factory) {
     Set<ProfileExpression> normalized = lexicographicallyOrdered(operands);
     return switch (normalized.size()) {
@@ -266,5 +280,13 @@ public sealed interface ProfileExpression {
 
   private static String join(Set<ProfileExpression> operands, String separator) {
     return operands.stream().map(ProfileExpression::toCanonicalString).collect(Collectors.joining(separator, "(", ")"));
+  }
+
+  private static long estimateCompound(SizeEstimator estimator, ProfileExpression expression, Set<ProfileExpression> operands) {
+    long size = estimator.estimateShallowObject(expression, 1, 0) + estimator.estimateSet(operands);
+    for (ProfileExpression operand : operands) {
+      size += estimator.estimateObject(operand);
+    }
+    return size;
   }
 }
