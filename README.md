@@ -168,11 +168,11 @@ All the `json` files contain a list of lines, indexed by file, explaining where 
 
 Into the directory with the expected issues:
 
-    its/ruling/src/test/resources/
+    its/ruling/src/test/resources/expected/
 
 For example using the command:
 
-    cp its/ruling/target/actual/* its/ruling/src/test/resources/
+    cp its/ruling/target/actual/* its/ruling/src/test/resources/expected/
 
 #### Debugging Integration Tests
 You can debug ITs by adding `-Dmaven.binary=mvnDebug` as an option when running the tests. This will cause the analyzer JVM to wait for a debugger to be attached before continuing.
