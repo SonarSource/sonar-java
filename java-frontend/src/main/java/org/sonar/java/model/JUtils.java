@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -72,10 +73,10 @@ public final class JUtils {
       result.add(sema.type(s));
       collectSuperTypes(result, sema, s);
     }
-    for (ITypeBinding i : typeBinding.getInterfaces()) {
+    Arrays.stream(typeBinding.getInterfaces()).forEach(i -> {
       result.add(sema.type(i));
       collectSuperTypes(result, sema, i);
-    }
+    });
   }
 
   public static Symbol getPackage(Symbol symbol) {
@@ -103,9 +104,9 @@ public final class JUtils {
     if (superclass != null) {
       result.add(t.sema.type(superclass));
     }
-    for (ITypeBinding i : t.typeBinding.getInterfaces()) {
-      result.add(t.sema.type(i));
-    }
+    Arrays.stream(t.typeBinding.getInterfaces())
+      .map(t.sema::type)
+      .forEach(result::add);
     return result;
   }
 

@@ -17,17 +17,16 @@
 package org.sonar.java.checks;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -212,28 +211,18 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
   }
 
   private static List<Symbol> retrieveMembers(Symbol.TypeSymbol classSymbol) {
-    List<Symbol> results = new LinkedList<>();
-    results.addAll(extractMembers(classSymbol, false));
-
-    for (Type parentInterface : classSymbol.interfaces()) {
-      results.addAll(extractMembers(parentInterface.symbol(), true));
-    }
-    Type superClass = classSymbol.superClass();
-    if (superClass != null) {
-      results.addAll(extractMembers(superClass.symbol(), true));
-    }
-
-    return results;
+    return Stream.concat(
+      Stream.concat(
+        extractMembers(classSymbol, false).stream(),
+        classSymbol.interfaces().stream().flatMap(parentInterface -> extractMembers(parentInterface.symbol(), true).stream())),
+      Stream.ofNullable(classSymbol.superClass()).flatMap(superClass -> extractMembers(superClass.symbol(), true).stream()))
+      .toList();
   }
 
   private static List<Symbol> extractMembers(Symbol.TypeSymbol classSymbol, boolean ignorePrivate) {
-    List<Symbol> results = new LinkedList<>();
-    for (Symbol symbol : classSymbol.memberSymbols()) {
-      if ((isVariableToExtract(symbol) || isMethodToExtract(symbol)) && !(symbol.isPrivate() && ignorePrivate)) {
-        results.add(symbol);
-      }
-    }
-    return results;
+    return classSymbol.memberSymbols().stream()
+      .filter(symbol -> (isVariableToExtract(symbol) || isMethodToExtract(symbol)) && !(symbol.isPrivate() && ignorePrivate))
+      .toList();
   }
 
   private static boolean isVariableToExtract(Symbol symbol) {

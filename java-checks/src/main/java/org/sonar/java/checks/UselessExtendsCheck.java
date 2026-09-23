@@ -79,20 +79,15 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDuplicate(ListTree<TypeTree> superInterfaces, TypeTree currentInterfaceTree) {
-    for (TypeTree superInterfaceTree : superInterfaces) {
-      if (!currentInterfaceTree.equals(superInterfaceTree) && SyntacticEquivalence.areEquivalent(currentInterfaceTree, superInterfaceTree)) {
-        return true;
-      }
-    }
-    return false;
+    return superInterfaces.stream()
+      .anyMatch(superInterfaceTree -> !currentInterfaceTree.equals(superInterfaceTree)
+        && SyntacticEquivalence.areEquivalent(currentInterfaceTree, superInterfaceTree));
   }
 
   private static List<Type> getTypes(ListTree<TypeTree> superInterfaces) {
-    List<Type> types = new ArrayList<>(superInterfaces.size());
-    for (TypeTree superInterface : superInterfaces) {
-      types.add(superInterface.symbolType());
-    }
-    return types;
+    return superInterfaces.stream()
+      .map(TypeTree::symbolType)
+      .toList();
   }
 
   private void checkRedundancy(TypeTree currentInterface, List<Type> superInterfacesTypes, List<Type> superTypes) {

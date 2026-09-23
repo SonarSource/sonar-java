@@ -91,12 +91,11 @@ public class MockitoStaticImportCheck extends IssuableSubscriptionVisitor {
   }
 
   private void pushClassMethods(ClassTree classTree) {
-    Set<String> methodNames = new HashSet<>();
-    for (Tree member : classTree.members()) {
-      if (member instanceof MethodTree methodTree) {
-        methodNames.add(methodTree.simpleName().name());
-      }
-    }
+    Set<String> methodNames = classTree.members().stream()
+      .filter(MethodTree.class::isInstance)
+      .map(MethodTree.class::cast)
+      .map(methodTree -> methodTree.simpleName().name())
+      .collect(Collectors.toSet());
     classMethodsStack.push(methodNames);
   }
 

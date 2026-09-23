@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.IntStream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
@@ -92,32 +93,29 @@ public class DuplicateImmutableCollectionArgumentsCheck extends IssuableSubscrip
 
   private void checkMapOf(MethodInvocationTree mit) {
     Arguments arguments = mit.arguments();
-    List<ExpressionTree> keys = new ArrayList<>();
-    for (int i = 0; i < arguments.size(); i += 2) {
-      keys.add(ExpressionUtils.skipParentheses(arguments.get(i)));
-    }
+    List<ExpressionTree> keys = IntStream.range(0, arguments.size())
+      .filter(i -> i % 2 == 0)
+      .mapToObj(arguments::get)
+      .map(ExpressionUtils::skipParentheses)
+      .toList();
     checkDuplicates(keys, MAP_OF_MESSAGE, FIRST_KEY_SECONDARY_MESSAGE);
   }
 
   private void checkMapOfEntries(MethodInvocationTree mit) {
-    List<ExpressionTree> keys = new ArrayList<>();
-    for (ExpressionTree arg : mit.arguments()) {
-      ExpressionTree unwrapped = ExpressionUtils.skipParentheses(arg);
-      if (unwrapped.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTree entryMit = (MethodInvocationTree) unwrapped;
-        if (MAP_ENTRY.matches(entryMit) && entryMit.arguments().size() == 2) {
-          keys.add(ExpressionUtils.skipParentheses(entryMit.arguments().get(0)));
-        }
-      }
-    }
+    List<ExpressionTree> keys = mit.arguments().stream()
+      .map(ExpressionUtils::skipParentheses)
+      .filter(unwrapped -> unwrapped.is(Tree.Kind.METHOD_INVOCATION))
+      .map(MethodInvocationTree.class::cast)
+      .filter(entryMit -> MAP_ENTRY.matches(entryMit) && entryMit.arguments().size() == 2)
+      .map(entryMit -> ExpressionUtils.skipParentheses(entryMit.arguments().get(0)))
+      .toList();
     checkDuplicates(keys, MAP_OF_ENTRIES_MESSAGE, FIRST_KEY_SECONDARY_MESSAGE);
   }
 
   private void checkSetOf(MethodInvocationTree mit) {
-    List<ExpressionTree> elements = new ArrayList<>();
-    for (ExpressionTree arg : mit.arguments()) {
-      elements.add(ExpressionUtils.skipParentheses(arg));
-    }
+    List<ExpressionTree> elements = mit.arguments().stream()
+      .map(ExpressionUtils::skipParentheses)
+      .toList();
     checkDuplicates(elements, SET_OF_MESSAGE, FIRST_ELEMENT_SECONDARY_MESSAGE);
   }
 
@@ -139,12 +137,10 @@ public class DuplicateImmutableCollectionArgumentsCheck extends IssuableSubscrip
   }
 
   private static ExpressionTree findFirstEquivalent(List<ExpressionTree> seen, ExpressionTree target) {
-    for (ExpressionTree prior : seen) {
-      if (areEquivalent(prior, target)) {
-        return prior;
-      }
-    }
-    return null;
+    return seen.stream()
+      .filter(prior -> areEquivalent(prior, target))
+      .findFirst()
+      .orElse(null);
   }
 
   private static boolean areEquivalent(ExpressionTree expr1, ExpressionTree expr2) {

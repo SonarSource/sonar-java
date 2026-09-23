@@ -160,10 +160,9 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
       TryStatementTree tryStatementTree = withinTry.pop();
       List<Tree> secondaryTrees = toReport.pop();
       if (!secondaryTrees.isEmpty()) {
-        List<JavaFileScannerContext.Location> secondary = new ArrayList<>();
-        for (Tree autoCloseable : secondaryTrees) {
-          secondary.add(new JavaFileScannerContext.Location("AutoCloseable resource", autoCloseable));
-        }
+        List<JavaFileScannerContext.Location> secondary = secondaryTrees.stream()
+          .map(autoCloseable -> new JavaFileScannerContext.Location("AutoCloseable resource", autoCloseable))
+          .toList();
         reportIssue(tryStatementTree.tryKeyword(),
           "Change this \"try\" to a try-with-resources." + context.getJavaVersion().java7CompatibilityMessage(), secondary, null);
       }

@@ -26,7 +26,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
@@ -65,10 +64,9 @@ public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScan
     if (!tree.catches().isEmpty()) {
       int size = currentNestingLevel.size();
       if (size > 0) {
-        List<JavaFileScannerContext.Location> secondary = new ArrayList<>(size);
-        for (Tree element : currentNestingLevel) {
-          secondary.add(new JavaFileScannerContext.Location("Nesting + 1", element));
-        }
+        List<JavaFileScannerContext.Location> secondary = currentNestingLevel.stream()
+          .map(element -> new JavaFileScannerContext.Location("Nesting + 1", element))
+          .toList();
         context.reportIssue(this, tree.tryKeyword(), "Extract this nested try block into a separate method.", secondary, null);
       }
       currentNestingLevel.push(tree.tryKeyword());
