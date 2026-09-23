@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -103,12 +104,16 @@ public class S9411Check extends IssuableSubscriptionVisitor implements JavaVersi
 
     ExpressionTree setValue = setCall.arguments().get(1);
     if (containsListGetWithSameIndexAndList(setValue, listSymbol, initializer)) {
-      reportIssue(setCall, MESSAGE);
+      reportIssue(forStatement.forKeyword(), MESSAGE);
     }
   }
 
   @CheckForNull
   private static ForLoopInitializer extractSingleInitializer(ForStatementTree forStatement) {
+    List<StatementTree> initStatements = forStatement.initializer();
+    if (initStatements.size() != 1 || !initStatements.get(0).is(Tree.Kind.VARIABLE)) {
+      return null;
+    }
     List<ForLoopInitializer> initializers = StreamSupport
       .stream(ForLoopInitializer.list(forStatement).spliterator(), false)
       .toList();
@@ -193,7 +198,7 @@ public class S9411Check extends IssuableSubscriptionVisitor implements JavaVersi
   private static boolean containsListGetWithSameIndexAndList(ExpressionTree expression, Symbol listSymbol, ForLoopInitializer initializer) {
     ListGetFinder finder = new ListGetFinder(listSymbol, initializer);
     expression.accept(finder);
-    return finder.found && !finder.indexUsedElsewhere;
+    return finder.found && !finder.indexUsedElsewhere && !finder.notLambdaCompatible;
   }
 
   private static class ListGetFinder extends BaseTreeVisitor {
@@ -201,6 +206,7 @@ public class S9411Check extends IssuableSubscriptionVisitor implements JavaVersi
     private final ForLoopInitializer initializer;
     private boolean found = false;
     private boolean indexUsedElsewhere = false;
+    private boolean notLambdaCompatible = false;
 
     ListGetFinder(Symbol listSymbol, ForLoopInitializer initializer) {
       this.listSymbol = listSymbol;
@@ -217,15 +223,35 @@ public class S9411Check extends IssuableSubscriptionVisitor implements JavaVersi
           return;
         }
       }
+      if (throwsCheckedException(tree.methodSymbol())) {
+        notLambdaCompatible = true;
+      }
       super.visitMethodInvocation(tree);
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      if (throwsCheckedException(tree.methodSymbol())) {
+        notLambdaCompatible = true;
+      }
+      super.visitNewClass(tree);
     }
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
       if (initializer.hasSameIdentifier(tree)) {
         indexUsedElsewhere = true;
+      } else if ((tree.symbol().isLocalVariable() || tree.symbol().isParameter())
+        && tree.symbol() instanceof Symbol.VariableSymbol variableSymbol
+        && !variableSymbol.isEffectivelyFinal()) {
+        notLambdaCompatible = true;
       }
       super.visitIdentifier(tree);
+    }
+
+    private static boolean throwsCheckedException(Symbol.MethodSymbol symbol) {
+      return symbol.thrownTypes().stream()
+        .anyMatch(t -> !t.isSubtypeOf("java.lang.RuntimeException") && !t.isSubtypeOf("java.lang.Error"));
     }
   }
 }

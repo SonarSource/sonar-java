@@ -1,5 +1,8 @@
 package checks;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -9,33 +12,33 @@ class S9411CheckSample {
   String suffix = "_suffix";
 
   void noncompliant(List<String> list) {
-    for (int i = 0; i < list.size(); i++) {
-      list.set(i, list.get(i).toUpperCase()); // Noncompliant {{Replace this loop with "List.replaceAll()".}}
-//    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    for (int i = 0; i < list.size(); i++) { // Noncompliant {{Replace this loop with "List.replaceAll()".}}
+//  ^^^
+      list.set(i, list.get(i).toUpperCase());
     }
   }
 
   void noncompliantStaticMethod(List<String> list) {
-    for (int i = 0; i < list.size(); i++) {
-      list.set(i, transform(list.get(i))); // Noncompliant
+    for (int i = 0; i < list.size(); i++) { // Noncompliant
+      list.set(i, transform(list.get(i)));
     }
   }
 
   void noncompliantTrim(List<String> names) {
-    for (int i = 0; i < names.size(); i++) {
-      names.set(i, names.get(i).trim()); // Noncompliant
+    for (int i = 0; i < names.size(); i++) { // Noncompliant
+      names.set(i, names.get(i).trim());
     }
   }
 
   void noncompliantPrefixIncrement(List<String> list) {
-    for (int i = 0; i < list.size(); ++i) {
-      list.set(i, list.get(i) + suffix); // Noncompliant
+    for (int i = 0; i < list.size(); ++i) { // Noncompliant
+      list.set(i, list.get(i) + suffix);
     }
   }
 
   void noncompliantArrayList(ArrayList<String> list) {
-    for (int i = 0; i < list.size(); i++) {
-      list.set(i, list.get(i).toLowerCase()); // Noncompliant
+    for (int i = 0; i < list.size(); i++) { // Noncompliant
+      list.set(i, list.get(i).toLowerCase());
     }
   }
 
@@ -174,8 +177,8 @@ class S9411CheckSample {
   }
 
   void noncompliantGreaterThan(List<String> list) {
-    for (int i = 0; list.size() > i; i++) {
-      list.set(i, list.get(i).toUpperCase()); // Noncompliant
+    for (int i = 0; list.size() > i; i++) { // Noncompliant
+      list.set(i, list.get(i).toUpperCase());
     }
   }
 
@@ -199,7 +202,12 @@ class S9411CheckSample {
     }
   }
 
-  void compliantBodyNotBlock(List<String> list, String val) {
+  void noncompliantBodyNotBlock(List<String> list) {
+    for (int i = 0; i < list.size(); i++) // Noncompliant
+      list.set(i, list.get(i).trim());
+  }
+
+  void compliantBodyNotBlockNoGet(List<String> list, String val) {
     for (int i = 0; i < list.size(); i++)
       list.set(i, val); // compliant - no list.get()
   }
@@ -223,6 +231,40 @@ class S9411CheckSample {
     }
   }
 
+  void compliantCheckedException(List<String> list) throws URISyntaxException {
+    for (int i = 0; i < list.size(); i++) {
+      list.set(i, new URI(list.get(i)).toString()); // compliant - constructor throws checked exception
+    }
+  }
+
+  void compliantMethodThrowsCheckedException(List<String> list) throws IOException {
+    for (int i = 0; i < list.size(); i++) {
+      list.set(i, parseWithException(list.get(i))); // compliant - method throws checked exception
+    }
+  }
+
+  void compliantNonEffectivelyFinalVariable(List<String> list) {
+    String prefix = "a";
+    prefix = "b";
+    for (int i = 0; i < list.size(); i++) {
+      list.set(i, prefix + list.get(i)); // compliant - prefix is not effectively final
+    }
+  }
+
+  void compliantModifiedLocalInValue(List<String> list) {
+    int count = 0;
+    for (int i = 0; i < list.size(); i++) {
+      list.set(i, list.get(i) + count++); // compliant - count is modified
+    }
+  }
+
+  void compliantCounterDeclaredOutsideLoop(List<String> list) {
+    int i;
+    for (i = 0; i < list.size(); i++) {
+      list.set(i, list.get(i).toUpperCase()); // compliant - counter declared outside loop
+    }
+  }
+
   private List<String> getList() {
     return new ArrayList<>();
   }
@@ -232,5 +274,9 @@ class S9411CheckSample {
 
   private static String transform(String s) {
     return s.trim().toLowerCase();
+  }
+
+  private static String parseWithException(String s) throws IOException {
+    return s.trim();
   }
 }
