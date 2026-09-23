@@ -27,12 +27,14 @@ import org.sonar.java.telemetry.SizeEstimator;
  *                 the {@code @Qualifier} annotation if present
  * @param module   the module key of the bean that declares this injection point
  * @param location the source location of the injection point
+ * @param multiple whether Spring collects every bean of the required type here, as it does for a collection or
+ *                 array injection point, instead of resolving a single one
  */
-public record InjectionPoint(String name, String module, BeanLocation location) implements SizeEstimable {
+public record InjectionPoint(String name, String module, BeanLocation location, boolean multiple) implements SizeEstimable {
 
   @Override
   public long estimateSize(SizeEstimator estimator) {
-    return estimator.estimateShallowObject(this, 3, 0)
+    return estimator.estimateShallowObject(this, 3, 1)
       + estimator.estimateString(name)
       + estimator.estimateString(module)
       + estimator.estimateObject(location);
@@ -45,9 +47,10 @@ public record InjectionPoint(String name, String module, BeanLocation location) 
    * an {@link InjectionPoint} once paired with the file it was collected from, which the gatherer knows from the
    * file its beans are stored under.
    *
-   * @param name the dependency name, as in {@link InjectionPoint#name()}
-   * @param span the text span of the injection point within its own file
+   * @param name     the dependency name, as in {@link InjectionPoint#name()}
+   * @param span     the text span of the injection point within its own file
+   * @param multiple whether all matching beans are collected here, as in {@link InjectionPoint#multiple()}
    */
-  public record InputFileData(String name, AnalyzerMessage.TextSpan span) {
+  public record InputFileData(String name, AnalyzerMessage.TextSpan span, boolean multiple) {
   }
 }
