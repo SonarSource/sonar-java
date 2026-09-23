@@ -1,10 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/util/AbstractStoppableExecutorService.java": [
-93,
-98,
-108,
-113,
-120,
-125
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S4977","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/util\/AbstractStoppableExecutorService.java"},"region":{"startLine":93,"endLine":93}}}]},{"ruleId":"java:S4977","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/util\/AbstractStoppableExecutorService.java"},"region":{"startLine":98,"endLine":98}}}]},{"ruleId":"java:S4977","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/util\/AbstractStoppableExecutorService.java"},"region":{"startLine":108,"endLine":108}}}]},{"ruleId":"java:S4977","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/util\/AbstractStoppableExecutorService.java"},"region":{"startLine":113,"endLine":113}}}]},{"ruleId":"java:S4977","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/util\/AbstractStoppableExecutorService.java"},"region":{"startLine":120,"endLine":120}}}]},{"ruleId":"java:S4977","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/util\/AbstractStoppableExecutorService.java"},"region":{"startLine":125,"endLine":125}}}]}]}]}

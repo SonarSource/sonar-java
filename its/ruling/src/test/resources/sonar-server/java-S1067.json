@@ -1,18 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/BestValueOptimization.java": [
-60
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistComponentsStep.java": [
-409
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/RuleUpdate.java": [
-222
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/source/HtmlTextDecorator.java": [
-170,
-176
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java": [
-251
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S1067","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/measure\/BestValueOptimization.java"},"region":{"startLine":60,"endLine":60}}}]},{"ruleId":"java:S1067","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/step\/PersistComponentsStep.java"},"region":{"startLine":409,"endLine":409}}}]},{"ruleId":"java:S1067","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/rule\/RuleUpdate.java"},"region":{"startLine":222,"endLine":222}}}]},{"ruleId":"java:S1067","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/source\/HtmlTextDecorator.java"},"region":{"startLine":170,"endLine":170}}}]},{"ruleId":"java:S1067","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/source\/HtmlTextDecorator.java"},"region":{"startLine":176,"endLine":176}}}]},{"ruleId":"java:S1067","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/user\/UserUpdater.java"},"region":{"startLine":251,"endLine":251}}}]}]}]}

@@ -1,17 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewSizeMeasuresStep.java": [
-143
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/filemove/FileMoveDetectionStepTest.java": [
-528
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/ws/DeleteActionTest.java": [
-107
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/organization/ws/UpdateActionTest.java": [
-79
-],
-"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/rule/ws/AppActionTest.java": [
-72
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S1612","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/step\/NewSizeMeasuresStep.java"},"region":{"startLine":143,"endLine":143}}}]},{"ruleId":"java:S1612","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/computation\/task\/projectanalysis\/filemove\/FileMoveDetectionStepTest.java"},"region":{"startLine":528,"endLine":528}}}]},{"ruleId":"java:S1612","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/organization\/ws\/DeleteActionTest.java"},"region":{"startLine":107,"endLine":107}}}]},{"ruleId":"java:S1612","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/organization\/ws\/UpdateActionTest.java"},"region":{"startLine":79,"endLine":79}}}]},{"ruleId":"java:S1612","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/test\/java\/org\/sonar\/server\/rule\/ws\/AppActionTest.java"},"region":{"startLine":72,"endLine":72}}}]}]}]}

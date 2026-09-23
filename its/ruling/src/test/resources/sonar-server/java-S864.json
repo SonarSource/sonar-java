@@ -1,8 +1,1 @@
-{
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/language/ws/ListAction.java": [
-83
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/rule/ws/RepositoriesAction.java": [
-89
-]
-}
+{"$schema":"https://json.schemastore.org/sarif-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"LITS"}},"results":[{"ruleId":"java:S864","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/language\/ws\/ListAction.java"},"region":{"startLine":83,"endLine":83}}}]},{"ruleId":"java:S864","message":{"text":"Issue"},"locations":[{"physicalLocation":{"artifactLocation":{"uri":"org.sonarsource.sonarqube:sonar-server:src\/main\/java\/org\/sonar\/server\/rule\/ws\/RepositoriesAction.java"},"region":{"startLine":89,"endLine":89}}}]}]}]}
