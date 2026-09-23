@@ -34,7 +34,11 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 public final class IntegerOverflowRange {
 
   private static final int MAX_DEPTH = 6;
-  private static final Range NON_NEGATIVE_INT = new Range(BigInteger.ZERO, BigInteger.valueOf(Integer.MAX_VALUE));
+  private static final BigInteger INT_MIN = BigInteger.valueOf(Integer.MIN_VALUE);
+  private static final BigInteger INT_MAX = BigInteger.valueOf(Integer.MAX_VALUE);
+  private static final BigInteger LONG_MIN = BigInteger.valueOf(Long.MIN_VALUE);
+  private static final BigInteger LONG_MAX = BigInteger.valueOf(Long.MAX_VALUE);
+  private static final Range NON_NEGATIVE_INT = new Range(BigInteger.ZERO, INT_MAX);
   private static final MethodMatchers NON_NEGATIVE_INT_METHODS = MethodMatchers.or(
     MethodMatchers.create().ofSubTypes("java.lang.CharSequence").names("length").addWithoutParametersMatcher().build(),
     MethodMatchers.create().ofSubTypes("java.util.Collection").names("size").addWithoutParametersMatcher().build(),
@@ -51,6 +55,18 @@ public final class IntegerOverflowRange {
   @CheckForNull
   public static Range rangeOf(ExpressionTree expression) {
     return rangeOf(expression, 0);
+  }
+
+  /**
+   * @return true when both operands have a provable range whose difference is guaranteed to fit in an int.
+   */
+  public static boolean intSubtractionCannotOverflow(ExpressionTree left, ExpressionTree right) {
+    Range leftRange = rangeOf(left);
+    if (leftRange == null) {
+      return false;
+    }
+    Range rightRange = rangeOf(right);
+    return rightRange != null && !leftRange.subtract(rightRange).exceeds(INT_MIN, INT_MAX);
   }
 
   @CheckForNull
@@ -176,7 +192,7 @@ public final class IntegerOverflowRange {
   }
 
   private static boolean exactNonNegative(@Nullable Range range) {
-    return range != null && range.low.equals(range.high) && range.low.signum() >= 0;
+    return range != null && range.isExact() && range.low.signum() >= 0;
   }
 
   public record Range(BigInteger low, BigInteger high) {
@@ -205,24 +221,32 @@ public final class IntegerOverflowRange {
       return new Range(high.negate(), low.negate());
     }
 
+    public boolean isExact() {
+      return low.equals(high);
+    }
+
+    /**
+     * @return true when at least one value of this range does not fit in the given type.
+     */
     public boolean exceeds(Type type) {
-      BigInteger minimum = minimumValue(type);
-      BigInteger maximum = maximumValue(type);
+      return isLong(type) ? exceeds(LONG_MIN, LONG_MAX) : exceeds(INT_MIN, INT_MAX);
+    }
+
+    /**
+     * @return true when no value of this range fits in the given type.
+     */
+    public boolean alwaysExceeds(Type type) {
+      BigInteger minimum = isLong(type) ? LONG_MIN : INT_MIN;
+      BigInteger maximum = isLong(type) ? LONG_MAX : INT_MAX;
+      return low.compareTo(maximum) > 0 || high.compareTo(minimum) < 0;
+    }
+
+    private boolean exceeds(BigInteger minimum, BigInteger maximum) {
       return low.compareTo(minimum) < 0 || high.compareTo(maximum) > 0;
     }
 
-    private static BigInteger minimumValue(Type type) {
-      if (type.isPrimitive(Type.Primitives.LONG)) {
-        return BigInteger.valueOf(Long.MIN_VALUE);
-      }
-      return BigInteger.valueOf(Integer.MIN_VALUE);
-    }
-
-    private static BigInteger maximumValue(Type type) {
-      if (type.isPrimitive(Type.Primitives.LONG)) {
-        return BigInteger.valueOf(Long.MAX_VALUE);
-      }
-      return BigInteger.valueOf(Integer.MAX_VALUE);
+    private static boolean isLong(Type type) {
+      return type.isPrimitive(Type.Primitives.LONG);
     }
 
     @CheckForNull
@@ -230,10 +254,10 @@ public final class IntegerOverflowRange {
       if (!exceeds(type)) {
         return this;
       }
-      if (!low.equals(high)) {
+      if (!isExact()) {
         return null;
       }
-      int bits = type.isPrimitive(Type.Primitives.LONG) ? Long.SIZE : Integer.SIZE;
+      int bits = isLong(type) ? Long.SIZE : Integer.SIZE;
       BigInteger modulus = BigInteger.ONE.shiftLeft(bits);
       BigInteger wrapped = low.mod(modulus);
       if (wrapped.testBit(bits - 1)) {

@@ -18,6 +18,8 @@ package org.sonar.java.checks;
 
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ComparisonMethodUtils;
 import org.sonar.java.checks.helpers.IntegerOverflowRange;
@@ -84,7 +86,7 @@ public class S3949Check extends IssuableSubscriptionVisitor {
   }
 
   private void checkBinary(BinaryExpressionTree tree) {
-    if ((tree.is(Tree.Kind.MINUS) && isComparatorSubtraction(tree)) || isWidenedSink(tree) || isTimestampCast(tree)) {
+    if ((tree.is(Tree.Kind.MINUS) && isComparatorSubtraction(tree)) || isWidenedSink(tree) || isTimestampArgument(tree)) {
       return;
     }
     Range left = IntegerOverflowRange.rangeOf(tree.leftOperand());
@@ -93,7 +95,7 @@ public class S3949Check extends IssuableSubscriptionVisitor {
       return;
     }
     Range result = resultRange(tree, left, right);
-    if (result.exceeds(tree.symbolType())) {
+    if (result.alwaysExceeds(tree.symbolType())) {
       reportIssue(tree, MESSAGE);
     }
   }
@@ -109,17 +111,19 @@ public class S3949Check extends IssuableSubscriptionVisitor {
   }
 
   private void checkNegation(UnaryExpressionTree tree) {
-    Range operand = IntegerOverflowRange.rangeOf(tree.expression());
-    if (operand == null || isDirectMinimumValue(tree.expression())) {
+    ExpressionTree expression = tree.expression();
+    if (expression.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL) || isDirectMinimumValue(expression) || isTimestampArgument(tree)) {
       return;
     }
-    if (operand.negate().exceeds(tree.symbolType())) {
+    Range operand = IntegerOverflowRange.rangeOf(expression);
+    if (operand != null && operand.negate().alwaysExceeds(tree.symbolType())) {
       reportIssue(tree, MESSAGE);
     }
   }
 
   private static boolean isUnsafeMidpoint(BinaryExpressionTree addition) {
-    if (!addition.symbolType().isPrimitive(Type.Primitives.INT)) {
+    if (!addition.leftOperand().symbolType().isPrimitive(Type.Primitives.INT)
+      || !addition.rightOperand().symbolType().isPrimitive(Type.Primitives.INT)) {
       return false;
     }
     Tree parent = ExpressionUtils.skipParenthesesUpwards(addition.parent());
@@ -136,11 +140,14 @@ public class S3949Check extends IssuableSubscriptionVisitor {
     }
     Range left = IntegerOverflowRange.rangeOf(addition.leftOperand());
     Range right = IntegerOverflowRange.rangeOf(addition.rightOperand());
-    return left == null || right == null || left.add(right).exceeds(addition.symbolType());
+    return (left == null || right == null) && !isExact(left) && !isExact(right);
+  }
+
+  private static boolean isExact(@Nullable Range range) {
+    return range != null && range.isExact();
   }
 
   private static boolean isDirectMinimumValue(ExpressionTree expression) {
-    expression = ExpressionUtils.skipParentheses(expression);
     if (!expression.is(Tree.Kind.MEMBER_SELECT)) {
       return false;
     }
@@ -161,14 +168,15 @@ public class S3949Check extends IssuableSubscriptionVisitor {
       return lambda.body() == result && ComparisonMethodUtils.isComparatorLambda(lambda);
     }
     if (parent instanceof ReturnStatementTree) {
-      MethodTree method = enclosingMethod(parent);
-      return method != null && ComparisonMethodUtils.isCompareMethod(method);
+      Tree function = enclosingFunction(parent);
+      return (function instanceof MethodTree method && ComparisonMethodUtils.isCompareMethod(method))
+        || (function instanceof LambdaExpressionTree lambda && ComparisonMethodUtils.isComparatorLambda(lambda));
     }
     return false;
   }
 
   private static boolean isWidenedSink(ExpressionTree expression) {
-    Tree parent = ExpressionUtils.skipParenthesesUpwards(expression.parent());
+    Tree parent = expression.parent();
     if (parent instanceof VariableTree variable) {
       return isWider(variable.type().symbolType(), expression.symbolType());
     }
@@ -176,8 +184,8 @@ public class S3949Check extends IssuableSubscriptionVisitor {
       return isWider(assignment.variable().symbolType(), expression.symbolType());
     }
     if (parent instanceof ReturnStatementTree) {
-      MethodTree method = enclosingMethod(parent);
-      return method != null && method.returnType() != null && isWider(method.returnType().symbolType(), expression.symbolType());
+      return enclosingFunction(parent) instanceof MethodTree method && method.returnType() != null
+        && isWider(method.returnType().symbolType(), expression.symbolType());
     }
     if (parent instanceof Arguments arguments) {
       Tree invocation = arguments.parent();
@@ -191,19 +199,17 @@ public class S3949Check extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  private static boolean isTimestampCast(ExpressionTree expression) {
+  private static boolean isTimestampArgument(ExpressionTree expression) {
     if (!expression.symbolType().isPrimitive(Type.Primitives.INT)) {
       return false;
     }
+    Tree argument = expression;
     Tree parent = ExpressionUtils.skipParenthesesUpwards(expression.parent());
-    if (!(parent instanceof TypeCastTree cast) || !cast.type().symbolType().isPrimitive(Type.Primitives.LONG)) {
-      return false;
+    if (parent instanceof TypeCastTree cast && cast.type().symbolType().isPrimitive(Type.Primitives.LONG)) {
+      argument = cast;
+      parent = ExpressionUtils.skipParenthesesUpwards(cast.parent());
     }
-    Tree argumentsTree = ExpressionUtils.skipParenthesesUpwards(cast.parent());
-    if (!(argumentsTree instanceof Arguments arguments)) {
-      return false;
-    }
-    if (arguments.isEmpty() || ExpressionUtils.skipParentheses(arguments.get(0)) != cast) {
+    if (!(parent instanceof Arguments arguments) || ExpressionUtils.skipParentheses(arguments.get(0)) != argument) {
       return false;
     }
     Tree invocation = arguments.parent();
@@ -211,12 +217,13 @@ public class S3949Check extends IssuableSubscriptionVisitor {
       || (invocation instanceof NewClassTree newClass && TIMESTAMP_METHODS.matches(newClass));
   }
 
-  private static MethodTree enclosingMethod(Tree tree) {
+  @CheckForNull
+  private static Tree enclosingFunction(Tree tree) {
     Tree current = tree.parent();
-    while (current != null && !(current instanceof MethodTree)) {
+    while (current != null && !(current instanceof MethodTree) && !(current instanceof LambdaExpressionTree)) {
       current = current.parent();
     }
-    return (MethodTree) current;
+    return current;
   }
 
   private static boolean isWiderArgument(Arguments arguments, Symbol.MethodSymbol method, ExpressionTree expression) {
@@ -224,7 +231,7 @@ public class S3949Check extends IssuableSubscriptionVisitor {
       return false;
     }
     for (int i = 0; i < arguments.size(); i++) {
-      if (ExpressionUtils.skipParentheses(arguments.get(i)) == expression) {
+      if (arguments.get(i) == expression) {
         return isWider(method.parameterTypes().get(i), expression.symbolType());
       }
     }

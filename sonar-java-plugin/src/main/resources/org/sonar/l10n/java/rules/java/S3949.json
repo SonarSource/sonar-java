@@ -13,8 +13,7 @@
     "constantCost": "5min"
   },
   "tags": [
-    "overflow",
-    "symbolic-execution"
+    "overflow"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-3949",
