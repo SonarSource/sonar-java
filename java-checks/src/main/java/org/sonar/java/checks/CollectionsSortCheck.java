@@ -16,6 +16,7 @@
  */
 package org.sonar.java.checks;
 
+import java.util.EnumSet;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
@@ -33,7 +34,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S9412")
 public class CollectionsSortCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
-  private static final Set<Tree.Kind> SAFE_KINDS = Set.of(
+  private static final Set<Tree.Kind> SAFE_KINDS = EnumSet.of(
     Tree.Kind.IDENTIFIER,
     Tree.Kind.MEMBER_SELECT,
     Tree.Kind.METHOD_INVOCATION,
