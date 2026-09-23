@@ -26,6 +26,7 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.springcontext.InjectionPoint;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -473,6 +474,66 @@ class SpringUtilsTest {
       assertThat(dependencies.get("EmailService"))
         .extracting(point -> point.span().startLine)
         .containsExactly(6);
+    }
+  }
+
+  // ---- Collection and array injection points ----------------------------------------
+
+  @Nested
+  class MultiBeanDependencies {
+    private final CompilationUnitTree compilationUnit = JParserTestUtils.parse("BeanFactory", """
+      class BeanFactory {
+        @org.springframework.beans.factory.annotation.Autowired
+        java.util.List<Runnable> injectedRunnables;
+
+        @org.springframework.context.annotation.Bean
+        Object createBean(
+          java.util.List<Runnable> listOfRunnables,
+          java.util.Set<Runnable> setOfRunnables,
+          java.util.Collection<Runnable> collectionOfRunnables,
+          Runnable[] arrayOfRunnables,
+          java.util.List rawList,
+          java.util.ArrayList<Runnable> concreteList,
+          Runnable singleRunnable) {
+          return new Object();
+        }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    private final ClassTreeImpl beanFactory = (ClassTreeImpl) compilationUnit.types().get(0);
+    private final MethodTreeImpl createBean = (MethodTreeImpl) beanFactory.members().get(1);
+    private final Map<String, Set<InjectionPoint.InputFileData>> dependencies = SpringUtils.collectDependenciesOnMethod(createBean);
+
+    @Test
+    void collection_and_array_parameters_are_grouped_under_their_element_type() {
+      assertThat(dependencies.get("java.lang.Runnable"))
+        .extracting(InjectionPoint.InputFileData::name)
+        .containsExactlyInAnyOrder("listOfRunnables", "setOfRunnables", "collectionOfRunnables", "arrayOfRunnables", "singleRunnable");
+    }
+
+    @Test
+    void collection_and_array_parameters_collect_every_matching_bean() {
+      assertThat(dependencies.get("java.lang.Runnable"))
+        .filteredOn(InjectionPoint.InputFileData::multiple)
+        .extracting(InjectionPoint.InputFileData::name)
+        .containsExactlyInAnyOrder("listOfRunnables", "setOfRunnables", "collectionOfRunnables", "arrayOfRunnables");
+    }
+
+    @Test
+    void a_raw_collection_keeps_its_own_type_but_still_collects_every_matching_bean() {
+      assertThat(dependencies.get("java.util.List"))
+        .containsExactly(new InjectionPoint.InputFileData("rawList", new AnalyzerMessage.TextSpan(11, 19, 11, 26), true));
+    }
+
+    @Test
+    void a_concrete_collection_class_is_not_a_multi_bean_injection_point() {
+      assertThat(dependencies.get("java.util.ArrayList"))
+        .containsExactly(new InjectionPoint.InputFileData("concreteList", new AnalyzerMessage.TextSpan(12, 34, 12, 46), false));
+    }
+
+    @Test
+    void an_autowired_collection_field_is_also_grouped_under_its_element_type() {
+      assertThat(SpringUtils.collectAutowiredDependenciesOnClass(beanFactory).get("java.lang.Runnable"))
+        .containsExactly(new InjectionPoint.InputFileData("injectedRunnables", new AnalyzerMessage.TextSpan(3, 27, 3, 44), true));
     }
   }
 

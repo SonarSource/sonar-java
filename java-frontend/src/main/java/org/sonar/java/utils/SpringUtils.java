@@ -34,6 +34,7 @@ import org.sonar.java.model.springcontext.ProfileExpressionParser;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -65,6 +66,11 @@ public final class SpringUtils {
   public static final String SPRING_BOOT_TEST_ANNOTATION = "org.springframework.boot.test.context.SpringBootTest";
 
   private static final String VALUE_ATTRIBUTE = "value";
+  /**
+   * Collection interfaces for which Spring injects every bean of the element type rather than resolving a single one,
+   * as {@code DefaultListableBeanFactory#resolveMultipleBeans} does.
+   */
+  private static final Set<String> MULTI_BEAN_COLLECTIONS = Set.of("java.util.List", "java.util.Set", "java.util.Collection");
 
   public static final List<String> STEREOTYPE_ANNOTATIONS = List.of(
     COMPONENT_ANNOTATION,
@@ -204,10 +210,11 @@ public final class SpringUtils {
     boolean hasAutowiredConstructor = false;
     for (Tree member : classTree.members()) {
       if (member instanceof VariableTree field && field.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
-        String typeFqn = field.symbol().type().fullyQualifiedName();
+        DependencyTarget target = resolveDependencyTarget(field.symbol().type());
         String name = dependencyKey(field.simpleName().name(), SpringUtils.extractQualifierValue(field.symbol().metadata()));
         var span = AnalyzerMessage.textSpanFor(field.simpleName());
-        deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(new InjectionPoint.InputFileData(name, span));
+        deps.computeIfAbsent(target.typeFqn(), k -> new LinkedHashSet<>())
+          .add(new InjectionPoint.InputFileData(name, span, target.multiple()));
       } else if (member instanceof MethodTree method) {
         if (method.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
           hasAutowiredConstructor |= method.is(Tree.Kind.CONSTRUCTOR);
@@ -235,16 +242,49 @@ public final class SpringUtils {
   public static Map<String, Set<InjectionPoint.InputFileData>> collectDependenciesOnMethod(MethodTree method) {
     Map<String, Set<InjectionPoint.InputFileData>> deps = new LinkedHashMap<>();
     for (var p : method.parameters()) {
-      String typeFqn = p.symbol().type().fullyQualifiedName();
+      DependencyTarget target = resolveDependencyTarget(p.symbol().type());
       String name = dependencyKey(p.simpleName().name(), SpringUtils.extractQualifierValue(p.symbol().metadata()));
       var span = AnalyzerMessage.textSpanFor(p.simpleName());
-      deps.computeIfAbsent(typeFqn, k -> new LinkedHashSet<>()).add(new InjectionPoint.InputFileData(name, span));
+      deps.computeIfAbsent(target.typeFqn(), k -> new LinkedHashSet<>())
+        .add(new InjectionPoint.InputFileData(name, span, target.multiple()));
     }
     return deps;
   }
 
   private static String dependencyKey(String fieldOrParamName, @Nullable String qualifier) {
     return qualifier != null ? qualifier : fieldOrParamName;
+  }
+
+  /**
+   * The type a dependency is matched against, and whether Spring injects every matching bean instead of a single one.
+   *
+   * @param typeFqn  fully-qualified name of the type the injection point is resolved against
+   * @param multiple whether every bean of {@code typeFqn} is collected, as for a collection or array injection point
+   */
+  private record DependencyTarget(String typeFqn, boolean multiple) {
+  }
+
+  /**
+   * Resolves the declared type of an injection point to the type Spring actually matches beans against.
+   *
+   * <p>For {@code T[]}, {@code List<T>}, {@code Set<T>} and {@code Collection<T>}, Spring collects every bean of the
+   * element type {@code T}, so the dependency is recorded against {@code T} rather than against the erased collection
+   * type, and flagged as multi-bean. A raw collection is recorded against the collection type itself, since its
+   * element type is unknown, but is still multi-bean.
+   *
+   * @param type The declared type of the field or parameter at the injection point
+   * @return The type to match beans against, and whether all of them are injected
+   */
+  private static DependencyTarget resolveDependencyTarget(Type type) {
+    if (type.isArray()) {
+      return new DependencyTarget(((Type.ArrayType) type).elementType().fullyQualifiedName(), true);
+    }
+    String erasureFqn = type.erasure().fullyQualifiedName();
+    if (MULTI_BEAN_COLLECTIONS.contains(erasureFqn)) {
+      String elementFqn = type.isParameterized() ? type.typeArguments().getFirst().fullyQualifiedName() : erasureFqn;
+      return new DependencyTarget(elementFqn, true);
+    }
+    return new DependencyTarget(type.fullyQualifiedName(), false);
   }
 
   /**

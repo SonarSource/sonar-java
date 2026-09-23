@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
@@ -46,7 +47,9 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
 
   /**
    * Creates the list of issues using the spring context model.
-   * For each injection point, retrieves the beans of the required type that are visible within the
+   * Injection points that collect every matching bean ({@code List<T>}, {@code Set<T>}, {@code Collection<T>},
+   * {@code T[]}) are skipped: Spring injects all candidates there, so they can never be ambiguous.
+   * For each remaining injection point, retrieves the beans of the required type that are visible within the
    * consumer's own Spring context (same module, or in a package covered by its {@code @ComponentScan}),
    * then checks for ambiguity: a single candidate, or a single one marked {@code @Primary}, is unambiguous.
    * Candidates with a profile are then excluded as potentially mutually exclusive, and the same
@@ -67,18 +70,26 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
     for (String type : typeToBeansIndex.getKeys()) {
       Map<String, Set<String>> candidatesByModule = new HashMap<>();
       for (InjectionPoint point : typeToDependenciesIndex.getDependenciesForType(type)) {
-        Set<String> candidates = candidatesByModule.computeIfAbsent(point.module(),
-          module -> typeToBeansIndex.getNamesForType(type, module, projectPackageScan.getPackagesForModule(module)));
-        if (hasUniqueOrPrimaryCandidate(candidates, registry)) {
+        if (point.multiple()) {
           continue;
         }
-        Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
-        if (!hasUniqueOrPrimaryCandidate(effectiveCandidates, registry) && !matchesByNameOrQualifier(candidates, point.name(), registry)) {
-          issues.add(new SpringContextIssue(point.location(), message(effectiveCandidates)));
-        }
+        Set<String> candidates = candidatesByModule.computeIfAbsent(point.module(),
+          module -> typeToBeansIndex.getNamesForType(type, module, projectPackageScan.getPackagesForModule(module)));
+        ambiguityIssue(point, candidates, registry).ifPresent(issues::add);
       }
     }
     return issues;
+  }
+
+  private static Optional<SpringContextIssue> ambiguityIssue(InjectionPoint point, Set<String> candidates, BeanDefinitionRegistry registry) {
+    if (hasUniqueOrPrimaryCandidate(candidates, registry)) {
+      return Optional.empty();
+    }
+    Set<String> effectiveCandidates = excludeCandidatesWithProfile(candidates, registry);
+    if (hasUniqueOrPrimaryCandidate(effectiveCandidates, registry) || matchesByNameOrQualifier(candidates, point.name(), registry)) {
+      return Optional.empty();
+    }
+    return Optional.of(new SpringContextIssue(point.location(), message(effectiveCandidates)));
   }
 
   private static boolean matchesByNameOrQualifier(Set<String> candidates, String dependencyName, BeanDefinitionRegistry registry) {
