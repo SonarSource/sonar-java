@@ -29,7 +29,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S9410")
-public class S9410Check extends IssuableSubscriptionVisitor {
+public class MethodHandleLookupSignatureCheck extends IssuableSubscriptionVisitor {
 
   private static final String FIND_CONSTRUCTOR = "findConstructor";
 

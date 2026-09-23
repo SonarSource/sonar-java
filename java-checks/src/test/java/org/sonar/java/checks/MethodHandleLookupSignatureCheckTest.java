@@ -21,21 +21,21 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-class S9410CheckTest {
+class MethodHandleLookupSignatureCheckTest {
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/S9410CheckSample.java"))
-      .withCheck(new S9410Check())
+      .onFile(mainCodeSourcesPath("checks/MethodHandleLookupSignatureCheckSample.java"))
+      .withCheck(new MethodHandleLookupSignatureCheck())
       .verifyIssues();
   }
 
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/S9410CheckSample.java"))
-      .withCheck(new S9410Check())
+      .onFile(mainCodeSourcesPath("checks/MethodHandleLookupSignatureCheckSample.java"))
+      .withCheck(new MethodHandleLookupSignatureCheck())
       .withoutSemantic()
       .verifyNoIssues();
   }

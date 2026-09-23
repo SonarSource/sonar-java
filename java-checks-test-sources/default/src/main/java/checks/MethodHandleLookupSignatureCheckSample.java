@@ -6,7 +6,7 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.util.List;
 
-class S9410CheckSample {
+class MethodHandleLookupSignatureCheckSample {
 
   static class UserService {
     int updateUser(int userId, String name) { return userId; }
