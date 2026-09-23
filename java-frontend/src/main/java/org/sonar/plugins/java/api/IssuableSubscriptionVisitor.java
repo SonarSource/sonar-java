@@ -27,6 +27,16 @@ import org.sonar.plugins.java.api.tree.Tree;
 public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 
   /**
+   * Override this method to release any per-file state (clear collections, null out AST references, etc.).
+   * It is called automatically before each file analysis (in {@link #setContext}) and after each file
+   * analysis (in {@link #leaveFile}), so subclasses do not need to override those two methods just
+   * for state cleanup.
+   */
+  protected void clearState() {
+    // Default: nothing to clear.
+  }
+
+  /**
    * Override this method only if you need to execute some instructions prior to start the analysis of a file.
    * Don't forget to call <code>super.setContext()`</code>.
    *
@@ -34,8 +44,8 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
    */
   @Override
   public void setContext(JavaFileScannerContext context) {
+    clearState();
     super.setContext(context);
-    // Explicitly declares the method to make it appears in the IssuableSubscriptionVisitor's members.
   }
 
   /**
@@ -69,8 +79,7 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
    */
   @Override
   public void leaveFile(JavaFileScannerContext context) {
-    // Explicitly declares the method to make it appears in the IssuableSubscriptionVisitor's members.
-    // Default behaviour is to do nothing
+    clearState();
   }
 
   /**

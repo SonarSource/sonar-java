@@ -94,8 +94,7 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
   private final List<VariableData> hardCodedUri = new ArrayList<>();
 
   @Override
-  public void setContext(JavaFileScannerContext context) {
-    super.setContext(context);
+  protected void clearState() {
     annotationsStack.clear();
     identifiersUsedInAnnotations.clear();
     hardCodedUri.clear();
@@ -117,7 +116,8 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
       }
     }
 
-    for(VariableData v : hardCodedUri) {
+    try {
+      for(VariableData v : hardCodedUri) {
       // equals to an identifier with unknown semantic, we cannot compare their symbols
       if (idNamesWithoutSemantic.contains(v.identifier())) {
         continue;
@@ -129,6 +129,9 @@ public class HardcodedURICheck extends IssuableSubscriptionVisitor {
         continue;
       }
       reportHardcodedURI(v.initializer());
+      }
+    } finally {
+      super.leaveFile(context);
     }
   }
 

@@ -15,7 +15,6 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -153,6 +152,12 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
       }
     }
     return true;
+  }
+
+  @Override
+  protected void clearState() {
+    shouldCheck.clear();
+    tryCatches.clear();
   }
 
 }

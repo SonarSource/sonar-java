@@ -67,7 +67,11 @@ public class IndentationCheck extends BaseTreeVisitor implements JavaFileScanner
     excludeIssueAtLine = 0;
     this.context = context;
     fileLines = context.getFileLines();
-    scan(context.getTree());
+    try {
+      scan(context.getTree());
+    } finally {
+      fileLines = null;
+    }
   }
 
   @Override

@@ -51,5 +51,7 @@ public class MissingPackageInfoCheck extends AbstractPackageInfoChecker {
     for (String missingPackageInfo : missingPackageWithoutPackageFile) {
       context.addIssueOnProject(this, "Add a 'package-info.java' file to document the '" + missingPackageInfo + "' package");
     }
+    missingPackageWithoutPackageFile.clear();
+    knownPackageWithPackageFile.clear();
   }
 }

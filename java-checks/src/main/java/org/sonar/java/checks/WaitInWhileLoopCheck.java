@@ -36,14 +36,14 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
   private Deque<Boolean> inWhileLoop = new LinkedList<>();
 
   @Override
-  public void setContext(JavaFileScannerContext context) {
-    inWhileLoop.push(false);
-    super.setContext(context);
+  protected void clearState() {
+    inWhileLoop.clear();
   }
 
   @Override
-  public void leaveFile(JavaFileScannerContext context) {
-    inWhileLoop.clear();
+  public void setContext(JavaFileScannerContext context) {
+    super.setContext(context);
+    inWhileLoop.push(false);
   }
 
   @Override

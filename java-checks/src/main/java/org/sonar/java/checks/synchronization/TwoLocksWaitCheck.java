@@ -159,4 +159,9 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  @Override
+  protected void clearState() {
+    synchronizedStack.clear();
+  }
+
 }
