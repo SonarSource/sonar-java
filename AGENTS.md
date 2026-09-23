@@ -261,7 +261,7 @@ str="<line including <substring>>"; sub="<substring>"; pre="${str%%"$sub"*}" suf
 
 Ruling tests validate that rule fixes don't break existing true positives. They run the analyzer against real-world Java projects (`guava`, `commons-beanutils`, `eclipse-jetty`, `sonar-server`, `jboss-ejb3-tutorial`, `regex-examples`) and compare results to expected baselines.
 
-- Expected ruling files: `its/ruling/src/test/resources/<project>/java-<RULE_ID>.json`
+- Expected ruling files: `its/ruling/src/test/resources/expected/<project>/java-<RULE_ID>.json`
 - Actual ruling output: `its/ruling/target/actual/<project>/java-<RULE_ID>.json`
 - Format: `{"group:artifact:path/to/File.java": [line1, line2, ...], ...}`
 - Ruling sources: `its/sources/<project>/`
