@@ -129,6 +129,7 @@ public class S9399Check extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitClass(ClassTree tree) {
+      // Do not visit inner classes as field accesses inside them are not guarded by the outer synchronized block
     }
 
     @Override
