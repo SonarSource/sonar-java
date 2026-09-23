@@ -17,15 +17,21 @@
 package org.sonar.java.checks;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -65,8 +71,11 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheck extends Issuabl
     for (Tree member : recordTree.members()) {
       if (member.is(Tree.Kind.CONSTRUCTOR)) {
         MethodTree constructor = (MethodTree) member;
-        if (isCompactConstructor(constructor) && constructor.block() != null) {
-          constructor.block().accept(new CompactConstructorVisitor(recordSymbol, componentNames));
+        BlockTree body = constructor.block();
+        if (isCompactConstructor(constructor)) {
+          body.accept(new AccessorCallVisitor(recordSymbol, componentNames, Collections.emptyMap()));
+        } else if (!delegatesToAnotherConstructor(body)) {
+          body.accept(new AccessorCallVisitor(recordSymbol, componentNames, fieldAssignmentEnds(body, componentNames)));
         }
       }
     }
@@ -76,14 +85,54 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheck extends Issuabl
     return constructor.openParenToken() == null;
   }
 
-  private class CompactConstructorVisitor extends BaseTreeVisitor {
+  /**
+   * Non-canonical record constructors must start with an explicit "this(...)" invocation, so a constructor that does not start with one
+   * is the explicit canonical constructor.
+   */
+  private static boolean delegatesToAnotherConstructor(BlockTree body) {
+    return body.body().stream()
+      .findFirst()
+      .filter(statement -> statement.is(Tree.Kind.EXPRESSION_STATEMENT))
+      .map(statement -> ((ExpressionStatementTree) statement).expression())
+      .filter(expression -> expression.is(Tree.Kind.METHOD_INVOCATION))
+      .map(expression -> ((MethodInvocationTree) expression).methodSelect())
+      .filter(ExpressionUtils::isThis)
+      .isPresent();
+  }
+
+  /**
+   * Returns, for each record component, the end position of the first "this.component = ..." assignment of the canonical constructor body.
+   * A final field cannot be assigned in a loop, so any accessor call located before this position runs before the field is assigned.
+   */
+  private static Map<String, Position> fieldAssignmentEnds(BlockTree body, Set<String> componentNames) {
+    Map<String, Position> assignmentEnds = new HashMap<>();
+    body.accept(new BaseTreeVisitor() {
+      @Override
+      public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+        ExpressionTree variable = ExpressionUtils.skipParentheses(tree.variable());
+        if (variable.is(Tree.Kind.MEMBER_SELECT)) {
+          MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) variable;
+          String name = memberSelect.identifier().name();
+          if (ExpressionUtils.isThis(memberSelect.expression()) && componentNames.contains(name)) {
+            assignmentEnds.putIfAbsent(name, Position.endOf(tree));
+          }
+        }
+        super.visitAssignmentExpression(tree);
+      }
+    });
+    return assignmentEnds;
+  }
+
+  private class AccessorCallVisitor extends BaseTreeVisitor {
 
     private final Symbol.TypeSymbol recordSymbol;
     private final Set<String> componentNames;
+    private final Map<String, Position> assignmentEnds;
 
-    public CompactConstructorVisitor(Symbol.TypeSymbol recordSymbol, Set<String> componentNames) {
+    public AccessorCallVisitor(Symbol.TypeSymbol recordSymbol, Set<String> componentNames, Map<String, Position> assignmentEnds) {
       this.recordSymbol = recordSymbol;
       this.componentNames = componentNames;
+      this.assignmentEnds = assignmentEnds;
     }
 
     @Override
@@ -105,42 +154,42 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheck extends Issuabl
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (isInvocationOnRecordInstance(tree)) {
-        Symbol methodSymbol = tree.methodSymbol();
-        if (!methodSymbol.isUnknown()
-          && recordSymbol.equals(methodSymbol.owner())
-          && tree.arguments().isEmpty()
-          && componentNames.contains(methodSymbol.name())
-          && ((Symbol.MethodSymbol) methodSymbol).declaration() == null) {
-          reportIssue(ExpressionUtils.methodName(tree),
-            String.format("Remove this use of the uninitialized value \"%s()\".", methodSymbol.name()));
-        }
+      Symbol methodSymbol = tree.methodSymbol();
+      String name = methodSymbol.name();
+      if (tree.arguments().isEmpty()
+        && componentNames.contains(name)
+        && recordSymbol.equals(methodSymbol.owner())
+        && isInvocationOnRecordInstance(tree)
+        && isBeforeFieldAssignment(name, tree)) {
+        reportIssue(ExpressionUtils.methodName(tree),
+          String.format("Replace this call to \"%s()\" with the \"%s\" parameter; the field is not assigned yet.", name, name));
       }
       super.visitMethodInvocation(tree);
     }
 
-    private boolean isInvocationOnRecordInstance(MethodInvocationTree invocation) {
-      ExpressionTree methodSelect = invocation.methodSelect();
-      if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-        return true;
-      }
-      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-        ExpressionTree receiver = ExpressionUtils.skipParentheses(((MemberSelectExpressionTree) methodSelect).expression());
-        while (receiver.is(Tree.Kind.TYPE_CAST)) {
-          receiver = ExpressionUtils.skipParentheses(((TypeCastTree) receiver).expression());
-        }
-        if (ExpressionUtils.isThis(receiver)) {
-          return true;
-        }
-        if (receiver.is(Tree.Kind.MEMBER_SELECT)) {
-          MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) receiver;
-          if (ExpressionUtils.isThis(memberSelect.identifier())) {
-            Symbol thisSymbol = memberSelect.identifier().symbol();
-            return !thisSymbol.isUnknown() && recordSymbol.equals(thisSymbol.enclosingClass());
-          }
-        }
-      }
-      return false;
+    private boolean isBeforeFieldAssignment(String componentName, MethodInvocationTree invocation) {
+      Position assignmentEnd = assignmentEnds.get(componentName);
+      return assignmentEnd == null || Position.startOf(invocation).isBefore(assignmentEnd);
     }
+  }
+
+  private static boolean isInvocationOnRecordInstance(MethodInvocationTree invocation) {
+    ExpressionTree methodSelect = invocation.methodSelect();
+    if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
+      return true;
+    }
+    ExpressionTree receiver = ExpressionUtils.skipParentheses(((MemberSelectExpressionTree) methodSelect).expression());
+    while (receiver.is(Tree.Kind.TYPE_CAST)) {
+      receiver = ExpressionUtils.skipParentheses(((TypeCastTree) receiver).expression());
+    }
+    return isThisReference(receiver);
+  }
+
+  /**
+   * Records are implicitly static, so both "this" and a qualified "X.this" denote the record being constructed.
+   */
+  private static boolean isThisReference(ExpressionTree expression) {
+    return ExpressionUtils.isThis(expression)
+      || (expression.is(Tree.Kind.MEMBER_SELECT) && ExpressionUtils.isThis(((MemberSelectExpressionTree) expression).identifier()));
   }
 }

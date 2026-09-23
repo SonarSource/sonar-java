@@ -1,10 +1,13 @@
 package checks;
 
+import java.util.List;
+import java.util.Locale;
+
 public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
 
   record SimpleUser(String name) {
     SimpleUser {
-      if (name().isBlank()) { // Noncompliant {{Remove this use of the uninitialized value "name()".}}
+      if (name().isBlank()) { // Noncompliant {{Replace this call to "name()" with the "name" parameter; the field is not assigned yet.}}
 //        ^^^^
         throw new IllegalArgumentException();
       }
@@ -13,7 +16,7 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
 
   record ThisAccess(String name) {
     ThisAccess {
-      if (this.name().isBlank()) { // Noncompliant {{Remove this use of the uninitialized value "name()".}}
+      if (this.name().isBlank()) { // Noncompliant {{Replace this call to "name()" with the "name" parameter; the field is not assigned yet.}}
 //             ^^^^
         throw new IllegalArgumentException();
       }
@@ -22,8 +25,7 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
 
   record QualifiedThisAccess(String name) {
     QualifiedThisAccess {
-      // Noncompliant@+1 {{Remove this use of the uninitialized value "name()".}}
-      if (QualifiedThisAccess.this.name().isBlank()) {
+      if (QualifiedThisAccess.this.name().isBlank()) { // Noncompliant {{Replace this call to "name()" with the "name" parameter; the field is not assigned yet.}}
 //                                 ^^^^
         throw new IllegalArgumentException();
       }
@@ -32,15 +34,15 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
 
   record MultipleComponents(String first, String last, int age) {
     MultipleComponents {
-      if (first().isEmpty()) { // Noncompliant {{Remove this use of the uninitialized value "first()".}}
+      if (first().isEmpty()) { // Noncompliant {{Replace this call to "first()" with the "first" parameter; the field is not assigned yet.}}
 //        ^^^^^
         throw new IllegalArgumentException();
       }
-      if (this.last().isEmpty()) { // Noncompliant {{Remove this use of the uninitialized value "last()".}}
+      if (this.last().isEmpty()) { // Noncompliant {{Replace this call to "last()" with the "last" parameter; the field is not assigned yet.}}
 //             ^^^^
         throw new IllegalArgumentException();
       }
-      if (age() < 0) { // Noncompliant {{Remove this use of the uninitialized value "age()".}}
+      if (age() < 0) { // Noncompliant {{Replace this call to "age()" with the "age" parameter; the field is not assigned yet.}}
 //        ^^^
         throw new IllegalArgumentException();
       }
@@ -55,34 +57,100 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
     }
   }
 
-  record CanonicalConstructor(String name) {
-    CanonicalConstructor(String name) {
-      if (name().isBlank()) { // Compliant, not a compact constructor
-        throw new IllegalArgumentException();
-      }
-      this.name = name;
-    }
-  }
-
-  record CustomConstructor(String name) {
-    CustomConstructor(String name, boolean flag) {
-      this(name);
-      if (name().isBlank()) { // Compliant, canonical constructor already ran
-        throw new IllegalArgumentException();
-      }
-    }
-  }
-
-  record ExplicitAccessor(String name) {
+  record ExplicitAccessor(List<String> items) {
     ExplicitAccessor {
-      if (name().isBlank()) { // Compliant, accessor is explicitly declared
+      if (items().isEmpty()) { // Noncompliant {{Replace this call to "items()" with the "items" parameter; the field is not assigned yet.}}
+//        ^^^^^
         throw new IllegalArgumentException();
       }
     }
 
     @Override
-    public String name() {
-      return name;
+    public List<String> items() {
+      return List.copyOf(items);
+    }
+  }
+
+  record CanonicalConstructor(String name) {
+    CanonicalConstructor(String name) {
+      if (name().isBlank()) { // Noncompliant {{Replace this call to "name()" with the "name" parameter; the field is not assigned yet.}}
+//        ^^^^
+        throw new IllegalArgumentException();
+      }
+      this.name = name;
+      if (name().isBlank()) { // Compliant, the field is assigned
+        throw new IllegalArgumentException();
+      }
+    }
+  }
+
+  record CanonicalMultipleComponents(String name, int age) {
+    CanonicalMultipleComponents(String name, int age) {
+      this.name = name.toLowerCase(Locale.ROOT);
+      if (name().isBlank() || age() < 0) { // Noncompliant {{Replace this call to "age()" with the "age" parameter; the field is not assigned yet.}}
+//                            ^^^
+        throw new IllegalArgumentException();
+      }
+      this.age = age;
+      if (age() > 150) { // Compliant
+        throw new IllegalArgumentException();
+      }
+    }
+  }
+
+  record CanonicalAccessorInAssignment(String name) {
+    CanonicalAccessorInAssignment(String name) {
+      this.name = name().trim(); // Noncompliant {{Replace this call to "name()" with the "name" parameter; the field is not assigned yet.}}
+//                ^^^^
+    }
+  }
+
+  record CanonicalParenthesizedAssignment(String name) {
+    CanonicalParenthesizedAssignment(String name) {
+      (this).name = name;
+      if (name().isBlank()) { // Compliant
+        throw new IllegalArgumentException();
+      }
+    }
+  }
+
+  record CanonicalBranches(String name) {
+    CanonicalBranches(String name) {
+      if (name == null) {
+        this.name = "";
+      } else {
+        this.name = name.trim();
+      }
+      if (name().isEmpty()) { // Compliant
+        throw new IllegalArgumentException();
+      }
+    }
+  }
+
+  static class Holder {
+    String value;
+  }
+
+  record CanonicalOtherAssignments(String name) {
+    CanonicalOtherAssignments(String name) {
+      String trimmed;
+      trimmed = name.trim();
+      Holder holder = new Holder();
+      holder.value = trimmed;
+      if (name().isEmpty()) { // Noncompliant {{Replace this call to "name()" with the "name" parameter; the field is not assigned yet.}}
+//        ^^^^
+        throw new IllegalArgumentException();
+      }
+      this.name = trimmed;
+    }
+  }
+
+  record DelegatingConstructor(String name) {
+    DelegatingConstructor(String name, boolean flag) {
+      this(name);
+      if (name().isBlank()) { // Compliant, the canonical constructor already ran
+        throw new IllegalArgumentException();
+      }
     }
   }
 
@@ -90,9 +158,14 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
     OtherMethodCall {
       helper(); // Compliant
       validate(name); // Compliant
+      name("suffix"); // Compliant, not the accessor
     }
 
     void helper() {
+    }
+
+    String name(String suffix) {
+      return name + suffix;
     }
 
     static void validate(String s) {
@@ -110,7 +183,7 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
 
   record OuterRecord(String outerName) {
     OuterRecord {
-      if (outerName().isBlank()) { // Noncompliant {{Remove this use of the uninitialized value "outerName()".}}
+      if (outerName().isBlank()) { // Noncompliant {{Replace this call to "outerName()" with the "outerName" parameter; the field is not assigned yet.}}
 //        ^^^^^^^^^
         throw new IllegalArgumentException();
       }
@@ -118,7 +191,7 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
 
     record InnerRecord(String innerName) {
       InnerRecord {
-        if (innerName().isBlank()) { // Noncompliant {{Remove this use of the uninitialized value "innerName()".}}
+        if (innerName().isBlank()) { // Noncompliant {{Replace this call to "innerName()" with the "innerName" parameter; the field is not assigned yet.}}
 //          ^^^^^^^^^
           throw new IllegalArgumentException();
         }
@@ -126,45 +199,32 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
     }
   }
 
-  record WithInnerClass(String name) {
-    WithInnerClass {
+  record DeferredCalls(String name) {
+    DeferredCalls {
       class LocalClass {
         void localMethod() {
           name(); // Compliant
         }
       }
-    }
-  }
-
-  record WithLambda(String name) {
-    WithLambda {
-      Runnable r = () -> name(); // Compliant
+      Runnable lambda = () -> name(); // Compliant
+      Object anonymous = new Object() {
+        String value = name(); // Compliant
+      };
     }
   }
 
   record WithCastAndParens(String name) {
     WithCastAndParens {
-      // Noncompliant@+1 {{Remove this use of the uninitialized value "name()".}}
-      if (((WithCastAndParens) (this)).name().isBlank()) {
+      if (((WithCastAndParens) (this)).name().isBlank()) { // Noncompliant {{Replace this call to "name()" with the "name" parameter; the field is not assigned yet.}}
 //                                     ^^^^
         throw new IllegalArgumentException();
       }
     }
   }
 
-  record OtherMethodWithParams(String name) {
-    OtherMethodWithParams {
-      compute(1); // Compliant
-    }
-
-    void compute(int x) {
-    }
-  }
-
   record InNewClassArgument(String name) {
     InNewClassArgument {
-      // Noncompliant@+1 {{Remove this use of the uninitialized value "name()".}}
-      throw new IllegalArgumentException("bad name: " + name());
+      throw new IllegalArgumentException("bad name: " + name()); // Noncompliant {{Replace this call to "name()" with the "name" parameter; the field is not assigned yet.}}
 //                                                      ^^^^
     }
   }
