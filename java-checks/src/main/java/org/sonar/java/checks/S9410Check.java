@@ -74,32 +74,21 @@ public class S9410Check extends IssuableSubscriptionVisitor {
   private void checkMethodLookup(MethodInvocationTree invocation) {
     String name = invocationName(invocation);
     List<ExpressionTree> arguments = invocation.arguments();
-    int methodTypeIndex;
-    Type targetType;
-    String memberName = null;
-    boolean staticLookup = "findStatic".equals(name);
-    if (FIND_CONSTRUCTOR.equals(name)) {
-      if (arguments.size() != 2) {
-        return;
-      }
-      targetType = classLiteralType(arguments.get(0));
-      methodTypeIndex = 1;
-    } else {
-      if (arguments.size() != ("findSpecial".equals(name) ? 4 : 3)) {
-        return;
-      }
-      targetType = classLiteralType(arguments.get(0));
-      memberName = constantString(arguments.get(1));
-      methodTypeIndex = 2;
-    }
     boolean isConstructor = FIND_CONSTRUCTOR.equals(name);
-    if (targetType == null || (memberName == null && !isConstructor)) {
+    Type targetType = classLiteralType(arguments.get(0));
+    if (targetType == null || !targetType.isClass()) {
       return;
     }
+    String memberName = isConstructor ? null : constantString(arguments.get(1));
+    if (!isConstructor && memberName == null) {
+      return;
+    }
+    int methodTypeIndex = isConstructor ? 1 : 2;
     MethodSignature signature = methodSignature(arguments.get(methodTypeIndex));
-    if (signature == null || !targetType.isClass()) {
+    if (signature == null) {
       return;
     }
+    boolean staticLookup = "findStatic".equals(name);
     String resolvedName = isConstructor ? "<init>" : memberName;
     boolean found = findMethod(targetType, resolvedName, signature, staticLookup, isConstructor);
     if (!found) {
@@ -109,9 +98,6 @@ public class S9410Check extends IssuableSubscriptionVisitor {
 
   private void checkFieldLookup(MethodInvocationTree invocation) {
     List<ExpressionTree> arguments = invocation.arguments();
-    if (arguments.size() != 3) {
-      return;
-    }
     Type targetType = classLiteralType(arguments.get(0));
     String memberName = constantString(arguments.get(1));
     Type requestedType = classLiteralType(arguments.get(2));
@@ -141,9 +127,6 @@ public class S9410Check extends IssuableSubscriptionVisitor {
       return null;
     }
     List<ExpressionTree> arguments = invocation.arguments();
-    if (arguments.isEmpty()) {
-      return null;
-    }
     Type returnType = classLiteralType(arguments.get(0));
     if (returnType == null) {
       return null;
@@ -185,10 +168,7 @@ public class S9410Check extends IssuableSubscriptionVisitor {
     return false;
   }
 
-  private static boolean matchesMethodInType(@javax.annotation.Nullable Type type, String symbolName, MethodSignature signature, boolean staticLookup, boolean constructor) {
-    if (type == null) {
-      return false;
-    }
+  private static boolean matchesMethodInType(Type type, String symbolName, MethodSignature signature, boolean staticLookup, boolean constructor) {
     return type.symbol().lookupSymbols(symbolName).stream()
       .filter(Symbol.MethodSymbol.class::isInstance)
       .map(Symbol.MethodSymbol.class::cast)

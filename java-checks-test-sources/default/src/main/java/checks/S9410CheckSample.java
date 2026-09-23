@@ -144,18 +144,6 @@ class S9410CheckSample {
     MethodHandle badSpecial = lookup.findSpecial(UserService.class, "nonExistent",
       MethodType.methodType(void.class), UserService.class); // Noncompliant
 
-    // Wrong number of arguments for findConstructor — ignored (covers args.size() != 2)
-    lookup.findConstructor(UserService.class, MethodType.methodType(void.class, int.class), UserService.class);
-
-    // Wrong number of arguments for findVirtual — ignored (covers args.size() != 3)
-    lookup.findVirtual(UserService.class, "updateUser");
-
-    // Wrong number of arguments for findVarHandle — ignored (covers args.size() != 3)
-    lookup.findVarHandle(UserService.class, "count");
-
-    // MethodType.methodType() with no arguments — ignored (covers arguments.isEmpty() in methodSignature)
-    lookup.findVirtual(UserService.class, "noArguments", MethodType.methodType());
-
     // Wrong field type on inherited field — noncompliant (covers field inherited from parent miss)
     VarHandle wrongInheritedField = lookup.findVarHandle(Child.class, "count", String.class); // Noncompliant
 
@@ -179,6 +167,25 @@ class S9410CheckSample {
 
     // Lookup of generic field — compliant (covers typeVar in sameErasure for fields)
     VarHandle genericField = lookup.findVarHandle(GenericHolder.class, "value", Object.class);
+  }
+
+  static void moreEdgeCases(MethodHandles.Lookup lookup) throws Throwable {
+    // findConstructor with null target — ignored (classLiteralType returns null)
+    Class<?> cls = UserService.class;
+    lookup.findConstructor(cls, MethodType.methodType(void.class, int.class));
+
+    // Wrong parameter type for a method with multiple parameters — covers sameErasure returning false
+    MethodHandle wrongSecondParam = lookup.findVirtual(UserService.class, "updateUser",
+      MethodType.methodType(int.class, int.class, int.class)); // Noncompliant
+
+    // Constructor with correct sig on child class — compliant
+    MethodHandle childCtor = lookup.findConstructor(Child.class, MethodType.methodType(void.class));
+
+    // findVirtual for method only on parent — compliant (covers supertype traversal returning true)
+    MethodHandle childUpdateUser = lookup.findVirtual(Child.class, "noArguments", MethodType.methodType(void.class));
+
+    // Correct findStatic — compliant
+    MethodHandle staticFormat = lookup.findStatic(UserService.class, "format", MethodType.methodType(String.class, String.class));
   }
 
   static void primitiveAndArrayTargets(MethodHandles.Lookup lookup) throws Throwable {
