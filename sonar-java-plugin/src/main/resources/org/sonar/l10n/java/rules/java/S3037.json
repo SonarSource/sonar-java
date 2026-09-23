@@ -1,0 +1,23 @@
+{
+  "title": "Record component accessors should not be called before the fields are assigned",
+  "type": "BUG",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "MEDIUM"
+    },
+    "attribute": "LOGICAL"
+  },
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "tags": [
+    "java16"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-3037",
+  "sqKey": "S3037",
+  "scope": "Main",
+  "quickfix": "unknown"
+}
