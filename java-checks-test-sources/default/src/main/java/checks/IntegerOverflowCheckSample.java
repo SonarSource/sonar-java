@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntSupplier;
 
-class S3949CheckSample {
+class IntegerOverflowCheckSample {
 
   int intAddition = Integer.MAX_VALUE + 1; // Noncompliant
 //                  ^^^^^^^^^^^^^^^^^^^^^

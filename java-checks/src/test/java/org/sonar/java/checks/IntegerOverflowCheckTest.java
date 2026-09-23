@@ -21,15 +21,15 @@ import org.sonar.java.checks.verifier.CheckVerifier;
 
 import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
 
-class S3949CheckTest {
+class IntegerOverflowCheckTest {
 
-  private static final String SAMPLE = "checks/S3949CheckSample.java";
+  private static final String SAMPLE = "checks/IntegerOverflowCheckSample.java";
 
   @Test
   void test() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath(SAMPLE))
-      .withCheck(new S3949Check())
+      .withCheck(new IntegerOverflowCheck())
       .verifyIssues();
   }
 
@@ -37,7 +37,7 @@ class S3949CheckTest {
   void test_without_semantic() {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath(SAMPLE))
-      .withCheck(new S3949Check())
+      .withCheck(new IntegerOverflowCheck())
       .withoutSemantic()
       .verifyNoIssues();
   }

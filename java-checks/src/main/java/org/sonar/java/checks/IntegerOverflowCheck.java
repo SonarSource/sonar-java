@@ -46,7 +46,7 @@ import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S3949")
-public class S3949Check extends IssuableSubscriptionVisitor {
+public class IntegerOverflowCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Rewrite this calculation to prevent overflow and preserve the result.";
   private static final MethodMatchers TIMESTAMP_METHODS = MethodMatchers.or(
