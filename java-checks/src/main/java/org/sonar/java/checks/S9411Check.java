@@ -243,6 +243,7 @@ public class S9411Check extends IssuableSubscriptionVisitor implements JavaVersi
         indexUsedElsewhere = true;
       } else if ((tree.symbol().isLocalVariable() || tree.symbol().isParameter())
         && tree.symbol() instanceof Symbol.VariableSymbol variableSymbol
+        && !variableSymbol.isFinal()
         && !variableSymbol.isEffectivelyFinal()) {
         notLambdaCompatible = true;
       }
