@@ -19,6 +19,7 @@ class S9410CheckSample {
   }
 
   static class Child extends UserService {
+    int childField;
     Child() { super(1); }
   }
 
@@ -27,6 +28,12 @@ class S9410CheckSample {
   }
 
   record Point(int x, int y) { }
+
+  static class GenericHolder<T> {
+    T value;
+    T getValue() { return value; }
+    void setValue(T v) { this.value = v; }
+  }
 
   static void verify(MethodHandles.Lookup lookup) throws Throwable {
     MethodHandle valid = lookup.findVirtual(UserService.class, "updateUser", MethodType.methodType(int.class, int.class, String.class));
@@ -80,5 +87,60 @@ class S9410CheckSample {
 
     // Static field with findVarHandle (should raise issue)
     VarHandle wrongInstanceKindField = lookup.findVarHandle(UserService.class, "version", String.class); // Noncompliant
+  }
+
+  static void edgeCases(MethodHandles.Lookup lookup) throws Throwable {
+    Class<?> clazz = UserService.class;
+
+    // Non-class-literal first argument — ignored, covers classLiteralType null branch
+    lookup.findVirtual(clazz, "updateUser", MethodType.methodType(int.class, int.class, String.class));
+
+    // Non-constant string name — ignored, covers memberName null branch
+    String methodName = getMethodName();
+    lookup.findVirtual(UserService.class, methodName, MethodType.methodType(int.class, int.class, String.class));
+
+    // Non-class-literal return type in methodType — ignored, covers returnType null in methodSignature
+    Class<?> returnClazz = int.class;
+    lookup.findVirtual(UserService.class, "updateUser", MethodType.methodType(returnClazz, int.class, String.class));
+
+    // Non-class-literal parameter type in methodType — ignored, covers parameter null in methodSignature
+    Class<?> paramClazz = int.class;
+    lookup.findVirtual(UserService.class, "updateUser", MethodType.methodType(int.class, paramClazz, String.class));
+
+    // Non-class-literal type argument for field — ignored, covers requestedType null in checkFieldLookup
+    Class<?> fieldType = int.class;
+    lookup.findVarHandle(UserService.class, "count", fieldType);
+
+    // Non-class-literal target for field — ignored, covers targetType null in checkFieldLookup
+    lookup.findVarHandle(clazz, "count", int.class);
+
+    // Non-constant name for field — ignored, covers memberName null in checkFieldLookup
+    String fName = getMethodName();
+    lookup.findVarHandle(UserService.class, fName, int.class);
+
+    // Generic type with type variable return — compliant (covers typeVar branch in sameErasure)
+    MethodHandle genericGet = lookup.findVirtual(GenericHolder.class, "getValue", MethodType.methodType(Object.class));
+    MethodHandle genericSet = lookup.findVirtual(GenericHolder.class, "setValue", MethodType.methodType(void.class, Object.class));
+
+    // Field inherited from parent — compliant (covers field supertype traversal)
+    VarHandle inheritedField = lookup.findVarHandle(Child.class, "count", int.class);
+
+    // Non-MethodInvocationTree as methodType argument — ignored, covers methodSignature null branch
+    lookup.findVirtual(UserService.class, "updateUser", dynamicMethodType());
+
+    // findConstructor with non-void return type — noncompliant (constructor requires void return)
+    MethodHandle badCtorReturn = lookup.findConstructor(UserService.class, MethodType.methodType(int.class, int.class)); // Noncompliant
+
+    // findSpecial with non-existent method name — noncompliant
+    MethodHandle badSpecial = lookup.findSpecial(UserService.class, "nonExistent",
+      MethodType.methodType(void.class), UserService.class); // Noncompliant
+  }
+
+  private static String getMethodName() {
+    return "updateUser";
+  }
+
+  private static MethodType dynamicMethodType() {
+    return MethodType.methodType(int.class, int.class, String.class);
   }
 }

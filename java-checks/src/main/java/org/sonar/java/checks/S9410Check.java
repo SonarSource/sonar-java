@@ -18,7 +18,6 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -158,7 +157,7 @@ public class S9410Check extends IssuableSubscriptionVisitor {
     return new MethodSignature(returnType, parameters);
   }
 
-  private static boolean findMethod(Type targetType, @Nullable String name, MethodSignature signature, boolean staticLookup, boolean constructor) {
+  private static boolean findMethod(Type targetType, String name, MethodSignature signature, boolean staticLookup, boolean constructor) {
     String symbolName = constructor ? "<init>" : name;
     if (matchesMethodInType(targetType, symbolName, signature, staticLookup, constructor)) {
       return true;
@@ -185,21 +184,22 @@ public class S9410Check extends IssuableSubscriptionVisitor {
 
   private static boolean matchesMethodInType(Type type, String symbolName, MethodSignature signature, boolean staticLookup, boolean constructor) {
     for (Symbol symbol : type.symbol().lookupSymbols(symbolName)) {
-      if (!(symbol instanceof Symbol.MethodSymbol method)) {
-        continue;
-      }
-      if (method.isUnknown()) {
-        return true;
-      }
-      if (method.isStatic() != staticLookup || !sameTypes(method.parameterTypes(), signature.parameters)) {
-        continue;
-      }
-      Type returnType = method.returnType().type();
-      if (constructor ? signature.returnType.isVoid() : sameErasure(returnType, signature.returnType)) {
+      if (symbol instanceof Symbol.MethodSymbol method && matchesMethod(method, signature, staticLookup, constructor)) {
         return true;
       }
     }
     return false;
+  }
+
+  private static boolean matchesMethod(Symbol.MethodSymbol method, MethodSignature signature, boolean staticLookup, boolean constructor) {
+    if (method.isUnknown()) {
+      return true;
+    }
+    if (method.isStatic() != staticLookup || !sameTypes(method.parameterTypes(), signature.parameters)) {
+      return false;
+    }
+    Type returnType = method.returnType().type();
+    return constructor ? signature.returnType.isVoid() : sameErasure(returnType, signature.returnType);
   }
 
   private static boolean findField(Type targetType, String name, Type requestedType, boolean staticLookup) {
