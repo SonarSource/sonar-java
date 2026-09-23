@@ -158,7 +158,7 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheck extends Issuabl
         && isInvocationOnRecordInstance(tree)
         && isBeforeFieldAssignment(name, tree)) {
         reportIssue(ExpressionUtils.methodName(tree),
-          String.format("Replace this call to \"%s()\" with the \"%s\" parameter; the field is not assigned yet.", name, name));
+          "Replace this call to \"" + name + "()\" with the \"" + name + "\" parameter; the field is not assigned yet.");
       }
       super.visitMethodInvocation(tree);
     }

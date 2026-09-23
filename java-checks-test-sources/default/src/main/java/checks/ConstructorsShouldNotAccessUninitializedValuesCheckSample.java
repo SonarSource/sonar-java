@@ -184,6 +184,17 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
     }
   }
 
+  record CanonicalBranchAssignment(String name) {
+    CanonicalBranchAssignment(String name) {
+      if (name == null) {
+        this.name = "";
+      } else {
+        String copy = name(); // FN, the textually first assignment of "name" is in the other branch
+        this.name = name.trim();
+      }
+    }
+  }
+
   record DelegatingConstructor(String name) {
     DelegatingConstructor(String name, boolean flag) {
       this(name);
