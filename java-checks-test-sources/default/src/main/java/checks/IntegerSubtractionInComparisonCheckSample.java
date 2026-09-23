@@ -369,10 +369,13 @@ class IntegerSubtractionInComparisonCheckSample {
       int c = b;
       int d = c;
       int e = d;
-      // The single-write resolution depth cap keeps this conservative: e is not traced all the way back to
+      int f = e;
+      int g = f;
+      int h = g;
+      // The single-write resolution depth cap keeps this conservative: h is not traced all the way back to
       // left.length(), so it is treated as unbounded even though it provably isn't.
       // Noncompliant@+1 {{Subtracting numeric values in compare can overflow; use Integer.compare instead.}}
-      return e - right.length();
+      return h - right.length();
     }
   }
 
