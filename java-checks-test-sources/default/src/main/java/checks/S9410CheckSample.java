@@ -22,6 +22,12 @@ class S9410CheckSample {
     Child() { super(1); }
   }
 
+  interface Greeter {
+    String greet();
+  }
+
+  record Point(int x, int y) { }
+
   static void verify(MethodHandles.Lookup lookup) throws Throwable {
     MethodHandle valid = lookup.findVirtual(UserService.class, "updateUser", MethodType.methodType(int.class, int.class, String.class));
     MethodHandle wrongParameter = lookup.findVirtual(UserService.class, "updateUser", MethodType.methodType(int.class, String.class, String.class)); // Noncompliant {{Use a type signature matching the target method.}}
@@ -51,5 +57,28 @@ class S9410CheckSample {
     // Generic type lookups (should not raise issues due to type erasure)
     MethodHandle listGet = lookup.findVirtual(List.class, "get", MethodType.methodType(Object.class, int.class));
     MethodHandle listAdd = lookup.findVirtual(List.class, "add", MethodType.methodType(boolean.class, Object.class));
+
+    // Interface targets with Object methods (should not raise issues)
+    MethodHandle greeterToString = lookup.findVirtual(Greeter.class, "toString", MethodType.methodType(String.class));
+    MethodHandle greeterHashCode = lookup.findVirtual(Greeter.class, "hashCode", MethodType.methodType(int.class));
+    MethodHandle greeterEquals = lookup.findVirtual(Greeter.class, "equals", MethodType.methodType(boolean.class, Object.class));
+    MethodHandle greeterGreet = lookup.findVirtual(Greeter.class, "greet", MethodType.methodType(String.class));
+    MethodHandle greeterWrongSig = lookup.findVirtual(Greeter.class, "greet", MethodType.methodType(int.class)); // Noncompliant
+
+    // Record with same-named fields and accessor methods
+    MethodHandle pointX = lookup.findVirtual(Point.class, "x", MethodType.methodType(int.class));
+    MethodHandle pointWrongX = lookup.findVirtual(Point.class, "x", MethodType.methodType(String.class)); // Noncompliant
+
+    // findSpecial lookup
+    MethodHandle specialCall = lookup.findSpecial(UserService.class, "updateUser",
+      MethodType.methodType(int.class, int.class, String.class), UserService.class);
+    MethodHandle wrongSpecial = lookup.findSpecial(UserService.class, "updateUser",
+      MethodType.methodType(void.class, int.class, String.class), UserService.class); // Noncompliant
+
+    // Non-static field with findStaticVarHandle (should raise issue)
+    VarHandle wrongStaticKindField = lookup.findStaticVarHandle(UserService.class, "count", int.class); // Noncompliant
+
+    // Static field with findVarHandle (should raise issue)
+    VarHandle wrongInstanceKindField = lookup.findVarHandle(UserService.class, "version", String.class); // Noncompliant
   }
 }

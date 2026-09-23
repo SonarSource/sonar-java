@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -31,9 +32,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S9410")
 public class S9410Check extends IssuableSubscriptionVisitor {
 
+  private static final String FIND_CONSTRUCTOR = "findConstructor";
+
   private static final MethodMatchers LOOKUP_METHODS = MethodMatchers.create()
     .ofTypes("java.lang.invoke.MethodHandles$Lookup")
-    .names("findVirtual", "findStatic", "findSpecial", "findConstructor")
+    .names("findVirtual", "findStatic", "findSpecial", FIND_CONSTRUCTOR)
     .withAnyParameters()
     .build();
   private static final MethodMatchers VAR_HANDLE_METHODS = MethodMatchers.create()
@@ -76,7 +79,7 @@ public class S9410Check extends IssuableSubscriptionVisitor {
     Type targetType;
     String memberName = null;
     boolean staticLookup = "findStatic".equals(name);
-    if ("findConstructor".equals(name)) {
+    if (FIND_CONSTRUCTOR.equals(name)) {
       if (arguments.size() != 2) {
         return;
       }
@@ -90,14 +93,14 @@ public class S9410Check extends IssuableSubscriptionVisitor {
       memberName = constantString(arguments.get(1));
       methodTypeIndex = 2;
     }
-    if (targetType == null || (memberName == null && !"findConstructor".equals(name))) {
+    if (targetType == null || (memberName == null && !FIND_CONSTRUCTOR.equals(name))) {
       return;
     }
     MethodSignature signature = methodSignature(arguments.get(methodTypeIndex));
     if (signature == null || !targetType.isClass()) {
       return;
     }
-    boolean found = findMethod(targetType, memberName, signature, staticLookup, "findConstructor".equals(name));
+    boolean found = findMethod(targetType, memberName, signature, staticLookup, FIND_CONSTRUCTOR.equals(name));
     if (!found) {
       reportIssue(arguments.get(methodTypeIndex), "Use a type signature matching the target method.");
     }
@@ -114,14 +117,14 @@ public class S9410Check extends IssuableSubscriptionVisitor {
     if (targetType == null || memberName == null || requestedType == null || !targetType.isClass()) {
       return;
     }
-    boolean staticLookup = invocationName(invocation).equals("findStaticVarHandle");
+    boolean staticLookup = "findStaticVarHandle".equals(invocationName(invocation));
     if (!findField(targetType, memberName, requestedType, staticLookup)) {
       reportIssue(arguments.get(2), "Use the declared type of the target field.");
     }
   }
 
   private static Type classLiteralType(ExpressionTree tree) {
-    if (!(tree instanceof MemberSelectExpressionTree select) || !select.identifier().name().equals("class")) {
+    if (!(tree instanceof MemberSelectExpressionTree select) || !"class".equals(select.identifier().name())) {
       return null;
     }
     Type type = select.expression().symbolType();
@@ -155,7 +158,7 @@ public class S9410Check extends IssuableSubscriptionVisitor {
     return new MethodSignature(returnType, parameters);
   }
 
-  private static boolean findMethod(Type targetType, String name, MethodSignature signature, boolean staticLookup, boolean constructor) {
+  private static boolean findMethod(Type targetType, @Nullable String name, MethodSignature signature, boolean staticLookup, boolean constructor) {
     String symbolName = constructor ? "<init>" : name;
     if (matchesMethodInType(targetType, symbolName, signature, staticLookup, constructor)) {
       return true;
@@ -171,12 +174,21 @@ public class S9410Check extends IssuableSubscriptionVisitor {
         return true;
       }
     }
+    if (targetType.symbol().isInterface()) {
+      Type objectType = targetType.symbol().superClass();
+      if (objectType != null && !objectType.isUnknown()) {
+        return matchesMethodInType(objectType, symbolName, signature, staticLookup, false);
+      }
+    }
     return false;
   }
 
   private static boolean matchesMethodInType(Type type, String symbolName, MethodSignature signature, boolean staticLookup, boolean constructor) {
     for (Symbol symbol : type.symbol().lookupSymbols(symbolName)) {
-      if (!(symbol instanceof Symbol.MethodSymbol method) || method.isUnknown()) {
+      if (!(symbol instanceof Symbol.MethodSymbol method)) {
+        continue;
+      }
+      if (method.isUnknown()) {
         return true;
       }
       if (method.isStatic() != staticLookup || !sameTypes(method.parameterTypes(), signature.parameters)) {
