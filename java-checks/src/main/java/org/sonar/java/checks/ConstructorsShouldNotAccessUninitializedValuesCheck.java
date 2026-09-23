@@ -38,7 +38,6 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -55,10 +54,6 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheck extends Issuabl
   public void visitNode(Tree tree) {
     ClassTree recordTree = (ClassTree) tree;
     Symbol.TypeSymbol recordSymbol = recordTree.symbol();
-    if (recordSymbol.isUnknown()) {
-      return;
-    }
-
     Set<String> componentNames = recordTree.recordComponents().stream()
       .map(VariableTree::simpleName)
       .map(IdentifierTree::name)
@@ -86,18 +81,16 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheck extends Issuabl
   }
 
   /**
-   * Non-canonical record constructors must start with an explicit "this(...)" invocation, so a constructor that does not start with one
-   * is the explicit canonical constructor.
+   * Non-canonical record constructors must invoke "this(...)" as a top-level statement of their body, possibly preceded by other
+   * statements since Java 25, so a constructor without such an invocation is the explicit canonical constructor.
    */
   private static boolean delegatesToAnotherConstructor(BlockTree body) {
     return body.body().stream()
-      .findFirst()
       .filter(statement -> statement.is(Tree.Kind.EXPRESSION_STATEMENT))
       .map(statement -> ((ExpressionStatementTree) statement).expression())
       .filter(expression -> expression.is(Tree.Kind.METHOD_INVOCATION))
       .map(expression -> ((MethodInvocationTree) expression).methodSelect())
-      .filter(ExpressionUtils::isThis)
-      .isPresent();
+      .anyMatch(ExpressionUtils::isThis);
   }
 
   /**
@@ -107,6 +100,16 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheck extends Issuabl
   private static Map<String, Position> fieldAssignmentEnds(BlockTree body, Set<String> componentNames) {
     Map<String, Position> assignmentEnds = new HashMap<>();
     body.accept(new BaseTreeVisitor() {
+      @Override
+      public void visitClass(ClassTree tree) {
+        // Record fields cannot be assigned from local or anonymous classes
+      }
+
+      @Override
+      public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+        // Record fields cannot be assigned from lambdas
+      }
+
       @Override
       public void visitAssignmentExpression(AssignmentExpressionTree tree) {
         ExpressionTree variable = ExpressionUtils.skipParentheses(tree.variable());
@@ -143,13 +146,6 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheck extends Issuabl
     @Override
     public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
       // Do not visit lambdas
-    }
-
-    @Override
-    public void visitNewClass(NewClassTree tree) {
-      scan(tree.enclosingExpression());
-      scan(tree.typeArguments());
-      scan(tree.arguments());
     }
 
     @Override

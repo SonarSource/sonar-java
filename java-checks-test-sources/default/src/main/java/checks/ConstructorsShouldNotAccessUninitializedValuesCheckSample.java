@@ -2,6 +2,8 @@ package checks;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
 
@@ -145,6 +147,43 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
     }
   }
 
+  record CanonicalLocalClassAssignment(String name) {
+    CanonicalLocalClassAssignment(String name) {
+      class Temporary {
+        String name;
+
+        Temporary() {
+          this.name = "temporary";
+        }
+      }
+      Runnable lambda = () -> new Temporary();
+      if (name().isEmpty()) { // Noncompliant {{Replace this call to "name()" with the "name" parameter; the field is not assigned yet.}}
+//        ^^^^
+        throw new IllegalArgumentException();
+      }
+      this.name = name;
+    }
+  }
+
+  record FlexibleConstructorBody(String name) {
+    FlexibleConstructorBody(String name, int ignored) {
+      Objects.requireNonNull(name);
+      this(name);
+      if (name().isBlank()) { // Compliant, the canonical constructor already ran
+        throw new IllegalArgumentException();
+      }
+    }
+  }
+
+  record GenericRecord<T>(T value) {
+    GenericRecord {
+      if (value() == null) { // Noncompliant {{Replace this call to "value()" with the "value" parameter; the field is not assigned yet.}}
+//        ^^^^^
+        throw new IllegalArgumentException();
+      }
+    }
+  }
+
   record DelegatingConstructor(String name) {
     DelegatingConstructor(String name, boolean flag) {
       this(name);
@@ -208,8 +247,11 @@ public class ConstructorsShouldNotAccessUninitializedValuesCheckSample {
       }
       Runnable lambda = () -> name(); // Compliant
       Object anonymous = new Object() {
-        String value = name(); // Compliant
+        String value() {
+          return name(); // Compliant
+        }
       };
+      Supplier<String> reference = this::name; // Compliant
     }
   }
 
