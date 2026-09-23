@@ -92,11 +92,12 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
         if (symbol.isVariableSymbol() && allUsagesAreCompareArguments(symbol)) {
           Tree declaration = symbol.declaration();
           if (declaration instanceof VariableTree variableTree && variableTree.initializer() != null) {
-            expr = skipParenthesesAndCasts(variableTree.initializer());
+            collectAllSubtractions(variableTree.initializer());
+            return;
           }
         }
       }
-      addNestedSubtractions(expr);
+      collectAllSubtractions(argument);
     }
 
     private static boolean allUsagesAreCompareArguments(Symbol symbol) {
@@ -116,13 +117,17 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
       return true;
     }
 
-    private void addNestedSubtractions(ExpressionTree expr) {
-      ExpressionTree unwrapped = skipParenthesesAndCasts(expr);
-      if (unwrapped.is(Tree.Kind.MINUS)) {
-        suppressedSubtractions.add(unwrapped);
-        BinaryExpressionTree binary = (BinaryExpressionTree) unwrapped;
-        addNestedSubtractions(binary.leftOperand());
-        addNestedSubtractions(binary.rightOperand());
+    private void collectAllSubtractions(Tree tree) {
+      tree.accept(new SubtractionCollector());
+    }
+
+    private class SubtractionCollector extends ComparisonMethodUtils.SkipNestedTypesVisitor {
+      @Override
+      public void visitBinaryExpression(BinaryExpressionTree tree) {
+        if (tree.is(Tree.Kind.MINUS)) {
+          suppressedSubtractions.add(tree);
+        }
+        super.visitBinaryExpression(tree);
       }
     }
 

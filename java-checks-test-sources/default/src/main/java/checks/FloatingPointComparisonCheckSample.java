@@ -458,4 +458,57 @@ class FloatingPointComparisonCheckSample {
       return (int) d;
     }
   }
+
+  // === Compliant: subtraction nested in method call inside Double.compare ===
+
+  static class MathHypotInCompare implements Comparable<MathHypotInCompare> {
+    private double x;
+    private double y;
+
+    @Override
+    public int compareTo(MathHypotInCompare other) {
+      return Double.compare(Math.hypot(this.x - 1, this.y - 1), Math.hypot(other.x - 1, other.y - 1)); // Compliant
+    }
+  }
+
+  // === Compliant: Math.abs of subtraction stored in variable passed to Double.compare ===
+
+  static class AbsSubtractionInCompare implements Comparable<AbsSubtractionInCompare> {
+    private double x;
+    private double y;
+
+    @Override
+    public int compareTo(AbsSubtractionInCompare other) {
+      double d1 = Math.abs(this.x - this.y); // Compliant - flows into Double.compare
+      double d2 = Math.abs(other.x - other.y);
+      return Double.compare(d1, d2);
+    }
+  }
+
+  // === Compliant: subtraction in addition inside Float.compare ===
+
+  static class AdditionWithSubtractionInCompare implements Comparable<AdditionWithSubtractionInCompare> {
+    private float a;
+    private float b;
+    private float c;
+
+    @Override
+    public int compareTo(AdditionWithSubtractionInCompare other) {
+      return Float.compare(this.a - this.b + this.c, other.a - other.b + other.c); // Compliant
+    }
+  }
+
+  // === Compliant: squared delta in Double.compare ===
+
+  static class SquaredDeltaInCompare implements Comparable<SquaredDeltaInCompare> {
+    private double a;
+    private double b;
+
+    @Override
+    public int compareTo(SquaredDeltaInCompare other) {
+      double d1 = (this.a - this.b) * (this.a - this.b); // Compliant - flows into Double.compare
+      double d2 = (other.a - other.b) * (other.a - other.b);
+      return Double.compare(d1, d2);
+    }
+  }
 }
