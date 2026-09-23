@@ -48,10 +48,11 @@ public class TypeToDependenciesIndex implements SizeEstimable {
    * @param dependencyName the dependency name to associate with that type
    * @param module         the module key in which the consuming bean is declared
    * @param location       the source location of the injection point
+   * @param multiple       whether every bean of that type is collected here, as for a collection or array injection point
    */
-  public void addDependencyForType(String dependencyType, String dependencyName, String module, BeanLocation location) {
+  public void addDependencyForType(String dependencyType, String dependencyName, String module, BeanLocation location, boolean multiple) {
     injectionPointsByType.computeIfAbsent(dependencyType, k -> new HashSet<>())
-      .add(new InjectionPoint(dependencyName, module, location));
+      .add(new InjectionPoint(dependencyName, module, location, multiple));
   }
 
   /**

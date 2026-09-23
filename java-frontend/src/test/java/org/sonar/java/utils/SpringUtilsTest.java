@@ -26,6 +26,7 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.springcontext.InjectionPoint;
+import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -35,6 +36,7 @@ import static org.sonar.java.model.springcontext.ProfileExpression.and;
 import static org.sonar.java.model.springcontext.ProfileExpression.not;
 import static org.sonar.java.model.springcontext.ProfileExpression.or;
 import static org.sonar.java.model.springcontext.ProfileExpression.profile;
+import static org.assertj.core.api.Assertions.tuple;
 
 class SpringUtilsTest {
 
@@ -473,6 +475,84 @@ class SpringUtilsTest {
       assertThat(dependencies.get("EmailService"))
         .extracting(point -> point.span().startLine)
         .containsExactly(6);
+    }
+  }
+
+  // ---- Collection and array injection points ----------------------------------------
+
+  @Nested
+  class MultiBeanDependencies {
+    private final CompilationUnitTree compilationUnit = JParserTestUtils.parse("BeanFactory", """
+      class BeanFactory {
+        @org.springframework.beans.factory.annotation.Autowired
+        java.util.List<Runnable> injectedRunnables;
+
+        @org.springframework.context.annotation.Bean
+        Object createBean(
+          java.util.List<Runnable> listOfRunnables,
+          java.util.Set<Runnable> setOfRunnables,
+          java.util.Collection<Runnable> collectionOfRunnables,
+          Runnable[] arrayOfRunnables,
+          java.util.List rawList,
+          java.util.ArrayList<Runnable> concreteList,
+          Runnable singleRunnable,
+          java.util.Map<String, Runnable> runnablesByName,
+          java.util.Map<Integer, Runnable> runnablesByIndex,
+          java.util.Map rawMap,
+          java.util.HashMap<String, Runnable> concreteMap) {
+          return new Object();
+        }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    private final ClassTreeImpl beanFactory = (ClassTreeImpl) compilationUnit.types().get(0);
+    private final MethodTreeImpl createBean = (MethodTreeImpl) beanFactory.members().get(1);
+    private final Map<String, Set<InjectionPoint.InputFileData>> dependencies = SpringUtils.collectDependenciesOnMethod(createBean);
+
+    @Test
+    void collection_map_and_array_parameters_are_grouped_under_their_element_type() {
+      assertThat(dependencies.get("java.lang.Runnable"))
+        .extracting(InjectionPoint.InputFileData::name)
+        .containsExactlyInAnyOrder("listOfRunnables", "setOfRunnables", "collectionOfRunnables", "arrayOfRunnables",
+          "runnablesByName", "singleRunnable");
+    }
+
+    @Test
+    void collection_map_and_array_parameters_collect_every_matching_bean() {
+      assertThat(dependencies.get("java.lang.Runnable"))
+        .filteredOn(InjectionPoint.InputFileData::multiple)
+        .extracting(InjectionPoint.InputFileData::name)
+        .containsExactlyInAnyOrder("listOfRunnables", "setOfRunnables", "collectionOfRunnables", "arrayOfRunnables", "runnablesByName");
+    }
+
+    @Test
+    void raw_collection_or_map_resolves_to_a_single_bean_of_its_own_type() {
+      assertThat(dependencies.get("java.util.List"))
+        .containsExactly(new InjectionPoint.InputFileData("rawList", new AnalyzerMessage.TextSpan(11, 19, 11, 26), false));
+      assertThat(dependencies.get("java.util.Map"))
+        .extracting(InjectionPoint.InputFileData::name, InjectionPoint.InputFileData::multiple)
+        .contains(tuple("rawMap", false));
+    }
+
+    @Test
+    void map_that_is_not_keyed_by_bean_name_resolves_to_a_single_bean() {
+      assertThat(dependencies.get("java.util.Map"))
+        .extracting(InjectionPoint.InputFileData::name, InjectionPoint.InputFileData::multiple)
+        .containsExactlyInAnyOrder(tuple("runnablesByIndex", false), tuple("rawMap", false));
+    }
+
+    @Test
+    void concrete_collection_or_map_class_is_not_a_multi_bean_injection_point() {
+      assertThat(dependencies.get("java.util.ArrayList"))
+        .containsExactly(new InjectionPoint.InputFileData("concreteList", new AnalyzerMessage.TextSpan(12, 34, 12, 46), false));
+      assertThat(dependencies.get("java.util.HashMap"))
+        .extracting(InjectionPoint.InputFileData::name, InjectionPoint.InputFileData::multiple)
+        .containsExactly(tuple("concreteMap", false));
+    }
+
+    @Test
+    void an_autowired_collection_field_is_also_grouped_under_its_element_type() {
+      assertThat(SpringUtils.collectAutowiredDependenciesOnClass(beanFactory).get("java.lang.Runnable"))
+        .containsExactly(new InjectionPoint.InputFileData("injectedRunnables", new AnalyzerMessage.TextSpan(3, 27, 3, 44), true));
     }
   }
 
