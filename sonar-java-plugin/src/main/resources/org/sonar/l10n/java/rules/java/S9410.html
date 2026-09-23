@@ -1,0 +1,87 @@
+<p>This is an issue when calling APIs that perform runtime lookups of methods or fields where the specified type signature does not match the actual
+target method or field type.</p>
+<p>In Java, this specifically refers to <code>MethodHandle</code> and <code>VarHandle</code> lookup methods.</p>
+<h2>Why is this an issue?</h2>
+<p>Language runtimes provide mechanisms for dynamic method invocation and field access that operate through programmatically constructed handles or
+references. These mechanisms allow code to invoke methods and access fields with better performance than traditional string-based reflection
+approaches.</p>
+<p>When creating these dynamic invocations, you must programmatically specify the exact type signature of the target method or field, including all
+parameter types and return types. If this constructed signature doesn’t match the actual target’s signature, the operation will fail at runtime with
+an exception.</p>
+<p>The compiler cannot verify these type signatures because they are constructed dynamically at runtime rather than being statically declared in code.
+This means type mismatches that could be caught during development will only surface when the code executes, potentially in production.</p>
+<p>Common mistakes include:</p>
+<ul>
+  <li>Using the wrong parameter types (e.g., string types instead of numeric types)</li>
+  <li>Using the wrong return type</li>
+  <li>Forgetting parameters or including extra ones</li>
+  <li>Using boxed/wrapper types instead of primitive types, or vice versa</li>
+  <li>Incorrect ordering of parameters</li>
+</ul>
+<h3>What is the potential impact?</h3>
+<p>When the type signature doesn’t match, the code will throw runtime errors in these scenarios:</p>
+<ul>
+  <li>When looking up a method with a signature that doesn’t exist</li>
+  <li>When looking up a field with the wrong type</li>
+  <li>When the dynamically obtained reference is invoked with incompatible types</li>
+</ul>
+<p>These runtime failures can cause application crashes, service disruptions, or unexpected behavior in production environments. Since these are
+dynamic invocation errors that may bypass compile-time checking, they may not be caught by standard error handling and can be difficult to
+diagnose.</p>
+<p>In Java, these scenarios correspond to specific exceptions: <code>NoSuchMethodException</code> for method lookups,
+<code>NoSuchFieldException</code> for field lookups, and <code>WrongMethodTypeException</code> for method handle invocations with incompatible
+types.</p>
+<h2>How to fix it</h2>
+<p>Ensure the <code>MethodType</code> specification matches the actual method signature exactly. Verify the return type, parameter count, parameter
+types, and their order.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+public class UserService {
+    public void updateUser(int userId, String name) {
+        // Implementation
+    }
+
+    public static void main(String[] args) throws Exception {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        // Wrong parameter types: String instead of int
+        MethodHandle mh = lookup.findVirtual(
+            UserService.class,
+            "updateUser",
+            MethodType.methodType(void.class, String.class, String.class) // Noncompliant
+        );
+    }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+public class UserService {
+    public void updateUser(int userId, String name) {
+        // Implementation
+    }
+
+    public static void main(String[] args) throws Exception {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        // Correct parameter types: int and String
+        MethodHandle mh = lookup.findVirtual(
+            UserService.class,
+            "updateUser",
+            MethodType.methodType(void.class, int.class, String.class)
+        );
+    }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/invoke/MethodHandle.html">MethodHandle
+  (Java SE 17 &amp; JDK 17)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/invoke/VarHandle.html">VarHandle (Java SE
+  17 &amp; JDK 17)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/invoke/MethodType.html">MethodType (Java SE
+  17 &amp; JDK 17)</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/invoke/MethodHandles.Lookup.html">MethodHandles.Lookup (Java SE 17
+  &amp; JDK 17)</a></li>
+</ul>
+

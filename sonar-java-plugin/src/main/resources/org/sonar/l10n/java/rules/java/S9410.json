@@ -1,0 +1,24 @@
+{
+  "title": "MethodHandle and VarHandle lookups should use matching type signatures",
+  "type": "BUG",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "pitfall",
+    "confusing"
+  ],
+  "defaultSeverity": "Critical",
+  "ruleSpecification": "RSPEC-9410",
+  "sqKey": "S9410",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "RELIABILITY": "HIGH"
+    },
+    "attribute": "LOGICAL"
+  }
+}
