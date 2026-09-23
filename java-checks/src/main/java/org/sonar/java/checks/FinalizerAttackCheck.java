@@ -88,7 +88,7 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
     List<JavaFileScannerContext.Location> secondaryLocations) {
     classTree.members().stream()
       .filter(member -> member.is(Kind.CONSTRUCTOR))
-      .map(member -> (MethodTree) member)
+      .map(MethodTree.class::cast)
       .filter(constructor -> isVulnerableConstructor(constructor, hasThrowingInitializers))
       .forEach(constructor -> reportIssue(constructor.simpleName(),
         "Make this class \"final\" or make this throwing constructor \"private\".",
@@ -209,7 +209,7 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
   private static boolean hasFinalFinalizer(ClassTree classTree) {
     return classTree.members().stream()
       .filter(member -> member.is(Kind.METHOD))
-      .map(member -> (MethodTree) member)
+      .map(MethodTree.class::cast)
       .anyMatch(method -> "finalize".equals(method.simpleName().name()) &&
         method.parameters().isEmpty() &&
         ModifiersUtils.hasModifier(method.modifiers(), Modifier.FINAL) &&

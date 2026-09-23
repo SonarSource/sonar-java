@@ -105,7 +105,7 @@ public class DuplicateImmutableCollectionArgumentsCheck extends IssuableSubscrip
     List<ExpressionTree> keys = mit.arguments().stream()
       .map(ExpressionUtils::skipParentheses)
       .filter(unwrapped -> unwrapped.is(Tree.Kind.METHOD_INVOCATION))
-      .map(unwrapped -> (MethodInvocationTree) unwrapped)
+      .map(MethodInvocationTree.class::cast)
       .filter(entryMit -> MAP_ENTRY.matches(entryMit) && entryMit.arguments().size() == 2)
       .map(entryMit -> ExpressionUtils.skipParentheses(entryMit.arguments().get(0)))
       .toList();

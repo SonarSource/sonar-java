@@ -96,7 +96,7 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
     }
     return Stream.concat(Stream.ofNullable(tree.superClass()), tree.superInterfaces().stream())
       .filter(typeTree -> typeTree.is(Tree.Kind.PARAMETERIZED_TYPE))
-      .map(typeTree -> (ParameterizedTypeTree) typeTree)
+      .map(ParameterizedTypeTree.class::cast)
       .flatMap(parameterizedTypeTree -> parameterizedTypeTree.typeArguments().stream())
       .map(TypeTree::symbolType)
       .anyMatch(Type::isTypeVar);

@@ -226,8 +226,8 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
       .map(type -> {
         String primitiveType = type.getValue();
         Predicate<Type> typeCriteria = "char".equals(primitiveType) || "boolean".equals(primitiveType)
-          ? t -> t.is(type.getKey())
-          : t -> t.isSubtypeOf("java.lang.Number");
+          ? (t -> t.is(type.getKey()))
+          : (t -> t.isSubtypeOf("java.lang.Number"));
         return MethodMatchers.create().ofType(typeCriteria).names(primitiveType + "Value").addWithoutParametersMatcher().build();
       })
       .toList());

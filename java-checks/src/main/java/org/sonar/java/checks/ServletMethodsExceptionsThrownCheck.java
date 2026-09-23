@@ -141,7 +141,7 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
   private boolean isNotCaught(Type type) {
     return tryCatches.stream()
       .flatMap(List::stream)
-      .noneMatch(tryCatchType -> type.isSubtypeOf(tryCatchType));
+      .noneMatch(type::isSubtypeOf);
   }
 
 }
