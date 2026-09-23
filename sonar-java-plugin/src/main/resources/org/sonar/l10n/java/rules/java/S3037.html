@@ -8,7 +8,7 @@ explicit canonical constructor before the corresponding field is assigned.</p>
   <li>In an explicit canonical constructor, each field is assigned by a <code>this.component = …​</code> statement of the constructor body.</li>
 </ul>
 <p>Until a field is assigned, it holds the default value of its type: <code>null</code>, <code>0</code>, or <code>false</code>. Reading such a field
-by its simple name or through <code>this.</code> is rejected by the compiler, but calling the component accessor, for example <code>name()</code> or
+through <code>this.</code> is rejected by the compiler, but calling the component accessor, for example <code>name()</code> or
 <code>this.name()</code>, compiles and silently reads the field.</p>
 <p>As a consequence, the accessor returns the default value instead of the value passed to the constructor. This typically defeats the validation
 performed in the constructor: a check such as <code>name().isBlank()</code> throws a <code>NullPointerException</code> instead of validating the
