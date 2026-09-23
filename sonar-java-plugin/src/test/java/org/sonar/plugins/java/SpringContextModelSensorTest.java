@@ -112,7 +112,7 @@ class SpringContextModelSensorTest {
   private static void registerDependency(SpringContextModel model, String type, String dependencyName, InputFile inputFile,
     int startLine, int startCharacter, int endLine, int endCharacter) {
     BeanLocation location = new BeanLocation(inputFile, new TextSpan(startLine, startCharacter, endLine, endCharacter));
-    model.getTypeToDependenciesIndex().addDependencyForType(type, dependencyName, MODULE_KEY, location);
+    model.getTypeToDependenciesIndex().addDependencyForType(type, dependencyName, MODULE_KEY, location, false);
   }
 
   private static InputFile fakeInputFile(SensorContextTester context, String fileName) {

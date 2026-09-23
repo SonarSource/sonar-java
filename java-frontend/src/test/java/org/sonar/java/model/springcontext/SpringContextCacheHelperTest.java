@@ -60,7 +60,11 @@ class SpringContextCacheHelperTest {
       assertThat(bean.getAsJsonArray("typeHierarchy")).extracting(JsonElement::getAsString)
         .containsExactlyInAnyOrder("checks.spring.context.QualifiedFieldDependencies");
       assertThat(bean.getAsJsonArray("dependencies")).extracting(element -> element.getAsJsonObject().get("type").getAsString())
-        .containsExactlyInAnyOrder("org.springframework.context.ApplicationContext", "org.springframework.core.env.Environment");
+        .containsExactlyInAnyOrder("org.springframework.context.ApplicationContext", "org.springframework.core.env.Environment",
+          "org.springframework.core.io.ResourceLoader");
+      assertThat(bean.getAsJsonArray("dependencies")).extracting(element -> element.getAsJsonObject()
+        .getAsJsonArray("injectionPoints").get(0).getAsJsonObject().get("multiple").getAsBoolean())
+        .containsExactly(false, false, true);
     }
 
     @Test
@@ -114,14 +118,16 @@ class SpringContextCacheHelperTest {
     }
 
     @Test
-    void injection_point_spans_survive_the_round_trip() {
+    void injection_point_spans_and_multiplicity_survive_the_round_trip() {
       var restored = readBeans(writeBeans(List.of(beanWithDependencies())));
 
       var dependencies = restored.getFirst().dependencies();
       assertThat(dependencies.get("org.springframework.context.ApplicationContext"))
-        .containsExactly(new InjectionPoint.InputFileData("primaryContext", new TextSpan(16, 2, 16, 55)));
+        .containsExactly(new InjectionPoint.InputFileData("primaryContext", new TextSpan(16, 2, 16, 55), false));
       assertThat(dependencies.get("org.springframework.core.env.Environment"))
-        .containsExactly(new InjectionPoint.InputFileData("environment", new TextSpan(19, 2, 19, 38)));
+        .containsExactly(new InjectionPoint.InputFileData("environment", new TextSpan(19, 2, 19, 38), false));
+      assertThat(dependencies.get("org.springframework.core.io.ResourceLoader"))
+        .containsExactly(new InjectionPoint.InputFileData("resourceLoaders", new TextSpan(22, 2, 22, 41), true));
     }
 
     /**
@@ -172,7 +178,16 @@ class SpringContextCacheHelperTest {
             .replace("\"dependencies\":[]", "\"dependencies\":[{\"type\":\"T\"}]") + "]}"),
         Arguments.of("injection point missing its name",
           "{\"version\":1,\"beans\":[" + bean.formatted(span, "false")
-            .replace("\"dependencies\":[]", "\"dependencies\":[{\"type\":\"T\",\"injectionPoints\":[{\"span\":" + span + "}]}]") + "]}"),
+            .replace("\"dependencies\":[]",
+              "\"dependencies\":[{\"type\":\"T\",\"injectionPoints\":[{\"span\":" + span + ",\"multiple\":false}]}]") + "]}"),
+        Arguments.of("injection point missing its multiplicity",
+          "{\"version\":1,\"beans\":[" + bean.formatted(span, "false")
+            .replace("\"dependencies\":[]",
+              "\"dependencies\":[{\"type\":\"T\",\"injectionPoints\":[{\"name\":\"t\",\"span\":" + span + "}]}]") + "]}"),
+        Arguments.of("injection point multiplicity not a boolean",
+          "{\"version\":1,\"beans\":[" + bean.formatted(span, "false")
+            .replace("\"dependencies\":[]",
+              "\"dependencies\":[{\"type\":\"T\",\"injectionPoints\":[{\"name\":\"t\",\"span\":" + span + ",\"multiple\":\"yes\"}]}]") + "]}"),
         Arguments.of("name given as a number",
           "{\"version\":1,\"beans\":[" + bean.formatted(span, "false").replace("\"name\":\"n\"", "\"name\":1") + "]}"),
         Arguments.of("span with a line number given as a string",
@@ -189,7 +204,7 @@ class SpringContextCacheHelperTest {
         {"version":1,"beans":[{"name":"simpleComponent","type":"checks.spring.context.SimpleComponent","package":"checks.spring.context",\
         "span":{"startLine":8,"startCharacter":13,"endLine":8,"endCharacter":28,"unknown":[]},"primary":false,"profiles":null,"qualifier":null,\
         "dependencies":[{"type":"T","injectionPoints":[{"name":"t","span":{"startLine":9,"startCharacter":2,"endLine":9,"endCharacter":5},\
-        "unknown":{}}],"unknown":0}],"typeHierarchy":[],"unknown":"ignored"}],"unknown":true}
+        "multiple":false,"unknown":{}}],"unknown":0}],"typeHierarchy":[],"unknown":"ignored"}],"unknown":true}
         """;
 
       var restored = readBeans(content);
@@ -275,9 +290,11 @@ class SpringContextCacheHelperTest {
   private static BeanDefinitionHolder.InputFileData beanWithDependencies() {
     Map<String, Set<InjectionPoint.InputFileData>> injectionPoints = new LinkedHashMap<>();
     injectionPoints.put("org.springframework.context.ApplicationContext",
-      Set.of(new InjectionPoint.InputFileData("primaryContext", new TextSpan(16, 2, 16, 55))));
+      Set.of(new InjectionPoint.InputFileData("primaryContext", new TextSpan(16, 2, 16, 55), false)));
     injectionPoints.put("org.springframework.core.env.Environment",
-      Set.of(new InjectionPoint.InputFileData("environment", new TextSpan(19, 2, 19, 38))));
+      Set.of(new InjectionPoint.InputFileData("environment", new TextSpan(19, 2, 19, 38), false)));
+    injectionPoints.put("org.springframework.core.io.ResourceLoader",
+      Set.of(new InjectionPoint.InputFileData("resourceLoaders", new TextSpan(22, 2, 22, 41), true)));
     return beanData("qualifiedFieldDependencies", "checks.spring.context.QualifiedFieldDependencies",
       new TextSpan(12, 6, 12, 32), false, ProfileExpression.profile("prod"), injectionPoints,
       Set.of("checks.spring.context.QualifiedFieldDependencies"));

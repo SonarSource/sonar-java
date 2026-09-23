@@ -23,6 +23,7 @@ import java.io.IOException;
 import org.sonar.java.model.springcontext.InjectionPoint;
 import org.sonar.java.reporting.AnalyzerMessage;
 
+import static org.sonar.java.serialization.JsonUtils.MULTIPLE;
 import static org.sonar.java.serialization.JsonUtils.NAME;
 import static org.sonar.java.serialization.JsonUtils.SPAN;
 import static org.sonar.java.serialization.JsonUtils.readString;
@@ -48,6 +49,7 @@ public final class InjectionPointTypeAdapter extends TypeAdapter<InjectionPoint.
     out.name(NAME).value(injectionPoint.name());
     out.name(SPAN);
     TextSpanTypeAdapter.getInstance().write(out, injectionPoint.span());
+    out.name(MULTIPLE).value(injectionPoint.multiple());
     out.endObject();
   }
 
@@ -55,15 +57,17 @@ public final class InjectionPointTypeAdapter extends TypeAdapter<InjectionPoint.
   public InjectionPoint.InputFileData read(JsonReader in) throws IOException {
     String name = null;
     AnalyzerMessage.TextSpan span = null;
+    Boolean multiple = null;
     in.beginObject();
     while (in.hasNext()) {
       switch (in.nextName()) {
         case NAME -> name = readString(in);
         case SPAN -> span = TextSpanTypeAdapter.getInstance().read(in);
+        case MULTIPLE -> multiple = in.nextBoolean();
         default -> in.skipValue();
       }
     }
     in.endObject();
-    return new InjectionPoint.InputFileData(required(name, NAME), required(span, SPAN));
+    return new InjectionPoint.InputFileData(required(name, NAME), required(span, SPAN), required(multiple, MULTIPLE));
   }
 }
