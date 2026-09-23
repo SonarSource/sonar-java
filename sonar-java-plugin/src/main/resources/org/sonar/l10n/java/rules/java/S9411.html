@@ -1,0 +1,57 @@
+<p>This rule raises an issue when a loop iterates over a list and replaces each element with a transformed version of itself, instead of using a
+dedicated list transformation method designed for in-place element replacement.</p>
+<p>In Java, this dedicated method is <code>List.replaceAll()</code>, which has been available since Java 8.</p>
+<h2>Why is this an issue?</h2>
+<p>Traditional loops that iterate over a list to replace each element with a transformed version are a common pattern in older codebases. While
+functionally correct, this approach has several drawbacks:</p>
+<p><strong>Verbosity</strong>: Index-based loops require explicit index management, bounds checking, and manual calls to retrieve and update elements
+at each position. This adds boilerplate code that obscures the actual intent.</p>
+<p><strong>Readability</strong>: The loop structure forces readers to mentally parse the iteration mechanics before understanding the transformation
+logic. The real purpose - applying a function to each element - is hidden within the loop body.</p>
+<p><strong>Error-prone</strong>: Manual index management introduces opportunities for off-by-one errors or incorrect loop bounds. Even though these
+are typically caught quickly, they add unnecessary risk.</p>
+<p>Modern languages provide dedicated methods for in-place list transformation that address this pattern. These methods:</p>
+<ul>
+  <li>Clearly express intent: "replace all elements with a transformation"</li>
+  <li>Eliminate boilerplate: no index variables, no bounds checking, no explicit element retrieval or update calls</li>
+  <li>Reduce cognitive load: readers immediately understand the operation without parsing loop mechanics</li>
+  <li>Are more maintainable: changes to the transformation logic are localized to the transformation function</li>
+</ul>
+<p>These transformation methods accept a function that takes an element and returns a transformed element of the same type. This functional approach
+aligns with modern programming idioms and makes the code more declarative: you specify <strong>what</strong> transformation to apply rather than
+<strong>how</strong> to iterate and apply it.</p>
+<p>In Java, the <code>List.replaceAll(UnaryOperator&lt;E&gt; operator)</code> method was introduced in Java 8 to address this pattern. The method
+takes a <code>UnaryOperator</code> - a functional interface representing a function that accepts and returns the same type.</p>
+<h3>What is the potential impact?</h3>
+<p>Using traditional loops instead of declarative collection transformation methods does not introduce bugs or security vulnerabilities. However, it
+does impact code maintainability:</p>
+<ul>
+  <li><strong>Reduced readability</strong>: Future maintainers must spend extra time understanding the iteration mechanics before grasping the
+  transformation logic</li>
+  <li><strong>Increased maintenance burden</strong>: More code means more opportunities for bugs during modifications</li>
+  <li><strong>Inconsistent codebase</strong>: Mixing traditional loops with modern functional approaches creates an inconsistent style that slows down
+  code comprehension</li>
+</ul>
+<p>In Java, this specifically refers to methods like <code>List.replaceAll()</code> for transforming list elements in place.</p>
+<h2>How to fix it</h2>
+<p>Replace the loop with a call to <code>List.replaceAll()</code>. Pass a <code>UnaryOperator</code> that performs the transformation. You can use a
+lambda expression or a method reference depending on the complexity of the transformation.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+for (int i = 0; i &lt; list.size(); i++) {
+    list.set(i, list.get(i).toUpperCase()); // Noncompliant
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+list.replaceAll(String::toUpperCase);
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html#replaceAll-java.util.function.UnaryOperator-">List.replaceAll(UnaryOperator)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/UnaryOperator.html">UnaryOperator Interface</a></li>
+</ul>
+
