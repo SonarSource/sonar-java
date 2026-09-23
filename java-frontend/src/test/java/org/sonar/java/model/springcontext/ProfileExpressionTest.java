@@ -21,6 +21,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.sonar.java.telemetry.SizeEstimator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -224,6 +225,16 @@ class ProfileExpressionTest {
     assertThat(UNCONDITIONAL.isActiveUnder(Set.of("dev"))).isTrue();
     assertThat(UNKNOWN.isActiveUnder(Set.of())).isTrue();
     assertThat(UNKNOWN.isActiveUnder(Set.of("dev"))).isTrue();
+  }
+
+  @Test
+  void estimates_expression_tree_size() {
+    assertThat(SizeEstimator.estimate(UNCONDITIONAL)).isEqualTo(16);
+    assertThat(SizeEstimator.estimate(UNKNOWN)).isEqualTo(16);
+    assertThat(SizeEstimator.estimate(profile("dev"))).isEqualTo(64);
+    assertThat(SizeEstimator.estimate(not(profile("dev")))).isEqualTo(80);
+    assertThat(SizeEstimator.estimate(and(List.of(profile("dev"), not(profile("test")))))).isEqualTo(368);
+    assertThat(SizeEstimator.estimate(or(List.of(profile("dev"), profile("test"))))).isEqualTo(352);
   }
 
   // ---- toCanonicalString --------------------------------------------------

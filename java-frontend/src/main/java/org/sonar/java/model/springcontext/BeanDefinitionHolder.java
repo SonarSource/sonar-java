@@ -35,7 +35,7 @@ import org.sonar.java.telemetry.SizeEstimator;
  * <p>Use {@link Builder} to construct instances:
  * <pre>{@code
  * BeanDefinitionHolder bean = new BeanDefinitionHolder.Builder(type, module, pkg, location)
- *     .profiles("prod")
+ *     .profileExpression(ProfileExpression.profile("prod"))
  *     .primary()
  *     .build();
  * }</pre>
@@ -71,13 +71,12 @@ public class BeanDefinitionHolder implements SizeEstimable {
   private Map<String, Set<String>> dependingBeans;
 
   /**
-   * Spring profile expression under which this bean is active, or {@code null} if unconditional.
-   * Comma-separated values within one {@code @Profile} annotation are OR-ed (as Spring does);
-   * a class-level and a {@code @Bean} method-level {@code @Profile} are AND-ed by joining their
-   * (already OR-ed) expressions with a semicolon, since Spring requires both to match.
+   * Condition under which this bean is active, as declared by {@code @Profile}. A bean carrying no
+   * {@code @Profile} holds {@link ProfileExpression#UNCONDITIONAL}, so this is never null. For a
+   * {@code @Bean} method, the class-level and method-level expressions are already composed here, since
+   * Spring requires both to match.
    */
-  @Nullable
-  private String profiles;
+  private ProfileExpression profileExpression = ProfileExpression.UNCONDITIONAL;
 
   /**
    * Whether the bean is marked as {@code @Primary}, making it the preferred candidate for autowiring.
@@ -102,8 +101,8 @@ public class BeanDefinitionHolder implements SizeEstimable {
     this.dependingBeans = beans;
   }
 
-  private void setProfiles(@Nullable String profiles) {
-    this.profiles = profiles;
+  private void setProfileExpression(ProfileExpression profileExpression) {
+    this.profileExpression = profileExpression;
   }
 
   private void setPrimary() {
@@ -134,9 +133,8 @@ public class BeanDefinitionHolder implements SizeEstimable {
     return dependingBeans;
   }
 
-  @Nullable
-  public String getProfiles() {
-    return profiles;
+  public ProfileExpression getProfileExpression() {
+    return profileExpression;
   }
 
   public boolean isPrimary() {
@@ -154,7 +152,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
       + estimator.estimateString(type)
       + estimator.estimateString(module)
       + estimator.estimateString(beanPackage)
-      + estimator.estimateString(profiles)
+      + estimator.estimateObject(profileExpression)
       + estimator.estimateString(qualifier)
       + estimator.estimateObject(location)
       + estimator.estimateMap(dependingBeans);
@@ -173,8 +171,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
     private final String beanPackage;
     private final BeanLocation location;
     private Map<String, Set<String>> dependingBeans = new LinkedHashMap<>();
-    @Nullable
-    private String profiles;
+    private ProfileExpression profileExpression = ProfileExpression.UNCONDITIONAL;
     private boolean isPrimary = false;
     @Nullable
     private String qualifier;
@@ -191,8 +188,8 @@ public class BeanDefinitionHolder implements SizeEstimable {
       return this;
     }
 
-    public Builder profiles(@Nullable String profiles) {
-      this.profiles = profiles;
+    public Builder profileExpression(ProfileExpression profileExpression) {
+      this.profileExpression = profileExpression;
       return this;
     }
 
@@ -210,7 +207,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
       BeanDefinitionHolder holder = new BeanDefinitionHolder(type, module, beanPackage, location);
       holder.setDependingBeans(dependingBeans.entrySet().stream()
         .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, e -> Set.copyOf(e.getValue()))));
-      holder.setProfiles(profiles);
+      holder.setProfileExpression(profileExpression);
       if (isPrimary) {
         holder.setPrimary();
       }
@@ -227,14 +224,14 @@ public class BeanDefinitionHolder implements SizeEstimable {
    * readable without knowing which file it describes. Pairing it with that file yields the
    * {@link BeanDefinitionHolder} the model exposes.
    *
-   * @param beanName      the name the bean is registered under
-   * @param type          fully-qualified name of the bean's type
-   * @param beanPackage   package of the class declaring the bean
-   * @param textSpan      the text span identifying the bean declaration within its own file
-   * @param isPrimary     whether the bean is annotated with {@code @Primary}
-   * @param profiles      the {@code @Profile} expression under which the bean is active, or {@code null} if unconditional
-   * @param dependencies  the bean's dependencies, mapped by required type FQN to the injection points that require them
-   * @param typeHierarchy fully-qualified names of the bean's own type and of all its ancestors and interfaces
+   * @param beanName          The name the bean is registered under.
+   * @param type              The fully-qualified name of the bean's type.
+   * @param beanPackage       The package of the class declaring the bean.
+   * @param textSpan          The text span identifying the bean declaration within its own file.
+   * @param isPrimary         Whether the bean is annotated with {@code @Primary}.
+   * @param profileExpression The condition under which the bean is active, {@link ProfileExpression#UNCONDITIONAL} if it carries no {@code @Profile}.
+   * @param dependencies      The bean's dependencies, mapped by required type FQN to the injection points that require them.
+   * @param typeHierarchy     The fully-qualified names of the bean's own type and of all its ancestors and interfaces.
    */
   public record InputFileData(
     String beanName,
@@ -242,7 +239,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
     String beanPackage,
     AnalyzerMessage.TextSpan textSpan,
     boolean isPrimary,
-    @Nullable String profiles,
+    ProfileExpression profileExpression,
     @Nullable String qualifier,
     Map<String, Set<InjectionPoint.InputFileData>> dependencies,
     Set<String> typeHierarchy) {

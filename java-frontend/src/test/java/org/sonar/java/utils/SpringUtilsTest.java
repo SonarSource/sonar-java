@@ -16,6 +16,7 @@
  */
 package org.sonar.java.utils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Nested;
@@ -26,9 +27,14 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.springcontext.InjectionPoint;
 import org.sonar.java.test.classpath.TestClasspathUtils;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.springcontext.ProfileExpression.and;
+import static org.sonar.java.model.springcontext.ProfileExpression.not;
+import static org.sonar.java.model.springcontext.ProfileExpression.or;
+import static org.sonar.java.model.springcontext.ProfileExpression.profile;
 
 class SpringUtilsTest {
 
@@ -38,10 +44,10 @@ class SpringUtilsTest {
       class A {
         @org.springframework.beans.factory.annotation.Autowired
         Object autowiredObject;
-        
+      
         @Autowired
         Object noSemaAnnotation;
-
+      
         @javax.annotation.Nullable
         Object nullableObject;
       }
@@ -164,9 +170,9 @@ class SpringUtilsTest {
       class A {
         @org.springframework.context.annotation.Bean("beanName")
         Object beanMethod() { return new Object(); }
-
+      
         Object nonBeanMethod() { return new Object(); }
-
+      
         @org.springframework.context.annotation.Bean({"aliasOne", "aliasTwo"})
         Object anotherBeanMethod() { return new Object(); }
       
@@ -174,12 +180,12 @@ class SpringUtilsTest {
         ApplicationContext namedBeanMethod() {
           return null;
         }
-    
+      
         @org.springframework.context.annotation.Bean(name = {})
         ApplicationContext emptyNameArrayMethod() {
           return null;
         }
-
+      
         int field;
       }
       """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
@@ -242,13 +248,13 @@ class SpringUtilsTest {
     private final CompilationUnitTree compilationUnit = JParserTestUtils.parse("A", """
       @org.springframework.stereotype.Component
       class NoExplicitName {}
-
+      
       @org.springframework.stereotype.Component("explicitName")
       class WithExplicitName {}
-
+      
       @org.springframework.stereotype.Component("")
       class WithBlankName {}
-
+      
       class NoStereotypeAnnotation {}
       """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
 
@@ -323,13 +329,13 @@ class SpringUtilsTest {
       class OrderService {
         @org.springframework.beans.factory.annotation.Autowired
         PaymentProcessor paymentProcessor;
-
+      
         @org.springframework.beans.factory.annotation.Autowired
         @org.springframework.beans.factory.annotation.Qualifier("special")
         PaymentProcessor specialProcessor;
-
+      
         NotificationService notInjected;
-
+      
         @org.springframework.beans.factory.annotation.Autowired
         void setEmailService(EmailService emailService) {
         }
@@ -483,66 +489,64 @@ class SpringUtilsTest {
     assertThat(SpringUtils.collectDependenciesOnMethod(createBean)).isEmpty();
   }
 
-  // ---- extractProfiles --------------------------------------------------
+  // ---- extractProfileExpression -------------------------------------------
 
   @Test
-  void extract_profiles_returns_single_profile() {
-    var compilationUnit = JParserTestUtils.parse("ProfiledComponent", """
-      @org.springframework.context.annotation.Profile("prod")
-      class ProfiledComponent {}
-      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
-    var clazz = (ClassTreeImpl) compilationUnit.types().get(0);
+  void extract_profile_expression_returns_single_profile() {
+    var metadata = profiledClassMetadata("ProfiledComponent", "@org.springframework.context.annotation.Profile(\"prod\")");
 
-    assertThat(SpringUtils.extractProfiles(clazz.symbol().metadata())).isEqualTo("prod");
+    assertThat(SpringUtils.extractProfileExpression(metadata)).isEqualTo(profile("prod"));
   }
 
   @Test
-  void extract_profiles_joins_multiple_profiles_with_comma() {
-    var compilationUnit = JParserTestUtils.parse("MultiProfileComponent", """
-      @org.springframework.context.annotation.Profile({"prod", "cloud"})
-      class MultiProfileComponent {}
-      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
-    var clazz = (ClassTreeImpl) compilationUnit.types().get(0);
+  void extract_profile_expression_ors_the_elements_of_the_annotation() {
+    var metadata = profiledClassMetadata("MultiProfileComponent", "@org.springframework.context.annotation.Profile({\"prod\", \"cloud\"})");
 
-    assertThat(SpringUtils.extractProfiles(clazz.symbol().metadata())).isEqualTo("prod,cloud");
+    assertThat(SpringUtils.extractProfileExpression(metadata)).isEqualTo(or(List.of(profile("prod"), profile("cloud"))));
   }
 
   @Test
-  void extract_profiles_returns_null_when_no_profile_annotation() {
-    var compilationUnit = JParserTestUtils.parse("SimpleComponent", """
-      class SimpleComponent {}
-      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
-    var clazz = (ClassTreeImpl) compilationUnit.types().get(0);
+  void extract_profile_expression_is_unconditional_when_no_profile_annotation() {
+    var metadata = profiledClassMetadata("SimpleComponent", "");
 
-    assertThat(SpringUtils.extractProfiles(clazz.symbol().metadata())).isNull();
+    assertThat(SpringUtils.extractProfileExpression(metadata).isUnconditional()).isTrue();
   }
 
   @Test
-  void extract_profiles_ignores_blank_profile_values() {
-    var compilationUnit = JParserTestUtils.parse("BlankProfileComponent", """
-      @org.springframework.context.annotation.Profile({"prod", ""})
-      class BlankProfileComponent {}
-      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
-    var clazz = (ClassTreeImpl) compilationUnit.types().get(0);
+  void extract_profile_expression_ignores_blank_profile_values() {
+    var metadata = profiledClassMetadata("BlankProfileComponent", "@org.springframework.context.annotation.Profile({\"prod\", \"\"})");
 
-    assertThat(SpringUtils.extractProfiles(clazz.symbol().metadata())).isEqualTo("prod");
-  }
-
-  // ---- composeProfiles ----------------------------------------------------
-
-  @Test
-  void compose_profiles_returns_own_profiles_when_class_has_none() {
-    assertThat(SpringUtils.composeProfiles(null, "test")).isEqualTo("test");
+    assertThat(SpringUtils.extractProfileExpression(metadata)).isEqualTo(profile("prod"));
   }
 
   @Test
-  void compose_profiles_returns_class_profiles_when_own_has_none() {
-    assertThat(SpringUtils.composeProfiles("prod", null)).isEqualTo("prod");
+  void extract_profile_expression_parses_operators() {
+    var metadata = profiledClassMetadata("ExpressionProfiledComponent", "@org.springframework.context.annotation.Profile(\"dev & !test\")");
+
+    assertThat(SpringUtils.extractProfileExpression(metadata)).isEqualTo(and(List.of(profile("dev"), not(profile("test")))));
   }
 
   @Test
-  void compose_profiles_ands_class_and_own_profiles_with_semicolon() {
-    assertThat(SpringUtils.composeProfiles("prod", "test")).isEqualTo("prod;test");
+  void extract_profile_expression_is_unknown_when_the_expression_is_malformed() {
+    var metadata = profiledClassMetadata("MalformedProfileComponent", "@org.springframework.context.annotation.Profile(\"a & b | c\")");
+
+    assertThat(SpringUtils.extractProfileExpression(metadata).isUnknown()).isTrue();
+  }
+
+  @Test
+  void extract_profile_expression_is_unknown_when_the_annotation_lists_nothing_readable() {
+    assertThat(SpringUtils.extractProfileExpression(
+      profiledClassMetadata("EmptyProfileComponent", "@org.springframework.context.annotation.Profile({})")).isUnknown()).isTrue();
+    assertThat(SpringUtils.extractProfileExpression(
+      profiledClassMetadata("UnresolvedProfileComponent", "@org.springframework.context.annotation.Profile(Constants.DEV)")).isUnknown()).isTrue();
+  }
+
+  private static SymbolMetadata profiledClassMetadata(String className, String profileAnnotation) {
+    var compilationUnit = JParserTestUtils.parse(className, """
+      %s
+      class %s {}
+      """.formatted(profileAnnotation, className), TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    return ((ClassTreeImpl) compilationUnit.types().getFirst()).symbol().metadata();
   }
 
 }

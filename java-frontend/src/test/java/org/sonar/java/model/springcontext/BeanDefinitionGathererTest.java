@@ -99,6 +99,59 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(beans.get(0).isPrimary()).isFalse();
   }
 
+  // ---- @Profile -------------------------------------------------------------
+
+  @Test
+  void profile_expression_is_parsed_for_a_stereotype_annotated_class() {
+    scan("src/test/files/springcontext/ProfileExpressionComponent.java");
+
+    var beans = model.getBeanDefinitionRegistry().getByName("profileExpressionComponent");
+    assertThat(beans).hasSize(1);
+    assertThat(beans.getFirst().getProfileExpression())
+      .isEqualTo(ProfileExpression.and(List.of(ProfileExpression.profile("dev"), ProfileExpression.not(ProfileExpression.profile("test")))));
+  }
+
+  @Test
+  void a_bean_without_profile_annotation_is_unconditional() {
+    scan("src/test/files/springcontext/SimpleComponent.java");
+
+    var beans = model.getBeanDefinitionRegistry().getByName("simpleComponent");
+    assertThat(beans).hasSize(1);
+    assertThat(beans.getFirst().getProfileExpression().isUnconditional()).isTrue();
+  }
+
+  @Test
+  void a_bean_method_profile_is_conjoined_with_the_one_of_its_configuration_class() {
+    scan("src/test/files/springcontext/ProfileExpressionConfiguration.java");
+
+    ProfileExpression classExpression = ProfileExpression.or(List.of(ProfileExpression.profile("prod"), ProfileExpression.profile("staging")));
+    assertThat(profileExpressionOf("profileExpressionConfiguration")).isEqualTo(classExpression);
+    assertThat(profileExpressionOf("unprofiledBean")).isEqualTo(classExpression);
+    assertThat(profileExpressionOf("profiledBean"))
+      .isEqualTo(ProfileExpression.and(List.of(classExpression, ProfileExpression.not(ProfileExpression.profile("cloud")))));
+  }
+
+  @Test
+  void a_bean_method_profile_alone_gates_a_bean_of_an_unprofiled_class() {
+    scan("src/test/files/springcontext/ConfigurationWithBeanMethods.java");
+
+    assertThat(profileExpressionOf("methodOnlyProfileBean")).isEqualTo(ProfileExpression.profile("test"));
+    assertThat(profileExpressionOf("simpleServiceBean").isUnconditional()).isTrue();
+  }
+
+  @Test
+  void a_malformed_profile_expression_is_unknown() {
+    scan("src/test/files/springcontext/MalformedProfileComponent.java");
+
+    assertThat(profileExpressionOf("malformedProfileComponent").isUnknown()).isTrue();
+  }
+
+  private ProfileExpression profileExpressionOf(String beanName) {
+    var beans = model.getBeanDefinitionRegistry().getByName(beanName);
+    assertThat(beans).hasSize(1);
+    return beans.getFirst().getProfileExpression();
+  }
+
   // ---- Anonymous / no annotation --------------------------------------------
 
   @Test
@@ -241,8 +294,8 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
     var beans = model.getBeanDefinitionRegistry().getByName("qualifiedFieldDependencies");
     assertThat(beans).hasSize(1);
-    assertThat(beans.get(0).getType()).isEqualTo("checks.spring.context.QualifiedFieldDependencies");
-    assertThat(beans.get(0).getProfiles()).isEqualTo("prod");
+    assertThat(beans.getFirst().getType()).isEqualTo("checks.spring.context.QualifiedFieldDependencies");
+    assertThat(beans.getFirst().getProfileExpression().profileNames()).containsExactly("prod");
     assertThat(model.getTypeToBeansIndex().getNamesForType("checks.spring.context.QualifiedFieldDependencies", "", Set.of()))
       .containsExactly("qualifiedFieldDependencies");
     assertInjectionPoint(

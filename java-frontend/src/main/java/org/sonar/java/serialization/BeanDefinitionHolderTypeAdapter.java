@@ -24,8 +24,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.InjectionPoint;
+import org.sonar.java.model.springcontext.ProfileExpression;
+import org.sonar.java.model.springcontext.ProfileExpressionParser;
 import org.sonar.java.reporting.AnalyzerMessage;
 
 import static org.sonar.java.serialization.JsonUtils.DEPENDENCIES;
@@ -71,7 +75,7 @@ public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefin
     out.name(SPAN);
     TextSpanTypeAdapter.getInstance().write(out, bean.textSpan());
     out.name(PRIMARY).value(bean.isPrimary());
-    out.name(PROFILES).value(bean.profiles());
+    out.name(PROFILES).value(canonicalProfiles(bean.profileExpression()));
     out.name(QUALIFIER).value(bean.qualifier());
     out.name(DEPENDENCIES);
     writeDependencies(out, bean.dependencies());
@@ -120,11 +124,25 @@ public final class BeanDefinitionHolderTypeAdapter extends TypeAdapter<BeanDefin
       required(beanPackage, PACKAGE),
       required(span, SPAN),
       required(isPrimary, PRIMARY),
-      profiles,
+      profileExpressionOf(profiles),
       qualifier,
       required(dependencies, DEPENDENCIES),
       required(typeHierarchy, TYPE_HIERARCHY)
     );
+  }
+
+  /**
+   * A bean carrying no {@code @Profile} is written as a JSON null rather than as the empty string
+   * {@link ProfileExpression#UNCONDITIONAL} canonically prints as, because the parser rejects a blank
+   * expression and so could not read that string back.
+   */
+  @CheckForNull
+  private static String canonicalProfiles(ProfileExpression profileExpression) {
+    return profileExpression.isUnconditional() ? null : profileExpression.toCanonicalString();
+  }
+
+  private static ProfileExpression profileExpressionOf(@Nullable String profiles) {
+    return profiles == null ? ProfileExpression.UNCONDITIONAL : ProfileExpressionParser.parse(profiles);
   }
 
   private static void writeDependencies(JsonWriter out, Map<String, Set<InjectionPoint.InputFileData>> dependencies) throws IOException {

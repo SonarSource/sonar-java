@@ -71,7 +71,7 @@ class SpringContextModelMetricsTest {
     long emptySize = SpringContextModelMetrics.of(model).estimatedSizeInBytes();
     var holder = new BeanDefinitionHolder.Builder("com.acme.MyBean", "module-a", "com.acme", newLocation())
       .dependingBeans(Map.of("com.acme.Collaborator", Set.of("collaborator")))
-      .profiles("!test")
+      .profileExpression(ProfileExpression.not(ProfileExpression.profile("test")))
       .build();
     model.getBeanDefinitionRegistry().addBeanDefinition("myBean", holder);
     model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", "module-a", newLocation());

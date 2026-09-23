@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanDefinitionRegistry;
 import org.sonar.java.model.springcontext.InjectionPoint;
+import org.sonar.java.model.springcontext.ProfileExpression;
 import org.sonar.java.model.springcontext.ProjectPackageScan;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.model.springcontext.TypeToBeansIndex;
@@ -43,7 +44,8 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
   private static final String MESSAGE = "Multiple beans match this dependency (%s);"
     + " disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".";
 
-  /** Creates the list of issues using the spring context model.
+  /**
+   * Creates the list of issues using the spring context model.
    * For each injection point, retrieves the beans of the required type that are visible within the
    * consumer's own Spring context (same module, or in a package covered by its {@code @ComponentScan}),
    * then checks for ambiguity: a single candidate, or a single one marked {@code @Primary}, is unambiguous.
@@ -110,7 +112,11 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
   }
 
   private static boolean hasProfile(BeanDefinitionRegistry registry, String beanName) {
-    return registry.getByName(beanName).stream().anyMatch(bean -> bean.getProfiles() != null);
+    return registry.getByName(beanName).stream()
+      .anyMatch(bean -> {
+        ProfileExpression expression = bean.getProfileExpression();
+        return !expression.isUnconditional() && !expression.isUnknown();
+      });
   }
 
   private static String message(Set<String> candidates) {
