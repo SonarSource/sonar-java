@@ -1,0 +1,19 @@
+{
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/source/DuplicationLineReader.java": [
+69
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/computation/task/projectanalysis/source/SymbolsLineReader.java": [
+58,
+83
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/duplication/ws/DuplicationsParser.java": [
+75,
+78
+],
+"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/IndexDefinitionHash.java": [
+79
+],
+"org.sonarsource.sonarqube:sonar-server:src/test/java/org/sonar/server/computation/task/projectanalysis/duplication/TextBlockTest.java": [
+92
+]
+}
