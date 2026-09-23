@@ -28,7 +28,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -73,7 +73,7 @@ public class BooleanLiteralCheck extends IssuableSubscriptionVisitor {
         .forRule(this)
         .onTree(literalList.get(0))
         .withMessage("Remove the unnecessary boolean literal%s.", nLiterals > 1 ? "s" : "")
-        .withSecondaries(literalList.stream().skip(1).map(lit -> new JavaFileScannerContext.Location("", lit)).toList())
+        .withSecondaries(literalList.stream().skip(1).map(lit -> new JavaFileLocation("", lit)).toList())
         .withQuickFixes(() -> getQuickFix(tree))
         .report();
     }

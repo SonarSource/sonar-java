@@ -28,7 +28,7 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -65,8 +65,8 @@ public class SpringAntMatcherOrderCheck extends AbstractMethodDetection {
     StringConstant patternToCheck = antPatterns.get(indexToCheck);
     StringConstant incompatiblePattern = firstIncompatiblePreviousPattern(patternToCheck, antPatterns, indexToCheck);
     if (incompatiblePattern != null) {
-      List<JavaFileScannerContext.Location> secondary = Collections.singletonList(
-        new JavaFileScannerContext.Location("Less restrictive", incompatiblePattern.expression));
+      List<JavaFileLocation> secondary = Collections.singletonList(
+        new JavaFileLocation("Less restrictive", incompatiblePattern.expression));
 
       reportIssue(patternToCheck.expression, "Reorder the URL patterns from most to less specific, the pattern \"" +
         patternToCheck.value + "\" should occurs before \"" + incompatiblePattern.value + "\".", secondary, null);

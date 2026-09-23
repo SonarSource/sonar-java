@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.regex.RegexCheck;
+import org.sonar.java.regex.RegexIssueLocation;
 import org.sonar.java.regex.RegexScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -288,7 +289,7 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
 
   public abstract void checkRegex(RegexParseResult regexForLiterals, ExpressionTree methodInvocationOrAnnotation);
 
-  public final void reportIssue(RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
+  public final void reportIssue(RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries) {
     if (reportedRegexTrees.add(regexTree)) {
       regexContext.reportIssue(this, regexTree, message, cost, secondaries);
     }
@@ -297,7 +298,7 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
   public final void reportIssueFromCommons(RegexSyntaxElement regexTree, String message, @Nullable Integer cost,
     List<org.sonarsource.analyzer.commons.regex.RegexIssueLocation> secondaries) {
     reportIssue(regexTree, message, cost, secondaries.stream()
-      .map(RegexCheck.RegexIssueLocation::fromCommonsRegexIssueLocation)
+      .map(RegexIssueLocation::fromCommonsRegexIssueLocation)
       .toList());
   }
 
@@ -309,7 +310,7 @@ public abstract class AbstractRegexCheck extends IssuableSubscriptionVisitor imp
     }
   }
 
-  public final void reportIssue(Tree javaTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
+  public final void reportIssue(Tree javaTree, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries) {
     regexContext.reportIssue(this, javaTree, message, cost, secondaries);
   }
 

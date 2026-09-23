@@ -23,7 +23,7 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -56,7 +56,7 @@ public final class PrimitivesMarkedNullableCheck extends IssuableSubscriptionVis
             .forRule(this)
             .onTree(returnType)
             .withMessage("\"@%s\" annotation should not be used on primitive types", annotationName)
-            .withSecondaries(new JavaFileScannerContext.Location("Child annotation", annotationTree))
+            .withSecondaries(new JavaFileLocation("Child annotation", annotationTree))
             .withQuickFix(() ->
               JavaQuickFix.newQuickFix("Remove \"@%s\"", annotationName)
                 .addTextEdit(JavaTextEdit.removeTextSpan(textSpanBetween(annotationTree, true,

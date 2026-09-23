@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -102,7 +102,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
       reportIssue(
         rightOperand,
         "Correct one of the identical sub-expressions on both sides of operator \"" + binaryExpressionTree.operatorToken().text() + "\"",
-        Collections.singletonList(new JavaFileScannerContext.Location(SECONDARY_MESSAGE, equivalentOperand)),
+        Collections.singletonList(new JavaFileLocation(SECONDARY_MESSAGE, equivalentOperand)),
         null);
     }
   }
@@ -116,7 +116,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
           reportIssue(
             rightOp,
             "Correct one of the identical sub-expressions on both sides of equals.",
-            Collections.singletonList(new JavaFileScannerContext.Location(SECONDARY_MESSAGE, leftOp)),
+            Collections.singletonList(new JavaFileLocation(SECONDARY_MESSAGE, leftOp)),
             null);
         }
       }
@@ -127,7 +127,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends IssuableSubscriptio
         reportIssue(
           rightOp,
           "Correct one of the identical argument sub-expressions.",
-          Collections.singletonList(new JavaFileScannerContext.Location(SECONDARY_MESSAGE, leftOp)),
+          Collections.singletonList(new JavaFileLocation(SECONDARY_MESSAGE, leftOp)),
           null);
       }
     }

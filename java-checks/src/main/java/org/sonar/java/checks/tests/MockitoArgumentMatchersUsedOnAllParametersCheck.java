@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -92,7 +93,7 @@ public class MockitoArgumentMatchersUsedOnAllParametersCheck extends AbstractMoc
         primaryMessage,
         nonMatchers.stream()
           .skip(1)
-          .map(secondary -> new JavaFileScannerContext.Location("", secondary))
+          .map(secondary -> new JavaFileLocation("", secondary))
           .toList(),
         null);
     }

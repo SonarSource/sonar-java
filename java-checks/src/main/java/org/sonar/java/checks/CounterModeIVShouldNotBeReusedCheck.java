@@ -28,7 +28,7 @@ import org.sonar.java.checks.helpers.HardcodedStringExpressionChecker;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -76,7 +76,7 @@ public class CounterModeIVShouldNotBeReusedCheck extends IssuableSubscriptionVis
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree method = (MethodInvocationTree) tree;
-    var secondaryLocations = new ArrayList<JavaFileScannerContext.Location>();
+    var secondaryLocations = new ArrayList<JavaFileLocation>();
 
     if (isJCAOperationModeEncrypt(method)) {
       checkForHardcodedIVInitialization(method, 2, secondaryLocations);
@@ -86,7 +86,7 @@ public class CounterModeIVShouldNotBeReusedCheck extends IssuableSubscriptionVis
 
   }
 
-  private void checkForHardcodedIVInitialization(MethodInvocationTree method, int constructorParamIndex, List<JavaFileScannerContext.Location> secondaryLocations) {
+  private void checkForHardcodedIVInitialization(MethodInvocationTree method, int constructorParamIndex, List<JavaFileLocation> secondaryLocations) {
     if (checkForJCAHardcodedIVInitialization(method.arguments().get(constructorParamIndex), secondaryLocations)) {
       MemberSelectExpressionTree methodSelect = (MemberSelectExpressionTreeImpl) method.methodSelect();
       reportIssue(methodSelect.identifier(), PRIMARY_LOCATION_ISSUE_MESSAGE, secondaryLocations, null);
@@ -110,23 +110,23 @@ public class CounterModeIVShouldNotBeReusedCheck extends IssuableSubscriptionVis
   }
 
   // argument here is going to be a GCMParameterSpec
-  private static boolean checkForJCAHardcodedIVInitialization(ExpressionTree expression, List<JavaFileScannerContext.Location> secondaryLocations) {
+  private static boolean checkForJCAHardcodedIVInitialization(ExpressionTree expression, List<JavaFileLocation> secondaryLocations) {
     ExpressionTree argument = ExpressionUtils.skipParentheses(expression);
     switch (argument.kind()) {
       case IDENTIFIER:
         List<ExpressionTree> assignments = ExpressionsHelper.getIdentifierAssignments((IdentifierTree) argument);
-        secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, argument));
+        secondaryLocations.add(new JavaFileLocation(SECONDARY_LOCATION_ISSUE_MESSAGE, argument));
         return assignments.stream()
           .allMatch(assignment -> checkForJCAHardcodedIVInitialization(assignment, secondaryLocations));
       case NEW_CLASS:
         NewClassTree constructor = (NewClassTree) argument;
         if (GCM_CONSTRUCTOR.matches(constructor)) {
           ExpressionTree arg = constructor.arguments().get(1);
-          secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, arg));
+          secondaryLocations.add(new JavaFileLocation(SECONDARY_LOCATION_ISSUE_MESSAGE, arg));
           return HardcodedStringExpressionChecker.isExpressionDerivedFromPlainText(arg, secondaryLocations, new HashSet<>());
         } else if (AEAD_CONSTRUCTOR.matches(constructor)) {
           ExpressionTree arg = constructor.arguments().get(2);
-          secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, arg));
+          secondaryLocations.add(new JavaFileLocation(SECONDARY_LOCATION_ISSUE_MESSAGE, arg));
           return HardcodedStringExpressionChecker.isExpressionDerivedFromPlainText(arg, secondaryLocations, new HashSet<>());
         }
         return false;

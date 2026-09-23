@@ -25,7 +25,7 @@ import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -156,10 +156,10 @@ public class PasswordEncoderCheck extends IssuableSubscriptionVisitor {
 
     var minIteration = MIN_ITERATIONS_BY_ALGORITHM.get(algorithm);
     if (iterationCount < minIteration) {
-      var secondaryLocations = new ArrayList<Location>();
-      secondaryLocations.add(new Location("", algorithmValueExpression));
+      var secondaryLocations = new ArrayList<JavaFileLocation>();
+      secondaryLocations.add(new JavaFileLocation("", algorithmValueExpression));
       if (!Objects.equals(iterationCountValueExpression.firstToken(), iterationCountExpression.firstToken())) {
-        secondaryLocations.add(new Location("", iterationCountValueExpression));
+        secondaryLocations.add(new JavaFileLocation("", iterationCountValueExpression));
       }
 
       reportIssue(iterationCountExpression, JAVAX_CRYPTO_MESSAGE_FORMAT.formatted(minIteration), secondaryLocations, null);

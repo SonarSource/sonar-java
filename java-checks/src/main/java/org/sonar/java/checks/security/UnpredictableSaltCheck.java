@@ -24,7 +24,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.Preconditions;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -73,7 +73,7 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
     saltExpression(((NewClassTree) tree))
     .map(ExpressionUtils::skipParentheses)
     .ifPresent(salt -> {
-      List<JavaFileScannerContext.Location> locations = new ArrayList<>();
+      List<JavaFileLocation> locations = new ArrayList<>();
       if (isPredictable(salt, locations)) {
         reportIssue(newClassTree, UNPREDICTABLE_SALT, locations, null);
       }
@@ -89,18 +89,18 @@ public class UnpredictableSaltCheck extends IssuableSubscriptionVisitor {
     return Optional.empty();
   }
 
-  private static boolean isPredictable(ExpressionTree saltExpression, List<JavaFileScannerContext.Location> locations) {
+  private static boolean isPredictable(ExpressionTree saltExpression, List<JavaFileLocation> locations) {
     return (saltExpression.is(Tree.Kind.METHOD_INVOCATION) && isInitializedWithGetBytes((MethodInvocationTree) saltExpression)) ||
       (saltExpression.is(Tree.Kind.IDENTIFIER) && isInitializedWithLiteral((IdentifierTree) saltExpression, locations));
   }
 
-  private static boolean isInitializedWithLiteral(IdentifierTree identifier, List<JavaFileScannerContext.Location> locations) {
+  private static boolean isInitializedWithLiteral(IdentifierTree identifier, List<JavaFileLocation> locations) {
     Symbol symbol = identifier.symbol();
     return Optional.ofNullable(getSingleWriteUsage(symbol))
       .filter(expressionTree -> expressionTree.is(Tree.Kind.METHOD_INVOCATION))
       .map(MethodInvocationTree.class::cast)
       .map(mit -> {
-        locations.add(new JavaFileScannerContext.Location("Salt initialized with a constant.", mit));
+        locations.add(new JavaFileLocation("Salt initialized with a constant.", mit));
         return isInitializedWithGetBytes(mit);
       })
       .orElse(false);

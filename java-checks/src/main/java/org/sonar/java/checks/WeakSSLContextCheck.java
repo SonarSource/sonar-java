@@ -25,6 +25,7 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -90,21 +91,21 @@ public class WeakSSLContextCheck extends IssuableSubscriptionVisitor {
     } else if (OK_HTTP_TLS_VERSION.matches(mit)) {
       List<ExpressionTree> unsecureVersions = getUnsecureVersionsInArguments(arguments);
       if (!unsecureVersions.isEmpty()) {
-        List<JavaFileScannerContext.Location> secondaries = unsecureVersions.stream()
+        List<JavaFileLocation> secondaries = unsecureVersions.stream()
           .skip(1)
-          .map(secondary -> new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, secondary))
+          .map(secondary -> new JavaFileLocation(SECONDARY_LOCATION_MESSAGE, secondary))
           .toList();
         reportIssue(unsecureVersions.get(0), ISSUE_MESSAGE, secondaries, null);
       }
     } else if (OPTIONS_ENABLED_PROTOCOLS.matches(mit)) {
       ExpressionTree argument = arguments.get(0);
       if (argument instanceof MethodInvocationTree methodInvocation) {
-        List<JavaFileScannerContext.Location> secondaryLocations = methodInvocation.arguments().stream()
+        List<JavaFileLocation> secondaryLocations = methodInvocation.arguments().stream()
           .filter(arg -> {
             var argValue = ExpressionUtils.resolveAsConstant(arg);
             return argValue != null && WEAK_FOR_SET_ENABLED_PROTOCOLS.contains(argValue);
           })
-          .map(arg -> new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, arg))
+          .map(arg -> new JavaFileLocation(SECONDARY_LOCATION_MESSAGE, arg))
           .toList();
         if (!secondaryLocations.isEmpty()) {
           reportIssue(((MemberSelectExpressionTree) mit.methodSelect()).identifier(), ISSUE_MESSAGE, secondaryLocations, null);

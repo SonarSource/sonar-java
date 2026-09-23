@@ -22,7 +22,7 @@ import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -47,8 +47,8 @@ public class PublicConstructorInAbstractClassCheck extends IssuableSubscriptionV
     Optional<ModifierKeywordTree> abstractKeyword = ModifiersUtils.findModifier(classTree.modifiers(), Modifier.ABSTRACT);
 
     abstractKeyword.ifPresent(keyword -> {
-      JavaFileScannerContext.Location keywordLocation = new JavaFileScannerContext.Location("This class is \"abstract\".", keyword);
-      List<JavaFileScannerContext.Location> secondaryLocations = Collections.singletonList(keywordLocation);
+      JavaFileLocation keywordLocation = new JavaFileLocation("This class is \"abstract\".", keyword);
+      List<JavaFileLocation> secondaryLocations = Collections.singletonList(keywordLocation);
       classTree.members().stream()
         .filter(PublicConstructorInAbstractClassCheck::isConstructor)
         .map(MethodTree.class::cast)

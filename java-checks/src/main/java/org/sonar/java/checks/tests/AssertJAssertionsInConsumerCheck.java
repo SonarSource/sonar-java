@@ -25,7 +25,7 @@ import org.sonar.java.checks.helpers.AbstractAssertionVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -91,9 +91,9 @@ public class AssertJAssertionsInConsumerCheck extends IssuableSubscriptionVisito
   }
 
   private void checkAssertions(MethodInvocationTree invocation, List<ExpressionTree> argumentsToCheck) {
-    List<Location> argumentsMissingAssertion = argumentsToCheck.stream()
+    List<JavaFileLocation> argumentsMissingAssertion = argumentsToCheck.stream()
       .filter(argument -> !hasAssertion(argument))
-      .map(argument -> new Location("Argument missing assertion", argument))
+      .map(argument -> new JavaFileLocation("Argument missing assertion", argument))
       .toList();
 
     if (!argumentsMissingAssertion.isEmpty()) {

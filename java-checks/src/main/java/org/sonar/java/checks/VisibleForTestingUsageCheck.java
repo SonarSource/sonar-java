@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -49,9 +50,9 @@ public class VisibleForTestingUsageCheck extends IssuableSubscriptionVisitor {
       return;
     }
     if (isMisusedVisibleForTesting(symbol)) {
-      List<JavaFileScannerContext.Location> locations = symbol.usages().stream()
+      List<JavaFileLocation> locations = symbol.usages().stream()
         .filter(identifierTree -> !tree.equals(identifierTree))
-        .map(identifierTree -> new JavaFileScannerContext.Location("usage of @VisibleForTesting in production", identifierTree))
+        .map(identifierTree -> new JavaFileLocation("usage of @VisibleForTesting in production", identifierTree))
         .toList();
 
       reportIssue(identifier, String.format("Remove this usage of \"%s\", it is annotated with @VisibleForTesting and should not be accessed from production code.",

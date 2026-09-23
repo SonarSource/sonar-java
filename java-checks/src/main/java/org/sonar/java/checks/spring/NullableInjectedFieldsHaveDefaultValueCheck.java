@@ -29,7 +29,7 @@ import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -77,7 +77,7 @@ public class NullableInjectedFieldsHaveDefaultValueCheck extends IssuableSubscri
           .forRule(this)
           .onTree(trees.valueAnnotation)
           .withMessage(issueMessage)
-          .withSecondaries(new JavaFileScannerContext.Location("The nullable annotation", trees.nullableAnnotation))
+          .withSecondaries(new JavaFileLocation("The nullable annotation", trees.nullableAnnotation))
           .withQuickFixes(() -> computeQuickFix(trees.valueAnnotation))
           .report()
       );

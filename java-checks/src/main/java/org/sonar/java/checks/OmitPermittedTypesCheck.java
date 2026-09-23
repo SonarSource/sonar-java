@@ -26,6 +26,7 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -69,7 +70,7 @@ public class OmitPermittedTypesCheck extends IssuableSubscriptionVisitor {
           .onTree(permitsKeyword)
           .withMessage(MESSAGE)
           .withSecondaries(permittedTypes.stream().map(t ->
-            new JavaFileScannerContext.Location("Permitted type", t))
+            new JavaFileLocation("Permitted type", t))
             .toList())
           .withQuickFix(() -> getQuickFix(permitsKeyword, permittedTypes))
           .report();

@@ -20,9 +20,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
@@ -72,7 +72,7 @@ public class SwitchRedundantKeywordCheck extends IssuableSubscriptionVisitor imp
         if (lastStatement.is(Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.THROW_STATEMENT)) {
           reportIssue(blockTree.openBraceToken(),
             String.format(MESSAGE, "block"),
-            Collections.singletonList(new JavaFileScannerContext.Location("Redundant close brace", blockTree.closeBraceToken())),
+            Collections.singletonList(new JavaFileLocation("Redundant close brace", blockTree.closeBraceToken())),
             null);
         }
       }
@@ -89,9 +89,9 @@ public class SwitchRedundantKeywordCheck extends IssuableSubscriptionVisitor imp
     reportIssue(statement, String.format(MESSAGE, redundantParts), blockBraceLocations(blockTree), null);
   }
 
-  private static List<JavaFileScannerContext.Location> blockBraceLocations(BlockTree blockTree) {
-    return Arrays.asList(new JavaFileScannerContext.Location("Redundant opening brace", blockTree.openBraceToken()),
-      new JavaFileScannerContext.Location("Redundant closing brace", blockTree.closeBraceToken()));
+  private static List<JavaFileLocation> blockBraceLocations(BlockTree blockTree) {
+    return Arrays.asList(new JavaFileLocation("Redundant opening brace", blockTree.openBraceToken()),
+      new JavaFileLocation("Redundant closing brace", blockTree.closeBraceToken()));
   }
 
   @Override

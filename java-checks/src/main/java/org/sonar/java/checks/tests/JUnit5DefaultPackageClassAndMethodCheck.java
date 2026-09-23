@@ -26,7 +26,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -62,8 +62,8 @@ public class JUnit5DefaultPackageClassAndMethodCheck extends IssuableSubscriptio
     collectNonCompliantModifiers(junit5InstanceMethods, noncompliantModifiers);
 
     if (!noncompliantModifiers.isEmpty()) {
-      List<JavaFileScannerContext.Location> secondaries = noncompliantModifiers.stream()
-        .map(m -> new JavaFileScannerContext.Location(String.format(MODIFIER_MESSAGE, m.keyword().text()), m))
+      List<JavaFileLocation> secondaries = noncompliantModifiers.stream()
+        .map(m -> new JavaFileLocation(String.format(MODIFIER_MESSAGE, m.keyword().text()), m))
         .toList();
       List<ModifierKeywordTree> modifiersForFix = new ArrayList<>(noncompliantModifiers);
       QuickFixHelper.newIssue(context)

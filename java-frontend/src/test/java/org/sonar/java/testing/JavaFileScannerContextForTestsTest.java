@@ -39,7 +39,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.ClassTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -116,9 +116,9 @@ class JavaFileScannerContextForTestsTest {
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void reportIssue_on_tree_with_secondaries(boolean withSecondariesAndCost) {
-    JavaFileScannerContext.Location location1 = new JavaFileScannerContext.Location("secondary message on }", classA.closeBraceToken());
-    JavaFileScannerContext.Location location2 = new JavaFileScannerContext.Location("secondary message on {", classA.openBraceToken());
-    List<JavaFileScannerContext.Location> secondaries = withSecondariesAndCost ? Arrays.asList(location1, location2) : Collections.emptyList();
+    JavaFileLocation location1 = new JavaFileLocation("secondary message on }", classA.closeBraceToken());
+    JavaFileLocation location2 = new JavaFileLocation("secondary message on {", classA.openBraceToken());
+    List<JavaFileLocation> secondaries = withSecondariesAndCost ? Arrays.asList(location1, location2) : Collections.emptyList();
     Integer cost = withSecondariesAndCost ? 42 : null;
 
     context.reportIssue(CHECK, classA, "issue on A", secondaries, cost);
@@ -166,9 +166,9 @@ class JavaFileScannerContextForTestsTest {
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void reportIssue_between_trees_with_secondaries(boolean withSecondariesAndCost) {
-    JavaFileScannerContext.Location location1 = new JavaFileScannerContext.Location("secondary message on }", classA.closeBraceToken());
-    JavaFileScannerContext.Location location2 = new JavaFileScannerContext.Location("secondary message on {", classA.openBraceToken());
-    List<JavaFileScannerContext.Location> secondaries = withSecondariesAndCost ? Arrays.asList(location1, location2) : Collections.emptyList();
+    JavaFileLocation location1 = new JavaFileLocation("secondary message on }", classA.closeBraceToken());
+    JavaFileLocation location2 = new JavaFileLocation("secondary message on {", classA.openBraceToken());
+    List<JavaFileLocation> secondaries = withSecondariesAndCost ? Arrays.asList(location1, location2) : Collections.emptyList();
     Integer cost = withSecondariesAndCost ? 42 : null;
 
     context.reportIssue(CHECK, classA, classB, "issue on A and B", secondaries, cost);
@@ -199,9 +199,9 @@ class JavaFileScannerContextForTestsTest {
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void reportIssue_between_trees_with_flows(boolean withFlowsAndCost) {
-    JavaFileScannerContext.Location location1 = new JavaFileScannerContext.Location("secondary message on }", classA.closeBraceToken());
-    JavaFileScannerContext.Location location2 = new JavaFileScannerContext.Location("secondary message on {", classA.openBraceToken());
-    Iterable<List<JavaFileScannerContext.Location>> flows = withFlowsAndCost ? Collections.singletonList(Arrays.asList(location1, location2)) : Collections.emptyList();
+    JavaFileLocation location1 = new JavaFileLocation("secondary message on }", classA.closeBraceToken());
+    JavaFileLocation location2 = new JavaFileLocation("secondary message on {", classA.openBraceToken());
+    Iterable<List<JavaFileLocation>> flows = withFlowsAndCost ? Collections.singletonList(Arrays.asList(location1, location2)) : Collections.emptyList();
     Integer cost = withFlowsAndCost ? 42 : null;
 
     context.reportIssueWithFlow(CHECK, classA, "issue on A", flows, cost);

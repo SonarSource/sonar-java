@@ -31,6 +31,7 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -610,9 +611,9 @@ class CheckVerifierTest {
       for (AnalyzerMessage analyzerMessage : anamyerMessages) {
         Double messageCost = analyzerMessage.getCost();
         Integer cost = messageCost != null ? messageCost.intValue() : null;
-        List<JavaFileScannerContext.Location> secLocations = new ArrayList<>();
+        List<JavaFileLocation> secLocations = new ArrayList<>();
         if (!analyzerMessage.flows.isEmpty()) {
-          List<List<JavaFileScannerContext.Location>> flows = analyzerMessage.flows.stream()
+          List<List<JavaFileLocation>> flows = analyzerMessage.flows.stream()
             .map(FakeVisitor::messagesToLocations)
             .toList();
           context.reportIssueWithFlow(this, mockTree(analyzerMessage), analyzerMessage.getMessage(), flows, null);
@@ -625,8 +626,8 @@ class CheckVerifierTest {
       }
     }
 
-    private static List<JavaFileScannerContext.Location> messagesToLocations(List<AnalyzerMessage> flow) {
-      return flow.stream().map(m -> new JavaFileScannerContext.Location(m.getMessage(), mockTree(m))).toList();
+    private static List<JavaFileLocation> messagesToLocations(List<AnalyzerMessage> flow) {
+      return flow.stream().map(m -> new JavaFileLocation(m.getMessage(), mockTree(m))).toList();
     }
 
     private static Tree mockTree(final AnalyzerMessage analyzerMessage) {

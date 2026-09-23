@@ -17,7 +17,7 @@
 package org.sonar.java.checks.regex;
 
 import org.sonar.check.Rule;
-import org.sonar.java.regex.RegexCheck;
+import org.sonar.java.regex.RegexIssueLocation;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
@@ -34,7 +34,7 @@ public class UnicodeAwareCharClassesCheck extends AbstractRegexCheck {
         message.replace("\"u\"", String.format("\"%s\"", flagName)),
         cost,
         secondaries.stream()
-          .map(RegexCheck.RegexIssueLocation::fromCommonsRegexIssueLocation)
+          .map(RegexIssueLocation::fromCommonsRegexIssueLocation)
           .toList());
     }).visit(regexForLiterals);
   }

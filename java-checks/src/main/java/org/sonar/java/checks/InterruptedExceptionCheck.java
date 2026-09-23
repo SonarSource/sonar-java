@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.matcher.MethodMatchersBuilder;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -107,7 +108,7 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
     if (!invocationInterrupting.isEmpty() && wasNotInterrupted(catchTree)) {
       reportIssue(catchTree.parameter(), String.format(MESSAGE, "InterruptedException"),
         invocationInterrupting.stream()
-          .map(t -> new JavaFileScannerContext.Location("Statement throwing InterruptedException.", t))
+          .map(t -> new JavaFileLocation("Statement throwing InterruptedException.", t))
           .toList(),
         null);
     }

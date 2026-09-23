@@ -23,11 +23,11 @@ import java.util.Locale;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -179,7 +179,7 @@ public class InstanceOfPatternMatchingCheck extends IssuableSubscriptionVisitor 
     private void report(InstanceOfTree instanceOf, ExpressionTree cast, String name) {
       String type = instanceOf.type().symbolType().name();
       String message = "Replace this instanceof check and cast with 'instanceof " + type + " " + name + "'";
-      JavaFileScannerContext.Location secondary = new JavaFileScannerContext.Location("Location of the cast", cast);
+      JavaFileLocation secondary = new JavaFileLocation("Location of the cast", cast);
       reportIssue(instanceOf, message, Collections.singletonList(secondary), null);
     }
   }

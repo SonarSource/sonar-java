@@ -24,7 +24,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -63,7 +63,7 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
           String shortName = annotationTypeIdentifier(annotationName);
           String message = "Either add an explanation about why this test is skipped or remove the \"@" + shortName + "\" annotation.";
           var secondaryLocation =
-            new JavaFileScannerContext.Location("@" + shortName + " annotation skips the test", annotationTree);
+            new JavaFileLocation("@" + shortName + " annotation skips the test", annotationTree);
           context.reportIssue(this, methodTree.simpleName(), message, Collections.singletonList(secondaryLocation), null);
         });
     }
@@ -79,7 +79,7 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
         .filter(ASSUME_METHODS::matches)
         .filter(IgnoredTestsCheck::hasConstantOppositeArg)
         .forEach(mit -> {
-          List<JavaFileScannerContext.Location> secondaryLocation = Collections.singletonList(new JavaFileScannerContext.Location(
+          List<JavaFileLocation> secondaryLocation = Collections.singletonList(new JavaFileLocation(
             "A constant boolean value is passed as argument, causing this test to always be skipped.", mit.arguments()));
 
           reportIssue(ExpressionUtils.methodName(mit), "This assumption is called with a boolean constant; remove it or, to skip this " +

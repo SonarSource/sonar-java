@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -79,7 +80,7 @@ public class TypeParametersShadowingCheck extends BaseTreeVisitor implements Jav
       if (shadowedId != null) {
         context.reportIssue(this, id,
           String.format(ISSUE_MESSAGE, name),
-          Collections.singletonList(new JavaFileScannerContext.Location("Shadowed type parameter", shadowedId)
+          Collections.singletonList(new JavaFileLocation("Shadowed type parameter", shadowedId)
         ), null);
       } else {
         // Entry added only in the else part, because we want to store only the first and outer most appearance of a type.

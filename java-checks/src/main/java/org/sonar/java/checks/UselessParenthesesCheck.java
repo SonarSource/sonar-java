@@ -18,7 +18,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -37,7 +37,7 @@ public class UselessParenthesesCheck extends IssuableSubscriptionVisitor {
     if (parenthesizedTree.expression().is(Kind.PARENTHESIZED_EXPRESSION)) {
       reportIssue(((ParenthesizedTree) parenthesizedTree.expression()).openParenToken(),
           "Remove these useless parentheses.",
-          Collections.singletonList(new JavaFileScannerContext.Location("", parenthesizedTree.closeParenToken())), null);
+          Collections.singletonList(new JavaFileLocation("", parenthesizedTree.closeParenToken())), null);
     }
   }
 

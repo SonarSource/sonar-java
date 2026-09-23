@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -71,7 +71,7 @@ public class StaticMethodHidingCheck extends IssuableSubscriptionVisitor {
     MethodTree declaration = hiddenMethod.declaration();
     if (declaration != null) {
       reportIssue(methodTree.simpleName(), message,
-        Collections.singletonList(new JavaFileScannerContext.Location("Hidden method",
+        Collections.singletonList(new JavaFileLocation("Hidden method",
           declaration.simpleName())),
         null);
     } else {

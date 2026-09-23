@@ -24,7 +24,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -155,7 +155,7 @@ public class AssertionArgumentOrderCheck extends AbstractMethodDetection {
 
   private InternalJavaIssueBuilder newIssue(ExpressionTree expectedArgument, ExpressionTree actualArgument, String message, Object... args) {
     return newIssue(actualArgument, message, args)
-      .withSecondaries(new JavaFileScannerContext.Location("Other argument to swap.", expectedArgument));
+      .withSecondaries(new JavaFileLocation("Other argument to swap.", expectedArgument));
   }
 
   /**

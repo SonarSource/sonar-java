@@ -23,6 +23,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -53,7 +54,7 @@ public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements Java
         .forRule(this)
         .onTree(tree.ifKeyword())
         .withMessage("Merge this if statement with the enclosing one.")
-        .withSecondaries(Collections.singletonList(new JavaFileScannerContext.Location("", outerIfStatement.ifKeyword())))
+        .withSecondaries(Collections.singletonList(new JavaFileLocation("", outerIfStatement.ifKeyword())))
         .withQuickFix(() -> computeQuickFix(tree, outerIfStatement))
         .report();
     }

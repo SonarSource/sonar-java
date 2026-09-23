@@ -23,13 +23,13 @@ import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.BoundaryTree;
 import org.sonarsource.analyzer.commons.regex.ast.NonCapturingGroupTree;
 import org.sonarsource.analyzer.commons.regex.ast.RegexBaseVisitor;
 import org.sonarsource.analyzer.commons.regex.ast.RegexTree;
 import org.sonarsource.analyzer.commons.regex.ast.SequenceTree;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -157,8 +157,8 @@ public class EmptyLineRegexCheck extends AbstractRegexCheck {
   }
 
   private void reportWithSecondaries(Tree regex, List<Tree> secondaries) {
-    List<JavaFileScannerContext.Location> secondariesLocation =
-      secondaries.stream().map(secondary -> new JavaFileScannerContext.Location("This string can be empty.", secondary))
+    List<JavaFileLocation> secondariesLocation =
+      secondaries.stream().map(secondary -> new JavaFileLocation("This string can be empty.", secondary))
         .toList();
     reportIssue(regex, MESSAGE, secondariesLocation, null);
   }

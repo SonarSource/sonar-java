@@ -25,7 +25,7 @@ import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -286,9 +286,9 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
         } else {
           List<MethodInvocationTree> allLocations = Stream.concat(intermediateMethodInvocations.stream(), Stream.of(mit)).toList();
           MethodInvocationTree mainLocation = allLocations.get(0);
-          List<Location> secondaries = allLocations.stream()
+          List<JavaFileLocation> secondaries = allLocations.stream()
             .skip(1L)
-            .map(methodInvocation -> new Location("", methodInvocation.methodSelect()))
+            .map(methodInvocation -> new JavaFileLocation("", methodInvocation.methodSelect()))
             .toList();
           context.reportIssue(AssertionsCompletenessCheck.this, mainLocation, "Add one or more 'assertThat' before 'assertAll'.", secondaries, null);
         }
@@ -314,8 +314,8 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
         if (assertThatCalled) {
           assertThatCalled = false;
         } else {
-          List<Location> secondaries = intermediateMethodInvocations.stream()
-            .map(methodInvocation -> new Location("", methodInvocation.methodSelect()))
+          List<JavaFileLocation> secondaries = intermediateMethodInvocations.stream()
+            .map(methodInvocation -> new JavaFileLocation("", methodInvocation.methodSelect()))
             .toList();
           context.reportIssue(AssertionsCompletenessCheck.this,
             tree.block().closeBraceToken(),

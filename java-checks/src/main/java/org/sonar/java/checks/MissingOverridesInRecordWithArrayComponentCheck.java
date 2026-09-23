@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -72,9 +72,9 @@ public class MissingOverridesInRecordWithArrayComponentCheck extends IssuableSub
       .ifPresent(composedMessage -> reportIssue(targetRecord.simpleName(), composedMessage, secondaries(recordArrayComponents), null));
   }
 
-  private static List<JavaFileScannerContext.Location> secondaries(List<VariableTree> recordArrayComponents) {
+  private static List<JavaFileLocation> secondaries(List<VariableTree> recordArrayComponents) {
     return recordArrayComponents.stream()
-      .map(arrayComponent -> new JavaFileScannerContext.Location("Array", arrayComponent))
+      .map(arrayComponent -> new JavaFileLocation("Array", arrayComponent))
       .toList();
   }
 

@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -157,7 +157,7 @@ public class ExpressionsHelper {
 
   public static class ValueResolution<T> {
     private T value;
-    private List<JavaFileScannerContext.Location> valuePath = new ArrayList<>();
+    private List<JavaFileLocation> valuePath = new ArrayList<>();
     private Set<Symbol> evaluatedSymbols = new HashSet<>();
     private final String locationMessage;
 
@@ -171,7 +171,7 @@ public class ExpressionsHelper {
 
     private void addLocation(ExpressionTree expressionTree, Symbol evaluatedSymbol) {
       evaluatedSymbols.add(evaluatedSymbol);
-      valuePath.add(new JavaFileScannerContext.Location(locationMessage, expressionTree));
+      valuePath.add(new JavaFileLocation(locationMessage, expressionTree));
     }
 
     @CheckForNull
@@ -179,7 +179,7 @@ public class ExpressionsHelper {
       return value;
     }
 
-    public List<JavaFileScannerContext.Location> valuePath() {
+    public List<JavaFileLocation> valuePath() {
       return valuePath;
     }
   }

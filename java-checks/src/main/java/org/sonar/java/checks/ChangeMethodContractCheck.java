@@ -24,7 +24,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.JUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.NullabilityData;
@@ -130,15 +130,15 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static List<JavaFileScannerContext.Location> getSecondariesForAnnotations(NullabilityData childData, NullabilityData parentData) {
-    List<JavaFileScannerContext.Location> secondaries = new ArrayList<>();
+  private static List<JavaFileLocation> getSecondariesForAnnotations(NullabilityData childData, NullabilityData parentData) {
+    List<JavaFileLocation> secondaries = new ArrayList<>();
     Tree childDeclaration = childData.declaration();
     if (childDeclaration != null) {
-      secondaries.add(new JavaFileScannerContext.Location("Child annotation", childDeclaration));
+      secondaries.add(new JavaFileLocation("Child annotation", childDeclaration));
     }
     Tree parentDeclaration = parentData.declaration();
     if (parentDeclaration != null) {
-      secondaries.add(new JavaFileScannerContext.Location("Overridden annotation", parentDeclaration));
+      secondaries.add(new JavaFileLocation("Overridden annotation", parentDeclaration));
     }
     return secondaries;
   }

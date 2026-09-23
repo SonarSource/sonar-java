@@ -32,7 +32,7 @@ import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -120,12 +120,12 @@ public class TransactionalMethodCheckedExceptionCheck extends IssuableSubscripti
     if (isClassLevel) {
       issueBuilder
         .withMessage("Specify rollback behavior for checked exceptions using \"rollbackFor\" or \"noRollbackFor\" attributes on the class-level @Transactional.")
-        .withSecondaries(new JavaFileScannerContext.Location("Class-level @Transactional annotation", transactionalAnnotation))
+        .withSecondaries(new JavaFileLocation("Class-level @Transactional annotation", transactionalAnnotation))
         .withQuickFixes(() -> computeQuickFixes(transactionalAnnotation, checkedExceptions));
     } else {
       issueBuilder
         .withMessage("Specify rollback behavior for checked exceptions using \"rollbackFor\" or \"noRollbackFor\" attributes.")
-        .withSecondaries(new JavaFileScannerContext.Location("@Transactional annotation", transactionalAnnotation))
+        .withSecondaries(new JavaFileLocation("@Transactional annotation", transactionalAnnotation))
         .withQuickFixes(() -> computeQuickFixes(transactionalAnnotation, checkedExceptions));
     }
 

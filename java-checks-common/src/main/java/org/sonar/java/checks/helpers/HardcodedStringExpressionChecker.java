@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -101,7 +101,7 @@ public class HardcodedStringExpressionChecker {
       .addParametersMatcher(JAVA_LANG_STRING)
       .build());
 
-  public static boolean isExpressionDerivedFromPlainText(ExpressionTree expression, List<JavaFileScannerContext.Location> secondaryLocations,
+  public static boolean isExpressionDerivedFromPlainText(ExpressionTree expression, List<JavaFileLocation> secondaryLocations,
     Set<Symbol> visited) {
     ExpressionTree arg = ExpressionUtils.skipParentheses(expression);
     switch (arg.kind()) {
@@ -143,13 +143,13 @@ public class HardcodedStringExpressionChecker {
     }
   }
 
-  private static boolean isDerivedFromPlainText(BinaryExpressionTree binaryExpression, List<JavaFileScannerContext.Location> secondaryLocations,
+  private static boolean isDerivedFromPlainText(BinaryExpressionTree binaryExpression, List<JavaFileLocation> secondaryLocations,
     Set<Symbol> visited) {
     return isExpressionDerivedFromPlainText(binaryExpression.rightOperand(), secondaryLocations, visited) &&
       isExpressionDerivedFromPlainText(binaryExpression.leftOperand(), secondaryLocations, visited);
   }
 
-  private static boolean isDerivedFromPlainText(IdentifierTree identifier, List<JavaFileScannerContext.Location> secondaryLocations,
+  private static boolean isDerivedFromPlainText(IdentifierTree identifier, List<JavaFileLocation> secondaryLocations,
     Set<Symbol> visited) {
     Symbol symbol = identifier.symbol();
     boolean firstVisit = visited.add(symbol);
@@ -163,16 +163,16 @@ public class HardcodedStringExpressionChecker {
 
     List<ExpressionTree> assignments = getIdentifierAssignments(identifier);
 
-    List<JavaFileScannerContext.Location> tempSecondaryLocations = new ArrayList<>();
+    List<JavaFileLocation> tempSecondaryLocations = new ArrayList<>();
     boolean identifierIsDerivedFromPlainText = !assignments.isEmpty() &&
       assignments.stream()
         .allMatch(expression -> isExpressionDerivedFromPlainText(expression, tempSecondaryLocations, visited));
 
     if (identifierIsDerivedFromPlainText) {
       if (variable.initializer() == null) {
-        secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, variable));
+        secondaryLocations.add(new JavaFileLocation(SECONDARY_LOCATION_ISSUE_MESSAGE, variable));
       } else {
-        secondaryLocations.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE, variable.initializer()));
+        secondaryLocations.add(new JavaFileLocation(SECONDARY_LOCATION_ISSUE_MESSAGE, variable.initializer()));
       }
       secondaryLocations.addAll(tempSecondaryLocations);
       return true;
@@ -184,20 +184,20 @@ public class HardcodedStringExpressionChecker {
     return symbol.isVariableSymbol() && symbol.owner().isTypeSymbol() && !symbol.isFinal();
   }
 
-  private static boolean isDerivedFromPlainText(NewArrayTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
+  private static boolean isDerivedFromPlainText(NewArrayTree invocation, List<JavaFileLocation> secondaryLocations,
     Set<Symbol> visited) {
     ListTree<ExpressionTree> initializers = invocation.initializers();
     return !initializers.isEmpty() && initializers.stream()
       .allMatch(expression -> isExpressionDerivedFromPlainText(expression, secondaryLocations, visited));
   }
 
-  private static boolean isDerivedFromPlainText(NewClassTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
+  private static boolean isDerivedFromPlainText(NewClassTree invocation, List<JavaFileLocation> secondaryLocations,
     Set<Symbol> visited) {
     return STRING_CONSTRUCTOR.matches(invocation) &&
       isExpressionDerivedFromPlainText(invocation.arguments().get(0), secondaryLocations, visited);
   }
 
-  private static boolean isDerivedFromPlainText(MethodInvocationTree invocation, List<JavaFileScannerContext.Location> secondaryLocations,
+  private static boolean isDerivedFromPlainText(MethodInvocationTree invocation, List<JavaFileLocation> secondaryLocations,
     Set<Symbol> visited) {
 
     if (STRING_VALUE_OF.matches(invocation) || ENCODERS.matches(invocation)) {
@@ -212,7 +212,7 @@ public class HardcodedStringExpressionChecker {
       isExpressionDerivedFromPlainText(((MemberSelectExpressionTree) methodSelect).expression(), secondaryLocations, visited);
   }
 
-  private static boolean isDerivedFromPlainText(ConditionalExpressionTree conditionalTree, List<JavaFileScannerContext.Location> secondaryLocations,
+  private static boolean isDerivedFromPlainText(ConditionalExpressionTree conditionalTree, List<JavaFileLocation> secondaryLocations,
     Set<Symbol> visited) {
     return isExpressionDerivedFromPlainText(conditionalTree.trueExpression(), secondaryLocations, visited) &&
       isExpressionDerivedFromPlainText(conditionalTree.falseExpression(), secondaryLocations, visited);

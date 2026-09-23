@@ -27,7 +27,7 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -129,7 +129,7 @@ public class DuplicateImmutableCollectionArgumentsCheck extends IssuableSubscrip
         reportIssue(
           expr,
           message,
-          Collections.singletonList(new JavaFileScannerContext.Location(secondaryMessage, firstOccurrence)),
+          Collections.singletonList(new JavaFileLocation(secondaryMessage, firstOccurrence)),
           null
         );
       } else {

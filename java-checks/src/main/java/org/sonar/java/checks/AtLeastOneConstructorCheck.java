@@ -22,7 +22,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -77,13 +77,13 @@ public class AtLeastOneConstructorCheck extends IssuableSubscriptionVisitor {
     if (simpleName != null && !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT)
       && !isAnnotationExcluded(tree.symbol())
       && !isBuilderPatternName(simpleName.name())) {
-      List<JavaFileScannerContext.Location> uninitializedVariables = new ArrayList<>();
+      List<JavaFileLocation> uninitializedVariables = new ArrayList<>();
       for (Tree member : tree.members()) {
         if (member.is(Kind.CONSTRUCTOR)) {
           // there is a constructor, no need to check further
           return;
         } else if (member.is(Kind.VARIABLE) && requiresInitialization((VariableTree) member)) {
-          uninitializedVariables.add(new JavaFileScannerContext.Location("Uninitialized field", member));
+          uninitializedVariables.add(new JavaFileLocation("Uninitialized field", member));
         }
       }
       if (!uninitializedVariables.isEmpty()) {

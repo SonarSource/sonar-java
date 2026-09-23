@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -74,7 +74,7 @@ public class TestNGJavadocTagsCheck extends IssuableSubscriptionVisitor {
 
     String firstTagOriginal = null;
     String firstAnnotation = null;
-    List<JavaFileScannerContext.Location> secondaryLocations = new ArrayList<>();
+    List<JavaFileLocation> secondaryLocations = new ArrayList<>();
 
     while (matcher.find()) {
       String tagName = matcher.group(1);
@@ -85,7 +85,7 @@ public class TestNGJavadocTagsCheck extends IssuableSubscriptionVisitor {
           firstTagOriginal = tagName;
           firstAnnotation = annotation;
         } else {
-          secondaryLocations.add(new JavaFileScannerContext.Location(
+          secondaryLocations.add(new JavaFileLocation(
             String.format("Also replace \"@%s\" with the TestNG \"%s\" annotation.",
               tagName, annotation),
             tree.simpleName()));

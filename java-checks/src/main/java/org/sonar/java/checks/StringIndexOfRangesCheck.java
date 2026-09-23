@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -128,7 +128,7 @@ public class StringIndexOfRangesCheck extends AbstractMethodDetection implements
   }
 
   private void reportWithSecondaryLocation(ExpressionTree tree, String msg, ExpressionTree secondaryLocation, String secondaryMsg) {
-    reportIssue(tree, msg, List.of(new JavaFileScannerContext.Location(secondaryMsg, secondaryLocation)), null);
+    reportIssue(tree, msg, List.of(new JavaFileLocation(secondaryMsg, secondaryLocation)), null);
   }
 
   /**

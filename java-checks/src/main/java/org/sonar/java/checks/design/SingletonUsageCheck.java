@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -67,7 +67,7 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
       if (isInitializedWithParameterFreeConstructor(constant) &&
         hasNonPrivateInstanceMethodsOrFields(classTree)) {
         reportIssue(classTree.simpleName(), MESSAGE_FOR_ENUMS,
-          Collections.singletonList(new JavaFileScannerContext.Location("Single enum", constant)), null);
+          Collections.singletonList(new JavaFileLocation("Single enum", constant)), null);
       }
     }
   }
@@ -89,16 +89,16 @@ public class SingletonUsageCheck extends IssuableSubscriptionVisitor {
       allConstructors.stream().allMatch(constructor -> constructor.symbol().isPrivate() && constructor.parameters().isEmpty()) &&
       hasNonPrivateInstanceMethodsOrFields(singletonClass)) {
 
-      var flows = new ArrayList<JavaFileScannerContext.Location>();
-      flows.add(new JavaFileScannerContext.Location("Singleton field", singletonField.simpleName()));
+      var flows = new ArrayList<JavaFileLocation>();
+      flows.add(new JavaFileLocation("Singleton field", singletonField.simpleName()));
       if (singletonClass != classTree) {
-        flows.add(new JavaFileScannerContext.Location("Singleton helper", classTree.simpleName()));
+        flows.add(new JavaFileLocation("Singleton helper", classTree.simpleName()));
       }
       allConstructors.forEach(constructor -> {
         IdentifierTree methodName = allConstructors.get(0).simpleName();
-        flows.add(new JavaFileScannerContext.Location("Private constructor", methodName));
+        flows.add(new JavaFileLocation("Private constructor", methodName));
       });
-      extractAssignments(singletonField).forEach(assignment -> flows.add(new JavaFileScannerContext.Location("Value assignment", assignment)));
+      extractAssignments(singletonField).forEach(assignment -> flows.add(new JavaFileLocation("Value assignment", assignment)));
 
       reportIssue(singletonClass.simpleName(), MESSAGE, flows, null);
     }

@@ -27,7 +27,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -94,10 +94,10 @@ public class OverwrittenKeyCheck extends IssuableSubscriptionVisitor {
     });
   }
 
-  private static List<JavaFileScannerContext.Location> secondaryLocations(CollectionAndKey key, Tree firstUse, List<Tree> rest) {
+  private static List<JavaFileLocation> secondaryLocations(CollectionAndKey key, Tree firstUse, List<Tree> rest) {
     return Stream.concat(
-      Stream.of(new JavaFileScannerContext.Location("Original value", firstUse)),
-      rest.stream().map(t -> new JavaFileScannerContext.Location("Same " + key.indexOrKey() + " is set", t)))
+      Stream.of(new JavaFileLocation("Original value", firstUse)),
+      rest.stream().map(t -> new JavaFileLocation("Same " + key.indexOrKey() + " is set", t)))
       .toList();
   }
 

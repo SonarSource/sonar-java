@@ -28,7 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -110,11 +110,11 @@ public class ParameterizedTestCheck extends IssuableSubscriptionVisitor {
         // We don't report an issue if the change would result in too many parameters.
         // or if no statement would be duplicated.
         // We still add it to "handled" to not report a subset of candidate methods.
-        List<JavaFileScannerContext.Location> secondaries = collectAndIgnoreLiterals.nodeToParametrize.stream().map(param ->
-          new JavaFileScannerContext.Location("Value to parameterize", param)).collect(Collectors.toCollection(ArrayList::new));
+        List<JavaFileLocation> secondaries = collectAndIgnoreLiterals.nodeToParametrize.stream().map(param ->
+          new JavaFileLocation("Value to parameterize", param)).collect(Collectors.toCollection(ArrayList::new));
 
         equivalentMethods.stream().map(equivalentMethod ->
-          new JavaFileScannerContext.Location("Related test", equivalentMethod.simpleName()))
+          new JavaFileLocation("Related test", equivalentMethod.simpleName()))
           .forEach(secondaries::add);
 
         reportIssue(method.simpleName(), String.format(MESSAGE, equivalentMethods.size() + 1), secondaries, null);

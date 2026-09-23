@@ -21,7 +21,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -124,7 +124,7 @@ public class BlockingOperationsInVirtualThreadsCheck extends IssuableSubscriptio
     finder.collectedBlockingOperations.forEach(mit -> reportIssue(
       ExpressionUtils.methodName(mit),
       "Use virtual threads for heavy blocking operations.",
-      List.of(new JavaFileScannerContext.Location("Containing thread", secondary)),
+      List.of(new JavaFileLocation("Containing thread", secondary)),
       null));
   }
 

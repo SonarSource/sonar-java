@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -60,9 +60,9 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
       for (Map.Entry<Symbol, MethodInvocationTree> entry : primaryTargets.entrySet()) {
         Symbol symbol = entry.getKey();
         MethodInvocationTree setInvocation = entry.getValue();
-        List<JavaFileScannerContext.Location> secondaries = secondaryTargets.getOrDefault(symbol, Collections.emptyList())
+        List<JavaFileLocation> secondaries = secondaryTargets.getOrDefault(symbol, Collections.emptyList())
           .stream()
-          .map(mit -> new JavaFileScannerContext.Location(SECONDARY_MESSAGE, mit))
+          .map(mit -> new JavaFileLocation(SECONDARY_MESSAGE, mit))
           .toList();
         reportIssue(setInvocation, MESSAGE, secondaries, null);
       }

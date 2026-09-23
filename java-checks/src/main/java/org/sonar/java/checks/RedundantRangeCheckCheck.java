@@ -28,7 +28,7 @@ import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -87,7 +87,7 @@ public class RedundantRangeCheckCheck extends IssuableSubscriptionVisitor {
       }
       Comparison implying = comparisons.get(j);
       if (implying.implies(redundant) && !shouldSkipMutualImplication(redundant, implying, redundantIndex, j)) {
-        var secondary = new JavaFileScannerContext.Location("Implying check", implying.tree);
+        var secondary = new JavaFileLocation("Implying check", implying.tree);
         reportIssue(redundant.tree, MESSAGE, Collections.singletonList(secondary), null);
         return;
       }

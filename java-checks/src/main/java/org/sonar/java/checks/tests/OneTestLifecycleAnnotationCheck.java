@@ -18,7 +18,7 @@ package org.sonar.java.checks.tests;
 
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -90,9 +90,9 @@ public class OneTestLifecycleAnnotationCheck extends IssuableSubscriptionVisitor
 
         IdentifierTree primaryLocation = methods.get(0);
 
-        List<JavaFileScannerContext.Location> secondaryLocations = methods.stream()
+        List<JavaFileLocation> secondaryLocations = methods.stream()
           .skip(1)
-          .map(methodName -> new JavaFileScannerContext.Location("same annotation", methodName))
+          .map(methodName -> new JavaFileLocation("same annotation", methodName))
           .toList();
 
         reportIssue(primaryLocation, message, secondaryLocations, null);

@@ -23,7 +23,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.TernaryValue;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.SwitchTree;
@@ -55,9 +55,9 @@ public class SwitchWithTooManyCasesCheck extends IssuableSubscriptionVisitor {
     List<CaseGroupTree> cases = switchTree.cases();
     int size = cases.size();
     if (size > maximumCases) {
-      List<JavaFileScannerContext.Location> secondary = new ArrayList<>();
+      List<JavaFileLocation> secondary = new ArrayList<>();
       for (CaseGroupTree element : cases) {
-        secondary.add(new JavaFileScannerContext.Location("+1", element.labels().get(0)));
+        secondary.add(new JavaFileLocation("+1", element.labels().get(0)));
       }
       reportIssue(switchTree.switchKeyword(),
         String.format("Reduce the number of non-empty switch cases from %d to at most %d.", size, maximumCases),

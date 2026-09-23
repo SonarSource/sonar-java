@@ -19,6 +19,7 @@ package org.sonar.samples.java;
 import java.util.Arrays;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.RegistrarContext;
 
 public class JavaExtensionsCheckRegistrar implements CheckRegistrar {
   /**

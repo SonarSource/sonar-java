@@ -17,9 +17,9 @@
 package org.sonar.java.checks.tests;
 
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -48,9 +48,9 @@ public class JUnitCompatibleAnnotationsCheck extends IssuableSubscriptionVisitor
     MethodTree method = (MethodTree) tree;
     List<AnnotationTree> annotationTrees = method.modifiers().annotations();
 
-    List<JavaFileScannerContext.Location> locations = annotationTrees.stream()
+    List<JavaFileLocation> locations = annotationTrees.stream()
       .filter(annotation -> ANNOTATIONS.contains(annotation.annotationType().symbolType().fullyQualifiedName()))
-      .map(annotationTree -> new JavaFileScannerContext.Location("Incompatible annotation", annotationTree))
+      .map(annotationTree -> new JavaFileLocation("Incompatible annotation", annotationTree))
       .toList();
 
     if (locations.size() > 1) {

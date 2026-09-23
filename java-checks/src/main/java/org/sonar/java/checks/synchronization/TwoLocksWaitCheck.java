@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -74,11 +74,11 @@ public class TwoLocksWaitCheck extends IssuableSubscriptionVisitor {
     return visitor.matchedMethods().findAny();
   }
 
-  private static List<JavaFileScannerContext.Location> flowFromTree(Tree tree) {
+  private static List<JavaFileLocation> flowFromTree(Tree tree) {
     SynchronizedKeywordVisitor synchronizedKeywordVisitor = new SynchronizedKeywordVisitor();
     tree.accept(synchronizedKeywordVisitor);
     return synchronizedKeywordVisitor.stream()
-      .map(t -> new JavaFileScannerContext.Location("locking", t))
+      .map(t -> new JavaFileLocation("locking", t))
       .toList();
   }
 

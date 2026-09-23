@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -105,10 +105,10 @@ public class RecordPatternInsteadOfFieldAccessCheck extends IssuableSubscription
     return !ALLOWED_METHODS.contains(mse.identifier().name());
   }
 
-  private static List<JavaFileScannerContext.Location> getSecondaryLocations(Set<MemberSelectExpressionTree> secondaryLocationsTrees) {
+  private static List<JavaFileLocation> getSecondaryLocations(Set<MemberSelectExpressionTree> secondaryLocationsTrees) {
     return secondaryLocationsTrees.stream()
       .map(tree ->
-        new JavaFileScannerContext.Location("Replace this getter with the respective record pattern component", tree))
+        new JavaFileLocation("Replace this getter with the respective record pattern component", tree))
       .toList();
   }
 

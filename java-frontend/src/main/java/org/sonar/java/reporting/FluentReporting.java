@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import org.sonar.java.annotations.Beta;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Beta
@@ -44,11 +44,11 @@ public interface FluentReporting {
      */
     JavaIssueBuilder withMessage(String message, Object... args);
 
-    JavaIssueBuilder withSecondaries(JavaFileScannerContext.Location... secondaries);
+    JavaIssueBuilder withSecondaries(JavaFileLocation... secondaries);
 
-    JavaIssueBuilder withSecondaries(List<JavaFileScannerContext.Location> secondaries);
+    JavaIssueBuilder withSecondaries(List<JavaFileLocation> secondaries);
 
-    JavaIssueBuilder withFlows(List<List<JavaFileScannerContext.Location>> flows);
+    JavaIssueBuilder withFlows(List<List<JavaFileLocation>> flows);
 
     JavaIssueBuilder withCost(int cost);
 

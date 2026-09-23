@@ -84,7 +84,7 @@ class IssuableSubscriptionVisitorTest {
           reportIssue(ct.members().get(0),
             ct.members().get(ct.members().size() - 1),
             "issue on type",
-            List.of(new JavaFileScannerContext.Location("", ct)),
+            List.of(new JavaFileLocation("", ct)),
             null);
         }
       }

@@ -22,7 +22,7 @@ import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -58,7 +58,7 @@ public class NullReturnedOnComputeIfPresentOrAbsentCheck extends AbstractMethodD
     getNullReturnInLambda(arguments.get(1)).ifPresent(nullReturn ->
       reportIssue(ExpressionUtils.methodName(invocation),
         PRIMARY_MESSAGE,
-        Collections.singletonList(new JavaFileScannerContext.Location(SECONDARY_MESSAGE, nullReturn)),
+        Collections.singletonList(new JavaFileLocation(SECONDARY_MESSAGE, nullReturn)),
         null));
   }
 

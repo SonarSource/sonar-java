@@ -26,7 +26,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -65,8 +65,8 @@ public class SpecializedFunctionalInterfacesCheck extends IssuableSubscriptionVi
     if (reportTreeAndStringInterfaces.isEmpty()) {
       return;
     }
-    List<JavaFileScannerContext.Location> secondaryLocations = reportTreeAndStringInterfaces.stream()
-      .map(interf -> new JavaFileScannerContext.Location("Replace this interface.", interf.classInterface))
+    List<JavaFileLocation> secondaryLocations = reportTreeAndStringInterfaces.stream()
+      .map(interf -> new JavaFileLocation("Replace this interface.", interf.classInterface))
       .toList();
     reportIssue(tree.simpleName(), reportMessage(reportTreeAndStringInterfaces), secondaryLocations, null);
   }

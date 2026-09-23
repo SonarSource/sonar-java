@@ -25,7 +25,7 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -102,8 +102,8 @@ public class CORSCheck extends IssuableSubscriptionVisitor {
     tree.accept(visitor);
     if (!visitor.addAllowedOrigin.isEmpty() && !visitor.applyPermit.isEmpty()) {
       visitor.addAllowedOrigin.forEach(mit -> {
-        List<Location> locations = visitor.applyPermit.stream()
-          .map(t -> new Location(MESSAGE, t))
+        List<JavaFileLocation> locations = visitor.applyPermit.stream()
+          .map(t -> new JavaFileLocation(MESSAGE, t))
           .toList();
         reportIssue(mit.methodSelect(), MESSAGE, locations, null);
       });

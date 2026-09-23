@@ -16,18 +16,9 @@
  */
 package org.sonar.plugins.java.api;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.StreamSupport;
-import javax.annotation.Nullable;
-import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.batch.ScannerSide;
 import org.sonar.api.batch.rule.CheckFactory;
-import org.sonar.api.batch.rule.Checks;
-import org.sonar.api.rule.RuleKey;
-import org.sonar.api.rule.RuleScope;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.java.Preconditions;
 import org.sonar.java.annotations.Beta;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
@@ -71,142 +62,6 @@ public interface CheckRegistrar {
    */
   default void register(RegistrarContext registrarContext, CheckFactory checkFactory) {
     register(registrarContext);
-  }
-
-  /**
-   * Context for checks registration.
-   */
-  class RegistrarContext {
-    private String repositoryKey;
-    private Iterable<Class<? extends JavaCheck>> mainCheckClassList;
-    private Iterable<Class<? extends JavaCheck>> testCheckClassList;
-
-    /**
-     * Registers java checks for a given repository.
-     * @param repositoryKey key of rule repository
-     * @param checkClasses classes of checks for main sources
-     * @param testCheckClasses classes of checks for test sources
-     */
-    public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses, Iterable<Class<? extends JavaCheck>> testCheckClasses) {
-      Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
-      this.repositoryKey = repositoryKey;
-      this.mainCheckClassList = checkClasses;
-      this.testCheckClassList = testCheckClasses;
-      registerMainChecks(repositoryKey, asCollection(checkClasses));
-      registerTestChecks(repositoryKey, asCollection(testCheckClasses));
-    }
-
-    /**
-     * getter for repository key.
-     * @return the repository key.
-     * @deprecated RegistrarContext should just forward the registration and not have any getters
-     */
-    @Deprecated(since = "7.25", forRemoval = true)
-    public String repositoryKey() {
-      return repositoryKey;
-    }
-
-    /**
-     * get main source check classes
-     * @return iterable of main checks classes
-     * @deprecated RegistrarContext should just forward the registration and not have any getters
-     */
-    @Deprecated(since = "7.25", forRemoval = true)
-    public Iterable<Class<? extends JavaCheck>> checkClasses() {
-      return mainCheckClassList;
-    }
-
-    /**
-     * get test source check classes
-     * @return iterable of test checks classes
-     * @deprecated RegistrarContext should just forward the registration and not have any getters
-     */
-    @Deprecated(since = "7.25", forRemoval = true)
-    public Iterable<Class<? extends JavaCheck>> testCheckClasses() {
-      return testCheckClassList;
-    }
-
-    /**
-     * Registers main code java checks for a given repository.
-     * @param repositoryKey key of rule repository
-     * @param javaCheckClassesAndInstances a collection of <code>Class<? extends JavaCheck></code> and
-     *        <code>JavaCheck></code> instances
-     */
-    public void registerMainChecks(String repositoryKey, Collection<?> javaCheckClassesAndInstances) {
-      // to be overridden
-    }
-
-    /**
-     * Register main code java checks which have already been initialized by a CheckFactory.
-     */
-    @Beta
-    public void registerMainChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
-      // to be overridden
-    }
-
-    /**
-     * Register test code java checks which have already been initialized by a CheckFactory.
-     */
-    @Beta
-    public void registerTestChecks(Checks<JavaCheck> checks, Collection<?> javaCheckClassesAndInstances){
-      // to be overridden
-    }
-
-    /**
-     * Registers test code java checks for a given repository.
-     * @param repositoryKey key of rule repository
-     * @param javaCheckClassesAndInstances a collection of <code>Class<? extends JavaCheck></code> and
-     *        <code>JavaCheck></code> instances
-     */
-    public void registerTestChecks(String repositoryKey, Collection<?> javaCheckClassesAndInstances) {
-      // to be overridden
-    }
-
-    /**
-     * Registers one main code check related to not one but a list of rules. The check will be active if at least one
-     * of the given rule key is active. In this context injection of @RuleProperty and auto instantiation of rules
-     * defined as template in RulesDefinition will not work. And the reportIssue mechanism will not be able to find the
-     * RuleKey automatically.
-     */
-    public void registerMainSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
-      // to be overridden
-    }
-
-    /**
-     * Registers a custom file scanner not related to any rule or repository.
-     * CheckRegistrars call this function to register a custom file scanner for execution during the analysis
-     * on all source files that match the given rule scope (MAIN, TEST or ALL).
-     * Custom file scanners reporting an issue will have no effect, since no rule is associated.
-     */
-    public void registerCustomFileScanner(RuleScope ruleScope, JavaFileScanner scanner) {
-      // to be overridden
-    }
-
-    /**
-     * Registers one test code check related to not one but a list of rules. The check will be active if at least one
-     * of the given rule key is active. In this context injection of @RuleProperty and auto instantiation of rules
-     * defined as template in RulesDefinition will not work.
-     */
-    public void registerTestSharedCheck(JavaCheck check, Collection<RuleKey> ruleKeys) {
-      // to be overridden
-    }
-
-    /**
-     * Cannot be used outside of Sonar Products. Registers rules compatible with the autoscan context.
-     * Note: It's possible to convert checkClass to RuleKey using:
-     * <pre>
-     *   RuleKey.of(repositoryKey, RuleAnnotationUtils.getRuleKey(checkClass))
-     * </pre>
-     */
-    public void registerAutoScanCompatibleRules(Collection<RuleKey> ruleKeys) {
-      // to be overridden
-    }
-
-    private static <T> Collection<T> asCollection(@Nullable Iterable<T> iterable) {
-      return iterable != null ?
-        StreamSupport.stream(iterable.spliterator(), false).toList() :
-        Collections.emptyList();
-    }
   }
 
 }

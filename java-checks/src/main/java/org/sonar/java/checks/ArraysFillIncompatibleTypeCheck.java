@@ -21,7 +21,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -129,8 +129,8 @@ public class ArraysFillIncompatibleTypeCheck extends IssuableSubscriptionVisitor
   private void reportMismatch(MethodInvocationTree mit, ExpressionTree arrayArg, Type arrayType, ExpressionTree incompatibleArg) {
     String message = String.format("An array of type \"%s\" cannot be filled with a value of type \"%s\".",
       arrayType.name(), incompatibleArg.symbolType().name());
-    List<JavaFileScannerContext.Location> secondaries = Collections.singletonList(
-      new JavaFileScannerContext.Location(String.format("Array of type \"%s\".", arrayType.name()), arrayArg)
+    List<JavaFileLocation> secondaries = Collections.singletonList(
+      new JavaFileLocation(String.format("Array of type \"%s\".", arrayType.name()), arrayArg)
     );
     reportIssue(ExpressionUtils.methodName(mit), message, secondaries, null);
   }

@@ -17,7 +17,7 @@
 package org.sonar.java.ast.visitors;
 
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -65,9 +65,9 @@ public class CognitiveComplexityVisitor extends BaseTreeVisitor {
     /**
      * Secondary locations related to the cognitive complexity nodes
      */
-    public final List<JavaFileScannerContext.Location> locations;
+    public final List<JavaFileLocation> locations;
 
-    public Result(int complexity, List<JavaFileScannerContext.Location> locations) {
+    public Result(int complexity, List<JavaFileLocation> locations) {
       this.complexity = complexity;
       this.locations = locations;
     }
@@ -77,7 +77,7 @@ public class CognitiveComplexityVisitor extends BaseTreeVisitor {
     }
   }
 
-  private final List<JavaFileScannerContext.Location> locations;
+  private final List<JavaFileLocation> locations;
   private final Set<Tree> ignored;
   private int complexity;
   private int nesting;
@@ -154,14 +154,14 @@ public class CognitiveComplexityVisitor extends BaseTreeVisitor {
   private void increaseComplexity(Tree tree, int increase) {
     complexity += increase;
     if (ignoreNesting) {
-      locations.add(new JavaFileScannerContext.Location("+1", tree));
+      locations.add(new JavaFileLocation("+1", tree));
       ignoreNesting = false;
     } else if (!ignored.contains(tree)) {
       String message = "+" + increase;
       if (increase > 1) {
         message += " (incl " + (increase - 1) + " for nesting)";
       }
-      locations.add(new JavaFileScannerContext.Location(message, tree));
+      locations.add(new JavaFileLocation(message, tree));
     }
   }
 

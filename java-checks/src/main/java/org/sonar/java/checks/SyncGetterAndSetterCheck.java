@@ -20,7 +20,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -95,7 +95,7 @@ public class SyncGetterAndSetterCheck extends IssuableSubscriptionVisitor {
         .forEach(pairMethod -> {
           String otherMethodName = methodTree.simpleName().name();
           reportIssue(pairMethod.simpleName(), "Synchronize this method to match the synchronization on \"" + otherMethodName + "\".",
-            Collections.singletonList(new JavaFileScannerContext.Location(otherMethodName + " method.", methodTree.simpleName())), null);
+            Collections.singletonList(new JavaFileLocation(otherMethodName + " method.", methodTree.simpleName())), null);
         });
     }
   }

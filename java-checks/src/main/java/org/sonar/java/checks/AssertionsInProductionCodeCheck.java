@@ -26,7 +26,7 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
@@ -77,9 +77,9 @@ public class AssertionsInProductionCodeCheck extends AbstractMethodDetection {
   public void leaveFile(JavaFileScannerContext context) {
     if (!assertions.isEmpty()) {
       final Tree primaryLocation = assertions.get(0);
-      List<Location> secondaryLocations = assertions.stream()
+      List<JavaFileLocation> secondaryLocations = assertions.stream()
         .skip(1)
-        .map(expr -> new Location("Assertion", expr))
+        .map(expr -> new JavaFileLocation("Assertion", expr))
         .toList();
       reportIssue(primaryLocation, "Remove this assertion from production code.", secondaryLocations, null);
     }

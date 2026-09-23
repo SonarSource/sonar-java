@@ -27,7 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -106,8 +106,8 @@ public class EqualsMismatchedMembersCheck extends IssuableSubscriptionVisitor {
         comparison.tree,
         String.format(ISSUE_MESSAGE, comparison.thisMember.displayName, comparison.otherMember.displayName),
         List.of(
-          new JavaFileScannerContext.Location(SECONDARY_THIS, comparison.thisMember.tree),
-          new JavaFileScannerContext.Location(SECONDARY_OTHER, comparison.otherMember.tree)),
+          new JavaFileLocation(SECONDARY_THIS, comparison.thisMember.tree),
+          new JavaFileLocation(SECONDARY_OTHER, comparison.otherMember.tree)),
         null);
     }
   }

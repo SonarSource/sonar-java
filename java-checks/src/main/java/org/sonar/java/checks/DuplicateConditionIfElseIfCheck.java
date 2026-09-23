@@ -20,6 +20,7 @@ import java.util.Collections;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -53,7 +54,7 @@ public class DuplicateConditionIfElseIfCheck extends BaseTreeVisitor implements 
           this,
           ifStatement.condition(),
           "This branch can not be reached because the condition duplicates a previous condition in the same sequence of \"if/else if\" statements",
-          Collections.singletonList(new JavaFileScannerContext.Location("Original", condition)),
+          Collections.singletonList(new JavaFileLocation("Original", condition)),
           null
         );
       }

@@ -28,24 +28,24 @@ class LocationTest {
   void testLocation() {
     String message = "message";
     Tree node = mock(Tree.class);
-    JavaFileScannerContext.Location location = new JavaFileScannerContext.Location(message, node);
-    assertThat(location.msg).isEqualTo(message);
-    assertThat(location.syntaxNode).isEqualTo(node);
+    JavaFileLocation location = new JavaFileLocation(message, node);
+    assertThat(location.msg()).isEqualTo(message);
+    assertThat(location.syntaxNode()).isEqualTo(node);
   }
 
   @Test
   void testEquality() {
     String message = "message";
     Tree node = mock(Tree.class);
-    JavaFileScannerContext.Location location = new JavaFileScannerContext.Location(message, node);
+    JavaFileLocation location = new JavaFileLocation(message, node);
 
     assertThat(location)
       // same message, same node
-      .isEqualTo(new JavaFileScannerContext.Location(message,node))
+      .isEqualTo(new JavaFileLocation(message,node))
       // same object
       .isEqualTo(location)
-      .isNotEqualTo(new JavaFileScannerContext.Location("msg", node))
-      .isNotEqualTo(new JavaFileScannerContext.Location(message, mock(Tree.class)))
+      .isNotEqualTo(new JavaFileLocation("msg", node))
+      .isNotEqualTo(new JavaFileLocation(message, mock(Tree.class)))
       .isNotEqualTo(null)
       .isNotEqualTo(new Object());
   }
@@ -54,11 +54,11 @@ class LocationTest {
   void testHashCode() {
     String message = "message";
     Tree node = mock(Tree.class);
-    JavaFileScannerContext.Location location = new JavaFileScannerContext.Location(message, node);
+    JavaFileLocation location = new JavaFileLocation(message, node);
 
     // same message, same node
-    assertThat(location).hasSameHashCodeAs(new JavaFileScannerContext.Location(message, node));
+    assertThat(location).hasSameHashCodeAs(new JavaFileLocation(message, node));
     // different location
-    assertThat(location.hashCode()).isNotEqualTo(new JavaFileScannerContext.Location("msg", node).hashCode());
+    assertThat(location.hashCode()).isNotEqualTo(new JavaFileLocation("msg", node).hashCode());
   }
 }

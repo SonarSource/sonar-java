@@ -19,7 +19,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
@@ -41,7 +41,7 @@ public class NestedEnumStaticCheck extends IssuableSubscriptionVisitor {
     ClassTree classTree = (ClassTree) tree;
     ModifierKeywordTree staticKeyword = ModifiersUtils.getModifier(classTree.modifiers(), Modifier.STATIC);
     if (staticKeyword != null) {
-      List<JavaFileScannerContext.Location> secondary = Collections.singletonList(new JavaFileScannerContext.Location("", classTree.declarationKeyword()));
+      List<JavaFileLocation> secondary = Collections.singletonList(new JavaFileLocation("", classTree.declarationKeyword()));
       reportIssue(staticKeyword, "Remove this redundant \"static\" qualifier; nested enum types are implicitly static.", secondary, null);
     }
   }

@@ -19,6 +19,7 @@ package org.sonar.java.checks;
 import java.util.Collections;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LineUtils;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Position;
@@ -93,7 +94,7 @@ public class IndentationAfterConditionalCheck extends BaseTreeVisitor implements
       Position.startOf(statement).column() > Position.startOf(startTree).column())) {
       context.reportIssue(this, startTree, endTree,
         "Use indentation to denote the code conditionally executed by this \"" + name + "\".",
-        Collections.singletonList(new JavaFileScannerContext.Location("", statement)), null);
+        Collections.singletonList(new JavaFileLocation("", statement)), null);
     }
   }
 }

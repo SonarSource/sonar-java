@@ -28,6 +28,7 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -99,9 +100,9 @@ public class ClassImportCouplingCheck extends AbstractCouplingChecker {
     }
   }
 
-  private List<JavaFileScannerContext.Location> getSecondaryLocations() {
+  private List<JavaFileLocation> getSecondaryLocations() {
     return secondaryLocations.stream()
-      .map(element -> new JavaFileScannerContext.Location("This class contributes to the tight class coupling.", element))
+      .map(element -> new JavaFileLocation("This class contributes to the tight class coupling.", element))
       .toList();
   }
 

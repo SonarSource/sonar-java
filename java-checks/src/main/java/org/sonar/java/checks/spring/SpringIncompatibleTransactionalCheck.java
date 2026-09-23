@@ -30,7 +30,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -140,8 +140,8 @@ public class SpringIncompatibleTransactionalCheck extends IssuableSubscriptionVi
     Set<String> incompatiblePropagation = INCOMPATIBLE_PROPAGATION_MAP.getOrDefault(callerPropagation, Collections.emptySet());
     if (incompatiblePropagation.contains(calleePropagation)) {
       String message = "\"" + calleeMethodSymbol.name() + "'s\" @Transactional requirement is incompatible with the one for this method.";
-      List<JavaFileScannerContext.Location> secondaryLocations = Collections.singletonList(
-        new JavaFileScannerContext.Location("Incompatible method definition.", ((MethodTree) calleeMethodSymbol.declaration()).simpleName()));
+      List<JavaFileLocation> secondaryLocations = Collections.singletonList(
+        new JavaFileLocation("Incompatible method definition.", ((MethodTree) calleeMethodSymbol.declaration()).simpleName()));
       reportIssue(ExpressionUtils.methodName(methodInvocation), message, secondaryLocations, null);
     }
   }

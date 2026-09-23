@@ -28,7 +28,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 
 public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
 
@@ -66,25 +66,25 @@ public class JavaIssueBuilderForTests extends InternalJavaIssueBuilder {
     reported = true;
   }
 
-  private static List<List<JavaFileScannerContext.Location>> toSingletonList(List<JavaFileScannerContext.Location> secondaries) {
+  private static List<List<JavaFileLocation>> toSingletonList(List<JavaFileLocation> secondaries) {
     return secondaries.stream()
       .map(Collections::singletonList)
       .toList();
   }
 
-  private static List<List<AnalyzerMessage>> listOfLocationsToListOfAnalyzerMessages(List<List<JavaFileScannerContext.Location>> locations, JavaCheck rule, InputFile inputFile) {
+  private static List<List<AnalyzerMessage>> listOfLocationsToListOfAnalyzerMessages(List<List<JavaFileLocation>> locations, JavaCheck rule, InputFile inputFile) {
     return locations.stream()
       .map(listOfLocations -> locationsToAnalyzerMessages(listOfLocations, rule, inputFile))
       .toList();
   }
 
-  private static List<AnalyzerMessage> locationsToAnalyzerMessages(List<JavaFileScannerContext.Location> locations, JavaCheck rule, InputFile inputFile) {
+  private static List<AnalyzerMessage> locationsToAnalyzerMessages(List<JavaFileLocation> locations, JavaCheck rule, InputFile inputFile) {
     return locations.stream()
       .map(location -> locationToAnalyzerMessage(location, rule, inputFile))
       .toList();
   }
 
-  private static AnalyzerMessage locationToAnalyzerMessage(JavaFileScannerContext.Location location, JavaCheck rule, InputFile inputFile) {
-    return new AnalyzerMessage(rule, inputFile, AnalyzerMessage.textSpanFor(location.syntaxNode), location.msg, 0);
+  private static AnalyzerMessage locationToAnalyzerMessage(JavaFileLocation location, JavaCheck rule, InputFile inputFile) {
+    return new AnalyzerMessage(rule, inputFile, AnalyzerMessage.textSpanFor(location.syntaxNode()), location.msg(), 0);
   }
 }

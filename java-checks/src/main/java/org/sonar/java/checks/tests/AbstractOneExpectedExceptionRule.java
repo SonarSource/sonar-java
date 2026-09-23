@@ -23,7 +23,7 @@ import java.util.Optional;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -162,9 +162,9 @@ public abstract class AbstractOneExpectedExceptionRule extends IssuableSubscript
     return !type.isSubtypeOf("java.lang.RuntimeException") && !type.isSubtypeOf("java.lang.Error");
   }
 
-  static List<JavaFileScannerContext.Location> secondaryLocations(List<Tree> methodInvocationTrees, String message) {
+  static List<JavaFileLocation> secondaryLocations(List<Tree> methodInvocationTrees, String message) {
     return methodInvocationTrees.stream()
-      .map(expr -> new JavaFileScannerContext.Location(message, expr))
+      .map(expr -> new JavaFileLocation(message, expr))
       .toList();
   }
 

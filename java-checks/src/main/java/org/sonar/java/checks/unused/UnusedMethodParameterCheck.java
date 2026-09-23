@@ -32,7 +32,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -116,9 +116,9 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
 
   private void reportUnusedParameters(MethodTree methodTree, List<IdentifierTree> unused) {
     IdentifierTree firstUnused = unused.get(0);
-    List<JavaFileScannerContext.Location> secondaryLocations = unused.stream()
+    List<JavaFileLocation> secondaryLocations = unused.stream()
       .skip(1)
-      .map(identifier -> new JavaFileScannerContext.Location(String.format(SECONDARY_MESSAGE_FORMAT, identifier.name()), identifier))
+      .map(identifier -> new JavaFileLocation(String.format(SECONDARY_MESSAGE_FORMAT, identifier.name()), identifier))
       .toList();
     String parameterNames = unused.stream().map(identifier -> "\"" + identifier.name() + "\"").collect(Collectors.joining(", "));
     QuickFixHelper.newIssue(context)

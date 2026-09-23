@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -154,16 +154,16 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static List<JavaFileScannerContext.Location> secondaryLocations(@Nullable ExpressionTree initializerOrExpression,
+  private static List<JavaFileLocation> secondaryLocations(@Nullable ExpressionTree initializerOrExpression,
     List<AssignmentExpressionTree> reassignments,
     String identifierName) {
-    List<JavaFileScannerContext.Location> secondaryLocations = reassignments.stream()
-      .map(assignment -> new JavaFileScannerContext.Location("SQL Query is assigned to '" + getVariableName(assignment) + "'",
+    List<JavaFileLocation> secondaryLocations = reassignments.stream()
+      .map(assignment -> new JavaFileLocation("SQL Query is assigned to '" + getVariableName(assignment) + "'",
         assignment.expression()))
       .collect(Collectors.toCollection(ArrayList::new));
 
     if (initializerOrExpression != null) {
-      secondaryLocations.add(new JavaFileScannerContext.Location("SQL Query is dynamically formatted and assigned to '" + identifierName + "'",
+      secondaryLocations.add(new JavaFileLocation("SQL Query is dynamically formatted and assigned to '" + identifierName + "'",
         initializerOrExpression));
     }
     return secondaryLocations;

@@ -23,7 +23,7 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -88,7 +88,7 @@ public class MathClampRangeCheck extends AbstractMethodDetection implements Java
     }
     reportIssue(
       exprA, String.format("Change the \"clamp(value,min,max)\"'s arguments so \"%s\" is not equals to \"%s\".", nameA, nameB),
-      List.of(new JavaFileScannerContext.Location(nameB + " argument", exprB)),
+      List.of(new JavaFileLocation(nameB + " argument", exprB)),
       null);
     return true;
   }
@@ -101,7 +101,7 @@ public class MathClampRangeCheck extends AbstractMethodDetection implements Java
       .forRule(this)
       .onTree(exprA)
       .withMessage("Change the \"clamp(value,min,max)\"'s arguments so \"%s\" is not always less than \"%s\".", nameA, nameB)
-      .withSecondaries(new JavaFileScannerContext.Location(nameB + " argument", exprB))
+      .withSecondaries(new JavaFileLocation(nameB + " argument", exprB))
       .withQuickFix(() -> JavaQuickFix.newQuickFix("Swap \"" + nameA + "\" and \"" + nameB + "\" arguments")
         .addTextEdit(JavaTextEdit.replaceTree(exprA, QuickFixHelper.contentForTree(exprB, context)))
         .addTextEdit(JavaTextEdit.replaceTree(exprB, QuickFixHelper.contentForTree(exprA, context)))

@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -67,11 +67,11 @@ public class LocalVariablesShouldNotSpanSwitchCaseGroupsCheck extends IssuableSu
       return;
     }
 
-    List<JavaFileScannerContext.Location> secondaries = new ArrayList<>();
+    List<JavaFileLocation> secondaries = new ArrayList<>();
     for (int index = firstLaterGroup; index < caseGroups.size(); index++) {
       IdentifierTree firstAccess = firstAccessTo(symbol, caseGroups.get(index));
       if (firstAccess != null) {
-        secondaries.add(new JavaFileScannerContext.Location(SECONDARY_MESSAGE, firstAccess));
+        secondaries.add(new JavaFileLocation(SECONDARY_MESSAGE, firstAccess));
       }
     }
     if (!secondaries.isEmpty()) {

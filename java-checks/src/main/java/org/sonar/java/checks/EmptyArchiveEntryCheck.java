@@ -25,7 +25,7 @@ import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -98,7 +98,7 @@ public class EmptyArchiveEntryCheck extends IssuableSubscriptionVisitor {
       MethodInvocationTree putNextEntry = pendingEntries.remove(receiver);
       if (putNextEntry != null) {
         reportIssue(ExpressionUtils.methodName(mit), "Write content to this archive entry; it is empty.",
-          Collections.singletonList(new JavaFileScannerContext.Location("Entry opened here", ExpressionUtils.methodName(putNextEntry))), null);
+          Collections.singletonList(new JavaFileLocation("Entry opened here", ExpressionUtils.methodName(putNextEntry))), null);
       }
     } else if (WRITE.matches(mit)) {
       pendingEntries.remove(receiver);

@@ -25,7 +25,7 @@ import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -73,18 +73,18 @@ public class ControllerWithRestControllerReplacementCheck extends IssuableSubscr
       }
     }
 
-    var secondaryLocations = new ArrayList<JavaFileScannerContext.Location>();
+    var secondaryLocations = new ArrayList<JavaFileLocation>();
     List<JavaTextEdit> edits = new ArrayList<>();
 
     responseBodyOnMethods
       .forEach(ann -> {
-        secondaryLocations.add(new JavaFileScannerContext.Location("Remove this \"@ResponseBody\" annotation.", ann));
+        secondaryLocations.add(new JavaFileLocation("Remove this \"@ResponseBody\" annotation.", ann));
         edits.add(JavaTextEdit.removeTree(ann));
       });
 
     classTree.modifiers().annotations().stream()
       .filter(ControllerWithRestControllerReplacementCheck::isResponseBody)
-      .forEach(annotationTree -> secondaryLocations.add(new JavaFileScannerContext.Location("Remove this \"@ResponseBody\" annotation.", annotationTree)));
+      .forEach(annotationTree -> secondaryLocations.add(new JavaFileLocation("Remove this \"@ResponseBody\" annotation.", annotationTree)));
 
     if (secondaryLocations.isEmpty()) {
       return;

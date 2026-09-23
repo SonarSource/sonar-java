@@ -22,12 +22,12 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.java.regex.RegexCheck;
+import org.sonar.java.regex.RegexIssueLocation;
 import org.sonar.java.regex.RegexParserTestUtils;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.java.reporting.FluentReporting;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.SourceMap;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -195,9 +195,9 @@ class DefaultJavaFileScannerContextTest extends DefaultInputFileScannerContextTe
     Tree firstMember = tree.members().get(0);
     Tree secondMember = tree.members().get(1);
 
-    ArrayList<Location> secondary = new ArrayList<>();
-    secondary.add(new JavaFileScannerContext.Location("secondary", firstMember));
-    secondary.add(new JavaFileScannerContext.Location("secondary", secondMember));
+    ArrayList<JavaFileLocation> secondary = new ArrayList<>();
+    secondary.add(new JavaFileLocation("secondary", firstMember));
+    secondary.add(new JavaFileLocation("secondary", secondMember));
 
     context.reportIssue(CHECK, tree.simpleName(), "msg", secondary, null);
 
@@ -262,7 +262,7 @@ class DefaultJavaFileScannerContextTest extends DefaultInputFileScannerContextTe
     RepetitionTree y23 = (RepetitionTree) disjunctionTree.getAlternatives().get(1);
     CurlyBraceQuantifier rep23 = (CurlyBraceQuantifier) y23.getQuantifier();
 
-    RegexCheck.RegexIssueLocation secondary = new RegexCheck.RegexIssueLocation(rep42, "regexSecondary");
+    RegexIssueLocation secondary = new RegexIssueLocation(rep42, "regexSecondary");
     context.reportIssue(regexCheck, rep23, "regexMsg", null, Collections.singletonList(secondary));
 
     assertThat(reportedMessage.getMessage()).isEqualTo("regexMsg");

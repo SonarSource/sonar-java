@@ -21,6 +21,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -54,9 +55,9 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private void reportIssueWithSecondaries(JavaFileScannerContext context) {
-    List<JavaFileScannerContext.Location> secondaries = reportedTrees.stream()
+    List<JavaFileLocation> secondaries = reportedTrees.stream()
       .skip(1)
-      .map(tree -> new JavaFileScannerContext.Location("Replace also this \"Sun\" reference.", tree))
+      .map(tree -> new JavaFileLocation("Replace also this \"Sun\" reference.", tree))
       .toList();
 
     int effortToFix = reportedTrees.size();

@@ -26,11 +26,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rule.RuleScope;
 import org.sonar.api.rules.RuleAnnotationUtils;
-import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.RegistrarContext;
 
-public class TestCheckRegistrarContext extends CheckRegistrar.RegistrarContext {
+public class TestCheckRegistrarContext extends RegistrarContext {
 
   public final List<Class<? extends JavaCheck>> mainCheckClasses = new ArrayList<>();
   public final List<JavaCheck> mainCheckInstances = new ArrayList<>();

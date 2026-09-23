@@ -17,7 +17,6 @@
 package org.sonar.plugins.java.api;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.sonar.java.annotations.Beta;
@@ -69,10 +68,10 @@ public interface JavaFileScannerContext extends InputFileScannerContext {
    * @param javaCheck check raising the issue
    * @param tree syntax node on which to raise the issue.
    * @param message Message to display to the user.
-   * @param secondaryLocations List of {@link Location} to display secondary location for the issue.
+   * @param secondaryLocations List of {@link JavaFileLocation} to display secondary location for the issue.
    * @param cost computed remediation cost if applicable, null if not.
    */
-  void reportIssue(JavaCheck javaCheck, Tree tree, String message, List<Location> secondaryLocations, @Nullable Integer cost);
+  void reportIssue(JavaCheck javaCheck, Tree tree, String message, List<JavaFileLocation> secondaryLocations, @Nullable Integer cost);
 
 
   /**
@@ -80,10 +79,10 @@ public interface JavaFileScannerContext extends InputFileScannerContext {
    * @param javaCheck check raising the issue
    * @param tree syntax node on which to raise the issue.
    * @param message Message to display to the user.
-   * @param flows List of list of {@link Location} to display flows for the issue.
+   * @param flows List of list of {@link JavaFileLocation} to display flows for the issue.
    * @param cost computed remediation cost if applicable, null if not.
    */
-  void reportIssueWithFlow(JavaCheck javaCheck, Tree tree, String message, Iterable<List<Location>> flows, @Nullable Integer cost);
+  void reportIssueWithFlow(JavaCheck javaCheck, Tree tree, String message, Iterable<List<JavaFileLocation>> flows, @Nullable Integer cost);
 
   /**
    * Report an issue.
@@ -100,10 +99,10 @@ public interface JavaFileScannerContext extends InputFileScannerContext {
    * @param startTree syntax node on which to start the highlighting of the issue.
    * @param endTree syntax node on which to end the highlighting of the issue.
    * @param message Message to display to the user.
-   * @param secondaryLocations List of {@link Location} to display secondary location for the issue.
+   * @param secondaryLocations List of {@link JavaFileLocation} to display secondary location for the issue.
    * @param cost computed remediation cost if applicable, null if not.
    */
-  void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondaryLocations, @Nullable Integer cost);
+  void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<JavaFileLocation> secondaryLocations, @Nullable Integer cost);
 
   /**
    * Lines of the currently analyzed file.
@@ -116,43 +115,6 @@ public interface JavaFileScannerContext extends InputFileScannerContext {
    * @return the file content as a String.
    */
   String getFileContent();
-
-  /**
-   * Message and syntaxNode for a secondary location.
-   */
-  class Location {
-    /**
-     * Message of the secondary location.
-     */
-    public final String msg;
-    /**
-     * Syntax node on which to raise the secondary location.
-     */
-    public final Tree syntaxNode;
-
-    public Location(String msg, Tree syntaxNode) {
-      this.msg = msg;
-      this.syntaxNode = Objects.requireNonNull(syntaxNode);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      Location location = (Location) o;
-      return Objects.equals(msg, location.msg) &&
-        Objects.equals(syntaxNode, location.syntaxNode);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(msg, syntaxNode);
-    }
-  }
 
   /**
    * Return JSR 45 source map for current input file

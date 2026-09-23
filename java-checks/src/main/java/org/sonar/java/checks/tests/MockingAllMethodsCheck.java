@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -91,8 +91,8 @@ public class MockingAllMethodsCheck extends AbstractMethodDetection {
             .filter(MockingAllMethodsCheck::isNonPrivateMethod)
             .collect(Collectors.toSet());
           if (declaredMethods.size() > 1 && mockedMethods.containsAll(declaredMethods)) {
-            List<JavaFileScannerContext.Location> secondaries = mockedMethods.stream()
-              .map(method -> new JavaFileScannerContext.Location("Method mocked here", whenCalls.get(method)))
+            List<JavaFileLocation> secondaries = mockedMethods.stream()
+              .map(method -> new JavaFileLocation("Method mocked here", whenCalls.get(method)))
               .toList();
             reportIssue(declaration, "Refactor this test instead of mocking every non-private member of this class.", secondaries, null);
           }

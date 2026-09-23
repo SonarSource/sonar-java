@@ -33,7 +33,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.JavaFileLocation;
 
 @Rule(key = "S2139")
 public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
@@ -61,19 +61,19 @@ public class LoggedRethrownExceptionsCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     CatchTree catchTree = (CatchTree) tree;
     boolean isLogging = false;
-    List<Location> secondaryLocations = new ArrayList<>();
+    List<JavaFileLocation> secondaryLocations = new ArrayList<>();
     for (StatementTree statementTree : catchTree.block().body()) {
       IdentifierTree exceptionIdentifier = catchTree.parameter().simpleName();
       if (isLogging && statementTree.is(Tree.Kind.THROW_STATEMENT)) {
         ExpressionTree thrown = ((ThrowStatementTree) statementTree).expression();
         if ((!thrown.is(Tree.Kind.NEW_CLASS) || isSameExceptionType((NewClassTree) thrown, catchTree)) && isExceptionUsed(exceptionIdentifier, thrown)) {
-          secondaryLocations.add(new Location("Thrown exception.", thrown));
+          secondaryLocations.add(new JavaFileLocation("Thrown exception.", thrown));
           reportIssue(catchTree.parameter(), MESSAGE, secondaryLocations, 0);
           return;
         }
       }
       if (isLoggingMethod(statementTree, exceptionIdentifier)) {
-        secondaryLocations.add(new Location("Logging statement.", statementTree));
+        secondaryLocations.add(new JavaFileLocation("Logging statement.", statementTree));
         isLogging = true;
       }
     }

@@ -21,7 +21,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
@@ -49,8 +49,8 @@ public class StaticImportCountCheck extends IssuableSubscriptionVisitor {
     int staticImportsCount = staticImports.size();
 
     if (staticImportsCount > threshold) {
-      List<JavaFileScannerContext.Location> flow = staticImports.stream()
-        .map(importStatement -> new JavaFileScannerContext.Location("+1", importStatement))
+      List<JavaFileLocation> flow = staticImports.stream()
+        .map(importStatement -> new JavaFileLocation("+1", importStatement))
         .toList();
       String message = String.format("Reduce the number of \"static\" imports in this class from %d to the maximum allowed %d.", staticImportsCount, threshold);
       reportIssue(staticImports.get(0), message, flow, null);

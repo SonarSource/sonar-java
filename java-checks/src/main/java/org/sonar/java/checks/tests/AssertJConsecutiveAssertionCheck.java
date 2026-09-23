@@ -27,7 +27,7 @@ import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -174,8 +174,8 @@ public class AssertJConsecutiveAssertionCheck extends IssuableSubscriptionVisito
       return ExpressionUtils.methodName(mit);
     }
 
-    JavaFileScannerContext.Location toSecondaryLocation() {
-      return new JavaFileScannerContext.Location("Other assertThat", methodName());
+    JavaFileLocation toSecondaryLocation() {
+      return new JavaFileLocation("Other assertThat", methodName());
     }
   }
 

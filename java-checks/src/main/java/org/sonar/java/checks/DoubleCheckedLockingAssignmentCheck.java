@@ -22,7 +22,7 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -140,9 +140,9 @@ public class DoubleCheckedLockingAssignmentCheck extends IssuableSubscriptionVis
       // cut the visit
     }
 
-    List<JavaFileScannerContext.Location> locations() {
+    List<JavaFileLocation> locations() {
       return usages.stream()
-        .map(u -> new JavaFileScannerContext.Location("Usage after assignment", u))
+        .map(u -> new JavaFileLocation("Usage after assignment", u))
         .toList();
     }
   }

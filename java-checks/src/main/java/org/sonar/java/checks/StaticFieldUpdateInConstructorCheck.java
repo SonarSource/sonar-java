@@ -19,7 +19,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -64,7 +64,7 @@ public class StaticFieldUpdateInConstructorCheck extends IssuableSubscriptionVis
       Symbol staticField = identifierTree.symbol();
       reportIssue(identifierTree,
         "Remove this assignment of \"" + staticField.name() + "\".",
-        Collections.singletonList(new JavaFileScannerContext.Location("Static field declaration.", staticField.declaration())),
+        Collections.singletonList(new JavaFileLocation("Static field declaration.", staticField.declaration())),
         null);
     });
 

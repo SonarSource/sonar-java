@@ -73,13 +73,14 @@ import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonar.plugins.java.api.RegistrarContext;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.plugin.api.SonarLintRuntime;
 
 @ScannerSide
 @SonarLintSide
-public class SonarComponents extends CheckRegistrar.RegistrarContext {
+public class SonarComponents extends RegistrarContext {
 
   private static final Logger LOG = LoggerFactory.getLogger(SonarComponents.class);
   private static final int LOGGED_MAX_NUMBER_UNDEFINED_TYPES = 50;

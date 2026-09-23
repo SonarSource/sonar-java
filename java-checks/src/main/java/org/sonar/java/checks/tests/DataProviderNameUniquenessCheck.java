@@ -23,7 +23,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -100,8 +100,8 @@ public class DataProviderNameUniquenessCheck extends IssuableSubscriptionVisitor
   }
 
   private void reportDuplicate(IdentifierTree duplicate, IdentifierTree first) {
-    List<JavaFileScannerContext.Location> secondaryLocations = new ArrayList<>();
-    secondaryLocations.add(new JavaFileScannerContext.Location(
+    List<JavaFileLocation> secondaryLocations = new ArrayList<>();
+    secondaryLocations.add(new JavaFileLocation(
       "First data provider with this name", first));
 
     reportIssue(duplicate, ISSUE_MESSAGE, secondaryLocations, null);

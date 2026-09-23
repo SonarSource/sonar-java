@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.DependencyVersionAware;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -75,7 +75,7 @@ public class SpringComposedRequestMappingCheck extends IssuableSubscriptionVisit
         if (preferredMethod != null) {
           reportIssue(annotation.annotationType(),
             "Replace \"@RequestMapping(method = RequestMethod." + currentMethod + ")\" with \"" + preferredMethod + "\"",
-            Collections.singletonList(new JavaFileScannerContext.Location("", requestMethod)),
+            Collections.singletonList(new JavaFileLocation("", requestMethod)),
             null);
         }
       }

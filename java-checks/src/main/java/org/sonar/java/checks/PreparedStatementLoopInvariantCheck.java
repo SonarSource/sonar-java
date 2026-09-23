@@ -27,7 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.TreeHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -77,7 +77,7 @@ public class PreparedStatementLoopInvariantCheck extends IssuableSubscriptionVis
 
   private void reportIfLoopInvariant(Set<String> declaredOrAssignedLocals, Candidate candidate) {
     if (isLoopInvariant(declaredOrAssignedLocals, candidate)) {
-      var secondaryLocation = new JavaFileScannerContext.Location(
+      var secondaryLocation = new JavaFileLocation(
         "Enclosing loop",
         Objects.requireNonNull(candidate.enclosingLoop)
       );

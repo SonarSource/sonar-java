@@ -24,7 +24,7 @@ import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -303,7 +303,7 @@ public class AssertionTypesCheck extends IssuableSubscriptionVisitor {
     reportIssue(
       expected.expression,
       "Change the assertion arguments to not compare dissimilar types.",
-      Collections.singletonList(new JavaFileScannerContext.Location("Actual", actual.expression)),
+      Collections.singletonList(new JavaFileLocation("Actual", actual.expression)),
       null);
   }
 

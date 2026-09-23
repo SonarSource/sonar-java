@@ -25,6 +25,7 @@ import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
@@ -160,9 +161,9 @@ public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implement
       TryStatementTree tryStatementTree = withinTry.pop();
       List<Tree> secondaryTrees = toReport.pop();
       if (!secondaryTrees.isEmpty()) {
-        List<JavaFileScannerContext.Location> secondary = new ArrayList<>();
+        List<JavaFileLocation> secondary = new ArrayList<>();
         for (Tree autoCloseable : secondaryTrees) {
-          secondary.add(new JavaFileScannerContext.Location("AutoCloseable resource", autoCloseable));
+          secondary.add(new JavaFileLocation("AutoCloseable resource", autoCloseable));
         }
         reportIssue(tryStatementTree.tryKeyword(),
           "Change this \"try\" to a try-with-resources." + context.getJavaVersion().java7CompatibilityMessage(), secondary, null);

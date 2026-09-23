@@ -22,7 +22,7 @@ import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -65,10 +65,10 @@ public class AssertionInTryCatchCheck extends IssuableSubscriptionVisitor {
   }
 
   private class TryBodyVisitor extends BaseTreeVisitor {
-    private final List<JavaFileScannerContext.Location> secondaryLocation;
+    private final List<JavaFileLocation> secondaryLocation;
 
     public TryBodyVisitor(VariableTree catchTree) {
-      this.secondaryLocation = Collections.singletonList(new JavaFileScannerContext.Location(
+      this.secondaryLocation = Collections.singletonList(new JavaFileLocation(
         "This parameter will catch the AssertionError",
         catchTree.type()));
     }

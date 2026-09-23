@@ -23,7 +23,7 @@ import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -78,12 +78,12 @@ public class TestAnnotationWithExpectedExceptionCheck extends IssuableSubscripti
 
   private static class AssertionCollector extends BaseTreeVisitor {
 
-    private final List<JavaFileScannerContext.Location> assertions = new ArrayList<>();
+    private final List<JavaFileLocation> assertions = new ArrayList<>();
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
       if (ASSERTIONS_METHOD_MATCHER.matches(methodInvocation)) {
-        assertions.add(new JavaFileScannerContext.Location(
+        assertions.add(new JavaFileLocation(
           "Assertion in method with expected exception",
           ExpressionUtils.methodName(methodInvocation)
         ));

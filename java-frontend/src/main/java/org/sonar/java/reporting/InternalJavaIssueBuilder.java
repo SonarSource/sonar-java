@@ -34,7 +34,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.java.Preconditions;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilder {
@@ -57,9 +57,9 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   private AnalyzerMessage.TextSpan textSpan;
   private String message;
   @Nullable
-  private List<JavaFileScannerContext.Location> secondaries;
+  private List<JavaFileLocation> secondaries;
   @Nullable
-  private List<List<JavaFileScannerContext.Location>> flows;
+  private List<List<JavaFileLocation>> flows;
   @Nullable
   private Integer cost;
   private final List<Supplier<List<JavaQuickFix>>> quickFixes = new ArrayList<>();
@@ -135,12 +135,12 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
-  public final InternalJavaIssueBuilder withSecondaries(JavaFileScannerContext.Location... secondaries) {
+  public final InternalJavaIssueBuilder withSecondaries(JavaFileLocation... secondaries) {
     return withSecondaries(Arrays.asList(secondaries));
   }
 
   @Override
-  public final InternalJavaIssueBuilder withSecondaries(List<JavaFileScannerContext.Location> secondaries) {
+  public final InternalJavaIssueBuilder withSecondaries(List<JavaFileLocation> secondaries) {
     requiresValueToBeSet(this.message, MESSAGE_NAME);
     requiresValueNotToBeSet(this.flows, FLOWS_NAME, SECONDARIES_NAME);
     requiresSetOnlyOnce(this.secondaries, SECONDARIES_NAME);
@@ -150,7 +150,7 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   @Override
-  public final InternalJavaIssueBuilder withFlows(List<List<JavaFileScannerContext.Location>> flows) {
+  public final InternalJavaIssueBuilder withFlows(List<List<JavaFileLocation>> flows) {
     requiresValueToBeSet(this.message, MESSAGE_NAME);
     requiresValueNotToBeSet(this.secondaries, SECONDARIES_NAME, FLOWS_NAME);
     requiresSetOnlyOnce(this.flows, FLOWS_NAME);
@@ -222,12 +222,12 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
     }
 
     if (flows != null) {
-      for (List<JavaFileScannerContext.Location> flow : flows) {
+      for (List<JavaFileLocation> flow : flows) {
         newIssue.addFlow(flow.stream()
           .map(location -> newIssue.newLocation()
             .on(inputFile)
             .at(range(inputFile, location))
-            .message(location.msg))
+            .message(location.msg()))
           .toList());
       }
     }
@@ -277,8 +277,8 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
     }
   }
 
-  private static TextRange range(InputFile file, JavaFileScannerContext.Location location) {
-    return rangeFromTextSpan(file, AnalyzerMessage.textSpanFor(location.syntaxNode));
+  private static TextRange range(InputFile file, JavaFileLocation location) {
+    return rangeFromTextSpan(file, AnalyzerMessage.textSpanFor(location.syntaxNode()));
   }
 
   private static TextRange rangeFromTextSpan(InputFile file, AnalyzerMessage.TextSpan textSpan) {
@@ -305,11 +305,11 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
     return Optional.ofNullable(cost);
   }
 
-  public Optional<List<JavaFileScannerContext.Location>> secondaries() {
+  public Optional<List<JavaFileLocation>> secondaries() {
     return Optional.ofNullable(secondaries);
   }
 
-  public Optional<List<List<JavaFileScannerContext.Location>>> flows() {
+  public Optional<List<List<JavaFileLocation>>> flows() {
     return Optional.ofNullable(flows);
   }
 

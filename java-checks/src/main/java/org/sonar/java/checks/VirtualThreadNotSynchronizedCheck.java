@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -67,7 +67,7 @@ public class VirtualThreadNotSynchronizedCheck extends IssuableSubscriptionVisit
     reportIssue(
       tree.methodSelect(),
       "Use a platform thread instead of a virtual thread",
-      List.of(new JavaFileScannerContext.Location("synchronized", secondaryLocation)),
+      List.of(new JavaFileLocation("synchronized", secondaryLocation)),
       null
     );
   }

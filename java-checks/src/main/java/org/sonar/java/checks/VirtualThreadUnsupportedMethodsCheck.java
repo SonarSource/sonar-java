@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -78,7 +78,7 @@ public class VirtualThreadUnsupportedMethodsCheck extends AbstractMethodDetectio
         reportIssue(
           memberSelect.identifier(),
           String.format(ISSUE_MESSAGE, memberSelect.identifier().name()),
-          List.of(new JavaFileScannerContext.Location(SECONDARY_LOCATION_ISSUE_MESSAGE,
+          List.of(new JavaFileLocation(SECONDARY_LOCATION_ISSUE_MESSAGE,
             ExpressionUtils.methodName(virtualThreadExpression.get()))),
           null);
       }

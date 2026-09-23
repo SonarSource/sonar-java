@@ -20,7 +20,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -80,16 +80,16 @@ public class SpringCacheableWithCachePutCheck extends IssuableSubscriptionVisito
     return isAnnotatedWithCachePut(symbol) && isAnnotatedWithCacheable(symbol);
   }
 
-  private static List<JavaFileScannerContext.Location> getSecondaryLocations(Symbol symbol) {
+  private static List<JavaFileLocation> getSecondaryLocations(Symbol symbol) {
     SymbolMetadata symbolMetadata = symbol.metadata();
     return symbolMetadata.annotations().stream()
       .filter(annotation ->
         annotation.symbol().type().is(CACHEABLE_FQN) || annotation.symbol().type().is(CACHE_PUT_FQN))
-      .map(annotation -> new JavaFileScannerContext.Location(annotation.symbol().name(), symbolMetadata.findAnnotationTree(annotation)))
+      .map(annotation -> new JavaFileLocation(annotation.symbol().name(), symbolMetadata.findAnnotationTree(annotation)))
       .collect(Collectors.toList());
   }
 
-  private static List<JavaFileScannerContext.Location> getSecondaryLocations(Symbol first, Symbol second) {
+  private static List<JavaFileLocation> getSecondaryLocations(Symbol first, Symbol second) {
     var locations = getSecondaryLocations(first);
     locations.addAll(getSecondaryLocations(second));
     return locations;

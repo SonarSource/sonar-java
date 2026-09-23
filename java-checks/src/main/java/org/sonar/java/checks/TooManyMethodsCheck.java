@@ -21,7 +21,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -65,8 +65,8 @@ public class TooManyMethodsCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    List<JavaFileScannerContext.Location> secondary = methods.stream()
-      .map(method -> new JavaFileScannerContext.Location("Method + 1", method.simpleName()))
+    List<JavaFileLocation> secondary = methods.stream()
+      .map(method -> new JavaFileLocation("Method + 1", method.simpleName()))
       .toList();
 
     TypeTree reportTree = ExpressionsHelper.reportOnClassTree(classTree);

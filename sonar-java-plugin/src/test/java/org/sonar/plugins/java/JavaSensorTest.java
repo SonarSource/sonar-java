@@ -68,6 +68,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.JspCodeVisitor;
+import org.sonar.plugins.java.api.RegistrarContext;
 import org.sonar.scanner.plugin.api.impl.config.MapSettings;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestFileSystem;
 import org.sonar.scanner.plugin.api.impl.fs.DefaultInputFile;

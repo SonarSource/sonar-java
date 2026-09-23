@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -55,17 +55,17 @@ public class SpringConstructorInjectionCheck extends IssuableSubscriptionVisitor
 
       if (!toReport.isEmpty()) {
         int cost = toReport.size();
-        List<JavaFileScannerContext.Location> secondaries = new ArrayList<>();
+        List<JavaFileLocation> secondaries = new ArrayList<>();
 
         // find constructor
         classTree.members().stream()
           .filter(m -> m.is(Tree.Kind.CONSTRUCTOR))
           .map(m -> ((MethodTree) m).simpleName())
           .findFirst()
-          .map(id -> new JavaFileScannerContext.Location("Constructor where you can inject these fields.", id))
+          .map(id -> new JavaFileLocation("Constructor where you can inject these fields.", id))
           .ifPresent(secondaries::add);
 
-        toReport.stream().skip(1).map(i -> new JavaFileScannerContext.Location("Also remove this annotation.", i)).forEach(secondaries::add);
+        toReport.stream().skip(1).map(i -> new JavaFileLocation("Also remove this annotation.", i)).forEach(secondaries::add);
 
         reportIssue(toReport.get(0), "Remove this annotation and use constructor injection instead.", secondaries, cost);
       }

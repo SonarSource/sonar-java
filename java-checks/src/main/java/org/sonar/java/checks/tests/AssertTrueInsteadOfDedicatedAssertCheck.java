@@ -20,10 +20,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -106,7 +106,7 @@ public class AssertTrueInsteadOfDedicatedAssertCheck extends AbstractMethodDetec
     replacementAssertionOpt.ifPresent(replacementAssertion -> reportIssue(
       problematicAssertionCallIdentifier,
       replacementAssertion.useInsteadMessage,
-      Collections.singletonList(new JavaFileScannerContext.Location(replacementAssertion.secondaryExplanationMessage, argumentExpression)),
+      Collections.singletonList(new JavaFileLocation(replacementAssertion.secondaryExplanationMessage, argumentExpression)),
       null));
   }
 

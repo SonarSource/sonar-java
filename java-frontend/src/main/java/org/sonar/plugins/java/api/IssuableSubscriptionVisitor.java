@@ -107,11 +107,11 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
    *
    * @param tree    syntax node on which to raise the issue.
    * @param message Message to display to the user.
-   * @param flow    List of {@link JavaFileScannerContext.Location} to display secondary locations describing the flow leading to the issue.
+   * @param flow    List of {@link JavaFileLocation} to display secondary locations describing the flow leading to the issue.
    *                Empty list if the issue does not requires secondary location.
    * @param cost    computed remediation cost if applicable, null if not.
    */
-  public void reportIssue(Tree tree, String message, List<JavaFileScannerContext.Location> flow, @Nullable Integer cost) {
+  public void reportIssue(Tree tree, String message, List<JavaFileLocation> flow, @Nullable Integer cost) {
     context.reportIssue(this, tree, message, flow, cost);
   }
 
@@ -132,11 +132,11 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
    * @param startTree syntax node on which to start the highlighting of the issue.
    * @param endTree   syntax node on which to end the highlighting of the issue.
    * @param message   Message to display to the user.
-   * @param flow      List of {@link JavaFileScannerContext.Location} to display secondary locations describing the flow leading to the issue.
+   * @param flow      List of {@link JavaFileLocation} to display secondary locations describing the flow leading to the issue.
    *                  Empty list if the issue does not requires secondary location.
    * @param cost      computed remediation cost if applicable, null if not.
    */
-  public void reportIssue(Tree startTree, Tree endTree, String message, List<JavaFileScannerContext.Location> flow, @Nullable Integer cost) {
+  public void reportIssue(Tree startTree, Tree endTree, String message, List<JavaFileLocation> flow, @Nullable Integer cost) {
     context.reportIssue(this, startTree, endTree, message, flow, cost);
   }
 

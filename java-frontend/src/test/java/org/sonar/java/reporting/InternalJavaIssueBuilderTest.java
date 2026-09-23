@@ -54,7 +54,7 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.model.JParserTestUtils;
 import org.sonar.java.testing.ThreadLocalLogTester;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -173,8 +173,8 @@ class InternalJavaIssueBuilderTest {
     builder.forRule(CHECK)
       .onTree(tree.simpleName())
       .withMessage("msg")
-      .withSecondaries(new JavaFileScannerContext.Location("secondary1", firstMember),
-        new JavaFileScannerContext.Location("secondary2", secondMember))
+      .withSecondaries(new JavaFileLocation("secondary1", firstMember),
+        new JavaFileLocation("secondary2", secondMember))
       .report();
 
     Collection<Issue> issues = sensorContextTester.allIssues();
@@ -207,8 +207,8 @@ class InternalJavaIssueBuilderTest {
       .withFlows(
         Collections.singletonList(
           Arrays.asList(
-            new JavaFileScannerContext.Location("location1", firstMember),
-            new JavaFileScannerContext.Location("location2", secondMember)
+            new JavaFileLocation("location1", firstMember),
+            new JavaFileLocation("location2", secondMember)
           )
         )
       ).report();
@@ -325,13 +325,13 @@ class InternalJavaIssueBuilderTest {
   void test_cannot_set_flow_after_secondary() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
     Tree firstMember = tree.members().get(0);
-    JavaFileScannerContext.Location location = new JavaFileScannerContext.Location("location1", firstMember);
+    JavaFileLocation location = new JavaFileLocation("location1", firstMember);
 
     builder = builder.forRule(CHECK)
       .onTree(tree.simpleName())
       .withMessage("msg")
       .withSecondaries(location);
-    List<List<JavaFileScannerContext.Location>> flows = Collections.singletonList(Collections.singletonList(location));
+    List<List<JavaFileLocation>> flows = Collections.singletonList(Collections.singletonList(location));
     assertThatThrownBy(() -> builder.withFlows(flows))
       .hasMessage("Cannot set secondaries when flows is already set.")
       .isOfAnyClassIn(IllegalStateException.class);
@@ -341,7 +341,7 @@ class InternalJavaIssueBuilderTest {
   void test_cannot_set_secondary_after_flow() {
     ClassTree tree = (ClassTree) compilationUnitTree.types().get(0);
     Tree firstMember = tree.members().get(0);
-    JavaFileScannerContext.Location location = new JavaFileScannerContext.Location("location1", firstMember);
+    JavaFileLocation location = new JavaFileLocation("location1", firstMember);
 
     builder = builder.forRule(CHECK)
       .onTree(tree.simpleName())

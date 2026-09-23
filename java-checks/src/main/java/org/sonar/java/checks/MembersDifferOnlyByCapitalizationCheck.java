@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LineUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -92,7 +92,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
       getDefinitionPlace(symbol, conflictingSymbol));
   }
 
-  private static List<JavaFileScannerContext.Location> declarationTree(Symbol symbol) {
+  private static List<JavaFileLocation> declarationTree(Symbol symbol) {
     Tree reportTree = null;
     if (symbol.isMethodSymbol()) {
       MethodTree declaration = ((Symbol.MethodSymbol) symbol).declaration();
@@ -108,7 +108,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
     if (reportTree == null) {
       return Collections.emptyList();
     }
-    return Collections.singletonList(new JavaFileScannerContext.Location("Conflicting identifier", reportTree));
+    return Collections.singletonList(new JavaFileLocation("Conflicting identifier", reportTree));
   }
 
   private static boolean isOverriding(Symbol symbol) {

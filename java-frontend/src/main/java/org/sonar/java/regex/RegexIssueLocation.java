@@ -1,0 +1,92 @@
+/*
+ * SonarQube Java
+ * Copyright (C) SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * You can redistribute and/or modify this program under the terms of
+ * the Sonar Source-Available License Version 1, as published by SonarSource Sàrl.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+package org.sonar.java.regex;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonarsource.analyzer.commons.regex.ast.IndexRange;
+import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
+
+/**
+ * Issue location holder, replacing regex syntax elements into text spans for reporting
+ */
+public class RegexIssueLocation {
+
+  private static final String CONTINUATION_MESSAGE = "Continuing here";
+  private final List<AnalyzerMessage.TextSpan> locations;
+  private final String message;
+
+  public RegexIssueLocation(RegexSyntaxElement tree, String message) {
+    this.locations = ((JavaAnalyzerRegexSource) tree.getSource()).textSpansFor(tree.getRange());
+    this.message = message;
+  }
+
+  public RegexIssueLocation(List<RegexSyntaxElement> trees, String message) {
+    this.locations = textSpansFromRegexSyntaxElements(trees);
+    this.message = message;
+  }
+
+  public static RegexIssueLocation fromCommonsRegexIssueLocation(org.sonarsource.analyzer.commons.regex.RegexIssueLocation location) {
+    return new RegexIssueLocation(location.syntaxElements(), location.message());
+  }
+
+  private RegexIssueLocation(AnalyzerMessage.TextSpan location, String message) {
+    this.locations = Collections.singletonList(location);
+    this.message = message;
+  }
+
+  public List<AnalyzerMessage.TextSpan> locations() {
+    return locations;
+  }
+
+  public String message() {
+    return message;
+  }
+
+  public List<RegexIssueLocation> toSingleLocationItems() {
+    if (locations.size() == 1) {
+      return Collections.singletonList(this);
+    }
+    return Stream.concat(
+        Stream.of(new RegexIssueLocation(locations.get(0), message)),
+        locations.stream().skip(1).map(loc -> new RegexIssueLocation(loc, CONTINUATION_MESSAGE)))
+      .toList();
+  }
+
+  private static List<AnalyzerMessage.TextSpan> textSpansFromRegexSyntaxElements(List<RegexSyntaxElement> trees) {
+    JavaAnalyzerRegexSource source = (JavaAnalyzerRegexSource) trees.get(0).getSource();
+    List<AnalyzerMessage.TextSpan> locations = new ArrayList<>();
+    IndexRange current = null;
+    for (RegexSyntaxElement tree : trees) {
+      if (current == null) {
+        current = tree.getRange();
+      } else if (tree.getRange().getBeginningOffset() == current.getEndingOffset()) {
+        current = new IndexRange(current.getBeginningOffset(), tree.getRange().getEndingOffset());
+      } else {
+        locations.addAll(source.textSpansFor(current));
+        current = tree.getRange();
+      }
+    }
+    if (current != null) {
+      locations.addAll(source.textSpansFor(current));
+    }
+    return locations;
+  }
+}

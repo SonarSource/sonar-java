@@ -30,11 +30,13 @@ import org.sonar.java.metrics.MetricsComputer;
 import org.sonar.java.metrics.MetricsScannerContext;
 import org.sonar.java.regex.RegexCache;
 import org.sonar.java.regex.RegexCheck;
+import org.sonar.java.regex.RegexIssueLocation;
 import org.sonar.java.regex.RegexScannerContext;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.SourceMap;
@@ -102,10 +104,10 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   }
 
   @Override
-  public void reportIssue(RegexCheck regexCheck, RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
-    List<RegexCheck.RegexIssueLocation> completedSecondaries = new ArrayList<>();
+  public void reportIssue(RegexCheck regexCheck, RegexSyntaxElement regexTree, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries) {
+    List<RegexIssueLocation> completedSecondaries = new ArrayList<>();
 
-    List<RegexCheck.RegexIssueLocation> mainLocations = new RegexCheck.RegexIssueLocation(regexTree, message).toSingleLocationItems();
+    List<RegexIssueLocation> mainLocations = new RegexIssueLocation(regexTree, message).toSingleLocationItems();
     if (mainLocations.size() > 1) {
       // handle other main locations as secondaries with same message
       completedSecondaries.addAll(mainLocations.subList(1, mainLocations.size()));
@@ -116,12 +118,12 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   }
 
   @Override
-  public void reportIssue(RegexCheck regexCheck, Tree javaSyntaxElement, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
+  public void reportIssue(RegexCheck regexCheck, Tree javaSyntaxElement, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries) {
     reportIssue(regexCheck, AnalyzerMessage.textSpanFor(javaSyntaxElement), message, cost, secondaries);
   }
 
-  private void reportIssue(RegexCheck regexCheck, AnalyzerMessage.TextSpan mainLocation, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries) {
-    List<List<RegexCheck.RegexIssueLocation>> secondariesAsFlows = new ArrayList<>();
+  private void reportIssue(RegexCheck regexCheck, AnalyzerMessage.TextSpan mainLocation, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries) {
+    List<List<RegexIssueLocation>> secondariesAsFlows = new ArrayList<>();
 
     secondaries.stream()
       .flatMap(regexIssueLocation -> regexIssueLocation.toSingleLocationItems().stream())
@@ -129,7 +131,7 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
       .forEach(secondariesAsFlows::add);
 
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(regexCheck, inputFile, mainLocation, message, cost != null ? cost : 0);
-    completeAnalyzerMessageWithFlows(analyzerMessage, secondariesAsFlows, ril -> ril.locations().get(0), RegexCheck.RegexIssueLocation::message);
+    completeAnalyzerMessageWithFlows(analyzerMessage, secondariesAsFlows, ril -> ril.locations().get(0), RegexIssueLocation::message);
     reportIssue(analyzerMessage);
   }
 
@@ -139,13 +141,13 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   }
 
   @Override
-  public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
-    List<List<Location>> flows = secondary.stream().map(Collections::singletonList).toList();
+  public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<JavaFileLocation> secondary, @Nullable Integer cost) {
+    List<List<JavaFileLocation>> flows = secondary.stream().map(Collections::singletonList).toList();
     reportIssueWithFlow(javaCheck, syntaxNode, message, flows, cost);
   }
 
   @Override
-  public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<Location>> flows, @Nullable Integer cost) {
+  public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<JavaFileLocation>> flows, @Nullable Integer cost) {
     throwIfEndOfAnalysisCheck(javaCheck);
 
     reportIssue(createAnalyzerMessage(inputFile, javaCheck, syntaxNode, null, message, flows, cost));
@@ -157,10 +159,10 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   }
 
   @Override
-  public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
+  public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<JavaFileLocation> secondary, @Nullable Integer cost) {
     throwIfEndOfAnalysisCheck(javaCheck);
 
-    List<List<Location>> flows = secondary.stream().map(Collections::singletonList).toList();
+    List<List<JavaFileLocation>> flows = secondary.stream().map(Collections::singletonList).toList();
     reportIssue(createAnalyzerMessage(inputFile, javaCheck, startTree, endTree, message, flows, cost));
   }
 
@@ -185,11 +187,11 @@ public class DefaultJavaFileScannerContext extends DefaultInputFileScannerContex
   }
 
   protected static AnalyzerMessage createAnalyzerMessage(InputFile inputFile, JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message,
-    Iterable<List<Location>> flows, @Nullable Integer cost) {
+    Iterable<List<JavaFileLocation>> flows, @Nullable Integer cost) {
 
     AnalyzerMessage.TextSpan location = endTree != null ? AnalyzerMessage.textSpanBetween(startTree, endTree) : AnalyzerMessage.textSpanFor(startTree);
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, inputFile, location, message, cost != null ? cost : 0);
-    completeAnalyzerMessageWithFlows(analyzerMessage, flows, loc -> AnalyzerMessage.textSpanFor(loc.syntaxNode), loc -> loc.msg);
+    completeAnalyzerMessageWithFlows(analyzerMessage, flows, loc -> AnalyzerMessage.textSpanFor(loc.syntaxNode()), loc -> loc.msg());
     return analyzerMessage;
   }
 

@@ -96,7 +96,7 @@ class CheckRegistrarTest {
       "register 3 instantiated test checks.");
   }
 
-  private static class TestInternalRegistration extends CheckRegistrar.RegistrarContext {
+  private static class TestInternalRegistration extends RegistrarContext {
 
     public final List<String> events = new ArrayList<>();
 

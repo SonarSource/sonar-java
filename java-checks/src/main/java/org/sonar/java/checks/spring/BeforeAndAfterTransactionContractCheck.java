@@ -21,7 +21,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -80,10 +80,10 @@ public class BeforeAndAfterTransactionContractCheck extends IssuableSubscription
     return SpringUtils.isAutowired(parameterSymbol);
   }
 
-  private static List<JavaFileScannerContext.Location> getSecondaryLocations(MethodTreeImpl methodTree) {
+  private static List<JavaFileLocation> getSecondaryLocations(MethodTreeImpl methodTree) {
     return methodTree.modifiers().annotations().stream()
       .filter(annotation -> TRANSACTION_ANNOTATIONS.contains(annotation.symbolType().fullyQualifiedName()))
-      .map(annotation -> new JavaFileScannerContext.Location("Annotation", annotation))
+      .map(annotation -> new JavaFileLocation("Annotation", annotation))
       .toList();
   }
 

@@ -7,6 +7,7 @@ package org.sonar.samples.java;
 import java.util.List;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.RegistrarContext;
 import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**

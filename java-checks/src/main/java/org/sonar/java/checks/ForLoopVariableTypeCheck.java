@@ -21,7 +21,7 @@ import java.util.List;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -58,8 +58,8 @@ public class ForLoopVariableTypeCheck extends IssuableSubscriptionVisitor {
       actualStatement.statement().accept(downCastVisitor);
 
       if (downCastVisitor.hasDownCastOfLoopVariable) {
-        List<JavaFileScannerContext.Location> locations = Collections.singletonList(
-          new JavaFileScannerContext.Location(String.format(SECONDARY_MESSAGE, collectionItemType.name()), actualStatement.expression()));
+        List<JavaFileLocation> locations = Collections.singletonList(
+          new JavaFileLocation(String.format(SECONDARY_MESSAGE, collectionItemType.name()), actualStatement.expression()));
         reportIssue(actualStatement.variable().type(), String.format(PRIMARY_MESSAGE, variableType.name()),
           locations, 0);
       }

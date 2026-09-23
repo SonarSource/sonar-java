@@ -22,7 +22,7 @@ import java.util.Collections;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -138,8 +138,8 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
       }
     }
     String recommendedAssertMethod = assertOrIs + predicate;
-    List<JavaFileScannerContext.Location> secondaryLocation = Collections.singletonList(
-      new JavaFileScannerContext.Location("This literal can be avoided by using a different assertion method.", literal)
+    List<JavaFileLocation> secondaryLocation = Collections.singletonList(
+      new JavaFileLocation("This literal can be avoided by using a different assertion method.", literal)
     );
     String mainMessage = String.format(MESSAGE_WITH_ALTERNATIVE, recommendedAssertMethod);
     reportIssue(methodName, mainMessage, secondaryLocation, null);
@@ -190,8 +190,8 @@ public class BooleanOrNullLiteralInAssertionsCheck extends AbstractMethodDetecti
   }
 
   private void reportDefaultMessage(IdentifierTree methodName, List<LiteralTree> literals) {
-    List<JavaFileScannerContext.Location> literalLocations = literals.stream()
-      .map(literal -> new JavaFileScannerContext.Location("There does not seem to be a reason to use a literal here.", literal))
+    List<JavaFileLocation> literalLocations = literals.stream()
+      .map(literal -> new JavaFileLocation("There does not seem to be a reason to use a literal here.", literal))
       .toList();
     reportIssue(methodName, DEFAULT_MESSAGE, literalLocations, null);
   }

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -53,7 +53,7 @@ public class MockitoEqSimplificationCheck extends AbstractMockitoArgumentChecker
         "Remove this%s useless \"eq(...)\" invocation; pass the values directly.", eqs.size() == 1 ? "" : " and every subsequent"),
         eqs.stream()
           .skip(1)
-          .map(eq -> new JavaFileScannerContext.Location("", eq.methodSelect()))
+          .map(eq -> new JavaFileLocation("", eq.methodSelect()))
           .toList(),
         null);
     }

@@ -26,7 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -55,19 +55,19 @@ public class EncryptionAlgorithmCheck extends AbstractMethodDetection {
     ExpressionTree firstArgument = mit.arguments().get(0);
     ExpressionTree algorithmTree = firstArgument;
     // Improve the review experience by helping to understand what is inside the first argument in case it's not hardcoded.
-    List<JavaFileScannerContext.Location> transformationDefinition = new ArrayList<>();
+    List<JavaFileLocation> transformationDefinition = new ArrayList<>();
 
     ExpressionTree defaultPropertyValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(firstArgument);
     if (defaultPropertyValue != null) {
       algorithmTree = defaultPropertyValue;
-      transformationDefinition.add(new JavaFileScannerContext.Location("Default transformation", defaultPropertyValue));
+      transformationDefinition.add(new JavaFileLocation("Default transformation", defaultPropertyValue));
     } else if (firstArgument.is(Tree.Kind.IDENTIFIER)) {
       Tree declaration = ((IdentifierTree) firstArgument).symbol().declaration();
       if (declaration != null) {
         // We expect that most of the time, the identifier will directly lead to a constant, so this is already enough.
         // "getConstantValueAsString" can be smarter and rebuild a constant from more complex tree (concatenation, ...)
         // in this case, the secondary will not be perfect, but still a first step to understand easily the issue.
-        transformationDefinition.add(new JavaFileScannerContext.Location("Transformation definition", declaration));
+        transformationDefinition.add(new JavaFileLocation("Transformation definition", declaration));
       }
     }
     String algorithmName = ExpressionsHelper.getConstantValueAsString(algorithmTree).value();

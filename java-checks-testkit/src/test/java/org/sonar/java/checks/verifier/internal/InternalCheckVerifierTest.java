@@ -41,6 +41,7 @@ import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
@@ -1198,8 +1199,8 @@ class InternalCheckVerifierTest {
         if (statements.size() >= 2) {
           // Report issue on line 4 (second statement) with flow on line 2 (method name)
           // Expected flow is on line 3 so this creates a sole flow discrepancy
-          List<JavaFileScannerContext.Location> flow = Collections.singletonList(
-            new JavaFileScannerContext.Location("flow message", methodTree.simpleName()));
+          List<JavaFileLocation> flow = Collections.singletonList(
+            new JavaFileLocation("flow message", methodTree.simpleName()));
           context.reportIssueWithFlow(this, statements.get(1),
             "issue", Collections.singletonList(flow), null);
         }
@@ -1233,8 +1234,8 @@ class InternalCheckVerifierTest {
           // Report issue with a flow on the first statement (line 3).
           // The flow location attributes in the test file specify wrong positions
           // which exercises validateFlowAttributes -> validateLocation (line 618).
-          List<JavaFileScannerContext.Location> flow = Collections.singletonList(
-            new JavaFileScannerContext.Location("null", statements.get(0)));
+          List<JavaFileLocation> flow = Collections.singletonList(
+            new JavaFileLocation("null", statements.get(0)));
           context.reportIssueWithFlow(this, statements.get(1),
             "issue", Collections.singletonList(flow), null);
         }

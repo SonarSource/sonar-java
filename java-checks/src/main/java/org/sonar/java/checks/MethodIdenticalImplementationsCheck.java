@@ -21,7 +21,7 @@ import org.sonar.java.ast.visitors.AccessorsUtils;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -83,7 +83,7 @@ public class MethodIdenticalImplementationsCheck extends IssuableSubscriptionVis
           reportIssue(
             otherMethod.simpleName(),
             String.format(ISSUE_MSG, methodIdentifier.text(), LineUtils.startLine(methodIdentifier)),
-            Collections.singletonList(new JavaFileScannerContext.Location("original implementation", methodIdentifier)),
+            Collections.singletonList(new JavaFileLocation("original implementation", methodIdentifier)),
             null);
           reported.add(otherMethod);
         });

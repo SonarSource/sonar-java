@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -95,9 +96,9 @@ public class RandomizedTestDataCheck extends IssuableSubscriptionVisitor {
     randomUUIDSecondaryLocations.clear();
   }
 
-  private static List<JavaFileScannerContext.Location> convertToLocations(Stream<Tree> trees) {
+  private static List<JavaFileLocation> convertToLocations(Stream<Tree> trees) {
     return trees
-      .map(tree -> new JavaFileScannerContext.Location(LOCATIONS_TEXT, tree))
+      .map(tree -> new JavaFileLocation(LOCATIONS_TEXT, tree))
       .toList();
   }
 }

@@ -19,7 +19,7 @@ package org.sonar.java.checks;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -45,7 +45,7 @@ public class StartupAnnotationCheck extends IssuableSubscriptionVisitor {
 
     var secondaryLocations = startupAnnotations.stream()
       .map(annotation ->
-        new JavaFileScannerContext.Location("Triggered by this annotation", annotation.annotationType())
+        new JavaFileLocation("Triggered by this annotation", annotation.annotationType())
       )
       .toList();
 

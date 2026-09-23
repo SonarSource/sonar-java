@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -104,7 +105,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
     private boolean usesWeekOfWeekBasedYear = false;
     private boolean usesYear = false;
     private boolean usesWeekBasedYear = false;
-    private final List<JavaFileScannerContext.Location> secondaries = new ArrayList<>();
+    private final List<JavaFileLocation> secondaries = new ArrayList<>();
     private ExpressionTree primary = null;
 
     @Override
@@ -131,7 +132,7 @@ public class DateTimeFormatterMismatchCheck extends IssuableSubscriptionVisitor 
         }
       } else if (refersToWeek(argument)) {
         usesWeek = true;
-        secondaries.add(new JavaFileScannerContext.Location(SECONDARY_LOCATION_MESSAGE, argument));
+        secondaries.add(new JavaFileLocation(SECONDARY_LOCATION_MESSAGE, argument));
         usesWeekOfWeekBasedYear |= isWeekOfWeekBasedYearUsed(argument);
       }
     }

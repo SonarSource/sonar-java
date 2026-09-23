@@ -26,7 +26,7 @@ import org.sonar.java.model.LineUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -91,7 +91,7 @@ public class OneDeclarationPerLineCheck extends IssuableSubscriptionVisitor {
         .forRule(this)
         .onTree(firstLocation)
         .withMessage("Declare \"%s\"%s on a separate line.", firstLocation.name(), moreThanOneMessage)
-        .withSecondaries(nodesToReport.stream().skip(1).map(lit -> new JavaFileScannerContext.Location("", lit.simpleName())).toList())
+        .withSecondaries(nodesToReport.stream().skip(1).map(lit -> new JavaFileLocation("", lit.simpleName())).toList())
         .withQuickFix(() -> getQuickFixes(nodesToReport))
         .report();
 

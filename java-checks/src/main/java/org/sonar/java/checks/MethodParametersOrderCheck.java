@@ -29,6 +29,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -68,8 +69,8 @@ public class MethodParametersOrderCheck extends IssuableSubscriptionVisitor {
     if (matchingNames(formalParameterList, argumentsList)) {
       List<VariableTree> matchingTypesWrongOrder = matchingTypesWrongOrder(formalParameterList, argumentsList);
       if (!matchingTypesWrongOrder.isEmpty()) {
-        List<JavaFileScannerContext.Location> flow = matchingTypesWrongOrder.stream()
-          .map(param -> new JavaFileScannerContext.Location("Misplaced Parameter", param))
+        List<JavaFileLocation> flow = matchingTypesWrongOrder.stream()
+          .map(param -> new JavaFileLocation("Misplaced Parameter", param))
           .toList();
         QuickFixHelper.newIssue(context)
           .forRule(this)

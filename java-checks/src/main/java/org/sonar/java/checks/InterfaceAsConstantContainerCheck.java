@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -40,14 +40,14 @@ public class InterfaceAsConstantContainerCheck extends IssuableSubscriptionVisit
     if (!classTree.superInterfaces().isEmpty()) {
       return;
     }
-    List<JavaFileScannerContext.Location> constantsLocation = collectConstantsLocation(classTree);
+    List<JavaFileLocation> constantsLocation = collectConstantsLocation(classTree);
     if (!constantsLocation.isEmpty()) {
       reportIssue(classTree.simpleName(), "Move constants defined in this interfaces to another class or enum.", constantsLocation, null);
     }
   }
 
-  private static List<JavaFileScannerContext.Location> collectConstantsLocation(ClassTree tree) {
-    List<JavaFileScannerContext.Location> constantLocations = new ArrayList<>();
+  private static List<JavaFileLocation> collectConstantsLocation(ClassTree tree) {
+    List<JavaFileLocation> constantLocations = new ArrayList<>();
     for (Tree member : tree.members()) {
       if (!member.is(Tree.Kind.VARIABLE, Tree.Kind.EMPTY_STATEMENT)) {
         // the interface doesn't hold only constants
@@ -56,7 +56,7 @@ public class InterfaceAsConstantContainerCheck extends IssuableSubscriptionVisit
       if (member.is(Tree.Kind.EMPTY_STATEMENT)) {
         continue;
       }
-      constantLocations.add(new JavaFileScannerContext.Location("", ((VariableTree) member).simpleName()));
+      constantLocations.add(new JavaFileLocation("", ((VariableTree) member).simpleName()));
     }
     return constantLocations;
   }

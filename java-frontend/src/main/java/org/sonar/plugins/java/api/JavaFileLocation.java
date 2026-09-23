@@ -14,12 +14,21 @@
  * You should have received a copy of the Sonar Source-Available License
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
-package org.sonar.java.regex;
+package org.sonar.plugins.java.api;
 
-import org.sonar.plugins.java.api.JavaCheck;
+import java.util.Objects;
+import org.sonar.plugins.java.api.tree.Tree;
 
 /**
- * Marker interface for rules targeting regexes
+ * Message and syntaxNode for a secondary location.
+ *
+ * @param msg        Message of the secondary location.
+ * @param syntaxNode Syntax node on which to raise the secondary location.
  */
-public interface RegexCheck extends JavaCheck {
+public record JavaFileLocation(String msg, Tree syntaxNode) {
+  public JavaFileLocation(String msg, Tree syntaxNode) {
+    this.msg = msg;
+    this.syntaxNode = Objects.requireNonNull(syntaxNode);
+  }
+
 }

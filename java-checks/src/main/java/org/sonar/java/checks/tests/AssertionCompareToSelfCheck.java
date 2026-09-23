@@ -27,7 +27,7 @@ import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -129,7 +129,7 @@ public class AssertionCompareToSelfCheck extends IssuableSubscriptionVisitor {
     if (ExpressionsHelper.alwaysReturnSameValue(actualExpression) &&
       SyntacticEquivalence.areEquivalent(actualExpression, expectedExpression) &&
       !isLegitimateSelfComparison(predicateMethodName, actualExpression)) {
-      List<Location> secondaryLocations = Collections.singletonList(new Location("actual", actualExpression));
+      List<JavaFileLocation> secondaryLocations = Collections.singletonList(new JavaFileLocation("actual", actualExpression));
       reportIssue(expectedExpression, MESSAGE, secondaryLocations, null);
     }
   }

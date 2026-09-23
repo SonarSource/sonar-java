@@ -41,7 +41,7 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.classpath.ClasspathForMain;
 import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
@@ -88,9 +88,9 @@ class DefaultJavaFileScannerContextWithSensorContextTest {
 
   @Test
   void test_report_issue_with_secondary_locations() {
-    List<JavaFileScannerContext.Location> secondary = Arrays.asList(
-      new JavaFileScannerContext.Location("+1", tree),
-      new JavaFileScannerContext.Location("+1", tree)
+    List<JavaFileLocation> secondary = Arrays.asList(
+      new JavaFileLocation("+1", tree),
+      new JavaFileLocation("+1", tree)
     );
     scannerContext.reportIssue(check, tree, "msg", secondary, null);
     Issue issue = sensorContext.allIssues().iterator().next();
@@ -99,9 +99,9 @@ class DefaultJavaFileScannerContextWithSensorContextTest {
 
   @Test
   void test_report_issue_with_flow() {
-    List<JavaFileScannerContext.Location> flow1 = Collections.singletonList(new JavaFileScannerContext.Location("flow1", tree));
-    List<JavaFileScannerContext.Location> flow2 = Collections.singletonList(new JavaFileScannerContext.Location("flow2", tree));
-    Set<List<JavaFileScannerContext.Location>> flows = SetUtils.immutableSetOf(flow1, flow2);
+    List<JavaFileLocation> flow1 = Collections.singletonList(new JavaFileLocation("flow1", tree));
+    List<JavaFileLocation> flow2 = Collections.singletonList(new JavaFileLocation("flow2", tree));
+    Set<List<JavaFileLocation>> flows = SetUtils.immutableSetOf(flow1, flow2);
     scannerContext.reportIssueWithFlow(check, tree, "msg", flows, null);
     Issue issue = sensorContext.allIssues().iterator().next();
     assertThat(issue.flows()).hasSize(2);

@@ -26,9 +26,9 @@ import org.sonarsource.analyzer.commons.regex.ast.RegexSyntaxElement;
 
 public interface RegexScannerContext {
 
-  void reportIssue(RegexCheck regexCheck, RegexSyntaxElement regexSyntaxElement, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries);
+  void reportIssue(RegexCheck regexCheck, RegexSyntaxElement regexSyntaxElement, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries);
 
-  void reportIssue(RegexCheck regexCheck, Tree javaSyntaxElement, String message, @Nullable Integer cost, List<RegexCheck.RegexIssueLocation> secondaries);
+  void reportIssue(RegexCheck regexCheck, Tree javaSyntaxElement, String message, @Nullable Integer cost, List<RegexIssueLocation> secondaries);
 
   RegexParseResult regexForLiterals(FlagSet initialFlags, LiteralTree... stringLiterals);
 

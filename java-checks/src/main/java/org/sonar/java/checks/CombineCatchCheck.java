@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.model.JavaTree.UnionTypeTreeImpl;
@@ -31,7 +32,6 @@ import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -63,7 +63,7 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
   private void reportIssueWithQuickFix(CatchTree catchTree, CatchTree catchTreeToBeCompared) {
     String quickFixMessage = "Combine this catch with the one at line " + LineUtils.startLine(catchTreeToBeCompared.catchKeyword());
     String issueMessage = quickFixMessage + ", which has the same body." + context.getJavaVersion().java7CompatibilityMessage();
-    List<JavaFileScannerContext.Location> flow = Collections.singletonList(new JavaFileScannerContext.Location("Combine with this catch", catchTreeToBeCompared));
+    List<JavaFileLocation> flow = Collections.singletonList(new JavaFileLocation("Combine with this catch", catchTreeToBeCompared));
     QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(catchTree.parameter())

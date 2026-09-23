@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -70,8 +71,8 @@ public class TooManyAssertionsCheck extends IssuableSubscriptionVisitor {
       List<Tree> assertionsTree = collectAssertionsInMethod(methodTree.symbol());
       int assertionsSize = assertionsTree.size();
       if (assertionsSize > maximum) {
-        List<JavaFileScannerContext.Location> locations = assertionsTree.stream()
-          .map(assertionTree -> new JavaFileScannerContext.Location("Assertion", assertionTree))
+        List<JavaFileLocation> locations = assertionsTree.stream()
+          .map(assertionTree -> new JavaFileLocation("Assertion", assertionTree))
           .toList();
 
         reportIssue(methodTree.simpleName(),

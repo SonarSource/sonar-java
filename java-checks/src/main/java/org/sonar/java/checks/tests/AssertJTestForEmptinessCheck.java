@@ -22,7 +22,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -126,7 +126,7 @@ public class AssertJTestForEmptinessCheck extends AbstractMethodDetection {
   private void reportIssueWithSecondary(MethodInvocationTree mit, ExpressionTree argument) {
     reportIssue(ExpressionUtils.methodName(mit),
       "Test the emptiness of the list before calling this assertion predicate.",
-      Collections.singletonList(new JavaFileScannerContext.Location("", argument)),
+      Collections.singletonList(new JavaFileLocation("", argument)),
       null);
   }
 

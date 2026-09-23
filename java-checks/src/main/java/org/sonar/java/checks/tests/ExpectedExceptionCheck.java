@@ -22,7 +22,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LineUtils;
-import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -63,7 +63,7 @@ public class ExpectedExceptionCheck extends AbstractMethodDetection {
   private static class AssertionCollector extends BaseTreeVisitor {
 
     private int collectAfterLine;
-    private List<Location> assertions = new ArrayList<>();
+    private List<JavaFileLocation> assertions = new ArrayList<>();
 
     public AssertionCollector(int collectAfterLine) {
       this.collectAfterLine = collectAfterLine;
@@ -73,7 +73,7 @@ public class ExpectedExceptionCheck extends AbstractMethodDetection {
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
       if (LineUtils.startLine(methodInvocation) > collectAfterLine &&
         ASSERTIONS_METHOD_MATCHER.matches(methodInvocation)) {
-        assertions.add(new Location("Other assertion", ExpressionUtils.methodName(methodInvocation)));
+        assertions.add(new JavaFileLocation("Other assertion", ExpressionUtils.methodName(methodInvocation)));
       }
     }
 

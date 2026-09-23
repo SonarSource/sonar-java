@@ -18,6 +18,7 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
@@ -51,7 +52,7 @@ public class ConditionalOnNewLineCheck extends IssuableSubscriptionVisitor {
 
     if(previousToken != null && isOnSameLineAsPreviousIf(ifStatementTree)) {
       reportIssue(ifStatementTree.ifKeyword(), "Move this \"if\" to a new line or add the missing \"else\".",
-        Collections.singletonList(new JavaFileScannerContext.Location("", previousToken)), null);
+        Collections.singletonList(new JavaFileLocation("", previousToken)), null);
     }
 
     StatementTree elsePart = ifStatementTree.elseStatement();

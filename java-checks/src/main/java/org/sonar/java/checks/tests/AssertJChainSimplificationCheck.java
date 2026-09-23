@@ -28,7 +28,7 @@ import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 
@@ -86,7 +86,7 @@ public class AssertJChainSimplificationCheck extends AbstractMethodDetection {
     checkPredicatesForSimplification(
       predicates, SIMPLIFIERS_WITH_CONTEXT, (simplifier, predicate) -> simplifier.simplify(subjectMit, predicate),
       (predicate, simplification) -> createIssueBuilder(predicate, simplification)
-        .withSecondaries(new JavaFileScannerContext.Location("This can be simplified", subjectMit.arguments().get(0)))
+        .withSecondaries(new JavaFileLocation("This can be simplified", subjectMit.arguments().get(0)))
         .report()
     );
   }

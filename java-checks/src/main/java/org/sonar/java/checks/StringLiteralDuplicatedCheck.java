@@ -31,6 +31,7 @@ import org.sonar.java.checks.helpers.LoggingMatchers;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.utils.JavaFileTypeClassifier;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -111,8 +112,8 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     });
   }
 
-  private static List<JavaFileScannerContext.Location> secondaryLocations(Collection<LiteralTree> literalTrees) {
-    return literalTrees.stream().map(element -> new JavaFileScannerContext.Location("Duplication", element)).toList();
+  private static List<JavaFileLocation> secondaryLocations(Collection<LiteralTree> literalTrees) {
+    return literalTrees.stream().map(element -> new JavaFileLocation("Duplication", element)).toList();
   }
 
   /**

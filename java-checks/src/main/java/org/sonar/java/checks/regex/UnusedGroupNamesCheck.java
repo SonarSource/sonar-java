@@ -26,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
-import org.sonar.java.regex.RegexCheck;
+import org.sonar.java.regex.RegexIssueLocation;
 import org.sonarsource.analyzer.commons.regex.RegexParseResult;
 import org.sonarsource.analyzer.commons.regex.ast.BackReferenceTree;
 import org.sonarsource.analyzer.commons.regex.ast.CapturingGroupTree;
@@ -137,8 +137,8 @@ public class UnusedGroupNamesCheck extends AbstractRegexCheckTrackingMatchers {
     }
   }
 
-  private static RegexCheck.RegexIssueLocation toLocation(CapturingGroupTree group, String message, Function<CapturingGroupTree, Object> arg) {
-    return new RegexCheck.RegexIssueLocation(group, String.format(message, arg.apply(group)));
+  private static RegexIssueLocation toLocation(CapturingGroupTree group, String message, Function<CapturingGroupTree, Object> arg) {
+    return new RegexIssueLocation(group, String.format(message, arg.apply(group)));
   }
 
   private static KnownGroupsCollector collectGroups(RegexParseResult regex) {

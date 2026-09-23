@@ -17,6 +17,7 @@
 package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -129,8 +130,8 @@ public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implemen
     if (breakAndContinues.size() > 1) {
       int effortToFix = breakAndContinues.size() - 1;
 
-      List<JavaFileScannerContext.Location> secondaryLocations = breakAndContinues.stream()
-          .map(t -> new JavaFileScannerContext.Location(String.format("\"%s\" statement.", t.is(Tree.Kind.BREAK_STATEMENT) ? "break" : "continue"), t))
+      List<JavaFileLocation> secondaryLocations = breakAndContinues.stream()
+          .map(t -> new JavaFileLocation(String.format("\"%s\" statement.", t.is(Tree.Kind.BREAK_STATEMENT) ? "break" : "continue"), t))
         .toList();
 
       context.reportIssue(this, primaryLocationTree,

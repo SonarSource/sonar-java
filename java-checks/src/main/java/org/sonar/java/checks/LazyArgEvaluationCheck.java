@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.LoggingMatchers;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -204,15 +205,15 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private void onMethodInvocationFound(MethodInvocationTree mit) {
-    List<JavaFileScannerContext.Location> flow = findStringArg(mit)
+    List<JavaFileLocation> flow = findStringArg(mit)
       .flatMap(LazyArgEvaluationCheck::checkArgument)
       .toList();
     if (!flow.isEmpty()) {
-      context.reportIssue(this, flow.get(0).syntaxNode, flow.get(0).msg, flow.subList(1, flow.size()), null);
+      context.reportIssue(this, flow.get(0).syntaxNode(), flow.get(0).msg(), flow.subList(1, flow.size()), null);
     }
   }
 
-  private static Stream<JavaFileScannerContext.Location> checkArgument(ExpressionTree stringArgument) {
+  private static Stream<JavaFileLocation> checkArgument(ExpressionTree stringArgument) {
     StringExpressionVisitor visitor = new StringExpressionVisitor();
     stringArgument.accept(visitor);
     if (visitor.shouldReport) {
@@ -222,7 +223,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
     }
   }
 
-  private static JavaFileScannerContext.Location locationFromArg(ExpressionTree stringArgument, StringExpressionVisitor visitor) {
+  private static JavaFileLocation locationFromArg(ExpressionTree stringArgument, StringExpressionVisitor visitor) {
     StringBuilder msg = new StringBuilder();
     if (visitor.hasMethodInvocation) {
       msg.append("Invoke method(s) only conditionally. ");
@@ -230,7 +231,7 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
     if (visitor.hasBinaryExpression) {
       msg.append("Use the built-in formatting to construct this argument.");
     }
-    return new JavaFileScannerContext.Location(msg.toString(), stringArgument);
+    return new JavaFileLocation(msg.toString(), stringArgument);
   }
 
   private static Stream<ExpressionTree> findStringArg(MethodInvocationTree mit) {

@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -93,8 +94,8 @@ public class MethodWithExcessiveReturnsCheck extends IssuableSubscriptionVisitor
     int count = returns.size();
     if (count > max) {
       String message = String.format(ISSUE_MESSAGE, count, max);
-      List<JavaFileScannerContext.Location> secondaries = returns.stream()
-        .map(token -> new JavaFileScannerContext.Location("return", token))
+      List<JavaFileLocation> secondaries = returns.stream()
+        .map(token -> new JavaFileLocation("return", token))
         .toList();
       reportIssue(reportTree, message, secondaries, null);
     }

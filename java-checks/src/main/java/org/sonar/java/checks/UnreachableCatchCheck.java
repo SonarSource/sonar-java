@@ -28,7 +28,7 @@ import org.sonar.java.model.JProblem;
 import org.sonar.java.model.JWarning;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext.Location;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.location.Position;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -42,7 +42,7 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
 
   private final List<JWarning> warnings = new ArrayList<>();
-  private static final Comparator<Location> LOCATION_COMPARATOR = Comparator.comparing(loc -> Position.startOf(loc.syntaxNode));
+  private static final Comparator<JavaFileLocation> LOCATION_COMPARATOR = Comparator.comparing(loc -> Position.startOf(loc.syntaxNode()));
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -122,7 +122,7 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
     return "Remove this type because it is unreachable, hidden by previous catch block(s).";
   }
 
-  private static List<Location> secondaries(TypeTree type, Map<TypeTree, Type> typeByExceptions) {
+  private static List<JavaFileLocation> secondaries(TypeTree type, Map<TypeTree, Type> typeByExceptions) {
     List<Type> targets;
     if (type.is(Tree.Kind.UNION_TYPE)) {
       targets = ((UnionTypeTree) type).typeAlternatives()
@@ -135,14 +135,14 @@ public class UnreachableCatchCheck extends IssuableSubscriptionVisitor {
     return childrenExceptionTypes(targets, typeByExceptions);
   }
 
-  private static List<Location> childrenExceptionTypes(List<Type> targets, Map<TypeTree, Type> exceptionTypes) {
-    List<Location> secondaries = new ArrayList<>();
+  private static List<JavaFileLocation> childrenExceptionTypes(List<Type> targets, Map<TypeTree, Type> exceptionTypes) {
+    List<JavaFileLocation> secondaries = new ArrayList<>();
     targets.forEach(target -> {
       for (Map.Entry<TypeTree, Type> exceptionType : exceptionTypes.entrySet()) {
         TypeTree tree = exceptionType.getKey();
         Type type = exceptionType.getValue();
         if (!type.equals(target) && type.isSubtypeOf(target)) {
-          secondaries.add(new Location("Already catch the exception", tree));
+          secondaries.add(new JavaFileLocation("Already catch the exception", tree));
         }
       }
     });

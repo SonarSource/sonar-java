@@ -29,7 +29,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.LineUtils;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
@@ -172,7 +172,7 @@ public class IdenticalCasesInSwitchCheck extends IssuableSubscriptionVisitor {
   }
 
   private void createIssue(Tree node, String message, Tree secondary) {
-    reportIssue(node, message, Collections.singletonList(new JavaFileScannerContext.Location("Original", secondary)), null);
+    reportIssue(node, message, Collections.singletonList(new JavaFileLocation("Original", secondary)), null);
   }
 
   private static String issueMessage(String type, Tree node) {

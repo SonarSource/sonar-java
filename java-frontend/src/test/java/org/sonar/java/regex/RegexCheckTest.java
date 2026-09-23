@@ -105,7 +105,7 @@ class RegexCheckTest implements RegexCheck {
   void one_location_to_single_location_items() {
     // issue with 1 location
     RegexTree regexTree = assertSuccessfulParse("A");
-    RegexCheck.RegexIssueLocation issue = new RegexCheck.RegexIssueLocation(regexTree, "My issue message.");
+    RegexIssueLocation issue = new RegexIssueLocation(regexTree, "My issue message.");
 
     assertThat(issue.message()).isEqualTo("My issue message.");
     List<RegexIssueLocation> locations = issue.toSingleLocationItems();
@@ -120,7 +120,7 @@ class RegexCheckTest implements RegexCheck {
   void three_locations_to_single_location_items() {
     // issue with 3 locations
     RegexTree regexTree = assertSuccessfulParse("A\" + \n  \"B\" + \n  \"C");
-    RegexCheck.RegexIssueLocation issue = new RegexCheck.RegexIssueLocation(regexTree, "My issue message.");
+    RegexIssueLocation issue = new RegexIssueLocation(regexTree, "My issue message.");
 
     assertThat(issue.message()).isEqualTo("My issue message.");
     List<RegexIssueLocation> locations = issue.toSingleLocationItems();
@@ -144,7 +144,7 @@ class RegexCheckTest implements RegexCheck {
     RegexTree regexTree = assertSuccessfulParse("A");
     org.sonarsource.analyzer.commons.regex.RegexIssueLocation regexIssueLocation =
       new org.sonarsource.analyzer.commons.regex.RegexIssueLocation(regexTree, "My issue message.");
-    RegexCheck.RegexIssueLocation issue = RegexCheck.RegexIssueLocation.fromCommonsRegexIssueLocation(regexIssueLocation);
+    RegexIssueLocation issue = RegexIssueLocation.fromCommonsRegexIssueLocation(regexIssueLocation);
 
     assertThat(issue.message()).isEqualTo("My issue message.");
     List<RegexIssueLocation> locations = issue.toSingleLocationItems();
@@ -156,11 +156,11 @@ class RegexCheckTest implements RegexCheck {
   }
 
   private static List<TextSpan> correspondingTextSpans(RegexTree tree) {
-    return new RegexCheck.RegexIssueLocation(tree, "message").locations();
+    return new RegexIssueLocation(tree, "message").locations();
   }
 
   private static List<TextSpan> correspondingTextSpans(List<RegexSyntaxElement> trees) {
-    return new RegexCheck.RegexIssueLocation(trees, "message").locations();
+    return new RegexIssueLocation(trees, "message").locations();
   }
 
 }

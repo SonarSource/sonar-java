@@ -24,7 +24,7 @@ import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -62,13 +62,13 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
       hasFinalFinalizer(classTree)) {
       return;
     }
-    List<JavaFileScannerContext.Location> secondaryLocations = Collections.singletonList(
-      new JavaFileScannerContext.Location("Non-final class", classTree.simpleName()));
+    List<JavaFileLocation> secondaryLocations = Collections.singletonList(
+      new JavaFileLocation("Non-final class", classTree.simpleName()));
 
     checkMembers(classTree, secondaryLocations);
   }
 
-  private void checkMembers(ClassTree classTree, List<JavaFileScannerContext.Location> secondaryLocations) {
+  private void checkMembers(ClassTree classTree, List<JavaFileLocation> secondaryLocations) {
     boolean hasExplicitConstructor = false;
     boolean hasThrowingInitializers = false;
     List<Tree> throwingInitializers = new ArrayList<>();
@@ -90,7 +90,7 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
   }
 
   private void reportVulnerableConstructors(ClassTree classTree, boolean hasThrowingInitializers,
-    List<JavaFileScannerContext.Location> secondaryLocations) {
+    List<JavaFileLocation> secondaryLocations) {
     for (Tree member : classTree.members()) {
       if (member.is(Kind.CONSTRUCTOR)) {
         MethodTree constructor = (MethodTree) member;
@@ -104,9 +104,9 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
   }
 
   private void reportThrowingInitializers(ClassTree classTree, List<Tree> throwingInitializers) {
-    List<JavaFileScannerContext.Location> locations = new ArrayList<>();
+    List<JavaFileLocation> locations = new ArrayList<>();
     for (Tree init : throwingInitializers) {
-      locations.add(new JavaFileScannerContext.Location("Throwing initializer", init));
+      locations.add(new JavaFileLocation("Throwing initializer", init));
     }
     reportIssue(classTree.simpleName(),
       "Make this class \"final\" or add a private constructor, because initializers can throw.",

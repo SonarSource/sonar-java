@@ -21,7 +21,7 @@ import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.metrics.MetricsScannerContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -57,9 +57,9 @@ public class MethodComplexityCheck extends IssuableSubscriptionVisitor {
     List<Tree> complexity = metricsComputer.getComplexityNodes(methodTree);
     int size = complexity.size();
     if (size > max) {
-      List<JavaFileScannerContext.Location> flow = new ArrayList<>();
+      List<JavaFileLocation> flow = new ArrayList<>();
       for (Tree element : complexity) {
-        flow.add(new JavaFileScannerContext.Location("+1", element));
+        flow.add(new JavaFileLocation("+1", element));
       }
       reportIssue(
         methodTree.simpleName(),

@@ -28,7 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -164,8 +164,8 @@ public class HashCodeMismatchedFieldsCheck extends IssuableSubscriptionVisitor {
       .map(Symbol::name)
       .sorted()
       .toList();
-    List<JavaFileScannerContext.Location> secondaryLocations = extraFields.values().stream()
-      .map(location -> new JavaFileScannerContext.Location(SECONDARY_MESSAGE, location))
+    List<JavaFileLocation> secondaryLocations = extraFields.values().stream()
+      .map(location -> new JavaFileLocation(SECONDARY_MESSAGE, location))
       .toList();
     reportIssue(hashCodeMethod.simpleName(), String.format(ISSUE_MESSAGE, String.join("\", \"", names)), secondaryLocations, null);
   }

@@ -26,7 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -95,10 +95,10 @@ public class CopyConstructorMissesFieldCheck extends IssuableSubscriptionVisitor
       return;
     }
 
-    List<JavaFileScannerContext.Location> secondaries = new ArrayList<>();
+    List<JavaFileLocation> secondaries = new ArrayList<>();
     eligibleFields.forEach((field, declaration) -> {
       if (!result.assignedFields.contains(field)) {
-        secondaries.add(new JavaFileScannerContext.Location(
+        secondaries.add(new JavaFileLocation(
           "Field \"" + field.name() + "\" is not explicitly initialized by this copy constructor.",
           declaration.simpleName()));
       }

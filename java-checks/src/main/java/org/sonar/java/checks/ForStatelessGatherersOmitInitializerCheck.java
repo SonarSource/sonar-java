@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.function.Function;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -104,7 +104,7 @@ public class ForStatelessGatherersOmitInitializerCheck extends IssuableSubscript
 
         var secondaries = issues.subList(1, issues.size())
           .stream()
-          .map(element -> new JavaFileScannerContext.Location("", element))
+          .map(element -> new JavaFileLocation("", element))
           .toList();
 
         context.reportIssue(this, issues.get(0), c.msg, secondaries, null);

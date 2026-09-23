@@ -19,7 +19,7 @@ package org.sonar.java.checks.synchronization;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -119,9 +119,9 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static List<JavaFileScannerContext.Location> createFlow(IfStatementTree parentIf, IfStatementTree nestedIf) {
+  private static List<JavaFileLocation> createFlow(IfStatementTree parentIf, IfStatementTree nestedIf) {
     return Stream.of(parentIf.condition(), nestedIf.condition())
-      .map(c -> new JavaFileScannerContext.Location("Double-checked locking", c))
+      .map(c -> new JavaFileLocation("Double-checked locking", c))
       .toList();
   }
 

@@ -19,7 +19,7 @@ package org.sonar.java.checks;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -98,9 +98,9 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
     return symbols.stream().map(s -> "\"" + s.name() + "\"").sorted().collect(Collectors.joining(","));
   }
 
-  private static List<JavaFileScannerContext.Location> getSecondaries(Map<Symbol, Tree> updatesInBody) {
+  private static List<JavaFileLocation> getSecondaries(Map<Symbol, Tree> updatesInBody) {
     return updatesInBody.entrySet().stream()
-      .map(entry -> new JavaFileScannerContext.Location(String.format("Move this update of \"%s\".", entry.getKey().name()), entry.getValue()))
+      .map(entry -> new JavaFileLocation(String.format("Move this update of \"%s\".", entry.getKey().name()), entry.getValue()))
       .toList();
   }
 

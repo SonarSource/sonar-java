@@ -27,12 +27,12 @@ import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.Sema;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -78,7 +78,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
   }
 
   @Override
-  public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<JavaFileScannerContext.Location> secondary, @Nullable Integer cost) {
+  public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<JavaFileLocation> secondary, @Nullable Integer cost) {
     throwIfEndOfAnalysisCheck(javaCheck);
     newIssue()
       .forRule(javaCheck)
@@ -100,7 +100,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
   }
 
   @Override
-  public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<JavaFileScannerContext.Location> secondary, @Nullable Integer cost) {
+  public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<JavaFileLocation> secondary, @Nullable Integer cost) {
     throwIfEndOfAnalysisCheck(javaCheck);
     newIssue()
       .forRule(javaCheck)
@@ -112,7 +112,7 @@ public class JavaFileScannerContextForTests extends DefaultJavaFileScannerContex
   }
 
   @Override
-  public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<JavaFileScannerContext.Location>> flows, @Nullable Integer cost) {
+  public void reportIssueWithFlow(JavaCheck javaCheck, Tree syntaxNode, String message, Iterable<List<JavaFileLocation>> flows, @Nullable Integer cost) {
     throwIfEndOfAnalysisCheck(javaCheck);
     newIssue()
       .forRule(javaCheck)

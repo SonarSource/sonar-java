@@ -25,7 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.helpers.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -122,7 +122,7 @@ public class RedundantSpringAnnotationCheck extends IssuableSubscriptionVisitor 
       .onTree(redundantAnnotation)
       .withMessage("Remove this \"@%s\" annotation, already implied by \"@%s\".", redundantName, impliedByName)
       .withSecondaries(List.of(
-        new JavaFileScannerContext.Location("Already implied by this annotation.", impliedByAnnotation)))
+        new JavaFileLocation("Already implied by this annotation.", impliedByAnnotation)))
       .report();
   }
 

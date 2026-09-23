@@ -22,10 +22,10 @@ import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -67,7 +67,7 @@ public class SwitchCasesShouldBeCommaSeparatedCheck extends SubscriptionVisitor 
           .forRule(this)
           .onTree(lastLabel)
           .withMessage(MESSAGE)
-          .withSecondaries(caseLabels.stream().map(label -> new JavaFileScannerContext.Location("", label)).toList())
+          .withSecondaries(caseLabels.stream().map(label -> new JavaFileLocation("", label)).toList())
           .report();
       }
 

@@ -22,7 +22,7 @@ import java.util.Optional;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaFileLocation;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -54,7 +54,7 @@ public class NoJUnit4AssertionsInJUnit5TestsCheck extends IssuableSubscriptionVi
     if (JUNIT4_ASSERT.matches(mit)) {
       Optional<AnnotationTree> testAnnotation = getJupiterTestAnnotation(mit);
       testAnnotation.ifPresent(annotationTree -> {
-        var secondary = new JavaFileScannerContext.Location("Jupiter test annotation", annotationTree);
+        var secondary = new JavaFileLocation("Jupiter test annotation", annotationTree);
         reportIssue(mit.methodSelect(), MESSAGE, List.of(secondary), null);
       });
     }
