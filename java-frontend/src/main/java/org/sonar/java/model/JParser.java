@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.compiler.IProblem;
@@ -463,14 +464,14 @@ public class JParser {
   static int firstIndexIn(TokenManager tokenManager, ASTNode e, TerminalToken tokenTypeCandidateA, TerminalToken tokenTypeCandidateB) {
     int first = tokenManager.firstIndexIn(e, ANY_TOKEN);
     int last = tokenManager.lastIndexIn(e, ANY_TOKEN);
-    for (int tokenIndex = first; tokenIndex <= last; tokenIndex++) {
-      Token token = tokenManager.get(tokenIndex);
-      if (token.tokenType == tokenTypeCandidateA || token.tokenType == tokenTypeCandidateB) {
-        return tokenIndex;
-      }
-    }
-    throw new IllegalStateException("Failed to find token " + tokenTypeCandidateA + " or " + tokenTypeCandidateB +
-      " in the tokens of a " + ASTNode.nodeClassForType(e.getNodeType()).getName());
+    return IntStream.rangeClosed(first, last)
+      .filter(tokenIndex -> {
+        Token token = tokenManager.get(tokenIndex);
+        return token.tokenType == tokenTypeCandidateA || token.tokenType == tokenTypeCandidateB;
+      })
+      .findFirst()
+      .orElseThrow(() -> new IllegalStateException("Failed to find token " + tokenTypeCandidateA + " or " + tokenTypeCandidateB +
+        " in the tokens of a " + ASTNode.nodeClassForType(e.getNodeType()).getName()));
   }
 
   /**
@@ -509,17 +510,16 @@ public class JParser {
     while (commentIndex > 0 && isComment(tokenManager.get(commentIndex - 1))) {
       commentIndex--;
     }
-    List<SyntaxTrivia> comments = new ArrayList<>();
-    for (int i = commentIndex; i < tokenIndex; i++) {
-      Token t = tokenManager.get(i);
-      LineColumnConverter.Pos pos = lineColumnConverter.toPos(t.originalStart);
-      comments.add(new InternalSyntaxTrivia(convertTokenTypeToCommentKind(t),
-        t.toString(tokenManager.getSource()),
-        pos.line(),
-        pos.columnOffset()
-      ));
-    }
-    return comments;
+    return IntStream.range(commentIndex, tokenIndex).<SyntaxTrivia>mapToObj(i -> {
+        Token t = tokenManager.get(i);
+        LineColumnConverter.Pos pos = lineColumnConverter.toPos(t.originalStart);
+        return new InternalSyntaxTrivia(convertTokenTypeToCommentKind(t),
+          t.toString(tokenManager.getSource()),
+          pos.line(),
+          pos.columnOffset()
+        );
+      })
+      .toList();
   }
 
   @VisibleForTesting
@@ -647,12 +647,9 @@ public class JParser {
     if (e == null) {
       return null;
     }
-    List<ModuleDirectiveTree> moduleDirectives = new ArrayList<>();
-    for (Object o : e.moduleStatements()) {
-      moduleDirectives.add(
-        convertModuleDirective((ModuleDirective) o)
-      );
-    }
+    List<ModuleDirectiveTree> moduleDirectives = e.moduleStatements().stream()
+      .map(o -> convertModuleDirective((ModuleDirective) o))
+      .toList();
     return new ModuleDeclarationTreeImpl(
       convertAnnotations(e.annotations()),
       e.isOpen() ? firstTokenIn(e, TerminalToken.TokenNameopen) : null,
@@ -2776,30 +2773,22 @@ public class JParser {
     if (typeBinding.isInterface()) {
       typeBinding = ast.resolveWellKnownType("java.lang.Object");
     }
-    for (IMethodBinding m : typeBinding.getDeclaredMethods()) {
-      if (methodBinding.isSubsignature(m)) {
-        return m;
-      }
-    }
-    return null;
+    return Stream.of(typeBinding.getDeclaredMethods())
+      .filter(methodBinding::isSubsignature)
+      .findFirst()
+      .orElse(null);
   }
 
   private List<AnnotationTree> convertAnnotations(List<?> e) {
-    List<AnnotationTree> annotations = new ArrayList<>();
-    for (Object o : e) {
-      annotations.add((AnnotationTree) convertExpression(
-        ((Annotation) o)
-      ));
-    }
-    return annotations;
+    return e.stream()
+      .map(o -> (AnnotationTree) convertExpression((Annotation) o))
+      .toList();
   }
 
   private ModifiersTreeImpl convertModifiers(List<?> source) {
-    List<ModifierTree> modifiers = new ArrayList<>();
-    for (Object o : source) {
-      modifiers.add(convertModifier((IExtendedModifier) o));
-    }
-    return new ModifiersTreeImpl(modifiers);
+    return new ModifiersTreeImpl(source.stream()
+      .map(o -> convertModifier((IExtendedModifier) o))
+      .toList());
   }
 
   private ModifierTree convertModifier(IExtendedModifier node) {

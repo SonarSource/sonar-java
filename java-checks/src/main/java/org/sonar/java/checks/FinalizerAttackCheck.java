@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
@@ -69,18 +70,12 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkMembers(ClassTree classTree, List<JavaFileScannerContext.Location> secondaryLocations) {
-    boolean hasExplicitConstructor = false;
-    boolean hasThrowingInitializers = false;
-    List<Tree> throwingInitializers = new ArrayList<>();
-
-    for (Tree member : classTree.members()) {
-      if (member.is(Kind.CONSTRUCTOR)) {
-        hasExplicitConstructor = true;
-      } else if (isThrowingInitializer(member)) {
-        throwingInitializers.add(member);
-        hasThrowingInitializers = true;
-      }
-    }
+    boolean hasExplicitConstructor = classTree.members().stream().anyMatch(member -> member.is(Kind.CONSTRUCTOR));
+    List<Tree> throwingInitializers = classTree.members().stream()
+      .filter(member -> !member.is(Kind.CONSTRUCTOR))
+      .filter(FinalizerAttackCheck::isThrowingInitializer)
+      .toList();
+    boolean hasThrowingInitializers = !throwingInitializers.isEmpty();
 
     if (hasExplicitConstructor) {
       reportVulnerableConstructors(classTree, hasThrowingInitializers, secondaryLocations);
@@ -91,23 +86,19 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
 
   private void reportVulnerableConstructors(ClassTree classTree, boolean hasThrowingInitializers,
     List<JavaFileScannerContext.Location> secondaryLocations) {
-    for (Tree member : classTree.members()) {
-      if (member.is(Kind.CONSTRUCTOR)) {
-        MethodTree constructor = (MethodTree) member;
-        if (isVulnerableConstructor(constructor, hasThrowingInitializers)) {
-          reportIssue(constructor.simpleName(),
-            "Make this class \"final\" or make this throwing constructor \"private\".",
-            secondaryLocations, null);
-        }
-      }
-    }
+    classTree.members().stream()
+      .filter(member -> member.is(Kind.CONSTRUCTOR))
+      .map(member -> (MethodTree) member)
+      .filter(constructor -> isVulnerableConstructor(constructor, hasThrowingInitializers))
+      .forEach(constructor -> reportIssue(constructor.simpleName(),
+        "Make this class \"final\" or make this throwing constructor \"private\".",
+        secondaryLocations, null));
   }
 
   private void reportThrowingInitializers(ClassTree classTree, List<Tree> throwingInitializers) {
-    List<JavaFileScannerContext.Location> locations = new ArrayList<>();
-    for (Tree init : throwingInitializers) {
-      locations.add(new JavaFileScannerContext.Location("Throwing initializer", init));
-    }
+    List<JavaFileScannerContext.Location> locations = throwingInitializers.stream()
+      .map(init -> new JavaFileScannerContext.Location("Throwing initializer", init))
+      .toList();
     reportIssue(classTree.simpleName(),
       "Make this class \"final\" or add a private constructor, because initializers can throw.",
       locations, null);
@@ -143,12 +134,7 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
     if (!visited.add(classTree)) {
       return true;
     }
-    for (TypeTree permitted : classTree.permittedTypes()) {
-      if (!isSafePermittedType(classTree, permitted, visited)) {
-        return false;
-      }
-    }
-    return true;
+    return classTree.permittedTypes().stream().allMatch(permitted -> isSafePermittedType(classTree, permitted, visited));
   }
 
   private static boolean isSafePermittedType(ClassTree context, TypeTree permitted, Set<ClassTree> visited) {
@@ -213,28 +199,21 @@ public class FinalizerAttackCheck extends IssuableSubscriptionVisitor {
   }
 
   private static ClassTree findClassInChildren(List<? extends Tree> children, String name) {
-    for (Tree child : children) {
-      ClassTree found = findClassInTree(child, name);
-      if (found != null) {
-        return found;
-      }
-    }
-    return null;
+    return children.stream()
+      .map(child -> findClassInTree(child, name))
+      .filter(Objects::nonNull)
+      .findFirst()
+      .orElse(null);
   }
 
   private static boolean hasFinalFinalizer(ClassTree classTree) {
-    for (Tree member : classTree.members()) {
-      if (member.is(Kind.METHOD)) {
-        MethodTree method = (MethodTree) member;
-        if ("finalize".equals(method.simpleName().name()) &&
-          method.parameters().isEmpty() &&
-          ModifiersUtils.hasModifier(method.modifiers(), Modifier.FINAL) &&
-          hasEmptyBody(method)) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return classTree.members().stream()
+      .filter(member -> member.is(Kind.METHOD))
+      .map(member -> (MethodTree) member)
+      .anyMatch(method -> "finalize".equals(method.simpleName().name()) &&
+        method.parameters().isEmpty() &&
+        ModifiersUtils.hasModifier(method.modifiers(), Modifier.FINAL) &&
+        hasEmptyBody(method));
   }
 
   private static boolean hasEmptyBody(MethodTree method) {

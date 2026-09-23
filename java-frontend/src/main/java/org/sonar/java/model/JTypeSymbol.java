@@ -31,10 +31,12 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
@@ -135,17 +137,12 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   }
 
   private Collection<Symbol> convertMemberSymbols() {
-    Collection<Symbol> members = new ArrayList<>();
-    for (ITypeBinding b : typeBinding().getDeclaredTypes()) {
-      members.add(sema.typeSymbol(b));
-    }
-    for (IVariableBinding b : typeBinding().getDeclaredFields()) {
-      members.add(sema.variableSymbol(b));
-    }
-    for (IMethodBinding b : typeBinding().getDeclaredMethods()) {
-      members.add(sema.methodSymbol(b));
-    }
-    return members;
+    return Stream.concat(
+      Stream.concat(
+        Arrays.stream(typeBinding().getDeclaredTypes()).map(sema::typeSymbol),
+        Arrays.stream(typeBinding().getDeclaredFields()).map(sema::variableSymbol)),
+      Arrays.stream(typeBinding().getDeclaredMethods()).map(sema::methodSymbol))
+      .collect(Collectors.toCollection(ArrayList::new));
   }
 
   @Override

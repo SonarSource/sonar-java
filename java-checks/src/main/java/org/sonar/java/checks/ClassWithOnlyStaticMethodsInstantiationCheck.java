@@ -33,7 +33,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import javax.annotation.Nullable;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -67,38 +66,21 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscr
 
   private static boolean hasOnlyStaticMethodsAndFields(Symbol.TypeSymbol newClassTypeSymbol) {
     Collection<Symbol> symbols = filterMethodsAndFields(newClassTypeSymbol.memberSymbols());
-    if (symbols.isEmpty()) {
-      return false;
-    }
-    for (Symbol symbol : symbols) {
-      if (!symbol.isStatic()) {
-        return false;
-      }
-    }
-    return superTypesHaveOnlyStaticMethods(newClassTypeSymbol);
+    return !symbols.isEmpty()
+      && symbols.stream().allMatch(Symbol::isStatic)
+      && superTypesHaveOnlyStaticMethods(newClassTypeSymbol);
   }
 
   private static boolean superTypesHaveOnlyStaticMethods(Symbol.TypeSymbol newClassTypeSymbol) {
     Type superClass = newClassTypeSymbol.superClass();
-    if (superClass != null && !superClass.is("java.lang.Object") && !hasOnlyStaticMethodsAndFields(superClass.symbol())) {
-      return false;
-    }
-    for (Type superInterface : newClassTypeSymbol.interfaces()) {
-      if (!hasOnlyStaticMethodsAndFields(superInterface.symbol())) {
-        return false;
-      }
-    }
-    return true;
+    return (superClass == null || superClass.is("java.lang.Object") || hasOnlyStaticMethodsAndFields(superClass.symbol()))
+      && newClassTypeSymbol.interfaces().stream().allMatch(superInterface -> hasOnlyStaticMethodsAndFields(superInterface.symbol()));
   }
 
   private static Collection<Symbol> filterMethodsAndFields(Collection<Symbol> symbols) {
-    List<Symbol> filtered = new ArrayList<>();
-    for (Symbol symbol : symbols) {
-      if ((symbol.isVariableSymbol() && !ExpressionUtils.isThisOrSuper(symbol.name())) || (symbol.isMethodSymbol() && !isConstructor(symbol))) {
-        filtered.add(symbol);
-      }
-    }
-    return filtered;
+    return symbols.stream()
+      .filter(symbol -> (symbol.isVariableSymbol() && !ExpressionUtils.isThisOrSuper(symbol.name())) || (symbol.isMethodSymbol() && !isConstructor(symbol)))
+      .toList();
   }
 
   private static boolean isConstructor(Symbol symbol) {

@@ -23,13 +23,13 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 
 @DeprecatedRuleKey(ruleKey = "ForLoopCounterChangedCheck", repositoryKey = "squid")
@@ -48,12 +48,10 @@ public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitForStatement(ForStatementTree tree) {
-    Set<String> pendingLoopCounters = new HashSet<>();
-    for (StatementTree statementTree : tree.initializer()) {
-      if (statementTree.is(Tree.Kind.VARIABLE)) {
-        pendingLoopCounters.add(((VariableTree) statementTree).simpleName().name());
-      }
-    }
+    Set<String> pendingLoopCounters = tree.initializer().stream()
+      .filter(statementTree -> statementTree.is(Tree.Kind.VARIABLE))
+      .map(statementTree -> ((VariableTree) statementTree).simpleName().name())
+      .collect(Collectors.toSet());
     scan(tree.initializer());
     scan(tree.condition());
     scan(tree.update());

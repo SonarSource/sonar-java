@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -173,20 +174,16 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkClassFields(ClassTree classTree) {
-    var privateFieldsWithNoSymbolUsages = new ArrayList<VariableTree>();
-
-    for (var member : classTree.members()) {
-      if (member instanceof VariableTree variableTree && isPrivateFieldWithNoSymbolUsages(variableTree)) {
-        privateFieldsWithNoSymbolUsages.add(variableTree);
-      }
-    }
+    var privateFieldsWithNoSymbolUsages = classTree.members().stream()
+      .filter(VariableTree.class::isInstance)
+      .map(VariableTree.class::cast)
+      .filter(this::isPrivateFieldWithNoSymbolUsages)
+      .toList();
 
     var annotationFieldReferencesVisitor = AnnotationFieldReferenceFinder.findReferencesTo(privateFieldsWithNoSymbolUsages);
     classTree.accept(annotationFieldReferencesVisitor);
 
-    for (var field : annotationFieldReferencesVisitor.fieldsNotReferencedInAnnotation()) {
-      raiseIssueForField(field);
-    }
+    annotationFieldReferencesVisitor.fieldsNotReferencedInAnnotation().forEach(this::raiseIssueForField);
   }
 
   private void raiseIssueForField(VariableTree variableTree) {
@@ -204,14 +201,8 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   private static boolean hasOwnerClassAllowedAnnotations(VariableTree variableTree) {
     var ownerClass = (ClassTree) variableTree.parent();
     var metadata = ownerClass.symbol().metadata();
-    for (String name: OWNER_CLASS_ALLOWED_ANNOTATIONS) {
-      // If the annotation does not use a fully qualified name e.g. `@Getter`,
-      // then only the identifier portion will be available in automatic analysis.
-      if (metadata.isAnnotatedWith(name) || metadata.isAnnotatedWith(annotationTypeIdentifier(name))) {
-        return true;
-      }
-    }
-    return false;
+    return OWNER_CLASS_ALLOWED_ANNOTATIONS.stream()
+      .anyMatch(name -> metadata.isAnnotatedWith(name) || metadata.isAnnotatedWith(annotationTypeIdentifier(name)));
   }
 
   private boolean onlyUsedInVariableAssignment(Symbol symbol) {
@@ -291,16 +282,14 @@ public class UnusedPrivateFieldCheck extends IssuableSubscriptionVisitor {
   }
 
   private List<JavaTextEdit> computeExpressionCaptures(List<AssignmentExpressionTree> assignments) {
-    List<JavaTextEdit> edits = new ArrayList<>();
-    for (int i = 1; i <= assignments.size(); i++) {
-      AssignmentExpressionTree assignment = assignments.get(i - 1);
-      ExpressionTree variable = assignment.variable();
-      String replacement = computeReplacement(variable, i);
-      edits.add(
-        JavaTextEdit.replaceBetweenTree(variable, true, assignment.expression(), false, replacement)
-      );
-    }
-    return edits;
+    return IntStream.range(0, assignments.size())
+      .mapToObj(index -> {
+        AssignmentExpressionTree assignment = assignments.get(index);
+        ExpressionTree variable = assignment.variable();
+        String replacement = computeReplacement(variable, index + 1);
+        return JavaTextEdit.replaceBetweenTree(variable, true, assignment.expression(), false, replacement);
+      })
+      .toList();
   }
 
   private String computeReplacement(ExpressionTree variable, int index) {

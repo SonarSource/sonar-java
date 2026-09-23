@@ -17,7 +17,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -135,10 +134,9 @@ public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFile
   private void checkNesting(Tree tree) {
     int size = nestingLevel.size();
     if (size == max) {
-      List<JavaFileScannerContext.Location> secondary = new ArrayList<>(size);
-      for (Tree element : nestingLevel) {
-        secondary.add(new JavaFileScannerContext.Location("Nesting + 1", element));
-      }
+      List<JavaFileScannerContext.Location> secondary = nestingLevel.stream()
+        .map(element -> new JavaFileScannerContext.Location("Nesting + 1", element))
+        .toList();
       context.reportIssue(this, tree, "Refactor this code to not nest more than " + max + " if/for/while/switch/try statements.", secondary, null);
     }
   }

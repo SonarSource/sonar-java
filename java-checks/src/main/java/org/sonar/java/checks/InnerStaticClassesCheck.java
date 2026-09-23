@@ -18,7 +18,7 @@ package org.sonar.java.checks;
 
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -87,30 +87,16 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
     if (outerClasses.size() == 1) {
       return true;
     }
-    for (Symbol outerClass : outerClasses) {
-      if (outerClass.isStatic()) {
-        return true;
-      }
-    }
-    return false;
+    return outerClasses.stream().anyMatch(Symbol::isStatic);
   }
 
   private static boolean isParameterizedWithTypeVarFromParent(ClassTree tree) {
     if (!tree.typeParameters().isEmpty()) {
       return false;
     }
-    List<ParameterizedTypeTree> parameterizedSuperTypes = new LinkedList<>();
-    TypeTree superClass = tree.superClass();
-    if (superClass != null && superClass.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      parameterizedSuperTypes.add((ParameterizedTypeTree) superClass);
-    }
-    for (TypeTree typeTree : tree.superInterfaces()) {
-      if (typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-        parameterizedSuperTypes.add((ParameterizedTypeTree) typeTree);
-      }
-    }
-
-    return parameterizedSuperTypes.stream()
+    return Stream.concat(Stream.ofNullable(tree.superClass()), tree.superInterfaces().stream())
+      .filter(typeTree -> typeTree.is(Tree.Kind.PARAMETERIZED_TYPE))
+      .map(typeTree -> (ParameterizedTypeTree) typeTree)
       .flatMap(parameterizedTypeTree -> parameterizedTypeTree.typeArguments().stream())
       .map(TypeTree::symbolType)
       .anyMatch(Type::isTypeVar);

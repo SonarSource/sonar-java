@@ -17,7 +17,6 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
@@ -86,11 +85,9 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
   }
 
   private static List<Type> getCaughtExceptions(List<CatchTree> catches) {
-    List<Type> result = new ArrayList<>();
-    for (CatchTree element : catches) {
-      result.add(element.parameter().type().symbolType());
-    }
-    return result;
+    return catches.stream()
+      .map(element -> element.parameter().type().symbolType())
+      .toList();
   }
 
   private void checkMethodInvocation(MethodInvocationTree node) {
@@ -124,13 +121,10 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
     }
   }
 
-  private void addIssueIfNotCaught(Iterable<Type> thrown, Tree node, String methodName) {
-    List<Type> uncaughtTypes = new ArrayList<>();
-    for (Type type : thrown) {
-      if (isNotCaught(type)) {
-        uncaughtTypes.add(type);
-      }
-    }
+  private void addIssueIfNotCaught(List<Type> thrown, Tree node, String methodName) {
+    List<Type> uncaughtTypes = thrown.stream()
+      .filter(this::isNotCaught)
+      .toList();
     if (!uncaughtTypes.isEmpty()) {
       reportIssue(node, buildMessage(methodName, uncaughtTypes));
     }
@@ -145,14 +139,9 @@ public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVis
   }
 
   private boolean isNotCaught(Type type) {
-    for (List<Type> tryCatch : tryCatches) {
-      for (Type tryCatchType : tryCatch) {
-        if (type.isSubtypeOf(tryCatchType)) {
-          return false;
-        }
-      }
-    }
-    return true;
+    return tryCatches.stream()
+      .flatMap(List::stream)
+      .noneMatch(tryCatchType -> type.isSubtypeOf(tryCatchType));
   }
 
 }
