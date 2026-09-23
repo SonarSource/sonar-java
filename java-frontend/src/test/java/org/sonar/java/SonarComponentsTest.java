@@ -1159,27 +1159,27 @@ class SonarComponentsTest {
   class Logging {
     private final DecimalFormat formatter = new DecimalFormat("00");
 
-    private final SensorContextTester context = SensorContextTester.create(new File(""));
-    private final TestFileSystem fs = context.fileSystem();
-    private final MapSettings settings = context.settings();
+    private final SensorContextTester loggingContext = SensorContextTester.create(new File(""));
+    private final TestFileSystem fs = loggingContext.fileSystem();
+    private final MapSettings settings = loggingContext.settings();
 
-    private final ClasspathForMain javaClasspath = new ClasspathForMain(context.config(), fs);
-    private final ClasspathForTest javaTestClasspath = new ClasspathForTest(context.config(), fs);
+    private final ClasspathForMain javaClasspath = new ClasspathForMain(loggingContext.config(), fs);
+    private final ClasspathForTest javaTestClasspath = new ClasspathForTest(loggingContext.config(), fs);
 
     private SonarComponents sonarComponents;
 
     @RegisterExtension
-    public LogTesterJUnit5 logTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
+    public LogTesterJUnit5 loggingLogTester = new LogTesterJUnit5().setLevel(Level.DEBUG);
 
     @BeforeEach
     void beforeEach() {
       sonarComponents = new SonarComponents(null, fs, javaClasspath, javaTestClasspath, null, null);
-      sonarComponents.setSensorContext(context);
+      sonarComponents.setSensorContext(loggingContext);
     }
 
     @Test
     void log_only_50_undefined_types() {
-      logTester.setLevel(Level.DEBUG);
+      loggingLogTester.setLevel(Level.DEBUG);
       String source = generateSource(26);
 
       // artificially populated the semantic errors with 26 unknown types and 52 errors
@@ -1189,10 +1189,10 @@ class SonarComponentsTest {
       // triggers log
       sonarComponents.logUndefinedTypes();
 
-      assertThat(logTester.logs(Level.WARN)).containsExactly(
+      assertThat(loggingLogTester.logs(Level.WARN)).containsExactly(
         "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
 
-      List<String> debugLogs = logTester.logs(Level.DEBUG);
+      List<String> debugLogs = loggingLogTester.logs(Level.DEBUG);
       assertThat(debugLogs).hasSize(1);
 
       String list = debugLogs.get(0);
@@ -1212,19 +1212,19 @@ class SonarComponentsTest {
 
     @Test
     void remove_info_and_warning_from_log_related_to_undefined_types() {
-      logTester.setLevel(Level.ERROR);
+      loggingLogTester.setLevel(Level.ERROR);
       String source = generateSource(26);
       sonarComponents.collectUndefinedTypes(DEFAULT_PATH,
         ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
       sonarComponents.logUndefinedTypes();
 
-      assertThat(logTester.logs(Level.WARN)).isEmpty();
-      assertThat(logTester.logs(Level.DEBUG)).isEmpty();
+      assertThat(loggingLogTester.logs(Level.WARN)).isEmpty();
+      assertThat(loggingLogTester.logs(Level.DEBUG)).isEmpty();
     }
 
     @Test
     void log_all_undefined_types_if_less_than_threshold() {
-      logTester.setLevel(Level.DEBUG);
+      loggingLogTester.setLevel(Level.DEBUG);
       String source = generateSource(1);
 
       // artificially populated the semantic errors with 1 unknown types and 2 errors
@@ -1234,10 +1234,10 @@ class SonarComponentsTest {
       // triggers log
       sonarComponents.logUndefinedTypes();
 
-      assertThat(logTester.logs(Level.WARN)).containsExactly(
+      assertThat(loggingLogTester.logs(Level.WARN)).containsExactly(
         "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them.");
 
-      List<String> debugLogs = logTester.logs(Level.DEBUG);
+      List<String> debugLogs = loggingLogTester.logs(Level.DEBUG);
       assertThat(debugLogs).hasSize(1);
 
       assertThat(debugLogs.get(0))
@@ -1249,10 +1249,10 @@ class SonarComponentsTest {
 
     @Test
     void suspicious_empty_libraries_should_be_logged() {
-      logTester.setLevel(Level.INFO);
+      loggingLogTester.setLevel(Level.INFO);
       logUndefinedTypesWithOneMainAndOneTest();
 
-      assertThat(logTester.logs(Level.WARN)).containsExactly(
+      assertThat(loggingLogTester.logs(Level.WARN)).containsExactly(
         "Missing 'sonar.java.libraries' property. You might end up with less precise analysis results.",
         "Missing 'sonar.java.test.libraries' property. You might end up with less precise analysis results.",
         "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them."
@@ -1261,20 +1261,20 @@ class SonarComponentsTest {
 
     @Test
     void suspicious_empty_libraries_should_not_be_logged_in_autoscan() {
-      logTester.setLevel(Level.INFO);
+      loggingLogTester.setLevel(Level.INFO);
       // Enable autoscan with a property
       settings.setProperty(SonarComponents.SONAR_AUTOSCAN, true);
 
       logUndefinedTypesWithOneMainAndOneTest();
 
-      assertThat(logTester.logs(Level.WARN)).containsExactly(
+      assertThat(loggingLogTester.logs(Level.WARN)).containsExactly(
         "Unresolved imports/types have been detected during analysis. Enable DEBUG mode to see them."
       );
     }
 
     @Test
     void log_problems_with_list_of_paths_of_files_affected() {
-      logTester.setLevel(Level.DEBUG);
+      loggingLogTester.setLevel(Level.DEBUG);
       String source = generateSource(1);
 
       // Add one test and one main file
@@ -1290,7 +1290,7 @@ class SonarComponentsTest {
         ((JavaTree.CompilationUnitTreeImpl) JParserTestUtils.parse(source)).sema.undefinedTypes());
       sonarComponents.logUndefinedTypes();
 
-      List<String> debugMessage = logTester.logs(Level.DEBUG);
+      List<String> debugMessage = loggingLogTester.logs(Level.DEBUG);
       assertThat(debugMessage).hasSize(1);
 
       List<String> linesInDebugMessage = debugMessage.stream()
