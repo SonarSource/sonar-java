@@ -43,7 +43,7 @@ class SpringTelemetryTest extends ScannerIntegrationAbstractTest {
   private static final long SINGLE_ELEMENT_HASH_SET_SIZE_BYTES = 176L;
   private static final long TWO_ELEMENT_HASH_SET_SIZE_BYTES = 208L;
   private static final long SINGLE_ELEMENT_LIST_SIZE_BYTES = 48L;
-  private static final long BEAN_DEFINITION_HOLDER_SHALLOW_SIZE_BYTES = 40L;
+  private static final long BEAN_DEFINITION_HOLDER_SHALLOW_SIZE_BYTES = 48L;
   private static final long UPPER_BOUND_HEADROOM_MULTIPLIER = 3L;
 
   /**

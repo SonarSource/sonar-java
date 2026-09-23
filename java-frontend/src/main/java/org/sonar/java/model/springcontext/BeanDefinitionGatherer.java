@@ -129,6 +129,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
         AnalyzerMessage.textSpanFor(classTree.simpleName()),
         meta.isAnnotatedWith(PRIMARY_ANNOTATION),
         classProfiles,
+        SpringUtils.extractQualifierValue(meta),
         dependencies,
         typeHierarchy);
       beansCollectedAtFileLevel.add(beanData);
@@ -186,7 +187,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
         var holderBuilder = new BeanDefinitionHolder.Builder(
           data.type(), context.getModuleKey(), data.beanPackage(), location)
           .dependingBeans(projectToNames(data.dependencies()))
-          .profiles(data.profiles());
+          .profiles(data.profiles())
+          .qualifier(data.qualifier());
         if (data.isPrimary()) {
           holderBuilder.primary();
         }
@@ -232,10 +234,11 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
     boolean isPrimary = beanMeta.isAnnotatedWith(PRIMARY_ANNOTATION);
     String ownProfiles = SpringUtils.extractProfiles(beanMeta);
     String profiles = composeProfiles(classProfiles, ownProfiles);
+    String qualifier = SpringUtils.extractQualifierValue(beanMeta);
     var textSpan = AnalyzerMessage.textSpanFor(method.simpleName());
 
     for (String beanName : beanNames) {
-      var beanData = new BeanDefinitionHolder.InputFileData(beanName, returnTypeFqn, pkg, textSpan, isPrimary, profiles, dependencies, typeHierarchy);
+      var beanData = new BeanDefinitionHolder.InputFileData(beanName, returnTypeFqn, pkg, textSpan, isPrimary, profiles, qualifier, dependencies, typeHierarchy);
       beansCollectedAtFileLevel.add(beanData);
     }
   }
