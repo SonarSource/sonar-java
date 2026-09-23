@@ -25,10 +25,16 @@ class CollectionsSortCheckTest {
 
   @Test
   void test() {
-    CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/CollectionsSortCheckSample.java"))
-      .withCheck(new CollectionsSortCheck())
+    createCheckVerifier()
+      .withJavaVersion(8)
       .verifyIssues();
+  }
+
+  @Test
+  void test_no_issues_for_older_versions() {
+    createCheckVerifier()
+      .withJavaVersion(7)
+      .verifyNoIssues();
   }
 
   @Test
@@ -36,7 +42,14 @@ class CollectionsSortCheckTest {
     CheckVerifier.newVerifier()
       .onFile(mainCodeSourcesPath("checks/CollectionsSortCheckSample.java"))
       .withCheck(new CollectionsSortCheck())
+      .withJavaVersion(8)
       .withoutSemantic()
       .verifyIssues();
+  }
+
+  private static CheckVerifier createCheckVerifier() {
+    return CheckVerifier.newVerifier()
+      .onFile(mainCodeSourcesPath("checks/CollectionsSortCheckSample.java"))
+      .withCheck(new CollectionsSortCheck());
   }
 }

@@ -16,18 +16,35 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Set;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S9412")
-public class CollectionsSortCheck extends AbstractMethodDetection {
+public class CollectionsSortCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
+
+  private static final Set<Tree.Kind> SAFE_KINDS = Set.of(
+    Tree.Kind.IDENTIFIER,
+    Tree.Kind.MEMBER_SELECT,
+    Tree.Kind.METHOD_INVOCATION,
+    Tree.Kind.ARRAY_ACCESS_EXPRESSION,
+    Tree.Kind.PARENTHESIZED_EXPRESSION,
+    Tree.Kind.NEW_CLASS);
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava8Compatible();
+  }
 
   private static final String MESSAGE = "Replace this \"Collections.sort()\" with \"List.sort()\".";
 
@@ -56,6 +73,9 @@ public class CollectionsSortCheck extends AbstractMethodDetection {
 
   private JavaQuickFix buildQuickFix(MethodInvocationTree mit, ExpressionTree listArgument, boolean hasTwoArgs) {
     String listText = QuickFixHelper.contentForTree(listArgument, context);
+    if (!listArgument.is(SAFE_KINDS.toArray(new Tree.Kind[0]))) {
+      listText = "(" + listText + ")";
+    }
     String replacement;
     if (hasTwoArgs) {
       String comparatorText = QuickFixHelper.contentForTree(mit.arguments().get(1), context);
