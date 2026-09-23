@@ -35,6 +35,15 @@ class S9410CheckSample {
     void setValue(T v) { this.value = v; }
   }
 
+  static class ParentWithField {
+    String parentField;
+    static int staticParentField;
+  }
+
+  static class ChildWithOwnField extends ParentWithField {
+    int childOnly;
+  }
+
   static void verify(MethodHandles.Lookup lookup) throws Throwable {
     MethodHandle valid = lookup.findVirtual(UserService.class, "updateUser", MethodType.methodType(int.class, int.class, String.class));
     MethodHandle wrongParameter = lookup.findVirtual(UserService.class, "updateUser", MethodType.methodType(int.class, String.class, String.class)); // Noncompliant {{Use a type signature matching the target method.}}
@@ -134,6 +143,42 @@ class S9410CheckSample {
     // findSpecial with non-existent method name — noncompliant
     MethodHandle badSpecial = lookup.findSpecial(UserService.class, "nonExistent",
       MethodType.methodType(void.class), UserService.class); // Noncompliant
+
+    // Wrong number of arguments for findConstructor — ignored (covers args.size() != 2)
+    lookup.findConstructor(UserService.class, MethodType.methodType(void.class, int.class), UserService.class);
+
+    // Wrong number of arguments for findVirtual — ignored (covers args.size() != 3)
+    lookup.findVirtual(UserService.class, "updateUser");
+
+    // Wrong number of arguments for findVarHandle — ignored (covers args.size() != 3)
+    lookup.findVarHandle(UserService.class, "count");
+
+    // MethodType.methodType() with no arguments — ignored (covers arguments.isEmpty() in methodSignature)
+    lookup.findVirtual(UserService.class, "noArguments", MethodType.methodType());
+
+    // Wrong field type on inherited field — noncompliant (covers field inherited from parent miss)
+    VarHandle wrongInheritedField = lookup.findVarHandle(Child.class, "count", String.class); // Noncompliant
+
+    // Lookup of non-existent field on child (only exists in parent) — noncompliant static mismatch
+    VarHandle wrongStaticInherited = lookup.findStaticVarHandle(Child.class, "count", int.class); // Noncompliant
+
+    // Field inherited from parent with correct type — compliant (covers findField supertype match)
+    VarHandle parentFieldOk = lookup.findVarHandle(ChildWithOwnField.class, "parentField", String.class);
+
+    // Field inherited from parent with wrong type — noncompliant
+    VarHandle parentFieldWrong = lookup.findVarHandle(ChildWithOwnField.class, "parentField", int.class); // Noncompliant
+
+    // Static field inherited from parent — compliant
+    VarHandle staticParentOk = lookup.findStaticVarHandle(ChildWithOwnField.class, "staticParentField", int.class);
+
+    // Null target type for findConstructor — ignored (covers targetType == null for constructor)
+    lookup.findConstructor(clazz, MethodType.methodType(void.class));
+
+    // Interface target with non-existent method — noncompliant
+    MethodHandle greeterNoMethod = lookup.findVirtual(Greeter.class, "nonExistent", MethodType.methodType(void.class)); // Noncompliant
+
+    // Lookup of generic field — compliant (covers typeVar in sameErasure for fields)
+    VarHandle genericField = lookup.findVarHandle(GenericHolder.class, "value", Object.class);
   }
 
   private static String getMethodName() {

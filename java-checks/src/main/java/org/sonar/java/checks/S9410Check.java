@@ -92,14 +92,16 @@ public class S9410Check extends IssuableSubscriptionVisitor {
       memberName = constantString(arguments.get(1));
       methodTypeIndex = 2;
     }
-    if (targetType == null || (memberName == null && !FIND_CONSTRUCTOR.equals(name))) {
+    boolean isConstructor = FIND_CONSTRUCTOR.equals(name);
+    if (targetType == null || (memberName == null && !isConstructor)) {
       return;
     }
     MethodSignature signature = methodSignature(arguments.get(methodTypeIndex));
     if (signature == null || !targetType.isClass()) {
       return;
     }
-    boolean found = findMethod(targetType, memberName, signature, staticLookup, FIND_CONSTRUCTOR.equals(name));
+    String resolvedName = isConstructor ? "<init>" : memberName;
+    boolean found = findMethod(targetType, resolvedName, signature, staticLookup, isConstructor);
     if (!found) {
       reportIssue(arguments.get(methodTypeIndex), "Use a type signature matching the target method.");
     }
@@ -158,8 +160,7 @@ public class S9410Check extends IssuableSubscriptionVisitor {
   }
 
   private static boolean findMethod(Type targetType, String name, MethodSignature signature, boolean staticLookup, boolean constructor) {
-    String symbolName = constructor ? "<init>" : name;
-    if (matchesMethodInType(targetType, symbolName, signature, staticLookup, constructor)) {
+    if (matchesMethodInType(targetType, name, signature, staticLookup, constructor)) {
       return true;
     }
     if (constructor) {
@@ -169,26 +170,24 @@ public class S9410Check extends IssuableSubscriptionVisitor {
       if (superType.isUnknown()) {
         return true;
       }
-      if (matchesMethodInType(superType, symbolName, signature, staticLookup, false)) {
+      if (matchesMethodInType(superType, name, signature, staticLookup, false)) {
         return true;
       }
     }
     if (targetType.symbol().isInterface()) {
       Type objectType = targetType.symbol().superClass();
       if (objectType != null && !objectType.isUnknown()) {
-        return matchesMethodInType(objectType, symbolName, signature, staticLookup, false);
+        return matchesMethodInType(objectType, name, signature, staticLookup, false);
       }
     }
     return false;
   }
 
   private static boolean matchesMethodInType(Type type, String symbolName, MethodSignature signature, boolean staticLookup, boolean constructor) {
-    for (Symbol symbol : type.symbol().lookupSymbols(symbolName)) {
-      if (symbol instanceof Symbol.MethodSymbol method && matchesMethod(method, signature, staticLookup, constructor)) {
-        return true;
-      }
-    }
-    return false;
+    return type.symbol().lookupSymbols(symbolName).stream()
+      .filter(Symbol.MethodSymbol.class::isInstance)
+      .map(Symbol.MethodSymbol.class::cast)
+      .anyMatch(method -> matchesMethod(method, signature, staticLookup, constructor));
   }
 
   private static boolean matchesMethod(Symbol.MethodSymbol method, MethodSignature signature, boolean staticLookup, boolean constructor) {
