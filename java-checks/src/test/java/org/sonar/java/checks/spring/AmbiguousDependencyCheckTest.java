@@ -106,6 +106,12 @@ class AmbiguousDependencyCheckTest {
   }
 
   @Test
+  void map_keyed_by_bean_name_is_never_ambiguous() {
+    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "MapInjectionConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
   void one_resolved_injection_point_does_not_hide_another_ambiguous_one_of_the_same_type() {
     SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "MixedInjectionConsumer.java");
     assertThat(check.execute(model)).hasSize(1);

@@ -48,7 +48,8 @@ public class AmbiguousDependencyCheck implements JavaCheck, SpringContextCheck {
   /**
    * Creates the list of issues using the spring context model.
    * Injection points that collect every matching bean ({@code List<T>}, {@code Set<T>}, {@code Collection<T>},
-   * {@code T[]}) are skipped: Spring injects all candidates there, so they can never be ambiguous.
+   * {@code T[]}, {@code Map<String, T>}) are skipped: Spring injects all candidates there, so they can never be
+   * ambiguous.
    * For each remaining injection point, retrieves the beans of the required type that are visible within the
    * consumer's own Spring context (same module, or in a package covered by its {@code @ComponentScan}),
    * then checks for ambiguity: a single candidate, or a single one marked {@code @Primary}, is unambiguous.

@@ -71,6 +71,8 @@ public final class SpringUtils {
    * as {@code DefaultListableBeanFactory#resolveMultipleBeans} does.
    */
   private static final Set<String> MULTI_BEAN_COLLECTIONS = Set.of("java.util.List", "java.util.Set", "java.util.Collection");
+  private static final String MAP_TYPE = "java.util.Map";
+  private static final String STRING_TYPE = "java.lang.String";
 
   public static final List<String> STEREOTYPE_ANNOTATIONS = List.of(
     COMPONENT_ANNOTATION,
@@ -267,10 +269,12 @@ public final class SpringUtils {
   /**
    * Resolves the declared type of an injection point to the type Spring actually matches beans against.
    *
-   * <p>For {@code T[]}, {@code List<T>}, {@code Set<T>} and {@code Collection<T>}, Spring collects every bean of the
-   * element type {@code T}, so the dependency is recorded against {@code T} rather than against the erased collection
-   * type, and flagged as multi-bean. A raw collection is recorded against the collection type itself, since its
-   * element type is unknown, but is still multi-bean.
+   * <p>For {@code T[]}, {@code List<T>}, {@code Set<T>}, {@code Collection<T>} and {@code Map<String, T>}, Spring
+   * collects every bean of the element type {@code T}, so the dependency is recorded against {@code T} rather than
+   * against the erased collection type, and flagged as multi-bean.
+   *
+   * <p>Anything else resolves to a single bean of the declared type, including a raw collection or map, whose
+   * element type cannot be resolved, and a map keyed by something other than the bean name.
    *
    * @param type The declared type of the field or parameter at the injection point
    * @return The type to match beans against, and whether all of them are injected
@@ -279,10 +283,14 @@ public final class SpringUtils {
     if (type.isArray()) {
       return new DependencyTarget(((Type.ArrayType) type).elementType().fullyQualifiedName(), true);
     }
-    String erasureFqn = type.erasure().fullyQualifiedName();
-    if (MULTI_BEAN_COLLECTIONS.contains(erasureFqn)) {
-      String elementFqn = type.isParameterized() ? type.typeArguments().getFirst().fullyQualifiedName() : erasureFqn;
-      return new DependencyTarget(elementFqn, true);
+    if (type.isParameterized()) {
+      String erasureFqn = type.erasure().fullyQualifiedName();
+      if (MULTI_BEAN_COLLECTIONS.contains(erasureFqn)) {
+        return new DependencyTarget(type.typeArguments().get(0).fullyQualifiedName(), true);
+      }
+      if (MAP_TYPE.equals(erasureFqn) && type.typeArguments().get(0).is(STRING_TYPE)) {
+        return new DependencyTarget(type.typeArguments().get(1).fullyQualifiedName(), true);
+      }
     }
     return new DependencyTarget(type.fullyQualifiedName(), false);
   }

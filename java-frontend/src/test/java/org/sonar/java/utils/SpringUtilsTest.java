@@ -36,6 +36,7 @@ import static org.sonar.java.model.springcontext.ProfileExpression.and;
 import static org.sonar.java.model.springcontext.ProfileExpression.not;
 import static org.sonar.java.model.springcontext.ProfileExpression.or;
 import static org.sonar.java.model.springcontext.ProfileExpression.profile;
+import static org.assertj.core.api.Assertions.tuple;
 
 class SpringUtilsTest {
 
@@ -494,7 +495,11 @@ class SpringUtilsTest {
           Runnable[] arrayOfRunnables,
           java.util.List rawList,
           java.util.ArrayList<Runnable> concreteList,
-          Runnable singleRunnable) {
+          Runnable singleRunnable,
+          java.util.Map<String, Runnable> runnablesByName,
+          java.util.Map<Integer, Runnable> runnablesByIndex,
+          java.util.Map rawMap,
+          java.util.HashMap<String, Runnable> concreteMap) {
           return new Object();
         }
       }
@@ -504,30 +509,44 @@ class SpringUtilsTest {
     private final Map<String, Set<InjectionPoint.InputFileData>> dependencies = SpringUtils.collectDependenciesOnMethod(createBean);
 
     @Test
-    void collection_and_array_parameters_are_grouped_under_their_element_type() {
+    void collection_map_and_array_parameters_are_grouped_under_their_element_type() {
       assertThat(dependencies.get("java.lang.Runnable"))
         .extracting(InjectionPoint.InputFileData::name)
-        .containsExactlyInAnyOrder("listOfRunnables", "setOfRunnables", "collectionOfRunnables", "arrayOfRunnables", "singleRunnable");
+        .containsExactlyInAnyOrder("listOfRunnables", "setOfRunnables", "collectionOfRunnables", "arrayOfRunnables",
+          "runnablesByName", "singleRunnable");
     }
 
     @Test
-    void collection_and_array_parameters_collect_every_matching_bean() {
+    void collection_map_and_array_parameters_collect_every_matching_bean() {
       assertThat(dependencies.get("java.lang.Runnable"))
         .filteredOn(InjectionPoint.InputFileData::multiple)
         .extracting(InjectionPoint.InputFileData::name)
-        .containsExactlyInAnyOrder("listOfRunnables", "setOfRunnables", "collectionOfRunnables", "arrayOfRunnables");
+        .containsExactlyInAnyOrder("listOfRunnables", "setOfRunnables", "collectionOfRunnables", "arrayOfRunnables", "runnablesByName");
     }
 
     @Test
-    void a_raw_collection_keeps_its_own_type_but_still_collects_every_matching_bean() {
+    void raw_collection_or_map_resolves_to_a_single_bean_of_its_own_type() {
       assertThat(dependencies.get("java.util.List"))
-        .containsExactly(new InjectionPoint.InputFileData("rawList", new AnalyzerMessage.TextSpan(11, 19, 11, 26), true));
+        .containsExactly(new InjectionPoint.InputFileData("rawList", new AnalyzerMessage.TextSpan(11, 19, 11, 26), false));
+      assertThat(dependencies.get("java.util.Map"))
+        .extracting(InjectionPoint.InputFileData::name, InjectionPoint.InputFileData::multiple)
+        .contains(tuple("rawMap", false));
     }
 
     @Test
-    void a_concrete_collection_class_is_not_a_multi_bean_injection_point() {
+    void map_that_is_not_keyed_by_bean_name_resolves_to_a_single_bean() {
+      assertThat(dependencies.get("java.util.Map"))
+        .extracting(InjectionPoint.InputFileData::name, InjectionPoint.InputFileData::multiple)
+        .containsExactlyInAnyOrder(tuple("runnablesByIndex", false), tuple("rawMap", false));
+    }
+
+    @Test
+    void concrete_collection_or_map_class_is_not_a_multi_bean_injection_point() {
       assertThat(dependencies.get("java.util.ArrayList"))
         .containsExactly(new InjectionPoint.InputFileData("concreteList", new AnalyzerMessage.TextSpan(12, 34, 12, 46), false));
+      assertThat(dependencies.get("java.util.HashMap"))
+        .extracting(InjectionPoint.InputFileData::name, InjectionPoint.InputFileData::multiple)
+        .containsExactly(tuple("concreteMap", false));
     }
 
     @Test
