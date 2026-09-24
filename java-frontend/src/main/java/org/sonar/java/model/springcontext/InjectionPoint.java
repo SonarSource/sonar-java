@@ -23,20 +23,20 @@ import org.sonar.java.telemetry.SizeEstimator;
 /**
  * A single point in the source where a dependency is injected, as registered in {@link TypeToDependenciesIndex}.
  *
- * @param name     the dependency name, either the field/parameter name at the injection point or the value of
- *                 the {@code @Qualifier} annotation if present
- * @param module   the module key of the bean that declares this injection point
- * @param location the source location of the injection point
- * @param multiple whether Spring collects every bean of the required type here, as it does for a collection or
- *                 array injection point, instead of resolving a single one
+ * @param name              The dependency name, either the field/parameter name at the injection point or the value of the {@code @Qualifier} annotation if present.
+ * @param module            The module key of the bean that declares this injection point.
+ * @param profileExpression The condition under which the bean declaring this injection point is active, which is also the condition under which the injection happens at all.
+ * @param location          The source location of the injection point.
+ * @param multiple          whether Spring collects every bean of the required type here, as it does for a collection or array injection point, instead of resolving a single one.
  */
-public record InjectionPoint(String name, String module, BeanLocation location, boolean multiple) implements SizeEstimable {
+public record InjectionPoint(String name, String module, ProfileExpression profileExpression, BeanLocation location, boolean multiple) implements SizeEstimable {
 
   @Override
   public long estimateSize(SizeEstimator estimator) {
-    return estimator.estimateShallowObject(this, 3, 1)
+    return estimator.estimateShallowObject(this, 4, 1)
       + estimator.estimateString(name)
       + estimator.estimateString(module)
+      + estimator.estimateObject(profileExpression)
       + estimator.estimateObject(location);
   }
 

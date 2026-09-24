@@ -5,9 +5,9 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-// Scenario: a @Primary candidate that also happens to be profiled must not be discarded before the primary
-// check runs — it is already the unique primary on the raw candidate set, so no issue is expected regardless
-// of its profile. Three candidates of type BeanClassLoaderAware (this class, PlainClassLoaderComponentA,
+// Scenario: a profiled @Primary candidate only resolves the ambiguity while its profile is active. When no
+// profile is active, the two non-primary candidates compete alone — issue expected.
+// Three candidates of type BeanClassLoaderAware (this class, PlainClassLoaderComponentA,
 // PlainClassLoaderComponentB), used only by ClassLoaderConsumer in this scenario. A distinct interface from
 // the other scenarios in this package, so that a whole-module scan does not merge candidate pools across
 // scenarios.

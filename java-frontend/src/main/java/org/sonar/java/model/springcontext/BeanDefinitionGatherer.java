@@ -197,7 +197,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
           springContextModel.getTypeToBeansIndex().addBeanForType(typeFqn, data.beanName(), context.getModuleKey(), data.beanPackage());
         }
         data.dependencies().forEach((typeFqn, points) -> points.forEach(point -> springContextModel.getTypeToDependenciesIndex()
-          .addDependencyForType(typeFqn, point.name(), context.getModuleKey(), new BeanLocation(inputFile, point.span()), point.multiple())));
+          .addDependencyForType(typeFqn, point.name(), context.getModuleKey(), data.profileExpression(), new BeanLocation(inputFile, point.span()), point.multiple())));
       }
     });
   }
