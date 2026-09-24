@@ -4,32 +4,6 @@
 81,
 82
 ],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/request/ProxyClusterStatsRequestBuilder.java": [
-72
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/request/ProxyGetRequestBuilder.java": [
-69,
-70,
-71
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/request/ProxyIndexRequestBuilder.java": [
-69,
-70,
-71
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/request/ProxyMultiGetRequestBuilder.java": [
-73,
-76
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/request/ProxyNodesStatsRequestBuilder.java": [
-72
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/request/ProxyPutMappingRequestBuilder.java": [
-76
-],
-"org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/es/request/ProxySearchRequestBuilder.java": [
-79
-],
 "org.sonarsource.sonarqube:sonar-server:src/main/java/org/sonar/server/issue/workflow/Transition.java": [
 118
 ],
