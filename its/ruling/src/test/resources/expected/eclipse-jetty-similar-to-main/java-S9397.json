@@ -2,24 +2,12 @@
 "org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCompliance.java": [
 249
 ],
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpParser.java": [
-1972,
-1974
-],
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/AbstractPathSpec.java": [
-64
-],
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/MappedResource.java": [
-99
-],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java": [
 462
 ],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ConnectionStatistics.java": [
 217,
-218,
-219,
-220
+218
 ],
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java": [
 368
@@ -34,40 +22,10 @@
 "org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
 139
 ],
-"org.eclipse.jetty:jetty-project:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java": [
-249,
-257
-],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java": [
 308
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelOverHttp.java": [
-339
-],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpConnection.java": [
-931
-],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartParser.java": [
-667,
-712,
-714
-],
 "org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
 480
-],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java": [
-610
-],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandlerCollection.java": [
-374
-],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java": [
-311
-],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/DefaultSessionIdManager.java": [
-488
-],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
-599
 ]
 }
