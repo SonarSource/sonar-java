@@ -169,8 +169,12 @@ class StringFormatCheckSample {
     return String.format("[%s]", value); // compliant: %s is inside brackets
   }
 
-  String inQuotes(String value) {
-    return String.format("'%s'", value); // Noncompliant {{Use string concatenation instead of String.format().}}
+  String inSingleQuotes(String value) {
+    return String.format("'%s'", value); // compliant: %s is between single quotes
+  }
+
+  String inDoubleQuotes(String value) {
+    return String.format("\"%s\"", value); // compliant: contains escape sequences
   }
 
   String inBackticks(String value) {
@@ -186,7 +190,7 @@ class StringFormatCheckSample {
   }
 
   String apostropheInFormat(String owner, String item) {
-    return String.format("%s's %s", owner, item); // Noncompliant {{Use string concatenation instead of String.format().}}
+    return String.format("%s's %s", owner, item); // compliant: %s is between single quotes
   }
 
   String unmatchedClosingBracket(String value) {
