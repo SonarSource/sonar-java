@@ -121,7 +121,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
     if (SpringUtils.STEREOTYPE_ANNOTATIONS.stream().anyMatch(meta::isAnnotatedWith)) {
       String beanName = SpringUtils.extractBeanNameFromAnnotation(meta, classTree.simpleName().name());
       Map<String, Set<InjectionPoint.InputFileData>> dependencies = collectAutowiredDependenciesOnClass(classTree);
-      Set<String> typeHierarchy = JUtils.collectTypeHierarchy(classTree.symbol());
+      Set<String> typeHierarchy = JUtils.collectTypeHierarchy(classTree.symbol().type());
       ProfileExpression classProfiles = SpringUtils.extractProfileExpression(meta);
       var beanData = new BeanDefinitionHolder.InputFileData(
         beanName, fqn, pkg,
@@ -225,7 +225,7 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
       ? method.returnType().symbolType().fullyQualifiedName()
       : "";
     Set<String> typeHierarchy = method.returnType() != null
-      ? JUtils.collectTypeHierarchy(method.returnType().symbolType().symbol())
+      ? JUtils.collectTypeHierarchy(method.returnType().symbolType())
       : Set.of();
 
     // Unlike class-level beans, a {@code @Bean} method's dependencies come only from its own parameters.

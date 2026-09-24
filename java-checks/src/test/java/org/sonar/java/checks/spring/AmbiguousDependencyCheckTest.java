@@ -114,6 +114,44 @@ class AmbiguousDependencyCheckTest {
     assertThat(check.execute(model)).isEmpty();
   }
 
+  // ---- Generic types ---------------------------------------------------------
+
+  @Test
+  void beans_of_the_same_generic_type_with_different_arguments_are_not_ambiguous() {
+    SpringContextModel model = buildModel("GenericDistinctArgumentsConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void beans_of_the_same_generic_type_with_the_same_argument_are_still_ambiguous() {
+    SpringContextModel model = buildModel("GenericSameArgumentConsumer.java");
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  @Test
+  void a_raw_injection_point_is_still_ambiguous_between_every_implementation() {
+    SpringContextModel model = buildModel("RawGenericConsumer.java");
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
+  @Test
+  void bean_methods_returning_maps_that_differ_only_by_their_value_type_are_not_ambiguous() {
+    SpringContextModel model = buildModel("GenericMapBeanConfig.java", "GenericMapConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void a_qualifier_disambiguates_two_beans_of_the_same_parameterized_type() {
+    SpringContextModel model = buildModel("GenericQualifiedBeanConfig.java", "GenericQualifiedConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void two_beans_of_the_same_parameterized_type_are_ambiguous_without_a_qualifier() {
+    SpringContextModel model = buildModel("GenericQualifiedBeanConfig.java", "GenericUnqualifiedConsumer.java");
+    assertThat(check.execute(model)).hasSize(1);
+  }
+
   @Test
   void one_resolved_injection_point_does_not_hide_another_ambiguous_one_of_the_same_type() {
     SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "MixedInjectionConsumer.java");

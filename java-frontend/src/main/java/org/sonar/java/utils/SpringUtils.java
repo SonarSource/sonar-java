@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
 import org.sonar.java.model.springcontext.InjectionPoint;
 import org.sonar.java.model.springcontext.ProfileExpression;
 import org.sonar.java.model.springcontext.ProfileExpressionParser;
@@ -281,18 +282,18 @@ public final class SpringUtils {
    */
   private static DependencyTarget resolveDependencyTarget(Type type) {
     if (type.isArray()) {
-      return new DependencyTarget(((Type.ArrayType) type).elementType().fullyQualifiedName(), true);
+      return new DependencyTarget(JUtils.typeKey(((Type.ArrayType) type).elementType()), true);
     }
     if (type.isParameterized()) {
       String erasureFqn = type.erasure().fullyQualifiedName();
       if (MULTI_BEAN_COLLECTIONS.contains(erasureFqn)) {
-        return new DependencyTarget(type.typeArguments().get(0).fullyQualifiedName(), true);
+        return new DependencyTarget(JUtils.typeKey(type.typeArguments().get(0)), true);
       }
       if (MAP_TYPE.equals(erasureFqn) && type.typeArguments().get(0).is(STRING_TYPE)) {
-        return new DependencyTarget(type.typeArguments().get(1).fullyQualifiedName(), true);
+        return new DependencyTarget(JUtils.typeKey(type.typeArguments().get(1)), true);
       }
     }
-    return new DependencyTarget(type.fullyQualifiedName(), false);
+    return new DependencyTarget(JUtils.typeKey(type), false);
   }
 
   /**
