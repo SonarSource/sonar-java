@@ -6,27 +6,27 @@ import java.util.Locale;
 class StringFormatCheckSample {
 
   String simple(Object value) {
-    return String.format("%s", value); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
+    return String.format("%s", value); // Noncompliant {{Use String.valueOf() instead of String.format().}}
   }
 
   String path(String directory, String filename) {
-    return String.format("%s/%s", directory, filename); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
+    return String.format("%s/%s", directory, filename); // Noncompliant {{Use string concatenation instead of String.format().}}
   }
 
   String label(String key, Object value) {
-    return String.format("%s: %s", key, value); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
+    return String.format("%s: %s", key, value); // Noncompliant {{Use string concatenation instead of String.format().}}
   }
 
   String wrapped(String value) {
-    return String.format("prefix-%s-suffix", value); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
+    return String.format("prefix-%s-suffix", value); // Noncompliant {{Use string concatenation instead of String.format().}}
   }
 
   String localized(Object value) {
-    return String.format(Locale.ROOT, "%s", value); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
+    return String.format(Locale.ROOT, "%s", value); // Noncompliant {{Use String.valueOf() instead of String.format().}}
   }
 
   String escapedPercent(String value) {
-    return String.format("100%%: %s", value); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
+    return String.format("100%%: %s", value); // Noncompliant {{Use string concatenation instead of String.format().}}
   }
 
   String numeric(double amount) {
@@ -98,15 +98,15 @@ class StringFormatCheckSample {
   }
 
   String localizedConcat(String a, String b) {
-    return String.format(Locale.ROOT, "%s/%s", a, b); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
+    return String.format(Locale.ROOT, "%s/%s", a, b); // Noncompliant {{Use string concatenation instead of String.format().}}
   }
 
   String multipleEscapedPercents(String value) {
-    return String.format("%%:%s:%%", value); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
+    return String.format("%%:%s:%%", value); // Noncompliant {{Use string concatenation instead of String.format().}}
   }
 
   String threeArguments(String a, String b, String c) {
-    return String.format("%s-%s-%s", a, b, c); // Noncompliant {{Use String.valueOf() or string concatenation instead of String.format().}}
+    return String.format("%s-%s-%s", a, b, c); // Noncompliant {{Use string concatenation instead of String.format().}}
   }
 
   String localizedNoArgs() {

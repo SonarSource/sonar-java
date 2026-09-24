@@ -76,7 +76,14 @@ public class StringFormatCheck extends AbstractMethodDetection {
     if (valueArguments.stream().anyMatch(arg -> arg.symbolType().isSubtypeOf("java.util.Formattable"))) {
       return;
     }
-    reportIssue(invocation.methodSelect(), "Use String.valueOf() or string concatenation instead of String.format().");
+    String message = isJustPlaceholder(rawValue)
+      ? "Use String.valueOf() instead of String.format()."
+      : "Use string concatenation instead of String.format().";
+    reportIssue(invocation.methodSelect(), message);
+  }
+
+  private static boolean isJustPlaceholder(String rawValue) {
+    return "%s".equals(rawValue);
   }
 
   private static int countSimplePlaceholders(String value) {
