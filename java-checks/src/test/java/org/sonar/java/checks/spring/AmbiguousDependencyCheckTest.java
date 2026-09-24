@@ -94,6 +94,24 @@ class AmbiguousDependencyCheckTest {
   }
 
   @Test
+  void collection_and_array_fields_are_never_ambiguous() {
+    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "CollectionInjectionConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void collection_and_array_parameters_of_a_bean_method_are_never_ambiguous() {
+    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "CollectionInjectionConfig.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
+  void map_keyed_by_bean_name_is_never_ambiguous() {
+    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "MapInjectionConsumer.java");
+    assertThat(check.execute(model)).isEmpty();
+  }
+
+  @Test
   void one_resolved_injection_point_does_not_hide_another_ambiguous_one_of_the_same_type() {
     SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "MixedInjectionConsumer.java");
     assertThat(check.execute(model)).hasSize(1);
@@ -228,7 +246,7 @@ class AmbiguousDependencyCheckTest {
   private static void registerInjectionPoint(SpringContextModel model, String type, String fieldName,
     String module, InputFile consumerFile) {
     model.getTypeToDependenciesIndex().addDependencyForType(type, fieldName, module,
-      new BeanLocation(consumerFile, new AnalyzerMessage.TextSpan(5)));
+      new BeanLocation(consumerFile, new AnalyzerMessage.TextSpan(5)), false);
   }
 
   private static InputFile dummyInputFile(String path) {
