@@ -180,6 +180,30 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(model.getBeanDefinitionRegistry().getByName("noScanAnnotations")).isEmpty();
   }
 
+  // ---- Generic bean types ----------------------------------------------------
+
+  @Test
+  void a_bean_of_a_parameterized_type_is_indexed_under_both_its_erased_and_parameterized_type() {
+    scan("src/test/files/springcontext/GenericBeans.java");
+
+    assertThat(namesForType("java.util.Map")).containsExactly("usersById");
+    assertThat(namesForType("java.util.Map<java.lang.Integer,checks.spring.context.User>")).containsExactly("usersById");
+    assertThat(namesForType("java.util.List")).containsExactly("orders");
+    assertThat(namesForType("java.util.List<checks.spring.context.Order>")).containsExactly("orders");
+  }
+
+  @Test
+  void a_bean_implementing_a_generic_interface_is_indexed_under_the_substituted_interface() {
+    scan("src/test/files/springcontext/GenericBeans.java");
+
+    assertThat(namesForType("checks.spring.context.Repository")).containsExactly("userRepository");
+    assertThat(namesForType("checks.spring.context.Repository<checks.spring.context.User>")).containsExactly("userRepository");
+  }
+
+  private Set<String> namesForType(String type) {
+    return model.getTypeToBeansIndex().getNamesForType(type, "", Set.of());
+  }
+
   // ---- DependencyVersionAware -----------------------------------------------
 
   @Test
