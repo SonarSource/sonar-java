@@ -142,7 +142,12 @@ class AmbiguousDependencyCheckTest {
   void inactive_profiled_candidate_still_leaves_ambiguity_between_the_rest() {
     SpringContextModel model =
       buildModel("PlainEventPublisherComponentA.java", "PlainEventPublisherComponentB.java", "ProfiledEventPublisherComponent.java", "EventPublisherConsumer.java");
-    assertThat(check.execute(model)).hasSize(1);
+    assertThat(check.execute(model))
+      .singleElement()
+      .extracting(SpringContextIssue::message)
+      .asString()
+      .contains("plainEventPublisherComponentA", "plainEventPublisherComponentB")
+      .doesNotContain("profiledEventPublisherComponent");
   }
 
   @Test
