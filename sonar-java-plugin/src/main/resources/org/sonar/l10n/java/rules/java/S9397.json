@@ -10,14 +10,14 @@
     "confusing",
     "clumsy"
   ],
-  "defaultSeverity": "Major",
+  "defaultSeverity": "Minor",
   "ruleSpecification": "RSPEC-9397",
   "sqKey": "S9397",
   "scope": "All",
   "quickfix": "unknown",
   "code": {
     "impacts": {
-      "MAINTAINABILITY": "MEDIUM"
+      "MAINTAINABILITY": "LOW"
     },
     "attribute": "CLEAR"
   }

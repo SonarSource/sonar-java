@@ -1,17 +1,23 @@
-<p>This rule raises an issue when a method annotated with TestNG's <code>@DataProvider</code> returns a type that is not compatible with TestNG's
-expected return types.</p>
+<p>This rule raises an issue when a method annotated with TestNG’s <code>@DataProvider</code> returns a type that is not runtime-compatible with
+TestNG’s expected return types.</p>
 <h2>Why is this an issue?</h2>
-<p>TestNG relies on the <code>@DataProvider</code> annotation to supply test data for parameterized tests. For TestNG to properly execute these tests,
-<code>@DataProvider</code> methods must return one of the following types (or a covariant subtype):</p>
+<p>TestNG relies on the <code>@DataProvider</code> annotation to supply test data for parameterized tests. At runtime, TestNG expects
+<code>@DataProvider</code> methods to return one of these types:</p>
 <ul>
-  <li><code>Object[][]</code> - a two-dimensional array where each inner array represents parameters for one test invocation (any reference-type 2D array such as <code>String[][]</code> is also accepted)</li>
-  <li><code>Iterator&lt;Object[]&gt;</code> - an iterator of arrays for lazy evaluation of test data (any <code>Iterator</code> subtype is accepted)</li>
-  <li><code>Iterator&lt;Object&gt;</code> - an iterator of objects for single-parameter test methods (converted internally by TestNG)</li>
-  <li><code>Object[]</code> - an array where each element represents one argument for a single-parameter test method (any reference-type array such as <code>String[]</code> is also accepted, available since TestNG 6.x)</li>
+  <li><code>Object[][]</code> or any covariant reference array such as <code>String[][]</code> - a two-dimensional array where each inner array
+  represents parameters for one test invocation</li>
+  <li><code>Iterator&lt;Object[]&gt;</code> (or <code>Iterator&lt;String[]&gt;</code>, etc.) - an iterator of arrays for lazy evaluation of test
+  data</li>
+  <li><code>Object[]</code> or any covariant reference array such as <code>String[]</code> - an array where each element is itself an
+  <code>Object[]</code> (available since TestNG 6.x)</li>
 </ul>
-<p>When a <code>@DataProvider</code> method returns an incompatible type (such as <code>List</code>, <code>Stream</code>, or a primitive array), TestNG
-cannot process the data correctly. This causes test failures at runtime, even though the code may compile successfully.</p>
-<p>Using the wrong return type breaks the contract between your test code and the TestNG framework, leading to:</p>
+<p>Because Java reference arrays are covariant, a <code>String[][]</code> is assignable to <code>Object[][]</code> at runtime, and TestNG can process
+it just like <code>Object[][]</code>. The same applies to <code>String[]</code> being assignable to <code>Object[]</code>. However, primitive arrays
+such as <code>int[]</code> or <code>int[][]</code> are <strong>not</strong> reference types and cannot be assigned to <code>Object[]</code> or
+<code>Object[][]</code>, so TestNG cannot use them.</p>
+<p>When a <code>@DataProvider</code> method returns an incompatible type (such as <code>List</code>, <code>Stream</code>, or a primitive array),
+TestNG cannot process the data correctly. This causes test failures at runtime, even though the code may compile successfully.</p>
+<p>Using the wrong return type breaks the runtime contract between your test code and the TestNG framework, leading to:</p>
 <ul>
   <li>Tests that fail to execute</li>
   <li>Misleading error messages</li>
@@ -29,7 +35,7 @@ exception when attempting to invoke the test method with the provided data.</p>
   <li><strong>Maintenance burden</strong>: Team members unfamiliar with TestNG’s requirements may struggle to understand and fix the issue</li>
 </ul>
 <p>In CI/CD pipelines, this can block deployments and require emergency fixes to restore test coverage.</p>
-<h2>How to fix it in TestNG</h2>
+<h2>How to fix it</h2>
 <p>Use <code>Object[][]</code> when you have a fixed set of test data. Each inner array represents the parameters for one test invocation.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
@@ -51,7 +57,8 @@ public Object[][] provideData() {
 }
 </pre>
 <p>Use <code>Iterator&lt;Object[]&gt;</code> when you need lazy evaluation or want to generate test data on-the-fly. This is useful for large datasets
-or when data generation is expensive.</p>
+or when data generation is expensive. <code>Iterator&lt;String[]&gt;</code> is also valid since <code>String[]</code> is assignable to
+<code>Object[]</code>.</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="2" data-diff-type="noncompliant">
 @DataProvider
@@ -70,24 +77,25 @@ public Iterator&lt;Object[]&gt; provideData() {
     ).iterator();
 }
 </pre>
-<p>Primitive arrays are not compatible with TestNG's data provider contract because they cannot be assigned to <code>Object[]</code>.</p>
+<p>Covariant reference arrays such as <code>String[]</code> are assignable to <code>Object[]</code> and are accepted by TestNG. However, primitive
+arrays such as <code>int[]</code> are not reference arrays and are rejected at runtime.</p>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="3" data-diff-type="noncompliant">
 @DataProvider
-public int[][] provideData() {  // Noncompliant
-    return new int[][] {{1, 2}, {3, 4}};
+public int[] provideIds() {  // Noncompliant, primitive arrays are not assignable to Object[]
+    return new int[]{1, 2, 3};
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="3" data-diff-type="compliant">
 @DataProvider
-public Object[][] provideData() {
-    return new Object[][] {{1, 2}, {3, 4}};
+public String[] provideData() {  // Compliant, String[] is assignable to Object[]
+    return new String[]{"value1", "value2", "value3"};
 }
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>TestNG Documentation - <a href="https://testng.org/doc/documentation-main.html#parameters-dataproviders">Parameters and Data Providers</a></li>
+  <li>TestNG Documentation - <a href="https://testng.org/parameters.html">Parameters</a></li>
 </ul>
 

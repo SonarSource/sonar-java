@@ -24,7 +24,7 @@
   },
   "securityStandards": {
     "CERT": [
-      "NUM12-J"
+      "NUM12-J."
     ]
   }
 }

@@ -1,20 +1,54 @@
-<p>The ternary pattern <code>a != null ? a.equals(b) : b == null</code> is a verbose way to perform null-safe equality checks. Java provides
-<code>Objects.equals(a, b)</code> which handles null values and is clearer to read.</p>
+<p>This rule raises an issue when a ternary expression is used to perform a null-safe equality check between two objects.</p>
+<p>In Java, this specifically refers to patterns like <code>a != null ? a.equals(b) : b == null</code> that can be replaced with
+<code>Objects.equals()</code>.</p>
 <h2>Why is this an issue?</h2>
-<p>Manual null-check-then-equals patterns are error-prone and harder to read than the standard library alternative. The
-<code>java.util.Objects.equals()</code> method was introduced in Java 7 specifically to simplify null-safe equality comparisons. Using it makes the
-intent immediately clear and eliminates the risk of mistakes in the null-handling logic.</p>
+<p>Manually checking for null before calling <code>equals()</code> is a common pattern, but it’s verbose and error-prone. Developers must remember to
+handle all null combinations correctly, which increases the chance of mistakes.</p>
+<p>Java provides <code>Objects.equals()</code> as a standard utility method that handles all null cases correctly. Using this method:</p>
+<ul>
+  <li>Reduces boilerplate code</li>
+  <li>Eliminates the risk of logic errors in null handling</li>
+  <li>Makes the intent clearer to other developers</li>
+  <li>Follows established Java conventions</li>
+</ul>
+<p>The <code>Objects.equals()</code> method is available since Java 7 and is the recommended way to perform null-safe equality comparisons.</p>
+<h3>What is the potential impact?</h3>
+<p>Using manual null checks instead of <code>Objects.equals()</code> has several impacts:</p>
+<ul>
+  <li><strong>Reduced Readability</strong>: The ternary pattern is more complex and requires careful reading to understand the null-handling
+  logic.</li>
+  <li><strong>Maintenance Risk</strong>: Future developers may misunderstand or incorrectly modify the null-checking logic.</li>
+  <li><strong>Inconsistency</strong>: Code that mixes manual null checks with <code>Objects.equals()</code> is harder to review and maintain.</li>
+</ul>
+<p>While this doesn’t directly cause bugs in correctly written code, it increases cognitive load and the risk of introducing errors during
+maintenance.</p>
+<h2>How to fix it</h2>
+<p>Replace the ternary null-check pattern with <code>Objects.equals()</code>. This handles all null cases correctly in a single method call.</p>
+<p>The ternary pattern <code>a != null ? a.equals(b) : b == null</code> returns:</p>
+<ul>
+  <li><code>true</code> when both <code>a</code> and <code>b</code> are null</li>
+  <li><code>true</code> when both are non-null and equal</li>
+  <li><code>false</code> otherwise</li>
+</ul>
+<p>This is exactly the behavior of <code>Objects.equals(a, b)</code>.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
-boolean equal = a != null ? a.equals(b) : b == null; // Noncompliant
+if (a != null ? a.equals(b) : b == null) { // Noncompliant
+    // ...
+}
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="1" data-diff-type="compliant">
-boolean equal = Objects.equals(a, b);
+if (Objects.equals(a, b)) {
+    // ...
+}
 </pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Objects.html#equals(java.lang.Object,java.lang.Object)">Objects.equals()</a></li>
+  <li>Oracle Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Objects.html#equals(java.lang.Object,java.lang.Object)">Objects (Java
+  SE 17 &amp; JDK 17)</a></li>
 </ul>
+

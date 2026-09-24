@@ -8,8 +8,7 @@
   },
   "tags": [
     "deprecated",
-    "convention",
-    "tests"
+    "convention"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-9387",
