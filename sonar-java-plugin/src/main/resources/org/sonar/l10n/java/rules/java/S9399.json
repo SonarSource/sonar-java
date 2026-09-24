@@ -1,6 +1,6 @@
 {
   "title": "Instance fields should not be guarded by static locks",
-  "type": "BUG",
+  "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
@@ -9,17 +9,17 @@
   "tags": [
     "concurrency",
     "multi-threading",
-    "pitfall"
+    "performance"
   ],
-  "defaultSeverity": "Critical",
+  "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-9399",
   "sqKey": "S9399",
   "scope": "All",
   "quickfix": "unknown",
   "code": {
     "impacts": {
-      "RELIABILITY": "HIGH"
+      "MAINTAINABILITY": "MEDIUM"
     },
-    "attribute": "COMPLETE"
+    "attribute": "CONVENTIONAL"
   }
 }

@@ -4,19 +4,21 @@
   "status": "ready",
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "2min"
+    "constantCost": "5 min"
   },
   "tags": [
-    "clumsy"
+    "java7",
+    "clumsy",
+    "pitfall"
   ],
-  "defaultSeverity": "Minor",
+  "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-9390",
   "sqKey": "S9390",
-  "scope": "Main",
+  "scope": "All",
   "quickfix": "unknown",
   "code": {
     "impacts": {
-      "MAINTAINABILITY": "LOW"
+      "MAINTAINABILITY": "MEDIUM"
     },
     "attribute": "CLEAR"
   }

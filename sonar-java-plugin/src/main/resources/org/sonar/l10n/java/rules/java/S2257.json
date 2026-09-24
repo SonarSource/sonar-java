@@ -14,6 +14,7 @@
   },
   "quickfix": "unknown",
   "tags": [
+    "cryptography",
     "cwe",
     "former-hotspot"
   ],

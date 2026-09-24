@@ -17,8 +17,7 @@ bundled with contract definitions.</p>
   <li>Confusion about where to place implementation logic in the codebase</li>
 </ul>
 <p>While nested interfaces within interfaces are acceptable (since both define contracts), concrete classes belong in their own files where their
-implementation purpose is clear. Abstract nested classes are not reported because they still describe a contract rather than a complete
-implementation.</p>
+implementation purpose is clear.</p>
 <h3>What is the potential impact?</h3>
 <p>When concrete classes are declared inside interfaces, the code becomes harder to understand and maintain:</p>
 <ul>
@@ -61,7 +60,7 @@ public class UserValidator {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/IandI/interfaceDef.html">Defining an Interface</a></li>
-  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html">Nested Classes</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/IandI/interfaceDef.html">Defining an Interface</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/nested.html">Nested Classes</a></li>
 </ul>
 

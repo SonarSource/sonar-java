@@ -21,13 +21,13 @@ value cannot be represented exactly and gets rounded to the nearest representabl
 <p>Making these conversions explicit with a cast documents that you are aware of potential precision loss and helps prevent accidental data
 corruption.</p>
 <h3>What is the potential impact?</h3>
-<h4>Data Corruption</h4>
+<h3>Data Corruption</h3>
 <p>Precision loss in conversions can lead to incorrect values being stored or processed. When working with identifiers, database keys, or financial
 calculations, even small rounding errors can have serious consequences.</p>
-<h4>Logic Errors</h4>
+<h3>Logic Errors</h3>
 <p>Code that compares converted values for equality may produce unexpected results. A value converted to float and back may not equal the original
 integer, breaking assumptions in your logic.</p>
-<h4>Debugging Difficulty</h4>
+<h3>Debugging Difficulty</h3>
 <p>Silent precision loss is hard to detect and diagnose. The code compiles without warnings, and the loss may only manifest under specific input
 values, making bugs intermittent and difficult to reproduce.</p>
 <h2>How to fix it</h2>
@@ -65,9 +65,8 @@ public class DataProcessor {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>Oracle Java Documentation - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html#jls-5.1.2">Widening Primitive
-  Conversion</a></li>
-  <li>Oracle Java Tutorials - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html">Primitive Data Types</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-5.html#jls-5.1.2">Widening Primitive Conversion</a></li>
+  <li>Java Tutorials - <a href="https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html">Primitive Data Types</a></li>
   <li>IEEE 754 Floating Point - <a href="https://en.wikipedia.org/wiki/IEEE_754">IEEE 754 - Wikipedia</a></li>
 </ul>
 

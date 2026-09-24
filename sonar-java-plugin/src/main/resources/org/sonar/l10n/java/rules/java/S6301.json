@@ -13,8 +13,9 @@
     "constantCost": "10min"
   },
   "tags": [
-    "cwe",
-    "android"
+    "android",
+    "cryptography",
+    "cwe"
   ],
   "defaultSeverity": "Major",
   "ruleSpecification": "RSPEC-6301",

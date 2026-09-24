@@ -13,9 +13,10 @@
     "constantCost": "5min"
   },
   "tags": [
+    "cert",
+    "cryptography",
     "cwe",
     "privacy",
-    "cert",
     "ssl"
   ],
   "defaultSeverity": "Critical",

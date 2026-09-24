@@ -6,8 +6,8 @@ proper Java annotations <code>@Test</code> and <code>@BeforeMethod</code>.</p>
 <p>Testing frameworks initially supported documentation comment tags for configuring test methods. For example, developers could write special markers
 in documentation comments to designate methods as tests. While this approach worked in older framework versions, it has significant drawbacks compared
 to modern declarative configuration mechanisms.</p>
-<p>Documentation comment tags are simply strings embedded in comments. The compiler doesn't check them, and development environments cannot validate
-them during development. This means typos or incorrect usage won't be caught until runtime, making bugs harder to find.</p>
+<p>Documentation comment tags are simply strings embedded in comments. The compiler doesn’t check them, and development environments cannot validate
+them during development. This means typos or incorrect usage won’t be caught until runtime, making bugs harder to find.</p>
 <p>Modern testing frameworks use first-class language constructs that declare test configuration directly in code. These are part of the language
 itself, so the compiler validates them at compile time. This catches errors early and makes the code more reliable.</p>
 <p>Language-native declarations also integrate better with development tools. IDEs can provide autocomplete, navigation, and refactoring support. When
@@ -36,14 +36,8 @@ errors:</p>
   <li><code>/** @test */</code> becomes <code>@Test</code></li>
   <li><code>/** @beforeMethod */</code> becomes <code>@BeforeMethod</code></li>
   <li><code>/** @afterMethod */</code> becomes <code>@AfterMethod</code></li>
-  <li><code>/** @beforeSuite */</code> becomes <code>@BeforeSuite</code></li>
-  <li><code>/** @afterSuite */</code> becomes <code>@AfterSuite</code></li>
-  <li><code>/** @beforeTest */</code> becomes <code>@BeforeTest</code></li>
-  <li><code>/** @afterTest */</code> becomes <code>@AfterTest</code></li>
-  <li><code>/** @beforeGroups */</code> becomes <code>@BeforeGroups</code></li>
-  <li><code>/** @afterGroups */</code> becomes <code>@AfterGroups</code></li>
-  <li><code>/** @dataProvider */</code> becomes <code>@DataProvider</code></li>
-  <li><code>/** @factory */</code> becomes <code>@Factory</code></li>
+  <li><code>/** @beforeClass */</code> becomes <code>@BeforeClass</code></li>
+  <li><code>/** @afterClass */</code> becomes <code>@AfterClass</code></li>
 </ul>
 <p>Import the annotation classes from <code>org.testng.annotations</code> package. Remove the Javadoc comment or keep it for documentation purposes
 without the tag.</p>
@@ -69,6 +63,7 @@ public void shouldValidateInput() {
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>
-  <li>TestNG Documentation - <a href="https://testng.org/doc/documentation-main.html#annotations">Annotations</a></li>
-  <li>TestNG Documentation - <a href="https://testng.org/doc/documentation-main.html#test-methods">TestNG Test Methods</a></li>
+  <li>TestNG Documentation - <a href="https://testng.org/#_annotations">Annotations</a></li>
+  <li>TestNG Documentation - <a href="https://testng.org/#_test_methods">TestNG Test Methods</a></li>
 </ul>
+
