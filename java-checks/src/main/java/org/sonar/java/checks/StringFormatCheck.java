@@ -89,26 +89,23 @@ public class StringFormatCheck extends AbstractMethodDetection {
   private static boolean hasPlaceholderInBracketsOrQuotes(String value) {
     int depth = 0;
     boolean inBackticks = false;
-    int i = 0;
-    while (i < value.length()) {
+    boolean afterPercent = false;
+    for (int i = 0; i < value.length(); i++) {
       char c = value.charAt(i);
-      if (c == '`') {
-        inBackticks = !inBackticks;
-      } else if (c == '%' && i + 1 < value.length()) {
-        if (isEnclosedPlaceholder(value.charAt(i + 1), inBackticks, depth)) {
+      if (afterPercent) {
+        afterPercent = false;
+        if (c == 's' && (inBackticks || depth > 0)) {
           return true;
         }
-        i++;
+      } else if (c == '`') {
+        inBackticks = !inBackticks;
+      } else if (c == '%') {
+        afterPercent = true;
       } else if (!inBackticks) {
         depth = updateBracketDepth(c, depth);
       }
-      i++;
     }
     return false;
-  }
-
-  private static boolean isEnclosedPlaceholder(char next, boolean inBackticks, int depth) {
-    return next == 's' && (inBackticks || depth > 0);
   }
 
   private static int updateBracketDepth(char c, int depth) {
