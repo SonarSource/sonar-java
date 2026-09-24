@@ -212,4 +212,12 @@ class StringFormatCheckSample {
   String backtickNoPlaceholder(String value) {
     return String.format("`x` %s", value); // Noncompliant {{Use string concatenation instead of String.format().}}
   }
+
+  String betweenQuotedSpans(String value) {
+    return String.format("'x' %s 'y'", value); // Noncompliant {{Use string concatenation instead of String.format().}}
+  }
+
+  String betweenBacktickSpans(String value) {
+    return String.format("`x` %s `y`", value); // Noncompliant {{Use string concatenation instead of String.format().}}
+  }
 }

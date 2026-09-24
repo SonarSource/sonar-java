@@ -114,9 +114,13 @@ public class StringFormatCheck extends AbstractMethodDetection {
       char c = value.charAt(i);
       if (c == '\'' || c == '`') {
         int close = value.indexOf(c, i + 1);
-        if (close != -1 && containsPlaceholder(value, i + 1, close)) {
+        if (close == -1) {
+          continue;
+        }
+        if (containsPlaceholder(value, i + 1, close)) {
           return true;
         }
+        i = close;
       }
     }
     return false;
