@@ -18,7 +18,7 @@ class StringFormatCheckSample {
   }
 
   String wrapped(String value) {
-    return String.format("prefix-%s-suffix", value); // Noncompliant {{Use string concatenation instead of String.format().}}
+    return String.format("prefix-%s-suffix", value); // compliant: format string is too long (>= 15 chars)
   }
 
   String localized(Object value) {
@@ -151,5 +151,41 @@ class StringFormatCheckSample {
 
   String escapeSequenceInFormat(int value) {
     return String.format("\045s", value); // compliant
+  }
+
+  String longFormatString(String a, String b) {
+    return String.format("long prefix %s/%s", a, b); // compliant: format string is too long (>= 15 chars)
+  }
+
+  String inBraces(String value) {
+    return String.format("{%s}", value); // compliant: %s is inside brackets
+  }
+
+  String inParentheses(String value) {
+    return String.format("(%s)", value); // compliant: %s is inside brackets
+  }
+
+  String inSquareBrackets(String value) {
+    return String.format("[%s]", value); // compliant: %s is inside brackets
+  }
+
+  String inQuotes(String value) {
+    return String.format("'%s'", value); // Noncompliant {{Use string concatenation instead of String.format().}}
+  }
+
+  String inBackticks(String value) {
+    return String.format("`%s`", value); // compliant: %s is between backticks
+  }
+
+  String escapedPercentInBrackets(String value) {
+    return String.format("[%%s] %s", value); // Noncompliant {{Use string concatenation instead of String.format().}}
+  }
+
+  String escapedPercentInQuotes(String value) {
+    return String.format("'%%s' %s", value); // Noncompliant {{Use string concatenation instead of String.format().}}
+  }
+
+  String apostropheInFormat(String owner, String item) {
+    return String.format("%s's %s", owner, item); // Noncompliant {{Use string concatenation instead of String.format().}}
   }
 }

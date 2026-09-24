@@ -60,11 +60,11 @@ public class StringFormatCheck extends AbstractMethodDetection {
     }
     LiteralTree literal = (LiteralTree) formatArgument;
     String rawValue = LiteralUtils.trimQuotes(literal.value());
-    if (rawValue.contains("\\")) {
+    if (rawValue.length() >= 15 || rawValue.contains("\\")) {
       return;
     }
     int placeholders = countSimplePlaceholders(rawValue);
-    if (placeholders <= 0 || invocation.arguments().size() != formatIndex + placeholders + 1) {
+    if (placeholders <= 0 || hasPlaceholderInBracketsOrQuotes(rawValue) || invocation.arguments().size() != formatIndex + placeholders + 1) {
       return;
     }
     List<ExpressionTree> valueArguments = invocation.arguments().subList(formatIndex + 1, invocation.arguments().size());
@@ -84,6 +84,38 @@ public class StringFormatCheck extends AbstractMethodDetection {
 
   private static boolean isJustPlaceholder(String rawValue) {
     return "%s".equals(rawValue);
+  }
+
+  private static boolean hasPlaceholderInBracketsOrQuotes(String value) {
+    int depth = 0;
+    boolean inBackticks = false;
+    for (int i = 0; i < value.length(); i++) {
+      char c = value.charAt(i);
+      if (c == '`') {
+        inBackticks = !inBackticks;
+        continue;
+      }
+      if (c == '%' && i + 1 < value.length()) {
+        char next = value.charAt(i + 1);
+        if (next == '%') {
+          i++;
+          continue;
+        }
+        if (next == 's' && (inBackticks || depth > 0)) {
+          return true;
+        }
+        continue;
+      }
+      if (inBackticks) {
+        continue;
+      }
+      if (c == '{' || c == '(' || c == '[') {
+        depth++;
+      } else if (c == '}' || c == ')' || c == ']') {
+        depth = Math.max(0, depth - 1);
+      }
+    }
+    return false;
   }
 
   private static int countSimplePlaceholders(String value) {
