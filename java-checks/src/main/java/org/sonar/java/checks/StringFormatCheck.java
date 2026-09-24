@@ -89,33 +89,35 @@ public class StringFormatCheck extends AbstractMethodDetection {
   private static boolean hasPlaceholderInBracketsOrQuotes(String value) {
     int depth = 0;
     boolean inBackticks = false;
-    for (int i = 0; i < value.length(); i++) {
+    int i = 0;
+    while (i < value.length()) {
       char c = value.charAt(i);
       if (c == '`') {
         inBackticks = !inBackticks;
-        continue;
-      }
-      if (c == '%' && i + 1 < value.length()) {
-        char next = value.charAt(i + 1);
-        if (next == '%') {
-          i++;
-          continue;
-        }
-        if (next == 's' && (inBackticks || depth > 0)) {
+      } else if (c == '%' && i + 1 < value.length()) {
+        if (isEnclosedPlaceholder(value.charAt(i + 1), inBackticks, depth)) {
           return true;
         }
-        continue;
+        i++;
+      } else if (!inBackticks) {
+        depth = updateBracketDepth(c, depth);
       }
-      if (inBackticks) {
-        continue;
-      }
-      if (c == '{' || c == '(' || c == '[') {
-        depth++;
-      } else if (c == '}' || c == ')' || c == ']') {
-        depth = Math.max(0, depth - 1);
-      }
+      i++;
     }
     return false;
+  }
+
+  private static boolean isEnclosedPlaceholder(char next, boolean inBackticks, int depth) {
+    return next == 's' && (inBackticks || depth > 0);
+  }
+
+  private static int updateBracketDepth(char c, int depth) {
+    if (c == '{' || c == '(' || c == '[') {
+      return depth + 1;
+    } else if (c == '}' || c == ')' || c == ']') {
+      return Math.max(0, depth - 1);
+    }
+    return depth;
   }
 
   private static int countSimplePlaceholders(String value) {

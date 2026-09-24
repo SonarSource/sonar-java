@@ -188,4 +188,20 @@ class StringFormatCheckSample {
   String apostropheInFormat(String owner, String item) {
     return String.format("%s's %s", owner, item); // Noncompliant {{Use string concatenation instead of String.format().}}
   }
+
+  String unmatchedClosingBracket(String value) {
+    return String.format(")%s", value); // Noncompliant {{Use string concatenation instead of String.format().}}
+  }
+
+  String escapedPercentInBackticks(String value) {
+    return String.format("`%%s` %s", value); // Noncompliant {{Use string concatenation instead of String.format().}}
+  }
+
+  String nestedBrackets(String value) {
+    return String.format("({%s})", value); // compliant: %s is inside brackets
+  }
+
+  String backtickNoPlaceholder(String value) {
+    return String.format("`x` %s", value); // Noncompliant {{Use string concatenation instead of String.format().}}
+  }
 }
