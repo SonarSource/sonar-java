@@ -60,11 +60,11 @@ public class StringFormatCheck extends AbstractMethodDetection {
     }
     LiteralTree literal = (LiteralTree) formatArgument;
     String rawValue = LiteralUtils.trimQuotes(literal.value());
-    if (rawValue.contains("\\")) {
+    if (rawValue.length() >= 15 || rawValue.contains("\\")) {
       return;
     }
     int placeholders = countSimplePlaceholders(rawValue);
-    if (placeholders <= 0 || invocation.arguments().size() != formatIndex + placeholders + 1) {
+    if (placeholders <= 0 || hasPlaceholderInBracketsOrQuotes(rawValue) || invocation.arguments().size() != formatIndex + placeholders + 1) {
       return;
     }
     List<ExpressionTree> valueArguments = invocation.arguments().subList(formatIndex + 1, invocation.arguments().size());
@@ -84,6 +84,68 @@ public class StringFormatCheck extends AbstractMethodDetection {
 
   private static boolean isJustPlaceholder(String rawValue) {
     return "%s".equals(rawValue);
+  }
+
+  private static boolean hasPlaceholderInBracketsOrQuotes(String value) {
+    return hasPlaceholderInBrackets(value) || hasPlaceholderInMatchingQuotes(value);
+  }
+
+  private static boolean hasPlaceholderInBrackets(String value) {
+    int depth = 0;
+    int i = 0;
+    while (i < value.length() - 1) {
+      char c = value.charAt(i);
+      if (c == '%') {
+        if (value.charAt(i + 1) == 's' && depth > 0) {
+          return true;
+        }
+        i += 2;
+      } else {
+        if (c == '{' || c == '(' || c == '[') {
+          depth++;
+        } else if ((c == '}' || c == ')' || c == ']') && depth > 0) {
+          depth--;
+        }
+        i++;
+      }
+    }
+    return false;
+  }
+
+  private static boolean hasPlaceholderInMatchingQuotes(String value) {
+    int i = 0;
+    while (i < value.length()) {
+      char c = value.charAt(i);
+      if (c == '\'' || c == '`') {
+        int close = value.indexOf(c, i + 1);
+        if (close != -1) {
+          if (containsPlaceholder(value, i + 1, close)) {
+            return true;
+          }
+          i = close + 1;
+        } else {
+          i++;
+        }
+      } else {
+        i++;
+      }
+    }
+    return false;
+  }
+
+  private static boolean containsPlaceholder(String value, int from, int to) {
+    int i = from;
+    while (i < to - 1) {
+      if (value.charAt(i) == '%') {
+        if (value.charAt(i + 1) == 's') {
+          return true;
+        }
+        i += 2;
+      } else {
+        i++;
+      }
+    }
+    return false;
   }
 
   private static int countSimplePlaceholders(String value) {
