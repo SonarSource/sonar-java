@@ -92,46 +92,56 @@ public class StringFormatCheck extends AbstractMethodDetection {
 
   private static boolean hasPlaceholderInBrackets(String value) {
     int depth = 0;
-    for (int i = 0; i < value.length() - 1; i++) {
+    int i = 0;
+    while (i < value.length() - 1) {
       char c = value.charAt(i);
       if (c == '%') {
-        char next = value.charAt(i + 1);
-        if (next == 's' && depth > 0) {
+        if (value.charAt(i + 1) == 's' && depth > 0) {
           return true;
         }
+        i += 2;
+      } else {
+        if (c == '{' || c == '(' || c == '[') {
+          depth++;
+        } else if ((c == '}' || c == ')' || c == ']') && depth > 0) {
+          depth--;
+        }
         i++;
-      } else if (c == '{' || c == '(' || c == '[') {
-        depth++;
-      } else if ((c == '}' || c == ')' || c == ']') && depth > 0) {
-        depth--;
       }
     }
     return false;
   }
 
   private static boolean hasPlaceholderInMatchingQuotes(String value) {
-    for (int i = 0; i < value.length(); i++) {
+    int i = 0;
+    while (i < value.length()) {
       char c = value.charAt(i);
       if (c == '\'' || c == '`') {
         int close = value.indexOf(c, i + 1);
-        if (close == -1) {
-          continue;
+        if (close != -1) {
+          if (containsPlaceholder(value, i + 1, close)) {
+            return true;
+          }
+          i = close + 1;
+        } else {
+          i++;
         }
-        if (containsPlaceholder(value, i + 1, close)) {
-          return true;
-        }
-        i = close;
+      } else {
+        i++;
       }
     }
     return false;
   }
 
   private static boolean containsPlaceholder(String value, int from, int to) {
-    for (int i = from; i < to - 1; i++) {
+    int i = from;
+    while (i < to - 1) {
       if (value.charAt(i) == '%') {
         if (value.charAt(i + 1) == 's') {
           return true;
         }
+        i += 2;
+      } else {
         i++;
       }
     }
