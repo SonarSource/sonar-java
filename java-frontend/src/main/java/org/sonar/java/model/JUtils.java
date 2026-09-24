@@ -20,9 +20,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -96,34 +98,63 @@ public final class JUtils {
   }
 
   /**
-   * Recursively walks superclasses and interfaces, recording each type's FQN.
+   * Recursively walks superclasses and interfaces, recording each type's {@link #typeKey(Type) key} and, when
+   * the two differ, its erased fully-qualified name.
    *
-   * {@code java.lang.Object} and unknown/unresolved types are excluded; a common ancestor
-   * reached through more than one interface is deduplicated by the returned {@link Set}.
+   * <p>Recording both means a lookup by erased name still finds every type it finds today, while a lookup by
+   * parameterized key only finds the types actually declared with that parameterization.
    *
-   * @param symbol The type symbol whose superclass and interface hierarchy is walked
-   * @return The set of fully qualified names collected from {@code symbol} and its ancestors
+   * {@code java.lang.Object} and unknown/unresolved types are excluded. Recursion is guarded by erased name, so
+   * a common ancestor reached through several interfaces is walked once, and a self-referential generic such as
+   * {@code interface A<T> extends B<A<T>>} still terminates.
+   *
+   * @param type The type whose own key, superclass and interface hierarchy are collected
+   * @return The set of keys collected from {@code type} and its ancestors
    */
-  public static Set<String> collectTypeHierarchy(Symbol.TypeSymbol symbol) {
-    Set<String> visited = new LinkedHashSet<>();
-    walkTypeHierarchy(symbol, visited);
-    return visited;
+  public static Set<String> collectTypeHierarchy(Type type) {
+    Set<String> keys = new LinkedHashSet<>();
+    walkTypeHierarchy(type, keys, new HashSet<>());
+    return keys;
   }
 
-  private static void walkTypeHierarchy(Symbol.TypeSymbol symbol, Set<String> visited) {
-    String fqn = symbol.type().fullyQualifiedName();
-    if ("java.lang.Object".equals(fqn) || symbol.type().isUnknown() || !visited.add(fqn)) {
+  private static void walkTypeHierarchy(Type type, Set<String> keys, Set<String> visited) {
+    String erasedFqn = type.erasure().fullyQualifiedName();
+    if ("java.lang.Object".equals(erasedFqn) || type.isUnknown() || !visited.add(erasedFqn)) {
       return;
     }
+    keys.add(erasedFqn);
+    keys.add(typeKey(type));
+    Symbol.TypeSymbol symbol = type.symbol();
     Type superClass = symbol.superClass();
     if (superClass != null && !superClass.isUnknown()) {
-      walkTypeHierarchy(superClass.symbol(), visited);
+      walkTypeHierarchy(superClass, keys, visited);
     }
     for (Type iface : symbol.interfaces()) {
       if (!iface.isUnknown()) {
-        walkTypeHierarchy(iface.symbol(), visited);
+        walkTypeHierarchy(iface, keys, visited);
       }
     }
+  }
+
+  /**
+   * The string a type is indexed under: its fully-qualified name, with its type arguments appended when they are
+   * all resolvable. Recursive, so {@code Repository<List<User>>} keeps its inner argument.
+   *
+   * <p>A non-generic type, a raw type, or one carrying a type variable or unresolved argument falls back to the
+   * erased name: nothing can be matched against an argument that is not known.
+   *
+   * @param type The type to derive a key for
+   * @return The key the type is indexed under
+   */
+  public static String typeKey(Type type) {
+    String erasedFqn = type.erasure().fullyQualifiedName();
+    List<Type> typeArguments = type.typeArguments();
+    if (!type.isParameterized() || typeArguments.stream().anyMatch(argument -> argument.isTypeVar() || argument.isUnknown())) {
+      return erasedFqn;
+    }
+    return typeArguments.stream()
+      .map(JUtils::typeKey)
+      .collect(Collectors.joining(",", erasedFqn + "<", ">"));
   }
 
   public static Set<Type> directSuperTypes(Type type) {

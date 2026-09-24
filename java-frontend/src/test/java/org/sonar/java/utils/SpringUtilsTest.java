@@ -530,21 +530,21 @@ class SpringUtilsTest {
         .containsExactly(new InjectionPoint.InputFileData("rawList", new AnalyzerMessage.TextSpan(11, 19, 11, 26), false));
       assertThat(dependencies.get("java.util.Map"))
         .extracting(InjectionPoint.InputFileData::name, InjectionPoint.InputFileData::multiple)
-        .contains(tuple("rawMap", false));
+        .containsExactly(tuple("rawMap", false));
     }
 
     @Test
-    void map_that_is_not_keyed_by_bean_name_resolves_to_a_single_bean() {
-      assertThat(dependencies.get("java.util.Map"))
+    void map_that_is_not_keyed_by_bean_name_resolves_to_a_single_bean_of_its_parameterized_type() {
+      assertThat(dependencies.get("java.util.Map<java.lang.Integer,java.lang.Runnable>"))
         .extracting(InjectionPoint.InputFileData::name, InjectionPoint.InputFileData::multiple)
-        .containsExactlyInAnyOrder(tuple("runnablesByIndex", false), tuple("rawMap", false));
+        .containsExactly(tuple("runnablesByIndex", false));
     }
 
     @Test
     void concrete_collection_or_map_class_is_not_a_multi_bean_injection_point() {
-      assertThat(dependencies.get("java.util.ArrayList"))
+      assertThat(dependencies.get("java.util.ArrayList<java.lang.Runnable>"))
         .containsExactly(new InjectionPoint.InputFileData("concreteList", new AnalyzerMessage.TextSpan(12, 34, 12, 46), false));
-      assertThat(dependencies.get("java.util.HashMap"))
+      assertThat(dependencies.get("java.util.HashMap<java.lang.String,java.lang.Runnable>"))
         .extracting(InjectionPoint.InputFileData::name, InjectionPoint.InputFileData::multiple)
         .containsExactly(tuple("concreteMap", false));
     }
