@@ -4,8 +4,8 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-// Three beans of type BeanClassLoaderAware exist; ProfiledPrimaryClassLoaderComponent is the unique @Primary
-// on the raw candidate set (profiled or not), so no issue is expected.
+// Three beans of type BeanClassLoaderAware exist; the unique @Primary among them is profiled, so with no
+// profile active PlainClassLoaderComponentA and PlainClassLoaderComponentB compete: issue expected.
 @Service
 public class ClassLoaderConsumer {
 

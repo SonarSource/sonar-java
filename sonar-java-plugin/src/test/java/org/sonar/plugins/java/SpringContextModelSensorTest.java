@@ -26,6 +26,7 @@ import org.sonar.api.batch.sensor.issue.Issue;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanLocation;
+import org.sonar.java.model.springcontext.ProfileExpression;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage.TextSpan;
 import org.sonar.java.telemetry.DefaultTelemetry;
@@ -112,7 +113,7 @@ class SpringContextModelSensorTest {
   private static void registerDependency(SpringContextModel model, String type, String dependencyName, InputFile inputFile,
     int startLine, int startCharacter, int endLine, int endCharacter) {
     BeanLocation location = new BeanLocation(inputFile, new TextSpan(startLine, startCharacter, endLine, endCharacter));
-    model.getTypeToDependenciesIndex().addDependencyForType(type, dependencyName, MODULE_KEY, location, false);
+    model.getTypeToDependenciesIndex().addDependencyForType(type, dependencyName, MODULE_KEY, ProfileExpression.UNCONDITIONAL, location, false);
   }
 
   private static InputFile fakeInputFile(SensorContextTester context, String fileName) {

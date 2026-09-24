@@ -25,6 +25,7 @@ import org.slf4j.event.Level;
 import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.model.springcontext.BeanDefinitionHolder;
 import org.sonar.java.model.springcontext.BeanLocation;
+import org.sonar.java.model.springcontext.ProfileExpression;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.telemetry.DefaultTelemetry;
@@ -79,7 +80,7 @@ class ProjectEndOfAnalysisSensorTest {
     var springContextModel = new SpringContextModel();
     springContextModel.getBeanDefinitionRegistry().addBeanDefinition("myBean", newHolder("com.acme.MyBean"));
     springContextModel.getBeanDefinitionRegistry().addBeanDefinition("myOtherBean", newHolder("com.acme.MyOtherBean"));
-    springContextModel.getTypeToDependenciesIndex().addDependencyForType("com.acme.MyBean", "myBean", "module-a", newLocation(), false);
+    springContextModel.getTypeToDependenciesIndex().addDependencyForType("com.acme.MyBean", "myBean", "module-a", ProfileExpression.UNCONDITIONAL, newLocation(), false);
     springContextModel.getProjectPackageScan().addPackage("module-a", "com.acme");
 
     var sensor = new ProjectEndOfAnalysisSensor(new DefaultTelemetry(), springContextModel);

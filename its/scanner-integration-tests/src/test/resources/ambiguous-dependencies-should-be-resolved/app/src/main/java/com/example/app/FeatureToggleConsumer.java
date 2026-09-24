@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * CASE: ambiguity resolved via @Profile exclusion, cross-module.
+ * CASE: ambiguity arising only under an active profile, cross-module.
  * ProdFeatureToggleService (@Profile("prod")) lives in module-a, DefaultFeatureToggleService in module-b.
- * Excluding the profiled candidate leaves DefaultFeatureToggleService as the only one.
+ * When the "prod" profile is active both are candidates and nothing disambiguates them.
  */
 @Component
 public class FeatureToggleConsumer {

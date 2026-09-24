@@ -146,6 +146,15 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(profileExpressionOf("malformedProfileComponent").isUnknown()).isTrue();
   }
 
+  @Test
+  void injection_points_carry_the_profile_expression_of_the_bean_declaring_them() {
+    scan("src/test/files/springcontext/QualifiedFieldDependencies.java");
+
+    assertThat(model.getTypeToDependenciesIndex().getDependenciesForType("org.springframework.core.env.Environment"))
+      .extracting(InjectionPoint::profileExpression)
+      .containsExactly(ProfileExpression.profile("prod"));
+  }
+
   private ProfileExpression profileExpressionOf(String beanName) {
     var beans = model.getBeanDefinitionRegistry().getByName(beanName);
     assertThat(beans).hasSize(1);

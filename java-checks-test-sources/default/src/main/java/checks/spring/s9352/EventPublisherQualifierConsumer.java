@@ -6,9 +6,8 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Service;
 
 // See PlainEventPublisherComponentA for context. This injection point is explicitly qualified towards the
-// profiled candidate: already disambiguated by name/qualifier, no issue expected, even though
-// ProfiledEventPublisherComponent is excluded from the uniqueness/@Primary heuristic used for unqualified
-// injection points of this type (see EventPublisherConsumer).
+// profiled candidate: it designates a single bean whichever profile is active, so no issue is expected, unlike
+// the unqualified injection point of the same type (see EventPublisherConsumer).
 @Service
 public class EventPublisherQualifierConsumer {
 

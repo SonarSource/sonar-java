@@ -31,7 +31,7 @@ class AmbiguousDependencyCrossModuleTest extends ScannerIntegrationAbstractTest 
   void test() {
     var issues = analyze(Path.of("ambiguous-dependencies-should-be-resolved"), "S9352");
     assertThat(issues)
-      .hasSize(2)
+      .hasSize(4)
       .contains(new TextRangeIssue(
         "app/src/main/java/com/example/app/PaymentConsumer.java",
         "java:S9352",
@@ -41,6 +41,16 @@ class AmbiguousDependencyCrossModuleTest extends ScannerIntegrationAbstractTest 
           "app/src/main/java/com/example/app/InventoryConsumer.java",
           "java:S9352",
           "Multiple beans match this dependency (storeInventoryService, warehouseInventoryService); disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
-          new TextRange(12, 12, 29, 45)));
+          new TextRange(12, 12, 29, 45)),
+        new TextRangeIssue(
+          "app/src/main/java/com/example/app/FeatureToggleConsumer.java",
+          "java:S9352",
+          "Multiple beans match this dependency (defaultFeatureToggleService, prodFeatureToggleService) in profile 'prod'; disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
+          new TextRange(16, 16, 33, 53)),
+        new TextRangeIssue(
+          "app/src/main/java/com/example/app/AuditLoggerConsumer.java",
+          "java:S9352",
+          "Multiple beans match this dependency (defaultAuditLogger, stagingAuditLogger) in profile 'staging'; disambiguate it with \"@Qualifier\" or mark one bean as \"@Primary\".",
+          new TextRange(16, 16, 24, 35)));
   }
 }

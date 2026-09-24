@@ -74,9 +74,9 @@ class SpringContextModelMetricsTest {
       .profileExpression(ProfileExpression.not(ProfileExpression.profile("test")))
       .build();
     model.getBeanDefinitionRegistry().addBeanDefinition("myBean", holder);
-    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", "module-a", newLocation(), false);
-    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "otherCollaborator", "module-a", newLocation(), false);
-    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Repository", "repository", "module-a", newLocation(), false);
+    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", "module-a", ProfileExpression.UNCONDITIONAL, newLocation(), false);
+    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "otherCollaborator", "module-a", ProfileExpression.UNCONDITIONAL, newLocation(), false);
+    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Repository", "repository", "module-a", ProfileExpression.UNCONDITIONAL, newLocation(), false);
 
     var metrics = SpringContextModelMetrics.of(model);
 
@@ -187,7 +187,7 @@ class SpringContextModelMetricsTest {
     model.getTypeToBeansIndex().addBeanForType("com.acme.MyBean", "myBean", "module-a", "com.acme");
     long afterBeanName = SpringContextModelMetrics.of(model).estimatedSizeInBytes();
 
-    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", "module-a", newLocation(), false);
+    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", "module-a", ProfileExpression.UNCONDITIONAL, newLocation(), false);
     long afterDependency = SpringContextModelMetrics.of(model).estimatedSizeInBytes();
 
     assertThat(afterEmpty)
@@ -203,7 +203,7 @@ class SpringContextModelMetricsTest {
     var model = new SpringContextModel();
     model.getBeanDefinitionRegistry().addBeanDefinition("myBean", newHolder("com.acme.MyBean"));
     model.getTypeToBeansIndex().addBeanForType("com.acme.MyBean", "myBean", "module-a", "com.acme");
-    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", "module-a", newLocation(), false);
+    model.getTypeToDependenciesIndex().addDependencyForType("com.acme.Collaborator", "collaborator", "module-a", ProfileExpression.UNCONDITIONAL, newLocation(), false);
     model.getEntityClassToPropertiesIndex().addProperty("com.acme.MyEntity", "table", "my_entity");
     model.getProjectPackageScan().addPackage("module-a", "com.acme");
 
