@@ -26,8 +26,8 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 
-import static org.sonar.java.checks.helpers.UnitTestUtils.ASSERTION_INVOCATION_MATCHERS;
-import static org.sonar.java.checks.helpers.UnitTestUtils.methodNameMatchesAssertionMethodPattern;
+import static org.sonar.java.utils.UnitTestUtils.ASSERTION_INVOCATION_MATCHERS;
+import static org.sonar.java.utils.UnitTestUtils.methodNameMatchesAssertionMethodPattern;
 import static org.sonar.java.model.ExpressionUtils.methodName;
 
 public abstract class AbstractAssertionVisitor extends BaseTreeVisitor {
