@@ -190,7 +190,11 @@ class StringFormatCheckSample {
   }
 
   String apostropheInFormat(String owner, String item) {
-    return String.format("%s's %s", owner, item); // compliant: %s is between single quotes
+    return String.format("%s's %s", owner, item); // Noncompliant {{Use string concatenation instead of String.format().}}
+  }
+
+  String itsFormat(String value) {
+    return String.format("it's %s", value); // Noncompliant {{Use string concatenation instead of String.format().}}
   }
 
   String unmatchedClosingBracket(String value) {

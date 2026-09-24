@@ -87,34 +87,51 @@ public class StringFormatCheck extends AbstractMethodDetection {
   }
 
   private static boolean hasPlaceholderInBracketsOrQuotes(String value) {
+    return hasPlaceholderInBrackets(value) || hasPlaceholderInMatchingQuotes(value);
+  }
+
+  private static boolean hasPlaceholderInBrackets(String value) {
     int depth = 0;
-    char inQuotes = 0;
-    boolean afterPercent = false;
-    for (int i = 0; i < value.length(); i++) {
+    for (int i = 0; i < value.length() - 1; i++) {
       char c = value.charAt(i);
-      if (afterPercent) {
-        afterPercent = false;
-        if (c == 's' && (inQuotes != 0 || depth > 0)) {
+      if (c == '%') {
+        char next = value.charAt(i + 1);
+        if (next == 's' && depth > 0) {
           return true;
         }
-      } else if (c == '`' || c == '\'' || c == '"') {
-        inQuotes = (inQuotes == c) ? 0 : (inQuotes == 0 ? c : inQuotes);
-      } else if (c == '%') {
-        afterPercent = true;
-      } else if (inQuotes == 0) {
-        depth = updateBracketDepth(c, depth);
+        i++;
+      } else if (c == '{' || c == '(' || c == '[') {
+        depth++;
+      } else if ((c == '}' || c == ')' || c == ']') && depth > 0) {
+        depth--;
       }
     }
     return false;
   }
 
-  private static int updateBracketDepth(char c, int depth) {
-    if (c == '{' || c == '(' || c == '[') {
-      return depth + 1;
-    } else if (c == '}' || c == ')' || c == ']') {
-      return Math.max(0, depth - 1);
+  private static boolean hasPlaceholderInMatchingQuotes(String value) {
+    for (int i = 0; i < value.length(); i++) {
+      char c = value.charAt(i);
+      if (c == '\'' || c == '`') {
+        int close = value.indexOf(c, i + 1);
+        if (close != -1 && containsPlaceholder(value, i + 1, close)) {
+          return true;
+        }
+      }
     }
-    return depth;
+    return false;
+  }
+
+  private static boolean containsPlaceholder(String value, int from, int to) {
+    for (int i = from; i < to - 1; i++) {
+      if (value.charAt(i) == '%') {
+        if (value.charAt(i + 1) == 's') {
+          return true;
+        }
+        i++;
+      }
+    }
+    return false;
   }
 
   private static int countSimplePlaceholders(String value) {
