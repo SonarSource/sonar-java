@@ -13,7 +13,7 @@
   "ruleSpecification": "RSPEC-9386",
   "sqKey": "S9386",
   "scope": "All",
-  "quickfix": "unknown",
+  "quickfix": "covered",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "LOW"
