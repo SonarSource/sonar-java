@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.verifier.TestUtils;
@@ -45,17 +47,10 @@ import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.sonar.java.model.springcontext.ProfileExpression.and;
-import static org.sonar.java.model.springcontext.ProfileExpression.not;
-import static org.sonar.java.model.springcontext.ProfileExpression.profile;
 
 class AmbiguousDependencyCheckTest {
 
   private static final String BASE_PATH = "checks/spring/s9352/";
-
-  private static final String SCENARIO_TYPE = "com.example.Collaborator";
-  private static final String SCENARIO_MODULE = "module-a";
-  private static final String SCENARIO_PACKAGE = "com.a";
 
   private final AmbiguousDependencyCheck check = new AmbiguousDependencyCheck();
 
@@ -192,83 +187,41 @@ class AmbiguousDependencyCheckTest {
       .contains("sameProfileComponentA", "sameProfileComponentB");
   }
 
-  @Test
-  void candidates_on_distinct_profiles_are_never_active_together() {
-    SpringContextModel model = new SpringContextModel();
-    registerCandidate(model, "devCollaborator", profile("dev"));
-    registerCandidate(model, "prodCollaborator", profile("prod"));
-    registerConsumer(model, "collaborator", ProfileExpression.UNCONDITIONAL);
-
+  @ParameterizedTest(name = "[{index}] {0}")
+  @ValueSource(strings = {"DistinctProfileCandidates.java", "NegatedProfileCandidates.java", "CombinedProfilesCandidates.java"})
+  void profiled_candidates_without_reportable_ambiguity_are_not_reported(String fileName) {
+    SpringContextModel model = buildModel(fileName);
     assertThat(check.execute(model)).isEmpty();
   }
 
   @Test
-  void candidate_and_its_negation_are_never_active_together() {
-    SpringContextModel model = new SpringContextModel();
-    registerCandidate(model, "cloudCollaborator", profile("cloud"));
-    registerCandidate(model, "onPremiseCollaborator", not(profile("cloud")));
-    registerConsumer(model, "collaborator", ProfileExpression.UNCONDITIONAL);
-
-    assertThat(check.execute(model)).isEmpty();
-  }
-
-  @Test
-  void profiled_candidate_competing_with_a_plain_one_raises_issue() {
-    SpringContextModel model = new SpringContextModel();
-    registerCandidate(model, "testCollaborator", profile("test"));
-    registerCandidate(model, "plainCollaborator", ProfileExpression.UNCONDITIONAL);
-    registerConsumer(model, "collaborator", ProfileExpression.UNCONDITIONAL);
-
+  void only_consumer_active_during_candidate_collision_is_flagged() {
+    SpringContextModel model = buildModel("ProfiledConsumersConfig.java");
     assertThat(check.execute(model))
       .singleElement()
       .extracting(SpringContextIssue::message)
       .asString()
-      .contains("plainCollaborator", "testCollaborator");
-  }
-
-  @Test
-  void consumer_is_not_flagged_for_a_collision_under_a_profile_it_is_absent_from() {
-    SpringContextModel model = new SpringContextModel();
-    registerCandidate(model, "stagingCollaboratorA", profile("staging"));
-    registerCandidate(model, "stagingCollaboratorB", profile("staging"));
-    registerConsumer(model, "collaborator", profile("dev"));
-
-    assertThat(check.execute(model)).isEmpty();
+      .contains("plainCollaborator", "stagingCollaborator", "in profile 'staging'");
   }
 
   @Test
   void profiled_consumer_is_still_flagged_for_a_collision_between_plain_candidates() {
-    SpringContextModel model = new SpringContextModel();
-    registerCandidate(model, "plainCollaboratorA", ProfileExpression.UNCONDITIONAL);
-    registerCandidate(model, "plainCollaboratorB", ProfileExpression.UNCONDITIONAL);
-    registerConsumer(model, "collaborator", profile("prod"));
-
-    assertThat(check.execute(model)).hasSize(1);
+    SpringContextModel model = buildModel("ComponentOne.java", "ComponentTwo.java", "ProfiledPlainConsumer.java");
+    assertThat(check.execute(model))
+      .singleElement()
+      .extracting(SpringContextIssue::message)
+      .asString()
+      .contains("componentOne", "componentTwo", "in profile 'prod'");
   }
 
   @Test
   void candidate_with_an_unreadable_profile_is_assumed_active() {
-    SpringContextModel model = new SpringContextModel();
-    registerCandidate(model, "unreadableCollaborator", ProfileExpression.UNKNOWN);
-    registerCandidate(model, "plainCollaborator", ProfileExpression.UNCONDITIONAL);
-    registerConsumer(model, "collaborator", ProfileExpression.UNCONDITIONAL);
-
+    SpringContextModel model = buildModel("UnreadableProfileCandidates.java");
     assertThat(check.execute(model))
       .singleElement()
       .extracting(SpringContextIssue::message)
       .asString()
       .contains("plainCollaborator", "unreadableCollaborator");
-  }
-
-  @Test
-  void candidates_requiring_several_profiles_at_once_are_not_reported() {
-    SpringContextModel model = new SpringContextModel();
-    ProfileExpression cloudAndEu = and(List.of(profile("cloud"), profile("eu")));
-    registerCandidate(model, "cloudEuCollaboratorA", cloudAndEu);
-    registerCandidate(model, "cloudEuCollaboratorB", cloudAndEu);
-    registerConsumer(model, "collaborator", ProfileExpression.UNCONDITIONAL);
-
-    assertThat(check.execute(model)).isEmpty();
   }
 
   // ---- Multi-module context scoping -----------------------------------------
@@ -359,21 +312,6 @@ class AmbiguousDependencyCheckTest {
   private static void registerInjectionPoint(SpringContextModel model, String type, String fieldName, String module, ProfileExpression consumerProfile, InputFile consumerFile) {
     model.getTypeToDependenciesIndex()
       .addDependencyForType(type, fieldName, module, consumerProfile, new BeanLocation(consumerFile, new AnalyzerMessage.TextSpan(5)), false);
-  }
-
-  /**
-   * Registers a bean of the single type the profile scenarios compete on, active under {@code profileExpression}.
-   */
-  private static void registerCandidate(SpringContextModel model, String beanName, ProfileExpression profileExpression) {
-    registerBean(model, beanName, SCENARIO_TYPE, SCENARIO_MODULE, SCENARIO_PACKAGE, dummyInputFile("com/a/" + beanName + ".java"),
-      builder -> builder.profileExpression(profileExpression));
-  }
-
-  /**
-   * Registers an injection point of the profile scenarios' type, declared by a bean active under {@code consumerProfile}.
-   */
-  private static void registerConsumer(SpringContextModel model, String dependencyName, ProfileExpression consumerProfile) {
-    registerInjectionPoint(model, SCENARIO_TYPE, dependencyName, SCENARIO_MODULE, consumerProfile, dummyInputFile("com/a/Consumer.java"));
   }
 
   private static InputFile dummyInputFile(String path) {
