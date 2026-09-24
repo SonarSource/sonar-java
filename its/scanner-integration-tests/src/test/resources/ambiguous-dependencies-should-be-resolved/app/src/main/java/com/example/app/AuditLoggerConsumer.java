@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * CASE: ambiguity resolved via an unprofiled @Primary despite a competing profiled @Primary, cross-module.
+ * CASE: two @Primary candidates colliding under an active profile, cross-module.
  * DefaultAuditLogger (@Primary) lives in module-a, StagingAuditLogger (@Primary + @Profile("staging"))
- * in module-b. Excluding the profiled candidate leaves DefaultAuditLogger as the unique primary.
+ * in module-b. When the "staging" profile is active both are primary, so neither wins.
  */
 @Component
 public class AuditLoggerConsumer {

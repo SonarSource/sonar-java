@@ -4,9 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Service;
 
-// Three beans of type MessageSourceAware exist; this field's name matches none of them, but
-// UnprofiledPrimaryComponent is the only unambiguous @Primary once ProfiledPrimaryComponent (profiled) is
-// excluded: no issue expected.
+// Three beans of type MessageSourceAware exist; this field's name matches none of them. Under @Profile("test")
+// both UnprofiledPrimaryComponent and ProfiledPrimaryComponent are @Primary: issue expected.
 @Service
 public class MessageSourceConsumer {
 

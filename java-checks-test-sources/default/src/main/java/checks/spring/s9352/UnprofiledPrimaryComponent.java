@@ -5,9 +5,8 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-// Scenario: an unprofiled @Primary candidate still disambiguates even though another, profiled candidate is also
-// @Primary — no issue expected. Regression test: the primary/unique check must be re-applied after profiled
-// candidates are excluded, not decided once on the raw candidate set.
+// Scenario: two @Primary candidates, one of them in a profile. When that profile is active both are primary and
+// neither wins — issue expected. When it is not, this class is the unique primary.
 // Three candidates of type MessageSourceAware (this class, ProfiledPrimaryComponent, PlainMessageSourceComponent),
 // used only by MessageSourceConsumer in this scenario. A distinct interface from the other scenarios in this
 // package, so that a whole-module scan does not merge candidate pools across scenarios.
