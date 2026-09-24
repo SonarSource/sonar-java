@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9148")
@@ -77,12 +78,28 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (FLOAT_DOUBLE_COMPARE.matches(tree)) {
+      if (FLOAT_DOUBLE_COMPARE.matches(tree) && !hasConstantArgument(tree)) {
         for (ExpressionTree argument : tree.arguments()) {
           collectSubtractionFromArgument(argument);
         }
       }
       super.visitMethodInvocation(tree);
+    }
+
+    private static boolean hasConstantArgument(MethodInvocationTree tree) {
+      return tree.arguments().stream().anyMatch(CompareArgumentCollector::isConstant);
+    }
+
+    private static boolean isConstant(ExpressionTree expr) {
+      expr = skipParenthesesAndCasts(expr);
+      if (expr.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.DOUBLE_LITERAL)) {
+        return true;
+      }
+      if (expr.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
+        ExpressionTree operand = ((UnaryExpressionTree) expr).expression();
+        return operand.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.DOUBLE_LITERAL);
+      }
+      return false;
     }
 
     private void collectSubtractionFromArgument(ExpressionTree argument) {
@@ -102,19 +119,25 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
 
     private static boolean allUsagesAreCompareArguments(Symbol symbol) {
       for (IdentifierTree usage : symbol.usages()) {
-        Tree parent = usage.parent();
-        if (parent == null) {
+        if (!isCompareArgument(usage)) {
           return false;
         }
-        if (parent.is(Tree.Kind.ARGUMENTS)) {
-          Tree grandParent = parent.parent();
-          if (grandParent instanceof MethodInvocationTree mit && FLOAT_DOUBLE_COMPARE.matches(mit)) {
-            continue;
-          }
-        }
-        return false;
       }
       return true;
+    }
+
+    private static boolean isCompareArgument(Tree tree) {
+      Tree current = tree;
+      Tree parent = current.parent();
+      while (parent != null && parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.TYPE_CAST)) {
+        current = parent;
+        parent = current.parent();
+      }
+      if (parent != null && parent.is(Tree.Kind.ARGUMENTS)) {
+        Tree grandParent = parent.parent();
+        return grandParent instanceof MethodInvocationTree mit && FLOAT_DOUBLE_COMPARE.matches(mit);
+      }
+      return false;
     }
 
     private void collectAllSubtractions(Tree tree) {

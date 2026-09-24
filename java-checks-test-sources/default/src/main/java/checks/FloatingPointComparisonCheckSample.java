@@ -459,6 +459,56 @@ class FloatingPointComparisonCheckSample {
     }
   }
 
+  // === Noncompliant: subtraction compared against constant in Double.compare ===
+
+  static class SubtractionAgainstConstant implements Comparable<SubtractionAgainstConstant> {
+    private double x;
+
+    @Override
+    public int compareTo(SubtractionAgainstConstant other) {
+      return Double.compare(this.x - other.x, 0); // Noncompliant
+//                                 ^
+    }
+  }
+
+  static class SubtractionAgainstZeroFloat implements Comparable<SubtractionAgainstZeroFloat> {
+    private float a;
+
+    @Override
+    public int compareTo(SubtractionAgainstZeroFloat other) {
+      return Float.compare(this.a - other.a, 0f); // Noncompliant
+//                                ^
+    }
+  }
+
+  // === Compliant: parenthesized variable usage in compare ===
+
+  static class ParenthesizedVariableUsage implements Comparable<ParenthesizedVariableUsage> {
+    private double x;
+    private double y;
+
+    @Override
+    public int compareTo(ParenthesizedVariableUsage other) {
+      double a = this.x - this.y; // Compliant - flows into Double.compare
+      double b = other.x - other.y;
+      return Double.compare((a), (b));
+    }
+  }
+
+  // === Compliant: cast variable usage in compare ===
+
+  static class CastVariableUsage implements Comparable<CastVariableUsage> {
+    private float x;
+    private float y;
+
+    @Override
+    public int compareTo(CastVariableUsage other) {
+      float a = this.x - this.y; // Compliant - flows into Double.compare via cast
+      float b = other.x - other.y;
+      return Double.compare((double) a, (double) b);
+    }
+  }
+
   // === Compliant: subtraction nested in method call inside Double.compare ===
 
   static class MathHypotInCompare implements Comparable<MathHypotInCompare> {
