@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
-final class JType implements Type, Type.ArrayType {
+class JType implements Type, Type.ArrayType {
 
   private static final Logger LOG = LoggerFactory.getLogger(JType.class);
 
@@ -218,34 +218,37 @@ final class JType implements Type, Type.ArrayType {
     return fullyQualifiedName;
   }
 
-  private static String fullyQualifiedName(ITypeBinding typeBinding) {
-    String qualifiedName;
-    if (typeBinding.isNullType()) {
-      qualifiedName = "<nulltype>";
-    } else if (typeBinding.isPrimitive()) {
-      qualifiedName = typeBinding.getName();
-    } else if (typeBinding.isArray()) {
-      qualifiedName = fullyQualifiedName(typeBinding.getComponentType()) + "[]";
-    } else if (typeBinding.isCapture()) {
-      qualifiedName = "!capture!";
-    } else if (typeBinding.isTypeVariable()) {
-      qualifiedName = typeBinding.getName();
-    } else {
-      qualifiedName = typeBinding.getBinaryName();
-      if (qualifiedName == null) {
-        // e.g. anonymous class in unreachable code
-        qualifiedName = typeBinding.getKey();
-      }
-    }
+  private String fullyQualifiedName(ITypeBinding typeBinding) {
+    String qualifiedName = baseQualifiedName(typeBinding);
     if (typeBinding.isIntersectionType()) {
-      TreeSet<String> intersectionTypes = new TreeSet<>();
-      intersectionTypes.add(qualifiedName);
-      for (ITypeBinding typeBound : typeBinding.getTypeBounds()) {
-        intersectionTypes.add(fullyQualifiedName(typeBound));
-      }
-      qualifiedName = String.join(" & ", intersectionTypes);
+      return intersectionTypeName(typeBinding, qualifiedName);
     }
     return qualifiedName;
+  }
+
+  private String baseQualifiedName(ITypeBinding typeBinding) {
+    if (typeBinding.isNullType()) {
+      return "<nulltype>";
+    } else if (typeBinding.isPrimitive()) {
+      return typeBinding.getName();
+    } else if (typeBinding.isArray()) {
+      return fullyQualifiedName(typeBinding.getComponentType()) + "[]";
+    } else if (typeBinding.isCapture()) {
+      return "!capture!";
+    } else if (typeBinding.isTypeVariable()) {
+      return typeBinding.getName();
+    }
+    String binaryName = typeBinding.getBinaryName();
+    return binaryName == null ? typeBinding.getKey() : binaryName;
+  }
+
+  private String intersectionTypeName(ITypeBinding typeBinding, String qualifiedName) {
+    TreeSet<String> intersectionTypes = new TreeSet<>();
+    intersectionTypes.add(qualifiedName);
+    for (ITypeBinding typeBound : typeBinding.getTypeBounds()) {
+      intersectionTypes.add(fullyQualifiedName(typeBound));
+    }
+    return String.join(" & ", intersectionTypes);
   }
 
   @Override
@@ -264,6 +267,16 @@ final class JType implements Type, Type.ArrayType {
       types[i] = sema.type(bounds[i]);
     }
     return types;
+  }
+
+  @Override
+  public boolean isUnionType() {
+    return false;
+  }
+
+  @Override
+  public Type[] getUnionTypes() {
+    return new Type[] { this };
   }
 
   /**
@@ -305,7 +318,8 @@ final class JType implements Type, Type.ArrayType {
     if (this == obj) {
       return true;
     }
-    if (obj instanceof JType other) {
+    if (obj != null && getClass() == obj.getClass()) {
+      JType other = (JType) obj;
       return areEqual(this.typeBinding, other.typeBinding);
     }
     return false;

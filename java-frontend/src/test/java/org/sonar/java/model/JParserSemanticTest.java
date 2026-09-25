@@ -84,6 +84,7 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PatternInstanceOfTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StaticInitializerTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -1427,10 +1428,6 @@ class JParserSemanticTest {
     assertThat(t.typeBinding).isNotNull();
   }
 
-  /**
-   * Tests a limitation of ECJ engine in marking unknown types as such when using union types
-   * Here, 'e' is recognized as being of type 'Object'
-   */
   @Test
   void union_type() {
     JavaTree.CompilationUnitTreeImpl cu = test("class A { void m() { try { } catch (Unknown1 | Unknown2 e) { e.toString(); } } }");
@@ -1439,13 +1436,12 @@ class JParserSemanticTest {
     CatchTree catchTree = ((TryStatementTree) m.block().body().get(0)).catches().get(0);
 
     Symbol exceptionVariable = catchTree.parameter().symbol();
-    // obviously wrong - recovered type
     assertThat(exceptionVariable.isUnknown()).isFalse();
-    assertThat(exceptionVariable.type()).is("java.lang.Object");
+    assertThat(exceptionVariable.type().isUnionType()).isTrue();
+    assertThat(exceptionVariable.type().getUnionTypes()).allMatch(Type::isUnknown);
 
     MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) ((ExpressionStatementTree) catchTree.block().body().get(0)).expression();
     IdentifierTreeImpl e = (IdentifierTreeImpl) ((MemberSelectExpressionTreeImpl) mit.methodSelect()).expression();
-    // obviously wrong - recovered type
     assertThat(e.symbol().isUnknown()).isFalse();
     assertThat(e.symbolType()).is("java.lang.Object");
 
@@ -1489,21 +1485,65 @@ class JParserSemanticTest {
 
   @Test
   void type_union() {
-    CompilationUnitTree cu = test("class C { void m() { try { } catch (MatchException | NumberFormatException v) { } } }");
+    CompilationUnitTree cu = test("class C { void m() { try { } catch (IllegalArgumentException | IllegalStateException v) { } } }");
     ClassTree c = (ClassTree) cu.types().get(0);
     MethodTree m = (MethodTree) c.members().get(0);
     TryStatementTree s = (TryStatementTree) m.block().body().get(0);
     VariableTreeImpl v = (VariableTreeImpl) s.catches().get(0).parameter();
-    AbstractTypedTree t = (AbstractTypedTree) v.type();
-    assertThat(t.typeBinding).isNotNull();
-    Type symbolType = t.symbolType();
+    Type symbolType = v.symbol().type();
     assertThat(symbolType).isNotNull();
     assertThat(symbolType.isUnknown()).isFalse();
-    // "fullyQualifiedName()" should be unique for each different type, like for example "java.lang.MatchException | java.lang.NumberFormatException"
-    // this will be fixed by SONARJAVA-5718
-    assertThat(symbolType.fullyQualifiedName()).isEqualTo("java.lang.RuntimeException");
-    assertThat(symbolType.getIntersectionTypes()).extracting(Type::fullyQualifiedName)
-      .containsExactly("java.lang.RuntimeException");
+    assertThat(symbolType.fullyQualifiedName()).isEqualTo("java.lang.IllegalArgumentException | java.lang.IllegalStateException");
+    assertThat(symbolType.name()).isEqualTo("IllegalArgumentException | IllegalStateException");
+    assertThat(symbolType).hasToString("IllegalArgumentException | IllegalStateException");
+    assertThat(symbolType.isUnionType()).isTrue();
+    assertThat(symbolType.is("java.lang.IllegalArgumentException | java.lang.IllegalStateException")).isTrue();
+    assertThat(symbolType.is("java.lang.RuntimeException")).isTrue();
+    assertThat(symbolType.is("java.lang.Throwable")).isFalse();
+    assertThat(symbolType.is("java.lang.Object")).isFalse();
+    assertThat(symbolType.is("java.lang.String")).isFalse();
+    assertThat(symbolType.getUnionTypes()).extracting(Type::fullyQualifiedName)
+      .containsExactly("java.lang.IllegalArgumentException", "java.lang.IllegalStateException");
+    Type[] unionTypes = symbolType.getUnionTypes();
+    unionTypes[0] = Type.UNKNOWN;
+    assertThat(symbolType.getUnionTypes()).extracting(Type::fullyQualifiedName)
+      .containsExactly("java.lang.IllegalArgumentException", "java.lang.IllegalStateException");
+    assertThat(v.simpleName().symbol().type()).isSameAs(symbolType);
+    assertThat(v.type().symbolType()).isSameAs(symbolType);
+  }
+
+  @Test
+  void type_union_equality() {
+    JavaTree.CompilationUnitTreeImpl cu = test("class C { void m() { try { } catch (IllegalArgumentException | IllegalStateException first) { } try { } catch (IllegalStateException | IllegalArgumentException second) { } RuntimeException other = new RuntimeException(); } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    List<StatementTree> statements = m.block().body();
+    Type firstType = ((TryStatementTree) statements.get(0)).catches().get(0).parameter().symbol().type();
+    Type secondType = ((TryStatementTree) statements.get(1)).catches().get(0).parameter().symbol().type();
+    Type otherType = ((VariableTreeImpl) statements.get(2)).symbol().type();
+    JavaTree.UnionTypeTreeImpl unionTypeTree = (JavaTree.UnionTypeTreeImpl) ((TryStatementTree) statements.get(0)).catches().get(0).parameter().type();
+    Type unknownUnionType = new JUnionType(cu.sema, unionTypeTree.typeBinding, new ITypeBinding[] { null });
+
+    assertThat(firstType)
+      .isEqualTo(firstType)
+      .isEqualTo(secondType)
+      .hasSameHashCodeAs(secondType)
+      .isNotEqualTo(otherType)
+      .isNotEqualTo(null);
+    assertThat(unknownUnionType.getUnionTypes()).containsExactly(Type.UNKNOWN);
+  }
+
+  @Test
+  void type_union_does_not_change_the_common_supertype() {
+    CompilationUnitTree cu = test("class C { void m() { try { } catch (IllegalArgumentException | IllegalStateException v) { } RuntimeException e = new RuntimeException(); } }");
+    ClassTree c = (ClassTree) cu.types().get(0);
+    MethodTree m = (MethodTree) c.members().get(0);
+    VariableTreeImpl runtimeException = (VariableTreeImpl) m.block().body().get(1);
+
+    Type runtimeExceptionType = runtimeException.symbol().type();
+
+    assertThat(runtimeExceptionType.isUnionType()).isFalse();
+    assertThat(runtimeExceptionType.fullyQualifiedName()).isEqualTo("java.lang.RuntimeException");
   }
 
   @Test
