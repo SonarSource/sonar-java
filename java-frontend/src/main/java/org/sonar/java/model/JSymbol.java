@@ -27,6 +27,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -263,14 +264,23 @@ abstract class JSymbol implements Symbol {
       case IBinding.TYPE:
         return sema.type((ITypeBinding) binding);
       case IBinding.VARIABLE:
-        ITypeBinding variableType = ((IVariableBinding) binding).getType();
-        return variableType != null ? sema.type(variableType) : Type.UNKNOWN;
+        return variableType((IVariableBinding) binding);
       case IBinding.PACKAGE,
            IBinding.METHOD:
         return Type.UNKNOWN;
       default:
         throw new IllegalStateException(unexpectedBinding());
     }
+  }
+
+  private Type variableType(IVariableBinding variableBinding) {
+    Tree declarationTree = sema.declarations.get(variableBinding);
+    if (declarationTree instanceof VariableTreeImpl variableTree
+      && variableTree.type() instanceof JavaTree.UnionTypeTreeImpl unionTypeTree) {
+      return unionTypeTree.symbolType();
+    }
+    ITypeBinding variableType = variableBinding.getType();
+    return variableType != null ? sema.type(variableType) : Type.UNKNOWN;
   }
 
   @Override
