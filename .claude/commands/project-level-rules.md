@@ -41,42 +41,126 @@ public class MyCheck extends IssuableSubscriptionVisitor implements EndOfAnalysi
 
 Rules implementing `EndOfAnalysis` are **never skipped** for unchanged files — they are always in `scannersThatCannotBeSkipped`. Without caching, they only see changed files on incremental runs.
 
-To correctly restore state for unchanged files, implement both:
+Do **not** hand-roll the cache plumbing. Implement `FileCachingCheck<T>` (`java-frontend/.../org/sonar/java/caching/FileCachingCheck.java`), where `T` is the data collected for
+one file. It owns the key construction, the `isCacheEnabled()` guard, `copyFromPrevious`, and the error handling.
 
-### 1. Write — `leaveFile()`: persist per-file data to cache
+No cache problem is fatal, but they degrade differently — worth knowing when a trace log is all you have to debug a miss:
+
+| Problem | Logged? | Consequence |
+|---|---|---|
+| Entry cannot be deserialized | trace | file is parsed instead, and the entry rewritten |
+| No entry for the file | no | file is parsed instead |
+| Write collides with an earlier one | trace | new payload dropped, earlier entry kept; the file had been parsed either way |
+| `copyFromPrevious` collides | trace | none — the data stays restored; another check sharing the entry already copied it |
+| I/O failure reading the cache | warn, by `VisitorsBridge` | file is parsed instead; fails the analysis only in fail-fast mode |
+
+Returning `true` from `restoreFromCache` only means that one check does not require parsing. The file is
+skipped only when every scanner that cannot be skipped returns `true`. Another scanner's cache miss or
+failure can therefore cause the check to visit a file after restoring its cached contribution. Keep
+module-level state keyed by `context.getInputFile().key()`, and replace that file's contribution from both
+the restored and parsed paths.
 
 ```java
-@Override
-public void leaveFile(JavaFileScannerContext context) {
-  super.leaveFile(context);
-  if (context.getCacheContext().isCacheEnabled()) {
-    var key = CACHE_KEY_PREFIX + context.getInputFile().key();
-    var bytes = serialize(myPerFileData);
-    try {
-      context.getCacheContext().getWriteCache().write(key, bytes);
-    } catch (IllegalArgumentException e) {
-      LOG.trace("Cache key already written: {}", key);
-    }
+@Rule(key = "SXXXX")
+public class MyCheck extends IssuableSubscriptionVisitor
+  implements EndOfAnalysis, FileCachingCheck<MyCheck.PerFileData> {
+
+  private static final String CACHE_KEY_PREFIX = "java:SXXXX:";
+  private static final int CACHE_FORMAT_VERSION = 1;
+  private static final String COUNT = "count";
+
+  private final Map<String, PerFileData> dataByFile = new HashMap<>();
+  private int currentFileCount;
+
+  record PerFileData(int count) {}
+
+  @Override
+  public String cacheKeyPrefix() {
+    return CACHE_KEY_PREFIX;
   }
-  myPerFileData.clear();
+
+  @Override
+  public byte[] serialize(PerFileData data) {
+    var document = JsonUtils.writeDocument(CACHE_FORMAT_VERSION,
+      out -> out.name(COUNT).value(data.count()));
+    return document.getBytes(StandardCharsets.UTF_8);
+  }
+
+  @Override
+  public PerFileData deserialize(byte[] data) {
+    var document = JsonUtils.parseDocument(new String(data, StandardCharsets.UTF_8), CACHE_FORMAT_VERSION);
+    return new PerFileData(JsonUtils.requiredInt(document, COUNT));
+  }
+
+  @Override
+  public void restore(InputFileScannerContext context, PerFileData data) {
+    dataByFile.put(context.getInputFile().key(), data);
+  }
+
+  @Override
+  public void leaveFile(JavaFileScannerContext context) {
+    var data = new PerFileData(currentFileCount);
+    dataByFile.put(context.getInputFile().key(), data);
+    writeToCache(context, data);
+    currentFileCount = 0;
+  }
+
+  @Override
+  public boolean scanWithoutParsing(InputFileScannerContext context) {
+    return restoreFromCache(context);
+  }
 }
 ```
 
-### 2. Read — `scanWithoutParsing()`: restore state from cache, skip parsing
+Aggregate `dataByFile.values()` in `endOfAnalysis`. Recording the parsed value before clearing per-file
+state is what replaces an earlier restore when another scanner forces parsing.
 
-```java
-@Override
-public boolean scanWithoutParsing(InputFileScannerContext context) {
-  var key = CACHE_KEY_PREFIX + context.getInputFile().key();
-  var bytes = context.getCacheContext().getReadCache().readBytes(key);
-  if (bytes != null) {
-    context.getCacheContext().getWriteCache().copyFromPrevious(key);
-    issues.addAll(deserialize(bytes));  // restore into aggregated state
-    return true;   // file does not need to be parsed
-  }
-  return false;    // cache miss — fall back to full parse
-}
-```
+A check implementing plain `JavaFileScanner` (no `leaveFile`) calls `writeToCache` from `scanFile`
+instead.
+
+### Serialization format
+
+Wrap the entry in a versioned document with `JsonUtils` (`org.sonar.java.serialization`):
+`writeDocument(version, body)` returns the document as a `String`, `parseDocument(content, version)`
+reads it back, and the check converts to and from `byte[]` in UTF-8 itself. Bump your
+`CACHE_FORMAT_VERSION` whenever the entry shape changes — old entries are then rejected and
+recomputed. Every `JsonUtils` accessor is strict and throws on anything unexpected, which
+`readFromCache` turns into a cache miss.
+
+Several checks sharing one format keep it in a dedicated class rather than in each check — see
+`SpringContextCacheHelper`, which owns the version the Spring gatherers share along with the
+`byte[]` conversions.
+
+Describe anything with structure as a Gson **`TypeAdapter`** rather than assembling the tree by hand —
+see `BeanDefinitionHolderTypeAdapter` and `InjectionPointTypeAdapter`, which read with `JsonUtils.readString`,
+`readNullableString` and `readStrings` (`readInt` too, in `TextSpanTypeAdapter`). Adapters should skip
+unknown properties (`default -> in.skipValue()`) so a newer entry shape stays readable.
+
+Never use Gson's reflective object binding (`new Gson().toJson(pojo)`): the plugin is shaded with
+`minimizeJar`, which strips classes reached only by reflection. Explicit `TypeAdapter`s and the tree
+API are both safe.
+
+### Restoring locations
+
+`TextSpanTypeAdapter.getInstance()` (`org.sonar.java.serialization`) serializes an `AnalyzerMessage.TextSpan`.
+
+A payload holds **text spans only, never the file they belong to**. File identity lives in the cache key
+(`cacheKeyPrefix() + inputFile.key()`), which is what lets `deserialize(byte[])` read an entry without
+knowing which file it describes. Name a per-file record after that property — see
+`BeanDefinitionHolder.InputFileData`.
+
+`restore(InputFileScannerContext, T)` is the only place the file reaches the check, so store the data
+under it and pair the spans with it when aggregating in `endOfAnalysis`. `BeanDefinitionGatherer` keys
+`beansCollectedByFile` by `InputFile` and builds every `BeanLocation(inputFile, data.textSpan())` in
+`gatherSpringContextData`, from the map key rather than from anything in the payload.
+
+Adapters therefore never need an `InputFile`, and are stateless singletons
+(`BeanDefinitionHolderTypeAdapter`, `TextSpanTypeAdapter`).
+
+### Sharing an entry between rules
+
+Two checks may return the same `cacheKeyPrefix()` to share one entry. `MissingPackageInfoCheck` (S1228) and `UselessPackageInfoCheck` (S4032) already share a single entry this way, through the hand-rolled key of their `AbstractPackageInfoChecker` base class.
+The first write of an analysis wins and the rest are ignored.
 
 ### When caching is not needed
 
@@ -101,10 +185,13 @@ Currently `ProjectEndOfAnalysisSensor` only handles telemetry, not rule issues.
 
 | Rule | Pattern |
 |---|---|
-| `SpringBeansShouldBeAccessibleCheck` (S4605) | Full caching: writes packages per file, reads in `scanWithoutParsing`, aggregates, reports in `endOfAnalysis` |
+| `SpringBeansShouldBeAccessibleCheck` (S4605) | Aggregates packages and reports in `endOfAnalysis`, but predates `FileCachingCheck` and still hand-rolls its own plumbing — not a template |
 | `BrainMethodCheck` (S6541) | No caching: collects candidates, noise-filters and reports in `endOfAnalysis` |
-| `AbstractPackageInfoChecker` | Base class for package-info checks |
+| `AbstractPackageInfoChecker` (S1228, S4032) | Two rules sharing one cache entry |
 | `ExcessiveContentRequestCheck` (S5693) | Cross-file config aggregation |
+| `DateEnumsCheck` (S8694) | Caches potential issues and rebuilds their quick fixes without the AST |
+| `BeanDefinitionGatherer` | `FileCachingCheck` reference: nested payload, spans paired with their file at aggregation time |
+| `ComponentScanPackageGatherer` | `FileCachingCheck` reference: flat payload, no locations to restore |
 
 ## Memory warning
 

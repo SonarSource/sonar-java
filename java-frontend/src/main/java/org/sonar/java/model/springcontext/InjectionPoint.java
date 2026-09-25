@@ -1,0 +1,56 @@
+/*
+ * SonarQube Java
+ * Copyright (C) SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * You can redistribute and/or modify this program under the terms of
+ * the Sonar Source-Available License Version 1, as published by SonarSource Sàrl.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+package org.sonar.java.model.springcontext;
+
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.telemetry.SizeEstimable;
+import org.sonar.java.telemetry.SizeEstimator;
+
+/**
+ * A single point in the source where a dependency is injected, as registered in {@link TypeToDependenciesIndex}.
+ *
+ * @param name              The dependency name, either the field/parameter name at the injection point or the value of the {@code @Qualifier} annotation if present.
+ * @param module            The module key of the bean that declares this injection point.
+ * @param profileExpression The condition under which the bean declaring this injection point is active, which is also the condition under which the injection happens at all.
+ * @param location          The source location of the injection point.
+ * @param multiple          whether Spring collects every bean of the required type here, as it does for a collection or array injection point, instead of resolving a single one.
+ */
+public record InjectionPoint(String name, String module, ProfileExpression profileExpression, BeanLocation location, boolean multiple) implements SizeEstimable {
+
+  @Override
+  public long estimateSize(SizeEstimator estimator) {
+    return estimator.estimateShallowObject(this, 4, 1)
+      + estimator.estimateString(name)
+      + estimator.estimateString(module)
+      + estimator.estimateObject(profileExpression)
+      + estimator.estimateObject(location);
+  }
+
+  /**
+   * An injection point as collected from a single file, holding no reference to that file.
+   *
+   * <p>This is the form kept in {@link BeanDefinitionHolder.InputFileData} and written to the cache. It becomes
+   * an {@link InjectionPoint} once paired with the file it was collected from, which the gatherer knows from the
+   * file its beans are stored under.
+   *
+   * @param name     the dependency name, as in {@link InjectionPoint#name()}
+   * @param span     the text span of the injection point within its own file
+   * @param multiple whether all matching beans are collected here, as in {@link InjectionPoint#multiple()}
+   */
+  public record InputFileData(String name, AnalyzerMessage.TextSpan span, boolean multiple) {
+  }
+}
