@@ -1,0 +1,14 @@
+{
+"com.google.guava:guava:src/com/google/common/collect/ImmutableMultimap.java": [
+280
+],
+"com.google.guava:guava:src/com/google/common/collect/Ordering.java": [
+698
+],
+"com.google.guava:guava:src/com/google/common/collect/RegularImmutableTable.java": [
+125
+],
+"com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+597
+]
+}
