@@ -1,0 +1,335 @@
+/*
+ * SonarQube Java
+ * Copyright (C) SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * You can redistribute and/or modify this program under the terms of
+ * the Sonar Source-Available License Version 1, as published by SonarSource Sàrl.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+package org.sonar.java.utils;
+
+import java.beans.Introspector;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import javax.annotation.Nullable;
+
+import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.model.JUtils;
+import org.sonar.java.model.springcontext.InjectionPoint;
+import org.sonar.java.model.springcontext.ProfileExpression;
+import org.sonar.java.model.springcontext.ProfileExpressionParser;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
+
+public final class SpringUtils {
+
+  public static final String BEANS_FACTORY_ANNOTATION_PACKAGE = "org.springframework.beans.factory.annotation.";
+  public static final String BOOT_CONTEXT_PROPERTIES_PACKAGE = "org.springframework.boot.context.properties.";
+  public static final String CONTEXT_ANNOTATION_PACKAGE = "org.springframework.context.annotation.";
+  public static final String DATA_PACKAGE = "org.springframework.data.";
+
+  public static final String SPRING_BOOT_APP_ANNOTATION = "org.springframework.boot.autoconfigure.SpringBootApplication";
+  public static final String CONTROLLER_ANNOTATION = "org.springframework.stereotype.Controller";
+  public static final String COMPONENT_ANNOTATION = "org.springframework.stereotype.Component";
+  public static final String REPOSITORY_ANNOTATION = "org.springframework.stereotype.Repository";
+  public static final String SERVICE_ANNOTATION = "org.springframework.stereotype.Service";
+  public static final String AUTOWIRED_ANNOTATION = BEANS_FACTORY_ANNOTATION_PACKAGE + "Autowired";
+  public static final String QUALIFIER_ANNOTATION = BEANS_FACTORY_ANNOTATION_PACKAGE + "Qualifier";
+  public static final String VALUE_ANNOTATION = BEANS_FACTORY_ANNOTATION_PACKAGE + "Value";
+  public static final String TRANSACTIONAL_ANNOTATION = "org.springframework.transaction.annotation.Transactional";
+  public static final String BEAN_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "Bean";
+  public static final String SCOPE_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "Scope";
+  public static final String CONFIGURATION_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "Configuration";
+  public static final String PROFILE_ANNOTATION = CONTEXT_ANNOTATION_PACKAGE + "Profile";
+  public static final String ASYNC_ANNOTATION = "org.springframework.scheduling.annotation.Async";
+  public static final String DATA_REPOSITORY_ANNOTATION = DATA_PACKAGE + "repository.Repository";
+  public static final String REST_CONTROLLER_ANNOTATION = "org.springframework.web.bind.annotation.RestController";
+  public static final String SPRING_BOOT_TEST_ANNOTATION = "org.springframework.boot.test.context.SpringBootTest";
+  public static final Set<String> INJECTION_ANNOTATIONS = Set.of(
+    AUTOWIRED_ANNOTATION,
+    "javax.inject.Inject",
+    "jakarta.inject.Inject");
+
+  private static final String VALUE_ATTRIBUTE = "value";
+  /**
+   * Collection interfaces for which Spring injects every bean of the element type rather than resolving a single one,
+   * as {@code DefaultListableBeanFactory#resolveMultipleBeans} does.
+   */
+  private static final Set<String> MULTI_BEAN_COLLECTIONS = Set.of("java.util.List", "java.util.Set", "java.util.Collection");
+  private static final String MAP_TYPE = "java.util.Map";
+  private static final String STRING_TYPE = "java.lang.String";
+
+  public static final List<String> STEREOTYPE_ANNOTATIONS = List.of(
+    COMPONENT_ANNOTATION,
+    SERVICE_ANNOTATION,
+    REPOSITORY_ANNOTATION,
+    CONTROLLER_ANNOTATION,
+    REST_CONTROLLER_ANNOTATION,
+    CONFIGURATION_ANNOTATION
+  );
+
+  private SpringUtils() {
+    // Utils class
+  }
+
+  public static boolean isScopeSingleton(SymbolMetadata clazzMeta) {
+    List<SymbolMetadata.AnnotationValue> values = clazzMeta.valuesForAnnotation(SCOPE_ANNOTATION);
+    if (values == null) {
+      // Scope is singleton by default
+      return true;
+    }
+    for (SymbolMetadata.AnnotationValue annotationValue : values) {
+      if (VALUE_ATTRIBUTE.equals(annotationValue.name()) || "scopeName".equals(annotationValue.name())) {
+        Object value = annotationValue.value();
+        if (value instanceof String stringValue && !"singleton".equals(stringValue)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  public static boolean isAutowired(Symbol symbol) {
+    return symbol.metadata().isAnnotatedWith(AUTOWIRED_ANNOTATION);
+  }
+
+  public static boolean isSpringBootTestClass(Symbol symbol) {
+    return symbol.metadata().isAnnotatedWith(SPRING_BOOT_TEST_ANNOTATION);
+  }
+
+  public static boolean isSpringBootUnitTest(MethodTree methodTree) {
+    Tree parentOfType = ExpressionUtils.getParentOfType(methodTree, Tree.Kind.CLASS);
+    if (parentOfType == null) {
+      return false;
+    }
+    ClassTree parentClass = (ClassTree) parentOfType;
+    return UnitTestUtils.isUnitTest(methodTree) && SpringUtils.isSpringBootTestClass(parentClass.symbol());
+  }
+
+  public static List<MethodTree> getBeanMethods(ClassTree classTree) {
+    return classTree.members().stream()
+      .filter(member -> member.is(Tree.Kind.METHOD))
+      .map(MethodTree.class::cast)
+      .filter(method -> method.symbol().metadata().isAnnotatedWith(BEAN_ANNOTATION))
+      .toList();
+  }
+
+  /**
+   * Extracts the bean name from whichever stereotype annotation is present on the bean definition,
+   * falling back to the decapitalized simple name for an unnamed bean.
+   *
+   * @param meta       The symbol metadata of the class declaring the bean
+   * @param simpleName The simple name of the class declaring the bean
+   * @return The resolved bean name
+   */
+  public static String extractBeanNameFromAnnotation(SymbolMetadata meta, String simpleName) {
+    for (String annotation : STEREOTYPE_ANNOTATIONS) {
+      List<SymbolMetadata.AnnotationValue> attrs = meta.valuesForAnnotation(annotation);
+      if (attrs != null) {
+        Optional<String> name = attrs.stream()
+          .filter(v -> VALUE_ATTRIBUTE.equals(v.name()) || "name".equals(v.name()))
+          .map(v -> (String) v.value())
+          .filter(s -> !s.isBlank())
+          .findFirst();
+        if (name.isPresent()) {
+          return name.get();
+        }
+      }
+    }
+    return Introspector.decapitalize(simpleName);
+  }
+
+  /**
+   * Reads the {@code @Bean} method's explicit "value"/"name" attribute (accepting one or several aliases),
+   * falling back to the method's own name when none is given.
+   *
+   * @param method The {@code @Bean} factory method, used for its name when no alias is declared
+   * @return The declared alias(es), or the method's own name when none is declared
+   */
+  public static List<String> extractBeanNameFromMethod(MethodTree method) {
+    SymbolMetadata beanMeta = method.symbol().metadata();
+    List<SymbolMetadata.AnnotationValue> attrs = beanMeta.valuesForAnnotation(BEAN_ANNOTATION);
+    List<String> names = attrs == null ? List.of() : attrs.stream()
+      .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()) || "name".equals(attr.name()))
+      .filter(attr -> attr.value() instanceof Object[])
+      .flatMap(attr -> Arrays.stream((Object[]) attr.value()))
+      .filter(String.class::isInstance)
+      .map(String.class::cast)
+      .filter(name -> !name.isBlank())
+      .toList();
+    return names.isEmpty() ? List.of(method.simpleName().name()) : names;
+  }
+
+  /**
+   * Reads the {@code @Qualifier} value, if any.
+   *
+   * @param metadata The symbol metadata of the field or parameter to check for a {@code @Qualifier}
+   * @return The qualifier's value, or {@code null} if none is declared
+   */
+  @Nullable
+  public static String extractQualifierValue(SymbolMetadata metadata) {
+    List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(QUALIFIER_ANNOTATION);
+    if (attrs == null) {
+      return null;
+    }
+    return attrs.stream()
+      .filter(v -> VALUE_ATTRIBUTE.equals(v.name()))
+      .map(v -> (String) v.value())
+      .filter(s -> !s.isBlank())
+      .findFirst()
+      .orElse(null);
+  }
+
+  /**
+   * Collects a class-level bean's dependencies from {@code @Autowired} fields, constructors and setters.
+   * <p>
+   * Also applies Spring's implicit single-constructor injection if no constructor is {@code @Autowired}
+   * and the class declares exactly one constructor. {@code hasAutowiredConstructor} guards against
+   * misapplying that fallback when an {@code @Autowired} constructor already exists alongside other,
+   * unannotated ones.
+   *
+   * @param classTree The class whose members are scanned for dependencies
+   * @return The class's dependencies, mapped by required type FQN to the {@link InjectionPoint.InputFileData} that require it
+   */
+  public static Map<String, Set<InjectionPoint.InputFileData>> collectAutowiredDependenciesOnClass(ClassTree classTree) {
+    Map<String, Set<InjectionPoint.InputFileData>> deps = new LinkedHashMap<>();
+    List<MethodTree> unannotatedConstructors = new ArrayList<>();
+    boolean hasAutowiredConstructor = false;
+    for (Tree member : classTree.members()) {
+      if (member instanceof VariableTree field && field.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
+        DependencyTarget target = resolveDependencyTarget(field.symbol().type());
+        String name = dependencyKey(field.simpleName().name(), SpringUtils.extractQualifierValue(field.symbol().metadata()));
+        var span = AnalyzerMessage.textSpanFor(field.simpleName());
+        deps.computeIfAbsent(target.typeFqn(), k -> new LinkedHashSet<>())
+          .add(new InjectionPoint.InputFileData(name, span, target.multiple()));
+      } else if (member instanceof MethodTree method) {
+        if (method.symbol().metadata().isAnnotatedWith(SpringUtils.AUTOWIRED_ANNOTATION)) {
+          hasAutowiredConstructor |= method.is(Tree.Kind.CONSTRUCTOR);
+          collectDependenciesOnMethod(method).forEach((type, points) -> deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(points));
+        } else if (method.is(Tree.Kind.CONSTRUCTOR)) {
+          // Held back until the class has been fully scanned, in case an @Autowired constructor appears
+          // later among the members and disqualifies the implicit single-constructor rule below.
+          unannotatedConstructors.add(method);
+        }
+      }
+    }
+    if (!hasAutowiredConstructor && unannotatedConstructors.size() == 1) {
+      collectDependenciesOnMethod(unannotatedConstructors.get(0)).forEach((type, points) -> deps.computeIfAbsent(type, k -> new LinkedHashSet<>()).addAll(points));
+    }
+    return deps;
+  }
+
+  /**
+   * Collect the given method's parameters as dependencies.
+   *
+   * @param method Method whose parameters are stored as dependencies, either {@code @Autowired} constructors/setters or
+   *               {@code @Bean} factory methods
+   * @return The collected dependencies, mapped by required type FQN to the {@link InjectionPoint.InputFileData} that require it
+   */
+  public static Map<String, Set<InjectionPoint.InputFileData>> collectDependenciesOnMethod(MethodTree method) {
+    Map<String, Set<InjectionPoint.InputFileData>> deps = new LinkedHashMap<>();
+    for (var p : method.parameters()) {
+      DependencyTarget target = resolveDependencyTarget(p.symbol().type());
+      String name = dependencyKey(p.simpleName().name(), SpringUtils.extractQualifierValue(p.symbol().metadata()));
+      var span = AnalyzerMessage.textSpanFor(p.simpleName());
+      deps.computeIfAbsent(target.typeFqn(), k -> new LinkedHashSet<>())
+        .add(new InjectionPoint.InputFileData(name, span, target.multiple()));
+    }
+    return deps;
+  }
+
+  private static String dependencyKey(String fieldOrParamName, @Nullable String qualifier) {
+    return qualifier != null ? qualifier : fieldOrParamName;
+  }
+
+  /**
+   * The type a dependency is matched against, and whether Spring injects every matching bean instead of a single one.
+   *
+   * @param typeFqn  fully-qualified name of the type the injection point is resolved against
+   * @param multiple whether every bean of {@code typeFqn} is collected, as for a collection or array injection point
+   */
+  private record DependencyTarget(String typeFqn, boolean multiple) {
+  }
+
+  /**
+   * Resolves the declared type of an injection point to the type Spring actually matches beans against.
+   *
+   * <p>For {@code T[]}, {@code List<T>}, {@code Set<T>}, {@code Collection<T>} and {@code Map<String, T>}, Spring
+   * collects every bean of the element type {@code T}, so the dependency is recorded against {@code T} rather than
+   * against the erased collection type, and flagged as multi-bean.
+   *
+   * <p>Anything else resolves to a single bean of the declared type, including a raw collection or map, whose
+   * element type cannot be resolved, and a map keyed by something other than the bean name.
+   *
+   * @param type The declared type of the field or parameter at the injection point
+   * @return The type to match beans against, and whether all of them are injected
+   */
+  private static DependencyTarget resolveDependencyTarget(Type type) {
+    if (type.isArray()) {
+      return new DependencyTarget(JUtils.typeKey(((Type.ArrayType) type).elementType()), true);
+    }
+    if (type.isParameterized()) {
+      String erasureFqn = type.erasure().fullyQualifiedName();
+      if (MULTI_BEAN_COLLECTIONS.contains(erasureFqn)) {
+        return new DependencyTarget(JUtils.typeKey(type.typeArguments().get(0)), true);
+      }
+      if (MAP_TYPE.equals(erasureFqn) && type.typeArguments().get(0).is(STRING_TYPE)) {
+        return new DependencyTarget(JUtils.typeKey(type.typeArguments().get(1)), true);
+      }
+    }
+    return new DependencyTarget(JUtils.typeKey(type), false);
+  }
+
+  /**
+   * Reads the condition a {@code @Profile} annotation places on the class or {@code @Bean} method it annotates.
+   *
+   * <p>The elements of the annotation's "value" array are OR-ed, as Spring does: {@code @Profile({"a", "b"})}
+   * matches as soon as either profile is active. Each element is parsed on its own, so an element using
+   * operators contributes the expression it declares.
+   *
+   * <p>A declared {@code @Profile} never yields {@link ProfileExpression#UNCONDITIONAL} — that value is
+   * reserved for the absence of the annotation. An annotation whose value cannot be read at all, because it
+   * is empty, blank or not resolvable to strings, therefore yields {@link ProfileExpression#UNKNOWN}: a bean
+   * we know to be conditional but cannot reason about.
+   *
+   * @param metadata The symbol metadata of the class or {@code @Bean} method to check for a {@code @Profile}.
+   * @return The condition under which the annotated bean is active, never null.
+   */
+  public static ProfileExpression extractProfileExpression(SymbolMetadata metadata) {
+    List<SymbolMetadata.AnnotationValue> attrs = metadata.valuesForAnnotation(PROFILE_ANNOTATION);
+    if (attrs == null) {
+      return ProfileExpression.UNCONDITIONAL;
+    }
+    List<ProfileExpression> expressions = attrs.stream()
+      .filter(attr -> VALUE_ATTRIBUTE.equals(attr.name()))
+      .filter(attr -> attr.value() instanceof Object[])
+      .flatMap(attr -> Arrays.stream((Object[]) attr.value()))
+      .filter(String.class::isInstance)
+      .map(String.class::cast)
+      .filter(profile -> !profile.isBlank())
+      .map(ProfileExpressionParser::parse)
+      .toList();
+    return expressions.isEmpty() ? ProfileExpression.UNKNOWN : ProfileExpression.or(expressions);
+  }
+
+}
