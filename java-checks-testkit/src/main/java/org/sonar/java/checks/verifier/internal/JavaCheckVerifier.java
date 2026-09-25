@@ -17,6 +17,7 @@
 package org.sonar.java.checks.verifier.internal;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -24,7 +25,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
@@ -154,15 +157,19 @@ public class JavaCheckVerifier implements CheckVerifier {
   }
 
   private static void addIssues(JavaFileScannerContextForTests scannerContext, MultiFileVerifier verifier) {
+    Map<InputFile, String[]> fileLines = new HashMap<>();
     scannerContext.getIssues().forEach(issue -> {
       if (!issue.getInputComponent().isFile()) {
         return;
       }
-      Path path = ((InternalInputFile) issue.getInputComponent()).path();
+      InputFile inputFile = (InputFile) issue.getInputComponent();
+      String[] lines = fileLines.computeIfAbsent(inputFile, JavaCheckVerifier::lines);
+      Path path = ((InternalInputFile) inputFile).path();
       String issueMessage = issue.getMessage();
       AnalyzerMessage.TextSpan textSpan = issue.primaryLocation();
       MultiFileVerifier.Issue verifierIssue;
       if (textSpan != null) {
+        validateLocation(lines, textSpan);
         verifierIssue = getIssueForTextSpan(verifier, textSpan, path, issueMessage);
       } else if (issue.getLine() != null) {
         verifierIssue = verifier.reportIssue(path, issueMessage).onLine(issue.getLine());
@@ -179,7 +186,7 @@ public class JavaCheckVerifier implements CheckVerifier {
 
       List<AnalyzerMessage> secondaries = issue.flows.stream().map(l -> l.isEmpty() ? null : l.get(0)).filter(Objects::nonNull).toList();
       MultiFileVerifier.Issue finalVerifierIssue = verifierIssue;
-      secondaries.forEach(secondary -> addSecondary(path, finalVerifierIssue, secondary));
+      secondaries.forEach(secondary -> addSecondary(inputFile, lines, finalVerifierIssue, secondary));
     });
   }
 
@@ -210,9 +217,29 @@ public class JavaCheckVerifier implements CheckVerifier {
     return replacement.replace("\n", "\\n");
   }
 
-  private static void addSecondary(Path path, MultiFileVerifier.Issue issue, AnalyzerMessage secondary) {
+  private static void addSecondary(InputFile inputFile, String[] lines, MultiFileVerifier.Issue issue, AnalyzerMessage secondary) {
     AnalyzerMessage.TextSpan textSpan = secondary.primaryLocation();
-    issue.addSecondary(path, textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter, secondary.getMessage());
+    validateLocation(lines, textSpan);
+    issue.addSecondary(((InternalInputFile) inputFile).path(), textSpan.startLine, textSpan.startCharacter + 1, textSpan.endLine, textSpan.endCharacter, secondary.getMessage());
+  }
+
+  private static String[] lines(InputFile inputFile) {
+    try {
+      return inputFile.contents().split("(\\r)?\\n|\\r");
+    } catch (IOException e) {
+      throw new IllegalStateException("Unable to read source file " + inputFile, e);
+    }
+  }
+
+  private static void validateLocation(String[] lines, AnalyzerMessage.TextSpan location) {
+    validatePosition(location.startLine, location.startCharacter, lines, location);
+    validatePosition(location.endLine, location.endCharacter, lines, location);
+  }
+
+  private static void validatePosition(int line, int column, String[] lines, AnalyzerMessage.TextSpan location) {
+    if (line < 1 || line > lines.length || (column != -1 && (column < 0 || column > lines[line - 1].length()))) {
+      throw new AssertionError("Invalid issue location " + location);
+    }
   }
 
   private static void addComments(MultiFileVerifier singleFileVerifier, CommentLinesVisitor commentLinesVisitor) {

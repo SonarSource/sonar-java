@@ -78,4 +78,12 @@ public class UnicodeAwareCharClassesCheckTestWithoutSemantic {
     Pattern.compile("\\w(?U:[a-y])\\w"); // Compliant. We assume the developer knows what they are doing if they are using unicode flags somewhere.
   }
 
+  void supportCommentInTextBlock() {
+    // Noncompliant@+2
+    Pattern.compile("""
+      ([0-9]{1,2}|[a-z]{3,3})([0-9]{1,2}|[a-z]{3,3})
+      #
+      """, Pattern.CASE_INSENSITIVE | Pattern.COMMENTS);
+  }
+
 }
