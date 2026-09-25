@@ -462,7 +462,12 @@ We first need to populate the HTML file with some information that will help dev
 ```html
 <p>For a method having a single parameter, the types of its return value and its parameter should never be the same.</p>
 
-<h2>Noncompliant Code Example</h2>
+<h2>Why is this an issue?</h2>
+<p>A method that returns the same type as its only parameter can make the method's purpose unclear.</p>
+
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre>
 class MyClass {
   int doSomething(int a) { // Noncompliant
@@ -471,7 +476,7 @@ class MyClass {
 }
 </pre>
 
-<h2>Compliant Solution</h2>
+<h4>Compliant solution</h4>
 <pre>
 class MyClass {
   int doSomething() { // Compliant
