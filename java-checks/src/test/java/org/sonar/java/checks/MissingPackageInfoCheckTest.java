@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -67,6 +68,8 @@ class MissingPackageInfoCheckTest {
 
   @Test
   void no_package_info() {
+    MissingPackageInfoCheck check = new MissingPackageInfoCheck();
+
     CheckVerifier.newVerifier()
       .onFiles(
         mainCodeSourcesPath("DefaultPackage.java"),
@@ -74,8 +77,12 @@ class MissingPackageInfoCheckTest {
         mainCodeSourcesPath("checks/packageInfo/package-info.java"),
         mainCodeSourcesPath("checks/packageInfo/nopackageinfo/HelloWorld.java"),
         mainCodeSourcesPath("checks/packageInfo/nopackageinfo/nopackageinfo.java"))
-      .withCheck(new MissingPackageInfoCheck())
+      .withCheck(check)
       .verifyIssueOnProject(EXPECTED_MESSAGE);
+
+    Set<String> set = check.missingPackageWithoutPackageFile;
+    assertThat(set).hasSize(1);
+    assertThat(set.iterator().next()).isEqualTo(EXPECTED_PACKAGE);
   }
 
   @Test

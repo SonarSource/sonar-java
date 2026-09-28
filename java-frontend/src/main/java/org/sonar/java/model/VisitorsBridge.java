@@ -435,7 +435,17 @@ public class VisitorsBridge {
       } catch (CheckFailureException e) {
         interruptIfFailFast(e);
       } finally {
-        issuableSubscriptionVisitorsDuration.stop();
+        try {
+          forEach(subscriptionVisitors, visitor -> {
+            if (visitor instanceof IssuableSubscriptionVisitor issuableVisitor) {
+              issuableVisitor.clearStateAfterFile();
+            }
+          });
+        } catch (CheckFailureException e) {
+          interruptIfFailFast(e);
+        } finally {
+          issuableSubscriptionVisitorsDuration.stop();
+        }
       }
     }
 
