@@ -132,28 +132,24 @@ intermediate <code>String</code> object, defeating the purpose. Use chained <cod
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="4" data-diff-type="noncompliant">
-class JsonBuilder {
-  String buildUserJson(String name, int age, String email) {
+class ReportBuilder {
+  String buildUserSummary(String name, int age, String email) {
     StringBuilder sb = new StringBuilder();
-    sb.append("{");
-    sb.append(String.format(""name":"%s",", name)); // Noncompliant
-    sb.append(String.format(""age":%d,", age)); // Noncompliant
-    sb.append(String.format(""email":"%s"", email)); // Noncompliant
-    sb.append("}");
+    sb.append(String.format("User: %s, ", name)); // Noncompliant
+    sb.append(String.format("age: %d, ", age)); // Noncompliant
+    sb.append(String.format("email: %s", email)); // Noncompliant
     return sb.toString();
   }
 }
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="4" data-diff-type="compliant">
-class JsonBuilder {
-  String buildUserJson(String name, int age, String email) {
+class ReportBuilder {
+  String buildUserSummary(String name, int age, String email) {
     StringBuilder sb = new StringBuilder();
-    sb.append("{");
-    sb.append(""name":"").append(name).append("",");
-    sb.append(""age":").append(age).append(",");
-    sb.append(""email":"").append(email).append(""");
-    sb.append("}");
+    sb.append("User: ").append(name).append(", ");
+    sb.append("age: ").append(age).append(", ");
+    sb.append("email: ").append(email);
     return sb.toString();
   }
 }
