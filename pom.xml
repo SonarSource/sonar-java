@@ -108,7 +108,7 @@
     <!-- Overrides parent pom to use a more recent version of jacoco -->
     <version.jacoco.plugin>0.8.15</version.jacoco.plugin>
 
-    <mockito-core.version>5.23.0</mockito-core.version>
+    <mockito-core.version>5.24.0</mockito-core.version>
     <test-java-agent-directory>${project.build.directory}/test-java-agent-libs</test-java-agent-directory>
     <jacoco-agent-jar>org.jacoco.agent-${version.jacoco.plugin}-runtime.jar</jacoco-agent-jar>
     <mockito-agent-jar>mockito-core-${mockito-core.version}.jar</mockito-agent-jar>
