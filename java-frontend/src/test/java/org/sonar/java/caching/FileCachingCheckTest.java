@@ -23,6 +23,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockito.ArgumentCaptor;
 import org.slf4j.event.Level;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.testing.ThreadLocalLogTester;
@@ -32,8 +33,7 @@ import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -146,7 +146,10 @@ class FileCachingCheckTest {
   @Test
   void round_trip_through_the_cache() {
     check.writeToCache(context(true), List.of("x", "y"));
-    when(readCache.readBytes(CACHE_KEY)).thenReturn("x,y".getBytes(StandardCharsets.UTF_8));
+
+    var dataCaptor = ArgumentCaptor.forClass(byte[].class);
+    verify(writeCache).write(eq(CACHE_KEY), dataCaptor.capture());
+    when(readCache.readBytes(CACHE_KEY)).thenReturn(dataCaptor.getValue());
 
     assertThat(check.restoreFromCache(context(true))).isTrue();
     assertThat(check.moduleState.get(FILE_KEY)).containsExactly("x", "y");
