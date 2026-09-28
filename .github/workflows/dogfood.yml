@@ -26,7 +26,7 @@ jobs:
       uses: SonarSource/vault-action-wrapper@v3
       with:
         secrets: |
-          development/kv/data/slack webhook | SLACK_WEBHOOK;
+          development/kv/data/slack token | SLACK_TOKEN;
           development/github/token/{REPO_OWNER_NAME_DASH}-dogfood-merge token | dogfood_token;
     - name: git octopus step
       env:
@@ -42,8 +42,10 @@ jobs:
     - name: Notify failures on Slack
       if: failure()
       uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
-      env:
-        SLACK_BOT_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SLACK_BOT_TOKEN }}
       with:
-        channel-id: squad-corelang-notifs
-        slack-message: "Dogfood build for `${{ steps.dogfood.outputs.sha1 }}`: *failed*, see the logs at https://github.com/SonarSource/sonar-java/actions/workflows/dogfood.yml"
+        method: chat.postMessage
+        token: ${{ fromJSON(steps.secrets.outputs.vault).SLACK_TOKEN }}
+        errors: true  # without this, Slack API errors are swallowed and the step reports success
+        payload: |
+          channel: squad-corelang-notifs
+          text: "Dogfood build for `${{ steps.dogfood.outputs.sha1 }}`: *failed*, see the logs at https://github.com/SonarSource/sonar-java/actions/workflows/dogfood.yml"
