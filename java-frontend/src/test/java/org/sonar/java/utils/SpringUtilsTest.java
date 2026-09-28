@@ -1,0 +1,632 @@
+/*
+ * SonarQube Java
+ * Copyright (C) SonarSource Sàrl
+ * mailto:info AT sonarsource DOT com
+ *
+ * You can redistribute and/or modify this program under the terms of
+ * the Sonar Source-Available License Version 1, as published by SonarSource Sàrl.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the Sonar Source-Available License for more details.
+ *
+ * You should have received a copy of the Sonar Source-Available License
+ * along with this program; if not, see https://sonarsource.com/license/ssal/
+ */
+package org.sonar.java.utils;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.sonar.java.model.JParserTestUtils;
+import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.model.springcontext.InjectionPoint;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.test.classpath.TestClasspathUtils;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.sonar.java.model.springcontext.ProfileExpression.and;
+import static org.sonar.java.model.springcontext.ProfileExpression.not;
+import static org.sonar.java.model.springcontext.ProfileExpression.or;
+import static org.sonar.java.model.springcontext.ProfileExpression.profile;
+import static org.assertj.core.api.Assertions.tuple;
+
+class SpringUtilsTest {
+
+  @Test
+  void is_autowired() {
+    var cu = JParserTestUtils.parse("""
+      class A {
+        @org.springframework.beans.factory.annotation.Autowired
+        Object autowiredObject;
+      
+        @Autowired
+        Object noSemaAnnotation;
+      
+        @javax.annotation.Nullable
+        Object nullableObject;
+      }
+      """);
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    var obj = (VariableTreeImpl) clazz.members().get(0);
+    assertThat(SpringUtils.isAutowired(obj.symbol())).isTrue();
+    var goo = (VariableTreeImpl) clazz.members().get(1);
+    assertThat(SpringUtils.isAutowired(goo.symbol())).isFalse();
+    var hoo = (VariableTreeImpl) clazz.members().get(2);
+    assertThat(SpringUtils.isAutowired(hoo.symbol())).isFalse();
+  }
+
+  // ---- isScopeSingleton -------------------------------------------------------
+
+  @Test
+  void is_scope_singleton_no_annotation_returns_true() {
+    var cu = JParserTestUtils.parse("A", """
+      @org.springframework.stereotype.Component
+      class A {}
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    assertThat(SpringUtils.isScopeSingleton(clazz.symbol().metadata())).isTrue();
+  }
+
+  @Test
+  void is_scope_singleton_with_singleton_scope_returns_true() {
+    var cu = JParserTestUtils.parse("A", """
+      @org.springframework.context.annotation.Scope("singleton")
+      class A {}
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    assertThat(SpringUtils.isScopeSingleton(clazz.symbol().metadata())).isTrue();
+  }
+
+  @Test
+  void is_scope_singleton_with_prototype_scope_returns_false() {
+    var cu = JParserTestUtils.parse("A", """
+      @org.springframework.context.annotation.Scope("prototype")
+      class A {}
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    assertThat(SpringUtils.isScopeSingleton(clazz.symbol().metadata())).isFalse();
+  }
+
+  @Test
+  void is_scope_singleton_with_scope_name_attribute_and_prototype_returns_false() {
+    var cu = JParserTestUtils.parse("A", """
+      @org.springframework.context.annotation.Scope(scopeName = "prototype")
+      class A {}
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    assertThat(SpringUtils.isScopeSingleton(clazz.symbol().metadata())).isFalse();
+  }
+
+  // ---- isSpringBootTestClass --------------------------------------------------
+
+  @Test
+  void is_spring_boot_test_class_with_annotation_returns_true() {
+    var cu = JParserTestUtils.parse("A", """
+      @org.springframework.boot.test.context.SpringBootTest
+      class A {}
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    assertThat(SpringUtils.isSpringBootTestClass(clazz.symbol())).isTrue();
+  }
+
+  @Test
+  void is_spring_boot_test_class_without_annotation_returns_false() {
+    var cu = JParserTestUtils.parse("class A {}");
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    assertThat(SpringUtils.isSpringBootTestClass(clazz.symbol())).isFalse();
+  }
+
+  // ---- isSpringBootUnitTest ---------------------------------------------------
+
+  @Test
+  void is_spring_boot_unit_test_method_in_interface_returns_false() {
+    // getParentOfType(method, CLASS) returns null for methods inside interfaces (kind is INTERFACE, not CLASS)
+    var cu = JParserTestUtils.parse("interface A { default void m() {} }");
+    var iface = (ClassTreeImpl) cu.types().get(0);
+    var method = (MethodTreeImpl) iface.members().get(0);
+    assertThat(SpringUtils.isSpringBootUnitTest(method)).isFalse();
+  }
+
+  @Test
+  void is_spring_boot_unit_test_in_spring_boot_test_class_returns_true() {
+    var cu = JParserTestUtils.parse("A", """
+      import org.junit.jupiter.api.Test;
+      @org.springframework.boot.test.context.SpringBootTest
+      class A {
+        @Test
+        void myTest() {}
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    var method = (MethodTreeImpl) clazz.members().get(0);
+    assertThat(SpringUtils.isSpringBootUnitTest(method)).isTrue();
+  }
+
+  @Test
+  void is_spring_boot_unit_test_in_non_spring_class_returns_false() {
+    var cu = JParserTestUtils.parse("A", """
+      import org.junit.jupiter.api.Test;
+      class A {
+        @Test
+        void myTest() {}
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var clazz = (ClassTreeImpl) cu.types().get(0);
+    var method = (MethodTreeImpl) clazz.members().get(0);
+    assertThat(SpringUtils.isSpringBootUnitTest(method)).isFalse();
+  }
+
+  // ---- getBeanMethods / extractBeanNameFromMethod --------------------------------
+
+  @Nested
+  class ConfigurationClassWithBeanMethods {
+    private final CompilationUnitTree compilationUnit = JParserTestUtils.parse("A", """
+      class A {
+        @org.springframework.context.annotation.Bean("beanName")
+        Object beanMethod() { return new Object(); }
+      
+        Object nonBeanMethod() { return new Object(); }
+      
+        @org.springframework.context.annotation.Bean({"aliasOne", "aliasTwo"})
+        Object anotherBeanMethod() { return new Object(); }
+      
+        @org.springframework.context.annotation.Bean(name = "namedBean")
+        ApplicationContext namedBeanMethod() {
+          return null;
+        }
+      
+        @org.springframework.context.annotation.Bean(name = {})
+        ApplicationContext emptyNameArrayMethod() {
+          return null;
+        }
+      
+        int field;
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    private final ClassTreeImpl configurationClass = (ClassTreeImpl) compilationUnit.types().get(0);
+
+    @Test
+    void get_bean_methods_returns_only_methods_annotated_with_bean() {
+      assertThat(SpringUtils.getBeanMethods(configurationClass))
+        .extracting(beanMethod -> beanMethod.simpleName().name())
+        .containsExactly("beanMethod", "anotherBeanMethod", "namedBeanMethod", "emptyNameArrayMethod");
+    }
+
+    @Test
+    void extract_bean_name_from_method_returns_explicit_name_or_falls_back_to_method_name() {
+      var beanMethod = (MethodTreeImpl) configurationClass.members().get(0);
+      var nonBeanMethod = (MethodTreeImpl) configurationClass.members().get(1);
+      var anotherBeanMethod = (MethodTreeImpl) configurationClass.members().get(2);
+      var namedBeanMethod = (MethodTreeImpl) configurationClass.members().get(3);
+      var emptyNameArrayMethod = (MethodTreeImpl) configurationClass.members().get(4);
+
+
+      assertThat(SpringUtils.extractBeanNameFromMethod(beanMethod)).containsExactly("beanName");
+      assertThat(SpringUtils.extractBeanNameFromMethod(nonBeanMethod)).containsExactly("nonBeanMethod");
+      assertThat(SpringUtils.extractBeanNameFromMethod(anotherBeanMethod)).containsExactly("aliasOne", "aliasTwo");
+      assertThat(SpringUtils.extractBeanNameFromMethod(namedBeanMethod)).containsExactly("namedBean");
+      assertThat(SpringUtils.extractBeanNameFromMethod(emptyNameArrayMethod)).containsExactly("emptyNameArrayMethod");
+    }
+  }
+
+  @Test
+  void get_bean_methods_returns_empty_list_when_no_bean_methods() {
+    var compilationUnit = JParserTestUtils.parse("A", """
+      class A {
+        Object nonBeanMethod() { return new Object(); }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var configurationClass = (ClassTreeImpl) compilationUnit.types().get(0);
+
+    assertThat(SpringUtils.getBeanMethods(configurationClass)).isEmpty();
+  }
+
+  @Test
+  void extract_bean_name_from_method_falls_back_to_method_name_when_name_array_is_empty() {
+    var compilationUnit = JParserTestUtils.parse("A", """
+      class A {
+        @org.springframework.context.annotation.Bean({})
+        Object beanMethod() { return new Object(); }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var configurationClass = (ClassTreeImpl) compilationUnit.types().get(0);
+    var beanMethod = (MethodTreeImpl) configurationClass.members().get(0);
+
+    assertThat(SpringUtils.extractBeanNameFromMethod(beanMethod)).containsExactly("beanMethod");
+  }
+
+  // ---- extractBeanNameFromAnnotation ---------------------------------------------
+
+  @Nested
+  class StereotypeAnnotatedClasses {
+    private final CompilationUnitTree compilationUnit = JParserTestUtils.parse("A", """
+      @org.springframework.stereotype.Component
+      class NoExplicitName {}
+      
+      @org.springframework.stereotype.Component("explicitName")
+      class WithExplicitName {}
+      
+      @org.springframework.stereotype.Component("")
+      class WithBlankName {}
+      
+      class NoStereotypeAnnotation {}
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+
+    @Test
+    void falls_back_to_decapitalized_simple_name_when_no_explicit_name() {
+      var clazz = (ClassTreeImpl) compilationUnit.types().get(0);
+      assertThat(SpringUtils.extractBeanNameFromAnnotation(clazz.symbol().metadata(), clazz.simpleName().name()))
+        .isEqualTo("noExplicitName");
+    }
+
+    @Test
+    void uses_explicit_name_from_value_attribute() {
+      var clazz = (ClassTreeImpl) compilationUnit.types().get(1);
+      assertThat(SpringUtils.extractBeanNameFromAnnotation(clazz.symbol().metadata(), clazz.simpleName().name()))
+        .isEqualTo("explicitName");
+    }
+
+    @Test
+    void falls_back_to_decapitalized_simple_name_when_explicit_name_is_blank() {
+      var clazz = (ClassTreeImpl) compilationUnit.types().get(2);
+      assertThat(SpringUtils.extractBeanNameFromAnnotation(clazz.symbol().metadata(), clazz.simpleName().name()))
+        .isEqualTo("withBlankName");
+    }
+
+    @Test
+    void falls_back_to_decapitalized_simple_name_when_no_stereotype_annotation() {
+      var clazz = (ClassTreeImpl) compilationUnit.types().get(3);
+      assertThat(SpringUtils.extractBeanNameFromAnnotation(clazz.symbol().metadata(), clazz.simpleName().name()))
+        .isEqualTo("noStereotypeAnnotation");
+    }
+  }
+
+  // ---- extractQualifierValue ------------------------------------------------------
+
+  @Nested
+  class QualifierAnnotatedParameters {
+    private final CompilationUnitTree compilationUnit = JParserTestUtils.parse("A", """
+      class A {
+        void m(
+          @org.springframework.beans.factory.annotation.Qualifier("qualifierValue") Object withQualifier,
+          @org.springframework.beans.factory.annotation.Qualifier("") Object withBlankQualifier,
+          Object withoutQualifier) {
+        }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    private final MethodTreeImpl method = (MethodTreeImpl) ((ClassTreeImpl) compilationUnit.types().get(0)).members().get(0);
+
+    @Test
+    void returns_qualifier_value_when_present() {
+      var withQualifier = method.parameters().get(0);
+      assertThat(SpringUtils.extractQualifierValue(withQualifier.symbol().metadata())).isEqualTo("qualifierValue");
+    }
+
+    @Test
+    void returns_null_when_qualifier_value_is_blank() {
+      var withBlankQualifier = method.parameters().get(1);
+      assertThat(SpringUtils.extractQualifierValue(withBlankQualifier.symbol().metadata())).isNull();
+    }
+
+    @Test
+    void returns_null_when_no_qualifier_annotation() {
+      var withoutQualifier = method.parameters().get(2);
+      assertThat(SpringUtils.extractQualifierValue(withoutQualifier.symbol().metadata())).isNull();
+    }
+  }
+
+  // ---- collectAutowiredDependenciesOnClass -----------------------------------------
+
+  @Nested
+  class AutowiredFieldsAndSetters {
+    private final CompilationUnitTree compilationUnit = JParserTestUtils.parse("OrderService", """
+      class OrderService {
+        @org.springframework.beans.factory.annotation.Autowired
+        PaymentProcessor paymentProcessor;
+      
+        @org.springframework.beans.factory.annotation.Autowired
+        @org.springframework.beans.factory.annotation.Qualifier("special")
+        PaymentProcessor specialProcessor;
+      
+        NotificationService notInjected;
+      
+        @org.springframework.beans.factory.annotation.Autowired
+        void setEmailService(EmailService emailService) {
+        }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    private final ClassTreeImpl orderService = (ClassTreeImpl) compilationUnit.types().get(0);
+    private final Map<String, Set<InjectionPoint.InputFileData>> dependencies = SpringUtils.collectAutowiredDependenciesOnClass(orderService);
+
+    @Test
+    void autowired_field_without_qualifier_is_registered_using_its_field_name() {
+      assertThat(dependencies.get("PaymentProcessor"))
+        .extracting(InjectionPoint.InputFileData::name)
+        .contains("paymentProcessor");
+    }
+
+    @Test
+    void autowired_field_with_qualifier_uses_qualifier_value_instead_of_field_name() {
+      assertThat(dependencies.get("PaymentProcessor"))
+        .extracting(InjectionPoint.InputFileData::name)
+        .contains("special");
+    }
+
+    @Test
+    void non_autowired_field_is_not_registered() {
+      assertThat(dependencies).doesNotContainKey("NotificationService");
+    }
+
+    @Test
+    void autowired_setter_parameter_is_registered() {
+      assertThat(dependencies.get("EmailService"))
+        .extracting(InjectionPoint.InputFileData::name)
+        .containsExactly("emailService");
+    }
+
+    @Test
+    void injection_points_are_located_on_the_injected_field_or_parameter() {
+      assertThat(dependencies.get("PaymentProcessor"))
+        .extracting(point -> point.span().startLine)
+        .containsExactlyInAnyOrder(3, 7);
+      assertThat(dependencies.get("EmailService"))
+        .extracting(point -> point.span().startLine)
+        .containsExactly(12);
+    }
+  }
+
+  @Test
+  void collect_autowired_dependencies_uses_implicit_single_constructor_when_none_is_autowired() {
+    var compilationUnit = JParserTestUtils.parse("OrderService", """
+      class OrderService {
+        OrderService(PaymentProcessor paymentProcessor) {
+        }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var orderService = (ClassTreeImpl) compilationUnit.types().get(0);
+    var dependencies = SpringUtils.collectAutowiredDependenciesOnClass(orderService);
+
+    assertThat(dependencies.get("PaymentProcessor"))
+      .extracting(InjectionPoint.InputFileData::name)
+      .containsExactly("paymentProcessor");
+  }
+
+  @Test
+  void collect_autowired_dependencies_ignores_multiple_unannotated_constructors() {
+    var compilationUnit = JParserTestUtils.parse("OrderService", """
+      class OrderService {
+        OrderService() {
+        }
+        OrderService(PaymentProcessor paymentProcessor) {
+        }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var orderService = (ClassTreeImpl) compilationUnit.types().get(0);
+    assertThat(SpringUtils.collectAutowiredDependenciesOnClass(orderService)).isEmpty();
+  }
+
+  @Test
+  void collect_autowired_dependencies_uses_only_the_autowired_constructor_when_others_are_unannotated() {
+    var compilationUnit = JParserTestUtils.parse("OrderService", """
+      class OrderService {
+        @org.springframework.beans.factory.annotation.Autowired
+        OrderService(PaymentProcessor paymentProcessor) {
+        }
+        OrderService(EmailService emailService) {
+        }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var orderService = (ClassTreeImpl) compilationUnit.types().get(0);
+    var dependencies = SpringUtils.collectAutowiredDependenciesOnClass(orderService);
+
+    assertThat(dependencies).containsOnlyKeys("PaymentProcessor");
+  }
+
+  // ---- collectDependenciesOnMethod --------------------------------------------------
+
+  @Nested
+  class MethodParametersAsDependencies {
+    private final CompilationUnitTree compilationUnit = JParserTestUtils.parse("BeanFactory", """
+      class BeanFactory {
+        @org.springframework.context.annotation.Bean
+        Object createBean(
+          PaymentProcessor paymentProcessor,
+          @org.springframework.beans.factory.annotation.Qualifier("special") PaymentProcessor specialProcessor,
+          EmailService emailService) {
+          return new Object();
+        }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    private final MethodTreeImpl createBean = (MethodTreeImpl) ((ClassTreeImpl) compilationUnit.types().get(0)).members().get(0);
+    private final Map<String, Set<InjectionPoint.InputFileData>> dependencies = SpringUtils.collectDependenciesOnMethod(createBean);
+
+    @Test
+    void parameters_are_grouped_by_declared_type() {
+      assertThat(dependencies).containsOnlyKeys("PaymentProcessor", "EmailService");
+    }
+
+    @Test
+    void parameter_without_qualifier_uses_its_own_name() {
+      assertThat(dependencies.get("PaymentProcessor"))
+        .extracting(InjectionPoint.InputFileData::name)
+        .contains("paymentProcessor");
+    }
+
+    @Test
+    void parameter_with_qualifier_uses_the_qualifier_value() {
+      assertThat(dependencies.get("PaymentProcessor"))
+        .extracting(InjectionPoint.InputFileData::name)
+        .contains("special");
+    }
+
+    @Test
+    void injection_points_are_located_on_the_parameter() {
+      assertThat(dependencies.get("PaymentProcessor"))
+        .extracting(point -> point.span().startLine)
+        .containsExactlyInAnyOrder(4, 5);
+      assertThat(dependencies.get("EmailService"))
+        .extracting(point -> point.span().startLine)
+        .containsExactly(6);
+    }
+  }
+
+  // ---- Collection and array injection points ----------------------------------------
+
+  @Nested
+  class MultiBeanDependencies {
+    private final CompilationUnitTree compilationUnit = JParserTestUtils.parse("BeanFactory", """
+      class BeanFactory {
+        @org.springframework.beans.factory.annotation.Autowired
+        java.util.List<Runnable> injectedRunnables;
+
+        @org.springframework.context.annotation.Bean
+        Object createBean(
+          java.util.List<Runnable> listOfRunnables,
+          java.util.Set<Runnable> setOfRunnables,
+          java.util.Collection<Runnable> collectionOfRunnables,
+          Runnable[] arrayOfRunnables,
+          java.util.List rawList,
+          java.util.ArrayList<Runnable> concreteList,
+          Runnable singleRunnable,
+          java.util.Map<String, Runnable> runnablesByName,
+          java.util.Map<Integer, Runnable> runnablesByIndex,
+          java.util.Map rawMap,
+          java.util.HashMap<String, Runnable> concreteMap) {
+          return new Object();
+        }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    private final ClassTreeImpl beanFactory = (ClassTreeImpl) compilationUnit.types().get(0);
+    private final MethodTreeImpl createBean = (MethodTreeImpl) beanFactory.members().get(1);
+    private final Map<String, Set<InjectionPoint.InputFileData>> dependencies = SpringUtils.collectDependenciesOnMethod(createBean);
+
+    @Test
+    void collection_map_and_array_parameters_are_grouped_under_their_element_type() {
+      assertThat(dependencies.get("java.lang.Runnable"))
+        .extracting(InjectionPoint.InputFileData::name)
+        .containsExactlyInAnyOrder("listOfRunnables", "setOfRunnables", "collectionOfRunnables", "arrayOfRunnables",
+          "runnablesByName", "singleRunnable");
+    }
+
+    @Test
+    void collection_map_and_array_parameters_collect_every_matching_bean() {
+      assertThat(dependencies.get("java.lang.Runnable"))
+        .filteredOn(InjectionPoint.InputFileData::multiple)
+        .extracting(InjectionPoint.InputFileData::name)
+        .containsExactlyInAnyOrder("listOfRunnables", "setOfRunnables", "collectionOfRunnables", "arrayOfRunnables", "runnablesByName");
+    }
+
+    @Test
+    void raw_collection_or_map_resolves_to_a_single_bean_of_its_own_type() {
+      assertThat(dependencies.get("java.util.List"))
+        .containsExactly(new InjectionPoint.InputFileData("rawList", new AnalyzerMessage.TextSpan(11, 19, 11, 26), false));
+      assertThat(dependencies.get("java.util.Map"))
+        .extracting(InjectionPoint.InputFileData::name, InjectionPoint.InputFileData::multiple)
+        .containsExactly(tuple("rawMap", false));
+    }
+
+    @Test
+    void map_that_is_not_keyed_by_bean_name_resolves_to_a_single_bean_of_its_parameterized_type() {
+      assertThat(dependencies.get("java.util.Map<java.lang.Integer,java.lang.Runnable>"))
+        .extracting(InjectionPoint.InputFileData::name, InjectionPoint.InputFileData::multiple)
+        .containsExactly(tuple("runnablesByIndex", false));
+    }
+
+    @Test
+    void concrete_collection_or_map_class_is_not_a_multi_bean_injection_point() {
+      assertThat(dependencies.get("java.util.ArrayList<java.lang.Runnable>"))
+        .containsExactly(new InjectionPoint.InputFileData("concreteList", new AnalyzerMessage.TextSpan(12, 34, 12, 46), false));
+      assertThat(dependencies.get("java.util.HashMap<java.lang.String,java.lang.Runnable>"))
+        .extracting(InjectionPoint.InputFileData::name, InjectionPoint.InputFileData::multiple)
+        .containsExactly(tuple("concreteMap", false));
+    }
+
+    @Test
+    void an_autowired_collection_field_is_also_grouped_under_its_element_type() {
+      assertThat(SpringUtils.collectAutowiredDependenciesOnClass(beanFactory).get("java.lang.Runnable"))
+        .containsExactly(new InjectionPoint.InputFileData("injectedRunnables", new AnalyzerMessage.TextSpan(3, 27, 3, 44), true));
+    }
+  }
+
+  @Test
+  void collect_dependencies_on_method_returns_empty_map_when_no_parameters() {
+    var compilationUnit = JParserTestUtils.parse("BeanFactory", """
+      class BeanFactory {
+        Object createBean() {
+          return new Object();
+        }
+      }
+      """, TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    var createBean = (MethodTreeImpl) ((ClassTreeImpl) compilationUnit.types().get(0)).members().get(0);
+    assertThat(SpringUtils.collectDependenciesOnMethod(createBean)).isEmpty();
+  }
+
+  // ---- extractProfileExpression -------------------------------------------
+
+  @Test
+  void extract_profile_expression_returns_single_profile() {
+    var metadata = profiledClassMetadata("ProfiledComponent", "@org.springframework.context.annotation.Profile(\"prod\")");
+
+    assertThat(SpringUtils.extractProfileExpression(metadata)).isEqualTo(profile("prod"));
+  }
+
+  @Test
+  void extract_profile_expression_ors_the_elements_of_the_annotation() {
+    var metadata = profiledClassMetadata("MultiProfileComponent", "@org.springframework.context.annotation.Profile({\"prod\", \"cloud\"})");
+
+    assertThat(SpringUtils.extractProfileExpression(metadata)).isEqualTo(or(List.of(profile("prod"), profile("cloud"))));
+  }
+
+  @Test
+  void extract_profile_expression_is_unconditional_when_no_profile_annotation() {
+    var metadata = profiledClassMetadata("SimpleComponent", "");
+
+    assertThat(SpringUtils.extractProfileExpression(metadata).isUnconditional()).isTrue();
+  }
+
+  @Test
+  void extract_profile_expression_ignores_blank_profile_values() {
+    var metadata = profiledClassMetadata("BlankProfileComponent", "@org.springframework.context.annotation.Profile({\"prod\", \"\"})");
+
+    assertThat(SpringUtils.extractProfileExpression(metadata)).isEqualTo(profile("prod"));
+  }
+
+  @Test
+  void extract_profile_expression_parses_operators() {
+    var metadata = profiledClassMetadata("ExpressionProfiledComponent", "@org.springframework.context.annotation.Profile(\"dev & !test\")");
+
+    assertThat(SpringUtils.extractProfileExpression(metadata)).isEqualTo(and(List.of(profile("dev"), not(profile("test")))));
+  }
+
+  @Test
+  void extract_profile_expression_is_unknown_when_the_expression_is_malformed() {
+    var metadata = profiledClassMetadata("MalformedProfileComponent", "@org.springframework.context.annotation.Profile(\"a & b | c\")");
+
+    assertThat(SpringUtils.extractProfileExpression(metadata).isUnknown()).isTrue();
+  }
+
+  @Test
+  void extract_profile_expression_is_unknown_when_the_annotation_lists_nothing_readable() {
+    assertThat(SpringUtils.extractProfileExpression(
+      profiledClassMetadata("EmptyProfileComponent", "@org.springframework.context.annotation.Profile({})")).isUnknown()).isTrue();
+    assertThat(SpringUtils.extractProfileExpression(
+      profiledClassMetadata("UnresolvedProfileComponent", "@org.springframework.context.annotation.Profile(Constants.DEV)")).isUnknown()).isTrue();
+  }
+
+  private static SymbolMetadata profiledClassMetadata(String className, String profileAnnotation) {
+    var compilationUnit = JParserTestUtils.parse(className, """
+      %s
+      class %s {}
+      """.formatted(profileAnnotation, className), TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    return ((ClassTreeImpl) compilationUnit.types().getFirst()).symbol().metadata();
+  }
+
+}

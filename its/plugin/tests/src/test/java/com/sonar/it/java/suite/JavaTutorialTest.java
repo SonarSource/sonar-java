@@ -83,6 +83,13 @@ public class JavaTutorialTest {
         Telemetry java.language.version: 17
         Telemetry java.module_count: 1
         Telemetry java.scanner_app: ScannerMaven
+        Telemetry java.spring.bean_count: \\d+
+        Telemetry java.spring.bean_name_count: \\d+
+        Telemetry java.spring.component_scan_package_count: \\d+
+        Telemetry java.spring.context_checks_time_ms: \\d+
+        Telemetry java.spring.context_model_gathering_time_ms: \\d+
+        Telemetry java.spring.context_model_size_bytes: \\d+
+        Telemetry java.spring.injection_point_count: \\d+
         """));
   }
 

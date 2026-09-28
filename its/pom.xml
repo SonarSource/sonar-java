@@ -15,6 +15,7 @@
   <description>Code Analyzer for Java :: Integration Tests :: Parent POM</description>
 
   <modules>
+    <module>scanner-integration-tests</module>
     <module>plugin</module>
     <module>ruling</module>
   </modules>

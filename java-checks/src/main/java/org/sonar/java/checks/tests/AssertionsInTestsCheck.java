@@ -43,8 +43,8 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.sonar.java.checks.helpers.UnitTestUtils.isAnnotatedWithSkippedTestAnnotation;
-import static org.sonar.java.checks.helpers.UnitTestUtils.isUnitTest;
+import static org.sonar.java.utils.UnitTestUtils.isAnnotatedWithSkippedTestAnnotation;
+import static org.sonar.java.utils.UnitTestUtils.isUnitTest;
 
 @Rule(key = "S2699")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
