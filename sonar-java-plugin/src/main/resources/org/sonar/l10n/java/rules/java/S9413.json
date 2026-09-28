@@ -1,0 +1,25 @@
+{
+  "title": "Redundant \"String.format\" should be removed when native formatting is available",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "slf4j",
+    "performance",
+    "logging"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9413",
+  "sqKey": "S9413",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  }
+}
