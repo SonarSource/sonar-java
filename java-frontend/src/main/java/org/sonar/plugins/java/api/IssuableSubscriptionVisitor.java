@@ -29,8 +29,7 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
   /**
    * Override this method to release any per-file state (clear collections, null out AST references, etc.).
    * It is called automatically before each file analysis (in {@link #setContext}) and after each file
-   * analysis (in {@link #leaveFile}), so subclasses do not need to override those two methods just
-   * for state cleanup.
+   * analysis (by the visitor runner), even if analysis fails or {@link #leaveFile} is overridden.
    */
   protected void clearState() {
     // Default: nothing to clear.
@@ -72,13 +71,8 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
     throw new UnsupportedOperationException("IssuableSubscriptionVisitor should not drive visit of file. Use leaveFile() instead.");
   }
 
-  /**
-   * Override this method only if you need to execute some instructions after the end of the analysis of a file.
-   *
-   * @param context the analysis context.
-   */
-  @Override
-  public void leaveFile(JavaFileScannerContext context) {
+  /** Releases per-file state after analysis, independently of the leaveFile lifecycle callback. */
+  public final void clearStateAfterFile() {
     clearState();
   }
 
