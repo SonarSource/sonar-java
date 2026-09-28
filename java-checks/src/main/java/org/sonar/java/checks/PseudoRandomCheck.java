@@ -188,8 +188,13 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     return null;
   }
 
+  private static final Pattern LETTER_DIGIT_BOUNDARY = Pattern.compile("(?<=[A-Za-z])(?=[0-9])|(?<=[0-9])(?=[A-Za-z])");
+
   // Split on underscores first; for each part either keep it as a single lowercase word
-  // when all-uppercase, or split further on capital-letter boundaries.
+  // when all-uppercase, or split further on capital-letter boundaries. Each resulting part
+  // is kept whole (so digit-bearing keywords like pbkdf2/poly1305/chacha20 still match) AND
+  // additionally split on letter/digit boundaries, keeping only the letter-bearing segments,
+  // so version-suffixed acronyms (AES256, RSA2048) also match their bare keyword form (aes, rsa).
   static List<String> tokenizeIdentifier(String identifier) {
     List<String> words = new ArrayList<>();
     Pattern splitPattern = Pattern.compile("(?=[A-Z])");
@@ -198,16 +203,37 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
         continue;
       }
       if (isAllUppercaseWithLetter(part)) {
-        words.add(part.toLowerCase(Locale.ROOT));
+        addLetterBearingSegments(part, words);
       } else {
         for (String sub : splitPattern.split(part)) {
           if (!sub.isEmpty()) {
-            words.add(sub.toLowerCase(Locale.ROOT));
+            addLetterBearingSegments(sub, words);
           }
         }
       }
     }
     return words;
+  }
+
+  private static void addLetterBearingSegments(String part, List<String> words) {
+    words.add(part.toLowerCase(Locale.ROOT));
+    String[] segments = LETTER_DIGIT_BOUNDARY.split(part);
+    if (segments.length > 1) {
+      for (String segment : segments) {
+        if (containsLetter(segment)) {
+          words.add(segment.toLowerCase(Locale.ROOT));
+        }
+      }
+    }
+  }
+
+  private static boolean containsLetter(String s) {
+    for (int i = 0; i < s.length(); i++) {
+      if (Character.isLetter(s.charAt(i))) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static boolean isAllUppercaseWithLetter(String part) {
