@@ -643,7 +643,6 @@ class InternalJavaIssueBuilderTest {
       return parent.quickFixes();
     }
 
-    @org.jetbrains.annotations.Nullable
     @Override
     public List<String> codeVariants() {
       return codeVariants;
@@ -655,7 +654,7 @@ class InternalJavaIssueBuilderTest {
     }
 
     @Override
-    public NewIssue setCodeVariants(@org.jetbrains.annotations.Nullable Iterable<String> iterable) {
+    public NewIssue setCodeVariants(Iterable<String> iterable) {
       codeVariants = iterable == null ? null : StreamSupport.stream(iterable.spliterator(), false)
         .toList();
       return this;
