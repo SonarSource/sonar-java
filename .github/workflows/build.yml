@@ -34,7 +34,7 @@ jobs:
       - uses: jdx/mise-action@3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518 # v4.2.5
         with:
           version: 2026.8.6
-      - uses: SonarSource/ci-github-actions/build-maven@v1
+      - uses: SonarSource/ci-github-actions/build-maven@v2
         id: build-maven
         env:
           MAVEN_OPTS: "-Xmx8g"
@@ -93,7 +93,7 @@ jobs:
           file-path: target/just_for_cache_key_calculation/pom.xml
           content: ${{ github.job }}-${{ toJSON(matrix.item) }}
       - name: Configure Maven
-        uses: SonarSource/ci-github-actions/config-maven@v1
+        uses: SonarSource/ci-github-actions/config-maven@v2
         with:
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
@@ -213,7 +213,7 @@ jobs:
           file-path: target/just_for_cache_key_calculation/pom.xml
           content: ${{ github.job }}-${{ matrix.sq_version }}
       - name: Configure Maven
-        uses: SonarSource/ci-github-actions/config-maven@v1
+        uses: SonarSource/ci-github-actions/config-maven@v2
         with:
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
@@ -262,7 +262,7 @@ jobs:
         with:
           file-path: target/just_for_cache_key_calculation/pom.xml
           content: ${{ github.job }}
-      - uses: SonarSource/ci-github-actions/config-maven@v1
+      - uses: SonarSource/ci-github-actions/config-maven@v2
         with:
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
@@ -304,7 +304,7 @@ jobs:
           secrets: |
             development/kv/data/next url | SONAR_HOST_URL;
             development/kv/data/next token | SONAR_TOKEN;
-      - uses: SonarSource/ci-github-actions/build-maven@v1
+      - uses: SonarSource/ci-github-actions/build-maven@v2
         with:
           deploy: false
           artifactory-reader-role: private-reader    # Override default public-reader
@@ -345,7 +345,7 @@ jobs:
         with:
           file-path: target/just_for_cache_key_calculation/pom.xml
           content: ${{ github.job }}
-      - uses: SonarSource/ci-github-actions/config-maven@v1
+      - uses: SonarSource/ci-github-actions/config-maven@v2
         with:
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
@@ -390,7 +390,7 @@ jobs:
           file-path: target/just_for_cache_key_calculation/pom.xml
           content: ${{ github.job }}
       - name: Configure Maven
-        uses: SonarSource/ci-github-actions/config-maven@v1
+        uses: SonarSource/ci-github-actions/config-maven@v2
         with:
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
@@ -419,6 +419,6 @@ jobs:
     env:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
-      - uses: SonarSource/ci-github-actions/promote@v1
+      - uses: SonarSource/ci-github-actions/promote@v2
         with:
           promote-pull-request: true
