@@ -109,7 +109,7 @@ jobs:
         with:
           sq-version: ${{ matrix.item.sq_version }}
       - name: Wait for Artifactory token federation
-        uses: ./.github/actions/wait-for-artifactory-token-federation
+        uses: SonarSource/ci-github-actions/wait-for-artifactory-token-federation@715009ff183f509d685a028c3cac34c69e3714c4
         with:
           probe-path: "api/search/versions?g=com.sonarsource.sonarqube&a=sonarqube-enterprise-lw&remote=1&repos=sonarsource-releases&v=*"
       - name: Run ruling tests
@@ -233,7 +233,7 @@ jobs:
         with:
           sq-version: ${{ matrix.sq_version }}
       - name: Wait for Artifactory token federation
-        uses: ./.github/actions/wait-for-artifactory-token-federation
+        uses: SonarSource/ci-github-actions/wait-for-artifactory-token-federation@715009ff183f509d685a028c3cac34c69e3714c4
         with:
           probe-path: "api/search/versions?g=com.sonarsource.sonarqube&a=sonarqube-enterprise-lw&remote=1&repos=sonarsource-releases&v=*"
       - name: Plugin QA
