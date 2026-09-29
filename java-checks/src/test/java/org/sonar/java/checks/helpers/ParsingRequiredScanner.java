@@ -31,9 +31,11 @@ public class ParsingRequiredScanner implements JavaFileScanner, EndOfAnalysis {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    // Do nothing
   }
 
   @Override
   public void endOfAnalysis(ModuleScannerContext context) {
+    // Do nothing
   }
 }
