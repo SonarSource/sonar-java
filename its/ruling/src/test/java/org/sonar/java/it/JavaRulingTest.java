@@ -519,8 +519,8 @@ public class JavaRulingTest {
       .as("%s should report how many files the analyzer leveraged from the cache", label)
       .isPositive();
     assertThat(usage.ratio())
-      .as("%s analyzes the same sources as the main branch, so almost every file should come from the cache, "
-        + "but only %d out of %d did", label, usage.fromCache(), usage.total())
+      .as("%s should leverage the cache for at least %d%% of files, but only %d out of %d did",
+        label, Math.round(filesCachedRatio * 100), usage.fromCache(), usage.total())
       .isGreaterThanOrEqualTo(filesCachedRatio);
   }
 
