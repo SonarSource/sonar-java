@@ -164,12 +164,10 @@ jobs:
           echo "Ruling QA result: ${{ needs.ruling-qa.result }}, failed=$RULING_FAILED"
 
       - name: Update ruling and notify
-        uses: SonarSource/core-languages-tooling-public/ruling-update-and-notify@master
+        uses: SonarSource/core-languages-tooling-public/ruling-update-and-notify@romain/rc-354
         with:
-          pr-number: ${{ github.event.pull_request.number }}
           ruling-failed: ${{ steps.check-ruling.outputs.ruling-failed }}
           ruling-root: 'its/ruling/src/test/resources/expected'
-          sources-root: 'its/sources'
         env:
           GH_TOKEN: ${{ github.token }}
 
