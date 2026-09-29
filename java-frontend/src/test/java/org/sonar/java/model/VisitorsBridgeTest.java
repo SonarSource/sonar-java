@@ -499,6 +499,49 @@ class VisitorsBridgeTest {
     }
 
     @Test
+    void scanWithoutParsing_excludes_dependency_incompatible_unskippable_visitors() throws ApiMismatchException {
+      class DependencyAwareGatherer extends IssuableSubscriptionVisitor implements DependencyVersionAware, EndOfAnalysis {
+        @Override
+        public List<Kind> nodesToVisit() {
+          return List.of();
+        }
+
+        @Override
+        public boolean isCompatibleWithDependencies(Function<String, Optional<Version>> dependencyFinder) {
+          return dependencyFinder.apply("spring-core").isPresent();
+        }
+
+        @Override
+        public boolean scanWithoutParsing(InputFileScannerContext context) {
+          return false;
+        }
+
+        @Override
+        public void endOfAnalysis(ModuleScannerContext context) {
+        }
+      }
+
+      SonarComponents specificSonarComponents = mock(SonarComponents.class);
+      doReturn(true).when(specificSonarComponents).canSkipUnchangedFiles();
+      doReturn(true).when(specificSonarComponents).fileCanBeSkipped(any(InputFile.class));
+      InputFile inputFile = mock(InputFile.class);
+
+      DependencyAwareGatherer gatherer = spy(new DependencyAwareGatherer());
+      VisitorsBridge withoutDependency = new VisitorsBridge(List.of(gatherer), Collections.emptyList(), specificSonarComponents);
+      withoutDependency.visitFile(null, false);
+      verify(gatherer, never()).leaveFile(any());
+      assertThat(withoutDependency.scanWithoutParsing(inputFile)).isTrue();
+      verify(gatherer, never()).scanWithoutParsing(any());
+
+      VisitorsBridge withDependency = new VisitorsBridge(List.of(gatherer),
+        List.of(new File("/home/user/.m2/path/spring-core-8.9.12.jar")), specificSonarComponents);
+      withDependency.visitFile(null, false);
+      verify(gatherer, times(1)).leaveFile(any());
+      assertThat(withDependency.scanWithoutParsing(inputFile)).isFalse();
+      verify(gatherer, times(1)).scanWithoutParsing(any());
+    }
+
+    @Test
     void scanWithoutParsing_returns_false_when_a_JFS_cannot_scan_successfully_without_parsing() throws ApiMismatchException {
       assertThat(scan_without_parsing(new ScannerThatCannotScanWithoutParsing())).isFalse();
     }

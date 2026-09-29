@@ -117,7 +117,8 @@ public class VisitorsBridge {
     allScanners.addAll(filterVisitors(visitors, v ->
       isVisitorJavaVersionCompatible(v) && isVisitorDependencyVersionCompatible(v)));
     if (canSkipScanningOfUnchangedFiles()) {
-      scannersThatCannotBeSkipped.addAll(filterVisitors(visitors, this::isUnskippableVisitor));
+      scannersThatCannotBeSkipped.addAll(filterVisitors(visitors, v ->
+        isUnskippableVisitor(v) && isVisitorDependencyVersionCompatible(v)));
     }
   }
 
