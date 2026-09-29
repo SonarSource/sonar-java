@@ -2,18 +2,21 @@
 type exist in the application’s dependency injection container without explicit disambiguation.</p>
 <h2>Why is this an issue?</h2>
 <p>Spring resolves autowiring by type: when exactly one bean matches the required type, it gets injected without further input. If two or more beans
-of the same type exist in the application context, Spring cannot decide which one to use and expects the ambiguity to be resolved explicitly, either
-with <code>@Qualifier</code> or by marking one bean <code>@Primary</code>.</p>
-<p>Without this disambiguation, Spring throws a <code>NoUniqueBeanDefinitionException</code> while building the application context.</p>
+of the same type exist in the application context, Spring cannot decide which one to use and expects the ambiguity to be resolved explicitly, for
+example with <code>@Qualifier</code>, by marking one bean <code>@Primary</code>, or by ensuring only one candidate is registered.</p>
 <h3>What is the potential impact?</h3>
-<p>The application will fail to start with an error indicating ambiguous dependency resolution during the dependency injection framework’s
-initialization phase. This prevents the application from running and requires immediate attention to resolve the configuration error.</p>
+<p>Spring will throw a <code>NoUniqueBeanDefinitionException</code> exception at runtime, indicating ambiguous dependency resolution during the
+dependency injection framework’s initialization phase. This prevents the application from running and requires immediate attention to resolve the
+configuration error.</p>
 <h2>How to fix it in Spring</h2>
+<p>The ambiguity can be resolved in several ways, for example with <code>@Qualifier</code>, <code>@Primary</code>, or by restricting which beans are
+registered with <code>@Conditional</code> and its variants. The two most common options are shown below.</p>
+<h3>Code examples</h3>
+<p><strong>Option 1: select the bean with <code>@Qualifier</code></strong></p>
 <p>Use the <code>@Qualifier</code> annotation at the injection point to explicitly specify which bean to inject. The qualifier value must match the
 bean name (typically the method name for <code>@Bean</code> methods).</p>
 <p>This approach is useful when different parts of your application need different beans of the same type. Each injection point can specify exactly
 which bean it requires.</p>
-<h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 @Configuration
@@ -57,6 +60,7 @@ public class ReportService {
     private DataSource dataSource; // Compliant; @Qualifier explicitly specifies that primaryDataSource needs to be used
 }
 </pre>
+<p><strong>Option 2: mark a default bean with <code>@Primary</code></strong></p>
 <p>Use the <code>@Primary</code> annotation on one of the bean definitions to mark it as the default choice. When Spring encounters multiple beans of
 the same type, it will automatically select the primary bean if no explicit qualifier is specified.</p>
 <p>This approach is useful when you have a clear default bean that should be used in most cases, with alternative beans available for specific
@@ -119,5 +123,10 @@ public class ReportService {
   <li>Spring Framework API - <a
   href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/annotation/Primary.html">@Primary
   Annotation</a></li>
+  <li>StackOverflow - <a
+  href="https://stackoverflow.com/questions/32245003/will-spring-throw-an-exception-if-there-is-ambiguity-when-resolving-a-bean">Will Spring throw an
+  exception if there is ambiguity when resolving a bean</a></li>
+  <li>Spring Framework Guru - <a href="https://springframework.guru/fixing-nonuniquebeandefinitionexception-exceptions/">Fixing
+  NoUniqueBeanDefinitionException</a></li>
 </ul>
 
