@@ -569,7 +569,6 @@ class JavaSensorTest {
   }
 
   private void executeJavaSensorForPerformanceMeasure(MapSettings settings, Path workDir) throws IOException {
-    Configuration configuration = settings.asConfig();
     SensorContextTester context = createContext(InputFile.Type.MAIN)
       .setRuntime(TestSonarRuntime.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
     context.setSettings(settings);
