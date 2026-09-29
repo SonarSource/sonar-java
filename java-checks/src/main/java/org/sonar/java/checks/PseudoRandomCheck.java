@@ -188,7 +188,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     return null;
   }
 
-  private static final Pattern LETTER_DIGIT_BOUNDARY = Pattern.compile("(?<=[A-Za-z])(?=\\d)|(?<=\\d)(?=[A-Za-z])");
+  private static final Pattern LETTER_DIGIT_BOUNDARY = Pattern.compile("(?<=[A-Za-z])(?=\\d)");
 
   // Split on underscores first; for each part either keep it as a single lowercase word
   // when all-uppercase, or split further on capital-letter boundaries. Each resulting part
