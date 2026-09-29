@@ -18,7 +18,6 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -31,7 +30,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
 
@@ -160,16 +158,17 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
       reportIssue(methodName, message.get());
       return;
     }
-    if (isDataFromFileSource(mit)) {
-      return;
-    }
     InsecureAlgorithm algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName.name());
     if (algorithm == null) {
       algorithm = algorithm(mit.arguments().get(0)).orElse(null);
     }
-    if (algorithm != null) {
+    if (algorithm != null && !isExempt(mit, algorithm)) {
       reportIssue(methodName, getMessageForAlgorithm(algorithm.toString()));
     }
+  }
+
+  protected boolean isExempt(MethodInvocationTree mit, InsecureAlgorithm algorithm) {
+    return false;
   }
 
   @Override
@@ -235,98 +234,6 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
         .findFirst();
     }
     return Optional.empty();
-  }
-
-  private static boolean isDataFromFileSource(MethodInvocationTree mit) {
-    String methodName = ExpressionUtils.methodName(mit).name();
-    List<ExpressionTree> arguments = mit.arguments();
-
-    if (arguments.isEmpty()) {
-      return false;
-    }
-
-    ExpressionTree dataArg = getDataArgument(methodName, arguments);
-    if (dataArg == null) {
-      return false;
-    }
-
-    return isFileSourceExpression(dataArg);
-  }
-
-  private static ExpressionTree getDataArgument(String methodName, List<ExpressionTree> arguments) {
-    if (methodName.endsWith("Hex") || methodName.endsWith("Digest") ||
-        methodName.equals("md5") || methodName.equals("md2") ||
-        methodName.equals("sha") || methodName.equals("sha1")) {
-      return arguments.get(0);
-    }
-    if (methodName.equals("appendMd5DigestAsHex") ||
-        methodName.equals("md5DigestAsHex") ||
-        methodName.equals("md5Digest")) {
-      return arguments.get(0);
-    }
-    if (methodName.equals("hashBytes")) {
-      return arguments.get(0);
-    }
-    return null;
-  }
-
-  private static boolean isFileSourceExpression(ExpressionTree expr) {
-    if (expr.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) expr;
-      String fqn = mit.methodSymbol().owner().type().fullyQualifiedName();
-      String methodName = ExpressionUtils.methodName(mit).name();
-
-      if (isFileIOMethod(fqn, methodName)) {
-        return true;
-      }
-
-      if (mit.arguments().size() > 0) {
-        ExpressionTree firstArg = mit.arguments().get(0);
-        if (isFileSourceExpression(firstArg)) {
-          return true;
-        }
-      }
-    } else if (expr.is(Tree.Kind.NEW_CLASS)) {
-      NewClassTree nct = (NewClassTree) expr;
-      String fqn = nct.symbolType().fullyQualifiedName();
-      if (isFileConstructor(fqn)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  private static boolean isFileIOMethod(String fqn, String methodName) {
-    if ("java.nio.file.Files".equals(fqn)) {
-      return methodName.equals("newInputStream") || methodName.equals("readAllBytes") ||
-             methodName.equals("readString");
-    }
-    if ("java.nio.channels.Channels".equals(fqn)) {
-      return methodName.equals("newInputStream");
-    }
-    if ("org.apache.commons.io.IOUtils".equals(fqn)) {
-      return methodName.equals("toByteArray");
-    }
-    if ("org.apache.commons.io.FileUtils".equals(fqn)) {
-      return methodName.equals("readFileToByteArray");
-    }
-    if ("com.google.common.io.Files".equals(fqn)) {
-      return methodName.equals("read") || methodName.equals("asByteSource");
-    }
-    if ("org.springframework.web.multipart.MultipartFile".equals(fqn)) {
-      return methodName.equals("getBytes") || methodName.equals("getInputStream");
-    }
-    if ("javax.servlet.http.Part".equals(fqn)) {
-      return methodName.equals("getInputStream");
-    }
-    return false;
-  }
-
-  private static boolean isFileConstructor(String fqn) {
-    return "java.io.FileInputStream".equals(fqn) ||
-           "java.io.FileReader".equals(fqn) ||
-           "java.nio.file.FileChannel".equals(fqn);
   }
 
 }

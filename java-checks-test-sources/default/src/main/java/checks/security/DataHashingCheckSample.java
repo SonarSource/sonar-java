@@ -156,51 +156,124 @@ class SpringDigestUtils {
 
   void digestUtils() throws IOException {
     org.springframework.util.DigestUtils.appendMd5DigestAsHex(new byte[10], new StringBuilder()); // Noncompliant {{Make sure this weak hash algorithm is not used in a sensitive context here.}}
-    org.springframework.util.DigestUtils.appendMd5DigestAsHex(new FileInputStream(""), new StringBuilder());
+    org.springframework.util.DigestUtils.appendMd5DigestAsHex(new FileInputStream(""), new StringBuilder()); // Compliant, file content
     org.springframework.util.DigestUtils.md5Digest(new byte[10]); // Noncompliant
-    org.springframework.util.DigestUtils.md5Digest(new FileInputStream(""));
+    org.springframework.util.DigestUtils.md5Digest(new FileInputStream("")); // Compliant, file content
     org.springframework.util.DigestUtils.md5DigestAsHex(new byte[10]); // Noncompliant
-    org.springframework.util.DigestUtils.md5DigestAsHex(new FileInputStream(""));
+    org.springframework.util.DigestUtils.md5DigestAsHex(new FileInputStream("")); // Compliant, file content
   }
 
 }
 
-class FileSourceHashing {
+class FileSourcedData {
 
-  void nioFiles(java.nio.file.Path path) throws IOException, NoSuchAlgorithmException {
-    MessageDigest.getInstance("MD5").digest(java.nio.file.Files.readAllBytes(path));
-    MessageDigest.getInstance("SHA-1").digest(java.nio.file.Files.readAllBytes(path));
+  void oneShot(java.nio.file.Path path, java.io.File file) throws IOException {
+    DigestUtils.md5Hex(java.nio.file.Files.newInputStream(path));
+    DigestUtils.sha1Hex(java.nio.file.Files.readAllBytes(path));
+    DigestUtils.md5Hex(java.nio.file.Files.readString(path));
+    DigestUtils.md5Hex(new java.io.BufferedInputStream(new FileInputStream(file)));
+    DigestUtils.md5Hex(org.apache.commons.io.IOUtils.toByteArray(new FileInputStream(file)));
+    DigestUtils.md5Hex(org.apache.commons.io.IOUtils.toByteArray(new java.io.FileReader(file)));
+    DigestUtils.md5Hex(org.apache.commons.io.FileUtils.readFileToByteArray(file));
+    DigestUtils.md5Hex(java.nio.file.Files.newInputStream(path).readAllBytes());
+    DigestUtils.md5Hex(com.google.common.io.Files.asByteSource(file).read());
+    DigestUtils.md5Hex(java.nio.channels.Channels.newInputStream(java.nio.channels.FileChannel.open(path)));
   }
 
-  void nioInputStream(java.nio.file.Path path) throws IOException, NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("MD5");
-    try (java.io.InputStream is = java.nio.file.Files.newInputStream(path)) {
-      is.transferTo(java.io.OutputStream.nullOutputStream());
+  void uploads(org.springframework.web.multipart.MultipartFile multipartFile, javax.servlet.http.Part javaxPart, jakarta.servlet.http.Part jakartaPart) throws IOException {
+    DigestUtils.md5Hex(multipartFile.getBytes());
+    DigestUtils.md5Hex(multipartFile.getInputStream());
+    DigestUtils.sha1Hex(javaxPart.getInputStream());
+    DigestUtils.sha1Hex(jakartaPart.getInputStream());
+  }
+
+  void variables(java.nio.file.Path path) throws IOException {
+    try (java.io.InputStream resource = java.nio.file.Files.newInputStream(path)) {
+      DigestUtils.sha1Hex(resource);
     }
   }
 
-  void classicFileInputStream(String path) throws IOException {
-    DigestUtils.md5Hex(new FileInputStream(path));
-    DigestUtils.md5(new FileInputStream(path));
-    DigestUtils.sha1Hex(new FileInputStream(path));
+  void chained(java.nio.file.Path path) throws IOException, NoSuchAlgorithmException {
+    MessageDigest.getInstance("MD5").digest(java.nio.file.Files.readAllBytes(path));
+    MessageDigest.getInstance("SHA-1").digest(java.nio.file.Files.readAllBytes(path));
+    DigestUtils.getMd5Digest().digest(java.nio.file.Files.readAllBytes(path));
+    com.google.common.hash.Hashing.md5().hashBytes(java.nio.file.Files.readAllBytes(path));
   }
 
-  void guavaHashing() {
-    com.google.common.hash.Hashing.md5().hashBytes(new byte[0]);
+  void streaming(java.nio.file.Path path) throws IOException, NoSuchAlgorithmException {
+    MessageDigest md = MessageDigest.getInstance("MD5");
+    try (java.io.InputStream is = new java.security.DigestInputStream(java.nio.file.Files.newInputStream(path), md)) {
+      is.transferTo(java.io.OutputStream.nullOutputStream());
+    }
+    md.digest();
   }
 
-  void apacheCommonsIO(java.io.File file) throws IOException {
-    DigestUtils.md5Hex(org.apache.commons.io.IOUtils.toByteArray(new FileInputStream(file)));
-    DigestUtils.md5Hex(org.apache.commons.io.FileUtils.readFileToByteArray(file));
+  void updates(java.nio.file.Path first, java.nio.file.Path second) throws IOException, NoSuchAlgorithmException {
+    MessageDigest md = MessageDigest.getInstance("SHA-1");
+    md.update(java.nio.file.Files.readAllBytes(first));
+    md.update(java.nio.file.Files.readAllBytes(second));
+    md.digest();
   }
 
-  void springMultipart(org.springframework.web.multipart.MultipartFile file) throws IOException {
-    DigestUtils.md5Hex(file.getBytes());
-    DigestUtils.sha1Hex(file.getInputStream());
+  void mac(java.nio.file.Path path, javax.crypto.SecretKey key) throws IOException, java.security.GeneralSecurityException {
+    javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA1");
+    mac.init(key);
+    mac.doFinal(java.nio.file.Files.readAllBytes(path));
   }
 
-  void servletPart(javax.servlet.http.Part part) throws IOException {
-    DigestUtils.md5Hex(part.getInputStream());
+  void guavaByteSource(java.io.File file) throws IOException {
+    com.google.common.io.Files.asByteSource(file).hash(com.google.common.hash.Hashing.md5());
+  }
+}
+
+class NotProvenToBeFileData {
+
+  private final MessageDigest fieldDigest = DigestUtils.getMd5Digest(); // Noncompliant
+
+  static byte[] concat(byte[] first, byte[] second) {
+    return first;
   }
 
+  void consume(MessageDigest digest) {
+  }
+
+  void mixedData(java.nio.file.Path path, String password) throws IOException, NoSuchAlgorithmException {
+    DigestUtils.md5Hex(concat(java.nio.file.Files.readAllBytes(path), password.getBytes())); // Noncompliant
+    MessageDigest md = MessageDigest.getInstance("MD5"); // Noncompliant
+    md.update(java.nio.file.Files.readAllBytes(path));
+    md.update(password.getBytes());
+    md.digest();
+  }
+
+  void escapingDigest(java.nio.file.Path path) throws IOException, NoSuchAlgorithmException {
+    MessageDigest md = MessageDigest.getInstance("MD5"); // Noncompliant
+    md.update(java.nio.file.Files.readAllBytes(path));
+    consume(md);
+  }
+
+  void neverFed() throws NoSuchAlgorithmException {
+    MessageDigest md = MessageDigest.getInstance("MD5"); // Noncompliant
+    md.digest();
+  }
+
+  void notFileData(byte[] bytes, java.io.InputStream stream, java.net.Socket socket) throws IOException {
+    DigestUtils.md5Hex(bytes); // Noncompliant
+    DigestUtils.md5Hex(new java.io.ByteArrayInputStream(bytes)); // Noncompliant
+    DigestUtils.md5Hex(new java.io.BufferedInputStream(stream)); // Noncompliant
+    DigestUtils.md5Hex(org.apache.commons.io.IOUtils.toByteArray(socket.getInputStream())); // Noncompliant
+    DigestUtils.md5Hex(java.nio.channels.Channels.newInputStream(java.nio.channels.Channels.newChannel(stream))); // Noncompliant
+    com.google.common.hash.Hashing.md5().hashBytes(bytes); // Noncompliant
+    com.google.common.io.ByteSource.wrap(bytes).hash(com.google.common.hash.Hashing.md5()); // Noncompliant
+  }
+
+  void reassigned(java.nio.file.Path path, byte[] bytes) throws IOException {
+    java.io.InputStream stream = java.nio.file.Files.newInputStream(path);
+    stream = new java.io.ByteArrayInputStream(bytes);
+    DigestUtils.md5Hex(stream); // Noncompliant
+  }
+
+  void otherAlgorithms(java.nio.file.Path path) throws IOException, NoSuchAlgorithmException {
+    DigestUtils.md2Hex(java.nio.file.Files.readAllBytes(path)); // Noncompliant
+    MessageDigest.getInstance("MD2").digest(java.nio.file.Files.readAllBytes(path)); // Noncompliant
+  }
 }
