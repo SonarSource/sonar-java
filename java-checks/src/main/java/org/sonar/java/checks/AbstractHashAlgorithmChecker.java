@@ -167,6 +167,13 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
     }
   }
 
+  /**
+   * Subclasses can override this method to not report on some usages of an insecure algorithm.
+   *
+   * @param mit the method invocation using the insecure algorithm, which can be inspected to detect exempted usages
+   * @param algorithm the insecure algorithm used by the given method invocation
+   * @return true when no issue should be reported on the given method invocation
+   */
   protected boolean isExempt(MethodInvocationTree mit, InsecureAlgorithm algorithm) {
     return false;
   }
