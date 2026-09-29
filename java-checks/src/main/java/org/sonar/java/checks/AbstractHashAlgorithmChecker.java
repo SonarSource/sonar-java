@@ -167,9 +167,7 @@ public abstract class AbstractHashAlgorithmChecker extends AbstractMethodDetecti
     }
   }
 
-  protected boolean isExempt(MethodInvocationTree mit, InsecureAlgorithm algorithm) {
-    return false;
-  }
+  protected abstract boolean isExempt(MethodInvocationTree mit, InsecureAlgorithm algorithm);
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
