@@ -32,6 +32,7 @@ import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.checks.helpers.HashCacheTestHelper;
+import org.sonar.java.checks.helpers.ParsingRequiredScanner;
 import org.sonar.java.checks.security.ExcessiveContentRequestCheck.CachedResult;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalInputFile;
@@ -188,29 +189,25 @@ class ExcessiveContentRequestCheckTest {
     }
 
     @Test
-    void log_when_failing_to_write_to_cache() {
-
-      var spyOnWriteCache = spy(writeCache);
-      IllegalArgumentException expectedException = new IllegalArgumentException("boom");
-      doThrow(expectedException).when(spyOnWriteCache).write(any(), any(byte[].class));
+    void cached_file_can_be_parsed_when_another_scanner_requires_it() throws IOException, NoSuchAlgorithmException {
+      String cacheKey = computeCacheKey(safeSourceFile);
+      byte[] cachedResult = toBytes(new CachedResult(true, true));
+      readCache.put(cacheKey, cachedResult);
+      readCache.put(HashCacheTestHelper.contentHashKey(safeSourceFile), FileHashingUtils.inputFileContentHash(safeSourceFile));
+      var check = spy(new ExcessiveContentRequestCheck());
 
       logTester.setLevel(Level.TRACE);
-
       verifier
         .addFiles(InputFile.Status.SAME, safeSourceFile)
-        .addFiles(InputFile.Status.CHANGED, unsafeSourceFile, sanitizerSourceFile)
-        .withCheck(new ExcessiveContentRequestCheck())
-        .withCache(readCache, spyOnWriteCache);
+        .withChecks(check, new ParsingRequiredScanner())
+        .verifyNoIssues();
 
-      assertThatThrownBy(verifier::verifyNoIssues)
-        .isInstanceOf(AnalysisException.class)
-        .hasRootCause(expectedException);
-
+      verify(check).scanWithoutParsing(any());
+      verify(check).leaveFile(any());
+      assertThat(writeCache.getData().get(cacheKey)).containsExactly(cachedResult);
       assertThat(logTester.getLogs(Level.TRACE))
         .map(LogAndArguments::getFormattedMsg)
-        .contains(
-          "Failed to write to cache for file " + safeSourceFile
-        );
+        .contains("Tried to write multiple times to cache key '" + cacheKey + "'. Ignoring writes after the first.");
     }
 
     @Test
