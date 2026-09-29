@@ -319,12 +319,12 @@ public class ExcessiveContentRequestCheck extends IssuableSubscriptionVisitor im
 
   private static void writeForNextAnalysis(CacheContext cacheContext, InputFile inputFile, boolean instantiates, boolean setsMaximumSize) {
     JavaWriteCache writeCache = cacheContext.getWriteCache();
+    String cacheKey = computeCacheKey(inputFile);
+    byte[] data = toBytes(new CachedResult(instantiates, setsMaximumSize));
     try {
-      writeCache.write(computeCacheKey(inputFile), toBytes(new CachedResult(instantiates, setsMaximumSize)));
+      writeCache.write(cacheKey, data);
     } catch (IllegalArgumentException e) {
-      String message = "Failed to write to cache for file " + inputFile;
-      LOGGER.trace(message);
-      throw new AnalysisException(message, e);
+      LOGGER.trace("Tried to write multiple times to cache key '{}'. Ignoring writes after the first.", cacheKey);
     }
   }
 

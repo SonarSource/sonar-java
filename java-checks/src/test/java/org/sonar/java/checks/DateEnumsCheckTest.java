@@ -31,6 +31,7 @@ import org.sonar.api.testfixtures.log.LogTesterJUnit5;
 import org.sonar.java.AnalysisException;
 import org.sonar.java.caching.FileHashingUtils;
 import org.sonar.java.checks.helpers.HashCacheTestHelper;
+import org.sonar.java.checks.helpers.ParsingRequiredScanner;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
@@ -165,6 +166,31 @@ class DateEnumsCheckTest {
       .verifyNoIssues();
 
     verify(check, times(1)).scanWithoutParsing(any());
+  }
+
+  @Test
+  void cached_file_is_counted_once_when_another_scanner_requires_parsing() {
+    String classWithIssues = mainCodeSourcesPath("checks/s8694/caching/ClassWithIssues.java");
+    String classWithoutIssues = mainCodeSourcesPath("checks/s8694/above/EnumFile.java");
+
+    verifier
+      .onFiles(List.of(classWithIssues, classWithoutIssues))
+      .withCheck(new DateEnumsCheck())
+      .verifyIssues();
+
+    var check = spy(new DateEnumsCheck());
+    var populatedReadCache = new InternalReadCache().putAll(writeCache);
+    var nextWriteCache = new InternalWriteCache().bind(populatedReadCache);
+    CheckVerifier.newVerifier()
+      .withCache(populatedReadCache, nextWriteCache)
+      .addFiles(InputFile.Status.SAME, classWithIssues)
+      .addFiles(InputFile.Status.CHANGED, classWithoutIssues)
+      .withChecks(check, new ParsingRequiredScanner())
+      .verifyIssues();
+
+    verify(check).scanWithoutParsing(any());
+    verify(check, times(2)).leaveFile(any());
+    assertThat(nextWriteCache.getData()).containsExactlyInAnyOrderEntriesOf(writeCache.getData());
   }
 
   @Test

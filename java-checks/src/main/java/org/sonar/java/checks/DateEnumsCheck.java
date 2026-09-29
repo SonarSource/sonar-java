@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.ConditionalRuleCacheUtils.CachedFileData;
@@ -50,6 +52,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 @Rule(key = "S8694")
 public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor, EndOfAnalysis {
 
+  private static final Logger LOG = LoggerFactory.getLogger(DateEnumsCheck.class);
   private static final String JAVA_TIME_MONTH = "java.time.Month";
   private static final String JAVA_TIME_DAY_OF_WEEK = "java.time.DayOfWeek";
   private static final String JAVA_TIME_LOCAL_DATE = "java.time.LocalDate";
@@ -156,6 +159,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   // Project-level accumulators — contributions from both fresh and cached files
   private int projectTotalUsageCount;
   private int projectTotalNoEnumUsageCount;
+  private final Map<InputFile, CachedFileData> restoredFiles = new HashMap<>();
 
   // All potential issue locations — populated from both fresh scans and cache reads
   private final Map<InputFile, List<CachedIssue>> issuesByFile = new HashMap<>();
@@ -172,17 +176,28 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     importSupplier = null;
+    CachedFileData restored = restoredFiles.remove(context.getInputFile());
+    if (restored != null) {
+      projectTotalUsageCount -= restored.totalCount();
+      projectTotalNoEnumUsageCount -= restored.issueCount();
+    }
     projectTotalUsageCount += currentFileTotalUsageCount;
     projectTotalNoEnumUsageCount += currentFileNoEnumUsageCount;
     if (!currentFileIssues.isEmpty()) {
       issuesByFile.put(context.getInputFile(), new ArrayList<>(currentFileIssues));
+    } else {
+      issuesByFile.remove(context.getInputFile());
     }
 
     CacheContext cacheContext = context.getCacheContext();
     if (cacheContext.isCacheEnabled()) {
-      cacheContext.getWriteCache().write(
-        cacheKey(context.getInputFile()),
-        ConditionalRuleCacheUtils.serialize(currentFileTotalUsageCount, currentFileNoEnumUsageCount, currentFileIssues));
+      String key = cacheKey(context.getInputFile());
+      byte[] data = ConditionalRuleCacheUtils.serialize(currentFileTotalUsageCount, currentFileNoEnumUsageCount, currentFileIssues);
+      try {
+        cacheContext.getWriteCache().write(key, data);
+      } catch (IllegalArgumentException e) {
+        LOG.trace("Tried to write multiple times to cache key '{}'. Ignoring writes after the first.", key);
+      }
     }
 
     currentFileTotalUsageCount = 0;
@@ -202,6 +217,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
       return false;
     }
     CachedFileData cached = ConditionalRuleCacheUtils.deserialize(data);
+    restoredFiles.put(context.getInputFile(), cached);
     projectTotalUsageCount += cached.totalCount();
     projectTotalNoEnumUsageCount += cached.issueCount();
     if (!cached.issues().isEmpty()) {
@@ -339,6 +355,7 @@ public class DateEnumsCheck extends AbstractMethodDetection implements JavaVersi
     projectTotalUsageCount = 0;
     projectTotalNoEnumUsageCount = 0;
     issuesByFile.clear();
+    restoredFiles.clear();
   }
 
   private static JavaQuickFix buildQuickFix(CachedIssue issue) {
