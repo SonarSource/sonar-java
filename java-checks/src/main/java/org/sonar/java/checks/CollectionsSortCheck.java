@@ -84,7 +84,7 @@ public class CollectionsSortCheck extends AbstractMethodDetection implements Jav
     } else {
       replacement = listText + ".sort(null)";
     }
-    return JavaQuickFix.newQuickFix("Use \"%s\" instead", replacement)
+    return JavaQuickFix.newQuickFix("Replace with \"List.sort()\"")
       .addTextEdit(JavaTextEdit.replaceTree(mit, replacement))
       .build();
   }
