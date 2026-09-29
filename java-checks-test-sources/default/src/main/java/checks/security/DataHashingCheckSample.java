@@ -156,11 +156,51 @@ class SpringDigestUtils {
 
   void digestUtils() throws IOException {
     org.springframework.util.DigestUtils.appendMd5DigestAsHex(new byte[10], new StringBuilder()); // Noncompliant {{Make sure this weak hash algorithm is not used in a sensitive context here.}}
-    org.springframework.util.DigestUtils.appendMd5DigestAsHex(new FileInputStream(""), new StringBuilder()); // Noncompliant
+    org.springframework.util.DigestUtils.appendMd5DigestAsHex(new FileInputStream(""), new StringBuilder());
     org.springframework.util.DigestUtils.md5Digest(new byte[10]); // Noncompliant
-    org.springframework.util.DigestUtils.md5Digest(new FileInputStream("")); // Noncompliant {{Make sure this weak hash algorithm is not used in a sensitive context here.}}
+    org.springframework.util.DigestUtils.md5Digest(new FileInputStream(""));
     org.springframework.util.DigestUtils.md5DigestAsHex(new byte[10]); // Noncompliant
-    org.springframework.util.DigestUtils.md5DigestAsHex(new FileInputStream("")); // Noncompliant
+    org.springframework.util.DigestUtils.md5DigestAsHex(new FileInputStream(""));
+  }
+
+}
+
+class FileSourceHashing {
+
+  void nioFiles(java.nio.file.Path path) throws IOException, NoSuchAlgorithmException {
+    MessageDigest.getInstance("MD5").digest(java.nio.file.Files.readAllBytes(path));
+    MessageDigest.getInstance("SHA-1").digest(java.nio.file.Files.readAllBytes(path));
+  }
+
+  void nioInputStream(java.nio.file.Path path) throws IOException, NoSuchAlgorithmException {
+    MessageDigest md = MessageDigest.getInstance("MD5");
+    try (java.io.InputStream is = java.nio.file.Files.newInputStream(path)) {
+      is.transferTo(java.io.OutputStream.nullOutputStream());
+    }
+  }
+
+  void classicFileInputStream(String path) throws IOException {
+    DigestUtils.md5Hex(new FileInputStream(path));
+    DigestUtils.md5(new FileInputStream(path));
+    DigestUtils.sha1Hex(new FileInputStream(path));
+  }
+
+  void guavaHashing() {
+    com.google.common.hash.Hashing.md5().hashBytes(new byte[0]);
+  }
+
+  void apacheCommonsIO(java.io.File file) throws IOException {
+    DigestUtils.md5Hex(org.apache.commons.io.IOUtils.toByteArray(new FileInputStream(file)));
+    DigestUtils.md5Hex(org.apache.commons.io.FileUtils.readFileToByteArray(file));
+  }
+
+  void springMultipart(org.springframework.web.multipart.MultipartFile file) throws IOException {
+    DigestUtils.md5Hex(file.getBytes());
+    DigestUtils.sha1Hex(file.getInputStream());
+  }
+
+  void servletPart(javax.servlet.http.Part part) throws IOException {
+    DigestUtils.md5Hex(part.getInputStream());
   }
 
 }
