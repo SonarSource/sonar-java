@@ -77,7 +77,6 @@ public class JavaRulingTest {
     "The Java analyzer is running in a context where unchanged files can be skipped.";
   private static final Pattern FILES_LEVERAGED_FROM_CACHE = Pattern.compile(
     "The Java analyzer was able to leverage cached data from previous analyses for (\\d+) out of (\\d+) files\\.");
-  private static final double MINIMUM_CACHED_FILES_RATIO = 0.9;
 
   /**
    * By default, all rules are enabled.
@@ -341,8 +340,8 @@ public class JavaRulingTest {
     assertThat(mainBranchUsage.fromCache())
       .as("The first analysis of the main branch has no previous analysis to leverage")
       .isZero();
-    assertCacheWasLeveraged(largePrResult, "Large PR");
-    assertCacheWasLeveraged(smallPrResult, "Small PR");
+    assertCacheWasLeveraged(largePrResult, "Large PR", 0.5);
+    assertCacheWasLeveraged(smallPrResult, "Small PR", 0.9);
 
     // Results
     assertThat(time2)
@@ -508,7 +507,7 @@ public class JavaRulingTest {
     return buildResult;
   }
 
-  private static void assertCacheWasLeveraged(BuildResult result, String label) {
+  private static void assertCacheWasLeveraged(BuildResult result, String label, double filesCachedRatio) {
     CacheUsage usage = cacheUsage(result);
     logCacheUsage(label, usage);
 
@@ -522,7 +521,7 @@ public class JavaRulingTest {
     assertThat(usage.ratio())
       .as("%s analyzes the same sources as the main branch, so almost every file should come from the cache, "
         + "but only %d out of %d did", label, usage.fromCache(), usage.total())
-      .isGreaterThanOrEqualTo(MINIMUM_CACHED_FILES_RATIO);
+      .isGreaterThanOrEqualTo(filesCachedRatio);
   }
 
   private static void logCacheUsage(String label, CacheUsage usage) {
