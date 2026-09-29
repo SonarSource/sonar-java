@@ -66,7 +66,6 @@ public class JavaSensor implements Sensor {
 
   private final SonarComponents sonarComponents;
   private final JavaResourceLocator javaResourceLocator;
-  private final Configuration settings;
   private final NoSonarFilter noSonarFilter;
   @Nullable
   private final Jasper jasper;
@@ -74,18 +73,17 @@ public class JavaSensor implements Sensor {
   private final Telemetry telemetry;
 
   public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator,
-                    Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
+                    NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
                     Telemetry telemetry, SpringContextModel springContextModel) {
-    this(sonarComponents, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter, null, telemetry, springContextModel);
+    this(sonarComponents, javaResourceLocator, noSonarFilter, postAnalysisIssueFilter, null, telemetry, springContextModel);
   }
 
   public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator,
-                    Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
+                    NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
                     @Nullable Jasper jasper, Telemetry telemetry, SpringContextModel springContextModel) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
     this.javaResourceLocator = javaResourceLocator;
-    this.settings = settings;
     this.postAnalysisIssueFilter = postAnalysisIssueFilter;
     this.jasper = jasper;
     this.telemetry = telemetry;
@@ -108,11 +106,11 @@ public class JavaSensor implements Sensor {
 
     Measurer measurer = new Measurer(context, noSonarFilter);
 
-    JavaVersion javaVersion = JavaVersionImpl.readFromConfiguration(settings);
+    JavaVersion javaVersion = JavaVersionImpl.readFromConfiguration(context.config());
     telemetry.aggregateAsSortedSet(JAVA_LANGUAGE_VERSION, javaVersion.toString());
     telemetry.aggregateAsCounter(JAVA_MODULE_COUNT, 1L);
 
-    telemetry.aggregateAsSortedSet(JAVA_SCANNER_APP, settings.get("sonar.scanner.app").orElse("none"));
+    telemetry.aggregateAsSortedSet(JAVA_SCANNER_APP, context.config().get("sonar.scanner.app").orElse("none"));
     telemetry.aggregateAsFlag(JAVA_IS_AUTOSCAN, sonarComponents.isAutoScan());
 
     JavaFrontend frontend = new JavaFrontend(javaVersion,
