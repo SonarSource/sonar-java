@@ -97,12 +97,7 @@ public class DataHashingCheck extends AbstractHashAlgorithmChecker {
       .build(),
     MethodMatchers.create()
       .ofSubTypes("org.springframework.web.multipart.MultipartFile")
-      .names("getBytes", "getInputStream")
-      .addWithoutParametersMatcher()
-      .build(),
-    MethodMatchers.create()
-      .ofSubTypes("javax.servlet.http.Part", "jakarta.servlet.http.Part")
-      .names("getInputStream")
+      .names("getBytes")
       .addWithoutParametersMatcher()
       .build(),
     MethodMatchers.create()

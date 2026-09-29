@@ -182,9 +182,9 @@ class FileSourcedData {
 
   void uploads(org.springframework.web.multipart.MultipartFile multipartFile, javax.servlet.http.Part javaxPart, jakarta.servlet.http.Part jakartaPart) throws IOException {
     DigestUtils.md5Hex(multipartFile.getBytes());
-    DigestUtils.md5Hex(multipartFile.getInputStream());
-    DigestUtils.sha1Hex(javaxPart.getInputStream());
-    DigestUtils.sha1Hex(jakartaPart.getInputStream());
+    DigestUtils.md5Hex(multipartFile.getInputStream()); // Noncompliant
+    DigestUtils.sha1Hex(javaxPart.getInputStream()); // Noncompliant
+    DigestUtils.sha1Hex(jakartaPart.getInputStream()); // Noncompliant
   }
 
   void variables(java.nio.file.Path path) throws IOException {
