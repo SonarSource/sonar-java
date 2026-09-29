@@ -47,14 +47,13 @@ class RedundantStringFormatCheckSample {
 
   void validate(int age, String name, Exception cause) throws ValidationException {
     if (age < 0) {
-      throw new IllegalArgumentException(String.format("Age cannot be negative: %d", age)); // Noncompliant {{Use string concatenation instead of "String.format".}}
-//                                       ^^^^^^^^^^^^^
+      throw new IllegalArgumentException(String.format("Age cannot be negative: %d", age));
     }
     if (name == null) {
-      throw new RuntimeException(String.format("Missing name for age %d", age), cause); // Noncompliant
+      throw new RuntimeException(String.format("Missing name for age %d", age), cause);
     }
     if (name.isEmpty()) {
-      throw new ValidationException(String.format("Empty name %s", name)); // Noncompliant
+      throw new ValidationException(String.format("Empty name %s", name));
     }
     if (name.length() > 10) {
       throw new IllegalStateException(String.format("%-10s|", name));

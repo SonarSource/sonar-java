@@ -154,30 +154,6 @@ class ReportBuilder {
   }
 }
 </pre>
-<h2>How to fix it in Exception constructors</h2>
-<p>For simple exception messages, string concatenation is clearer and more efficient than <code>String.format</code>. The <code>+</code> operator is
-optimized by the Java compiler and doesn’t require parsing format specifiers.</p>
-<h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
-<pre data-diff-id="5" data-diff-type="noncompliant">
-class Validator {
-  void validateAge(int age) {
-    if (age &lt; 0) {
-      throw new IllegalArgumentException(String.format("Age cannot be negative: %d", age)); // Noncompliant
-    }
-  }
-}
-</pre>
-<h4>Compliant solution</h4>
-<pre data-diff-id="5" data-diff-type="compliant">
-class Validator {
-  void validateAge(int age) {
-    if (age &lt; 0) {
-      throw new IllegalArgumentException("Age cannot be negative: " + age);
-    }
-  }
-}
-</pre>
 <h2>Resources</h2>
 <h3>Documentation</h3>
 <ul>

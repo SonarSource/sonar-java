@@ -28,7 +28,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 @Rule(key = "S9413")
@@ -59,7 +58,6 @@ public class RedundantStringFormatCheck extends IssuableSubscriptionVisitor {
   private static final String PRINTF_MESSAGE = "Use \"printf\" instead of \"String.format\".";
   private static final String LOGGING_MESSAGE = "Use the logger's built-in \"{}\" formatting instead of \"String.format\".";
   private static final String APPEND_MESSAGE = "Use chained \"append\" calls instead of \"String.format\".";
-  private static final String EXCEPTION_MESSAGE = "Use string concatenation instead of \"String.format\".";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -88,23 +86,17 @@ public class RedundantStringFormatCheck extends IssuableSubscriptionVisitor {
 
   @Nullable
   private static String targetMessage(Tree call, Tree argument) {
-    if (call instanceof MethodInvocationTree mit) {
-      if (!isMessageArgument(mit.methodSymbol(), mit.arguments().indexOf(argument))) {
-        return null;
-      }
-      if (PRINT_METHODS.matches(mit)) {
-        return PRINTF_MESSAGE;
-      }
-      if (LOG_METHODS.matches(mit)) {
-        return LOGGING_MESSAGE;
-      }
-      if (APPEND_METHODS.matches(mit)) {
-        return APPEND_MESSAGE;
-      }
-    } else if (call instanceof NewClassTree newClass
-      && newClass.symbolType().isSubtypeOf("java.lang.Throwable")
-      && isMessageArgument(newClass.methodSymbol(), newClass.arguments().indexOf(argument))) {
-      return EXCEPTION_MESSAGE;
+    if (!(call instanceof MethodInvocationTree mit) || !isMessageArgument(mit.methodSymbol(), mit.arguments().indexOf(argument))) {
+      return null;
+    }
+    if (PRINT_METHODS.matches(mit)) {
+      return PRINTF_MESSAGE;
+    }
+    if (LOG_METHODS.matches(mit)) {
+      return LOGGING_MESSAGE;
+    }
+    if (APPEND_METHODS.matches(mit)) {
+      return APPEND_MESSAGE;
     }
     return null;
   }
