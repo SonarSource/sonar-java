@@ -263,6 +263,9 @@ public class DataHashingCheck extends AbstractHashAlgorithmChecker {
     if (!symbol.isVariableSymbol() || !symbol.owner().isMethodSymbol()) {
       return false;
     }
+    if (symbol.type().isArray() && symbol.usages().size() != 1) {
+      return false;
+    }
     ExpressionTree value = ExpressionsHelper.getSingleWriteUsage(symbol);
     return value != null && isFileSourced(value);
   }

@@ -191,6 +191,8 @@ class FileSourcedData {
     try (java.io.InputStream resource = java.nio.file.Files.newInputStream(path)) {
       DigestUtils.sha1Hex(resource);
     }
+    byte[] content = java.nio.file.Files.readAllBytes(path);
+    DigestUtils.md5Hex(content);
   }
 
   void chained(java.nio.file.Path path) throws IOException, NoSuchAlgorithmException {
@@ -264,6 +266,24 @@ class NotProvenToBeFileData {
     DigestUtils.md5Hex(java.nio.channels.Channels.newInputStream(java.nio.channels.Channels.newChannel(stream))); // Noncompliant
     com.google.common.hash.Hashing.md5().hashBytes(bytes); // Noncompliant
     com.google.common.io.ByteSource.wrap(bytes).hash(com.google.common.hash.Hashing.md5()); // Noncompliant
+  }
+
+  void arrayOverwritten(java.nio.file.Path path, byte[] secret) throws IOException {
+    byte[] data = java.nio.file.Files.readAllBytes(path);
+    System.arraycopy(secret, 0, data, 0, secret.length);
+    DigestUtils.md5Hex(data); // Noncompliant
+  }
+
+  void arrayXored(java.nio.file.Path path, byte[] key) throws IOException {
+    byte[] data = java.nio.file.Files.readAllBytes(path);
+    data[0] ^= key[0];
+    DigestUtils.md5Hex(data); // Noncompliant
+  }
+
+  void arrayMixed(java.nio.file.Path path, byte[] secret) throws IOException {
+    byte[] data = java.nio.file.Files.readAllBytes(path);
+    concat(data, secret);
+    DigestUtils.md5Hex(data); // Noncompliant
   }
 
   void reassigned(java.nio.file.Path path, byte[] bytes) throws IOException {
