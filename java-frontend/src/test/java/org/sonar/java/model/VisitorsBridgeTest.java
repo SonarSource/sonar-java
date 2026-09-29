@@ -184,7 +184,9 @@ class VisitorsBridgeTest {
   void clear_state_when_visit_fails_before_leave_file() {
     StatefulVisitorWithoutLeaveFileDelegation visitor = new StatefulVisitorWithoutLeaveFileDelegation(true);
 
-    assertThatThrownBy(() -> visitorsBridge(visitor, true).visitFile(COMPILATION_UNIT_TREE, false))
+    VisitorsBridge visitorsBridge = visitorsBridge(visitor, true);
+
+    assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
       .isInstanceOf(AnalysisException.class);
 
     assertThat(visitor.state).isFalse();
