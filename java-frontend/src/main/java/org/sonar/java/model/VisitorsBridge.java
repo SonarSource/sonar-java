@@ -158,7 +158,7 @@ public class VisitorsBridge {
   }
 
   boolean isUnskippableVisitor(Object visitor) {
-    return isVisitorJavaVersionCompatible(visitor) && !canVisitorBeSkippedOnUnchangedFiles(visitor);
+    return isVisitorJavaVersionCompatible(visitor) && isVisitorDependencyVersionCompatible(visitor) && !canVisitorBeSkippedOnUnchangedFiles(visitor);
   }
 
   boolean isVisitorJavaVersionCompatible(Object visitor) {
