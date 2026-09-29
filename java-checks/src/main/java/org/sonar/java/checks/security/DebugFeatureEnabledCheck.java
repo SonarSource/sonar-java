@@ -15,7 +15,6 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks.security;
-
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -130,6 +129,11 @@ public class DebugFeatureEnabledCheck extends IssuableSubscriptionVisitor {
 
   private boolean enclosingClassExtendsThrowable() {
     return enclosingClass.peek() != null && enclosingClass.peek().type().isSubtypeOf("java.lang.Throwable");
+  }
+
+  @Override
+  protected void clearState() {
+    enclosingClass.clear();
   }
 
 }

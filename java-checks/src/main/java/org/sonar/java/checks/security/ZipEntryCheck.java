@@ -15,7 +15,6 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks.security;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -108,4 +107,9 @@ public class ZipEntryCheck extends IssuableSubscriptionVisitor {
   private void report(MethodInvocationTree mit) {
     reportIssue(ExpressionUtils.methodName(mit), ISSUE_MESSAGE);
   }
+  @Override
+  protected void clearState() {
+    calls.clear();
+  }
+
 }

@@ -136,10 +136,15 @@ public class LazyArgEvaluationCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    if (context.getSemanticModel() == null) {
-      return;
+    treeStack.clear();
+    try {
+      if (context.getSemanticModel() == null) {
+        return;
+      }
+      scan(context.getTree());
+    } finally {
+      treeStack.clear();
     }
-    scan(context.getTree());
   }
 
   @Override

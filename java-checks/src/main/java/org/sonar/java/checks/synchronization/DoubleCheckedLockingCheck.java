@@ -200,4 +200,10 @@ public class DoubleCheckedLockingCheck extends IssuableSubscriptionVisitor {
     }
   }
 
+  @Override
+  protected void clearState() {
+    ifFieldStack.clear();
+    synchronizedStmtStack.clear();
+  }
+
 }

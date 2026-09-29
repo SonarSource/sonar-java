@@ -15,7 +15,6 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -178,6 +177,11 @@ public class VolatileVariablesOperationsCheck extends IssuableSubscriptionVisito
       super.visitMemberSelectExpression(tree);
     }
 
+  }
+
+  @Override
+  protected void clearState() {
+    visitedUnaryExpressions.clear();
   }
 
 }

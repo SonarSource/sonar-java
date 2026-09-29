@@ -40,6 +40,7 @@ public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetecti
   @Override
   public void leaveFile(JavaFileScannerContext context) {
     withinSynchronizedBlock.clear();
+    super.leaveFile(context);
   }
 
   @Override

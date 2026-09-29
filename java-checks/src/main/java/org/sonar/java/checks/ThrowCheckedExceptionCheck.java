@@ -15,7 +15,6 @@
  * along with this program; if not, see https://sonarsource.com/license/ssal/
  */
 package org.sonar.java.checks;
-
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -80,4 +79,9 @@ public class ThrowCheckedExceptionCheck extends IssuableSubscriptionVisitor {
   private static boolean isOverriding(MethodTree methodTree) {
     return Boolean.TRUE.equals(methodTree.isOverriding());
   }
+  @Override
+  protected void clearState() {
+    methods.clear();
+  }
+
 }

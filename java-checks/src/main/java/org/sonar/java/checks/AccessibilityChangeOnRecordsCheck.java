@@ -108,4 +108,10 @@ public class AccessibilityChangeOnRecordsCheck extends AbstractAccessibilityChan
     IdentifierTree identifier = (IdentifierTree) callee;
     return Optional.of(identifier.symbol());
   }
+  @Override
+  protected void clearState() {
+    primaryTargets.clear();
+    secondaryTargets.clear();
+  }
+
 }

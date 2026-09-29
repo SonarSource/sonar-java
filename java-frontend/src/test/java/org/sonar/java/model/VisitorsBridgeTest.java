@@ -170,6 +170,31 @@ class VisitorsBridgeTest {
   }
 
   @Test
+  void clear_state_when_leave_file_does_not_delegate() {
+    StatefulVisitorWithoutLeaveFileDelegation visitor = new StatefulVisitorWithoutLeaveFileDelegation(false);
+
+    visitorsBridge(visitor, false).visitFile(COMPILATION_UNIT_TREE, false);
+
+    assertThat(visitor.state).isFalse();
+    assertThat(visitor.leaveCalled).isTrue();
+    assertThat(visitor.clearCount).isEqualTo(2);
+  }
+
+  @Test
+  void clear_state_when_visit_fails_before_leave_file() {
+    StatefulVisitorWithoutLeaveFileDelegation visitor = new StatefulVisitorWithoutLeaveFileDelegation(true);
+
+    VisitorsBridge visitorsBridge = visitorsBridge(visitor, true);
+
+    assertThatThrownBy(() -> visitorsBridge.visitFile(COMPILATION_UNIT_TREE, false))
+      .isInstanceOf(AnalysisException.class);
+
+    assertThat(visitor.state).isFalse();
+    assertThat(visitor.leaveCalled).isFalse();
+    assertThat(visitor.clearCount).isEqualTo(2);
+  }
+
+  @Test
   void swallow_exception_when_hidden_property_set_to_false_with_all_kinds_of_visisitors() {
     assertThatCode(() -> {
       visitorsBridge(Arrays.asList(
@@ -706,6 +731,46 @@ class VisitorsBridgeTest {
     @Override
     public void leaveNode(Tree tree) {
       throw NPE;
+    }
+  }
+
+  private static class StatefulVisitorWithoutLeaveFileDelegation extends IssuableSubscriptionVisitor {
+    private final boolean failOnVisit;
+    private boolean state;
+    private boolean leaveCalled;
+    private int clearCount;
+
+    private StatefulVisitorWithoutLeaveFileDelegation(boolean failOnVisit) {
+      this.failOnVisit = failOnVisit;
+    }
+
+    @Override
+    public List<Tree.Kind> nodesToVisit() {
+      return List.of(Tree.Kind.COMPILATION_UNIT);
+    }
+
+    @Override
+    public void setContext(JavaFileScannerContext context) {
+      super.setContext(context);
+      state = true;
+    }
+
+    @Override
+    public void visitNode(Tree tree) {
+      if (failOnVisit) {
+        throw NPE;
+      }
+    }
+
+    @Override
+    public void leaveFile(JavaFileScannerContext context) {
+      leaveCalled = true;
+    }
+
+    @Override
+    protected void clearState() {
+      state = false;
+      clearCount++;
     }
   }
 
