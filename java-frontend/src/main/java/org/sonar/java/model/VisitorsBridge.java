@@ -117,8 +117,7 @@ public class VisitorsBridge {
     allScanners.addAll(filterVisitors(visitors, v ->
       isVisitorJavaVersionCompatible(v) && isVisitorDependencyVersionCompatible(v)));
     if (canSkipScanningOfUnchangedFiles()) {
-      scannersThatCannotBeSkipped.addAll(filterVisitors(visitors, v ->
-        isUnskippableVisitor(v) && isVisitorDependencyVersionCompatible(v)));
+      scannersThatCannotBeSkipped.addAll(filterVisitors(visitors, this::isUnskippableVisitor));
     }
   }
 
@@ -159,7 +158,7 @@ public class VisitorsBridge {
   }
 
   boolean isUnskippableVisitor(Object visitor) {
-    return isVisitorJavaVersionCompatible(visitor) && !canVisitorBeSkippedOnUnchangedFiles(visitor);
+    return isVisitorJavaVersionCompatible(visitor) && isVisitorDependencyVersionCompatible(visitor) && !canVisitorBeSkippedOnUnchangedFiles(visitor);
   }
 
   boolean isVisitorJavaVersionCompatible(Object visitor) {
