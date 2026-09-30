@@ -93,7 +93,12 @@ class StringUtilsTest {
     // A word right after a digit run in a compound acronym must be isolated on its own.
     assertThat(StringUtils.tokenizeIdentifier("SHA256RSA")).contains("sha", "rsa");
 
-    // camelCase digit suffix: the digit run is dropped, not glued to the following word.
+    // camelCase digit suffix: each camelCase part is kept whole (`cha20`) and its letter-only
+    // form is added as an extra candidate (`cha`). This never produces a single `chacha20`
+    // token, so it does not match the `chacha20` keyword even though ChaCha20 is how the
+    // algorithm is usually written. This is a known, accepted heuristic gap: matching camelCase
+    // concatenations would also make randomBytes match randombytes, which is deliberately not
+    // supported (see splitRandomBytes in PseudoRandomCheckSecurityKeywordsSample.java).
     assertThat(StringUtils.tokenizeIdentifier("ChaCha20")).containsExactly("cha", "cha20", "cha");
   }
 }
