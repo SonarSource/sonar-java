@@ -16,18 +16,16 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.utils.StringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -165,7 +163,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     IdentifierCollector collector = new IdentifierCollector();
     scope.accept(collector);
     for (String identifier : collector.identifiers) {
-      for (String token : tokenizeIdentifier(identifier)) {
+      for (String token : StringUtils.tokenizeIdentifier(identifier)) {
         if (SECURITY_KEYWORDS.contains(token)) {
           return true;
         }
@@ -186,68 +184,6 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
       current = current.parent();
     }
     return null;
-  }
-
-  private static final Pattern LETTER_DIGIT_BOUNDARY = Pattern.compile("(?<=[A-Za-z])(?=\\d)|(?<=\\d)(?=[A-Za-z])");
-
-  // Split on underscores first; for each part either keep it as a single lowercase word
-  // when all-uppercase, or split further on capital-letter boundaries. Each resulting part
-  // is kept whole (so digit-bearing keywords like pbkdf2/poly1305/chacha20 still match) AND
-  // additionally split on letter/digit boundaries, keeping only the letter-bearing segments,
-  // so version-suffixed acronyms (AES256, RSA2048) also match their bare keyword form (aes, rsa).
-  static List<String> tokenizeIdentifier(String identifier) {
-    List<String> words = new ArrayList<>();
-    Pattern splitPattern = Pattern.compile("(?=[A-Z])");
-    for (String part : identifier.split("_")) {
-      if (part.isEmpty()) {
-        continue;
-      }
-      if (isAllUppercaseWithLetter(part)) {
-        addLetterBearingSegments(part, words);
-      } else {
-        for (String sub : splitPattern.split(part)) {
-          if (!sub.isEmpty()) {
-            addLetterBearingSegments(sub, words);
-          }
-        }
-      }
-    }
-    return words;
-  }
-
-  private static void addLetterBearingSegments(String part, List<String> words) {
-    words.add(part.toLowerCase(Locale.ROOT));
-    String[] segments = LETTER_DIGIT_BOUNDARY.split(part);
-    if (segments.length > 1) {
-      for (String segment : segments) {
-        if (containsLetter(segment)) {
-          words.add(segment.toLowerCase(Locale.ROOT));
-        }
-      }
-    }
-  }
-
-  private static boolean containsLetter(String s) {
-    for (int i = 0; i < s.length(); i++) {
-      if (Character.isLetter(s.charAt(i))) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private static boolean isAllUppercaseWithLetter(String part) {
-    boolean hasLetter = false;
-    for (int i = 0; i < part.length(); i++) {
-      char c = part.charAt(i);
-      if (Character.isLetter(c)) {
-        hasLetter = true;
-        if (Character.isLowerCase(c)) {
-          return false;
-        }
-      }
-    }
-    return hasLetter;
   }
 
   private static class IdentifierCollector extends BaseTreeVisitor {

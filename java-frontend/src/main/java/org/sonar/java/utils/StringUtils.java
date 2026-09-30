@@ -21,8 +21,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 public class StringUtils {
+
+  private static final Pattern CAMEL_CASE_BOUNDARY = Pattern.compile("(?=[A-Z])");
+  private static final Pattern LETTER_DIGIT_BOUNDARY = Pattern.compile("(?<=[A-Za-z])(?=\\d)|(?<=\\d)(?=[A-Za-z])");
+
   private StringUtils() {}
 
   /** Check if the string is null or empty. */
@@ -71,5 +77,66 @@ public class StringUtils {
       }
     }
     return result.toArray(new String[0]);
+  }
+
+  /**
+   * Split an identifier into lowercase words, handling camelCase, snake_case, all-uppercase
+   * acronyms, and digit/letter boundaries. Each part between underscores is kept whole (so
+   * digit-bearing words like pbkdf2 or poly1305 still match verbatim) and, when it mixes
+   * letters and digits, also split into its letter-only segments (so version-suffixed
+   * acronyms like AES256 also yield the bare word aes).
+   */
+  public static List<String> tokenizeIdentifier(String identifier) {
+    List<String> words = new ArrayList<>();
+    for (String part : identifier.split("_")) {
+      if (part.isEmpty()) {
+        continue;
+      }
+      if (isAllUppercaseWithLetter(part)) {
+        addLetterBearingSegments(part, words);
+      } else {
+        for (String sub : CAMEL_CASE_BOUNDARY.split(part)) {
+          if (!sub.isEmpty()) {
+            addLetterBearingSegments(sub, words);
+          }
+        }
+      }
+    }
+    return words;
+  }
+
+  private static void addLetterBearingSegments(String part, List<String> words) {
+    words.add(part.toLowerCase(Locale.ROOT));
+    String[] segments = LETTER_DIGIT_BOUNDARY.split(part);
+    if (segments.length > 1) {
+      for (String segment : segments) {
+        if (containsLetter(segment)) {
+          words.add(segment.toLowerCase(Locale.ROOT));
+        }
+      }
+    }
+  }
+
+  private static boolean containsLetter(String s) {
+    for (int i = 0; i < s.length(); i++) {
+      if (Character.isLetter(s.charAt(i))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean isAllUppercaseWithLetter(String part) {
+    boolean hasLetter = false;
+    for (int i = 0; i < part.length(); i++) {
+      char c = part.charAt(i);
+      if (Character.isLetter(c)) {
+        hasLetter = true;
+        if (Character.isLowerCase(c)) {
+          return false;
+        }
+      }
+    }
+    return hasLetter;
   }
 }
