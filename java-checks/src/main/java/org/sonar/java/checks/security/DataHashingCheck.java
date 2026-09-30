@@ -50,6 +50,11 @@ public class DataHashingCheck extends AbstractMethodDetection {
   private static final String GET_INSTANCE = "getInstance";
   private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String CONSTRUCTOR = "<init>";
+  private static final String COMMONS_DIGEST_UTILS = "org.apache.commons.codec.digest.DigestUtils";
+  private static final String SPRING_DIGEST_UTILS = "org.springframework.util.DigestUtils";
+  private static final String MD5_DIGEST = "md5Digest";
+  private static final String MD5_DIGEST_AS_HEX = "md5DigestAsHex";
+  private static final String APPEND_MD5_DIGEST_AS_HEX = "appendMd5DigestAsHex";
 
   private static final Map<String, InsecureAlgorithm> ALGORITHM_BY_METHOD_NAME = MapBuilder.<String, InsecureAlgorithm>newMap()
     .put("getMd2Digest", InsecureAlgorithm.MD2)
@@ -64,9 +69,9 @@ public class DataHashingCheck extends AbstractMethodDetection {
     .put("sha1Hex", InsecureAlgorithm.SHA1)
     .put("sha", InsecureAlgorithm.SHA1)
     .put("shaHex", InsecureAlgorithm.SHA1)
-    .put("md5Digest", InsecureAlgorithm.MD5)
-    .put("md5DigestAsHex", InsecureAlgorithm.MD5)
-    .put("appendMd5DigestAsHex", InsecureAlgorithm.MD5)
+    .put(MD5_DIGEST, InsecureAlgorithm.MD5)
+    .put(MD5_DIGEST_AS_HEX, InsecureAlgorithm.MD5)
+    .put(APPEND_MD5_DIGEST_AS_HEX, InsecureAlgorithm.MD5)
     .build();
 
   /**
@@ -168,13 +173,13 @@ public class DataHashingCheck extends AbstractMethodDetection {
 
   private static final MethodMatchers ONE_SHOT_DIGESTS = MethodMatchers.or(
     MethodMatchers.create()
-      .ofTypes("org.apache.commons.codec.digest.DigestUtils")
+      .ofTypes(COMMONS_DIGEST_UTILS)
       .names("md5", "md5Hex", "sha1", "sha1Hex", "sha", "shaHex")
       .withAnyParameters()
       .build(),
     MethodMatchers.create()
-      .ofTypes("org.springframework.util.DigestUtils")
-      .names("md5Digest", "md5DigestAsHex", "appendMd5DigestAsHex")
+      .ofTypes(SPRING_DIGEST_UTILS)
+      .names(MD5_DIGEST, MD5_DIGEST_AS_HEX, APPEND_MD5_DIGEST_AS_HEX)
       .withAnyParameters()
       .build());
 
@@ -185,7 +190,7 @@ public class DataHashingCheck extends AbstractMethodDetection {
       .withAnyParameters()
       .build(),
     MethodMatchers.create()
-      .ofTypes("org.apache.commons.codec.digest.DigestUtils")
+      .ofTypes(COMMONS_DIGEST_UTILS)
       .names("getDigest", "getMd5Digest", "getShaDigest", "getSha1Digest")
       .withAnyParameters()
       .build(),
@@ -423,14 +428,14 @@ public class DataHashingCheck extends AbstractMethodDetection {
     ArrayList<MethodMatchers> matchers = new ArrayList<>();
     matchers
       .add(MethodMatchers.create()
-        .ofTypes("org.apache.commons.codec.digest.DigestUtils")
+        .ofTypes(COMMONS_DIGEST_UTILS)
         .names("getDigest")
         .addParametersMatcher(JAVA_LANG_STRING)
         .build());
 
     matchers
       .add(MethodMatchers.create()
-        .ofTypes("org.apache.commons.codec.digest.DigestUtils")
+        .ofTypes(COMMONS_DIGEST_UTILS)
         .name(ALGORITHM_BY_METHOD_NAME::containsKey)
         .withAnyParameters()
         .build());
@@ -445,8 +450,8 @@ public class DataHashingCheck extends AbstractMethodDetection {
 
     matchers
       .add(MethodMatchers.create()
-        .ofTypes("org.springframework.util.DigestUtils")
-        .names("appendMd5DigestAsHex", "md5Digest", "md5DigestAsHex")
+        .ofTypes(SPRING_DIGEST_UTILS)
+        .names(APPEND_MD5_DIGEST_AS_HEX, MD5_DIGEST, MD5_DIGEST_AS_HEX)
         .withAnyParameters()
         .build());
 
