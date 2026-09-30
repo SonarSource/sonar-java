@@ -77,6 +77,15 @@ class PseudoRandomCheckSecurityKeywordsSample {
     Random r = new Random(); // Noncompliant
     r.nextInt(pbkdf2);
   }
+
+  // --- Keyword directly after a digit run in a compound all-uppercase acronym. ---
+  // `SHA256RSA` splits into `SHA` + `256RSA`; the digit/letter boundary must also split
+  // right after the digit run so `RSA` is isolated on its own and matches `rsa`.
+  void keywordAfterDigitRun() {
+    final int SHA256RSA = 1;
+    Random r = new Random(); // Noncompliant
+    r.nextInt(SHA256RSA);
+  }
 }
 
 // --- Inner-class scope isolation. ---
