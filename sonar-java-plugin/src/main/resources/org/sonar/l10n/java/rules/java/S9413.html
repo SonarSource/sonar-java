@@ -27,20 +27,10 @@ these frameworks:</p>
 <ul>
   <li>Logging frameworks use their own placeholder syntax</li>
   <li>Output stream APIs have their own formatting methods</li>
-  <li>String builder APIs are designed for efficient concatenation</li>
 </ul>
 <p>Using the native approach makes your intent clearer and your code more maintainable.</p>
-<h2>When generic formatting defeats the purpose</h2>
-<p>Some APIs are specifically designed for performance. Using generic string formatting with them undermines their benefits:</p>
-<pre>
-StringBuilder sb = new StringBuilder();
-sb.append(format("User: %s, Age: %d", name, age)); // Creates intermediate String object
-</pre>
-<p>The string builder API is meant to avoid creating intermediate string objects, but generic formatting functions create one anyway, negating the
-performance benefit.</p>
 <p>In Java, this specifically refers to <code>String.format()</code>. Common APIs with their own formatting include SLF4J (using <code>{}</code>
-placeholders), <code>PrintStream</code> and <code>PrintWriter</code> (with <code>printf</code> methods), and <code>StringBuilder</code> (designed for
-efficient string concatenation).</p>
+placeholders), and <code>PrintStream</code> and <code>PrintWriter</code> (with <code>printf</code> methods).</p>
 <h3>What is the potential impact?</h3>
 <p>Using redundant manual string formatting can lead to:</p>
 <ul>
@@ -55,6 +45,8 @@ efficient string concatenation).</p>
 <h2>How to fix it in SLF4J</h2>
 <p>SLF4J and similar logging frameworks (Log4j2, Logback) support parameterized logging with <code>{}</code> placeholders. This approach defers string
 construction until the log level is enabled.</p>
+<p>Arguments implementing <code>java.util.Formattable</code> are an exception: <code>String.format</code> formats them with
+<code>formatTo</code> instead of <code>toString</code>, so replacing it with <code>{}</code> placeholders could change the message.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
@@ -123,34 +115,6 @@ import java.io.PrintWriter;
 class ReportGenerator {
   void writeHeader(PrintWriter writer, String title, int pageNum) {
     writer.printf("Page %d: %s%n", pageNum, title);
-  }
-}
-</pre>
-<h2>How to fix it in StringBuilder</h2>
-<p><code>StringBuilder</code> is designed for efficient string concatenation. Using <code>String.format</code> with it creates an unnecessary
-intermediate <code>String</code> object, defeating the purpose. Use chained <code>append</code> calls instead.</p>
-<h3>Code examples</h3>
-<h4>Noncompliant code example</h4>
-<pre data-diff-id="4" data-diff-type="noncompliant">
-class ReportBuilder {
-  String buildUserSummary(String name, int age, String email) {
-    StringBuilder sb = new StringBuilder();
-    sb.append(String.format("User: %s, ", name)); // Noncompliant
-    sb.append(String.format("age: %d, ", age)); // Noncompliant
-    sb.append(String.format("email: %s", email)); // Noncompliant
-    return sb.toString();
-  }
-}
-</pre>
-<h4>Compliant solution</h4>
-<pre data-diff-id="4" data-diff-type="compliant">
-class ReportBuilder {
-  String buildUserSummary(String name, int age, String email) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("User: ").append(name).append(", ");
-    sb.append("age: ").append(age).append(", ");
-    sb.append("email: ").append(email);
-    return sb.toString();
   }
 }
 </pre>

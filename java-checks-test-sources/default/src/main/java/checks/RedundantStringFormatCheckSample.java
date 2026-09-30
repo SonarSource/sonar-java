@@ -2,6 +2,8 @@ package checks;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Formattable;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Locale;
 
@@ -10,13 +12,41 @@ class RedundantStringFormatCheckSample {
   private static final String ROW_FORMAT = "%s: %d";
 
   void printing(int a, int b, int sum, double ratio, long count, PrintWriter writer, int pageNum, String title) {
-    System.out.println(String.format("Result: %d + %d = %d", a, b, sum)); // Noncompliant {{Use "printf" instead of "String.format".}}
+    System.out.println(String.format("Result: %d + %d = %d", a, b, sum)); // Noncompliant {{Use "printf" instead of "String.format".}} [[quickfixes=qf1]]
 //                     ^^^^^^^^^^^^^
-    System.err.print(String.format("%.2f", ratio)); // Noncompliant
-    System.out.println(String.format(Locale.US, "%,d", count)); // Noncompliant
+    // fix@qf1 {{Replace with "printf"}}
+    // edit@qf1 [[sc=59;ec=59]] {{%n}}
+    // edit@qf1 [[sc=16;ec=23]] {{printf}}
+    // edit@qf1 [[sc=24;ec=38]] {{}}
+    // edit@qf1 [[sc=71;ec=72]] {{}}
+    System.err.print(String.format("%.2f", ratio)); // Noncompliant [[quickfixes=qf2]]
+    // fix@qf2 {{Replace with "printf"}}
+    // edit@qf2 [[sc=16;ec=21]] {{printf}}
+    // edit@qf2 [[sc=22;ec=36]] {{}}
+    // edit@qf2 [[sc=49;ec=50]] {{}}
+    System.out.println(String.format(Locale.US, "%,d", count)); // Noncompliant [[quickfixes=qf3]]
+    // fix@qf3 {{Replace with "printf"}}
+    // edit@qf3 [[sc=53;ec=53]] {{%n}}
+    // edit@qf3 [[sc=16;ec=23]] {{printf}}
+    // edit@qf3 [[sc=24;ec=38]] {{}}
+    // edit@qf3 [[sc=61;ec=62]] {{}}
     writer.println(String.format("Page %d: %s", pageNum, title)); // Noncompliant
-    writer.print(String.format(ROW_FORMAT, title, pageNum)); // Noncompliant
-    System.out.println((String.format("Total: %d", sum))); // Noncompliant
+    writer.print(String.format(ROW_FORMAT, title, pageNum)); // Noncompliant [[quickfixes=qf4]]
+    // fix@qf4 {{Replace with "printf"}}
+    // edit@qf4 [[sc=12;ec=17]] {{printf}}
+    // edit@qf4 [[sc=18;ec=32]] {{}}
+    // edit@qf4 [[sc=58;ec=59]] {{}}
+    System.out.println((String.format("Total: %d", sum))); // Noncompliant [[quickfixes=qf5]]
+    // fix@qf5 {{Replace with "printf"}}
+    // edit@qf5 [[sc=49;ec=49]] {{%n}}
+    // edit@qf5 [[sc=16;ec=23]] {{printf}}
+    // edit@qf5 [[sc=24;ec=39]] {{}}
+    // edit@qf5 [[sc=55;ec=57]] {{}}
+    System.out.println(String.format(ROW_FORMAT, title, pageNum)); // Noncompliant [[quickfixes=!]]
+    // Noncompliant@+1 [[quickfixes=!]]
+    writer.println(String.format("""
+      %s""", title));
+    System.out.println(String.format("Id %s", new FormattableId())); // Noncompliant
 
     System.out.printf("Result: %d + %d = %d%n", a, b, sum);
     System.out.println("Result: " + sum);
@@ -24,24 +54,11 @@ class RedundantStringFormatCheckSample {
     System.out.println("Total " + String.format("%.2f", ratio));
   }
 
-  String json(String name, int age, int hash) {
+  String builder(String name, int age) {
     StringBuilder sb = new StringBuilder("{");
-    sb.append(String.format("\"name\":\"%s\",", name)); // Noncompliant {{Use chained "append" calls instead of "String.format".}}
-//            ^^^^^^^^^^^^^
-    sb.append(String.format("\"age\":%d", age)).append("}"); // Noncompliant
-    StringBuffer buffer = new StringBuffer();
-    buffer.append(String.format("Progress 100%% for %s", name)); // Noncompliant
-
-    sb.append("\"age\":").append(age);
-    sb.append(String.format("%08X", hash));
-    sb.append(String.format("%.2f", age / 3.0));
-    sb.append(String.format(Locale.ROOT, "%d", age));
-    sb.append(String.format(ROW_FORMAT, name, age));
-    sb.append(String.format("%n"));
-    sb.append(String.format("%1$s-%1$s", name));
-    sb.append(String.format("100%", name));
-    sb.append(String.format("""
-      %s""", name));
+    sb.append(String.format("name: %s, ", name));
+    new StringBuffer().append(String.format("age: %d", age));
+    sb.append("name: ").append(name);
     return sb.toString();
   }
 
@@ -81,5 +98,12 @@ class RedundantStringFormatCheckSample {
   }
 
   record Wrapper(String value) {
+  }
+
+  static class FormattableId implements Formattable {
+    @Override
+    public void formatTo(Formatter formatter, int flags, int width, int precision) {
+      formatter.format("ID");
+    }
   }
 }

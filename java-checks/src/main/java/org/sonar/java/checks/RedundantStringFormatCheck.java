@@ -17,10 +17,14 @@
 package org.sonar.java.checks;
 
 import java.util.List;
-import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.LoggingMatchers;
+import org.sonar.java.checks.helpers.QuickFixHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.reporting.JavaQuickFix;
+import org.sonar.java.reporting.JavaTextEdit;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -47,17 +51,10 @@ public class RedundantStringFormatCheck extends IssuableSubscriptionVisitor {
     .addParametersMatcher(STRING)
     .build();
 
-  private static final MethodMatchers APPEND_METHODS = MethodMatchers.create()
-    .ofTypes("java.lang.StringBuilder", "java.lang.StringBuffer")
-    .names("append")
-    .addParametersMatcher(STRING)
-    .build();
-
   private static final MethodMatchers LOG_METHODS = MethodMatchers.or(LoggingMatchers.SLF4J_LOG_METHODS, LoggingMatchers.LOG4J_LOG_METHODS);
 
   private static final String PRINTF_MESSAGE = "Use \"printf\" instead of \"String.format\".";
   private static final String LOGGING_MESSAGE = "Use the logger's built-in \"{}\" formatting instead of \"String.format\".";
-  private static final String APPEND_MESSAGE = "Use chained \"append\" calls instead of \"String.format\".";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -70,35 +67,55 @@ public class RedundantStringFormatCheck extends IssuableSubscriptionVisitor {
     if (!STRING_FORMAT.matches(formatCall)) {
       return;
     }
-    Tree argument = formatCall;
-    while (argument.parent().is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      argument = argument.parent();
-    }
+    Tree argument = outermostParentheses(formatCall);
     Tree arguments = argument.parent();
     if (!arguments.is(Tree.Kind.ARGUMENTS)) {
       return;
     }
-    String message = targetMessage(arguments.parent(), argument);
-    if (message != null && (PRINTF_MESSAGE.equals(message) || hasSimpleLiteralFormat(formatCall))) {
-      reportIssue(formatCall.methodSelect(), message);
+    if (!(arguments.parent() instanceof MethodInvocationTree call) || !isMessageArgument(call.methodSymbol(), call.arguments().indexOf(argument))) {
+      return;
+    }
+    if (PRINT_METHODS.matches(call)) {
+      QuickFixHelper.newIssue(context)
+        .forRule(this)
+        .onTree(formatCall.methodSelect())
+        .withMessage(PRINTF_MESSAGE)
+        .withQuickFixes(() -> printfQuickFix(call, argument, formatCall))
+        .report();
+    } else if (LOG_METHODS.matches(call) && hasSimpleLiteralFormat(formatCall) && hasNoFormattableArgument(formatCall)) {
+      reportIssue(formatCall.methodSelect(), LOGGING_MESSAGE);
     }
   }
 
-  @Nullable
-  private static String targetMessage(Tree call, Tree argument) {
-    if (!(call instanceof MethodInvocationTree mit) || !isMessageArgument(mit.methodSymbol(), mit.arguments().indexOf(argument))) {
-      return null;
+  private static Tree outermostParentheses(Tree tree) {
+    Tree result = tree;
+    while (result.parent().is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      result = result.parent();
     }
-    if (PRINT_METHODS.matches(mit)) {
-      return PRINTF_MESSAGE;
+    return result;
+  }
+
+  /**
+   * Builds a quick fix turning {@code print(String.format(args))} into {@code printf(args)}.
+   * For {@code println}, a {@code %n} is appended to the format, which is only possible when the format is a string literal.
+   */
+  private static List<JavaQuickFix> printfQuickFix(MethodInvocationTree printCall, Tree argument, MethodInvocationTree formatCall) {
+    List<ExpressionTree> formatArguments = formatCall.arguments();
+    boolean isPrintln = "println".equals(printCall.methodSymbol().name());
+    JavaQuickFix.Builder builder = JavaQuickFix.newQuickFix("Replace with \"printf\"");
+    if (isPrintln) {
+      ExpressionTree format = formatArguments.get(formatArguments.get(0).symbolType().is("java.util.Locale") ? 1 : 0);
+      if (!format.is(Tree.Kind.STRING_LITERAL)) {
+        return List.of();
+      }
+      AnalyzerMessage.TextSpan formatSpan = AnalyzerMessage.textSpanFor(format);
+      builder.addTextEdit(JavaTextEdit.insertAtPosition(formatSpan.endLine, formatSpan.endCharacter - 1, "%n"));
     }
-    if (LOG_METHODS.matches(mit)) {
-      return LOGGING_MESSAGE;
-    }
-    if (APPEND_METHODS.matches(mit)) {
-      return APPEND_MESSAGE;
-    }
-    return null;
+    return List.of(builder
+      .addTextEdit(JavaTextEdit.replaceTree(ExpressionUtils.methodName(printCall), "printf"))
+      .addTextEdit(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(argument, true, formatArguments.get(0), false)))
+      .addTextEdit(JavaTextEdit.removeTextSpan(AnalyzerMessage.textSpanBetween(formatArguments.get(formatArguments.size() - 1), false, argument, true)))
+      .build());
   }
 
   /**
@@ -121,6 +138,13 @@ public class RedundantStringFormatCheck extends IssuableSubscriptionVisitor {
       return false;
     }
     return hasOnlySimpleConversions(LiteralUtils.trimQuotes(((LiteralTree) arguments.get(0)).value()));
+  }
+
+  /**
+   * {@code %s} calls {@code formatTo} on {@link java.util.Formattable} values instead of {@code toString}, which "{}" placeholders would not preserve.
+   */
+  private static boolean hasNoFormattableArgument(MethodInvocationTree formatCall) {
+    return formatCall.arguments().stream().noneMatch(arg -> arg.symbolType().isSubtypeOf("java.util.Formattable"));
   }
 
   /**

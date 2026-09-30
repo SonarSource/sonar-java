@@ -15,7 +15,7 @@
   "ruleSpecification": "RSPEC-9413",
   "sqKey": "S9413",
   "scope": "All",
-  "quickfix": "unknown",
+  "quickfix": "partial",
   "code": {
     "impacts": {
       "MAINTAINABILITY": "MEDIUM"

@@ -1,5 +1,7 @@
 package checks;
 
+import java.util.Formattable;
+import java.util.Formatter;
 import java.util.Locale;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +31,20 @@ class RedundantStringFormatCheckLoggingSample {
     LOG.info(String.format("User %s", username).trim());
     String message = String.format("User %s", username);
     LOG.info(message);
+  }
+
+  void formattable(FormattableId id, Formattable formattable, Object value) {
+    LOG.info(String.format("Value: %s", id));
+    LOG.info(String.format("Value: %s", formattable));
+    LOG4J.info(String.format("Values: %s %s", value, id));
+    LOG.info(String.format("Value: %s", value)); // Noncompliant
+  }
+
+  static class FormattableId implements Formattable {
+    @Override
+    public void formatTo(Formatter formatter, int flags, int width, int precision) {
+      formatter.format("ID");
+    }
   }
 
   void log4j(String id, int count) {
