@@ -422,7 +422,7 @@ public class InternalCheckVerifier implements CheckVerifier {
       validateIssue(expected, unexpectedLines, issue, remediationFunction);
     }
     if (!expected.isEmpty() || !unexpectedLines.isEmpty()) {
-      Collections.sort(unexpectedLines);
+      unexpectedLines.sort(null);
       List<Integer> expectedLines = expected.keySet().stream().sorted().toList();
       throw new AssertionError(new StringBuilder()
         .append(expectedLines.isEmpty() ? "" : ("Expected at " + expectedLines))
