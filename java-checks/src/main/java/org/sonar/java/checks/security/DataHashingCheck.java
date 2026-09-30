@@ -16,13 +16,18 @@
  */
 package org.sonar.java.checks.security;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.CheckForNull;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.AbstractHashAlgorithmChecker;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.JavaPropertiesHelper;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -34,10 +39,116 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonarsource.analyzer.commons.collections.MapBuilder;
 import org.sonarsource.analyzer.commons.collections.SetUtils;
 
+import static org.sonar.plugins.java.api.semantic.MethodMatchers.ANY;
+
 @Rule(key = "S4790")
-public class DataHashingCheck extends AbstractHashAlgorithmChecker {
+public class DataHashingCheck extends AbstractMethodDetection {
+
+  private static final String GET_INSTANCE = "getInstance";
+  private static final String JAVA_LANG_STRING = "java.lang.String";
+  private static final String CONSTRUCTOR = "<init>";
+
+  private static final Map<String, InsecureAlgorithm> ALGORITHM_BY_METHOD_NAME = MapBuilder.<String, InsecureAlgorithm>newMap()
+    .put("getMd2Digest", InsecureAlgorithm.MD2)
+    .put("getMd5Digest", InsecureAlgorithm.MD5)
+    .put("getShaDigest", InsecureAlgorithm.SHA1)
+    .put("getSha1Digest", InsecureAlgorithm.SHA1)
+    .put("md2", InsecureAlgorithm.MD2)
+    .put("md2Hex", InsecureAlgorithm.MD2)
+    .put("md5", InsecureAlgorithm.MD5)
+    .put("md5Hex", InsecureAlgorithm.MD5)
+    .put("sha1", InsecureAlgorithm.SHA1)
+    .put("sha1Hex", InsecureAlgorithm.SHA1)
+    .put("sha", InsecureAlgorithm.SHA1)
+    .put("shaHex", InsecureAlgorithm.SHA1)
+    .put("md5Digest", InsecureAlgorithm.MD5)
+    .put("md5DigestAsHex", InsecureAlgorithm.MD5)
+    .put("appendMd5DigestAsHex", InsecureAlgorithm.MD5)
+    .build();
+
+  /**
+   * These APIs have static getInstance method to get an implementation of some crypto algorithm.
+   * javax.crypto.Cipher is missing from this list, because it is covered by rule S5547 {@link org.sonar.java.checks.StrongCipherAlgorithmCheck}
+   * Details can be found here <a href="http://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html">Security Standard Names</a>
+   */
+  private static final String[] CRYPTO_APIS = {
+    "java.security.AlgorithmParameters",
+    "java.security.AlgorithmParameterGenerator",
+    "java.security.MessageDigest",
+    "java.security.KeyFactory",
+    "java.security.KeyPairGenerator",
+    "java.security.Signature",
+    "javax.crypto.Mac",
+    "javax.crypto.KeyGenerator"
+  };
+
+  private enum InsecureAlgorithm {
+    MD2, MD4, MD5, MD6, RIPEMD,
+    HAVAL128 {
+      @Override
+      public String toString() {
+        return "HAVAL-128";
+      }
+    },
+    SHA {
+      @Override
+      public boolean match(String algorithm) {
+        // exact match required for SHA, so it doesn't match compliant SHA-512
+        return "SHA".equals(algorithm);
+      }
+    },
+    SHA0 {
+      @Override
+      public String toString() {
+        return "SHA-0";
+      }
+    },
+    SHA1 {
+      @Override
+      public String toString() {
+        return "SHA-1";
+      }
+    },
+    SHA224 {
+      @Override
+      public String toString() {
+        return "SHA-224";
+      }
+    },
+    DSA {
+      @Override
+      public boolean match(String algorithm) {
+        // exact match required for DSA, so it doesn't match ECDSA
+        return "DSA".equals(algorithm);
+      }
+    };
+
+    public boolean match(String algorithm) {
+      String normalizedName = algorithm.replace("-", "").toLowerCase(Locale.ENGLISH);
+      return normalizedName.contains(name().toLowerCase(Locale.ENGLISH));
+    }
+  }
+
+  private enum DeprecatedSpringPasswordEncoder {
+    MD5("org.springframework.security.authentication.encoding.Md5PasswordEncoder", CONSTRUCTOR),
+    SHA("org.springframework.security.authentication.encoding.ShaPasswordEncoder", CONSTRUCTOR),
+    LDAP("org.springframework.security.crypto.password.LdapShaPasswordEncoder", CONSTRUCTOR),
+    MD4("org.springframework.security.crypto.password.Md4PasswordEncoder", CONSTRUCTOR),
+    MESSAGE_DIGEST("org.springframework.security.crypto.password.MessageDigestPasswordEncoder", CONSTRUCTOR),
+    STANDARD("org.springframework.security.crypto.password.StandardPasswordEncoder", CONSTRUCTOR),
+    NO_OP("org.springframework.security.crypto.password.NoOpPasswordEncoder", GET_INSTANCE);
+
+    private final String classFqn;
+    private final String methodName;
+
+    DeprecatedSpringPasswordEncoder(String fqn, String methodName) {
+      this.classFqn = fqn;
+      this.methodName = methodName;
+    }
+  }
 
   private static final Set<String> DEPRECATED_HASH_CLASSES = SetUtils.immutableSetOf(
     DeprecatedSpringPasswordEncoder.MD5.classFqn,
@@ -157,22 +268,11 @@ public class DataHashingCheck extends AbstractHashAlgorithmChecker {
     OTHER
   }
 
-  @Override
-  protected Optional<String> getMessageForClass(String className) {
-    return DEPRECATED_HASH_CLASSES.contains(className) ? Optional.of(MESSAGE) : Optional.empty();
-  }
-
-  @Override
-  protected String getMessageForAlgorithm(String algorithmName) {
-    return MESSAGE;
-  }
-
   /**
    * MD5 and SHA-1 are exempted only when every byte reaching the digest is proven to come from a file.
    * Anything that cannot be proven (unknown symbol, field, digest passed to another method, mixed data) is still reported.
    */
-  @Override
-  protected boolean isExempt(MethodInvocationTree mit, InsecureAlgorithm algorithm) {
+  private static boolean isExempt(MethodInvocationTree mit, InsecureAlgorithm algorithm) {
     if (!EXEMPTABLE_ALGORITHMS.contains(algorithm)) {
       return false;
     }
@@ -203,15 +303,13 @@ public class DataHashingCheck extends AbstractHashAlgorithmChecker {
   }
 
   private static Use classify(ExpressionTree use) {
-    Tree parent = use.parent();
-    if (parent.is(Tree.Kind.MEMBER_SELECT)
-      && ((MemberSelectExpressionTree) parent).expression() == use
-      && parent.parent().is(Tree.Kind.METHOD_INVOCATION)
-      && ((MethodInvocationTree) parent.parent()).methodSelect() == parent) {
-      return classifyCall(((MemberSelectExpressionTree) parent).identifier().name(), ((MethodInvocationTree) parent.parent()).arguments());
+    if (use.parent() instanceof MemberSelectExpressionTree memberSelect
+      && memberSelect.expression() == use
+      && memberSelect.parent() instanceof MethodInvocationTree invocation) {
+      return classifyCall(memberSelect.identifier().name(), invocation.arguments());
     }
-    if (parent.is(Tree.Kind.ARGUMENTS)) {
-      return classifyArgument(use, parent.parent());
+    if (use.parent().is(Tree.Kind.ARGUMENTS)) {
+      return classifyArgument(use, use.parent().parent());
     }
     return Use.OTHER;
   }
@@ -291,5 +389,92 @@ public class DataHashingCheck extends AbstractHashAlgorithmChecker {
   @CheckForNull
   private static ExpressionTree receiver(MethodInvocationTree call) {
     return call.methodSelect().is(Tree.Kind.MEMBER_SELECT) ? ((MemberSelectExpressionTree) call.methodSelect()).expression() : null;
+  }
+
+  @Override
+  protected MethodMatchers getMethodInvocationMatchers() {
+    return getWeakHashMethodInvocationMatchers();
+  }
+
+  @Override
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    IdentifierTree methodName = ExpressionUtils.methodName(mit);
+    if (DEPRECATED_HASH_CLASSES.contains(methodName.symbol().owner().type().fullyQualifiedName())) {
+      reportIssue(methodName, MESSAGE);
+      return;
+    }
+    InsecureAlgorithm algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName.name());
+    if (algorithm == null) {
+      algorithm = algorithm(mit.arguments().get(0)).orElse(null);
+    }
+    if (algorithm != null && !isExempt(mit, algorithm)) {
+      reportIssue(methodName, MESSAGE);
+    }
+  }
+
+  @Override
+  protected void onConstructorFound(NewClassTree newClassTree) {
+    if (DEPRECATED_HASH_CLASSES.contains(newClassTree.identifier().symbolType().fullyQualifiedName())) {
+      reportIssue(newClassTree.identifier(), MESSAGE);
+    }
+  }
+
+  private static MethodMatchers getWeakHashMethodInvocationMatchers() {
+    ArrayList<MethodMatchers> matchers = new ArrayList<>();
+    matchers
+      .add(MethodMatchers.create()
+        .ofTypes("org.apache.commons.codec.digest.DigestUtils")
+        .names("getDigest")
+        .addParametersMatcher(JAVA_LANG_STRING)
+        .build());
+
+    matchers
+      .add(MethodMatchers.create()
+        .ofTypes("org.apache.commons.codec.digest.DigestUtils")
+        .name(ALGORITHM_BY_METHOD_NAME::containsKey)
+        .withAnyParameters()
+        .build());
+
+    matchers
+      .add(MethodMatchers.create()
+        .ofTypes(CRYPTO_APIS)
+        .names(GET_INSTANCE)
+        .addParametersMatcher(JAVA_LANG_STRING)
+        .addParametersMatcher(JAVA_LANG_STRING, ANY)
+        .build());
+
+    matchers
+      .add(MethodMatchers.create()
+        .ofTypes("org.springframework.util.DigestUtils")
+        .names("appendMd5DigestAsHex", "md5Digest", "md5DigestAsHex")
+        .withAnyParameters()
+        .build());
+
+    for (DeprecatedSpringPasswordEncoder pe : DeprecatedSpringPasswordEncoder.values()) {
+      matchers.add(MethodMatchers.create().ofTypes(pe.classFqn).names(pe.methodName).withAnyParameters().build());
+    }
+
+    matchers.add(MethodMatchers.create()
+      .ofTypes("com.google.common.hash.Hashing")
+      .names("md5", "sha1")
+      .addWithoutParametersMatcher().build());
+
+    return MethodMatchers.or(matchers);
+  }
+
+  private static Optional<InsecureAlgorithm> algorithm(ExpressionTree invocationArgument) {
+    ExpressionTree expectedAlgorithm = invocationArgument;
+    ExpressionTree defaultPropertyValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(invocationArgument);
+    if (defaultPropertyValue != null) {
+      expectedAlgorithm = defaultPropertyValue;
+    }
+    Optional<String> stringConstant = expectedAlgorithm.asConstant(String.class);
+    if (stringConstant.isPresent()) {
+      String algorithmName = stringConstant.get();
+      return Arrays.stream(InsecureAlgorithm.values())
+        .filter(alg -> alg.match(algorithmName))
+        .findFirst();
+    }
+    return Optional.empty();
   }
 }

@@ -15,7 +15,6 @@ This analysis is based on direct inspection of the following source files:
 
 **Abstract Base Classes:**
 - `java-checks/src/main/java/org/sonar/java/checks/AbstractForLoopRule.java`
-- `java-checks/src/main/java/org/sonar/java/checks/AbstractHashAlgorithmChecker.java`
 - `java-checks/src/main/java/org/sonar/java/checks/regex/AbstractRegexCheck.java`
 - `java-checks-common/src/main/java/org/sonar/java/checks/methods/AbstractMethodDetection.java`
 
@@ -70,7 +69,6 @@ Based on file listings and @Rule annotation searches, the main java-checks modul
    - `AbstractRegexCheck` for regex validation rules
    - `AbstractMethodDetection` for method invocation-based rules
    - `AbstractForLoopRule` for for-loop analysis rules
-   - `AbstractHashAlgorithmChecker` for cryptography rules
    
 3. **Module organization:**
    - Core rules in `java-checks`
