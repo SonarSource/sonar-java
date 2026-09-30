@@ -80,11 +80,16 @@ public class StringUtils {
   }
 
   /**
-   * Split an identifier into lowercase words, handling camelCase, snake_case, all-uppercase
-   * acronyms, and digit/letter boundaries. Each part between underscores is kept whole (so
-   * digit-bearing words like pbkdf2 or poly1305 still match verbatim) and, when it mixes
-   * letters and digits, also split into its letter-only segments (so version-suffixed
-   * acronyms like AES256 also yield the bare word aes).
+   * Splits an identifier into lowercase words, handling camelCase, snake_case, all-uppercase
+   * acronyms, and digit/letter boundaries.
+   * <p>
+   * Each part between underscores is kept whole (so digit-bearing words like {@code pbkdf2}
+   * or {@code poly1305} still match verbatim) and, when it mixes letters and digits, is also
+   * split into its letter-only segments (so version-suffixed acronyms like {@code AES256}
+   * also yield the bare word {@code aes}).
+   *
+   * @param identifier the identifier to tokenize
+   * @return the lowercase words the identifier was split into
    */
   public static List<String> tokenizeIdentifier(String identifier) {
     List<String> words = new ArrayList<>();

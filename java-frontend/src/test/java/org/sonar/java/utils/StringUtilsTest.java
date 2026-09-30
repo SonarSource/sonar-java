@@ -85,6 +85,9 @@ class StringUtilsTest {
     assertThat(StringUtils.tokenizeIdentifier("RSA2048")).containsExactly("rsa2048", "rsa");
     assertThat(StringUtils.tokenizeIdentifier("HMAC256")).containsExactly("hmac256", "hmac");
 
+    // Underscore already separates the digits from the acronym, so no digit/letter split is needed.
+    assertThat(StringUtils.tokenizeIdentifier("AES_256_KEY")).containsExactly("aes", "256", "key");
+
     // Digit-bearing words are kept whole, so they still match their own literal spelling.
     assertThat(StringUtils.tokenizeIdentifier("pbkdf2")).containsExactly("pbkdf2", "pbkdf");
     assertThat(StringUtils.tokenizeIdentifier("poly1305")).containsExactly("poly1305", "poly");
