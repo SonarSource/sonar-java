@@ -1,0 +1,130 @@
+<p>An issue is raised when string formatting functions that substitute placeholders with values are used as arguments to methods that already support
+formatting or parameterized messages natively.</p>
+<p>In Java, this specifically refers to <code>String.format</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>Many APIs provide built-in formatting capabilities. When you wrap generic string formatting functions around these APIs, you’re adding an
+unnecessary layer that hurts both performance and readability.</p>
+<h2>Performance concerns</h2>
+<p>Generic string formatting functions are typically eagerly evaluated. This means the formatted string is created immediately, even if it’s never
+used. This is particularly problematic in logging scenarios:</p>
+<pre>
+LOG.debug(format("Processing %d items", items.size())); // Always formats, even if DEBUG is disabled
+</pre>
+<p>When the debug level is disabled, the application still pays the cost of:</p>
+<ul>
+  <li>Creating the format string</li>
+  <li>Boxing primitive values into objects</li>
+  <li>Parsing the format specifiers</li>
+  <li>Building the final string</li>
+</ul>
+<p>Logging frameworks provide parameterized logging that defers string construction until the message is actually needed:</p>
+<pre>
+LOG.debug("Processing {} items", items.size()); // Only formats if DEBUG is enabled
+</pre>
+<h2>Readability and idioms</h2>
+<p>Each API has its own idiomatic way of formatting. Using generic string formatting makes the code less recognizable to developers familiar with
+these frameworks:</p>
+<ul>
+  <li>Logging frameworks use their own placeholder syntax</li>
+  <li>Output stream APIs have their own formatting methods</li>
+</ul>
+<p>Using the native approach makes your intent clearer and your code more maintainable.</p>
+<p>In Java, this specifically refers to <code>String.format()</code>. Common APIs with their own formatting include SLF4J (using <code>{}</code>
+placeholders), and <code>PrintStream</code> and <code>PrintWriter</code> (with <code>printf</code> methods).</p>
+<h3>What is the potential impact?</h3>
+<p>Using redundant manual string formatting can lead to:</p>
+<ul>
+  <li><strong>Performance degradation</strong>: In high-throughput applications, especially those with extensive logging, the unnecessary string
+  formatting can waste significant CPU cycles and create memory pressure from temporary objects.</li>
+  <li><strong>Maintainability issues</strong>: Code that doesn’t follow framework conventions is harder for other developers to understand and
+  maintain, increasing the likelihood of bugs during refactoring.</li>
+  <li><strong>Inconsistent codebase</strong>: Mixing manual string formatting with native API calls creates inconsistency, making the code harder to
+  review and understand.</li>
+</ul>
+<p>In Java, this specifically refers to redundant <code>String.format</code> calls.</p>
+<h2>How to fix it in SLF4J</h2>
+<p>SLF4J and similar logging frameworks (Log4j2, Logback) support parameterized logging with <code>{}</code> placeholders. This approach defers string
+construction until the log level is enabled.</p>
+<p>Arguments implementing <code>java.util.Formattable</code> are an exception: <code>String.format</code> formats them with
+<code>formatTo</code> instead of <code>toString</code>, so replacing it with <code>{}</code> placeholders could change the message.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+class UserService {
+  private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
+
+  void activateUser(String username, String role) {
+    LOG.info(String.format("Activated user '%s' with role '%s'", username, role)); // Noncompliant
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+class UserService {
+  private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
+
+  void activateUser(String username, String role) {
+    LOG.info("Activated user '{}' with role '{}'", username, role);
+  }
+}
+</pre>
+<h2>How to fix it in System.out/System.err</h2>
+<p>For console output, use <code>printf</code> instead of <code>println</code> with <code>String.format</code>. The <code>printf</code> method
+supports the same format specifiers as <code>String.format</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+class Calculator {
+  void displayResult(int a, int b, int sum) {
+    System.out.println(String.format("Result: %d + %d = %d", a, b, sum)); // Noncompliant
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+class Calculator {
+  void displayResult(int a, int b, int sum) {
+    System.out.printf("Result: %d + %d = %d%n", a, b, sum);
+  }
+}
+</pre>
+<h2>How to fix it in PrintStream/PrintWriter</h2>
+<p>Both <code>PrintStream</code> and <code>PrintWriter</code> provide <code>printf</code> and <code>format</code> methods. Use these instead of
+wrapping <code>String.format</code> in <code>print</code> or <code>println</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+import java.io.PrintWriter;
+
+class ReportGenerator {
+  void writeHeader(PrintWriter writer, String title, int pageNum) {
+    writer.println(String.format("Page %d: %s", pageNum, title)); // Noncompliant
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+import java.io.PrintWriter;
+
+class ReportGenerator {
+  void writeHeader(PrintWriter writer, String title, int pageNum) {
+    writer.printf("Page %d: %s%n", pageNum, title);
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>SLF4J Documentation - <a href="https://www.slf4j.org/faq.html#logging_performance">SLF4J FAQ - What is the fastest way of logging?</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/PrintStream.html">PrintStream (Java SE
+  17)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html">Formatter (Java SE
+  17)</a></li>
+</ul>
+
