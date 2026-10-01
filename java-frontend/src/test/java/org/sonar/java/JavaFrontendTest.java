@@ -55,7 +55,9 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.telemetry.NoOpTelemetry;
+import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -180,7 +182,8 @@ class JavaFrontendTest {
 
   @Test
   void scanning_empty_project_should_be_logged_in_batch() {
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), new Measurer(sensorContext, mock(NoSonarFilter.class)), new NoOpTelemetry(), mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), mockSonarComponents(), new Measurer(sensorContext, mock(NoSonarFilter.class)), new NoOpTelemetry(),
+      mock(JavaResourceLocator.class), mainCodeIssueScannerAndFilter);
     frontend.scan(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
     assertThat(filterOutAnalysisProgress(logTester.logs(Level.INFO))).containsExactly(
@@ -233,6 +236,34 @@ class JavaFrontendTest {
       "Server-side caching is not enabled. The Java analyzer will not try to leverage data from a previous analysis.",
       "No \"Main and Test\" source files to scan."
     );
+  }
+
+  @Test
+  void spring_bean_is_registered_once_when_main_and_test_scanners_finish() throws IOException {
+    sensorContext = SensorContextTester.create(temp.toFile().getAbsoluteFile());
+    sensorContext.setRuntime(SONARQUBE_RUNTIME);
+    InputFile mainFile = addFile(temp, "@org.springframework.stereotype.Component class MainBean {}", sensorContext);
+    InputFile testFile = addFile(temp, "@org.springframework.stereotype.Component class HelperTest {}", sensorContext);
+
+    FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
+    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
+    javaClasspath = mock(ClasspathForMain.class);
+    javaTestClasspath = mock(ClasspathForTest.class);
+    var classpath = TestClasspathUtils.DEFAULT_MODULE.getClassPath();
+    when(javaClasspath.getElements()).thenReturn(classpath);
+    when(javaTestClasspath.getElements()).thenReturn(classpath);
+
+    sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class), mock(ActiveRules.class));
+    sonarComponents.setSensorContext(sensorContext);
+    var springContextModel = new SpringContextModel();
+    sonarComponents.setSpringContextModel(springContextModel);
+
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), new NoOpTelemetry(),
+      mock(JavaResourceLocator.class), null);
+    frontend.scan(List.of(mainFile), List.of(testFile), List.of());
+
+    assertThat(springContextModel.getBeanDefinitionRegistry().getByName("mainBean")).hasSize(1);
+    assertThat(springContextModel.getBeanDefinitionRegistry().getByName("helperTest")).hasSize(1);
   }
 
   @Test

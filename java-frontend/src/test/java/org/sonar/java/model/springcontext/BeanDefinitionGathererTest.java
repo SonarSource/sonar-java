@@ -51,7 +51,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
 
   @BeforeEach
   void setUp() {
-    gatherer = new BeanDefinitionGatherer(new NoOpTelemetry());
+    gatherer = new BeanDefinitionGatherer(new SpringContextGatheringModel(), new NoOpTelemetry());
     model = new SpringContextModel();
   }
 
@@ -315,8 +315,9 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     InputFileScannerContext context = mock(InputFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getCacheContext()).thenReturn(cacheContext);
+    when(context.getModuleKey()).thenReturn("");
 
-    gatherer = new BeanDefinitionGatherer(new NoOpTelemetry());
+    gatherer = new BeanDefinitionGatherer(new SpringContextGatheringModel(), new NoOpTelemetry());
     model = new SpringContextModel();
     assertThat(gatherer.scanWithoutParsing(context)).isTrue();
     verify(writeCache).copyFromPrevious(entry.key());
@@ -351,8 +352,9 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     InputFileScannerContext context = mock(InputFileScannerContext.class);
     when(context.getInputFile()).thenReturn(inputFile);
     when(context.getCacheContext()).thenReturn(cacheContext);
+    when(context.getModuleKey()).thenReturn("");
 
-    gatherer = new BeanDefinitionGatherer(new NoOpTelemetry());
+    gatherer = new BeanDefinitionGatherer(new SpringContextGatheringModel(), new NoOpTelemetry());
     model = new SpringContextModel();
     assertThat(gatherer.scanWithoutParsing(context)).isTrue();
 
