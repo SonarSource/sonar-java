@@ -76,15 +76,13 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
   private static final String PRIMARY_ANNOTATION = "org.springframework.context.annotation.Primary";
   private static final String CACHE_KEY_PREFIX = "java:spring:bean-definitions:";
 
-  private final Map<InputFile, List<BeanDefinitionHolder.InputFileData>> beansCollectedByFile = new LinkedHashMap<>();
-
   /**
    * Beans found in the file currently being scanned, used for per-file cache writes.
    */
   private final List<BeanDefinitionHolder.InputFileData> beansCollectedAtFileLevel = new ArrayList<>();
 
-  public BeanDefinitionGatherer(Telemetry telemetry) {
-    super(telemetry);
+  public BeanDefinitionGatherer(SpringContextGatheringModel springContextGatheringModel, Telemetry telemetry) {
+    super(springContextGatheringModel, telemetry);
   }
 
   @Override
@@ -142,7 +140,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
   @Override
   protected void leaveSpringFile(JavaFileScannerContext context) {
     var beans = List.copyOf(beansCollectedAtFileLevel);
-    beansCollectedByFile.put(context.getInputFile(), beans);
+    InputFile currentFile = context.getInputFile();
+    springContextGatheringModel.collectBeans(context.getModuleKey(), currentFile.key(), currentFile, beans);
     writeToCache(context, beans);
     beansCollectedAtFileLevel.clear();
   }
@@ -164,7 +163,8 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
 
   @Override
   public void restore(InputFileScannerContext context, List<BeanDefinitionHolder.InputFileData> beans) {
-    beansCollectedByFile.put(context.getInputFile(), List.copyOf(beans));
+    InputFile currentFile = context.getInputFile();
+    springContextGatheringModel.collectBeans(context.getModuleKey(), currentFile.key(), currentFile, beans);
   }
 
   /**
@@ -180,8 +180,9 @@ public class BeanDefinitionGatherer extends SpringContextModelGatherer
    */
   @Override
   public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {
-    beansCollectedByFile.forEach((inputFile, beans) -> {
-      for (BeanDefinitionHolder.InputFileData data : beans) {
+    springContextGatheringModel.getInputFilesData(context.getModuleKey()).forEach(inputFileData -> {
+      InputFile inputFile = inputFileData.inputFile();
+      for (BeanDefinitionHolder.InputFileData data : inputFileData.beans()) {
         var location = new BeanLocation(inputFile, data.textSpan());
         var holderBuilder = new BeanDefinitionHolder.Builder(
           data.type(), context.getModuleKey(), data.beanPackage(), location)
