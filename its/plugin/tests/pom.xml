@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>it-java-plugin</artifactId>
-    <version>8.40.0-SNAPSHOT</version>
+    <version>8.45.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>it-java-plugin-tests</artifactId>
@@ -82,13 +82,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <!-- Fixes "Defaulting to no-operation (NOP) logger", which results in missing logs from the orchestrator. -->
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>${slf4j.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

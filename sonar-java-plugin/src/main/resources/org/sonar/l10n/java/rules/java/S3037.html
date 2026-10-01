@@ -1,0 +1,81 @@
+<p>This rule raises an issue when a record component accessor is called on the record being constructed, inside a compact constructor or inside an
+explicit canonical constructor before the corresponding field is assigned.</p>
+<h2>Why is this an issue?</h2>
+<p>The fields of a record are assigned only once, by its canonical constructor:</p>
+<ul>
+  <li>In a compact constructor, the fields are assigned implicitly, from the constructor parameters, <strong>after</strong> the body of the
+  constructor has run.</li>
+  <li>In an explicit canonical constructor, each field is assigned by a <code>this.component = …​</code> statement of the constructor body.</li>
+</ul>
+<p>Until a field is assigned, it holds the default value of its type: <code>null</code>, <code>0</code>, or <code>false</code>. Reading such a field
+through <code>this.</code> is rejected by the compiler, but calling the component accessor, for example <code>name()</code> or
+<code>this.name()</code>, compiles and silently reads the field.</p>
+<p>As a consequence, the accessor returns the default value instead of the value passed to the constructor. This typically defeats the validation
+performed in the constructor: a check such as <code>name().isBlank()</code> throws a <code>NullPointerException</code> instead of validating the
+argument, and a check such as <code>age() &lt; 0</code> is always <code>false</code>, so invalid values are accepted. The same applies to explicitly
+declared accessors, as they typically read the same unassigned field.</p>
+<p>Calls placed in lambdas and in local or anonymous classes are not reported, as they may run after the construction of the record.</p>
+<h2>How to fix it</h2>
+<p>Read the constructor parameter instead of calling the accessor. In a compact constructor, the parameters have the same names as the record
+components. In an explicit canonical constructor, either read the parameter or call the accessor only after the field has been assigned.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+record User(String name, int age) {
+  User {
+    if (name().isBlank()) { // Noncompliant: name() returns null here
+      throw new IllegalArgumentException("Name must not be blank");
+    }
+    if (age() &lt; 0) { // Noncompliant: age() always returns 0 here
+      throw new IllegalArgumentException("Age must not be negative");
+    }
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+record User(String name, int age) {
+  User {
+    if (name.isBlank()) {
+      throw new IllegalArgumentException("Name must not be blank");
+    }
+    if (age &lt; 0) {
+      throw new IllegalArgumentException("Age must not be negative");
+    }
+  }
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+record Email(String address) {
+  Email(String address) {
+    if (!address().contains("@")) { // Noncompliant: address() returns null here
+      throw new IllegalArgumentException("Invalid email address");
+    }
+    this.address = address.toLowerCase(Locale.ROOT);
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+record Email(String address) {
+  Email(String address) {
+    if (!address.contains("@")) {
+      throw new IllegalArgumentException("Invalid email address");
+    }
+    this.address = address.toLowerCase(Locale.ROOT);
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10.4">8.10.4 Record Constructor
+  Declarations</a></li>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-16.html">Chapter 16. Definite Assignment</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S1699} - Constructors should only call non-overridable methods</li>
+</ul>
+

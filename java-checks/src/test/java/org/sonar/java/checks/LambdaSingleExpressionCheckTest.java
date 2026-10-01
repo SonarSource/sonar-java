@@ -19,12 +19,14 @@ package org.sonar.java.checks;
 import org.junit.jupiter.api.Test;
 import org.sonar.java.checks.verifier.CheckVerifier;
 
+import static org.sonar.java.checks.verifier.TestUtils.mainCodeSourcesPath;
+
 class LambdaSingleExpressionCheckTest {
 
   @Test
   void no_version() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/LambdaSingleExpressionCheck_no_version.java")
+      .onFile(mainCodeSourcesPath("checks/LambdaSingleExpressionCheckNoVersionSample.java"))
       .withCheck(new LambdaSingleExpressionCheck())
       .verifyIssues();
   }
@@ -32,7 +34,7 @@ class LambdaSingleExpressionCheckTest {
   @Test
   void java_8() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/LambdaSingleExpressionCheck.java")
+      .onFile(mainCodeSourcesPath("checks/LambdaSingleExpressionCheckSample.java"))
       .withCheck(new LambdaSingleExpressionCheck())
       .withJavaVersion(8)
       .verifyIssues();
@@ -41,7 +43,7 @@ class LambdaSingleExpressionCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile("src/test/files/checks/LambdaSingleExpressionCheck_no_version.java")
+      .onFile(mainCodeSourcesPath("checks/LambdaSingleExpressionCheckSampleWithoutSemantic.java"))
       .withCheck(new LambdaSingleExpressionCheck())
       .withoutSemantic()
       .verifyIssues();

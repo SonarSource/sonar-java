@@ -1,0 +1,15 @@
+{
+"com.google.guava:guava:src/com/google/common/math/DoubleMath.java": [
+446
+],
+"com.google.guava:guava:src/com/google/common/math/DoubleUtils.java": [
+97
+],
+"com.google.guava:guava:src/com/google/common/math/LongMath.java": [
+296
+],
+"com.google.guava:guava:src/com/google/common/primitives/UnsignedInteger.java": [
+201,
+210
+]
+}

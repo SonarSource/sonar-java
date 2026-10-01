@@ -72,7 +72,7 @@ if (MY_MATCHER.matches(methodInvocationTree)) {
 ### Rule Implementation
 - Rule class: `java-checks/src/main/java/org/sonar/java/checks/{RuleId}Check.java`
 - Test class: `java-checks/src/test/java/org/sonar/java/checks/{RuleId}CheckTest.java`
-- Test samples: `java-checks-test-sources/default/src/main/files/checks/{RuleId}CheckSample.java`
+- Test samples: `java-checks-test-sources/default/src/main/java/checks/{RuleId}CheckSample.java`
 
 ### Metadata
 - HTML description: `sonar-java-plugin/src/main/resources/org/sonar/l10n/java/rules/java/{RULE_ID}.html`

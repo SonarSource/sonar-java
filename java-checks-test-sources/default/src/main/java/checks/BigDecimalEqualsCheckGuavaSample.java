@@ -14,6 +14,11 @@ class BigDecimalEqualsCheckGuavaSample {
 
     // Compliant
     res = com.google.common.base.Objects.equal(s, "hello");
+    res = com.google.common.base.Objects.equal(null, s);
+    res = com.google.common.base.Objects.equal(s, null);
+    res = com.google.common.base.Objects.equal(null, a);
+    res = com.google.common.base.Objects.equal(a, null);
+    res = com.google.common.base.Objects.equal(a.setScale(2), b.setScale(2));
   }
 
   static class AccountWithGuavaEquals {

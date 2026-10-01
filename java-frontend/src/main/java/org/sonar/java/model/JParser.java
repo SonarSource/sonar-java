@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.eclipse.jdt.core.compiler.IProblem;
@@ -463,14 +464,14 @@ public class JParser {
   static int firstIndexIn(TokenManager tokenManager, ASTNode e, TerminalToken tokenTypeCandidateA, TerminalToken tokenTypeCandidateB) {
     int first = tokenManager.firstIndexIn(e, ANY_TOKEN);
     int last = tokenManager.lastIndexIn(e, ANY_TOKEN);
-    for (int tokenIndex = first; tokenIndex <= last; tokenIndex++) {
-      Token token = tokenManager.get(tokenIndex);
-      if (token.tokenType == tokenTypeCandidateA || token.tokenType == tokenTypeCandidateB) {
-        return tokenIndex;
-      }
-    }
-    throw new IllegalStateException("Failed to find token " + tokenTypeCandidateA + " or " + tokenTypeCandidateB +
-      " in the tokens of a " + ASTNode.nodeClassForType(e.getNodeType()).getName());
+    return IntStream.rangeClosed(first, last)
+      .filter(tokenIndex -> {
+        Token token = tokenManager.get(tokenIndex);
+        return token.tokenType == tokenTypeCandidateA || token.tokenType == tokenTypeCandidateB;
+      })
+      .findFirst()
+      .orElseThrow(() -> new IllegalStateException("Failed to find token " + tokenTypeCandidateA + " or " + tokenTypeCandidateB +
+        " in the tokens of a " + ASTNode.nodeClassForType(e.getNodeType()).getName()));
   }
 
   /**
@@ -509,17 +510,16 @@ public class JParser {
     while (commentIndex > 0 && isComment(tokenManager.get(commentIndex - 1))) {
       commentIndex--;
     }
-    List<SyntaxTrivia> comments = new ArrayList<>();
-    for (int i = commentIndex; i < tokenIndex; i++) {
-      Token t = tokenManager.get(i);
-      LineColumnConverter.Pos pos = lineColumnConverter.toPos(t.originalStart);
-      comments.add(new InternalSyntaxTrivia(convertTokenTypeToCommentKind(t),
-        t.toString(tokenManager.getSource()),
-        pos.line(),
-        pos.columnOffset()
-      ));
-    }
-    return comments;
+    return IntStream.range(commentIndex, tokenIndex).<SyntaxTrivia>mapToObj(i -> {
+        Token t = tokenManager.get(i);
+        LineColumnConverter.Pos pos = lineColumnConverter.toPos(t.originalStart);
+        return new InternalSyntaxTrivia(convertTokenTypeToCommentKind(t),
+          t.toString(tokenManager.getSource()),
+          pos.line(),
+          pos.columnOffset()
+        );
+      })
+      .toList();
   }
 
   @VisibleForTesting
@@ -647,12 +647,9 @@ public class JParser {
     if (e == null) {
       return null;
     }
-    List<ModuleDirectiveTree> moduleDirectives = new ArrayList<>();
-    for (Object o : e.moduleStatements()) {
-      moduleDirectives.add(
-        convertModuleDirective((ModuleDirective) o)
-      );
-    }
+    List<ModuleDirectiveTree> moduleDirectives = e.moduleStatements().stream()
+      .map(o -> convertModuleDirective((ModuleDirective) o))
+      .toList();
     return new ModuleDeclarationTreeImpl(
       convertAnnotations(e.annotations()),
       e.isOpen() ? firstTokenIn(e, TerminalToken.TokenNameopen) : null,
@@ -857,11 +854,10 @@ public class JParser {
 
   private ClassTreeImpl convertEnumDeclaration(EnumDeclaration e, ModifiersTreeImpl modifiers, IdentifierTreeImpl name,
                                                InternalSyntaxToken openBraceToken, List<Tree> members, InternalSyntaxToken closeBraceToken) {
-    List<Tree> enumConstants = new ArrayList<>();
-    for (Object o : e.enumConstants()) {
-      // introduced as first members
-      enumConstants.add(processEnumConstantDeclaration((EnumConstantDeclaration) o));
-    }
+    List<Tree> enumConstants = ((List<?>) e.enumConstants()).stream()
+      .map(EnumConstantDeclaration.class::cast)
+      .<Tree>map(this::processEnumConstantDeclaration)
+      .toList();
     members.addAll(0, enumConstants);
 
     InternalSyntaxToken declarationKeyword = firstTokenBefore(e.getName(), TerminalToken.TokenNameenum);
@@ -976,9 +972,11 @@ public class JParser {
     final InternalSyntaxToken closeParToken;
     if (tokenManager.get(openParTokenIndex).tokenType == TerminalToken.TokenNameLPAREN) {
       openParToken = createSyntaxToken(openParTokenIndex);
-      closeParToken = e.arguments().isEmpty()
-        ? firstTokenAfter(e.getName(), TerminalToken.TokenNameRPAREN)
-        : firstTokenAfter((ASTNode) e.arguments().get(e.arguments().size() - 1), TerminalToken.TokenNameRPAREN);
+      closeParToken = firstTokenAfter(
+        e.arguments().isEmpty()
+          ? e.getName()
+          : (ASTNode) e.arguments().get(e.arguments().size() - 1),
+        TerminalToken.TokenNameRPAREN);
     } else {
       openParToken = null;
       closeParToken = null;
@@ -1626,10 +1624,10 @@ public class JParser {
           body = StatementListTreeImpl.emptyList();
         }
 
-        List<ExpressionTree> expressions = new ArrayList<>();
-        for (Object oo : c.expressions()) {
-          expressions.add(convertExpressionFromCase((Expression) oo));
-        }
+        List<ExpressionTree> expressions = ((List<?>) c.expressions()).stream()
+          .map(Expression.class::cast)
+          .map(this::convertExpressionFromCase)
+          .toList();
 
         caselabels.add(new CaseLabelTreeImpl(
           firstTokenIn(c, c.isDefault() ? TerminalToken.TokenNamedefault : TerminalToken.TokenNamecase),
@@ -2082,14 +2080,14 @@ public class JParser {
   }
 
   private NewArrayTreeImpl convertArrayCreation(ArrayCreation e) {
-    List<ArrayDimensionTree> dimensions = new ArrayList<>();
-    for (Object o : e.dimensions()) {
-      dimensions.add(new ArrayDimensionTreeImpl(
-        firstTokenBefore((Expression) o, TerminalToken.TokenNameLBRACKET),
-        convertExpression((Expression) o),
-        firstTokenAfter((Expression) o, TerminalToken.TokenNameRBRACKET)
-      ));
-    }
+    List<ArrayDimensionTree> dimensions = ((List<?>) e.dimensions()).stream()
+      .map(Expression.class::cast)
+      .<ArrayDimensionTree>map(dimension -> new ArrayDimensionTreeImpl(
+        firstTokenBefore(dimension, TerminalToken.TokenNameLBRACKET),
+        convertExpression(dimension),
+        firstTokenAfter(dimension, TerminalToken.TokenNameRBRACKET)
+      ))
+      .collect(Collectors.toCollection(ArrayList::new));
     InitializerListTreeImpl initializers = InitializerListTreeImpl.emptyList();
     if (e.getInitializer() != null) {
       assert dimensions.isEmpty();
@@ -2641,10 +2639,10 @@ public class JParser {
   }
 
   private JavaTree.AnnotatedTypeTree convertSimpleType(SimpleType e) {
-    List<AnnotationTree> annotations = new ArrayList<>();
-    for (Object o : e.annotations()) {
-      annotations.add((AnnotationTree) convertExpression(((Annotation) o)));
-    }
+    List<AnnotationTree> annotations = ((List<?>) e.annotations()).stream()
+      .map(Annotation.class::cast)
+      .map(annotation -> (AnnotationTree) convertExpression(annotation))
+      .toList();
     JavaTree.AnnotatedTypeTree t = e.isVar() ? convertVarType(e) : (JavaTree.AnnotatedTypeTree) convertExpression(e.getName());
     t.complete(annotations);
     // typeBinding is assigned by convertVarType or convertExpression
@@ -2737,9 +2735,10 @@ public class JParser {
     if (bound == null) {
       t = new JavaTree.WildcardTreeImpl(questionToken);
     } else {
+      boolean isUpperBound = e.isUpperBound();
       t = new JavaTree.WildcardTreeImpl(
-        e.isUpperBound() ? Tree.Kind.EXTENDS_WILDCARD : Tree.Kind.SUPER_WILDCARD,
-        e.isUpperBound() ? firstTokenBefore(bound, TerminalToken.TokenNameextends) : firstTokenBefore(bound, TerminalToken.TokenNamesuper),
+        isUpperBound ? Tree.Kind.EXTENDS_WILDCARD : Tree.Kind.SUPER_WILDCARD,
+        firstTokenBefore(bound, isUpperBound ? TerminalToken.TokenNameextends : TerminalToken.TokenNamesuper),
         convertType(bound)
       ).complete(questionToken);
     }
@@ -2773,30 +2772,22 @@ public class JParser {
     if (typeBinding.isInterface()) {
       typeBinding = ast.resolveWellKnownType("java.lang.Object");
     }
-    for (IMethodBinding m : typeBinding.getDeclaredMethods()) {
-      if (methodBinding.isSubsignature(m)) {
-        return m;
-      }
-    }
-    return null;
+    return Stream.of(typeBinding.getDeclaredMethods())
+      .filter(methodBinding::isSubsignature)
+      .findFirst()
+      .orElse(null);
   }
 
   private List<AnnotationTree> convertAnnotations(List<?> e) {
-    List<AnnotationTree> annotations = new ArrayList<>();
-    for (Object o : e) {
-      annotations.add((AnnotationTree) convertExpression(
-        ((Annotation) o)
-      ));
-    }
-    return annotations;
+    return e.stream()
+      .map(o -> (AnnotationTree) convertExpression((Annotation) o))
+      .toList();
   }
 
   private ModifiersTreeImpl convertModifiers(List<?> source) {
-    List<ModifierTree> modifiers = new ArrayList<>();
-    for (Object o : source) {
-      modifiers.add(convertModifier((IExtendedModifier) o));
-    }
-    return new ModifiersTreeImpl(modifiers);
+    return new ModifiersTreeImpl(source.stream()
+      .map(o -> convertModifier((IExtendedModifier) o))
+      .toList());
   }
 
   private ModifierTree convertModifier(IExtendedModifier node) {

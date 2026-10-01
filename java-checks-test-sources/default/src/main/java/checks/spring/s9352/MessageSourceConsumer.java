@@ -1,0 +1,14 @@
+package checks.spring.s9352;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceAware;
+import org.springframework.stereotype.Service;
+
+// Three beans of type MessageSourceAware exist; this field's name matches none of them. Under @Profile("test")
+// both UnprofiledPrimaryComponent and ProfiledPrimaryComponent are @Primary: issue expected.
+@Service
+public class MessageSourceConsumer {
+
+  @Autowired
+  private MessageSourceAware contextAware;
+}

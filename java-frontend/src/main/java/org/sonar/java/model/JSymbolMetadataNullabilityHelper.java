@@ -119,8 +119,6 @@ public class JSymbolMetadataNullabilityHelper {
     "edu.umd.cs.findbugs.annotations.NonNull",
     "io.reactivex.annotations.NonNull",
     "io.reactivex.rxjava3.annotations.NonNull",
-    "javax.validation.constraints.NotNull",
-    "jakarta.validation.constraints.NotNull",
     "lombok.NonNull",
     "org.checkerframework.checker.nullness.compatqual.NonNullDecl",
     "org.checkerframework.checker.nullness.compatqual.NonNullType",

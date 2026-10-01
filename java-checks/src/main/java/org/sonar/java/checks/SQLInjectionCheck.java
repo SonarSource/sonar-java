@@ -158,13 +158,12 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     List<AssignmentExpressionTree> reassignments,
     String identifierName) {
     List<JavaFileScannerContext.Location> secondaryLocations = reassignments.stream()
-      .map(assignment -> new JavaFileScannerContext.Location(String.format("SQL Query is assigned to '%s'", getVariableName(assignment)),
+      .map(assignment -> new JavaFileScannerContext.Location("SQL Query is assigned to '" + getVariableName(assignment) + "'",
         assignment.expression()))
       .collect(Collectors.toCollection(ArrayList::new));
 
     if (initializerOrExpression != null) {
-      secondaryLocations.add(new JavaFileScannerContext.Location(String.format("SQL Query is dynamically formatted and assigned to '%s'",
-        identifierName),
+      secondaryLocations.add(new JavaFileScannerContext.Location("SQL Query is dynamically formatted and assigned to '" + identifierName + "'",
         initializerOrExpression));
     }
     return secondaryLocations;

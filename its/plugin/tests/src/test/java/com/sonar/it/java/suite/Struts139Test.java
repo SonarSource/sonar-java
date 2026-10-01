@@ -88,10 +88,10 @@ public class Struts139Test {
   }
 
   private static String componentKey(String path, String file) {
-    return String.format("%s:%s/src/main/java/%s%s", PROJECT_STRUTS, MODULE_CORE_PHYSICAL_NAME, path, file);
+    return PROJECT_STRUTS + ":" + MODULE_CORE_PHYSICAL_NAME + "/src/main/java/" + path + file;
   }
 
   private static String moduleKey() {
-    return String.format("%s:%s/src", PROJECT_STRUTS, MODULE_CORE_PHYSICAL_NAME);
+    return PROJECT_STRUTS + ":" + MODULE_CORE_PHYSICAL_NAME + "/src";
   }
 }

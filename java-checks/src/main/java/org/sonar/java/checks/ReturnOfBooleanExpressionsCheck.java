@@ -129,7 +129,9 @@ public class ReturnOfBooleanExpressionsCheck extends IssuableSubscriptionVisitor
   }
 
   private static boolean areAllSyntacticallyEquivalentExceptBoolean(MethodInvocationTree mit1, MethodInvocationTree mit2) {
-    if (skipParenthesesUpwards(mit1.parent()).kind() != skipParenthesesUpwards(mit2.parent()).kind()) {
+    Tree parent1 = skipParenthesesUpwards(mit1.parent());
+    Tree parent2 = skipParenthesesUpwards(mit2.parent());
+    if (parent1 == null || parent2 == null || parent1.kind() != parent2.kind()) {
       // requires to have on both side a return statement, or on both side an expression statement.
       return false;
     }

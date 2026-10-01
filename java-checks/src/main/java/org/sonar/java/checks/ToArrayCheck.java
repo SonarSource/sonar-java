@@ -58,7 +58,7 @@ public class ToArrayCheck extends AbstractMethodDetection {
       ExpressionTree methodSelect = mit.methodSelect();
       // Do not report an issue for type variables and call to toArray from the Collection itself
       if (!elementType.isTypeVar() && methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-        String typeName = String.format("new %s[0]", elementType.name());
+        String typeName = "new " + elementType.name() + "[0]";
         QuickFixHelper.newIssue(context)
           .forRule(this)
           .onTree(mit)

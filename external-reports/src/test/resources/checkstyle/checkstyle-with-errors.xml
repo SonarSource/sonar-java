@@ -12,6 +12,6 @@
 	<error message="Error at file level with an unknown rule key." source="com.puppycrawl.tools.checkstyle.checks.UnknownRuleKey" />
 </file>
 <file name="${PROJECT_DIR}A.java">
-	<error line="1" column="1" severity="error" message="Unsupported rule key format." source="invalid-format" />
+	<error line="1" column="1" severity="error" message="Custom rule issue." source="com.example.CustomCheck" />
 </file>
 </checkstyle>

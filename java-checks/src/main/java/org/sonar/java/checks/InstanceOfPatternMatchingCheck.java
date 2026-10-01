@@ -178,7 +178,7 @@ public class InstanceOfPatternMatchingCheck extends IssuableSubscriptionVisitor 
 
     private void report(InstanceOfTree instanceOf, ExpressionTree cast, String name) {
       String type = instanceOf.type().symbolType().name();
-      String message = String.format("Replace this instanceof check and cast with 'instanceof %s %s'", type, name);
+      String message = "Replace this instanceof check and cast with 'instanceof " + type + " " + name + "'";
       JavaFileScannerContext.Location secondary = new JavaFileScannerContext.Location("Location of the cast", cast);
       reportIssue(instanceOf, message, Collections.singletonList(secondary), null);
     }

@@ -132,6 +132,9 @@ public class AlmostJavadocCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isAlmostJavadoc(SyntaxTrivia trivia) {
     String text = trivia.comment().stripTrailing();
+    if (text.contains("(non-Javadoc)")) {
+      return false;
+    }
     if (trivia.isComment(CommentKind.BLOCK)) {
       return hasTag(text);
     }

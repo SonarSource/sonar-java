@@ -1,0 +1,46 @@
+<p>This rule raises an issue when a <code>continue</code> statement is used inside a loop.</p>
+<h2>Why is this an issue?</h2>
+<p>The <code>continue</code> statement is an unstructured control flow mechanism that disrupts the natural flow of a loop. When used, it immediately
+skips the rest of the current iteration and jumps to the next one.</p>
+<p>While this might seem convenient in the moment, it creates several problems:</p>
+<ul>
+  <li><strong>Reduced readability</strong>: Readers must mentally track where <code>continue</code> statements occur and what they skip, making it
+  harder to understand what code actually executes in each iteration.</li>
+  <li><strong>Harder maintenance</strong>: As loops evolve, <code>continue</code> statements can interact with new code in unexpected ways, making
+  changes risky.</li>
+  <li><strong>Difficult testing</strong>: Code paths become more complex to test thoroughly when control flow jumps around unpredictably.</li>
+</ul>
+<p>Structured alternatives like <code>if</code> statements make the logic explicit and easier to follow. Instead of using <code>continue</code> to
+skip certain iterations, you can use a conditional to execute code only when needed. This creates clearer, more maintainable code that’s easier to
+reason about.</p>
+<h3>What is the potential impact?</h3>
+<p>Using <code>continue</code> statements makes code harder to understand, modify, and test. While it doesn’t directly cause bugs, it increases the
+likelihood of introducing defects during maintenance because the control flow becomes less obvious.</p>
+<p>The impact is primarily on maintainability:</p>
+<ul>
+  <li><strong>Increased cognitive load</strong>: Developers must track multiple exit points within a loop</li>
+  <li><strong>Higher defect risk</strong>: Changes to the loop body may not account for all <code>continue</code> statements</li>
+  <li><strong>Reduced testability</strong>: More complex control flow requires more test cases to achieve full coverage</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Replace the <code>continue</code> statement with an <code>if</code> statement that inverts the condition. This makes the control flow explicit and
+improves readability.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+for (int i = 0; i &lt; 10; i++) {
+    if (i == 5) {
+        continue;  // Noncompliant
+    }
+    System.out.println("i = " + i);
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+for (int i = 0; i &lt; 10; i++) {
+    if (i != 5) {
+        System.out.println("i = " + i);
+    }
+}
+</pre>
+

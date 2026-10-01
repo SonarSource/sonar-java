@@ -32,7 +32,6 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.Sensor;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
-import org.sonar.api.config.Configuration;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.GeneratedCheckList;
@@ -43,6 +42,7 @@ import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -64,33 +64,31 @@ public class JavaSensor implements Sensor {
   private static final String PERFORMANCE_MEASURE_DESTINATION_FILE = "sonar.java.performance.measure.json";
 
   private final SonarComponents sonarComponents;
-  private final FileSystem fs;
   private final JavaResourceLocator javaResourceLocator;
-  private final Configuration settings;
   private final NoSonarFilter noSonarFilter;
   @Nullable
   private final Jasper jasper;
   private final PostAnalysisIssueFilter postAnalysisIssueFilter;
   private final Telemetry telemetry;
 
-  public JavaSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
-    Configuration settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter, Telemetry telemetry) {
-    this(sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilter, null, telemetry);
+  public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator,
+                    NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
+                    Telemetry telemetry, SpringContextModel springContextModel) {
+    this(sonarComponents, javaResourceLocator, noSonarFilter, postAnalysisIssueFilter, null, telemetry, springContextModel);
   }
 
-  public JavaSensor(SonarComponents sonarComponents, FileSystem fs, JavaResourceLocator javaResourceLocator,
-    Configuration settings, NoSonarFilter noSonarFilter,
-    PostAnalysisIssueFilter postAnalysisIssueFilter, @Nullable Jasper jasper, Telemetry telemetry) {
+  public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator,
+                    NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
+                    @Nullable Jasper jasper, Telemetry telemetry, SpringContextModel springContextModel) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
-    this.fs = fs;
     this.javaResourceLocator = javaResourceLocator;
-    this.settings = settings;
     this.postAnalysisIssueFilter = postAnalysisIssueFilter;
     this.jasper = jasper;
     this.telemetry = telemetry;
     this.sonarComponents.registerMainChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaChecks());
     this.sonarComponents.registerTestChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaTestChecks());
+    this.sonarComponents.setSpringContextModel(springContextModel);
   }
 
   @Override
@@ -107,11 +105,11 @@ public class JavaSensor implements Sensor {
 
     Measurer measurer = new Measurer(context, noSonarFilter);
 
-    JavaVersion javaVersion = JavaVersionImpl.readFromConfiguration(settings);
+    JavaVersion javaVersion = JavaVersionImpl.readFromConfiguration(context.config());
     telemetry.aggregateAsSortedSet(JAVA_LANGUAGE_VERSION, javaVersion.toString());
     telemetry.aggregateAsCounter(JAVA_MODULE_COUNT, 1L);
 
-    telemetry.aggregateAsSortedSet(JAVA_SCANNER_APP, settings.get("sonar.scanner.app").orElse("none"));
+    telemetry.aggregateAsSortedSet(JAVA_SCANNER_APP, context.config().get("sonar.scanner.app").orElse("none"));
     telemetry.aggregateAsFlag(JAVA_IS_AUTOSCAN, sonarComponents.isAutoScan());
 
     JavaFrontend frontend = new JavaFrontend(javaVersion,
@@ -121,7 +119,7 @@ public class JavaSensor implements Sensor {
       javaResourceLocator,
       postAnalysisIssueFilter,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));
-    frontend.scan(getSourceFiles(), getTestFiles(), runJasper(context));
+    frontend.scan(getSourceFiles(context.fileSystem()), getTestFiles(context.fileSystem()), runJasper(context));
 
     sensorDuration.stop();
   }
@@ -165,15 +163,15 @@ public class JavaSensor implements Sensor {
     return jasper != null ? jasper.generateFiles(context, sonarComponents.getJavaClasspath()) : Collections.emptyList();
   }
 
-  private Iterable<InputFile> getSourceFiles() {
-    return javaFiles(InputFile.Type.MAIN);
+  private static Iterable<InputFile> getSourceFiles(FileSystem fs) {
+    return javaFiles(fs, InputFile.Type.MAIN);
   }
 
-  private Iterable<InputFile> getTestFiles() {
-    return javaFiles(InputFile.Type.TEST);
+  private static Iterable<InputFile> getTestFiles(FileSystem fs) {
+    return javaFiles(fs, InputFile.Type.TEST);
   }
 
-  private Iterable<InputFile> javaFiles(InputFile.Type type) {
+  private static Iterable<InputFile> javaFiles(FileSystem fs, InputFile.Type type) {
     return fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(type)));
   }
 

@@ -121,7 +121,7 @@ public class BrainMethodCheck extends IssuableSubscriptionVisitor implements End
       // plus a percentage of total found — but the percentage component is capped at numberOfAdditionalIssuesThreshold.
       numberOfIssuesToReport = numberOfFoundIssuesThreshold
         + Math.min((numberOfIssuesToReport * issuesToReportPercentage) / 100, numberOfAdditionalIssuesThreshold);
-      issuesFound.sort((a, b) -> b.brainScore - a.brainScore);
+      issuesFound.sort((a, b) -> Integer.compare(b.brainScore, a.brainScore));
     }
     var defaultContext = (DefaultModuleScannerContext) context;
     for (int i = 0; i < numberOfIssuesToReport; i++) {

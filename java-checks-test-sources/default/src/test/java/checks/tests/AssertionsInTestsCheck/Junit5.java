@@ -3,7 +3,9 @@ package checks.tests.AssertionsInTestsCheck;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
@@ -27,6 +29,11 @@ class Junit5Test {
 class ATest extends Junit5Test {
   @Override
   void test_method_parent() { // Ok - not considered as test method as it is overridden
+  }
+
+  @Disabled
+  @Test
+  void disabled_test_without_assertion() { // Compliant - @Disabled tests are skipped
   }
 
   @Test
@@ -88,4 +95,39 @@ class ATest extends Junit5Test {
   interface CustomStringContextProvider extends Extension {
   }
 
+  @Nested
+  @Disabled
+  class DisabledNestedClass {
+    @Test
+    void test_without_assertion() { // Compliant - enclosing @Nested class is @Disabled
+    }
+  }
+
+}
+
+@Disabled
+class DisabledClassTest {
+  @Test
+  void test_without_assertion() { // Compliant - enclosing class is @Disabled
+  }
+
+  // JUnit still runs static nested classes inside @Disabled
+  static class StaticNestedInsideDisabled {
+    @Test
+    void test_without_assertion() { // Noncompliant
+    }
+  }
+
+  @Nested
+  class NestedInsideDisabled {
+    @Test
+    void test_without_assertion() { // Compliant - @Disabled propagates to @Nested classes
+    }
+  }
+
+  class NonStaticInnerInsideDisabled { // non-static, no @Nested: not a valid JUnit test container
+    @Test
+    void test_without_assertion() { // Compliant
+    }
+  }
 }

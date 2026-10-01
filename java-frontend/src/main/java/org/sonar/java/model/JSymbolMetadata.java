@@ -408,22 +408,19 @@ final class JSymbolMetadata implements SymbolMetadata {
     }
 
     private Object convertAnnotationValue(Object value) {
-      if (value instanceof IVariableBinding iVariableBinding) {
-        return sema.variableSymbol(iVariableBinding);
-      } else if (value instanceof ITypeBinding iTypeBinding) {
-        return sema.typeSymbol(iTypeBinding);
-      } else if (value instanceof IAnnotationBinding iAnnotationBinding) {
-        return sema.annotation(iAnnotationBinding);
-      } else if (value instanceof Object[] a) {
-        // Godin: probably better to not modify original array
-        Object[] result = new Object[a.length];
-        for (int i = 0; i < a.length; i++) {
-          result[i] = convertAnnotationValue(a[i]);
+      return switch (value) {
+        case IVariableBinding iVariableBinding -> sema.variableSymbol(iVariableBinding);
+        case ITypeBinding iTypeBinding -> sema.typeSymbol(iTypeBinding);
+        case IAnnotationBinding iAnnotationBinding -> sema.annotation(iAnnotationBinding);
+        case Object[] a -> {
+          Object[] result = new Object[a.length];
+          for (int i = 0; i < a.length; i++) {
+            result[i] = convertAnnotationValue(a[i]);
+          }
+          yield result;
         }
-        return result;
-      } else {
-        return value;
-      }
+        case null, default -> value;
+      };
     }
   }
 

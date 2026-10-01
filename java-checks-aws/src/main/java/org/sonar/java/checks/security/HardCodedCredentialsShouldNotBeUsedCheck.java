@@ -111,10 +111,9 @@ public class HardCodedCredentialsShouldNotBeUsedCheck extends IssuableSubscripti
       var secondaryLocations = new ArrayList<JavaFileScannerContext.Location>();
       if (isExpressionDerivedFromPlainText(argument, secondaryLocations, new HashSet<>())) {
         String value = ExpressionsHelper.getConstantValueAsString(argument).value();
-        if (value != null && SecretClassifier.isKnownNonSecret(value)) {
-          continue;
+        if (value == null || !SecretClassifier.isKnownNonSecret(value)) {
+          reportIssue(argument, ISSUE_MESSAGE, secondaryLocations, null);
         }
-        reportIssue(argument, ISSUE_MESSAGE, secondaryLocations, null);
       }
     }
   }

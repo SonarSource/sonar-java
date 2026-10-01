@@ -1,0 +1,173 @@
+<p>This rule raises an issue when <code>hashCode()</code> reads an instance field that <code>equals()</code> does not read. Two objects that compare
+equal can then produce different hash codes.</p>
+<h2>Why is this an issue?</h2>
+<p>The <code>Object.hashCode()</code> contract requires that objects considered equal by <code>equals()</code> produce the same hash code. When
+<code>hashCode()</code> factors in a field that <code>equals()</code> ignores, two instances that <code>equals()</code> treats as identical can still
+return different hash codes, because that extra field is free to differ between them.</p>
+<p>That defect is easy to introduce and easy to miss in review: adding a field to a class and remembering to include it in <code>hashCode()’s
+aggregation while forgetting to add the matching comparison in `equals()</code> still compiles and looks complete.</p>
+<p>Breaking the contract has consequences that only surface at runtime, and often only for specific data. A <code>HashMap</code> or
+<code>HashSet</code> computes an object’s bucket from its hash code before ever calling <code>equals()</code>. If an equal object later has a
+different hash code, it lands in a different bucket, so lookups, deduplication, and cache retrieval silently fail to find it.</p>
+<p>The reverse situation, a field compared in <code>equals()</code> but not read in <code>hashCode()</code>, does not break this contract:
+<code>hashCode()</code> is still free to return the same value for those objects. It can reduce how well hash codes spread across buckets, but it is
+not a correctness defect, so this rule does not flag it.</p>
+<h2>How to fix it</h2>
+<p>Either add the missing field to <code>equals()</code>, or remove it from <code>hashCode()</code>.</p>
+<p>Adding the field to <code>equals()</code> is usually the safer choice: it keeps the field as part of the object’s identity and restores the
+contract without discarding information that <code>hashCode()</code> was already using. Removing the field from <code>hashCode()</code> is appropriate
+only when that field is not actually part of what makes two instances equal.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+final class OrderKey {
+  private final long id;
+  private final int version;
+
+  @Override
+  public boolean equals(Object other) {
+    return other instanceof OrderKey key &amp;&amp; id == key.id;
+  }
+
+  @Override
+  public int hashCode() { // Noncompliant: reads "version", which equals() never reads
+    return Objects.hash(id, version);
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+final class OrderKey {
+  private final long id;
+  private final int version;
+
+  @Override
+  public boolean equals(Object other) {
+    return other instanceof OrderKey key &amp;&amp; id == key.id &amp;&amp; version == key.version;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, version);
+  }
+}
+</pre>
+<p>Simple getters that only return a field are resolved the same way as direct field reads.</p>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+final class Person {
+  private final String firstName;
+  private final String lastName;
+
+  String getFirstName() {
+    return firstName;
+  }
+
+  String getLastName() {
+    return lastName;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    return other instanceof Person person &amp;&amp; getFirstName().equals(person.getFirstName());
+  }
+
+  @Override
+  public int hashCode() { // Noncompliant: reads "lastName", which equals() never reads
+    return Objects.hash(getFirstName(), getLastName());
+  }
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+final class Person {
+  private final String firstName;
+  private final String lastName;
+
+  String getFirstName() {
+    return firstName;
+  }
+
+  String getLastName() {
+    return lastName;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    return other instanceof Person person
+      &amp;&amp; getFirstName().equals(person.getFirstName())
+      &amp;&amp; getLastName().equals(person.getLastName());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getFirstName(), getLastName());
+  }
+}
+</pre>
+<h3>Exceptions</h3>
+<p>This rule only compares <code>equals(Object)</code> and <code>hashCode()</code> when both are declared directly in the same class. It does not
+analyze inherited implementations, generated ones such as a record’s or a Lombok-annotated class’s, or static fields.</p>
+<p>A field that only caches a previously computed hash value is not flagged, because that field does not add new identity state beyond what
+<code>equals()</code> already compares:</p>
+<pre>
+final class Point {
+  private final int x;
+  private final int y;
+  private int cachedHash;
+
+  @Override
+  public boolean equals(Object other) {
+    return other instanceof Point point &amp;&amp; x == point.x &amp;&amp; y == point.y;
+  }
+
+  @Override
+  public int hashCode() {
+    if (cachedHash == 0) {
+      cachedHash = Objects.hash(x, y);
+    }
+    return cachedHash;
+  }
+}
+</pre>
+<p>The rule does not raise an issue when <code>hashCode()</code> delegates to a method whose field reads it cannot resolve, such as one that calls
+another type’s methods or applies further logic beyond returning a field:</p>
+<pre>
+final class Config {
+  private final Map&lt;String, String&gt; values;
+
+  @Override
+  public boolean equals(Object other) {
+    return other instanceof Config config &amp;&amp; values.equals(config.values);
+  }
+
+  @Override
+  public int hashCode() {
+    return computeHash();
+  }
+
+  private int computeHash() {
+    return values.entrySet().stream().mapToInt(Object::hashCode).sum();
+  }
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()"><code>Object.hashCode</code> Method</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)"><code>Object.equals</code>
+  Method</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Objects.html#hash(java.lang.Object…​)"><code>Objects.hash</code>
+  Method</a></li>
+  <li>CERT - <a href="https://cmu-sei.github.io/secure-coding-standards/sei-cert-oracle-coding-standard-for-java/rules/methods-met/met09-j/">MET09-J.
+  Classes that define an equals() method must also define a hashCode() method</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S1206} - "equals(Object obj)" and "hashCode()" should be overridden in pairs</li>
+  <li>{rule:java:S9350} - equals() implementations should not compare mismatched members</li>
+</ul>
+

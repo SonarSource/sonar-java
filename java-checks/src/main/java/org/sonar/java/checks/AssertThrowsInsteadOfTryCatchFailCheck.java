@@ -18,10 +18,10 @@ package org.sonar.java.checks;
 
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.QuickFixHelper;
-import org.sonar.java.checks.helpers.UnitTestUtils;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
 import org.sonar.java.reporting.JavaQuickFix;
 import org.sonar.java.reporting.JavaTextEdit;
+import org.sonar.java.utils.UnitTestUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -169,15 +169,12 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
         ", %s".formatted(contentFor(argument))
       ).orElse("");
 
-      return isTryBlock ?
-        new Replacements(
-          "assertThrows(%s, () -> ".formatted(typeClass(firstCaughtTypeInTry(tryStatement))),
-          "%s);".formatted(argumentsSuffix)
-        ) :
-        new Replacements(
-          "assertDoesNotThrow(() -> ",
-          "%s);".formatted(argumentsSuffix)
-        );
+      return new Replacements(
+        isTryBlock
+          ? "assertThrows(%s, () -> ".formatted(typeClass(firstCaughtTypeInTry(tryStatement)))
+          : "assertDoesNotThrow(() -> ",
+        "%s);".formatted(argumentsSuffix)
+      );
     }
 
     private Replacements assertJReplacement(
@@ -188,15 +185,12 @@ public class AssertThrowsInsteadOfTryCatchFailCheck extends IssuableSubscription
       var failureMessagePart = failArguments.isEmpty() ?
         "" :
         ".withFailMessage(%s)".formatted(contentFor(failArguments.get(0)));
-      return isTryBlock ?
-        new Replacements(
-          "assertThatCode(() -> ",
-          ")%s.isInstanceOf(%s);".formatted(failureMessagePart, typeClass(firstCaughtTypeInTry(tryStatement)))
-        ) :
-        new Replacements(
-          "assertThatCode(() -> ",
-          ")%s.doesNotThrowAnyException();".formatted(failureMessagePart)
-        );
+      return new Replacements(
+        "assertThatCode(() -> ",
+        isTryBlock
+          ? ")%s.isInstanceOf(%s);".formatted(failureMessagePart, typeClass(firstCaughtTypeInTry(tryStatement)))
+          : ")%s.doesNotThrowAnyException();".formatted(failureMessagePart)
+      );
     }
 
     private String contentFor(Tree tree) {

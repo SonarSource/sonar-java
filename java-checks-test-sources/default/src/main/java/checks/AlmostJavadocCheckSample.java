@@ -121,6 +121,44 @@ class AlmostJavadocCheckSample {
     return name;
   }
 
+  /*
+   * (non-Javadoc)
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    return 0;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object other) {
+    return this == other;
+  }
+
+  /* (non-Javadoc)
+   * @param ignored this Eclipse stub still contains a Javadoc tag
+   */
+  public void eclipseMarkerWithoutSee(int ignored) {
+  }
+
+  // Noncompliant@+1
+  /* @see java.lang.Object#clone() */
+  public Object seeWithoutEclipseMarker() {
+    return this;
+  }
+
+  // Noncompliant@+1
+  /* (non-javadoc) @see java.lang.Object#wait() */
+  public void lowercaseMarkerLookalike() {
+  }
+
+  // (non-Javadoc) {@link Object} */
+  public void eclipseMarkerLineComment() {
+  }
+
   record Point(int x, int y) {
     // Noncompliant@+1
     /* @param x the x coordinate */

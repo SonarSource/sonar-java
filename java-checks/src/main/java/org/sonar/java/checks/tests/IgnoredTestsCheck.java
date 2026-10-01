@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.sonar.check.Rule;
+import org.sonar.java.utils.UnitTestUtils;
 import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -56,16 +57,13 @@ public class IgnoredTestsCheck extends IssuableSubscriptionVisitor {
     SymbolMetadata symbolMetadata = methodTree.symbol().metadata();
 
     // check for @Ignore or @Disabled annotations
-    for (String annotationName : List.of("org.junit.Ignore", "org.junit.jupiter.api.Disabled")) {
+    for (String annotationName : UnitTestUtils.SKIPPED_TEST_ANNOTATIONS) {
       getSilentlyIgnoredAnnotation(symbolMetadata, annotationName)
         .ifPresent(annotationTree -> {
           String shortName = annotationTypeIdentifier(annotationName);
-          String message = String.format(
-            "Either add an explanation about why this test is skipped or remove the \"@%s\" annotation.",
-            shortName
-          );
+          String message = "Either add an explanation about why this test is skipped or remove the \"@" + shortName + "\" annotation.";
           var secondaryLocation =
-            new JavaFileScannerContext.Location(String.format("@%s annotation skips the test", shortName), annotationTree);
+            new JavaFileScannerContext.Location("@" + shortName + " annotation skips the test", annotationTree);
           context.reportIssue(this, methodTree.simpleName(), message, Collections.singletonList(secondaryLocation), null);
         });
     }

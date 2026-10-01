@@ -185,9 +185,9 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
   }
 
   private static String emptyArrayString(Type.ArrayType arrayType) {
-    return String.format("new %s", arrayType.name()
+    return "new " + arrayType.name()
       .replace("[]", "[0]")
-      .replaceAll("<.+>", ""));
+      .replaceAll("<.+>", "");
   }
 
   private enum CollectionType {
@@ -213,15 +213,15 @@ public class ReturnEmptyArrayNotNullCheck extends IssuableSubscriptionVisitor {
 
     CollectionType(String typeName) {
       this.typeName = typeName;
-      this.replacement = String.format("new %s<>()", typeName);
-      this.fullyQualifiedName = String.format("java.util.%s", typeName);
+      this.replacement = "new " + typeName + "<>()";
+      this.fullyQualifiedName = "java.util." + typeName;
       this.requiredType = fullyQualifiedName;
     }
 
     CollectionType(String typeName, String replacement) {
       this.typeName = typeName;
       this.replacement = replacement;
-      this.fullyQualifiedName = String.format("java.util.%s", typeName);
+      this.fullyQualifiedName = "java.util." + typeName;
       this.requiredType = "java.util.Collections";
     }
 

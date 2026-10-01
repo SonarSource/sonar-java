@@ -41,6 +41,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +72,11 @@ public class JavaRulingTest {
 
   private static final String INCREMENTAL_ANALYSIS_KEY = "sonar.java.skipUnchanged";
   private static final String SONAR_CACHING_ENABLED_KEY = "sonar.analysisCache.enabled";
+
+  private static final String CAN_SKIP_UNCHANGED_FILES_LOG =
+    "The Java analyzer is running in a context where unchanged files can be skipped.";
+  private static final Pattern FILES_LEVERAGED_FROM_CACHE = Pattern.compile(
+    "The Java analyzer was able to leverage cached data from previous analyses for (\\d+) out of (\\d+) files\\.");
 
   /**
    * By default, all rules are enabled.
@@ -157,7 +164,7 @@ public class JavaRulingTest {
   }
 
   private static void prepareDumpOldFolder() throws Exception {
-    Path allRulesFolder = Paths.get("src/test/resources");
+    Path allRulesFolder = Paths.get("src/test/resources/expected");
     if (SUBSET_OF_ENABLED_RULES.isEmpty()) {
       effectiveDumpOldFolder = allRulesFolder.toAbsolutePath();
     } else {
@@ -260,7 +267,7 @@ public class JavaRulingTest {
       );
 
     var before1 = System.currentTimeMillis();
-    executeBuildWithCommonProperties(branchBuild, mainBranchSourceCode);
+    BuildResult mainBranchResult = executeBuildWithCommonProperties(branchBuild, mainBranchSourceCode);
     var after1 = System.currentTimeMillis();
     var time1 = after1 - before1;
 
@@ -292,7 +299,7 @@ public class JavaRulingTest {
       );
 
     var before2 = System.currentTimeMillis();
-    executeBuildWithCommonProperties(prBuild, prSourceCode);
+    BuildResult largePrResult = executeBuildWithCommonProperties(prBuild, prSourceCode);
     var after2 = System.currentTimeMillis();
     var time2 = after2 - before2;
 
@@ -323,9 +330,18 @@ public class JavaRulingTest {
       );
 
     var before3 = System.currentTimeMillis();
-    executeBuildWithCommonProperties(smallPrBuild, smallPrSourceCode);
+    BuildResult smallPrResult = executeBuildWithCommonProperties(smallPrBuild, smallPrSourceCode);
     var after3 = System.currentTimeMillis();
     var time3 = after3 - before3;
+
+    // Cache usage
+    CacheUsage mainBranchUsage = cacheUsage(mainBranchResult);
+    logCacheUsage("Main branch", mainBranchUsage);
+    assertThat(mainBranchUsage.fromCache())
+      .as("The first analysis of the main branch has no previous analysis to leverage")
+      .isZero();
+    assertCacheWasLeveraged(largePrResult, "Large PR", 0.5);
+    assertCacheWasLeveraged(smallPrResult, "Small PR", 0.9);
 
     // Results
     assertThat(time2)
@@ -455,15 +471,15 @@ public class JavaRulingTest {
     ORCHESTRATOR.getServer().associateProjectToQualityProfile(projectKey, "java", "rules");
   }
 
-  private static void executeDebugBuildWithCommonProperties(Build<?> build, String projectName) throws IOException {
-    executeBuildWithCommonProperties(build, projectName, true);
+  private static BuildResult executeDebugBuildWithCommonProperties(Build<?> build, String projectName) throws IOException {
+    return executeBuildWithCommonProperties(build, projectName, true);
   }
 
-  private static void executeBuildWithCommonProperties(Build<?> build, String projectName) throws IOException {
-    executeBuildWithCommonProperties(build, projectName, false);
+  private static BuildResult executeBuildWithCommonProperties(Build<?> build, String projectName) throws IOException {
+    return executeBuildWithCommonProperties(build, projectName, false);
   }
 
-  private static void executeBuildWithCommonProperties(Build<?> build, String projectName, boolean buildQuietly) throws IOException {
+  private static BuildResult executeBuildWithCommonProperties(Build<?> build, String projectName, boolean buildQuietly) throws IOException {
     build.setProperty("sonar.scanner.skipJreProvisioning", "true");
     build.setProperty("sonar.cpd.exclusions", "**/*")
       .setProperty("sonar.java.performance.measure", "true")
@@ -487,6 +503,50 @@ public class JavaRulingTest {
     } else {
       dumpServerLogs();
       Fail.fail("Build failure for project: " + projectName);
+    }
+    return buildResult;
+  }
+
+  private static void assertCacheWasLeveraged(BuildResult result, String label, double filesCachedRatio) {
+    CacheUsage usage = cacheUsage(result);
+    logCacheUsage(label, usage);
+
+    assertThat(result.getLogs())
+      .as("%s should be analyzed in a context where unchanged files can be skipped", label)
+      .contains(CAN_SKIP_UNCHANGED_FILES_LOG);
+
+    assertThat(usage.total())
+      .as("%s should report how many files the analyzer leveraged from the cache", label)
+      .isPositive();
+    assertThat(usage.ratio())
+      .as("%s should leverage the cache for at least %d%% of files, but only %d out of %d did",
+        label, Math.round(filesCachedRatio * 100), usage.fromCache(), usage.total())
+      .isGreaterThanOrEqualTo(filesCachedRatio);
+  }
+
+  private static void logCacheUsage(String label, CacheUsage usage) {
+    LOG.info("[incremental analysis] {}: the Java analyzer leveraged cached data for {} out of {} files ({}%).",
+      label, usage.fromCache(), usage.total(), Math.round(usage.ratio() * 100));
+  }
+
+  /**
+   * Sums the "N out of M files" counts that the Java analyzer logs once per module, so that a multi-module
+   * project can be asserted on as a whole.
+   */
+  private static CacheUsage cacheUsage(BuildResult result) {
+    Matcher matcher = FILES_LEVERAGED_FROM_CACHE.matcher(result.getLogs());
+    int fromCache = 0;
+    int total = 0;
+    while (matcher.find()) {
+      fromCache += Integer.parseInt(matcher.group(1));
+      total += Integer.parseInt(matcher.group(2));
+    }
+    return new CacheUsage(fromCache, total);
+  }
+
+  private record CacheUsage(int fromCache, int total) {
+    double ratio() {
+      return total == 0 ? 0d : (double) fromCache / total;
     }
   }
 
@@ -549,7 +609,7 @@ public class JavaRulingTest {
       .orElse(null);
 
     if (StringUtils.isEmpty(profileKey)) {
-      LOG.error("Could not retrieve profile key : Template rule " + ruleTemplateKey + " has not been activated");
+      LOG.error("Could not retrieve profile key : Template rule {} has not been activated", ruleTemplateKey);
     } else {
       String ruleKey = "java:" + instantiationKey;
       newAdminWsClient(ORCHESTRATOR).qualityprofiles()
@@ -558,7 +618,7 @@ public class JavaRulingTest {
           .setRule(ruleKey)
           .setSeverity("INFO")
           .setParams(Collections.emptyList()));
-      LOG.info(String.format("Successfully activated template rule '%s'", ruleKey));
+      LOG.info("Successfully activated template rule '{}'", ruleKey);
     }
   }
 

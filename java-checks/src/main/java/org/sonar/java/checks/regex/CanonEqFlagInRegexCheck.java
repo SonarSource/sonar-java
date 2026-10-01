@@ -80,7 +80,7 @@ public class CanonEqFlagInRegexCheck extends AbstractRegexCheck {
           endOfMessage = "\"Pattern.compile(pattern, CANON_EQ).matcher(input).replaceFirst(replacement)\"";
         }
       }
-      reportIssue(regexForLiterals.getResult(), String.format("Use the CANON_EQ flag with %s.", endOfMessage), null, visitor.subjectToNormalization);
+      reportIssue(regexForLiterals.getResult(), "Use the CANON_EQ flag with " + endOfMessage + ".", null, visitor.subjectToNormalization);
     }
   }
 

@@ -41,12 +41,12 @@ public class DummyCache implements JavaReadCache, JavaWriteCache {
 
   @Override
   public void write(String key, InputStream data) {
-    throw new IllegalArgumentException(String.format("Same key cannot be written to multiple times (%s)", key));
+    throw new IllegalArgumentException("Same key cannot be written to multiple times (" + key + ")");
   }
 
   @Override
   public void write(String key, byte[] data) {
-    throw new IllegalArgumentException(String.format("Same key cannot be written to multiple times (%s)", key));
+    throw new IllegalArgumentException("Same key cannot be written to multiple times (" + key + ")");
   }
 
   @Override

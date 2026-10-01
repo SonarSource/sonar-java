@@ -803,6 +803,106 @@ class JUtilsTest {
   }
 
   @Nested
+  class CollectTypeHierarchy {
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      interface Root { }
+      interface Left extends Root { }
+      interface Right extends Root { }
+      class Base implements Left { }
+      class Derived extends Base implements Right, Unknown { Unknown u; }
+      """);
+    private final ClassTreeImpl base = nthClass(cu, 3);
+    private final ClassTreeImpl derived = nthClass(cu, 4);
+
+    @Test
+    void object_has_no_hierarchy() {
+      assertThat(JUtils.collectTypeHierarchy(OBJECT_TYPE)).isEmpty();
+    }
+
+    @Test
+    void unknown_type_has_no_hierarchy() {
+      VariableTreeImpl u = firstField(derived);
+      assertThat(JUtils.collectTypeHierarchy(u.symbol().type())).isEmpty();
+    }
+
+    @Test
+    void interface_with_no_further_hierarchy_contains_only_itself() {
+      Type root = base.symbol().interfaces().get(0).symbol().interfaces().get(0);
+      assertThat(JUtils.collectTypeHierarchy(root)).containsOnly("Root");
+    }
+
+    @Test
+    void hierarchy_is_collected_through_superclass_and_interfaces() {
+      assertThat(JUtils.collectTypeHierarchy(base.symbol().type())).containsOnly("Base", "Left", "Root");
+    }
+
+    @Test
+    void common_ancestor_reached_through_multiple_interfaces_is_deduplicated() {
+      Set<String> hierarchy = JUtils.collectTypeHierarchy(derived.symbol().type());
+      assertThat(hierarchy).containsOnly("Derived", "Base", "Left", "Right", "Root");
+    }
+  }
+
+  @Nested
+  class CollectGenericTypeHierarchy {
+    private final JavaTree.CompilationUnitTreeImpl cu = test("""
+      interface Repository<T> { }
+      interface CrudRepository<T> extends Repository<T> { }
+      class User { }
+      class Order { }
+      class DirectRepo implements Repository<User> { }
+      class DeepRepo implements CrudRepository<User> { }
+      class GenericRepo<T> implements Repository<T> { }
+      class SuperRepo extends GenericRepo<Order> { }
+      class RawRepo implements Repository { }
+      class NestedRepo implements Repository<java.util.List<User>> { }
+      """);
+
+    @Test
+    void a_parameterized_supertype_is_recorded_both_erased_and_parameterized() {
+      assertThat(hierarchyOf("DirectRepo")).containsOnly("DirectRepo", "Repository", "Repository<User>");
+    }
+
+    @Test
+    void type_arguments_are_substituted_through_an_intermediate_interface() {
+      assertThat(hierarchyOf("DeepRepo"))
+        .containsOnly("DeepRepo", "CrudRepository", "CrudRepository<User>", "Repository", "Repository<User>");
+    }
+
+    @Test
+    void type_arguments_are_substituted_through_a_superclass() {
+      assertThat(hierarchyOf("SuperRepo"))
+        .containsOnly("SuperRepo", "GenericRepo", "GenericRepo<Order>", "Repository", "Repository<Order>");
+    }
+
+    @Test
+    void a_type_variable_argument_falls_back_to_the_erased_name() {
+      assertThat(hierarchyOf("GenericRepo")).containsOnly("GenericRepo", "Repository");
+    }
+
+    @Test
+    void a_raw_supertype_is_recorded_erased_only() {
+      assertThat(hierarchyOf("RawRepo")).containsOnly("RawRepo", "Repository");
+    }
+
+    @Test
+    void a_nested_type_argument_is_kept() {
+      assertThat(hierarchyOf("NestedRepo"))
+        .containsOnly("NestedRepo", "Repository", "Repository<java.util.List<User>>");
+    }
+
+    private Set<String> hierarchyOf(String className) {
+      return JUtils.collectTypeHierarchy(cu.types().stream()
+        .map(ClassTreeImpl.class::cast)
+        .filter(clazz -> className.equals(clazz.simpleName().name()))
+        .findFirst()
+        .orElseThrow()
+        .symbol()
+        .type());
+    }
+  }
+
+  @Nested
   class EnclosingClass {
     private final JavaTree.CompilationUnitTreeImpl cu = test("""
       package org.foo;

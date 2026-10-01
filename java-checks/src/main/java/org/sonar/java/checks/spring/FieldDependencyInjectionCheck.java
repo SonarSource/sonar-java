@@ -19,7 +19,7 @@ package org.sonar.java.checks.spring;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.InjectionHelper;
-import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -27,11 +27,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6813")
 public class FieldDependencyInjectionCheck extends IssuableSubscriptionVisitor {
-  private static final List<String> INJECTION_ANNOTATIONS = List.of(
-    SpringUtils.AUTOWIRED_ANNOTATION,
-    "javax.inject.Inject",
-    "jakarta.inject.Inject");
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return List.of(Tree.Kind.CLASS);
@@ -47,8 +42,7 @@ public class FieldDependencyInjectionCheck extends IssuableSubscriptionVisitor {
         var vt = (VariableTree) member;
 
         vt.modifiers().annotations().stream()
-          .filter(annotationTree -> INJECTION_ANNOTATIONS.stream()
-            .anyMatch(targetAnnotation -> annotationTree.symbolType().is(targetAnnotation)))
+          .filter(annotationTree -> SpringUtils.INJECTION_ANNOTATIONS.contains(annotationTree.symbolType().fullyQualifiedName()))
           .findFirst()
           .ifPresent(annotationTree -> reportIssue(annotationTree, "Remove this field injection and use constructor injection instead."));
       }

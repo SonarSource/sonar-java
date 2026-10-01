@@ -329,7 +329,7 @@ public class JavaCheckVerifier implements CheckVerifier {
 
     this.files.forEach(inputFile -> {
       if (filesToAddStrings.contains(inputFile.toString())) {
-        throw new IllegalArgumentException(String.format("File %s was already added.", inputFile));
+        throw new IllegalArgumentException("File " + inputFile + " was already added.");
       }
     });
 
@@ -400,7 +400,7 @@ public class JavaCheckVerifier implements CheckVerifier {
 
     if (issues.size() != 1) {
       String issueNumberMessage = issues.isEmpty() ? "none has been raised" : String.format("%d issues have been raised", issues.size());
-      throw new AssertionError(String.format("A single issue is expected on the project, but %s", issueNumberMessage));
+      throw new AssertionError("A single issue is expected on the project, but " + issueNumberMessage);
     }
     AnalyzerMessage issue = issues.get(0);
     if (issue.getLine() != null) {

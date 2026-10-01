@@ -14,6 +14,7 @@
     "constantCost": "30min"
   },
   "tags": [
+    "cryptography",
     "cwe",
     "former-hotspot"
   ],

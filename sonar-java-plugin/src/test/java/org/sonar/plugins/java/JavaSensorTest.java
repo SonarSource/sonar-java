@@ -111,7 +111,7 @@ class JavaSensorTest {
   @Test
   void test_toString() throws IOException {
     SonarComponents sonarComponents = createSonarComponentsMock(createContext(InputFile.Type.MAIN));
-    assertThat(new JavaSensor(sonarComponents, null, null, null, null, null, telemetry)).hasToString("JavaSensor");
+    assertThat(new JavaSensor(sonarComponents, null, null, null, null, telemetry, null)).hasToString("JavaSensor");
   }
 
   @Test
@@ -173,13 +173,13 @@ class JavaSensorTest {
     settings.setProperty("sonar.scanner.app", "ScannerJavaSensorTest");
 
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    SensorContextTester context = spy(createContext(onType).setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7))));
+    SensorContextTester context = spy(createContext(onType).setRuntime(TestSonarRuntime.forSonarLint(Version.create(6, 7)))).setSettings(settings);
     TestFileSystem fs = context.fileSystem();
     fs.setWorkDir(Files.createTempDirectory(tmp, "work"));
     SonarComponents sonarComponents = createSonarComponentsMock(context);
     DefaultJavaResourceLocator javaResourceLocator = createDefaultJavaResourceLocator(settings.asConfig(), fs);
 
-    JavaSensor jss = new JavaSensor(sonarComponents, fs, javaResourceLocator, settings.asConfig(), noSonarFilter, null, telemetry);
+    JavaSensor jss = new JavaSensor(sonarComponents, javaResourceLocator, noSonarFilter, null, telemetry, null);
 
     jss.execute(context);
     int expectedNoSonarLine = lineNumberOfTheMethodWithNoSonar(fs);
@@ -280,8 +280,8 @@ class JavaSensorTest {
 
     Jasper jasper = mock(Jasper.class);
     when(jasper.generateFiles(any(), any())).thenReturn(asList(generatedFile));
-    JavaSensor jss = new JavaSensor(sonarComponents, context.fileSystem(), mock(JavaResourceLocator.class),
-      new MapSettings().asConfig(), mock(NoSonarFilter.class), null, jasper, telemetry);
+    JavaSensor jss = new JavaSensor(sonarComponents, mock(JavaResourceLocator.class),
+      mock(NoSonarFilter.class), null, jasper, telemetry, null);
     jss.execute(context);
 
     ArgumentCaptor<JavaFileScannerContext> scannerContext = ArgumentCaptor.forClass(JavaFileScannerContext.class);
@@ -308,8 +308,8 @@ class JavaSensorTest {
     when(sonarComponents.jspChecks()).thenReturn(Collections.singletonList(jspCodeVisitor));
 
     Jasper jasper = mock(Jasper.class);
-    JavaSensor jss = new JavaSensor(sonarComponents, context.fileSystem(), mock(JavaResourceLocator.class),
-      context.config(), mock(NoSonarFilter.class), null, jasper, telemetry);
+    JavaSensor jss = new JavaSensor(sonarComponents, mock(JavaResourceLocator.class),
+      mock(NoSonarFilter.class), null, jasper, telemetry, null);
     jss.execute(context);
 
     verify(jasper, never()).generateFiles(any(), any());
@@ -501,7 +501,7 @@ class JavaSensorTest {
     SonarComponents components = new SonarComponents(fileLinesContextFactory, fs,
       javaClasspath, javaTestClasspath, specificCheckFactory, context.activeRules(), checkRegistrars, null, null);
 
-    JavaSensor jss = new JavaSensor(components, fs, resourceLocator, context.config(), mock(NoSonarFilter.class), null, telemetry);
+    JavaSensor jss = new JavaSensor(components, resourceLocator, mock(NoSonarFilter.class), null, telemetry, null);
     jss.execute(context);
 
     assertThat(hook.scanFileCount).as("Custom file scanner should be called even in autoscan mode").isPositive();
@@ -516,7 +516,7 @@ class JavaSensorTest {
   void test_describe_sensor() throws IOException {
     DefaultSensorDescriptor descriptor = new DefaultSensorDescriptor();
     SonarComponents sonarComponents = createSonarComponentsMock(createContext(InputFile.Type.MAIN));
-    var sensor = new JavaSensor(sonarComponents, null, null, null, null, null, telemetry);
+    var sensor = new JavaSensor(sonarComponents, null, null, null, telemetry, null);
     sensor.describe(descriptor);
     assertThat(descriptor.name()).isEqualTo("JavaSensor");
     assertThat(descriptor.languages()).containsExactly("java", "jsp");
@@ -563,13 +563,12 @@ class JavaSensorTest {
     SonarComponents components = new SonarComponents(fileLinesContextFactory, fs,
       javaClasspath, javaTestClasspath, specificCheckFactory, context.activeRules(), checkRegistrars, null, null);
 
-    JavaSensor jss = new JavaSensor(components, fs, resourceLocator, context.config(), mock(NoSonarFilter.class), null, telemetry);
+    JavaSensor jss = new JavaSensor(components, resourceLocator, mock(NoSonarFilter.class), null, telemetry, null);
     jss.execute(context);
     return context;
   }
 
   private void executeJavaSensorForPerformanceMeasure(MapSettings settings, Path workDir) throws IOException {
-    Configuration configuration = settings.asConfig();
     SensorContextTester context = createContext(InputFile.Type.MAIN)
       .setRuntime(TestSonarRuntime.forSonarQube(Version.create(8, 7), SonarQubeSide.SCANNER, SonarEdition.COMMUNITY));
     context.setSettings(settings);
@@ -577,7 +576,7 @@ class JavaSensorTest {
     fs.setWorkDir(workDir);
     SonarComponents components = createSonarComponentsMock(context);
     DefaultJavaResourceLocator resourceLocator = createDefaultJavaResourceLocator(context.config(), fs);
-    JavaSensor jss = new JavaSensor(components, fs, resourceLocator, configuration, mock(NoSonarFilter.class), null, telemetry);
+    JavaSensor jss = new JavaSensor(components, resourceLocator, mock(NoSonarFilter.class), null, telemetry, null);
     jss.execute(context);
   }
 

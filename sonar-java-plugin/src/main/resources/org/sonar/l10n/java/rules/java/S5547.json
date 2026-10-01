@@ -13,6 +13,7 @@
     "constantCost": "15min"
   },
   "tags": [
+    "cryptography",
     "cwe",
     "privacy"
   ],

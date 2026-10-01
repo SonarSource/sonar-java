@@ -129,7 +129,7 @@ abstract class BuiltInJavaQualityProfile implements BuiltInQualityProfilesDefini
       String repositoryKey = (String) getRepositoryKeyMethod.invoke(null);
       return ruleKeys.stream().map(k -> RuleKey.of(repositoryKey, k)).collect(Collectors.toSet());
     } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      LOG.debug(String.format("[%s], no %s rules added to %s java profile: %s", e.getClass().getSimpleName(), rulesCategory, getProfileName(), e.getMessage()));
+      LOG.debug("[{}], no {} rules added to {} java profile: {}", e.getClass().getSimpleName(), rulesCategory, getProfileName(), e.getMessage());
     }
     return new HashSet<>();
   }

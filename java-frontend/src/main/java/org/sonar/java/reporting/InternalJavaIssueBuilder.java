@@ -74,15 +74,15 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
   }
 
   private static void requiresValueToBeSet(Object target, String targetName) {
-    Preconditions.checkState(target != null, String.format("A %s must be set first.", targetName));
+    Preconditions.checkState(target != null, "A " + targetName + " must be set first.");
   }
 
   private static void requiresValueNotToBeSet(Object target, String targetName, String otherName) {
-    Preconditions.checkState(target == null, String.format("Cannot set %s when %s is already set.", targetName, otherName));
+    Preconditions.checkState(target == null, "Cannot set " + targetName + " when " + otherName + " is already set.");
   }
 
   private static void requiresSetOnlyOnce(Object target, String targetName) {
-    Preconditions.checkState(target == null, String.format("Cannot set %s multiple times.", targetName));
+    Preconditions.checkState(target == null, "Cannot set " + targetName + " multiple times.");
   }
 
   @Override
@@ -273,7 +273,7 @@ public class InternalJavaIssueBuilder implements FluentReporting.JavaIssueBuilde
       }
     } catch (RuntimeException e) {
       // We still want to report the issue if we did not manage to create a quick fix.
-      LOG.warn(String.format("Could not report quick fixes for rule: %s. %s: %s", ruleKey, e.getClass().getName(), e.getMessage()));
+      LOG.warn("Could not report quick fixes for rule: {}. {}: {}", ruleKey, e.getClass().getName(), e.getMessage());
     }
   }
 

@@ -65,7 +65,7 @@ public final class InternalInputFile extends InternalMockedSonarAPI implements I
     try {
       return new String(Files.readAllBytes(file.toPath()), UTF_8);
     } catch (IOException e) {
-      throw new IllegalStateException(String.format("Unable to read file '%s'", file.getAbsolutePath()));
+      throw new IllegalStateException("Unable to read file '" + file.getAbsolutePath() + "'");
     }
   }
 

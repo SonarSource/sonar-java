@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>docs</artifactId>
-    <version>8.40.0-SNAPSHOT</version>
+    <version>8.45.0-SNAPSHOT</version>
   </parent>
 
 
@@ -27,6 +27,8 @@
       <version>10.12.0.2522</version>
       <scope>provided</scope>
     </dependency>
+    <!-- This example targets Plugin API 10.12, while its tests use v14 fixtures.
+         Keep this direct dependency so the centrally managed SLF4J 2 version wins in both scopes. -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -109,8 +111,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>17</source>
-          <target>17</target>
+          <source>21</source>
+          <target>21</target>
         </configuration>
       </plugin>
 

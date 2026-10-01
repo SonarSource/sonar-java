@@ -150,7 +150,7 @@ class ActualExpectedInSubjectQuickFix implements AssertJChainSimplificationQuick
       .addTextEdit(
         // assertThat(x.y(a)).z() --> assertThat(x).predicateName(a)).z()
         JavaTextEdit.replaceTextSpan(textSpanBetween(memberSelect.expression(), false, invocationTree.arguments().get(0), false),
-          String.format(").%s(", predicateName)),
+          ")." + predicateName + "("),
         // assertThat(x).predicateName(a)).z() --> assertThat(x).predicateName(a)
         JavaTextEdit.removeTextSpan(textSpanBetween(invocationTree.arguments(), false, predicate, true))
       ).build();

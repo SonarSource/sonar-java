@@ -18,7 +18,7 @@ package org.sonar.java.checks.spring;
 
 import java.util.List;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.utils.SpringUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -44,7 +44,7 @@ public class UsePageableParameterForPagedQueryCheck extends IssuableSubscription
   public void visitNode(Tree tree) {
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
     Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
-    if (!enclosingClass.isInterface()) {
+    if (enclosingClass == null || !enclosingClass.isInterface()) {
       return;
     }
     if (isPageableMethod(methodTree, enclosingClass.type()) && !hasPageableParameter(methodTree)) {

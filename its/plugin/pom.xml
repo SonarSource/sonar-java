@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>java-its</artifactId>
-    <version>8.40.0-SNAPSHOT</version>
+    <version>8.45.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>it-java-plugin</artifactId>
@@ -39,13 +39,6 @@
       <groupId>org.sonarsource.sonarlint.core</groupId>
       <artifactId>sonarlint-core-test-utils</artifactId>
       <version>${sonarlint.plugin.api.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- sonarlint-core requires slf4j 2.x at runtime; override the parent's 1.7 management for this module. -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.test.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

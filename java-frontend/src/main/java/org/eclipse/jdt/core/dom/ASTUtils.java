@@ -58,7 +58,7 @@ public final class ASTUtils {
       return bindingResolver.getTypeBinding(referenceBinding);
     } catch (Exception e) {
       // exception on ECJ side when trying to resolve a Type, recover on null type
-      LOG.error(String.format("ECJ Unable to resolve type %s", name), e);
+      LOG.error("ECJ Unable to resolve type " + name, e);
       return null;
     }
   }

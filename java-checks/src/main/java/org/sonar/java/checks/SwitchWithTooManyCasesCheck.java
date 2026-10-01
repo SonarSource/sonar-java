@@ -16,7 +16,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.sonar.check.Rule;
@@ -55,10 +54,9 @@ public class SwitchWithTooManyCasesCheck extends IssuableSubscriptionVisitor {
     List<CaseGroupTree> cases = switchTree.cases();
     int size = cases.size();
     if (size > maximumCases) {
-      List<JavaFileScannerContext.Location> secondary = new ArrayList<>();
-      for (CaseGroupTree element : cases) {
-        secondary.add(new JavaFileScannerContext.Location("+1", element.labels().get(0)));
-      }
+      List<JavaFileScannerContext.Location> secondary = cases.stream()
+        .map(element -> new JavaFileScannerContext.Location("+1", element.labels().get(0)))
+        .toList();
       reportIssue(switchTree.switchKeyword(),
         String.format("Reduce the number of non-empty switch cases from %d to at most %d.", size, maximumCases),
         secondary, null);

@@ -16,58 +16,56 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ComparisonMethodUtils;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S9148")
 public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Use \"Double.compare\" or \"Float.compare\" to compare floating-point values.";
 
-  private static final MethodMatchers COMPARE_METHODS = MethodMatchers.or(
-    MethodMatchers.create()
-      .ofSubTypes("java.lang.Comparable")
-      .names("compareTo")
-      .addParametersMatcher(MethodMatchers.ANY)
-      .build(),
-    MethodMatchers.create()
-      .ofSubTypes("java.util.Comparator")
-      .names("compare")
-      .addParametersMatcher(MethodMatchers.ANY, MethodMatchers.ANY)
-      .build());
+  private static final MethodMatchers FLOAT_DOUBLE_COMPARE = MethodMatchers.or(
+    MethodMatchers.create().ofTypes("java.lang.Float").names("compare").withAnyParameters().build(),
+    MethodMatchers.create().ofTypes("java.lang.Double").names("compare").withAnyParameters().build());
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Arrays.asList(Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
+    return ComparisonMethodUtils.nodesToVisit();
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (context.getSemanticModel() == null) {
-      return;
-    }
-    if (tree.is(Tree.Kind.METHOD)) {
-      MethodTree methodTree = (MethodTree) tree;
-      if (COMPARE_METHODS.matches(methodTree) && methodTree.block() != null) {
-        methodTree.block().accept(new FloatingPointComparisonVisitor());
-      }
-    } else {
-      LambdaExpressionTree lambda = (LambdaExpressionTree) tree;
-      if (lambda.symbolType().isSubtypeOf("java.util.Comparator")) {
-        lambda.body().accept(new FloatingPointComparisonVisitor());
-      }
-    }
+    ComparisonMethodUtils.visitComparisonNode(context, tree,
+      methodTree -> {
+        Set<Tree> suppressedSubtractions = collectSuppressedSubtractions(methodTree.block());
+        methodTree.block().accept(new FloatingPointComparisonVisitor(suppressedSubtractions));
+      },
+      lambda -> {
+        Set<Tree> suppressedSubtractions = collectSuppressedSubtractions(lambda.body());
+        lambda.body().accept(new FloatingPointComparisonVisitor(suppressedSubtractions));
+      });
+  }
+
+  private static Set<Tree> collectSuppressedSubtractions(Tree tree) {
+    var collector = new CompareArgumentCollector();
+    tree.accept(collector);
+    return collector.suppressedSubtractions;
   }
 
   private static boolean hasFloatingType(ExpressionTree tree) {
@@ -75,30 +73,122 @@ public class FloatingPointComparisonCheck extends IssuableSubscriptionVisitor {
       || tree.symbolType().isPrimitive(Type.Primitives.DOUBLE);
   }
 
-  private class FloatingPointComparisonVisitor extends BaseTreeVisitor {
+  private static class CompareArgumentCollector extends ComparisonMethodUtils.SkipNestedTypesVisitor {
+    final Set<Tree> suppressedSubtractions = new HashSet<>();
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (FLOAT_DOUBLE_COMPARE.matches(tree) && !hasConstantArgument(tree)) {
+        for (ExpressionTree argument : tree.arguments()) {
+          collectSubtractionFromArgument(argument);
+        }
+      }
+      super.visitMethodInvocation(tree);
+    }
+
+    private static boolean hasConstantArgument(MethodInvocationTree tree) {
+      return tree.arguments().stream().anyMatch(CompareArgumentCollector::isConstant);
+    }
+
+    private static boolean isConstant(ExpressionTree expr) {
+      expr = skipParenthesesAndCasts(expr);
+      if (expr.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.DOUBLE_LITERAL)) {
+        return true;
+      }
+      if (expr.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS)) {
+        ExpressionTree operand = ((UnaryExpressionTree) expr).expression();
+        return operand.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.DOUBLE_LITERAL);
+      }
+      return false;
+    }
+
+    private void collectSubtractionFromArgument(ExpressionTree argument) {
+      ExpressionTree expr = skipParenthesesAndCasts(argument);
+      if (expr.is(Tree.Kind.IDENTIFIER)) {
+        Symbol symbol = ((IdentifierTree) expr).symbol();
+        if (symbol.isVariableSymbol() && allUsagesAreCompareArguments(symbol)) {
+          Tree declaration = symbol.declaration();
+          if (declaration instanceof VariableTree variableTree && variableTree.initializer() != null) {
+            collectAllSubtractions(variableTree.initializer());
+            return;
+          }
+        }
+      }
+      collectAllSubtractions(argument);
+    }
+
+    private static boolean allUsagesAreCompareArguments(Symbol symbol) {
+      for (IdentifierTree usage : symbol.usages()) {
+        if (!isCompareArgument(usage)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    private static boolean isCompareArgument(Tree tree) {
+      Tree current = tree;
+      Tree parent = current.parent();
+      while (parent != null && parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.TYPE_CAST)) {
+        current = parent;
+        parent = current.parent();
+      }
+      if (parent != null && parent.is(Tree.Kind.ARGUMENTS)) {
+        Tree grandParent = parent.parent();
+        return grandParent instanceof MethodInvocationTree mit && FLOAT_DOUBLE_COMPARE.matches(mit);
+      }
+      return false;
+    }
+
+    private void collectAllSubtractions(Tree tree) {
+      tree.accept(new SubtractionCollector());
+    }
+
+    private class SubtractionCollector extends ComparisonMethodUtils.SkipNestedTypesVisitor {
+      @Override
+      public void visitBinaryExpression(BinaryExpressionTree tree) {
+        if (tree.is(Tree.Kind.MINUS)) {
+          suppressedSubtractions.add(tree);
+        }
+        super.visitBinaryExpression(tree);
+      }
+    }
+
+    private static ExpressionTree skipParenthesesAndCasts(ExpressionTree tree) {
+      ExpressionTree result = ExpressionUtils.skipParentheses(tree);
+      while (result.is(Tree.Kind.TYPE_CAST)) {
+        result = ExpressionUtils.skipParentheses(((TypeCastTree) result).expression());
+      }
+      return result;
+    }
+  }
+
+  private class FloatingPointComparisonVisitor extends ComparisonMethodUtils.SkipNestedTypesVisitor {
+
+    private final Set<Tree> suppressedSubtractions;
+
+    FloatingPointComparisonVisitor(Set<Tree> suppressedSubtractions) {
+      this.suppressedSubtractions = suppressedSubtractions;
+    }
 
     @Override
     public void visitBinaryExpression(BinaryExpressionTree tree) {
-      if (tree.is(Tree.Kind.MINUS, Tree.Kind.LESS_THAN, Tree.Kind.GREATER_THAN,
-        Tree.Kind.LESS_THAN_OR_EQUAL_TO, Tree.Kind.GREATER_THAN_OR_EQUAL_TO)
-        && hasFloatingOperand(tree)) {
+      if (isProblematicExpression(tree) && hasFloatingOperand(tree)) {
         reportIssue(tree.operatorToken(), MESSAGE);
       }
       super.visitBinaryExpression(tree);
     }
 
+    private boolean isProblematicExpression(BinaryExpressionTree tree) {
+      if (tree.is(Tree.Kind.LESS_THAN, Tree.Kind.GREATER_THAN,
+        Tree.Kind.LESS_THAN_OR_EQUAL_TO, Tree.Kind.GREATER_THAN_OR_EQUAL_TO)) {
+        return true;
+      }
+      return tree.is(Tree.Kind.MINUS) && !suppressedSubtractions.contains(tree);
+    }
+
     private boolean hasFloatingOperand(BinaryExpressionTree tree) {
       return hasFloatingType(tree.leftOperand()) || hasFloatingType(tree.rightOperand());
-    }
-
-    @Override
-    public void visitClass(ClassTree tree) {
-      // Do not visit inner classes
-    }
-
-    @Override
-    public void visitLambdaExpression(LambdaExpressionTree tree) {
-      // Do not visit nested lambdas
     }
   }
 }

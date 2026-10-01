@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>java</artifactId>
-    <version>8.40.0-SNAPSHOT</version>
+    <version>8.45.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>sonar-java-plugin</artifactId>
@@ -81,11 +81,6 @@
     <dependency>
       <groupId>org.sonarsource.api.plugin</groupId>
       <artifactId>sonar-plugin-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -169,7 +164,7 @@
           <requiredForLanguages>java,jsp,kotlin</requiredForLanguages>
           <sonarLintSupported>true</sonarLintSupported>
           <pluginApiMinVersion>9.14.0.375</pluginApiMinVersion>
-          <jreMinVersion>17</jreMinVersion>
+          <jreMinVersion>21</jreMinVersion>
           <archive>
             <manifestEntries>
               <Implementation-Version>${project.version}</Implementation-Version>
@@ -334,7 +329,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
-          <version>3.6.3</version>
+          <version>3.6.4</version>
           <executions>
             <execution>
               <id>generate-built-in-profiles</id>

@@ -53,56 +53,56 @@ public class ExternalIssueAssert extends AbstractAssert<ExternalIssueAssert, Ext
 
   public ExternalIssueAssert hasFileName(String fileName) {
     if (!fileName.equals(actual.fileName)) {
-      errorMessages.add(String.format("Unexpected fileName. Expected: %s, but was: %s.", fileName, actual.fileName));
+      errorMessages.add("Unexpected fileName. Expected: " + fileName + ", but was: " + actual.fileName + ".");
     }
     return this;
   }
 
   public ExternalIssueAssert hasEngineId(String engineId) {
     if (!engineId.equals(actual.engineId)) {
-      errorMessages.add(String.format("Unexpected engineId. Expected: %s, but was: %s.", engineId, actual.engineId));
+      errorMessages.add("Unexpected engineId. Expected: " + engineId + ", but was: " + actual.engineId + ".");
     }
     return this;
   }
 
   public ExternalIssueAssert hasRuleId(String ruleId) {
     if (!ruleId.equals(actual.ruleId)) {
-      errorMessages.add(String.format("Unexpected ruleId. Expected: %s, but was: %s.", ruleId, actual.ruleId));
+      errorMessages.add("Unexpected ruleId. Expected: " + ruleId + ", but was: " + actual.ruleId + ".");
     }
     return this;
   }
 
   public ExternalIssueAssert hasRuleKey(String ruleKey) {
     if (!ruleKey.equals(actual.ruleKey)) {
-      errorMessages.add(String.format("Unexpected ruleKey. Expected: %s, but was: %s.", ruleKey, actual.ruleKey));
+      errorMessages.add("Unexpected ruleKey. Expected: " + ruleKey + ", but was: " + actual.ruleKey + ".");
     }
     return this;
   }
 
   public ExternalIssueAssert hasRuleType(RuleType ruleType) {
     if (!ruleType.equals(actual.ruleType)) {
-      errorMessages.add(String.format("Unexpected ruleType. Expected: %s, but was: %s.", ruleType, actual.ruleType));
+      errorMessages.add("Unexpected ruleType. Expected: " + ruleType + ", but was: " + actual.ruleType + ".");
     }
     return this;
   }
 
   public ExternalIssueAssert hasSeverity(Severity severity) {
     if (!severity.equals(actual.severity)) {
-      errorMessages.add(String.format("Unexpected severity. Expected: %s, but was: %s.", severity, actual.severity));
+      errorMessages.add("Unexpected severity. Expected: " + severity + ", but was: " + actual.severity + ".");
     }
     return this;
   }
 
   public ExternalIssueAssert hasMessage(String message) {
     if (!message.equals(actual.message)) {
-      errorMessages.add(String.format("Unexpected message. Expected: %s, but was: %s.", message, actual.message));
+      errorMessages.add("Unexpected message. Expected: " + message + ", but was: " + actual.message + ".");
     }
     return this;
   }
 
   public ExternalIssueAssert hasTextRange(TextRange textRange) {
     if (!textRange.equals(actual.textRange)) {
-      errorMessages.add(String.format("Unexpected textRange. Expected: %s, but was: %s.", textRange.toString(), actual.textRange.toString()));
+      errorMessages.add("Unexpected textRange. Expected: " + textRange + ", but was: " + actual.textRange + ".");
     }
     return this;
   }

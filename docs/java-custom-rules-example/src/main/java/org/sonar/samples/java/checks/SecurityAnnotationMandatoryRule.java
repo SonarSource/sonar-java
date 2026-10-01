@@ -103,7 +103,7 @@ public class SecurityAnnotationMandatoryRule extends BaseTreeVisitor implements 
       }
       if (!isHavingMandatoryAnnotation) {
         // report on the method name, not on everything
-        context.reportIssue(this, tree.simpleName(), String.format("Mandatory Annotation not set @%s", name));
+        context.reportIssue(this, tree.simpleName(), "Mandatory Annotation not set @" + name);
       }
 
     }

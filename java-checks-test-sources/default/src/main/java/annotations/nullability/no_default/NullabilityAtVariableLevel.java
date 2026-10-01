@@ -104,8 +104,6 @@ public class NullabilityAtVariableLevel {
   Object id1031_type_NON_NULL_level_VARIABLE;
   @javax.annotation.Nonnull
   Object id1032_type_NON_NULL_level_VARIABLE;
-  @javax.validation.constraints.NotNull
-  Object id1033_type_NON_NULL_level_VARIABLE;
   @lombok.NonNull
   Object id1034_type_NON_NULL_level_VARIABLE;
   @org.checkerframework.checker.nullness.compatqual.NonNullDecl

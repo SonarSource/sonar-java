@@ -56,7 +56,7 @@ public class JavaReadCacheImpl implements JavaReadCache {
         try (var in = read(key)) {
           return in.readAllBytes();
         } catch (IOException e) {
-          throw new CacheReadException(String.format("Unable to read data for key '%s'", key), e);
+          throw new CacheReadException("Unable to read data for key '" + key + "'", e);
         }
       } else {
         LOG.trace("Cache miss for key '{}'", key);

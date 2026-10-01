@@ -1,5 +1,5 @@
 {
-  "title": "Expensive compilation or preparation operations should not be performed inside loops",
+  "title": "Prepared Statements should not be created inside loops",
   "type": "CODE_SMELL",
   "status": "ready",
   "remediation": {
@@ -8,7 +8,6 @@
   },
   "tags": [
     "performance",
-    "regex",
     "sql"
   ],
   "defaultSeverity": "Major",

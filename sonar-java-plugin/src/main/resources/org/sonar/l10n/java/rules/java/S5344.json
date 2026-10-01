@@ -13,6 +13,7 @@
     "constantCost": "30min"
   },
   "tags": [
+    "cryptography",
     "cwe",
     "spring"
   ],

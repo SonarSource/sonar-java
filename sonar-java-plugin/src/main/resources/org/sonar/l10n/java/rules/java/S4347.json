@@ -13,8 +13,9 @@
     "constantCost": "2min"
   },
   "tags": [
-    "cwe",
     "cert",
+    "cryptography",
+    "cwe",
     "pitfall"
   ],
   "defaultSeverity": "Critical",

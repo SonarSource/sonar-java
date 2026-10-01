@@ -23,7 +23,6 @@ import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.container.Server;
 import com.sonar.orchestrator.junit4.OrchestratorRule;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -57,12 +56,9 @@ public class TestUtils {
   }
 
   public static File pluginJar(String artifactId) {
-    return Iterables.getOnlyElement(Arrays.asList(new File(homeDir(), "plugins/" + artifactId + "/target/").listFiles(new FilenameFilter() {
-      @Override
-      public boolean accept(File dir, String name) {
-        return name.endsWith(".jar") && !name.endsWith("-sources.jar");
-      }
-    })));
+    return Iterables.getOnlyElement(Arrays.asList(new File(homeDir(), "plugins/" + artifactId + "/target/").listFiles(
+      (dir, name) -> name.endsWith(".jar") && !name.endsWith("-sources.jar")
+    )));
   }
 
   public static File projectDir(String projectName) {

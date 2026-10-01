@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -93,7 +93,7 @@ public class LeastSpecificTypeCheck extends IssuableSubscriptionVisitor {
       && !leastSpecificType.is("java.lang.Object")) {
 
       String suggestedType = getSuggestedType(springInjectionAnnotated, leastSpecificType);
-      String message = String.format("Use '%s' here; it is a more general type than '%s'.", suggestedType, parameterType.erasure().name());
+      String message = "Use '" + suggestedType + "' here; it is a more general type than '" + parameterType.erasure().name() + "'.";
       reportIssue(parameter.declaration(), message);
     }
   }

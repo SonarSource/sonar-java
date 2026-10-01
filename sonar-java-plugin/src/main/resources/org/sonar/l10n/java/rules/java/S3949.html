@@ -1,0 +1,73 @@
+<p>This rule raises an issue when an integer calculation always overflows or uses an overflow-prone midpoint formula.</p>
+<h2>Why is this an issue?</h2>
+<p>Java does not report integer overflow. When an <code>int</code> or <code>long</code> calculation exceeds the range of its result type, the value
+silently wraps around.</p>
+<p>The wrapped value can produce an incorrect index, size, limit, midpoint, or security-relevant result.</p>
+<p>Widening the destination type does not protect a calculation performed with narrower operands. At least one operand must be widened before the
+operation. When overflow must be rejected, use an exact arithmetic method such as <code>Math.addExact</code>.</p>
+<p>For ordered non-negative bounds, calculate a midpoint by subtracting the lower bound before adding it back.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+int total = Integer.MAX_VALUE + 1; // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+long total = (long) Integer.MAX_VALUE + 1;
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+int delta = Integer.MIN_VALUE - 1; // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+long delta = (long) Integer.MIN_VALUE - 1;
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+int size = 1_000_000 * 10_000; // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+long size = 1_000_000L * 10_000;
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="4" data-diff-type="noncompliant">
+final int value = Integer.MIN_VALUE;
+int opposite = -value; // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="4" data-diff-type="compliant">
+final int value = Integer.MIN_VALUE;
+long opposite = -(long) value;
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="5" data-diff-type="noncompliant">
+int midpoint = (low + high) / 2; // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="5" data-diff-type="compliant">
+int midpoint = low + (high - low) / 2;
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="6" data-diff-type="noncompliant">
+final int increment = 1;
+int next = Integer.MAX_VALUE + increment; // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="6" data-diff-type="compliant">
+final int increment = 1;
+int next = Math.addExact(Integer.MAX_VALUE, increment);
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Language Specification - <a href="https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.2.2">Integer Operations</a></li>
+  <li>Java API - <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Math.html#addExact(int,int)"><code>Math.addExact(int,
+  int)</code></a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S2184} - Narrower types should not be used in arithmetic operations when the result is assigned or cast to a wider type</li>
+</ul>
+

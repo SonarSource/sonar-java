@@ -43,7 +43,7 @@ public class AvoidSuperClassRule extends IssuableSubscriptionVisitor {
 
     // Check if superClass avoid
     if (SUPER_CLASS_AVOID.contains(superClassName)) {
-      reportIssue(tree, String.format("The usage of super class %s is forbidden", superClassName));
+      reportIssue(tree, "The usage of super class " + superClassName + " is forbidden");
     }
   }
 

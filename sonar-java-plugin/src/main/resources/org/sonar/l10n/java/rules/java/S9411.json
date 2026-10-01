@@ -1,0 +1,25 @@
+{
+  "title": "Loops that transform list elements should use \"List.replaceAll()\"",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "java8",
+    "loop",
+    "readability"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9411",
+  "sqKey": "S9411",
+  "scope": "All",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  }
+}

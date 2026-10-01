@@ -3,6 +3,9 @@ package checks.spring;
 import javax.transaction.Transactional.TxType;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.UUID;
 
 import static javax.transaction.Transactional.TxType.REQUIRED;
 
@@ -341,4 +344,36 @@ class SpringIncompatibleTransactionalCheckSampleIntermediatePrivateMethodFalseNe
 
   }
 
+}
+
+class SpringIncompatibleTransactionalCheckSampleSupportTransactionTemplate {
+
+  private TransactionTemplate transactionTemplate;
+
+  @Transactional
+  public void retry(UUID id) {
+  }
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void retryNew(UUID id) {
+  }
+
+  public void retryBatch(UUID id) {
+    // Possible FNs: calls inside a TransactionTemplate callback are suppressed because a transaction is guaranteed
+    // to be active at the call site. However, if the template's propagation is customized (e.g. NEVER or NOT_SUPPORTED),
+    // self-invocations that require a transaction would still be problematic. Resolving the template's propagation
+    // statically requires data-flow / symbolic-execution techniques and is out of scope for this rule.
+    transactionTemplate.executeWithoutResult(status -> {
+      retry(id); // compliant - inside a TransactionTemplate callback: a transaction is already active
+      retryNew(id); // compliant - self-invocation reports are suppressed inside TransactionTemplate callbacks
+    });
+    transactionTemplate.execute(status -> {
+      retry(id);
+      retryNew(id);
+      return id.toString();
+    });
+
+    retry(id); // Noncompliant {{"retry's" @Transactional requirement is incompatible with the one for this method.}} [[secondary=354]]
+    retryNew(id); // Noncompliant {{"retryNew's" @Transactional requirement is incompatible with the one for this method.}} [[secondary=358]]
+  }
 }

@@ -189,6 +189,11 @@ public class CipherBlockChainingCheckShouldDetectCustomIVFactories {
       final byte[] iv = generateRandomData(12);
       // An FP used to be raised here because iv is securely generated in a separate method, and we were not able to trace that.
       cipher.init(ENCRYPT_MODE, secretKey, new IvParameterSpec(iv)); // Compliant
+
+      // new byte[16] is not dynamically generated, so the DECRYPT_MODE suppression path must fire.
+      // No FP should be raised: opMode1's initializer resolves to DECRYPT_MODE even though opMode1 is non-final.
+      int opMode1 = Cipher.DECRYPT_MODE;
+      cipher.init(opMode1, secretKey, new IvParameterSpec(new byte[16]));
     }
 
     private byte[] generateRandomData(final int length) {

@@ -1,0 +1,83 @@
+<p>This rule raises an issue when a method reference that performs an operation or returns an extremum (such as <code>Math::min</code>,
+<code>Math::max</code>, <code>Integer::min</code>, <code>Integer::max</code>, <code>Integer::sum</code>, or <code>Math::addExact</code>) is used as a
+<code>Comparator</code>.</p>
+<h2>Why is this an issue?</h2>
+<p>The <code>Comparator</code> interface requires its comparison method to return a negative integer, zero, or a positive integer depending on whether
+the first argument is less than, equal to, or greater than the second argument. Furthermore, the relation must be anti-symmetric: <code>sgn(compare(x,
+y)) == -sgn(compare(y, x))</code> for all <code>x</code> and <code>y</code>.</p>
+<p>Methods such as <code>Math.min(a, b)</code> and <code>Integer.max(a, b)</code> return one of their input arguments rather than a comparison result.
+Similarly, arithmetic methods like <code>Integer.sum(a, b)</code>, <code>Math.addExact(a, b)</code>, and <code>Math.multiplyExact(a, b)</code> compute
+values that are symmetric (<code>op(a, b) == op(b, a)</code>), directly violating anti-symmetry.</p>
+<p>When passed as a method reference (for example, <code>list.sort(Math::min)</code> or <code>stream.sorted(Integer::sum)</code>), these methods do
+not satisfy the mathematical properties of a comparator. Using them as comparators corrupts sorting order or causes sorting algorithms, such as
+<code>TimSort</code>, to throw <code>IllegalArgumentException: Comparison method violates its general contract!</code> at runtime.</p>
+<h2>How to fix it</h2>
+<p>Replace the invalid method reference with an appropriate comparator, such as <code>Comparator.naturalOrder()</code>,
+<code>Comparator.reverseOrder()</code>, or a standard comparison method like <code>Integer::compare</code>.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+import java.util.List;
+
+void sortNumbers(List&lt;Integer&gt; numbers) {
+  numbers.sort(Math::min); // Noncompliant: "Math::min" does not return a comparison result
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+import java.util.Comparator;
+import java.util.List;
+
+void sortNumbers(List&lt;Integer&gt; numbers) {
+  numbers.sort(Comparator.naturalOrder());
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="2" data-diff-type="noncompliant">
+import java.util.List;
+import java.util.stream.Stream;
+
+List&lt;Integer&gt; getSorted(Stream&lt;Integer&gt; stream) {
+  return stream.sorted(Integer::max).toList(); // Noncompliant: "Integer::max" does not return a comparison result
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="2" data-diff-type="compliant">
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Stream;
+
+List&lt;Integer&gt; getSorted(Stream&lt;Integer&gt; stream) {
+  return stream.sorted(Comparator.reverseOrder()).toList();
+}
+</pre>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="3" data-diff-type="noncompliant">
+import java.util.List;
+
+void sortByPrimitiveValue(List&lt;Integer&gt; list) {
+  list.sort(Integer::sum); // Noncompliant: "Integer::sum" does not return a comparison result
+}
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="3" data-diff-type="compliant">
+import java.util.List;
+
+void sortByPrimitiveValue(List&lt;Integer&gt; list) {
+  list.sort(Integer::compare);
+}
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Comparator.html#compare(T,T)">Comparator.compare</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Math.html#min(int,int)">Math.min</a></li>
+  <li>Java Documentation - <a
+  href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html#compare(int,int)">Integer.compare</a></li>
+</ul>
+<h3>Related rules</h3>
+<ul>
+  <li>{rule:java:S9354} - "Comparable.compareTo()" and "Comparator.compare()" should not use subtraction on numerical fields</li>
+</ul>
+

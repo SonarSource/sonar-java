@@ -29,6 +29,8 @@ BigDecimal bigDecimal = new BigDecimal("42.0");
 <h3>Exceptions</h3>
 <p><code>BigDecimal</code> constructor with a <code>double</code> argument is ignored as using <code>valueOf</code> instead might change the resulting
 value. See {rule:java:S2111}.</p>
+<p><code>BigDecimal</code> constructor with a <code>String</code> argument is also ignored because <code>BigDecimal.valueOf</code> does not accept a
+<code>String</code>, leaving no equivalent alternative.</p>
 <h2>Resources</h2>
 <ul>
   <li><a href="https://docs.oracle.com/javase/tutorial/java/data/autoboxing.html">Oracle - Learning the Java Language</a> - Autoboxing and

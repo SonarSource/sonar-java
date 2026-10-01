@@ -18,7 +18,6 @@ package org.sonar.java.checks;
 
 import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
@@ -70,13 +69,10 @@ public class SelectorMethodArgumentCheck extends IssuableSubscriptionVisitor {
   }
 
   private static List<Symbol> getBooleanParametersAsSymbol(List<VariableTree> parameters) {
-    List<Symbol> booleanParameters = new LinkedList<>();
-    for (VariableTree variableTree : parameters) {
-      if (isBooleanVariable(variableTree)) {
-        booleanParameters.add(variableTree.symbol());
-      }
-    }
-    return booleanParameters;
+    return parameters.stream()
+      .filter(SelectorMethodArgumentCheck::isBooleanVariable)
+      .map(VariableTree::symbol)
+      .toList();
   }
 
   private static boolean isBooleanVariable(VariableTree variableTree) {

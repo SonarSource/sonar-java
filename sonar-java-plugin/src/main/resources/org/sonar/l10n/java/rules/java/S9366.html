@@ -1,0 +1,36 @@
+<p>This rule raises an issue when a <code>java.time.Duration</code> conversion method is passed as a <code>long</code> argument alongside an adjacent
+<code>java.util.concurrent.TimeUnit</code> argument whose unit does not match the converted unit.</p>
+<h2>Why is this an issue?</h2>
+<p>Timeout interfaces commonly accept a numeric duration and a <code>TimeUnit</code> constant, such as <code>Future.get(long, TimeUnit)</code> or
+<code>CountDownLatch.await(long, TimeUnit)</code>. The numeric value has no unit by itself; the <code>TimeUnit</code> gives it meaning.</p>
+<p>Converting a <code>Duration</code> value already chooses a unit. For example, <code>toMillis()</code> produces a value in milliseconds, and
+<code>toSeconds()</code> produces a value in seconds. Passing that converted number with a different <code>TimeUnit</code> causes the API to interpret
+the value in the wrong unit.</p>
+<p>For example, passing <code>timeout.toMillis()</code> with <code>TimeUnit.SECONDS</code> changes a one-second timeout into 1,000 seconds.
+Conversely, passing <code>timeout.toSeconds()</code> with <code>TimeUnit.MILLISECONDS</code> turns a one-second timeout into one millisecond. Such
+mismatches can cause operations to time out prematurely or block much longer than intended.</p>
+<h3>What is the potential impact?</h3>
+<p>A mismatched time unit can make a timeout much shorter or longer than intended, causing premature operation failures, blocked threads, exhausted
+resources, or delayed shutdowns.</p>
+<h2>How to fix it</h2>
+<p>Use the <code>TimeUnit</code> that matches the <code>Duration</code> conversion, or convert the <code>Duration</code> to the unit expected by the
+API.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+future.get(timeout.toMillis(), TimeUnit.SECONDS); // Noncompliant: Change this TimeUnit to "MILLISECONDS" or convert the duration to seconds.
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+future.get(timeout.toSeconds(), TimeUnit.SECONDS);
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Duration.html">Duration (Java SE 21 &amp;
+  JDK 21)</a></li>
+  <li>Java Documentation - <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit (Java SE
+  21 &amp; JDK 21)</a></li>
+</ul>
+

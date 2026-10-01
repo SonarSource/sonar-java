@@ -50,8 +50,7 @@ public class JUnit4AnnotationsCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     String qualifiedName = ((AnnotationTree) tree).annotationType().symbolType().fullyQualifiedName();
     if (OLD_NEW_ANNOTATIONS_MAP.containsKey(qualifiedName)) {
-      reportIssue(tree, String.format("Change this JUnit4 %s to the equivalent JUnit5 %s annotation.",
-        qualifiedName, OLD_NEW_ANNOTATIONS_MAP.get(qualifiedName)));
+      reportIssue(tree, "Change this JUnit4 " + qualifiedName + " to the equivalent JUnit5 " + OLD_NEW_ANNOTATIONS_MAP.get(qualifiedName) + " annotation.");
     }
   }
 }

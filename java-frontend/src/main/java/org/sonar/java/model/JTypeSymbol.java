@@ -16,25 +16,24 @@
  */
 package org.sonar.java.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.eclipse.jdt.core.dom.IMethodBinding;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
 
@@ -135,17 +134,12 @@ final class JTypeSymbol extends JSymbol implements Symbol.TypeSymbol {
   }
 
   private Collection<Symbol> convertMemberSymbols() {
-    Collection<Symbol> members = new ArrayList<>();
-    for (ITypeBinding b : typeBinding().getDeclaredTypes()) {
-      members.add(sema.typeSymbol(b));
-    }
-    for (IVariableBinding b : typeBinding().getDeclaredFields()) {
-      members.add(sema.variableSymbol(b));
-    }
-    for (IMethodBinding b : typeBinding().getDeclaredMethods()) {
-      members.add(sema.methodSymbol(b));
-    }
-    return members;
+    return Stream.concat(
+      Stream.concat(
+        Arrays.stream(typeBinding().getDeclaredTypes()).map(sema::typeSymbol),
+        Arrays.stream(typeBinding().getDeclaredFields()).map(sema::variableSymbol)),
+      Arrays.stream(typeBinding().getDeclaredMethods()).map(sema::methodSymbol))
+      .collect(Collectors.toCollection(ArrayList::new));
   }
 
   @Override

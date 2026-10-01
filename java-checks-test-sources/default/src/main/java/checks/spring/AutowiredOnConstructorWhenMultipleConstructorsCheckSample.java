@@ -16,7 +16,7 @@ public class AutowiredOnConstructorWhenMultipleConstructorsCheckSample { // Comp
   }
 
   @Component
-  class SpringComponent { // Noncompliant {{Add @Autowired to one of the constructors.}}
+  class SpringComponent { // Noncompliant {{Add @Autowired or @Inject to one of the constructors.}}
 //      ^^^^^^^^^^^^^^^
 
     public SpringComponent() {
@@ -40,6 +40,42 @@ public class AutowiredOnConstructorWhenMultipleConstructorsCheckSample { // Comp
     }
 
     public CompliantSpringComponent(String s) {
+    }
+  }
+
+  @Component
+  class ComponentWithJavaxInjectConstructor { // Compliant
+
+    @javax.inject.Inject
+    public ComponentWithJavaxInjectConstructor() {
+    }
+
+    public ComponentWithJavaxInjectConstructor(int i) {
+    }
+  }
+
+  @Component
+  class ComponentWithJakartaInjectConstructor { // Compliant
+
+    @jakarta.inject.Inject
+    public ComponentWithJakartaInjectConstructor() {
+    }
+
+    public ComponentWithJakartaInjectConstructor(int i) {
+    }
+  }
+
+  @Component
+  class ComponentWithInjectField { // Noncompliant {{Add @Autowired or @Inject to one of the constructors.}}
+//      ^^^^^^^^^^^^^^^^^^^^^^^^
+
+    @javax.inject.Inject
+    private String dependency;
+
+    public ComponentWithInjectField() {
+    }
+
+    public ComponentWithInjectField(int i) {
     }
   }
 

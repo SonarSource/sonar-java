@@ -10,6 +10,27 @@
 than one statement. However, when the code block consists of only one statement (which may or may not be a <code>return</code> statement), it can be
 rewritten using expression notation.</p>
 <p>This convention exists because expression notation has a cleaner, more concise, functional programming style and is regarded as more readable.</p>
+<h3>Exceptions</h3>
+<p>This rule does not flag block-form lambdas in the following cases:</p>
+<ul>
+  <li><strong>Multiline body</strong> — if the opening <code>{</code> and closing <code>}</code> are on different lines, a block form is kept for
+  readability.</li>
+  <li><strong>Spring JDBC <code>query()</code> with a single-parameter lambda</strong> — converting such a lambda to an expression form may silently
+  change overload resolution.</li>
+  <li><strong><code>MethodHandle.invoke()</code> / <code>MethodHandle.invokeExact()</code></strong> — these are signature-polymorphic methods.
+  Converting such lambdas to an expression form changes the inferred return type, which can cause a <code>WrongMethodTypeException</code> at
+  runtime.</li>
+</ul>
+<pre>
+entries.forEach(e -&gt; { // Compliant, multiline body
+  System.out.println(e.getKey() + ": " + e.getValue());
+});
+
+// Compliant, expression form would resolve to ResultSetExtractor instead of RowCallbackHandler
+jdbcTemplate.query("SELECT id, cnt FROM t", rs -&gt; { map.merge(rs.getLong("id"), rs.getLong("cnt"), Long::sum); });
+
+process(() -&gt; { handle.invokeExact(); }); // Compliant, signature-polymorphic invocation stays void
+</pre>
 <h2>How to fix it</h2>
 <ul>
   <li>If the code block consists only of a <code>return</code> statement, replace the code block with the argument expression from the
@@ -27,7 +48,7 @@ rewritten using expression notation.</p>
 </pre>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="2" data-diff-type="noncompliant">
-x -&gt; {System.out.println(x+1);} // Noncompliant, replace code block with statement
+x -&gt; { System.out.println(x+1); } // Noncompliant, replace code block with statement
 </pre>
 <h4>Compliant solution</h4>
 <pre data-diff-id="2" data-diff-type="compliant">

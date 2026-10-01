@@ -31,9 +31,9 @@ jobs:
       deployed: ${{ steps.build-maven.outputs.deployed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518 # v4.2.5
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
-          version: 2026.8.6
+          version: 2026.9.14
       - uses: SonarSource/ci-github-actions/build-maven@v2
         id: build-maven
         env:
@@ -77,9 +77,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-      - uses: jdx/mise-action@3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518 # v4.2.5
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
-          version: 2026.8.6
+          version: 2026.9.14
       - name: Select Java Version
         shell: bash # Set explicitly so Bash is used on Windows runners too.
         run: |
@@ -128,7 +128,7 @@ jobs:
         with:
           name: ${{ matrix.item.runner }}_${{ matrix.item.profile }}
           it-dir: its/ruling
-          expected-dir: src/test/resources
+          expected-dir: src/test/resources/expected
           actual-dir: target/actual
 
   ruling-update-notify:
@@ -147,7 +147,7 @@ jobs:
           submodules: recursive
 
       - name: Install uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
           enable-cache: true
 
@@ -168,7 +168,7 @@ jobs:
         with:
           pr-number: ${{ github.event.pull_request.number }}
           ruling-failed: ${{ steps.check-ruling.outputs.ruling-failed }}
-          ruling-root: 'its/ruling/src/test/resources'
+          ruling-root: 'its/ruling/src/test/resources/expected'
           sources-root: 'its/sources'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -197,9 +197,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: recursive
-      - uses: jdx/mise-action@3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518 # v4.2.5
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
-          version: 2026.8.6
+          version: 2026.9.14
       - name: Select Java Version
         shell: bash # Set explicitly so Bash is used on Windows runners too.
         run: |
@@ -248,9 +248,9 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518 # v4.2.5
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
-          version: 2026.8.6
+          version: 2026.9.14
       - uses: SonarSource/vault-action-wrapper@v3
         id: secrets
         with:
@@ -295,9 +295,9 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518 # v4.2.5
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
-          version: 2026.8.6
+          version: 2026.9.14
       - uses: SonarSource/vault-action-wrapper@v3
         id: secrets
         with:
@@ -331,9 +331,9 @@ jobs:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518 # v4.2.5
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
-          version: 2026.8.6
+          version: 2026.9.14
       - uses: SonarSource/vault-action-wrapper@v3
         id: secrets
         with:
@@ -381,9 +381,9 @@ jobs:
       - name: Config Git
         run: git config --global core.autocrlf input
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: jdx/mise-action@3c2e0cf82a5b2e5249f0d3635a4d83d0ae861518 # v4.2.5
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
-          version: 2026.8.6
+          version: 2026.9.14
       - name: Ensure Separate Job Cache Key
         uses: ./.github/actions/write-file
         with:
@@ -422,3 +422,31 @@ jobs:
       - uses: SonarSource/ci-github-actions/promote@v2
         with:
           promote-pull-request: true
+
+  notify-build-failure:
+    name: Notify Build Failure
+    needs:
+      - build
+      - ruling-qa
+      - plugin-qa
+      - sanity
+      - test-analyze
+      - custom-rules-license-check
+      - qa-os-win
+      - promote
+    if: >-
+      always()
+      && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/branch-') || startsWith(github.ref, 'refs/heads/dogfood-'))
+      && contains(needs.*.result, 'failure')
+    runs-on: sonar-xs-public
+    permissions:
+      actions: read      # lets the action list this run's own jobs via the GitHub API
+      id-token: write    # required for vault-action-wrapper in the shared slack-notify action
+    steps:
+      - name: Slack Notification
+        uses: SonarSource/core-languages-tooling-public/common-actions/slack-notify@v1
+        with:
+          slack-channel: squad-corelang-notifs
+          branch-patterns: ${{ format('{0},branch-*,dogfood-*', github.event.repository.default_branch) }}
+          github-token: ${{ github.token }}
+          branch: ${{ github.ref_name }}

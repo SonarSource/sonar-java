@@ -5,7 +5,9 @@ import java.util.Objects;
 
 class BigDecimalEqualsCheckSample {
 
-  void method(BigDecimal a, BigDecimal b, Object o, String s) {
+  private static final int SCALE = 2;
+
+  void method(BigDecimal a, BigDecimal b, Object o, String s, int runtimeScaleA, int runtimeScaleB) {
     boolean res;
 
     res = a.equals(b); // Noncompliant [["BigDecimal.equals()" compares scale as well as value; use "compareTo() == 0" for numerical comparison.]]
@@ -18,6 +20,11 @@ class BigDecimalEqualsCheckSample {
 //                ^^^^^^
     res = Objects.equals(a, o); // Noncompliant
     res = Objects.equals(o, a); // Noncompliant
+    res = a.setScale(2).equals(b); // Noncompliant
+    res = a.equals(b.setScale(2)); // Noncompliant
+    res = a.setScale(2).equals(b.setScale(3)); // Noncompliant
+    res = a.setScale(runtimeScaleA).equals(b.setScale(runtimeScaleB)); // Noncompliant
+    res = Objects.equals(a.setScale(2), b); // Noncompliant
 
     // Compliant
     res = a.compareTo(b) == 0;
@@ -26,6 +33,16 @@ class BigDecimalEqualsCheckSample {
     res = s.equals(a);
     res = s.equals("hello");
     res = Objects.equals(s, "hello");
+    res = Objects.equals(null, s);
+    res = Objects.equals(s, null);
+    res = Objects.equals(null, a);
+    res = Objects.equals(a, null);
+    res = Objects.equals((null), s);
+    res = a.setScale(2).equals(b.setScale(2));
+    res = a.setScale(2, java.math.RoundingMode.UP).equals(b.setScale(2, java.math.RoundingMode.DOWN));
+    res = a.setScale(SCALE, java.math.RoundingMode.HALF_UP).equals(b.setScale(SCALE, java.math.RoundingMode.HALF_UP));
+    res = (a.setScale(2)).equals((b.setScale(2)));
+    res = Objects.equals(a.setScale(2), b.setScale(2));
   }
 
   static class Account {
@@ -67,6 +84,7 @@ class BigDecimalEqualsCheckSample {
 
     void testCustom(MyBigDecimal other) {
       boolean r = this.equals(other); // Noncompliant
+      r = this.setScale(2).equals(other.setScale(2));
     }
   }
 }

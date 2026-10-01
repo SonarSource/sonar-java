@@ -22,7 +22,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodTreeUtils;
-import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -34,9 +34,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 @Rule(key = "S6832")
 public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionVisitor {
-  private static final String JAVAX_INJECT_ANNOTATION = "javax.inject.Inject";
-  private static final String JAKARTA_INJECT_ANNOTATION = "jakarta.inject.Inject";
-  private static final Set<String> AUTO_WIRING_ANNOTATIONS = Set.of(SpringUtils.AUTOWIRED_ANNOTATION, JAVAX_INJECT_ANNOTATION, JAKARTA_INJECT_ANNOTATION);
+  private static final Set<String> SCOPED_PROXY_MODES = Set.of("TARGET_CLASS", "INTERFACES");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -148,11 +146,19 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
   }
 
   private static boolean hasTypeNotSingletonBean(VariableTree variableTree) {
-    return hasNotSingletonScopeAnnotation(variableTree.symbol().type().symbol().metadata().annotations());
+    List<SymbolMetadata.AnnotationInstance> annotations = variableTree.symbol().type().symbol().metadata().annotations();
+    return hasNotSingletonScopeAnnotation(annotations) && !hasScopedProxy(annotations);
+  }
+
+  private static boolean hasScopedProxy(List<SymbolMetadata.AnnotationInstance> annotations) {
+    return annotations.stream()
+      .filter(ai -> ai.symbol().type().is(SpringUtils.SCOPE_ANNOTATION))
+      .flatMap(ai -> ai.values().stream())
+      .anyMatch(NonSingletonAutowiredInSingletonCheck::isScopedProxyAnnotationValue);
   }
 
   private static boolean isAutoWiringAnnotation(AnnotationTree annotationTree) {
-    return AUTO_WIRING_ANNOTATIONS.contains(annotationTree.symbolType().fullyQualifiedName());
+    return SpringUtils.INJECTION_ANNOTATIONS.contains(annotationTree.symbolType().fullyQualifiedName());
   }
 
   private static boolean isSingletonBean(ClassTree classTree) {
@@ -169,6 +175,12 @@ public class NonSingletonAutowiredInSingletonCheck extends IssuableSubscriptionV
       && annotationInstance.values()
         .stream()
         .anyMatch(NonSingletonAutowiredInSingletonCheck::isNotSingletonAnnotationValue);
+  }
+
+  private static boolean isScopedProxyAnnotationValue(SymbolMetadata.AnnotationValue annotationValue) {
+    return "proxyMode".equals(annotationValue.name())
+      && annotationValue.value() instanceof Symbol.VariableSymbol variableSymbol
+      && SCOPED_PROXY_MODES.contains(variableSymbol.name());
   }
 
   private static boolean isNotSingletonAnnotationValue(SymbolMetadata.AnnotationValue annotationValue) {

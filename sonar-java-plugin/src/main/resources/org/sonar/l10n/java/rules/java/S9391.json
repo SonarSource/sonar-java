@@ -1,0 +1,25 @@
+{
+  "title": "Loops should use Stream API when performing filter, map, or collect operations",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5 min"
+  },
+  "tags": [
+    "java8",
+    "convention",
+    "readability"
+  ],
+  "defaultSeverity": "Major",
+  "ruleSpecification": "RSPEC-9391",
+  "sqKey": "S9391",
+  "scope": "Main",
+  "quickfix": "unknown",
+  "code": {
+    "impacts": {
+      "MAINTAINABILITY": "MEDIUM"
+    },
+    "attribute": "CLEAR"
+  }
+}

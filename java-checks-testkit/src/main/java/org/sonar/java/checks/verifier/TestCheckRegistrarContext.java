@@ -110,7 +110,7 @@ public class TestCheckRegistrarContext extends CheckRegistrar.RegistrarContext {
         }
       } catch (ClassCastException | NoSuchMethodException | InstantiationException | IllegalAccessException |
                InvocationTargetException e) {
-        throw new IllegalStateException(String.format("Fail to instantiate %s", javaCheckClassOrInstance), e);
+        throw new IllegalStateException("Fail to instantiate " + javaCheckClassOrInstance, e);
       }
       RuleKey ruleKey = RuleKey.of(repositoryKey, RuleAnnotationUtils.getRuleKey(checkClass));
       destCheckClasses.add(checkClass);

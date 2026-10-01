@@ -4,12 +4,14 @@ default package, public and protected visibility, even if it is recommended to u
 code.</p>
 <p>But JUnit5 ignores without any warning:</p>
 <ul>
-  <li>private classes and private methods</li>
+  <li>private methods</li>
   <li>static methods</li>
   <li>methods returning a value without being a TestFactory</li>
+  <li><code>@Nested</code> classes with <code>private</code> visibility (the entire nested test suite is silently skipped)</li>
 </ul>
 <h3>Noncompliant code example</h3>
 <pre>
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class MyClassTest {
@@ -25,8 +27,9 @@ class MyClassTest {
   boolean test3() { // Noncompliant - ignored by JUnit5
     // ...
   }
+
   @Nested
-  private class MyNestedClass { // Noncompliant - ignored by JUnit5
+  private class NestedTests { // Noncompliant - entire nested suite ignored by JUnit5
     @Test
     void test() {
       // ...
@@ -36,6 +39,7 @@ class MyClassTest {
 </pre>
 <h3>Compliant solution</h3>
 <pre>
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class MyClassTest {
@@ -51,8 +55,9 @@ class MyClassTest {
   void test3() {
     // ...
   }
+
   @Nested
-  class MyNestedClass {
+  class NestedTests { // Compliant - private modifier removed
     @Test
     void test() {
       // ...

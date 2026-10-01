@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.sonarsource.java</groupId>
     <artifactId>java-its</artifactId>
-    <version>8.40.0-SNAPSHOT</version>
+    <version>8.45.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>it-java-ruling</artifactId>
@@ -23,7 +23,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
@@ -82,13 +82,6 @@
       <groupId>org.sonarsource.java</groupId>
       <artifactId>test-classpath-reader</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <!-- Fixes "Defaulting to no-operation (NOP) logger", which results in missing logs from the orchestrator. -->
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>${slf4j.version}</version>
       <scope>test</scope>
     </dependency>
     <!-- not a direct code dependency, but needed to download it and install it into SonarQube -->

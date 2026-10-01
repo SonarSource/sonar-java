@@ -11,7 +11,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>21</maven.compiler.release>
-    <slf4j.version>1.7.36</slf4j.version>
+    <!-- Standalone project: keep aligned with the SLF4J version provided by the Plugin API. -->
+    <slf4j.version>2.0.20</slf4j.version>
   </properties>
   <dependencies>
     <dependency>
@@ -26,7 +27,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.15.0</version>
+          <version>3.16.0</version>
           <configuration>
             <source>21</source>
             <target>21</target>

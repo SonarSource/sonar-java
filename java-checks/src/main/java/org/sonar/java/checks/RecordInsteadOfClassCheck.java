@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -147,7 +147,7 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
       return;
     }
     if (hasParameterForEveryField(constructor, fieldsNameToType.keySet()) && !constructorHasSmallerVisibility(constructor, classSymbol)) {
-      reportIssue(classTree.simpleName(), String.format("Refactor this class declaration to use 'record %s'.", recordName(classTree, constructor)));
+      reportIssue(classTree.simpleName(), "Refactor this class declaration to use 'record " + recordName(classTree, constructor) + "'.");
     }
   }
 
@@ -325,12 +325,12 @@ public class RecordInsteadOfClassCheck extends IssuableSubscriptionVisitor imple
 
   private static String recordName(ClassTree classTree, Symbol.MethodSymbol constructor) {
     String typeName = classTree.simpleName().name();
-    return String.format("%s(%s)", typeName, parametersAsString(constructor.declaration().parameters()));
+    return typeName + "(" + parametersAsString(constructor.declaration().parameters()) + ")";
   }
 
   private static String parametersAsString(List<VariableTree> parameters) {
     String parametersAsString = parameters.stream()
-      .map(p -> String.format("%s %s", typeAsString(p.type()), p.simpleName().name()))
+      .map(p -> typeAsString(p.type()) + " " + p.simpleName().name())
       .collect(Collectors.joining(", "));
     if (parametersAsString.length() > 50) {
       return parametersAsString.substring(0, 47) + "...";

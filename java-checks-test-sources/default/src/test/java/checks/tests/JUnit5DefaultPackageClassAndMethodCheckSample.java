@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class JUnit5DefaultPackageClassAndMethodCheckSample { // Noncompliant {{Remove redundant visibility modifiers from this test class and its methods.}} [[quickfixes=qf1]]
+class JUnit5DefaultPackageClassAndMethodCheckSample { // Noncompliant {{Remove redundant visibility modifiers from the methods of this test class.}} [[quickfixes=qf1]]
 //    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   // fix@qf1 {{Remove all redundant visibility modifiers}}
   // edit@qf1 [[sl=+12;sc=3;el=+12;ec=10]] {{}}
@@ -75,19 +75,15 @@ class JUnit5DefaultPackageClassAndMethodCheckSample { // Noncompliant {{Remove r
 
   }
 
-  protected static class PublicWithOneTest { // Noncompliant {{Remove this 'protected' modifier.}} [[quickfixes=qf2]]
-//^^^^^^^^^
-  // fix@qf2 {{Remove this 'protected' modifier.}}
-  // edit@qf2 [[sc=3;ec=13]] {{}}
+  protected static class PublicWithOneTest { // Compliant - test method is already package-private, class may legitimately need to be protected
     @Test
     void test() {}
   }
 
-  public static class WithClassAndMethodModifiers { // Noncompliant {{Remove redundant visibility modifiers from this test class and its methods.}} [[quickfixes=qf3]]
+  public static class WithClassAndMethodModifiers { // Noncompliant {{Remove redundant visibility modifiers from the methods of this test class.}} [[quickfixes=qf3]]
   //                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    // fix@qf3 {{Remove all redundant visibility modifiers}}
-    // edit@qf3 [[sl=+6;sc=5;el=+6;ec=12]] {{}}
-    // edit@qf3 [[sc=3;ec=10]] {{}}
+    // fix@qf3 {{Remove this 'public' modifier.}}
+    // edit@qf3 [[sl=+5;sc=5;el=+5;ec=12]] {{}}
     @Test
     public void test() {}
   }
@@ -102,21 +98,12 @@ class JUnit5DefaultPackageClassAndMethodCheckSample { // Noncompliant {{Remove r
     void test() {}
   }
 
-  public static class TestClassWithPublicStaticMethod { // Compliant
+  public static class PublicClassWithPackagePrivateTests { // Compliant - all JUnit5 methods are already package-private
     @Test
     void test() {}
 
-    public static Object foo() { // in order to have this method visible from outside, class must be public
-      return null;
-    }
-  }
-
-  public static class TestClassWithPublicStaticField { // Compliant
-
-    public static String MY_CONSTANT = "yolo"; // in order to have this field visible from outside, class must be public
-
-    @Test
-    void test() {}
+    @BeforeEach
+    void setup() {}
   }
 
   public abstract class AbstractTest {

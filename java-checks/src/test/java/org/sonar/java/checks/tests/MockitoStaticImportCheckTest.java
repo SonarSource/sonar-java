@@ -47,4 +47,12 @@ class MockitoStaticImportCheckTest {
       .withCheck(new MockitoStaticImportCheck())
       .verifyNoIssues();
   }
+
+  @Test
+  void test_no_static_import() {
+    CheckVerifier.newVerifier()
+      .onFile(testCodeSourcesPath("checks/tests/MockitoStaticImportCheckNoStaticImportSample.java"))
+      .withCheck(new MockitoStaticImportCheck())
+      .verifyNoIssues();
+  }
 }

@@ -120,7 +120,7 @@ public class TestUtils {
         .setType(type)
         .build();
     } catch (Exception e) {
-      throw new IllegalStateException(String.format("Unable to read file '%s", file.getAbsoluteFile()));
+      throw new IllegalStateException("Unable to read file '" + file.getAbsoluteFile());
     }
   }
 

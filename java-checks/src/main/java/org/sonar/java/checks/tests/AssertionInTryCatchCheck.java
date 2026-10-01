@@ -34,7 +34,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import static org.sonar.java.checks.helpers.UnitTestUtils.COMMON_ASSERTION_MATCHER;
+import static org.sonar.java.utils.UnitTestUtils.COMMON_ASSERTION_MATCHER;
 
 @Rule(key = "S5779")
 public class AssertionInTryCatchCheck extends IssuableSubscriptionVisitor {
@@ -78,7 +78,7 @@ public class AssertionInTryCatchCheck extends IssuableSubscriptionVisitor {
       if (COMMON_ASSERTION_MATCHER.matches(methodInvocation)) {
         IdentifierTree identifier = ExpressionUtils.methodName(methodInvocation);
         reportIssue(identifier,
-          String.format("Don't use %s() inside a try-catch catching an AssertionError.", identifier.name()),
+          "Don't use " + identifier.name() + "() inside a try-catch catching an AssertionError.",
           secondaryLocation,
           null);
       }

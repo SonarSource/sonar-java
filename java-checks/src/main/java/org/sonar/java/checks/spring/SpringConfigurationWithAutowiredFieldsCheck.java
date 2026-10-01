@@ -17,14 +17,13 @@
 package org.sonar.java.checks.spring;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.SpringUtils;
+import org.sonar.java.utils.SpringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -39,10 +38,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE_FORMAT = "Inject this field value directly into \"%s\", the only method that uses it.";
-
-  private static final List<String> AUTOWIRED_ANNOTATIONS = Arrays.asList(
-    SpringUtils.AUTOWIRED_ANNOTATION,
-    "javax.inject.Inject");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -78,7 +73,7 @@ public class SpringConfigurationWithAutowiredFieldsCheck extends IssuableSubscri
     Symbol variableSymbol = variable.symbol();
     SymbolMetadata metadata = variableSymbol.metadata();
 
-    for(String annotation: AUTOWIRED_ANNOTATIONS) {
+    for(String annotation: SpringUtils.INJECTION_ANNOTATIONS) {
       List<SymbolMetadata.AnnotationValue> annotationValues = metadata.valuesForAnnotation(annotation);
       if (annotationValues != null) {
         if (annotationValues.stream().anyMatch(SpringConfigurationWithAutowiredFieldsCheck::isRequiredFalse)

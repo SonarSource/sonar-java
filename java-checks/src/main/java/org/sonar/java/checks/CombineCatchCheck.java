@@ -17,10 +17,10 @@
 package org.sonar.java.checks;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaVersionAwareVisitor;
 import org.sonar.java.checks.helpers.QuickFixHelper;
@@ -50,12 +50,10 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
   public void visitNode(Tree tree) {
     ArrayDeque<CatchTree> catches = new ArrayDeque<>();
     for (CatchTree catchTree : ((TryStatementTree) tree).catches()) {
-      for (CatchTree catchTreeToBeCompared : catches) {
-        if (SyntacticEquivalence.areSemanticallyEquivalent(catchTree.block().body(), catchTreeToBeCompared.block().body())) {
-          reportIssueWithQuickFix(catchTree, catchTreeToBeCompared);
-          break;
-        }
-      }
+      catches.stream()
+        .filter(catchTreeToBeCompared -> SyntacticEquivalence.areSemanticallyEquivalent(catchTree.block().body(), catchTreeToBeCompared.block().body()))
+        .findFirst()
+        .ifPresent(catchTreeToBeCompared -> reportIssueWithQuickFix(catchTree, catchTreeToBeCompared));
       catches.push(catchTree);
     }
   }
@@ -105,23 +103,14 @@ public class CombineCatchCheck extends IssuableSubscriptionVisitor implements Ja
   }
 
   private static List<TypeTree> mergeCatchTypes(List<TypeTree> upperCatchTypes, List<TypeTree> lowerCatchTypes) {
-    List<TypeTree> result = new ArrayList<>();
-    for (TypeTree upperType : upperCatchTypes) {
-      if (isNotMaskedBySuperType(upperType, lowerCatchTypes)) {
-        result.add(upperType);
-      }
-    }
-    result.addAll(lowerCatchTypes);
-    return result;
+    return Stream.concat(
+      upperCatchTypes.stream().filter(upperType -> isNotMaskedBySuperType(upperType, lowerCatchTypes)),
+      lowerCatchTypes.stream())
+      .toList();
   }
 
   private static boolean isNotMaskedBySuperType(TypeTree type, List<TypeTree> types) {
-    for (TypeTree other : types) {
-      if (type.symbolType().isSubtypeOf(other.symbolType())) {
-        return false;
-      }
-    }
-    return true;
+    return types.stream().noneMatch(other -> type.symbolType().isSubtypeOf(other.symbolType()));
   }
 
   private String formatType(TypeTree type) {

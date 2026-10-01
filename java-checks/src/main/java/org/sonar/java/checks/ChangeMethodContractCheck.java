@@ -83,9 +83,11 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
 
   private void compareNullability(TypeTree tree, SymbolMetadata upperBound, SymbolMetadata lowerBound, boolean overriddenIsLowerBound) {
     // Check current level
-    if (upperBound.nullabilityData().isNullable(PACKAGE, false, false)
-        && lowerBound.nullabilityData().isNonNull(PACKAGE, false, false)) {
-      reportIssue(tree, lowerBound.nullabilityData(), upperBound.nullabilityData(), overriddenIsLowerBound);
+    NullabilityData upperData = upperBound.nullabilityData();
+    NullabilityData lowerData = lowerBound.nullabilityData();
+    if (upperData.isNullable(PACKAGE, false, false)
+        && lowerData.isNonNull(PACKAGE, false, false)) {
+      reportIssue(tree, lowerData, upperData, overriddenIsLowerBound);
     }
 
     // Check type parameters
@@ -122,9 +124,7 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     Optional<String> otherAsString = nullabilityAsString(overrideeNullability);
     if (overrideeAsString.isPresent() && otherAsString.isPresent()) {
       reportIssue(reportLocation,
-        String.format("Fix the incompatibility of the annotation %s to honor %s of the overridden method.",
-          overrideeAsString.get(),
-          otherAsString.get()),
+        "Fix the incompatibility of the annotation " + overrideeAsString.get() + " to honor " + otherAsString.get() + " of the overridden method.",
         getSecondariesForAnnotations(otherNullability, overrideeNullability),
         null);
     }

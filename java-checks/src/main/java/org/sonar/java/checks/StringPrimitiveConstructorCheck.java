@@ -36,8 +36,6 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "S2129")
 public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor {
 
-  private static final String QUICK_FIX_MESSAGE = "Replace this \"%s\" constructor with %s";
-  private static final String REPLACEMENT_MESSAGE = "the %s literal passed as parameter";
   private static final String ISSUE_MESSAGE = "Remove this \"%s\" constructor";
 
   private static final String STRING = "java.lang.String";
@@ -131,11 +129,11 @@ public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor
       textEdit = JavaTextEdit.replaceTree(newClassTree, "\"\"");
     } else if (BIG_INT_MATCHER.matches(newClassTree)) {
       String arg = getFirstArgumentAsString(newClassTree).replace("\"", "") + "L";
-      String replacement = String.format("BigInteger.valueOf(%s)", arg);
+      String replacement = "BigInteger.valueOf(" + arg + ")";
       message = formatQuickFixMessage(className, "\"BigInteger.valueOf()\" static method");
       textEdit = JavaTextEdit.replaceTree(newClassTree, replacement);
     } else {
-      message = formatQuickFixMessage(className, String.format(REPLACEMENT_MESSAGE, classToLiteral.get(className)));
+      message = formatQuickFixMessage(className, "the " + classToLiteral.get(className) + " literal passed as parameter");
       String replacement = getFirstArgumentAsString(newClassTree);
       textEdit = JavaTextEdit.replaceTree(newClassTree, replacement);
     }
@@ -143,7 +141,7 @@ public class StringPrimitiveConstructorCheck extends IssuableSubscriptionVisitor
   }
 
   private static String formatQuickFixMessage(String constructor, String replacement) {
-    return String.format(QUICK_FIX_MESSAGE, constructor, replacement);
+    return "Replace this \"" + constructor + "\" constructor with " + replacement;
   }
 
   private String getFirstArgumentAsString(NewClassTree newClassTree) {

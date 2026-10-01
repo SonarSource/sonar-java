@@ -1,5 +1,6 @@
-<p>The <code>@Autowired</code> annotation in Spring is used for automatic dependency injection. It allows Spring to resolve and inject the required
-beans into your bean. For example to inject a <code>@Repository</code> object into a <code>@Service</code>.</p>
+<p>The <code>@Autowired</code> annotation in Spring, and the standard JSR-330 <code>@Inject</code> annotation (from <code>jakarta.inject</code> or
+<code>javax.inject</code>) that Spring also supports, are used for automatic dependency injection. They allow Spring to resolve and inject the
+required beans into your bean. For example, to inject a <code>@Repository</code> object into a <code>@Service</code>.</p>
 <h2>Why is this an issue?</h2>
 <p>The Spring dependency injection mechanism cannot identify which constructor to use for auto-wiring when multiple constructors are present in a
 class. This ambiguity can cause the application to crash at runtime, and it makes the code less clear to understand and more complex to extend and
@@ -15,12 +16,12 @@ maintain.</p>
   <li><strong>maintainability issues</strong>: adding more constructors in the future could lead to further confusion and potential bugs.</li>
 </ul>
 <h2>How to fix it</h2>
-<p>Use the <code>@Autowired</code> annotation to specify which constructor to use for auto-wiring.</p>
+<p>Use the <code>@Autowired</code> or <code>@Inject</code> annotation to specify which constructor to use for dependency injection.</p>
 <h3>Code examples</h3>
 <h4>Noncompliant code example</h4>
 <pre data-diff-id="1" data-diff-type="noncompliant">
 @Component
-public class ExampleClass { // Noncompliant: multiple constructors present and no @Autowired annotation to specify which one to use
+public class ExampleClass { // Noncompliant: multiple constructors present and no @Autowired or @Inject annotation to specify which one to use
 
     private final DependencyClass1 dependency1;
 
@@ -46,7 +47,7 @@ public class ExampleClass {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Autowired
+    @Autowired // or @Inject from jakarta.inject or javax.inject
     public ExampleClass(DependencyClass1 dependency1) {
         this.dependency1 = dependency1;
     }
@@ -59,6 +60,8 @@ public class ExampleClass {
 <ul>
   <li>Spring - <a href="https://docs.spring.io/spring-framework/reference/core/beans/annotation-config/autowired.html">Annotation Config:
   Autowired</a></li>
+  <li>Spring - <a href="https://docs.spring.io/spring-framework/reference/core/beans/standard-annotations.html#beans-inject-named">Dependency
+  Injection with @Inject and @Named</a></li>
 </ul>
 <h3>Articles &amp; blog posts</h3>
 <ul>

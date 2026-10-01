@@ -24,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.jetbrains.annotations.NotNull;
 import org.sonar.api.batch.fs.InputFile;
 
 class InputFileUtils {
@@ -41,7 +40,6 @@ class InputFileUtils {
     }
   }
 
-  @NotNull
   private static InputFile generateInputFile(String code, SensorContextTester context, File file, InputFile.Type type) throws IOException {
     Files.writeString(file.toPath(), code, StandardCharsets.UTF_8);
     InputFile defaultFile = TestUtils.inputFile(context.fileSystem().baseDir().getAbsolutePath(), file, type);

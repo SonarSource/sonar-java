@@ -14,8 +14,9 @@
     "constantCost": "30min"
   },
   "tags": [
-    "cwe",
     "android",
+    "cryptography",
+    "cwe",
     "former-hotspot"
   ],
   "defaultSeverity": "Minor",

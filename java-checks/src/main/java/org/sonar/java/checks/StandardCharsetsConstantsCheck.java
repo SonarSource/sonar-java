@@ -279,7 +279,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
               break;
             case "IOUtils.toString":
               if (arguments.size() == 2 && arguments.get(0).symbolType().is(BYTE_ARRAY)) {
-                String issueMsg = String.format("Replace IOUtils.toString() call with new String(..., StandardCharsets.%s);", constantName);
+                String issueMsg = "Replace IOUtils.toString() call with new String(..., StandardCharsets." + constantName + ");";
                 reportIssue(callExpression, issueMsg);
               } else {
                 reportDefaultQuickfix(charsetNameArgument, constantName);
@@ -293,7 +293,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
   }
 
   private void reportQuickfixOnMemberSelect(IdentifierTree identifierTree, String identifier) {
-    String issueMsg = String.format("Replace \"com.google.common.base.Charsets.%s\" with \"StandardCharsets.%s\".", identifier, identifier);
+    String issueMsg = "Replace \"com.google.common.base.Charsets." + identifier + "\" with \"StandardCharsets." + identifier + "\".";
     QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(identifierTree)
@@ -306,7 +306,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(callExpression)
-      .withMessage(String.format("Replace %s() call with StandardCharsets.%s", methodRef, constantName))
+      .withMessage("Replace " + methodRef + "() call with StandardCharsets." + constantName)
       .withQuickFix(() -> quickfixOnCharsetCall(callExpression, constantName))
       .report();
   }
@@ -356,7 +356,7 @@ public class StandardCharsetsConstantsCheck extends AbstractMethodDetection impl
     QuickFixHelper.newIssue(context)
       .forRule(this)
       .onTree(charsetNameArgument)
-      .withMessage(String.format("Replace charset name argument with StandardCharsets.%s", constantName))
+      .withMessage("Replace charset name argument with StandardCharsets." + constantName)
       .withQuickFix(() -> JavaQuickFix.newQuickFix(REPLACE_WITH_STANDARD_CHARSETS + constantName + "\"")
           .addTextEdits(edits)
           .build())

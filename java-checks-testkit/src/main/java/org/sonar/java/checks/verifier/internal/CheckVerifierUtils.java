@@ -55,7 +55,7 @@ public class CheckVerifierUtils {
     SonarComponents sonarComponents = new SonarComponents(null, fileSystem, classpathForMain, classpathForTest, null, null) {
       @Override
       public boolean reportAnalysisError(RecognitionException re, InputFile inputFile) {
-        throw new AssertionError(String.format("Should not fail analysis (%s)", re.getMessage()));
+        throw new AssertionError("Should not fail analysis (" + re.getMessage() + ")");
       }
 
       @Override
@@ -75,19 +75,19 @@ public class CheckVerifierUtils {
 
   protected static void requiresNull(@Nullable Object obj, String fieldName) {
     if (obj != null) {
-      throw new AssertionError(String.format("Do not set %s multiple times!", fieldName));
+      throw new AssertionError("Do not set " + fieldName + " multiple times!");
     }
   }
 
   protected static void requiresNonNull(@Nullable Object obj, String fieldName) {
     if (obj == null) {
-      throw new AssertionError(String.format("Set %s before calling any verification method!", fieldName));
+      throw new AssertionError("Set " + fieldName + " before calling any verification method!");
     }
   }
 
   protected static void requiresNonEmpty(Collection<?> objects, String fieldName) {
     if (objects.isEmpty()) {
-      throw new AssertionError(String.format("Provide at least one %s!", fieldName));
+      throw new AssertionError("Provide at least one " + fieldName + "!");
     }
   }
 

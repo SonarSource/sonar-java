@@ -38,20 +38,20 @@ Key | Value
 ## Project's specific JDK
 
 In some situations, you might have to analyze a project built with a different version of Java than the one executing the analysis.
-The most common case is to run the analysis with **Java 17**, while the project itself uses **Java 11** or before for its build.
+The most common case is to run the analysis with **Java 21**, while the project itself uses **Java 17** or before for its build.
 
 If this is your case, you will need to set the `sonar.java.jdkHome` property manually to point the appropriate JDK (see below).
 By doing this you will specify which JDK classes the analyzer must refer to during the analysis.
 Not setting this property, while it would have been required, usually leads to inconsistent or even impossible to fix issues being reported, especially in relation with native JDK classes.
 
 When setting `sonar.java.jdkHome`, you need to provide the path to the JDK directory used by the project being analyzed, if different from the Java runtime executing the analysis.
-For example, for a Java 11 project, by setting it as follows: `sonar.java.jdkHome=/usr/lib/jvm/jdk11.0.22`
+For example, for a Java 17 project, by setting it as follows: `sonar.java.jdkHome=/usr/lib/jvm/jdk17.0.11`
 
 ```bash
-# Here maven uses the default version of Java on the system but we specify that we want to analyze a Java 11 project.
+# Here maven uses the default version of Java on the system but we specify that we want to analyze a Java 17 project.
 mvn clean verify sonar:sonar \
   # other analysis parameters
-  -Dsonar.java.jdkHome=/usr/lib/jvm/jdk11.0.22/
+  -Dsonar.java.jdkHome=/usr/lib/jvm/jdk17.0.11/
   # other analysis parameters
 ```
 This option can of course be added to your `sonar.properties` configuration.
@@ -150,6 +150,11 @@ where `src/main/webapp` is the directory which contains `.jsp` or Thymeleaf's `.
 The tutorial [Writing Custom Java Rules 101](https://redirect.sonarsource.com/doc/java-custom-rules-guide.html) will help to quickly start writing custom rules for Java.
 
 ### API changes
+
+#### **8.41**
+
+**Breaking**  
+The Java analyzer now requires `Java 21` to run.
 
 #### **8.22**
 

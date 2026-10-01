@@ -54,8 +54,6 @@ import static java.lang.System.currentTimeMillis;
 public class JavaAstScanner {
   private static final Logger LOG = LoggerFactory.getLogger(JavaAstScanner.class);
 
-  private static final String LOG_ERROR_STACKOVERFLOW = "A stack overflow error occurred while analyzing file: '%s'";
-  private static final String LOG_ERROR_UNABLE_TO_PARSE_FILE = "Unable to parse source file : '%s'";
   private static final String LOG_WARN_MISCONFIGURED_JAVA_VERSION = "Analyzing '%s' file with misconfigured Java version."
     + " Please check that property '%s' is correctly configured (currently set to: %d) or exclude 'module-info.java' files from analysis."
     + " Such files only exist in Java9+ projects.";
@@ -175,7 +173,7 @@ public class JavaAstScanner {
       telemetry.aggregateAsCounter(javaAnalysisKeys.success().typeErrorCountKey(), undefinedTypes.size());
     } catch (RecognitionException e) {
       checkInterrupted(e);
-      LOG.error(String.format(LOG_ERROR_UNABLE_TO_PARSE_FILE, inputFile));
+      LOG.error("Unable to parse source file : '{}'", inputFile);
       LOG.error(e.getMessage());
 
       parseErrorWalkAndVisit(e, inputFile);
@@ -186,7 +184,7 @@ public class JavaAstScanner {
       checkInterrupted(e);
       interruptIfFailFast(e, inputFile);
     } catch (StackOverflowError error) {
-      LOG.error(String.format(LOG_ERROR_STACKOVERFLOW, inputFile), error);
+      LOG.error("A stack overflow error occurred while analyzing file: '" + inputFile + "'", error);
       if (sonarComponents == null || sonarComponents.shouldFailOnStackOverflow()) {
         throw error;
       }
@@ -245,7 +243,7 @@ public class JavaAstScanner {
   }
 
   private static String getAnalysisExceptionMessage(InputFile file) {
-    return String.format("Unable to analyze file : '%s'", file);
+    return "Unable to analyze file : '" + file + "'";
   }
 
   public void setVisitorBridge(VisitorsBridge visitor) {

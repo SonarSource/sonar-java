@@ -44,7 +44,7 @@ public class SonarLintCache implements ReadCache, WriteCache {
   @Override
   public InputStream read(String s) {
     if (!contains(s)) {
-      throw new IllegalArgumentException(String.format("SonarLintCache does not contain key \"%s\"", s));
+      throw new IllegalArgumentException("SonarLintCache does not contain key \"" + s + "\"");
     }
     return new ByteArrayInputStream(cache.get(s));
   }
@@ -66,7 +66,7 @@ public class SonarLintCache implements ReadCache, WriteCache {
   @Override
   public void write(String s, byte[] bytes) {
     if (contains(s)) {
-      throw new IllegalArgumentException(String.format("Same key cannot be written to multiple times (%s)", s));
+      throw new IllegalArgumentException("Same key cannot be written to multiple times (" + s + ")");
     }
     cache.put(s, bytes);
   }

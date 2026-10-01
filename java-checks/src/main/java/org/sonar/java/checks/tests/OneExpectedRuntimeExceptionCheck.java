@@ -23,7 +23,7 @@ import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import static org.sonar.java.checks.helpers.UnitTestUtils.FAIL_METHOD_MATCHER;
+import static org.sonar.java.utils.UnitTestUtils.FAIL_METHOD_MATCHER;
 
 @Rule(key = "S5778")
 public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExceptionRule {
@@ -101,7 +101,7 @@ public class OneExpectedRuntimeExceptionCheck extends AbstractOneExpectedExcepti
     List<Tree> invocationTree = visitor.getInvocationTree();
     if (invocationTree.size() > 1) {
       reportIssue(reportLocation,
-        String.format("Refactor the %s to have only one invocation possibly throwing a runtime exception.", placeToRefactor),
+        "Refactor the " + placeToRefactor + " to have only one invocation possibly throwing a runtime exception.",
         secondaryLocations(invocationTree, "May throw a runtime exception"),
         null);
     }
