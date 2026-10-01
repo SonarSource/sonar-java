@@ -16,7 +16,9 @@
  */
 package org.sonar.java.model.springcontext;
 
+import com.google.gson.annotations.JsonAdapter;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.serialization.InjectionPointTypeAdapter;
 import org.sonar.java.telemetry.SizeEstimable;
 import org.sonar.java.telemetry.SizeEstimator;
 
@@ -51,6 +53,7 @@ public record InjectionPoint(String name, String module, ProfileExpression profi
    * @param span     the text span of the injection point within its own file
    * @param multiple whether all matching beans are collected here, as in {@link InjectionPoint#multiple()}
    */
+  @JsonAdapter(InjectionPointTypeAdapter.class)
   public record InputFileData(String name, AnalyzerMessage.TextSpan span, boolean multiple) {
   }
 }
