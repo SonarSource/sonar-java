@@ -16,6 +16,7 @@
  */
 package org.sonar.java.model.springcontext;
 
+import com.google.gson.annotations.JsonAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,17 +26,20 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.java.serialization.SpringContextGatheringModelTypeAdapter;
 
 /**
  * Stores the data collected per-module, per-file during Spring context collection.
  */
+@JsonAdapter(SpringContextGatheringModelTypeAdapter.class)
 public class SpringContextGatheringModel {
 
   /**
    * The Spring data collected for a given file in a module.
    *
-   * @param beans    The bean definitions gathered in the file.
-   * @param packages The packages covered by the file.
+   * @param inputFile The source file, absent after JSON deserialization.
+   * @param beans     The bean definitions gathered in the file.
+   * @param packages  The packages covered by the file.
    */
   public record InputFileData(@Nullable InputFile inputFile, List<BeanDefinitionHolder.InputFileData> beans, Set<String> packages) {
   }
@@ -44,6 +48,14 @@ public class SpringContextGatheringModel {
    * The Spring data collected per-module, per-file.
    */
   private final Map<String, Map<String, InputFileData>> filesData = new HashMap<>();
+
+  public Map<String, Map<String, InputFileData>> filesData() {
+    return Map.copyOf(filesData);
+  }
+
+  public void ensureModule(String moduleKey) {
+    filesData.computeIfAbsent(moduleKey, k -> new HashMap<>());
+  }
 
   public void collectBeans(String moduleKey, String fileKey, @Nullable InputFile inputFile, List<BeanDefinitionHolder.InputFileData> beans) {
     filesData
