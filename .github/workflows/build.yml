@@ -87,17 +87,16 @@ jobs:
           JAVA_21_HOME="$(mise where java@21)"
           echo "JAVA_HOME=${JAVA_21_HOME}" >> "$GITHUB_ENV"
           echo "${JAVA_21_HOME}/bin" >> "$GITHUB_PATH"
-      - name: Ensure Separate Job Cache Key
-        uses: ./.github/actions/write-file
+      - uses: ./.github/actions/maven-cache
         with:
-          file-path: target/just_for_cache_key_calculation/pom.xml
-          content: ${{ github.job }}-${{ toJSON(matrix.item) }}
+          namespace: ruling-qa-${{ matrix.item.runner }}-${{ matrix.item.profile }}-${{ matrix.item.sq_version }}
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v2
         with:
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
+          disable-caching: 'true'
       - name: Getting Vault Secrets
         id: secrets
         uses: SonarSource/vault-action-wrapper@v3
@@ -207,17 +206,16 @@ jobs:
           JAVA_21_HOME="$(mise where java@21)"
           echo "JAVA_HOME=${JAVA_21_HOME}" >> "$GITHUB_ENV"
           echo "${JAVA_21_HOME}/bin" >> "$GITHUB_PATH"
-      - name: Ensure Separate Job Cache Key
-        uses: ./.github/actions/write-file
+      - uses: ./.github/actions/maven-cache
         with:
-          file-path: target/just_for_cache_key_calculation/pom.xml
-          content: ${{ github.job }}-${{ matrix.sq_version }}
+          namespace: plugin-qa-${{ matrix.sq_version }}
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v2
         with:
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
+          disable-caching: 'true'
       - name: Getting Vault Secrets
         id: secrets
         uses: SonarSource/vault-action-wrapper@v3
@@ -257,16 +255,15 @@ jobs:
           secrets: |
             development/kv/data/next url | SONAR_HOST_URL;
             development/kv/data/next token | SONAR_TOKEN;
-      - name: Ensure Separate Job Cache Key
-        uses: ./.github/actions/write-file
+      - uses: ./.github/actions/maven-cache
         with:
-          file-path: target/just_for_cache_key_calculation/pom.xml
-          content: ${{ github.job }}
+          namespace: sanity
       - uses: SonarSource/ci-github-actions/config-maven@v2
         with:
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
+          disable-caching: 'true'
       - name: Compile Test Sources
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
@@ -340,16 +337,15 @@ jobs:
           secrets: |
             development/kv/data/next url | SONAR_HOST_URL;
             development/kv/data/next token | SONAR_TOKEN;
-      - name: Ensure Separate Job Cache Key
-        uses: ./.github/actions/write-file
+      - uses: ./.github/actions/maven-cache
         with:
-          file-path: target/just_for_cache_key_calculation/pom.xml
-          content: ${{ github.job }}
+          namespace: custom-rules-license-check
       - uses: SonarSource/ci-github-actions/config-maven@v2
         with:
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
+          disable-caching: 'true'
         env:
           SONAR_HOST_URL: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ fromJSON(steps.secrets.outputs.vault).SONAR_TOKEN }}
@@ -384,17 +380,16 @@ jobs:
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
           version: 2026.9.14
-      - name: Ensure Separate Job Cache Key
-        uses: ./.github/actions/write-file
+      - uses: ./.github/actions/maven-cache
         with:
-          file-path: target/just_for_cache_key_calculation/pom.xml
-          content: ${{ github.job }}
+          namespace: qa-os-win
       - name: Configure Maven
         uses: SonarSource/ci-github-actions/config-maven@v2
         with:
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
+          disable-caching: 'true'
       - name: Run Maven
         env:
           JAVA_TOOL_OPTIONS: ""
