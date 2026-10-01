@@ -246,7 +246,7 @@ class JavaFrontendTest {
     InputFile testFile = addFile(temp, "@org.springframework.stereotype.Component class HelperTest {}", sensorContext);
 
     FileLinesContextFactory fileLinesContextFactory = mock(FileLinesContextFactory.class);
-    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(mock(FileLinesContext.class));
+    when(fileLinesContextFactory.createFor(any(InputFile.class))).thenReturn(fileLinesContext);
     javaClasspath = mock(ClasspathForMain.class);
     javaTestClasspath = mock(ClasspathForTest.class);
     var classpath = TestClasspathUtils.DEFAULT_MODULE.getClassPath();
