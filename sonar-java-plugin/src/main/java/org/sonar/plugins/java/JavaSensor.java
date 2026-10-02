@@ -16,7 +16,11 @@
  */
 package org.sonar.plugins.java;
 
+import com.google.gson.Gson;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,21 +38,25 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rule.RuleScope;
 import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.java.model.springcontext.SpringContextModel;
+import org.sonar.java.model.springcontext.SpringContextGatheringModel;
+import org.sonar.java.model.springcontext.SpringContextModelGatherers;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonarsource.performance.measure.PerformanceMeasure;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.sonar.api.rules.RuleAnnotationUtils.getRuleKey;
 import static org.sonar.java.telemetry.TelemetryKey.JAVA_IS_AUTOSCAN;
 import static org.sonar.java.telemetry.TelemetryKey.JAVA_LANGUAGE_VERSION;
@@ -62,6 +70,8 @@ public class JavaSensor implements Sensor {
   private static final String PERFORMANCE_MEASURE_ACTIVATION_PROPERTY = "sonar.java.performance.measure";
   private static final String PERFORMANCE_MEASURE_FILE_PATH_PROPERTY = "sonar.java.performance.measure.path";
   private static final String PERFORMANCE_MEASURE_DESTINATION_FILE = "sonar.java.performance.measure.json";
+  public static final String SPRING_CONTEXT_MODEL_PATH_PROPERTY = "sonar.java.springContext.model.path";
+  static final String DEFAULT_SPRING_CONTEXT_MODEL_PATH = ".sonar/spring-context-model.json";
 
   private final SonarComponents sonarComponents;
   private final JavaResourceLocator javaResourceLocator;
@@ -70,25 +80,28 @@ public class JavaSensor implements Sensor {
   private final Jasper jasper;
   private final PostAnalysisIssueFilter postAnalysisIssueFilter;
   private final Telemetry telemetry;
+  private final SpringContextGatheringModel springContextGatheringModel;
 
-  public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator,
-                    NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
-                    Telemetry telemetry, SpringContextModel springContextModel) {
-    this(sonarComponents, javaResourceLocator, noSonarFilter, postAnalysisIssueFilter, null, telemetry, springContextModel);
+  public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator, NoSonarFilter noSonarFilter,
+    PostAnalysisIssueFilter postAnalysisIssueFilter, Telemetry telemetry, SpringContextGatheringModel springContextGatheringModel) {
+    this(sonarComponents, javaResourceLocator, noSonarFilter, postAnalysisIssueFilter, null, telemetry, springContextGatheringModel);
   }
 
-  public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator,
-                    NoSonarFilter noSonarFilter, PostAnalysisIssueFilter postAnalysisIssueFilter,
-                    @Nullable Jasper jasper, Telemetry telemetry, SpringContextModel springContextModel) {
+  public JavaSensor(SonarComponents sonarComponents, JavaResourceLocator javaResourceLocator, NoSonarFilter noSonarFilter,
+    PostAnalysisIssueFilter postAnalysisIssueFilter, @Nullable Jasper jasper, Telemetry telemetry, SpringContextGatheringModel springContextGatheringModel) {
     this.noSonarFilter = noSonarFilter;
     this.sonarComponents = sonarComponents;
     this.javaResourceLocator = javaResourceLocator;
     this.postAnalysisIssueFilter = postAnalysisIssueFilter;
     this.jasper = jasper;
     this.telemetry = telemetry;
+    this.springContextGatheringModel = springContextGatheringModel;
     this.sonarComponents.registerMainChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaChecks());
     this.sonarComponents.registerTestChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaTestChecks());
-    this.sonarComponents.setSpringContextModel(springContextModel);
+    SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry)
+      .forEach(gatherer -> this.sonarComponents.registerCustomFileScanner(RuleScope.MAIN, gatherer));
+    SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry)
+      .forEach(gatherer -> this.sonarComponents.registerCustomFileScanner(RuleScope.TEST, gatherer));
   }
 
   @Override
@@ -101,6 +114,14 @@ public class JavaSensor implements Sensor {
     PerformanceMeasure.Duration sensorDuration = createPerformanceMeasureReport(context);
 
     sonarComponents.setSensorContext(context);
+    File rootDirectory = sonarComponents.projectLevelBaseDir();
+    if (rootDirectory == null) {
+      rootDirectory = context.fileSystem().baseDir();
+    }
+    Path modelPath = springContextGatheringModelPath(context, rootDirectory);
+    if (!springContextGatheringModel.isRestored()) {
+      springContextGatheringModel.restoreFrom(loadSpringContextGatheringModel(modelPath));
+    }
     sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
 
     Measurer measurer = new Measurer(context, noSonarFilter);
@@ -122,6 +143,29 @@ public class JavaSensor implements Sensor {
     frontend.scan(getSourceFiles(context.fileSystem()), getTestFiles(context.fileSystem()), runJasper(context));
 
     sensorDuration.stop();
+  }
+
+  static Path springContextGatheringModelPath(SensorContext context, File rootDirectory) {
+    String configuredPath = context.config().get(SPRING_CONTEXT_MODEL_PATH_PROPERTY)
+      .filter(value -> !value.isBlank())
+      .orElse(DEFAULT_SPRING_CONTEXT_MODEL_PATH);
+    return rootDirectory.toPath().resolve(configuredPath).toAbsolutePath().normalize();
+  }
+
+  @VisibleForTesting
+  static SpringContextGatheringModel loadSpringContextGatheringModel(Path path) {
+    if (!Files.exists(path)) {
+      return new SpringContextGatheringModel();
+    }
+    try (var reader = Files.newBufferedReader(path, UTF_8)) {
+      SpringContextGatheringModel model = new Gson().fromJson(reader, SpringContextGatheringModel.class);
+      if (model == null) {
+        throw new IllegalArgumentException("JSON document is empty");
+      }
+      return model;
+    } catch (IOException | RuntimeException e) {
+      throw new IllegalStateException("Unable to load Spring context model from " + path, e);
+    }
   }
 
   private UnaryOperator<List<JavaCheck>> createCheckFilter(boolean isAutoScanCheckFiltering) {

@@ -66,7 +66,6 @@ import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JProblem;
 import org.sonar.java.model.LineUtils;
-import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.JavaIssue;
 import org.sonar.java.utils.ModuleMetadataUtils;
@@ -137,7 +136,6 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   private SensorContext context;
   private UnaryOperator<List<JavaCheck>> checkFilter = UnaryOperator.identity();
   private final Set<RuleKey> additionalAutoScanCompatibleRuleKeys;
-  private SpringContextModel springContextModel;
 
   private boolean alreadyLoggedSkipStatus = false;
 
@@ -524,6 +522,11 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
     }
   }
 
+  public File projectLevelBaseDir() {
+    var root = ModuleMetadataUtils.getRootProject(projectDefinition);
+    return root != null ? root.getBaseDir() : fs.baseDir();
+  }
+
   /**
    * Returns an OS-independent key that should identify the module within the project
    *
@@ -692,14 +695,6 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
 
   public Configuration getConfiguration() {
     return context.config();
-  }
-
-  public void setSpringContextModel(SpringContextModel springContextModel) {
-    this.springContextModel = springContextModel;
-  }
-
-  public SpringContextModel getSpringContextModel() {
-    return springContextModel;
   }
 
 }

@@ -37,7 +37,6 @@ import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.InputFileScannerContext;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.Version;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -50,21 +49,18 @@ class SpringContextModelGathererTest {
   private static final String SIMPLE_CLASS = "src/test/files/model/SimpleClass.java";
   private static final List<File> CLASSPATH = TestClasspathUtils.DEFAULT_MODULE.getClassPath();
   private static final long ONE_MILLISECOND_IN_NANOS = 1_000_000L;
-  private static final long SUB_MILLISECOND_IN_NANOS = 400_000L;
+  private static final long SUB_MILLISECOND_IN_NANOS = 600_000L;
 
   /**
-   * {@code SimpleClass.java} holds a single class, so scanning it goes through three measured phases:
-   * one {@code visitNode}, one {@code leaveFile} and one {@code endOfAnalysis}.
+   * {@code SimpleClass.java} holds a single class, so scanning it goes through two measured phases:
+   * one {@code visitNode} and one {@code leaveFile}.
    */
-  private static final int PHASES_OF_A_PARSED_FILE = 3;
-
-  private final SpringContextModel model = new SpringContextModel();
+  private static final int PHASES_OF_A_PARSED_FILE = 2;
 
   @Test
   void gathering_time_is_reported() {
     var telemetry = new DefaultTelemetry();
     scanFile(SIMPLE_CLASS, new SampleGatherer(new SpringContextGatheringModel(), telemetry), CLASSPATH);
-    assertThat(model.getTypeToBeansIndex().getNamesForType("com.example.MyService", "", Set.of())).containsExactly("myServiceBean");
     assertThat(telemetry.toMap().get(GATHERING_TIME_KEY)).matches("\\d+");
   }
 
@@ -81,11 +77,11 @@ class SpringContextModelGathererTest {
     var gatherer = new SampleGatherer(new SpringContextGatheringModel(), telemetry, new IncrementingNanoTime(ONE_MILLISECOND_IN_NANOS));
     gatherer.scanWithoutParsing(mock(InputFileScannerContext.class));
     bridgeFor(gatherer, CLASSPATH).endOfAnalysis();
-    assertThat(telemetry.toMap()).containsEntry(GATHERING_TIME_KEY, "2");
+    assertThat(telemetry.toMap()).containsEntry(GATHERING_TIME_KEY, "1");
   }
 
   /**
-   * Each of the three phases lasts 0.4 ms and would be truncated to 0 ms if converted on its own,
+   * Each of the two phases lasts 0.6 ms and would be truncated to 0 ms if converted on its own,
    * but together they reach 1.2 ms.
    */
   @Test
@@ -125,7 +121,6 @@ class SpringContextModelGathererTest {
     SensorContextTester sensorContextTester = SensorContextTester.create(new File(""));
     var sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(sensorContextTester);
-    sonarComponents.setSpringContextModel(model);
     return new VisitorsBridge(List.of(check), classpath, sonarComponents);
   }
 
@@ -142,11 +137,6 @@ class SpringContextModelGathererTest {
 
     SampleGatherer(SpringContextGatheringModel springContextGatheringModel, Telemetry telemetry, LongSupplier nanoTime) {
       super(springContextGatheringModel, telemetry, nanoTime);
-    }
-
-    @Override
-    public void gatherSpringContextData(ModuleScannerContext context, SpringContextModel springContextModel) {
-      springContextModel.getTypeToBeansIndex().addBeanForType("com.example.MyService", "myServiceBean", context.getModuleKey(), "com.example");
     }
 
     @Override
