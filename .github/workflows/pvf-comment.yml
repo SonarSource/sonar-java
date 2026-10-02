@@ -1,0 +1,52 @@
+name: PVF /pvf comment
+
+on:
+  issue_comment:
+    types: [created]
+  # TEST ONLY - revert this commit before merging.
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: 'PR number to validate.'
+        required: true
+      comment:
+        description: 'Comment body to parse, e.g. "/pvf" or "/pvf S1234, S5678".'
+        default: '/pvf'
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: read
+  id-token: write
+
+concurrency:
+  group: pvf-comment-${{ github.event.issue.number }}
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  trigger:
+    if: >
+      github.event_name == 'workflow_dispatch' || (
+      github.event.issue.pull_request &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association) &&
+      contains(github.event.comment.body, '/pvf'))
+    runs-on: sonar-xs
+    steps:
+      - name: Get cross-repo dispatch token from Vault
+        id: secrets
+        uses: SonarSource/vault-action-wrapper@v3
+        with:
+          secrets: |
+            development/github/token/{REPO_OWNER_NAME_DASH}-pvf-dispatch token | DISPATCH_TOKEN;
+
+      - name: Trigger performance validation in peachee-java-kotlin
+        uses: SonarSource/core-languages-tooling-public/pvf-trigger@master
+        with:
+          comment: ${{ inputs.comment || github.event.comment.body }}
+          pr-number: ${{ inputs.pr-number || github.event.issue.number }}
+          target-repo: SonarSource/peachee-java-kotlin
+          # TEST ONLY - revert this commit before merging. Runs the config from the peachee PR branch.
+          target-ref: rombirli/sonarjava-6899-onboard-pvf
+          target-workflow: performance-validation-java.yml
+          dispatch-token: ${{ fromJSON(steps.secrets.outputs.vault).DISPATCH_TOKEN }}
