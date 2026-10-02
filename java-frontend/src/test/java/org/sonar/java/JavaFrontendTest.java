@@ -55,6 +55,7 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.java.model.springcontext.SpringContextGatheringModel;
 import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.test.classpath.TestClasspathUtils;
@@ -255,12 +256,12 @@ class JavaFrontendTest {
 
     sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class), mock(ActiveRules.class));
     sonarComponents.setSensorContext(sensorContext);
-    var springContextModel = new SpringContextModel();
-    sonarComponents.setSpringContextModel(springContextModel);
+    var gatheringModel = new SpringContextGatheringModel();
 
     JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), new NoOpTelemetry(),
-      mock(JavaResourceLocator.class), null);
+      mock(JavaResourceLocator.class), null, gatheringModel);
     frontend.scan(List.of(mainFile), List.of(testFile), List.of());
+    var springContextModel = SpringContextModel.of(gatheringModel);
 
     assertThat(springContextModel.getBeanDefinitionRegistry().getByName("mainBean")).hasSize(1);
     assertThat(springContextModel.getBeanDefinitionRegistry().getByName("helperTest")).hasSize(1);
