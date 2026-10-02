@@ -42,8 +42,6 @@ import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.java.model.springcontext.SpringContextGatheringModel;
-import org.sonar.java.model.springcontext.SpringContextModelGatherers;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -80,12 +78,6 @@ public class JavaFrontend {
 
   public JavaFrontend(JavaVersion javaVersion, SonarComponents sonarComponents, Measurer measurer, Telemetry telemetry,
     JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
-    this(javaVersion, sonarComponents, measurer, telemetry, javaResourceLocator, postAnalysisIssueFilter, null, visitors);
-  }
-
-  public JavaFrontend(JavaVersion javaVersion, SonarComponents sonarComponents, Measurer measurer, Telemetry telemetry,
-    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter,
-    @Nullable SpringContextGatheringModel springContextGatheringModel, JavaCheck... visitors) {
     this.javaVersion = javaVersion;
     this.sonarComponents = sonarComponents;
     this.telemetry = telemetry;
@@ -103,11 +95,6 @@ public class JavaFrontend {
 
     List<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
     testCodeVisitors.add(measurer.new TestFileMeasurer());
-
-    if (springContextGatheringModel != null) {
-      codeVisitors.addAll(SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry));
-      testCodeVisitors.addAll(SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry));
-    }
 
     if (!sonarComponents.isSonarLintContext()) {
       codeVisitors.add(new FileLinesVisitor(sonarComponents));

@@ -38,6 +38,7 @@ import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rule.RuleScope;
 import org.sonar.java.GeneratedCheckList;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
@@ -48,6 +49,7 @@ import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.GeneratedFile;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.springcontext.SpringContextGatheringModel;
+import org.sonar.java.model.springcontext.SpringContextModelGatherers;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -96,6 +98,10 @@ public class JavaSensor implements Sensor {
     this.springContextGatheringModel = springContextGatheringModel;
     this.sonarComponents.registerMainChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaChecks());
     this.sonarComponents.registerTestChecks(GeneratedCheckList.REPOSITORY_KEY, GeneratedCheckList.getJavaTestChecks());
+    SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry)
+      .forEach(gatherer -> this.sonarComponents.registerCustomFileScanner(RuleScope.MAIN, gatherer));
+    SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry)
+      .forEach(gatherer -> this.sonarComponents.registerCustomFileScanner(RuleScope.TEST, gatherer));
   }
 
   @Override
@@ -133,7 +139,6 @@ public class JavaSensor implements Sensor {
       telemetry,
       javaResourceLocator,
       postAnalysisIssueFilter,
-      springContextGatheringModel,
       sonarComponents.mainChecks().toArray(new JavaCheck[0]));
     frontend.scan(getSourceFiles(context.fileSystem()), getTestFiles(context.fileSystem()), runJasper(context));
 

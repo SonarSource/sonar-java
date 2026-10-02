@@ -115,16 +115,7 @@ public class SpringContextModelSensor implements ProjectSensor {
     }
   }
 
-  private void recordSpringTelemetry(SpringContextModel model) {
-    var metrics = SpringContextModelMetrics.of(model);
-    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_BEAN_COUNT, metrics.beanCount());
-    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_BEAN_NAME_COUNT, metrics.beanNameCount());
-    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_INJECTION_POINT_COUNT, metrics.injectionPointCount());
-    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_COMPONENT_SCAN_PACKAGE_COUNT, metrics.componentScanPackageCount());
-    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_CONTEXT_MODEL_SIZE_BYTES, metrics.estimatedSizeInBytes());
-  }
-
-  private void reportIssues(SensorContext context, SpringContextCheck check, SpringContextModel springContextModel) {
+  private static void reportIssues(SensorContext context, SpringContextCheck check, SpringContextModel springContextModel) {
     RuleKey ruleKey = RuleKey.of(GeneratedCheckList.REPOSITORY_KEY, check.getClass().getAnnotation(Rule.class).key());
     if (context.activeRules().find(ruleKey) == null) {
       // Rule not active in the quality profile: skip running the check, its issues would be discarded anyway.
@@ -143,5 +134,14 @@ public class SpringContextModelSensor implements ProjectSensor {
         .message(issue.message()));
       newIssue.save();
     }
+  }
+
+  private void recordSpringTelemetry(SpringContextModel model) {
+    var metrics = SpringContextModelMetrics.of(model);
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_BEAN_COUNT, metrics.beanCount());
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_BEAN_NAME_COUNT, metrics.beanNameCount());
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_INJECTION_POINT_COUNT, metrics.injectionPointCount());
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_COMPONENT_SCAN_PACKAGE_COUNT, metrics.componentScanPackageCount());
+    telemetry.aggregateAsCounter(TelemetryKey.JAVA_SPRING_CONTEXT_MODEL_SIZE_BYTES, metrics.estimatedSizeInBytes());
   }
 }
