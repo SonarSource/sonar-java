@@ -46,13 +46,13 @@ class SpringContextModelTest {
 
   @Test
   void scan_fills_project_package_scan_in_spring_context_model() {
-    SpringContextModel springContextModel = new SpringContextModel();
     SonarComponents sonarComponents = TestUtils.mockSonarComponents();
-    when(sonarComponents.getSpringContextModel()).thenReturn(springContextModel);
     when(sonarComponents.getJavaClasspath()).thenReturn(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     when(sonarComponents.getModuleKey()).thenReturn("a");
 
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, mock(Measurer.class), new NoOpTelemetry(), mock(JavaResourceLocator.class), null);
+    var gatheringModel = new SpringContextGatheringModel();
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, mock(Measurer.class), new NoOpTelemetry(), mock(JavaResourceLocator.class), null,
+      gatheringModel);
     frontend.scan(
       List.of(
         TestUtils.inputFile("src/test/files/springcontext/SpringBootApp.java"),
@@ -61,6 +61,7 @@ class SpringContextModelTest {
       List.of(),
       List.of()
     );
+    SpringContextModel springContextModel = SpringContextModel.of(gatheringModel);
 
     assertThat(springContextModel.getProjectPackageScan().getModules()).isNotEmpty();
     assertThat(springContextModel.getProjectPackageScan().getPackagesForModule("a"))

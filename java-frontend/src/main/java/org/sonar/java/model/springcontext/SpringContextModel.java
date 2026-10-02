@@ -16,16 +16,20 @@
  */
 package org.sonar.java.model.springcontext;
 
-import org.sonar.api.scanner.ScannerSide;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.telemetry.SizeEstimable;
 import org.sonar.java.telemetry.SizeEstimator;
-import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**
  * Aggregates all Spring context information collected during project scanning.
  *
  * <p>Acts as the top-level model passed to rules that need to reason about the Spring
- * application context. Each field is a specialized index populated during the scan phase:
+ * application context. Each field is a specialized index loaded after Spring context collection:
  * <ul>
  *   <li>{@link BeanDefinitionRegistry} — bean definitions indexed by bean name</li>
  *   <li>{@link ProjectPackageScan} — packages registered for component scanning, per module</li>
@@ -33,8 +37,6 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
  *   <li>{@link EntityClassToPropertiesIndex} — JPA {@code @Entity} class properties</li>
  * </ul>
  */
-@ScannerSide
-@SonarLintSide
 public class SpringContextModel implements SizeEstimable {
   /**
    * Registry of all bean definitions discovered during scanning.
@@ -60,6 +62,18 @@ public class SpringContextModel implements SizeEstimable {
    * Index of properties associated with Spring Data / Hibernate {@code @Entity} classes.
    */
   private final EntityClassToPropertiesIndex entityClassToPropertiesIndex = new EntityClassToPropertiesIndex();
+
+  /**
+   * Builds a new model from every module and file contribution collected during Spring context gathering.
+   */
+  public static SpringContextModel of(SpringContextGatheringModel gatheringModel) {
+    var model = new SpringContextModel();
+    gatheringModel.filesData().forEach((moduleKey, files) -> {
+      model.projectPackageScan.addPackages(moduleKey, gatheringModel.getPackages(moduleKey));
+      files.values().forEach(fileData -> model.addBeans(moduleKey, fileData));
+    });
+    return model;
+  }
 
   public BeanDefinitionRegistry getBeanDefinitionRegistry() {
     return beanDefinitionRegistry;
@@ -89,5 +103,33 @@ public class SpringContextModel implements SizeEstimable {
       + estimator.estimateObject(typeToBeansIndex)
       + estimator.estimateObject(typeToDependenciesIndex)
       + estimator.estimateObject(entityClassToPropertiesIndex);
+  }
+
+  private void addBeans(String moduleKey, SpringContextGatheringModel.InputFileData fileData) {
+    InputFile inputFile = fileData.inputFile();
+    for (BeanDefinitionHolder.InputFileData data : fileData.beans()) {
+      var location = new BeanLocation(inputFile, data.textSpan());
+      var holderBuilder = new BeanDefinitionHolder.Builder(data.type(), moduleKey, data.beanPackage(), location)
+        .dependingBeans(projectToNames(data.dependencies()))
+        .profileExpression(data.profileExpression())
+        .qualifier(data.qualifier());
+      if (data.isPrimary()) {
+        holderBuilder.primary();
+      }
+      beanDefinitionRegistry.addBeanDefinition(data.beanName(), holderBuilder.build());
+      for (String typeFqn : data.typeHierarchy()) {
+        typeToBeansIndex.addBeanForType(typeFqn, data.beanName(), moduleKey, data.beanPackage());
+      }
+      data.dependencies().forEach((typeFqn, points) -> points.forEach(point -> typeToDependenciesIndex
+        .addDependencyForType(typeFqn, point.name(), moduleKey, data.profileExpression(), new BeanLocation(inputFile, point.span()), point.multiple())));
+    }
+  }
+
+  private static Map<String, Set<String>> projectToNames(Map<String, Set<InjectionPoint.InputFileData>> injectionPointsByType) {
+    Map<String, Set<String>> names = new LinkedHashMap<>();
+    injectionPointsByType.forEach((typeFqn, points) -> names.put(typeFqn, points.stream()
+      .map(InjectionPoint.InputFileData::name)
+      .collect(Collectors.toCollection(LinkedHashSet::new))));
+    return names;
   }
 }

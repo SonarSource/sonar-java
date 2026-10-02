@@ -21,7 +21,7 @@ import org.sonar.java.telemetry.Telemetry;
 import org.sonar.plugins.java.api.JavaCheck;
 
 /**
- * Registry of all {@link SpringContextModelGatherer} visitors that populate the {@link SpringContextModel}
+ * Registry of all {@link SpringContextModelGatherer} visitors that collect data for the {@link SpringContextModel}
  * during a module analysis.
  *
  * <p>Use {@link #getAllGatherers(SpringContextGatheringModel, Telemetry)} to obtain the full list of gatherers to be registered with the scanner.

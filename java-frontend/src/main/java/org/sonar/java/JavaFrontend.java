@@ -61,7 +61,9 @@ public class JavaFrontend {
   private static final Logger LOG = LoggerFactory.getLogger(JavaFrontend.class);
   private static final String BATCH_ERROR_MESSAGE = "Batch Mode failed, analysis of Java Files stopped.";
 
-  /** List of libraries, whose presence or absence we want to report. */
+  /**
+   * List of libraries, whose presence or absence we want to report.
+   */
   private static final Map<TelemetryKey, String> REPORTED_DEPENDENCIES = Map.of(
     JAVA_DEPENDENCY_LOMBOK, "lombok",
     JAVA_DEPENDENCY_SPRING_BOOT, "spring-boot",
@@ -77,7 +79,13 @@ public class JavaFrontend {
   private final JavaAstScanner astScannerForGeneratedFiles;
 
   public JavaFrontend(JavaVersion javaVersion, SonarComponents sonarComponents, Measurer measurer, Telemetry telemetry,
-                      JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
+    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter, JavaCheck... visitors) {
+    this(javaVersion, sonarComponents, measurer, telemetry, javaResourceLocator, postAnalysisIssueFilter, null, visitors);
+  }
+
+  public JavaFrontend(JavaVersion javaVersion, SonarComponents sonarComponents, Measurer measurer, Telemetry telemetry,
+    JavaResourceLocator javaResourceLocator, @Nullable SonarJavaIssueFilter postAnalysisIssueFilter,
+    @Nullable SpringContextGatheringModel springContextGatheringModel, JavaCheck... visitors) {
     this.javaVersion = javaVersion;
     this.sonarComponents = sonarComponents;
     this.telemetry = telemetry;
@@ -96,11 +104,9 @@ public class JavaFrontend {
     List<JavaCheck> testCodeVisitors = new ArrayList<>(commonVisitors);
     testCodeVisitors.add(measurer.new TestFileMeasurer());
 
-    if (sonarComponents.getSpringContextModel() != null) {
-      // Call SpringContextModelGatherers.getAllGatherers twice to have separate gatherer
-      // instances between the main and test scanners to avoid duplicating the issues
-      codeVisitors.addAll(SpringContextModelGatherers.getAllGatherers(new SpringContextGatheringModel(), telemetry));
-      testCodeVisitors.addAll(SpringContextModelGatherers.getAllGatherers(new SpringContextGatheringModel(), telemetry));
+    if (springContextGatheringModel != null) {
+      codeVisitors.addAll(SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry));
+      testCodeVisitors.addAll(SpringContextModelGatherers.getAllGatherers(springContextGatheringModel, telemetry));
     }
 
     if (!sonarComponents.isSonarLintContext()) {

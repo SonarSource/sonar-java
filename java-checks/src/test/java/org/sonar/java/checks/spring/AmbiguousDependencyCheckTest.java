@@ -373,10 +373,8 @@ class AmbiguousDependencyCheckTest {
     List<File> classpath = TestClasspathUtils.DEFAULT_MODULE.getClassPath();
     SonarComponents sonarComponents = new SonarComponents(null, null, null, null, null, null);
     sonarComponents.setSensorContext(SensorContextTester.create(new File("")));
-    SpringContextModel model = new SpringContextModel();
-    sonarComponents.setSpringContextModel(model);
-
-    BeanDefinitionGatherer gatherer = new BeanDefinitionGatherer(new SpringContextGatheringModel(), new NoOpTelemetry());
+    var gatheringModel = new SpringContextGatheringModel();
+    BeanDefinitionGatherer gatherer = new BeanDefinitionGatherer(gatheringModel, new NoOpTelemetry());
     VisitorsBridge visitorsBridge = new VisitorsBridge(List.of((JavaCheck) gatherer), classpath, sonarComponents);
     for (String filePath : filePaths) {
       File file = new File(filePath);
@@ -385,7 +383,7 @@ class AmbiguousDependencyCheckTest {
       visitorsBridge.visitFile(compilationUnit, false);
     }
     visitorsBridge.endOfAnalysis();
-    return model;
+    return SpringContextModel.of(gatheringModel);
   }
 
   private static InputFile inputFile(File file) {
