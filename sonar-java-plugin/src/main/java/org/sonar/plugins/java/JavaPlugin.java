@@ -36,9 +36,9 @@ import org.sonar.java.classpath.ClasspathForTest;
 import org.sonar.java.classpath.ClasspathProperties;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.jsp.Jasper;
-import org.sonar.java.model.springcontext.SpringContextModel;
-import org.sonar.java.telemetry.NoOpTelemetry;
+import org.sonar.java.model.springcontext.SpringContextGatheringModel;
 import org.sonar.java.telemetry.DefaultTelemetry;
+import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.caching.SonarLintCache;
 import org.sonar.plugins.surefire.SurefireExtensions;
@@ -83,9 +83,18 @@ public class JavaPlugin implements Plugin {
         .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
         .build(),
       JavaRulesDefinition.class,
-      SpringContextModel.class,
+      SpringContextGatheringModel.class,
       SonarComponents.class,
       DefaultJavaResourceLocator.class,
+      PropertyDefinition.builder(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY)
+        .name("Spring context model file")
+        .description("Path to the JSON file used to restore Spring context data at the start of analysis and save it afterward. "
+          + "When unset, data is saved to " + JavaSensor.DEFAULT_SPRING_CONTEXT_MODEL_PATH + " without restoring a previous model. "
+          + "Relative paths use the root project directory.")
+        .category(JavaConstants.JAVA_CATEGORY)
+        .subCategory("General")
+        .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
+        .build(),
       PropertyDefinition.builder(JavaVersion.ENABLE_PREVIEW)
         .name("Enable JDK's latest preview feature")
         .description("Allow to enable JDK's preview features for analysis. Only the Java's latest supported version preview features are supported.")
