@@ -57,6 +57,7 @@ import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.springcontext.SpringContextGatheringModel;
 import org.sonar.java.model.springcontext.SpringContextModel;
+import org.sonar.java.model.springcontext.SpringContextModelGatherers;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.test.classpath.TestClasspathUtils;
 import org.sonar.plugins.java.api.CheckRegistrar;
@@ -257,9 +258,14 @@ class JavaFrontendTest {
     sonarComponents = new SonarComponents(fileLinesContextFactory, sensorContext.fileSystem(), javaClasspath, javaTestClasspath, mock(CheckFactory.class), mock(ActiveRules.class));
     sonarComponents.setSensorContext(sensorContext);
     var gatheringModel = new SpringContextGatheringModel();
+    var telemetry = new NoOpTelemetry();
+    SpringContextModelGatherers.getAllGatherers(gatheringModel, telemetry)
+      .forEach(gatherer -> sonarComponents.registerCustomFileScanner(RuleScope.MAIN, gatherer));
+    SpringContextModelGatherers.getAllGatherers(gatheringModel, telemetry)
+      .forEach(gatherer -> sonarComponents.registerCustomFileScanner(RuleScope.TEST, gatherer));
 
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), new NoOpTelemetry(),
-      mock(JavaResourceLocator.class), null, gatheringModel);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, new Measurer(sensorContext, mock(NoSonarFilter.class)), telemetry,
+      mock(JavaResourceLocator.class), null, sonarComponents.mainChecks().toArray(new JavaCheck[0]));
     frontend.scan(List.of(mainFile), List.of(testFile), List.of());
     var springContextModel = SpringContextModel.of(gatheringModel);
 

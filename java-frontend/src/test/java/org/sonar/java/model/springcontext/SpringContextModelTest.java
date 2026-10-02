@@ -16,8 +16,10 @@
  */
 package org.sonar.java.model.springcontext;
 
+import java.io.File;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.java.JavaFrontend;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
@@ -25,6 +27,7 @@ import org.sonar.java.TestUtils;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.java.test.classpath.TestClasspathUtils;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,17 +51,19 @@ class SpringContextModelTest {
   void scan_fills_project_package_scan_in_spring_context_model() {
     SonarComponents sonarComponents = TestUtils.mockSonarComponents();
     when(sonarComponents.getJavaClasspath()).thenReturn(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
+    when(sonarComponents.getJavaTestClasspath()).thenReturn(TestClasspathUtils.DEFAULT_MODULE.getClassPath());
     when(sonarComponents.getModuleKey()).thenReturn("a");
 
     var gatheringModel = new SpringContextGatheringModel();
-    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, mock(Measurer.class), new NoOpTelemetry(), mock(JavaResourceLocator.class), null,
-      gatheringModel);
+    var telemetry = new NoOpTelemetry();
+    List<JavaCheck> testGatherers = List.copyOf(SpringContextModelGatherers.getAllGatherers(gatheringModel, telemetry));
+    when(sonarComponents.testChecks()).thenReturn(testGatherers);
+    var mainGatherers = SpringContextModelGatherers.getAllGatherers(gatheringModel, telemetry).toArray(new JavaCheck[0]);
+    JavaFrontend frontend = new JavaFrontend(new JavaVersionImpl(), sonarComponents, mock(Measurer.class), telemetry, mock(JavaResourceLocator.class), null,
+      mainGatherers);
     frontend.scan(
-      List.of(
-        TestUtils.inputFile("src/test/files/springcontext/SpringBootApp.java"),
-        TestUtils.inputFile("src/test/files/springcontext/SpringContextComponent.java")
-      ),
-      List.of(),
+      List.of(TestUtils.inputFile("src/test/files/springcontext/SpringBootApp.java")),
+      List.of(TestUtils.inputFile("", new File("src/test/files/springcontext/SpringContextComponent.java"), InputFile.Type.TEST)),
       List.of()
     );
     SpringContextModel springContextModel = SpringContextModel.of(gatheringModel);
