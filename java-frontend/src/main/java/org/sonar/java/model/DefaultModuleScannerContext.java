@@ -26,7 +26,6 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Configuration;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.caching.CacheContextImpl;
-import org.sonar.java.model.springcontext.SpringContextModel;
 import org.sonar.java.reporting.AnalyzerMessage;
 import org.sonar.java.reporting.FluentReporting;
 import org.sonar.java.reporting.InternalJavaIssueBuilder;
@@ -121,10 +120,6 @@ public class DefaultModuleScannerContext implements ModuleScannerContext {
   @Override
   public Configuration getConfiguration() {
     return sonarComponents.getConfiguration();
-  }
-
-  public SpringContextModel getSpringContextModel() {
-    return sonarComponents.getSpringContextModel();
   }
 
 }
