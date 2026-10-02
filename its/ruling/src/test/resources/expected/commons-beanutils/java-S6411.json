@@ -1,9 +1,6 @@
 {
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java": [
-47,
-66,
-69,
-70
+47
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ContextClassLoaderLocal.java": [
 105

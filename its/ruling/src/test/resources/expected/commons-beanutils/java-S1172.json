@@ -16,9 +16,6 @@
 "commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BetaBean.java": [
 34
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaListTestCase.java": [
-177
-],
 "commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MappedPropertyTestBean.java": [
 77
 ],

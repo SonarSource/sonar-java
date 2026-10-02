@@ -1,7 +1,6 @@
 {
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanMap.java": [
-47,
-706
+47
 ],
 "commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaList.java": [
 160
