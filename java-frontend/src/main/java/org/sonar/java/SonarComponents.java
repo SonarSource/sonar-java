@@ -548,23 +548,26 @@ public class SonarComponents extends CheckRegistrar.RegistrarContext {
   public boolean canSkipUnchangedFiles() throws ApiMismatchException {
     if (context == null) {
       return false;
-    } else {
-      var overrideSkipFlag = context.config() == null ? null : context.config().getBoolean(SONAR_CAN_SKIP_UNCHANGED_FILES_KEY).orElse(null);
-      try {
-        if (overrideSkipFlag != null) {
-          return overrideSkipFlag;
-        }
-        Method canSkipUnchangedFiles = context.getClass().getMethod("canSkipUnchangedFiles");
-        return (Boolean) canSkipUnchangedFiles.invoke(context);
-      } catch (NoSuchMethodError | NoSuchMethodException error) {
-        throw new ApiMismatchException(error);
-      } catch (InvocationTargetException | IllegalAccessException error) {
-        Throwable cause = error.getCause();
-        if (cause instanceof NoSuchMethodError) {
-          throw new ApiMismatchException(cause);
-        }
-        throw new ApiMismatchException(error);
+    }
+    return canSkipUnchangedFiles(context);
+  }
+
+  public static boolean canSkipUnchangedFiles(SensorContext context) throws ApiMismatchException {
+    var overrideSkipFlag = context.config() == null ? null : context.config().getBoolean(SONAR_CAN_SKIP_UNCHANGED_FILES_KEY).orElse(null);
+    try {
+      if (overrideSkipFlag != null) {
+        return overrideSkipFlag;
       }
+      Method canSkipUnchangedFiles = context.getClass().getMethod("canSkipUnchangedFiles");
+      return (Boolean) canSkipUnchangedFiles.invoke(context);
+    } catch (NoSuchMethodError | NoSuchMethodException error) {
+      throw new ApiMismatchException(error);
+    } catch (InvocationTargetException | IllegalAccessException error) {
+      Throwable cause = error.getCause();
+      if (cause instanceof NoSuchMethodError) {
+        throw new ApiMismatchException(cause);
+      }
+      throw new ApiMismatchException(error);
     }
   }
 

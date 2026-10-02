@@ -118,9 +118,9 @@ public class JavaSensor implements Sensor {
     if (rootDirectory == null) {
       rootDirectory = context.fileSystem().baseDir();
     }
-    Path modelPath = springContextGatheringModelPath(context, rootDirectory);
     if (!springContextGatheringModel.isRestored()) {
-      springContextGatheringModel.restoreFrom(loadSpringContextGatheringModel(modelPath));
+      configuredSpringContextGatheringModelPath(context, rootDirectory)
+        .ifPresent(path -> springContextGatheringModel.restoreFrom(loadSpringContextGatheringModel(path)));
     }
     sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
 
@@ -145,11 +145,19 @@ public class JavaSensor implements Sensor {
     sensorDuration.stop();
   }
 
-  static Path springContextGatheringModelPath(SensorContext context, File rootDirectory) {
-    String configuredPath = context.config().get(SPRING_CONTEXT_MODEL_PATH_PROPERTY)
+  static Optional<Path> configuredSpringContextGatheringModelPath(SensorContext context, File rootDirectory) {
+    return context.config().get(SPRING_CONTEXT_MODEL_PATH_PROPERTY)
       .filter(value -> !value.isBlank())
-      .orElse(DEFAULT_SPRING_CONTEXT_MODEL_PATH);
-    return rootDirectory.toPath().resolve(configuredPath).toAbsolutePath().normalize();
+      .map(value -> resolveSpringContextGatheringModelPath(rootDirectory, value));
+  }
+
+  static Path springContextGatheringModelOutputPath(SensorContext context, File rootDirectory) {
+    return configuredSpringContextGatheringModelPath(context, rootDirectory)
+      .orElseGet(() -> resolveSpringContextGatheringModelPath(rootDirectory, DEFAULT_SPRING_CONTEXT_MODEL_PATH));
+  }
+
+  private static Path resolveSpringContextGatheringModelPath(File rootDirectory, String path) {
+    return rootDirectory.toPath().resolve(path).toAbsolutePath().normalize();
   }
 
   @VisibleForTesting

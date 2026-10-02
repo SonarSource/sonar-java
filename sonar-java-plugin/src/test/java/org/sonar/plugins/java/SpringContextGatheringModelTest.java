@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.sonar.api.batch.bootstrap.ProjectDefinition;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.java.SonarComponents;
@@ -53,7 +54,7 @@ class SpringContextGatheringModelTest {
   Path root;
 
   @Test
-  void restores_updates_and_saves_one_model_across_module_contexts() throws IOException {
+  void restores_updates_and_saves_one_model_across_module_contexts_during_incremental_analysis() throws IOException {
     Path moduleA = Files.createDirectory(root.resolve("module-a"));
     Path moduleB = Files.createDirectory(root.resolve("module-b"));
     Path modelPath = root.resolve(CONTEXT_PATH);
@@ -73,7 +74,7 @@ class SpringContextGatheringModelTest {
 
     var gatheringModel = new SpringContextGatheringModel();
     JavaSensor sensor = sensor(gatheringModel);
-    sensor.execute(context(moduleA, CONTEXT_PATH));
+    sensor.execute(context(moduleA, CONTEXT_PATH, true));
     assertThat(gatheringModel.filesData()).containsOnlyKeys("module-a", "module-b");
 
     var updatedBean = bean("updated");
@@ -81,8 +82,8 @@ class SpringContextGatheringModelTest {
     gatheringModel.collectPackages("module-a", analyzedFileKey, analyzedFile, Set.of("updated.package"));
 
     Files.writeString(modelPath, "{");
-    sensor.execute(context(moduleB, CONTEXT_PATH));
-    assertThat(JavaSensor.springContextGatheringModelPath(context(moduleB, CONTEXT_PATH), root.toFile())).isEqualTo(modelPath);
+    sensor.execute(context(moduleB, CONTEXT_PATH, true));
+    assertThat(JavaSensor.configuredSpringContextGatheringModelPath(context(moduleB, CONTEXT_PATH, false), root.toFile())).contains(modelPath);
     assertThat(gatheringModel.filesData().get("module-a").get(analyzedFileKey).inputFile()).isSameAs(analyzedFile);
     SpringContextModel projectModel = SpringContextModel.of(gatheringModel);
     assertThat(projectModel.getBeanDefinitionRegistry().getByName("previous")).isEmpty();
@@ -90,7 +91,7 @@ class SpringContextGatheringModelTest {
     assertThat(projectModel.getBeanDefinitionRegistry().getByName("untouched")).hasSize(1);
     assertThat(projectModel.getProjectPackageScan().getPackagesForModule("module-b")).containsExactly("untouched.package");
 
-    new SpringContextModelSensor(new NoOpTelemetry(), gatheringModel).execute(context(root, CONTEXT_PATH));
+    new SpringContextModelSensor(new NoOpTelemetry(), gatheringModel).execute(context(root, CONTEXT_PATH, true));
 
     SpringContextGatheringModel saved = GSON.fromJson(Files.readString(modelPath), SpringContextGatheringModel.class);
     assertThat(saved.filesData()).containsOnlyKeys("module-a", "module-b");
@@ -101,11 +102,35 @@ class SpringContextGatheringModelTest {
   }
 
   @Test
-  void resolves_the_default_path_from_the_root_project() throws IOException {
-    Path module = Files.createDirectory(root.resolve("module-a"));
+  void does_not_restore_from_the_default_path_when_the_property_is_unset_or_blank() throws IOException {
+    Path defaultPath = root.resolve(JavaSensor.DEFAULT_SPRING_CONTEXT_MODEL_PATH);
+    Files.createDirectories(defaultPath.getParent());
+    var previousModel = new SpringContextGatheringModel();
+    previousModel.collectBeans("previous-module", "previous-file", null, List.of(bean("previous")));
+    Files.writeString(defaultPath, GSON.toJson(previousModel));
 
-    assertThat(JavaSensor.springContextGatheringModelPath(SensorContextTester.create(module), components().projectLevelBaseDir()))
-      .isEqualTo(root.resolve(JavaSensor.DEFAULT_SPRING_CONTEXT_MODEL_PATH));
+    for (SensorContextTester analysisContext : List.of(context(root), context(root, " ", false))) {
+      var gatheringModel = new SpringContextGatheringModel();
+      sensor(gatheringModel).execute(analysisContext);
+      assertThat(gatheringModel.isRestored()).isFalse();
+      assertThat(gatheringModel.filesData()).doesNotContainKey("previous-module");
+    }
+  }
+
+  @Test
+  void resolves_the_configured_path_from_the_root_project() throws IOException {
+    Path module = Files.createDirectory(root.resolve("module-a"));
+    SensorContextTester moduleContext = context(module, CONTEXT_PATH, false);
+    ProjectDefinition rootProject = ProjectDefinition.create();
+    rootProject.setBaseDir(root.toFile());
+    ProjectDefinition moduleProject = ProjectDefinition.create();
+    moduleProject.setBaseDir(module.toFile());
+    rootProject.addSubProject(moduleProject);
+    SonarComponents components = new SonarComponents(null, moduleContext.fileSystem(), null, null, null, null, moduleProject);
+
+    assertThat(components.projectLevelBaseDir()).isEqualTo(root.toFile());
+    assertThat(JavaSensor.configuredSpringContextGatheringModelPath(moduleContext, components.projectLevelBaseDir()))
+      .contains(root.resolve(CONTEXT_PATH));
   }
 
   @Test
@@ -130,10 +155,6 @@ class SpringContextGatheringModelTest {
     assertThat(JavaSensor.loadSpringContextGatheringModel(modelPath).filesData()).isEmpty();
   }
 
-  private SonarComponents components() {
-    return new SonarComponents(null, SensorContextTester.create(root).fileSystem(), null, null, null, null);
-  }
-
   private JavaSensor sensor(SpringContextGatheringModel gatheringModel) {
     SonarComponents components = mock(SonarComponents.class);
     when(components.projectLevelBaseDir()).thenReturn(root.toFile());
@@ -146,11 +167,19 @@ class SpringContextGatheringModelTest {
     return new JavaSensor(components, mock(JavaResourceLocator.class), mock(NoSonarFilter.class), null, new NoOpTelemetry(), gatheringModel);
   }
 
-  private static SensorContextTester context(Path baseDirectory, String configuredPath) {
+  private static SensorContextTester context(Path baseDirectory) {
     SensorContextTester context = SensorContextTester.create(baseDirectory);
     context.fileSystem().setWorkDir(baseDirectory);
+    return context;
+  }
+
+  private static SensorContextTester context(Path baseDirectory, String configuredPath, boolean incremental) {
+    SensorContextTester context = context(baseDirectory);
     MapSettings settings = new MapSettings();
     settings.setProperty(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY, configuredPath);
+    if (incremental) {
+      settings.setProperty(SonarComponents.SONAR_CAN_SKIP_UNCHANGED_FILES_KEY, true);
+    }
     context.setSettings(settings);
     return context;
   }

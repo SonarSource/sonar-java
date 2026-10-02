@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+import org.sonar.api.SonarProduct;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.Phase;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -30,10 +31,12 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.scanner.sensor.ProjectSensor;
 import org.sonar.check.Rule;
 import org.sonar.java.GeneratedCheckList;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.annotations.VisibleForTesting;
 import org.sonar.java.checks.spring.SpringContextCheck;
 import org.sonar.java.checks.spring.SpringContextChecks;
 import org.sonar.java.checks.spring.SpringContextIssue;
+import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.jsp.Jasper;
 import org.sonar.java.model.springcontext.BeanLocation;
 import org.sonar.java.model.springcontext.SpringContextGatheringModel;
@@ -74,13 +77,16 @@ public class SpringContextModelSensor implements ProjectSensor {
 
   @Override
   public void execute(SensorContext context) {
+    if (isFullProjectAnalysis(context)) {
+      gatheringModel.removeUnvisitedFiles();
+    }
     long buildingStartTime = System.nanoTime();
     SpringContextModel springContextModel = SpringContextModel.of(gatheringModel);
     telemetry.aggregateAsCounter(
       TelemetryKey.JAVA_SPRING_CONTEXT_MODEL_GATHERING_TIME_MS,
       TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - buildingStartTime));
     recordSpringTelemetry(springContextModel);
-    Path path = JavaSensor.springContextGatheringModelPath(context, context.fileSystem().baseDir());
+    Path path = JavaSensor.springContextGatheringModelOutputPath(context, context.fileSystem().baseDir());
     saveSpringContextGatheringModel(path, gatheringModel);
 
     long startTime = System.nanoTime();
@@ -92,6 +98,14 @@ public class SpringContextModelSensor implements ProjectSensor {
       telemetry.aggregateAsCounter(
         TelemetryKey.JAVA_SPRING_CONTEXT_CHECKS_TIME_MS,
         TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime));
+    }
+  }
+
+  private static boolean isFullProjectAnalysis(SensorContext context) {
+    try {
+      return context.runtime().getProduct() == SonarProduct.SONARQUBE && !SonarComponents.canSkipUnchangedFiles(context);
+    } catch (ApiMismatchException e) {
+      return false;
     }
   }
 

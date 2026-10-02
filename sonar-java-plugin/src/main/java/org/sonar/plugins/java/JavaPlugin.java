@@ -88,11 +88,12 @@ public class JavaPlugin implements Plugin {
       DefaultJavaResourceLocator.class,
       PropertyDefinition.builder(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY)
         .name("Spring context model file")
-        .description("Path to the JSON file used to restore and save Spring context data between analyses. Relative paths use the root project directory.")
+        .description("Path to the JSON file used to restore Spring context data at the start of analysis and save it afterward. "
+          + "When unset, data is saved to " + JavaSensor.DEFAULT_SPRING_CONTEXT_MODEL_PATH + " without restoring a previous model. "
+          + "Relative paths use the root project directory.")
         .category(JavaConstants.JAVA_CATEGORY)
         .subCategory("General")
         .onConfigScopes(Set.of(PropertyDefinition.ConfigScope.PROJECT))
-        .defaultValue(JavaSensor.DEFAULT_SPRING_CONTEXT_MODEL_PATH)
         .build(),
       PropertyDefinition.builder(JavaVersion.ENABLE_PREVIEW)
         .name("Enable JDK's latest preview feature")
