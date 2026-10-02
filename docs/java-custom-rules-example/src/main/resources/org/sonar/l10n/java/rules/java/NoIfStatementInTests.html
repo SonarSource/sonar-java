@@ -2,7 +2,12 @@
 <p>In particular, this rule targets test methods (method annotated with JUnit4 @Test annotation) that contain an "if" statement, completely arbitrarily. A possible reasoning
 could be that some people might feel a test should not have any conditional path.</p>
 
-<h2>Noncompliant Code Example</h2>
+<h2>Why is this an issue?</h2>
+<p>Conditional paths in a test can make its expected behavior harder to understand.</p>
+
+<h2>How to fix it</h2>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
 <pre>
 @Test
 public void my_test_method() {
@@ -13,7 +18,7 @@ public void my_test_method() {
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
+<h4>Compliant solution</h4>
 <pre>
 @Test
 public void my_first_test_method() {
