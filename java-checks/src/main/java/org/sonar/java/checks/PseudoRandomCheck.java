@@ -16,18 +16,16 @@
  */
 package org.sonar.java.checks;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ExpressionUtils;
+import org.sonar.java.utils.StringUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
@@ -165,7 +163,7 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
     IdentifierCollector collector = new IdentifierCollector();
     scope.accept(collector);
     for (String identifier : collector.identifiers) {
-      for (String token : tokenizeIdentifier(identifier)) {
+      for (String token : StringUtils.tokenizeIdentifier(identifier)) {
         if (SECURITY_KEYWORDS.contains(token)) {
           return true;
         }
@@ -186,42 +184,6 @@ public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
       current = current.parent();
     }
     return null;
-  }
-
-  // Split on underscores first; for each part either keep it as a single lowercase word
-  // when all-uppercase, or split further on capital-letter boundaries.
-  static List<String> tokenizeIdentifier(String identifier) {
-    List<String> words = new ArrayList<>();
-    Pattern splitPattern = Pattern.compile("(?=[A-Z])");
-    for (String part : identifier.split("_")) {
-      if (part.isEmpty()) {
-        continue;
-      }
-      if (isAllUppercaseWithLetter(part)) {
-        words.add(part.toLowerCase(Locale.ROOT));
-      } else {
-        for (String sub : splitPattern.split(part)) {
-          if (!sub.isEmpty()) {
-            words.add(sub.toLowerCase(Locale.ROOT));
-          }
-        }
-      }
-    }
-    return words;
-  }
-
-  private static boolean isAllUppercaseWithLetter(String part) {
-    boolean hasLetter = false;
-    for (int i = 0; i < part.length(); i++) {
-      char c = part.charAt(i);
-      if (Character.isLetter(c)) {
-        hasLetter = true;
-        if (Character.isLowerCase(c)) {
-          return false;
-        }
-      }
-    }
-    return hasLetter;
   }
 
   private static class IdentifierCollector extends BaseTreeVisitor {

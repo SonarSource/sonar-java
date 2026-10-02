@@ -73,4 +73,35 @@ class StringUtilsTest {
     assertThatThrownBy(() -> StringUtils.flatten("a", list))
       .isInstanceOf(ArrayStoreException.class);
   }
+
+  @Test
+  void testTokenizeIdentifier() {
+    assertThat(StringUtils.tokenizeIdentifier("userPassword")).containsExactly("user", "password");
+    assertThat(StringUtils.tokenizeIdentifier("user_token")).containsExactly("user", "token");
+    assertThat(StringUtils.tokenizeIdentifier("HMAC")).containsExactly("hmac");
+
+    // Digit-suffixed acronyms also yield their bare letter-only form.
+    assertThat(StringUtils.tokenizeIdentifier("AES256_KEY")).containsExactly("aes256", "aes", "key");
+    assertThat(StringUtils.tokenizeIdentifier("RSA2048")).containsExactly("rsa2048", "rsa");
+    assertThat(StringUtils.tokenizeIdentifier("HMAC256")).containsExactly("hmac256", "hmac");
+
+    // Underscore already separates the digits from the acronym, so no digit/letter split is needed.
+    assertThat(StringUtils.tokenizeIdentifier("AES_256_KEY")).containsExactly("aes", "256", "key");
+
+    // Digit-bearing words are kept whole, so they still match their own literal spelling.
+    assertThat(StringUtils.tokenizeIdentifier("pbkdf2")).containsExactly("pbkdf2", "pbkdf");
+    assertThat(StringUtils.tokenizeIdentifier("poly1305")).containsExactly("poly1305", "poly");
+    assertThat(StringUtils.tokenizeIdentifier("PBKDF2")).containsExactly("pbkdf2", "pbkdf");
+
+    // A word right after a digit run in a compound acronym must be isolated on its own.
+    assertThat(StringUtils.tokenizeIdentifier("SHA256RSA")).contains("sha", "rsa");
+
+    // camelCase digit suffix: each camelCase part is kept whole (`cha20`) and its letter-only
+    // form is added as an extra candidate (`cha`). This never produces a single `chacha20`
+    // token, so it does not match the `chacha20` keyword even though ChaCha20 is how the
+    // algorithm is usually written. This is a known, accepted heuristic gap: matching camelCase
+    // concatenations would also make randomBytes match randombytes, which is deliberately not
+    // supported (see splitRandomBytes in PseudoRandomCheckSecurityKeywordsSample.java).
+    assertThat(StringUtils.tokenizeIdentifier("ChaCha20")).containsExactly("cha", "cha20", "cha");
+  }
 }

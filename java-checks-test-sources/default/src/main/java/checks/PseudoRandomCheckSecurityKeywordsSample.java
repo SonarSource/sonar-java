@@ -59,16 +59,32 @@ class PseudoRandomCheckSecurityKeywordsSample {
     r.nextBytes(randomBytes);
   }
 
-// --- Digit-suffixed all-uppercase crypto acronym: documents a known tokenizer gap. ---
+// --- Digit-suffixed all-uppercase crypto acronym. ---
 // `AES256_KEY` splits on `_` to ["AES256", "KEY"]. `AES256` has no lowercase letter so
-// isAllUppercaseWithLetter returns true and it lowercases to `aes256` as a single token
-// (NOT `aes` + `256`). The keyword set holds `aes`, not `aes256`, so no match fires.
-// `KEY` -> `[key]`, which is not in the Java security-keyword set.
-// Intentional: splitting letters from trailing digits is out of scope here; tracked under APPSEC-3004.
+// isAllUppercaseWithLetter returns true; the letter/digit boundary split then yields
+// `aes` + `256`, and the digit-only segment is dropped. `aes` is in the keyword set.
   void digitSuffixedAcronym() {
     final int AES256_KEY = 32;
-    Random r = new Random(); // Compliant
+    Random r = new Random(); // Noncompliant
     r.nextInt(AES256_KEY);
+  }
+
+  // --- Digit-bearing keyword still matches as a whole token (regression guard). ---
+  // `pbkdf2` is itself a keyword; the letter/digit boundary split must only ADD `pbkdf` as an
+  // extra candidate, never replace the whole-word token, or this literal spelling would stop matching.
+  void digitBearingKeywordPreserved() {
+    int pbkdf2 = 32;
+    Random r = new Random(); // Noncompliant
+    r.nextInt(pbkdf2);
+  }
+
+  // --- Keyword directly after a digit run in a compound all-uppercase acronym. ---
+  // `SHA256RSA` splits into `SHA` + `256RSA`; the digit/letter boundary must also split
+  // right after the digit run so `RSA` is isolated on its own and matches `rsa`.
+  void keywordAfterDigitRun() {
+    final int SHA256RSA = 1;
+    Random r = new Random(); // Noncompliant
+    r.nextInt(SHA256RSA);
   }
 }
 

@@ -20,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.utils.PackageUtils;
@@ -34,6 +36,7 @@ import org.sonarsource.analyzer.commons.annotations.DeprecatedRuleKey;
 @Rule(key = "S120")
 public class BadPackageNameCheck implements JavaFileScanner, EndOfAnalysis {
 
+  private static final Logger LOG = LoggerFactory.getLogger(BadPackageNameCheck.class);
   private static final String DEFAULT_FORMAT = "^[a-z_]+(\\.[a-z_][a-z0-9_]*)*$";
   private static final String CACHE_KEY_PREFIX = "java:S120:package:";
 
@@ -66,7 +69,13 @@ public class BadPackageNameCheck implements JavaFileScanner, EndOfAnalysis {
     var packageDeclaration = context.getTree().packageDeclaration();
     String name = packageDeclaration != null ? PackageUtils.packageName(packageDeclaration, ".") : "";
     if (context.getCacheContext().isCacheEnabled()) {
-      context.getCacheContext().getWriteCache().write(CACHE_KEY_PREFIX + context.getInputFile().key(), name.getBytes(StandardCharsets.UTF_8));
+      String cacheKey = CACHE_KEY_PREFIX + context.getInputFile().key();
+      byte[] data = name.getBytes(StandardCharsets.UTF_8);
+      try {
+        context.getCacheContext().getWriteCache().write(cacheKey, data);
+      } catch (IllegalArgumentException e) {
+        LOG.trace("Tried to write multiple times to cache key '{}'. Ignoring writes after the first.", cacheKey);
+      }
     }
     if (!name.isEmpty()) {
       handlePackageName(name);

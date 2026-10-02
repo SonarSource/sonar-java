@@ -1,0 +1,18 @@
+name: Maven Cache
+description: Cache Maven dependencies for one job namespace
+
+inputs:
+  namespace:
+    description: Job and matrix identity
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: SonarSource/gh-action_cache@v1
+      with:
+        path: ~/.m2/repository
+        key: maven-${{ runner.os }}-${{ runner.arch }}-${{ inputs.namespace }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          maven-${{ runner.os }}-${{ runner.arch }}-${{ inputs.namespace }}-
+          maven-${{ runner.os }}-Build-

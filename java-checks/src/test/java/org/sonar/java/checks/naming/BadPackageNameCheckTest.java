@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.cache.ReadCache;
+import org.sonar.java.checks.helpers.ParsingRequiredScanner;
 import org.sonar.java.checks.verifier.CheckVerifier;
 import org.sonar.java.checks.verifier.internal.InternalReadCache;
 import org.sonar.java.checks.verifier.internal.InternalWriteCache;
@@ -150,5 +151,28 @@ class BadPackageNameCheckTest {
 
     verify(check, times(0)).scanFile(any());
     verify(check, times(1)).scanWithoutParsing(any());
+  }
+
+  @Test
+  void cached_file_can_be_parsed_when_another_scanner_requires_it() {
+    String expectedMessage = "Rename package \"PACKAGE\" to match the regular expression '" + DEFAULT_FORMAT + "'.";
+    CheckVerifier.newVerifier()
+      .onFile(NONCOMPLIANT_FILE)
+      .withCheck(new BadPackageNameCheck())
+      .withCache(readCache, writeCache)
+      .verifyIssueOnProject(expectedMessage);
+
+    var check = spy(new BadPackageNameCheck());
+    var populatedReadCache = new InternalReadCache().putAll(writeCache);
+    var nextWriteCache = new InternalWriteCache().bind(populatedReadCache);
+    CheckVerifier.newVerifier()
+      .withCache(populatedReadCache, nextWriteCache)
+      .addFiles(InputFile.Status.SAME, NONCOMPLIANT_FILE)
+      .withChecks(check, new ParsingRequiredScanner())
+      .verifyIssueOnProject(expectedMessage);
+
+    verify(check).scanWithoutParsing(any());
+    verify(check).scanFile(any());
+    assertThat(nextWriteCache.getData()).containsExactlyInAnyOrderEntriesOf(writeCache.getData());
   }
 }

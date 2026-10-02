@@ -29,7 +29,7 @@ runs:
         retention-days: ${{ env.RETENTION_DAYS }}
 
     - name: Configure NPM
-      uses: SonarSource/ci-github-actions/config-npm@v1
+      uses: SonarSource/ci-github-actions/config-npm@v2
       if: runner.os != 'Windows'
 
     - name: Generate Diff Report

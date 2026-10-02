@@ -1,0 +1,48 @@
+<p>This rule raises an issue when a standalone utility function for sorting is called on a collection object in language versions where the collection
+type provides its own instance method for sorting.</p>
+<p>In Java, this specifically refers to calling <code>Collections.sort()</code> on a <code>List</code> object in Java 8 or later, where
+<code>List.sort()</code> should be used instead.</p>
+<h2>Why is this an issue?</h2>
+<p>In earlier versions of the language, sorting a collection required using a static utility method from a helper class. This approach followed the
+pattern of having utility functions in separate classes for operations on data structures.</p>
+<p>In later versions, the collection interface itself gained its own sorting method. This change embraced a more object-oriented design where the
+collection can be sorted directly on the instance.</p>
+<p>Using the static utility sorting function in modern code is outdated for several reasons:</p>
+<ul>
+  <li><strong>Readability</strong>: <code>myCollection.sort(comparator)</code> reads more naturally than <code>UtilityClass.sort(myCollection,
+  comparator)</code>. The object performing the action comes first, making the code flow clearer.</li>
+  <li><strong>API design</strong>: The newer approach aligns with modern design patterns that favor adding methods directly to interfaces, reducing
+  the need for separate utility classes.</li>
+  <li><strong>Consistency</strong>: Using the instance method makes the code consistent with other modern APIs in the language.</li>
+</ul>
+<p>While the static utility sorting function still works correctly and has the same behavior, using it signals that the code hasn’t been updated to
+take advantage of newer language features.</p>
+<p>In Java specifically, this refers to using <code>Collections.sort()</code> versus the <code>List.sort()</code> method that was introduced in Java
+8.</p>
+<h3>What is the potential impact?</h3>
+<p>Using a utility class method to sort a collection instead of the collection’s own sorting method has minimal practical impact on the application’s
+behavior, as both methods produce the same result. However, it affects code maintainability:</p>
+<ul>
+  <li>The code appears outdated, suggesting it may not be taking advantage of other modern language features.</li>
+  <li>New team members familiar with modern language practices may find the code less intuitive.</li>
+  <li>The codebase becomes inconsistent if some parts use the collection’s instance method while others use the utility class method.</li>
+</ul>
+<h2>How to fix it</h2>
+<p>Replace <code>Collections.sort(myList)</code> with <code>myList.sort(null)</code>. When sorting with the natural order, pass <code>null</code> as
+the comparator to the <code>sort()</code> method.</p>
+<h3>Code examples</h3>
+<h4>Noncompliant code example</h4>
+<pre data-diff-id="1" data-diff-type="noncompliant">
+Collections.sort(myList); // Noncompliant
+</pre>
+<h4>Compliant solution</h4>
+<pre data-diff-id="1" data-diff-type="compliant">
+myList.sort(null);
+</pre>
+<h2>Resources</h2>
+<h3>Documentation</h3>
+<ul>
+  <li>Java SE Documentation - <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html#sort-java.util.Comparator-">List (Java Platform
+  SE 8)</a></li>
+</ul>
+
