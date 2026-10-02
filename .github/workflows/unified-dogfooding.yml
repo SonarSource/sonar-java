@@ -21,6 +21,7 @@ jobs:
           MAVEN_OPTS: "-Xmx8g"
           JAVA_TOOL_OPTIONS: ""
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           run-shadow-scans: true
           artifactory-reader-role: private-reader
           artifactory-deployer-role: qa-deployer
