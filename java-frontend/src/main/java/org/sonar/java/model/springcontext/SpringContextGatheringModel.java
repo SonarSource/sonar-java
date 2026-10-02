@@ -89,6 +89,13 @@ public class SpringContextGatheringModel {
   }
 
   /**
+   * Removes data restored from a previous analysis for files that were not visited during the current analysis.
+   */
+  public void removeUnvisitedFiles() {
+    filesData.values().forEach(moduleData -> moduleData.values().removeIf(data -> data.inputFile() == null));
+  }
+
+  /**
    * Registers a module even when it has no collected file data.
    *
    * @param moduleKey The module key.
