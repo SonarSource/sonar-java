@@ -18,21 +18,6 @@
     <skipTests>false</skipTests>
   </properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.sonarsource.orchestrator</groupId>
-        <artifactId>sonar-orchestrator-locators</artifactId>
-        <version>${orchestrator.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.sonarsource.orchestrator</groupId>
-        <artifactId>sonar-orchestrator-build</artifactId>
-        <version>${orchestrator.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
     <dependency>
       <groupId>com.sonarsource.scanner.integrationtester</groupId>
