@@ -28,7 +28,6 @@ import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.TestUtils;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.plugins.java.api.InputFileScannerContext;
-import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
@@ -137,10 +136,7 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
 
   @Test
   void module_without_scanned_files_collects_nothing() {
-    ModuleScannerContext context = mock(ModuleScannerContext.class);
-    when(context.getModuleKey()).thenReturn(MODULE_KEY);
-
-    gatherer.gatherSpringContextData(context, model);
+    model = SpringContextModel.of(gatherer.springContextGatheringModel);
 
     assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY)).isEmpty();
   }
@@ -191,9 +187,7 @@ class ComponentScanPackageGathererTest extends SpringContextGathererTest {
 
     assertThat(gatherer.scanWithoutParsing(context)).isTrue();
 
-    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
-    when(moduleScannerContext.getModuleKey()).thenReturn(MODULE_KEY);
-    gatherer.gatherSpringContextData(moduleScannerContext, model);
+    model = SpringContextModel.of(gatherer.springContextGatheringModel);
 
     assertThat(model.getProjectPackageScan().getPackagesForModule(MODULE_KEY))
       .containsExactlyInAnyOrder("com.example.service", "com.example.web");
