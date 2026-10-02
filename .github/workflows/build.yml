@@ -52,6 +52,13 @@ jobs:
             --define sonar.skip=true
             --projects !java-checks-test-sources/aws,!java-checks-test-sources/default,!java-checks-test-sources/java-17,!java-checks-test-sources/spring-3.2,!java-checks-test-sources/spring-web-4.0
 
+      # PVF: publish the concrete deployed plugin version so pvf-comment.yml can dispatch a performance-validation run into peachee-java-kotlin.
+      - name: Prepare PVF candidate version
+        if: ${{ steps.build-maven.outputs.deployed }}
+        uses: SonarSource/core-languages-tooling-public/prepare-pvf@master
+        with:
+          build-version: ${{ steps.build-maven.outputs.project-version }}
+
   ruling-qa:
     strategy:
       fail-fast: false
