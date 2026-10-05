@@ -108,8 +108,8 @@ public class JavaSensor implements Sensor {
 
     sonarComponents.setSensorContext(context);
     if (!springContextGatheringModel.isRestored()) {
-      SpringContextModelPersistence.configuredPath(context, sonarComponents.projectLevelBaseDir())
-        .ifPresent(path -> springContextGatheringModel.restoreFrom(SpringContextModelPersistence.load(path)));
+      var path = SpringContextModelPersistence.modelPath(context, sonarComponents.projectLevelBaseDir());
+      springContextGatheringModel.restoreFrom(SpringContextModelPersistence.load(path));
     }
     sonarComponents.setCheckFilter(createCheckFilter(sonarComponents.isAutoScanCheckFiltering()));
 

@@ -65,6 +65,7 @@ class SpringContextModelSensorTest {
 
   private static final String MODULE_KEY = "module";
   private static final String MODEL_PATH = "state/context.json";
+  private static final String DEFAULT_MODEL_PATH = ".sonar/spring-context-model.json";
   private static final RuleKey S9352_RULE_KEY = RuleKey.of("java", "S9352");
   private static final Gson GSON = new Gson();
 
@@ -291,7 +292,7 @@ class SpringContextModelSensorTest {
 
     Files.writeString(modelPath, "{");
     sensor.execute(javaSensorContext(moduleB, MODEL_PATH, true));
-    assertThat(SpringContextModelPersistence.configuredPath(javaSensorContext(moduleB, MODEL_PATH, false), tempDir.toFile())).contains(modelPath);
+    assertThat(SpringContextModelPersistence.modelPath(javaSensorContext(moduleB, MODEL_PATH, false), tempDir.toFile())).isEqualTo(modelPath);
     assertThat(gatheringModel.filesData().get("module-a").get(analyzedFileKey).inputFile()).isSameAs(analyzedFile);
     SpringContextModel projectModel = SpringContextModel.of(gatheringModel);
     assertThat(projectModel.getBeanDefinitionRegistry().getByName("previous")).isEmpty();
@@ -310,8 +311,8 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void does_not_restore_from_the_default_path_when_the_property_is_unset_or_blank() throws IOException {
-    Path defaultPath = tempDir.resolve(".sonar/spring-context-model.json");
+  void restores_from_the_default_path_when_the_property_is_unset_or_blank() throws IOException {
+    Path defaultPath = tempDir.resolve(DEFAULT_MODEL_PATH);
     Files.createDirectories(defaultPath.getParent());
     var previousModel = new SpringContextGatheringModel();
     previousModel.collectBeans("previous-module", "previous-file", null, List.of(bean("previous")));
@@ -320,8 +321,26 @@ class SpringContextModelSensorTest {
     for (SensorContextTester analysisContext : List.of(javaSensorContext(tempDir), javaSensorContext(tempDir, " ", false))) {
       var gatheringModel = new SpringContextGatheringModel();
       javaSensor(gatheringModel).execute(analysisContext);
-      assertThat(gatheringModel.isRestored()).isFalse();
-      assertThat(gatheringModel.filesData()).doesNotContainKey("previous-module");
+      assertThat(gatheringModel.isRestored()).isTrue();
+      assertThat(gatheringModel.filesData().get("previous-module")).containsKey("previous-file");
+    }
+  }
+
+  @Test
+  void saves_to_the_default_path_when_the_property_is_unset_or_blank() {
+    Path defaultPath = tempDir.resolve(DEFAULT_MODEL_PATH);
+    List<SensorContextTester> contexts = List.of(javaSensorContext(tempDir), javaSensorContext(tempDir, " ", false));
+
+    for (int i = 0; i < contexts.size(); i++) {
+      SensorContextTester analysisContext = contexts.get(i);
+      String beanName = "component" + i;
+      var gatheringModel = new SpringContextGatheringModel();
+      registerBean(gatheringModel, "example.Service", beanName, fakeInputFile(analysisContext, "Component.java"));
+
+      sensor(gatheringModel, new NoOpTelemetry()).execute(analysisContext);
+
+      assertThat(defaultPath).exists();
+      assertThat(SpringContextModelPersistence.load(defaultPath).filesData().get(MODULE_KEY)).containsOnlyKeys(beanName);
     }
   }
 
@@ -337,8 +356,19 @@ class SpringContextModelSensorTest {
     SonarComponents components = new SonarComponents(null, moduleContext.fileSystem(), null, null, null, null, moduleProject);
 
     assertThat(components.projectLevelBaseDir()).isEqualTo(tempDir.toFile());
-    assertThat(SpringContextModelPersistence.configuredPath(moduleContext, components.projectLevelBaseDir()))
-      .contains(tempDir.resolve(MODEL_PATH));
+    assertThat(SpringContextModelPersistence.modelPath(moduleContext, components.projectLevelBaseDir()))
+      .isEqualTo(tempDir.resolve(MODEL_PATH));
+    moduleContext.setSettings(new MapSettings());
+    assertThat(SpringContextModelPersistence.modelPath(moduleContext, components.projectLevelBaseDir()))
+      .isEqualTo(tempDir.resolve(DEFAULT_MODEL_PATH));
+  }
+
+  @Test
+  void preserves_an_absolute_configured_path() {
+    Path absolutePath = tempDir.resolve(MODEL_PATH);
+
+    assertThat(SpringContextModelPersistence.modelPath(javaSensorContext(tempDir, absolutePath.toString(), false), tempDir.toFile()))
+      .isEqualTo(absolutePath);
   }
 
   @Test

@@ -78,8 +78,7 @@ public class SpringContextModelSensor implements ProjectSensor {
       TelemetryKey.JAVA_SPRING_CONTEXT_MODEL_GATHERING_TIME_MS,
       TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - buildingStartTime));
     recordSpringTelemetry(springContextModel);
-    SpringContextModelPersistence.configuredPath(context, context.fileSystem().baseDir())
-      .ifPresent(path -> SpringContextModelPersistence.save(path, gatheringModel));
+    SpringContextModelPersistence.save(SpringContextModelPersistence.modelPath(context, context.fileSystem().baseDir()), gatheringModel);
 
     long startTime = System.nanoTime();
     try {
