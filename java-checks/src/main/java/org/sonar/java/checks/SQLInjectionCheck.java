@@ -213,7 +213,7 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDynamicPlusAssignment(ExpressionTree arg) {
-    return arg.is(Tree.Kind.PLUS_ASSIGNMENT) && !((AssignmentExpressionTree) arg).expression().asConstant().isPresent();
+    return arg.is(Tree.Kind.PLUS_ASSIGNMENT) && hasDynamicConcatenationOperand(((AssignmentExpressionTree) arg).expression());
   }
 
   private static boolean isDynamicString(ExpressionTree arg) {
