@@ -107,6 +107,8 @@ public class JavaSensor implements Sensor {
     PerformanceMeasure.Duration sensorDuration = createPerformanceMeasureReport(context);
 
     sonarComponents.setSensorContext(context);
+    // Restore the Spring context gathering model from the previous analysis, if it hasn't been restored already
+    // (i.e. the model is only restored the first time the sensor is run on a module and is reused between modules).
     if (!springContextGatheringModel.isRestored()) {
       var path = SpringContextModelPersistence.modelPath(context, sonarComponents.projectLevelBaseDir());
       springContextGatheringModel.restoreFrom(SpringContextModelPersistence.load(path));
