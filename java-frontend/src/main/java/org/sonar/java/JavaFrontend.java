@@ -42,6 +42,7 @@ import org.sonar.java.exceptions.ApiMismatchException;
 import org.sonar.java.filters.SonarJavaIssueFilter;
 import org.sonar.java.model.JParserConfig;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.model.springcontext.SpringContextGatheringModel;
 import org.sonar.java.model.springcontext.SpringContextModelGatherers;
 import org.sonar.java.telemetry.Telemetry;
 import org.sonar.java.telemetry.TelemetryKey;
@@ -98,8 +99,8 @@ public class JavaFrontend {
     if (sonarComponents.getSpringContextModel() != null) {
       // Call SpringContextModelGatherers.getAllGatherers twice to have separate gatherer
       // instances between the main and test scanners to avoid duplicating the issues
-      codeVisitors.addAll(SpringContextModelGatherers.getAllGatherers(telemetry));
-      testCodeVisitors.addAll(SpringContextModelGatherers.getAllGatherers(telemetry));
+      codeVisitors.addAll(SpringContextModelGatherers.getAllGatherers(new SpringContextGatheringModel(), telemetry));
+      testCodeVisitors.addAll(SpringContextModelGatherers.getAllGatherers(new SpringContextGatheringModel(), telemetry));
     }
 
     if (!sonarComponents.isSonarLintContext()) {
