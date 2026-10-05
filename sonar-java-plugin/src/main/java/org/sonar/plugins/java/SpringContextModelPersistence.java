@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.sensor.SensorContext;
@@ -33,16 +32,18 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 final class SpringContextModelPersistence {
 
+  private static final String DEFAULT_MODEL_PATH = ".sonar/spring-context-model.json";
   private static final Logger LOG = LoggerFactory.getLogger(SpringContextModelPersistence.class);
   private static final Gson GSON = new Gson();
 
   private SpringContextModelPersistence() {
   }
 
-  static Optional<Path> configuredPath(SensorContext context, File rootDirectory) {
-    return context.config().get(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY)
+  static Path modelPath(SensorContext context, File rootDirectory) {
+    String path = context.config().get(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY)
       .filter(value -> !value.isBlank())
-      .map(value -> rootDirectory.toPath().resolve(value).toAbsolutePath().normalize());
+      .orElse(DEFAULT_MODEL_PATH);
+    return rootDirectory.toPath().resolve(path).toAbsolutePath().normalize();
   }
 
   static SpringContextGatheringModel load(Path path) {
