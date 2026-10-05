@@ -377,4 +377,18 @@ class SQLFormat {
     query += String.format("WHERE col = \"%c\"", "value");
     this.stmt.execute(query); // Noncompliant
   }
+
+  public void plusAssignmentClassName(String input) throws SQLException {
+    String query = "SELECT ";
+    query += getClass().getName();
+    this.stmt.execute(query); // Compliant
+
+    String query2 = "SELECT ";
+    query2 += "." + SQLInjection.class.getSimpleName();
+    this.stmt.execute(query2); // Compliant
+
+    String query3 = "SELECT ";
+    query3 += SQLInjection.class.getName() + input;
+    this.stmt.execute(query3); // Noncompliant
+  }
 }
