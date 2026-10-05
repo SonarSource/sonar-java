@@ -16,11 +16,12 @@ jobs:
       - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
         with:
           version: 2026.9.17
-      - uses: SonarSource/ci-github-actions/build-maven@v2
+      - uses: SonarSource/ci-github-actions/build-maven@c3a85ac3a2f67f86966e2fb1fdf9a7c1bdc997dc # 2.2.0
         env:
           MAVEN_OPTS: "-Xmx8g"
           JAVA_TOOL_OPTIONS: ""
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           run-shadow-scans: true
           artifactory-reader-role: private-reader
           artifactory-deployer-role: qa-deployer
