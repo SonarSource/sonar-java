@@ -1,0 +1,50 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/notification/DefaultNotificationManager.java": [
+24
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/QualityGates.java": [
+47
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/authentication/UserIdentityAuthenticatorTest.java": [
+29
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/measure/index/ProjectsEsModuleTest.java": [
+24
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/platform/web/SecurityServletFilterTest.java": [
+29
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualitygate/ws/CreateConditionActionTest.java": [
+45
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualitygate/ws/UpdateConditionActionTest.java": [
+45
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/setting/DatabaseSettingsEnablerTest.java": [
+26,
+27,
+28
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/setting/NopSettingLoaderTest.java": [
+24
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/setting/ProjectSettingsFactoryTest.java": [
+25
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/setting/ws/CheckSecretKeyActionTest.java": [
+30
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/setting/ws/EncryptActionTest.java": [
+31
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/setting/ws/GenerateSecretKeyActionTest.java": [
+30,
+36
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/usertoken/ws/SearchActionTest.java": [
+37
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/ws/WsTester.java": [
+23
+]
+}

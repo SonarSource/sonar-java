@@ -1,0 +1,48 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/component/ws/SuggestionsAction.java": [
+193
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/BulkChangeAction.java": [
+215
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/ChangelogAction.java": [
+115,
+133
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchResponseFormat.java": [
+140
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/notification/ws/ListAction.java": [
+127
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/organization/OrganizationCreationImpl.java": [
+269
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/SearchGlobalPermissionsAction.java": [
+90
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/projectanalysis/ws/DeleteAction.java": [
+85
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/projectanalysis/ws/UpdateEventAction.java": [
+135
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileInsertImpl.java": [
+104
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/BuiltInQProfileRepositoryImpl.java": [
+113
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesNotification.java": [
+59
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesNotificationTemplate.java": [
+55
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/BuiltInQualityProfilesUpdateListener.java": [
+56
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/RegisterQualityProfiles.java": [
+80
+]
+}

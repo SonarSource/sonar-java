@@ -1,12 +1,12 @@
 {
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConstructorUtils.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConstructorUtils.java": [
 110,
 222
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaClass.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/LazyDynaClass.java": [
 104
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java": [
 113,
 115,
 136,
@@ -16,7 +16,7 @@
 983,
 984
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
 77,
 233,
 239,
@@ -37,7 +37,7 @@
 1559,
 1559
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
 100,
 205,
 218,
@@ -62,7 +62,7 @@
 694,
 699
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
 59,
 120,
 122,
@@ -94,7 +94,7 @@
 1234,
 1235
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
 53,
 115,
 117,
@@ -105,18 +105,18 @@
 2611,
 2612
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaResultSetTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaResultSetTestCase.java": [
 51,
 153
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaRowSetTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaRowSetTestCase.java": [
 54,
 156
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/NestedTestBean.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/NestedTestBean.java": [
 72
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
 132,
 294,
 300,
@@ -130,18 +130,18 @@
 4046,
 4050
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestBean.java": [
 229,
 243
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java": [
 754,
 760
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSetMetaData.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSetMetaData.java": [
 46
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java": [
 110,
 249,
 262,

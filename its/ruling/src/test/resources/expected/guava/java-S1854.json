@@ -1,5 +1,5 @@
 {
-"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+"guava:src/com/google/common/cache/LocalCache.java": [
 2331,
 2844,
 2997,
@@ -10,14 +10,14 @@
 3336,
 3402
 ],
-"com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java": [
+"guava:src/com/google/common/collect/ImmutableSortedMap.java": [
 818,
 820
 ],
-"com.google.guava:guava:src/com/google/common/collect/LinkedListMultimap.java": [
+"guava:src/com/google/common/collect/LinkedListMultimap.java": [
 232
 ],
-"com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java": [
+"guava:src/com/google/common/collect/MapMakerInternalMap.java": [
 2658,
 2709,
 2739,
@@ -26,7 +26,7 @@
 2927,
 2992
 ],
-"com.google.guava:guava:src/com/google/common/math/BigIntegerMath.java": [
+"guava:src/com/google/common/math/BigIntegerMath.java": [
 358
 ]
 }

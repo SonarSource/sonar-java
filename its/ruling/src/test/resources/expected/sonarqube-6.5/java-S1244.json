@@ -1,0 +1,14 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/TrackerRawInputFactory.java": [
+138
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/Measure.java": [
+242
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/MeasureDtoToMeasure.java": [
+87
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/custom/ws/CustomMeasureJsonWriter.java": [
+92
+]
+}
