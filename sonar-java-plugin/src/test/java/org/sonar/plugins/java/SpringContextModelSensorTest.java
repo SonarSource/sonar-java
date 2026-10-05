@@ -16,15 +16,16 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.gson.Gson;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.SensorContextTester;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestInputFileBuilder;
 import com.sonarsource.scanner.engine.sensor.test.fixtures.TestSonarRuntime;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -54,6 +55,7 @@ import org.sonar.scanner.plugin.api.impl.rule.ActiveRulesBuilder;
 import org.sonar.scanner.plugin.api.impl.rule.NewActiveRule;
 import org.sonar.scanner.plugin.api.impl.sensor.DefaultSensorDescriptor;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -66,7 +68,7 @@ class SpringContextModelSensorTest {
   private static final String MODEL_PATH = "state/context.json";
   private static final String DEFAULT_MODEL_PATH = ".sonar/spring-context-model.json";
   private static final RuleKey S9352_RULE_KEY = RuleKey.of("java", "S9352");
-  private static final Gson GSON = new Gson();
+  private static final String FIXTURE_DIRECTORY = "/org/sonar/plugins/java/springcontext/";
 
   @TempDir
   Path tempDir;
@@ -128,7 +130,7 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void restored_beans_affect_analyzed_files_without_reporting_on_restored_files() {
+  void restored_beans_affect_analyzed_files_without_reporting_on_restored_files() throws IOException {
     SensorContextTester context = SensorContextTester.create(tempDir);
     context.setActiveRules(activeRulesWithS9352());
     MapSettings settings = new MapSettings();
@@ -137,11 +139,8 @@ class SpringContextModelSensorTest {
     context.setSettings(settings);
     InputFile analyzedFile = fakeInputFile(context, "Consumer.java");
     String type = "example.Service";
-    var gatheringModel = new SpringContextGatheringModel();
-    gatheringModel.collectBeans(MODULE_KEY, "restored-one", null, List.of(gatheredBean("componentOne", type, Map.of())));
-    gatheringModel.collectBeans(MODULE_KEY, "restored-two", null, List.of(gatheredBean("componentTwo", type, Map.of())));
+    var gatheringModel = restoredModel("ambiguous-restored-beans.json");
     var dependency = Map.of(type, Set.of(new InjectionPoint.InputFileData("contextAware", new TextSpan(13, 13, 13, 25), false)));
-    gatheringModel.collectBeans(MODULE_KEY, "restored-consumer", null, List.of(gatheredBean("oldConsumer", "example.OldConsumer", dependency)));
     gatheringModel.collectBeans(MODULE_KEY, analyzedFile.key(), analyzedFile, List.of(gatheredBean("consumer", "example.Consumer", dependency)));
 
     sensor(gatheringModel, new NoOpTelemetry()).execute(context);
@@ -153,14 +152,12 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void removes_unvisited_files_before_building_and_saving_the_model_on_full_analysis() {
+  void removes_unvisited_files_before_building_and_saving_the_model_on_full_analysis() throws IOException {
     SensorContextTester context = configuredContext();
     context.setActiveRules(activeRulesWithS9352());
     InputFile analyzedFile = fakeInputFile(context, "Consumer.java");
     String type = "example.Service";
-    var gatheringModel = new SpringContextGatheringModel();
-    gatheringModel.collectBeans(MODULE_KEY, "unvisited", null, List.of(gatheredBean("oldService", type, Map.of())));
-    gatheringModel.collectPackages(MODULE_KEY, "unvisited", null, Set.of("stale.package"));
+    var gatheringModel = restoredModel("unvisited-service.json");
     registerBean(gatheringModel, type, "currentService", analyzedFile);
     registerDependency(gatheringModel, type, "contextAware", analyzedFile);
 
@@ -177,7 +174,7 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void keeps_unvisited_files_for_incremental_and_sonarlint_analyses() {
+  void keeps_unvisited_files_for_incremental_and_sonarlint_analyses() throws IOException {
     SensorContextTester incrementalContext = SensorContextTester.create(tempDir);
     MapSettings settings = new MapSettings();
     settings.setProperty(SonarComponents.SONAR_CAN_SKIP_UNCHANGED_FILES_KEY, true);
@@ -188,9 +185,7 @@ class SpringContextModelSensorTest {
     sonarLintContext.setSettings(new MapSettings().setProperty(JavaSensor.SPRING_CONTEXT_MODEL_PATH_PROPERTY, MODEL_PATH));
 
     for (SensorContextTester context : List.of(incrementalContext, sonarLintContext)) {
-      var gatheringModel = new SpringContextGatheringModel();
-      gatheringModel.collectBeans(MODULE_KEY, "unvisited", null, List.of(gatheredBean("oldService", "example.Service", Map.of())));
-      gatheringModel.collectPackages(MODULE_KEY, "unvisited", null, Set.of("stale.package"));
+      var gatheringModel = restoredModel("unvisited-service.json");
 
       sensor(gatheringModel, new NoOpTelemetry()).execute(context);
 
@@ -220,11 +215,10 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void keeps_unvisited_files_when_scan_mode_cannot_be_determined() {
+  void keeps_unvisited_files_when_scan_mode_cannot_be_determined() throws IOException {
     SensorContextTester context = spy(SensorContextTester.create(tempDir));
     doThrow(new NoSuchMethodError("canSkipUnchangedFiles is unavailable")).when(context).canSkipUnchangedFiles();
-    var gatheringModel = new SpringContextGatheringModel();
-    gatheringModel.collectBeans(MODULE_KEY, "unvisited", null, List.of(gatheredBean("oldService", "example.Service", Map.of())));
+    var gatheringModel = restoredModel("unvisited-service.json");
 
     sensor(gatheringModel, new NoOpTelemetry()).execute(context);
 
@@ -266,20 +260,11 @@ class SpringContextModelSensorTest {
     Path moduleA = Files.createDirectory(tempDir.resolve("module-a"));
     Path moduleB = Files.createDirectory(tempDir.resolve("module-b"));
     Path modelPath = tempDir.resolve(MODEL_PATH);
-    Files.createDirectories(modelPath.getParent());
+    copyModelFixture("two-modules.json", modelPath);
 
     InputFile analyzedFile = new TestInputFileBuilder("module-a", "src/A.java").setContents("class A {}").build();
     String analyzedFileKey = analyzedFile.key();
     String untouchedFileKey = "module-b:src/B.java";
-    var previousBean = bean("previous");
-    var untouchedBean = bean("untouched");
-    var initialModel = new SpringContextGatheringModel();
-    initialModel.collectBeans("module-a", analyzedFileKey, null, List.of(previousBean));
-    initialModel.collectPackages("module-a", analyzedFileKey, null, Set.of("previous.package"));
-    initialModel.collectBeans("module-b", untouchedFileKey, null, List.of(untouchedBean));
-    initialModel.collectPackages("module-b", untouchedFileKey, null, Set.of("untouched.package"));
-    Files.writeString(modelPath, GSON.toJson(initialModel));
-
     var gatheringModel = new SpringContextGatheringModel();
     JavaSensor sensor = javaSensor(gatheringModel);
     sensor.execute(javaSensorContext(moduleA, MODEL_PATH, true));
@@ -301,21 +286,19 @@ class SpringContextModelSensorTest {
 
     sensor(gatheringModel, new NoOpTelemetry()).execute(javaSensorContext(tempDir, MODEL_PATH, true));
 
-    SpringContextGatheringModel saved = GSON.fromJson(Files.readString(modelPath), SpringContextGatheringModel.class);
+    SpringContextGatheringModel saved = SpringContextModelPersistence.load(modelPath);
     assertThat(saved.filesData()).containsOnlyKeys("module-a", "module-b");
     assertThat(saved.filesData().get("module-a").get(analyzedFileKey).beans()).containsExactly(updatedBean);
     assertThat(saved.filesData().get("module-a").get(analyzedFileKey).packages()).containsExactly("updated.package");
-    assertThat(saved.filesData().get("module-b").get(untouchedFileKey).beans()).containsExactly(untouchedBean);
+    assertThat(saved.filesData().get("module-b").get(untouchedFileKey).beans())
+      .extracting(BeanDefinitionHolder.InputFileData::beanName).containsExactly("untouched");
     assertThat(saved.filesData().get("module-b").get(untouchedFileKey).packages()).containsExactly("untouched.package");
   }
 
   @Test
   void restores_from_the_default_path_when_the_property_is_unset_or_blank() throws IOException {
     Path defaultPath = tempDir.resolve(DEFAULT_MODEL_PATH);
-    Files.createDirectories(defaultPath.getParent());
-    var previousModel = new SpringContextGatheringModel();
-    previousModel.collectBeans("previous-module", "previous-file", null, List.of(bean("previous")));
-    Files.writeString(defaultPath, GSON.toJson(previousModel));
+    copyModelFixture("default-path.json", defaultPath);
 
     for (SensorContextTester analysisContext : List.of(javaSensorContext(tempDir), javaSensorContext(tempDir, " ", false))) {
       var gatheringModel = new SpringContextGatheringModel();
@@ -394,6 +377,20 @@ class SpringContextModelSensorTest {
 
   private SpringContextModelSensor sensor(SpringContextGatheringModel gatheringModel, Telemetry telemetry) {
     return new SpringContextModelSensor(telemetry, gatheringModel);
+  }
+
+  private SpringContextGatheringModel restoredModel(String fixtureName) throws IOException {
+    var model = new SpringContextGatheringModel();
+    model.restoreFrom(SpringContextModelPersistence.load(copyModelFixture(fixtureName, tempDir.resolve(MODEL_PATH))));
+    return model;
+  }
+
+  private Path copyModelFixture(String fixtureName, Path destination) throws IOException {
+    Files.createDirectories(destination.getParent());
+    try (InputStream source = getClass().getResourceAsStream(FIXTURE_DIRECTORY + fixtureName)) {
+      Files.copy(Objects.requireNonNull(source, fixtureName), destination, REPLACE_EXISTING);
+    }
+    return destination;
   }
 
   private SensorContextTester configuredContext() {

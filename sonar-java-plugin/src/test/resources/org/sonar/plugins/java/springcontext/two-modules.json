@@ -1,0 +1,40 @@
+{
+  "filesData": {
+    "module-a": {
+      "module-a:src/A.java": {
+        "beans": [
+          {
+            "name": "previous",
+            "type": "example.Bean",
+            "package": "example",
+            "span": { "startLine": 1, "startCharacter": 0, "endLine": 1, "endCharacter": 4 },
+            "primary": false,
+            "profiles": null,
+            "qualifier": null,
+            "dependencies": [],
+            "typeHierarchy": ["example.Bean"]
+          }
+        ],
+        "packages": ["previous.package"]
+      }
+    },
+    "module-b": {
+      "module-b:src/B.java": {
+        "beans": [
+          {
+            "name": "untouched",
+            "type": "example.Bean",
+            "package": "example",
+            "span": { "startLine": 1, "startCharacter": 0, "endLine": 1, "endCharacter": 4 },
+            "primary": false,
+            "profiles": null,
+            "qualifier": null,
+            "dependencies": [],
+            "typeHierarchy": ["example.Bean"]
+          }
+        ],
+        "packages": ["untouched.package"]
+      }
+    }
+  }
+}
