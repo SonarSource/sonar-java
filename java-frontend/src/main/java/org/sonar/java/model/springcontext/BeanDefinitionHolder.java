@@ -16,12 +16,14 @@
  */
 package org.sonar.java.model.springcontext;
 
+import com.google.gson.annotations.JsonAdapter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.sonar.java.reporting.AnalyzerMessage;
+import org.sonar.java.serialization.BeanDefinitionHolderTypeAdapter;
 import org.sonar.java.telemetry.SizeEstimable;
 import org.sonar.java.telemetry.SizeEstimator;
 
@@ -233,6 +235,7 @@ public class BeanDefinitionHolder implements SizeEstimable {
    * @param dependencies      The bean's dependencies, mapped by required type FQN to the injection points that require them.
    * @param typeHierarchy     The fully-qualified names of the bean's own type and of all its ancestors and interfaces.
    */
+  @JsonAdapter(BeanDefinitionHolderTypeAdapter.class)
   public record InputFileData(
     String beanName,
     String type,
