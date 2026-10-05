@@ -438,10 +438,7 @@ public class JavaRulingTest {
   @Test
   public void vibebot() throws IOException {
     String projectName = "vibebot";
-    File pomFile = FileLocation.of("../vibebot/pom.xml").getFile().getCanonicalFile();
-    prepareProject("org.vibebot:vibebot", projectName);
-    MavenBuild build = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests");
-    build.setProperty("sonar.projectKey", "org.vibebot:vibebot");
+    MavenBuild build = test_project("org.vibebot:vibebot", projectName);
     executeBuildWithCommonProperties(build, projectName);
   }
 
