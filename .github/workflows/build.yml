@@ -34,11 +34,12 @@ jobs:
       - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
         with:
           version: 2026.9.17
-      - uses: SonarSource/ci-github-actions/build-maven@v2
+      - uses: SonarSource/ci-github-actions/build-maven@2.2.0
         id: build-maven
         env:
           MAVEN_OPTS: "-Xmx8g"
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           deploy-pull-request: true
           sonar-platform: none # Prevent analysis
           # Override artifactory roles for public repo using private access
@@ -91,8 +92,9 @@ jobs:
         with:
           namespace: ruling-qa-${{ matrix.item.runner }}-${{ matrix.item.profile }}-${{ matrix.item.sq_version }}
       - name: Configure Maven
-        uses: SonarSource/ci-github-actions/config-maven@v2
+        uses: SonarSource/ci-github-actions/config-maven@2.2.0
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
@@ -210,8 +212,9 @@ jobs:
         with:
           namespace: plugin-qa-${{ matrix.sq_version }}
       - name: Configure Maven
-        uses: SonarSource/ci-github-actions/config-maven@v2
+        uses: SonarSource/ci-github-actions/config-maven@2.2.0
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
@@ -258,8 +261,9 @@ jobs:
       - uses: ./.github/actions/maven-cache
         with:
           namespace: sanity
-      - uses: SonarSource/ci-github-actions/config-maven@v2
+      - uses: SonarSource/ci-github-actions/config-maven@2.2.0
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
@@ -301,8 +305,9 @@ jobs:
           secrets: |
             development/kv/data/next url | SONAR_HOST_URL;
             development/kv/data/next token | SONAR_TOKEN;
-      - uses: SonarSource/ci-github-actions/build-maven@v2
+      - uses: SonarSource/ci-github-actions/build-maven@2.2.0
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           deploy: false
           artifactory-reader-role: private-reader    # Override default public-reader
           artifactory-deployer-role: qa-deployer     # Override default public-deployer
@@ -340,8 +345,9 @@ jobs:
       - uses: ./.github/actions/maven-cache
         with:
           namespace: custom-rules-license-check
-      - uses: SonarSource/ci-github-actions/config-maven@v2
+      - uses: SonarSource/ci-github-actions/config-maven@2.2.0
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
@@ -384,8 +390,9 @@ jobs:
         with:
           namespace: qa-os-win
       - name: Configure Maven
-        uses: SonarSource/ci-github-actions/config-maven@v2
+        uses: SonarSource/ci-github-actions/config-maven@2.2.0
         with:
+          repox-url: https://repox-internal.dev.sonar.build
           artifactory-reader-role: private-reader
           use-develocity: ${{ env.USE_DEVELOCITY }}
           develocity-url: ${{ env.DEVELOCITY_URL }}
@@ -414,7 +421,7 @@ jobs:
     env:
       BUILD_NUMBER: ${{ needs.build.outputs.build-number }}
     steps:
-      - uses: SonarSource/ci-github-actions/promote@v2
+      - uses: SonarSource/ci-github-actions/promote@2.2.0
         with:
           promote-pull-request: true
 
