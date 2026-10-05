@@ -137,6 +137,8 @@ Note for internal contributors: in order to also execute the tests that depend o
 
     mvn clean install -Pit-plugin
 
+`IncrementalAnalysisTest` verifies server-side cache reuse and analysis time for a main branch and two pull requests using the Eclipse Jetty projects under `its/sources`. It requires Enterprise Edition and runs with the Sonar way profile, independently of the issue-baseline comparisons in the ruling suite.
+
 #### Ruling Test
 
 The "Ruling Test" is an integration test suite that launches the analysis of a large code base, saves the issues created by the plugin in report files, and then compares those results to the set of expected issues (stored as JSON files).
