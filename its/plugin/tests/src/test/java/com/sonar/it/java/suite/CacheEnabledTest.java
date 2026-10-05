@@ -68,7 +68,7 @@ public class CacheEnabledTest {
       .setEdition(com.sonar.orchestrator.container.Edition.ENTERPRISE_LW)
       .activateLicense()
       .useDefaultAdminCredentialsForBuilds(true)
-      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
+      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "DEV"))
       .addPlugin(JavaTestSuite.JAVA_PLUGIN_LOCATION)
       // for support of custom rules
       .addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")))
