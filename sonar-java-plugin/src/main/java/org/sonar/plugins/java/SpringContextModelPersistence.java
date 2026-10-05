@@ -57,7 +57,8 @@ final class SpringContextModelPersistence {
       }
       return model;
     } catch (IOException | RuntimeException e) {
-      throw new IllegalStateException("Unable to load Spring context model from " + path, e);
+      LOG.warn("Unable to load Spring context model from {}, starting from an empty model", path, e);
+      return new SpringContextGatheringModel();
     }
   }
 

@@ -55,7 +55,6 @@ import org.sonar.scanner.plugin.api.impl.rule.NewActiveRule;
 import org.sonar.scanner.plugin.api.impl.sensor.DefaultSensorDescriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -372,14 +371,14 @@ class SpringContextModelSensorTest {
   }
 
   @Test
-  void rejects_invalid_json_without_overwriting_it() throws IOException {
+  void starts_with_an_empty_model_for_invalid_json_without_overwriting_it() throws IOException {
     Path modelPath = tempDir.resolve(MODEL_PATH);
     Files.createDirectories(modelPath.getParent());
     Files.writeString(modelPath, "{");
 
-    assertThatThrownBy(() -> SpringContextModelPersistence.load(modelPath))
-      .isInstanceOf(IllegalStateException.class)
-      .hasMessageContaining(modelPath.toString());
+    assertThat(SpringContextModelPersistence.load(modelPath).filesData()).isEmpty();
+    assertThat(logTester.logs(Level.WARN))
+      .contains("Unable to load Spring context model from " + modelPath + ", starting from an empty model");
     assertThat(Files.readString(modelPath)).isEqualTo("{");
   }
 
