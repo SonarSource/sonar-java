@@ -31,6 +31,15 @@ import org.sonarsource.api.sonarlint.SonarLintSide;
 
 /**
  * Stores the data collected per-module, per-file during Spring context collection.
+ *
+ * <p>This data structure is populated by {@link SpringContextModelGatherer} instances during the analysis.
+ * A {@link SpringContextModel} instance is built from the structure's contents at the end of the analysis, to be
+ * passed to {@code SpringContextCheck} instances to raise issues.</p>
+ *
+ * <p>The structure is serialized to JSON and saved to a file at the end of the analysis, so it can be restored and
+ * reused in later analyses. Partial analyses retain restored data for unvisited files to provide whole-project context.
+ * Full analyses remove data for unvisited files before building the context model, to reflect changes due to deleted
+ * files.</p>
  */
 @ScannerSide
 @SonarLintSide

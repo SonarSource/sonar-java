@@ -67,6 +67,13 @@ public class SpringContextModelSensor implements ProjectSensor {
     descriptor.onlyOnLanguages(Java.KEY, Jasper.JSP_LANGUAGE_KEY).name("Java SpringContextModelSensor");
   }
 
+  /**
+   * Finalizes the gathered Spring context after Java analysis. On a full project analysis, removes data for files that
+   * were not visited before building the context model.
+   * Records telemetry, persists the Spring context gathering model data, and reports issues from active Spring checks.
+   *
+   * @param context The context of the current analysis.
+   */
   @Override
   public void execute(SensorContext context) {
     if (isFullProjectAnalysis(context)) {
