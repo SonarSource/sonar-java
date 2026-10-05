@@ -35,7 +35,6 @@ import org.sonar.api.batch.sensor.cache.WriteCache;
 import org.sonar.java.TestUtils;
 import org.sonar.java.telemetry.NoOpTelemetry;
 import org.sonar.plugins.java.api.InputFileScannerContext;
-import org.sonar.plugins.java.api.ModuleScannerContext;
 import org.sonar.plugins.java.api.caching.CacheContext;
 import org.sonar.plugins.java.api.caching.JavaReadCache;
 import org.sonar.plugins.java.api.caching.JavaWriteCache;
@@ -322,9 +321,7 @@ class BeanDefinitionGathererTest extends SpringContextGathererTest {
     assertThat(gatherer.scanWithoutParsing(context)).isTrue();
     verify(writeCache).copyFromPrevious(entry.key());
 
-    ModuleScannerContext moduleScannerContext = mock(ModuleScannerContext.class);
-    when(moduleScannerContext.getModuleKey()).thenReturn("");
-    gatherer.gatherSpringContextData(moduleScannerContext, model);
+    model = SpringContextModel.of(gatherer.springContextGatheringModel);
 
     var beans = model.getBeanDefinitionRegistry().getByName("qualifiedFieldDependencies");
     assertThat(beans).hasSize(1);
