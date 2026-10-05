@@ -1,0 +1,11 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/IssueVisitor.java": [
+25
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/PermissionChange.java": [
+31
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/plugins/ServerExtensionInstaller.java": [
+44
+]
+}

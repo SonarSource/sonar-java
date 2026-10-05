@@ -1,0 +1,25 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/authentication/event/AuthenticationEvent.java": [
+97
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/FileSimilarity.java": [
+28
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/filemove/MovedFilesRepository.java": [
+37
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/IndexDefinition.java": [
+31
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/organization/BillingValidations.java": [
+47,
+65
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/organization/OrganizationCreation.java": [
+120,
+126
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/permission/ws/template/DefaultTemplatesResolver.java": [
+43
+]
+}

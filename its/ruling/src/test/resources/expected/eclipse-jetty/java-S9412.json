@@ -1,14 +1,14 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyCustomizerTest.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ProxyCustomizerTest.java": [
 97
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerTest.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/handler/ContextHandlerTest.java": [
 792
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
 840
 ],
-"org.eclipse.jetty:jetty-project:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java": [
+"eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java": [
 693
 ]
 }

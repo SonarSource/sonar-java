@@ -1,0 +1,20 @@
+{
+"sonarqube-6.5:src/test/java/org/sonar/server/computation/task/projectanalysis/step/ComputeQProfileMeasureStepTest.java": [
+153
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/issue/IssueServiceMediumTest.java": [
+175
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/permission/ws/RemoveGroupActionTest.java": [
+288
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/platform/web/WebPagesFilterTest.java": [
+143
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/qualityprofile/ws/BackupActionTest.java": [
+170
+],
+"sonarqube-6.5:src/test/java/org/sonar/server/user/ws/CreateActionTest.java": [
+314
+]
+}

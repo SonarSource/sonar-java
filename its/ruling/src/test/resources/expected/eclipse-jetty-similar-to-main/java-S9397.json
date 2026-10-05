@@ -1,31 +1,31 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCompliance.java": [
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpCompliance.java": [
 249
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java": [
 462
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ConnectionStatistics.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ConnectionStatistics.java": [
 217,
 218
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SelectorManager.java": [
 368
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/SocketChannelEndPoint.java": [
 68,
 127
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/WriteFlusher.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/WriteFlusher.java": [
 147
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
 139
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/DebugListener.java": [
 308
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
 480
 ]
 }

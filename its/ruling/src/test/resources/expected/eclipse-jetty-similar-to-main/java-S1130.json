@@ -1,13 +1,13 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/HttpGenerator.java": [
 197,
 358
 ],
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java": [
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java": [
 78,
 114
 ],
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpURITest.java": [
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpURITest.java": [
 33,
 78,
 95,
@@ -17,35 +17,35 @@
 267,
 276
 ],
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/PathMappingsTest.java": [
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/pathmap/PathMappingsTest.java": [
 171,
 273
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/WriteFlusherTest.java": [
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/WriteFlusherTest.java": [
 411
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceContentFactory.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceContentFactory.java": [
 71
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
 776
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java": [
 433
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
 213
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
 938
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncRequestReadTest.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/AsyncRequestReadTest.java": [
 56
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/GracefulStopTest.java": [
 265
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpInputAsyncStateTest.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpInputAsyncStateTest.java": [
 275,
 291,
 308,
@@ -68,7 +68,7 @@
 624,
 707
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpInputTest.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpInputTest.java": [
 198,
 362,
 497,
@@ -76,14 +76,14 @@
 538,
 548
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpWriterTest.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpWriterTest.java": [
 243
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/InsufficientThreadsDetectionTest.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/InsufficientThreadsDetectionTest.java": [
 40,
 77
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/PartialRFC2616Test.java": [
 388
 ]
 }

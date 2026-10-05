@@ -1,0 +1,14 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/component/ws/FilterParser.java": [
+45
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/debt/DebtModelXMLExporter.java": [
+102
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/UrlSettings.java": [
+47
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/util/MetricKeyValidator.java": [
+50
+]
+}

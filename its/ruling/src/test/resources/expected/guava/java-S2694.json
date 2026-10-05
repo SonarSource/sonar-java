@@ -1,8 +1,8 @@
 {
-"com.google.guava:guava:src/com/google/common/cache/LocalCache.java": [
+"guava:src/com/google/common/cache/LocalCache.java": [
 4449
 ],
-"com.google.guava:guava:src/com/google/common/reflect/Types.java": [
+"guava:src/com/google/common/reflect/Types.java": [
 137
 ]
 }

@@ -1,5 +1,5 @@
 {
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BasicDynaBeanTestCase.java": [
 109,
 110,
 111,
@@ -19,7 +19,7 @@
 924,
 944
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanMapTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanMapTestCase.java": [
 209,
 210,
 211,
@@ -47,26 +47,26 @@
 383,
 384
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanPropertyValueChangeClosureTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanPropertyValueChangeClosureTestCase.java": [
 29,
 30,
 31,
 33
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicateTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanPropertyValueEqualsPredicateTestCase.java": [
 29,
 30,
 31,
 33
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanToPropertyValueTransformerTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanToPropertyValueTransformerTestCase.java": [
 29,
 30,
 31,
 32,
 34
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsBenchCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsBenchCase.java": [
 109,
 110,
 111,
@@ -75,7 +75,7 @@
 114,
 115
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanUtilsTestCase.java": [
 190,
 191,
 195,
@@ -156,7 +156,7 @@
 1449,
 1468
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/BeanificationTestCase.java": [
 141,
 331,
 343,
@@ -169,7 +169,7 @@
 402,
 405
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConstructorUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConstructorUtilsTestCase.java": [
 86,
 100,
 138,
@@ -177,7 +177,7 @@
 198,
 207
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/ConvertUtilsTestCase.java": [
 252,
 254,
 256,
@@ -186,10 +186,10 @@
 262,
 264
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanMapDecoratorTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanMapDecoratorTestCase.java": [
 49
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaBeanUtilsTestCase.java": [
 115,
 116,
 117,
@@ -254,7 +254,7 @@
 1184,
 1189
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/DynaPropertyUtilsTestCase.java": [
 111,
 112,
 113,
@@ -305,7 +305,7 @@
 2481,
 2532
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaBeanTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaBeanTestCase.java": [
 42,
 43,
 293,
@@ -327,7 +327,7 @@
 396,
 396
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaMapTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/LazyDynaMapTestCase.java": [
 43,
 44,
 256,
@@ -350,19 +350,19 @@
 386,
 386
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MappedPropertyTestBean.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/MappedPropertyTestBean.java": [
 62,
 62,
 94
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/MethodUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/MethodUtilsTestCase.java": [
 291,
 298,
 356,
 416,
 517
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsBenchCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsBenchCase.java": [
 107,
 108,
 109,
@@ -371,7 +371,7 @@
 112,
 113
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/PropertyUtilsTestCase.java": [
 262,
 264,
 266,
@@ -416,7 +416,7 @@
 3758,
 3836
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSet.java": [
 176,
 180,
 182,
@@ -424,15 +424,15 @@
 186,
 190
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSetMetaData.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/TestResultSetMetaData.java": [
 98,
 158
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/WrapDynaBeanTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/WrapDynaBeanTestCase.java": [
 281,
 282
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ArrayConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ArrayConverterTestCase.java": [
 68,
 81,
 81,
@@ -447,7 +447,7 @@
 226,
 226
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/BigDecimalConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/BigDecimalConverterTestCase.java": [
 104,
 105,
 106,
@@ -455,7 +455,7 @@
 108,
 109
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/BigIntegerConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/BigIntegerConverterTestCase.java": [
 105,
 106,
 107,
@@ -463,7 +463,7 @@
 109,
 110
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ByteConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ByteConverterTestCase.java": [
 45,
 46,
 47,
@@ -494,7 +494,7 @@
 147,
 150
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/CharacterConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/CharacterConverterTestCase.java": [
 69,
 71,
 80,
@@ -505,18 +505,18 @@
 90,
 112
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ClassConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ClassConverterTestCase.java": [
 86,
 108,
 119
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DateConverterTestBase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DateConverterTestBase.java": [
 249,
 277,
 304,
 362
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DoubleConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/DoubleConverterTestCase.java": [
 45,
 46,
 47,
@@ -541,7 +541,7 @@
 124,
 125
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/FloatConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/FloatConverterTestCase.java": [
 45,
 46,
 47,
@@ -569,7 +569,7 @@
 156,
 159
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/IntegerConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/IntegerConverterTestCase.java": [
 46,
 47,
 48,
@@ -600,7 +600,7 @@
 149,
 152
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/LongConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/LongConverterTestCase.java": [
 45,
 46,
 47,
@@ -625,7 +625,7 @@
 124,
 125
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/NumberConverterTestBase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/NumberConverterTestBase.java": [
 85,
 86,
 87,
@@ -641,7 +641,7 @@
 325,
 348
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ShortConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/ShortConverterTestCase.java": [
 45,
 46,
 47,
@@ -672,16 +672,16 @@
 148,
 151
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/SqlDateConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/SqlDateConverterTestCase.java": [
 85
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/SqlTimeConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/SqlTimeConverterTestCase.java": [
 80
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/SqlTimestampConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/converters/SqlTimestampConverterTestCase.java": [
 100
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleBeanificationTestCase.java": [
 147,
 322,
 335,
@@ -689,7 +689,7 @@
 348,
 391
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/LocaleConvertUtilsTestCase.java": [
 296,
 298,
 300,
@@ -700,18 +700,18 @@
 609,
 626
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/ByteLocaleConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/ByteLocaleConverterTestCase.java": [
 54,
 55,
 94,
 100
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/DoubleLocaleConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/DoubleLocaleConverterTestCase.java": [
 45,
 46,
 85
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/FloatLocaleConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/FloatLocaleConverterTestCase.java": [
 51,
 52,
 91,
@@ -722,7 +722,7 @@
 279,
 315
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/IntegerLocaleConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/IntegerLocaleConverterTestCase.java": [
 45,
 46,
 85,
@@ -730,19 +730,19 @@
 268,
 270
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/LongLocaleConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/LongLocaleConverterTestCase.java": [
 45,
 46,
 85,
 94
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/ShortLocaleConverterTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/locale/converters/ShortLocaleConverterTestCase.java": [
 45,
 46,
 85,
 94
 ],
-"commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
+"commons-beanutils:src/test/java/org/apache/commons/beanutils2/memoryleaktests/MemoryLeakTestCase.java": [
 427
 ]
 }

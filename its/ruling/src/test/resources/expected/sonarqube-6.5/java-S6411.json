@@ -1,0 +1,81 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/api/posttask/ConditionToCondition.java": [
+38,
+40
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/api/posttask/PostProjectAnalysisTasksExecutor.java": [
+168
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/component/MapBasedDbIdsRepository.java": [
+38
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/component/VisitorsCrawler.java": [
+44,
+60
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/FormulaExecutorComponentVisitor.java": [
+220
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/measure/MapBasedRawMeasureRepository.java": [
+48,
+116,
+126,
+140,
+149,
+163
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/MutableQualityGateStatusHolder.java": [
+32
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/QualityGateStatusHolder.java": [
+40
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/QualityGateStatusHolderImpl.java": [
+33,
+43,
+54
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/scm/ScmInfoRepositoryImpl.java": [
+47
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/source/SymbolsLineReader.java": [
+48,
+117,
+118
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComputeMeasureVariationsStep.java": [
+122,
+163
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ExecuteVisitorsStep.java": [
+58
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/QualityGateMeasuresStep.java": [
+156,
+157
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentAction.java": [
+161
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentDtoToWsComponent.java": [
+34
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/ComponentTreeAction.java": [
+314
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/ws/SearchHistoryResponseFactory.java": [
+87
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/organization/OrganizationCreationImpl.java": [
+265
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualityprofile/RegisterQualityProfiles.java": [
+77,
+102
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/CachingRuleFinder.java": [
+61,
+75,
+79
+]
+}

@@ -1,42 +1,42 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java": [
+"eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java": [
 521
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Dispatcher.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Dispatcher.java": [
 76
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Handler.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Handler.java": [
 69
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannel.java": [
 1042
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java": [
 199
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/Server.java": [
 540,
 581
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ScopedHandler.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ScopedHandler.java": [
 155,
 175,
 201,
 223
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java": [
 130
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ClassLoadingObjectInputStream.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ClassLoadingObjectInputStream.java": [
 58
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/DecoratedObjectFactory.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/DecoratedObjectFactory.java": [
 85
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
 419
 ],
-"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
 195,
 224,
 239,

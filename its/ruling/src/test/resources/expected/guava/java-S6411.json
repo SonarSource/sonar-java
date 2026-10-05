@@ -1,22 +1,22 @@
 {
-"com.google.guava:guava:src/com/google/common/base/Defaults.java": [
+"guava:src/com/google/common/base/Defaults.java": [
 38,
 42,
 42,
 54
 ],
-"com.google.guava:guava:src/com/google/common/base/Enums.java": [
+"guava:src/com/google/common/base/Enums.java": [
 82,
 85
 ],
-"com.google.guava:guava:src/com/google/common/collect/ClassToInstanceMap.java": [
+"guava:src/com/google/common/collect/ClassToInstanceMap.java": [
 49
 ],
-"com.google.guava:guava:src/com/google/common/collect/ForwardingSortedMap.java": [
+"guava:src/com/google/common/collect/ForwardingSortedMap.java": [
 136,
 136
 ],
-"com.google.guava:guava:src/com/google/common/collect/ImmutableClassToInstanceMap.java": [
+"guava:src/com/google/common/collect/ImmutableClassToInstanceMap.java": [
 35,
 57,
 126,
@@ -24,10 +24,10 @@
 161,
 166
 ],
-"com.google.guava:guava:src/com/google/common/collect/ImmutableListMultimap.java": [
+"guava:src/com/google/common/collect/ImmutableListMultimap.java": [
 389
 ],
-"com.google.guava:guava:src/com/google/common/collect/ImmutableRangeMap.java": [
+"guava:src/com/google/common/collect/ImmutableRangeMap.java": [
 69,
 141,
 226,
@@ -37,33 +37,33 @@
 332,
 334
 ],
-"com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java": [
+"guava:src/com/google/common/collect/ImmutableSetMultimap.java": [
 551
 ],
-"com.google.guava:guava:src/com/google/common/collect/MutableClassToInstanceMap.java": [
+"guava:src/com/google/common/collect/MutableClassToInstanceMap.java": [
 37,
 46,
 55,
 59
 ],
-"com.google.guava:guava:src/com/google/common/collect/Ordering.java": [
+"guava:src/com/google/common/collect/Ordering.java": [
 307
 ],
-"com.google.guava:guava:src/com/google/common/collect/RangeMap.java": [
+"guava:src/com/google/common/collect/RangeMap.java": [
 101,
 114
 ],
-"com.google.guava:guava:src/com/google/common/collect/RegularImmutableBiMap.java": [
+"guava:src/com/google/common/collect/RegularImmutableBiMap.java": [
 40,
 41
 ],
-"com.google.guava:guava:src/com/google/common/collect/Tables.java": [
+"guava:src/com/google/common/collect/Tables.java": [
 592,
 592,
 594,
 594
 ],
-"com.google.guava:guava:src/com/google/common/collect/TreeRangeMap.java": [
+"guava:src/com/google/common/collect/TreeRangeMap.java": [
 207,
 212,
 216,
@@ -74,14 +74,14 @@
 476,
 564
 ],
-"com.google.guava:guava:src/com/google/common/eventbus/SubscriberRegistry.java": [
+"guava:src/com/google/common/eventbus/SubscriberRegistry.java": [
 65,
 186
 ],
-"com.google.guava:guava:src/com/google/common/net/MediaType.java": [
+"guava:src/com/google/common/net/MediaType.java": [
 109
 ],
-"com.google.guava:guava:src/com/google/common/primitives/Primitives.java": [
+"guava:src/com/google/common/primitives/Primitives.java": [
 40,
 43,
 48,
@@ -91,18 +91,18 @@
 66,
 67
 ],
-"com.google.guava:guava:src/com/google/common/reflect/ImmutableTypeToInstanceMap.java": [
+"guava:src/com/google/common/reflect/ImmutableTypeToInstanceMap.java": [
 33,
 98,
 100,
 130
 ],
-"com.google.guava:guava:src/com/google/common/reflect/MutableTypeToInstanceMap.java": [
+"guava:src/com/google/common/reflect/MutableTypeToInstanceMap.java": [
 43,
 46,
 86
 ],
-"com.google.guava:guava:src/com/google/common/reflect/TypeResolver.java": [
+"guava:src/com/google/common/reflect/TypeResolver.java": [
 91,
 97,
 102,
@@ -112,15 +112,15 @@
 312,
 318
 ],
-"com.google.guava:guava:src/com/google/common/reflect/TypeToInstanceMap.java": [
+"guava:src/com/google/common/reflect/TypeToInstanceMap.java": [
 48
 ],
-"com.google.guava:guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
+"guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java": [
 287,
 625,
 632
 ],
-"com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java": [
+"guava:src/com/google/common/util/concurrent/ServiceManager.java": [
 383,
 408,
 581

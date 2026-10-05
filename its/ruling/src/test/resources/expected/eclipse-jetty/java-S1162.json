@@ -1,27 +1,27 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java": [
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/GZIPContentDecoder.java": [
 215,
 272,
 280,
 387,
 396
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/AbstractEndPoint.java": [
 292,
 306
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
 327,
 332
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ssl/SslConnection.java": [
 947,
 1198,
 1393,
 1485,
 1486
 ],
-"org.eclipse.jetty:jetty-project:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java": [
+"eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/MetaData.java": [
 118,
 129,
 165,
@@ -32,20 +32,20 @@
 547,
 551
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpOutput.java": [
 716,
 722,
 729,
 1025,
 1347
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/MultiPartFormInputStream.java": [
 508,
 703,
 723,
 731
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ProxyConnectionFactory.java": [
 282,
 299,
 687,
@@ -55,58 +55,58 @@
 733,
 736
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResourceService.java": [
 245
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ResponseWriter.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ResponseWriter.java": [
 132,
 137
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ServerConnector.java": [
 299,
 346
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
 1902,
 2844
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerCollection.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/HandlerCollection.java": [
 150
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/resource/SeekableByteChannelRangeWriter.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/resource/SeekableByteChannelRangeWriter.java": [
 154,
 160
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionCache.java": [
 371,
 424
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java": [
 70
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java": [
 638
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
 548,
 562
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionData.java": [
 138
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/ByteArrayISO8859Writer.java": [
 238
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/FutureCallback.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/FutureCallback.java": [
 160,
 168,
 172,
 180
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/FuturePromise.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/FuturePromise.java": [
 146
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/IntrospectionUtil.java": [
 55,
 57,
 75,
@@ -118,43 +118,43 @@
 262,
 264
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/MultiException.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/MultiException.java": [
 119,
 120,
 122,
 175,
 205
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/PathWatcher.java": [
 1028,
 1032
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/RolloverFileOutputStream.java": [
 243,
 257
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/SharedBlockingCallback.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/SharedBlockingCallback.java": [
 76,
 196,
 203,
 208
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/PathResource.java": [
 303
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/Resource.java": [
 186
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/resource/URLResource.java": [
 225
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java": [
+"eclipse-jetty:jetty-util/src/main/java/org/eclipse/jetty/util/security/CertificateValidator.java": [
 118,
 143,
 191,
 261
 ],
-"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlConfiguration.java": [
 487,
 704,
 841,
@@ -163,7 +163,7 @@
 1392,
 1406
 ],
-"org.eclipse.jetty:jetty-project:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
+"eclipse-jetty:jetty-xml/src/main/java/org/eclipse/jetty/xml/XmlParser.java": [
 209
 ]
 }

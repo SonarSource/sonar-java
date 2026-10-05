@@ -1,5 +1,5 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
 428,
 439
 ]

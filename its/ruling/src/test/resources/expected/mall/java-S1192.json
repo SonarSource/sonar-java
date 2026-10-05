@@ -1,25 +1,25 @@
 {
-"com.macro.mall:mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderServiceImpl.java": [
+"mall:mall-admin/src/main/java/com/macro/mall/service/impl/OmsOrderServiceImpl.java": [
 51
 ],
-"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/util/RequestUtil.java": [
+"mall:mall-common/src/main/java/com/macro/mall/common/util/RequestUtil.java": [
 19
 ],
-"com.macro.mall:mall:mall-demo/src/main/java/com/macro/mall/demo/controller/RestTemplateDemoController.java": [
+"mall:mall-demo/src/main/java/com/macro/mall/demo/controller/RestTemplateDemoController.java": [
 41
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpCategoryExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpCategoryExample.java": [
 318,
 378
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/CmsHelpExample.java": [
 179,
 309,
 379,
 439,
 499
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsMemberReportExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/CmsMemberReportExample.java": [
 179,
 239,
 309,
@@ -27,19 +27,19 @@
 439,
 499
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaExample.java": [
 248,
 378
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaProductRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/CmsPrefrenceAreaProductRelationExample.java": [
 178,
 238
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCategoryExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCategoryExample.java": [
 318,
 378
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCommentExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectCommentExample.java": [
 179,
 239,
 309,
@@ -47,7 +47,7 @@
 449,
 509
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectExample.java": [
 179,
 239,
 379,
@@ -62,15 +62,15 @@
 939,
 999
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectProductRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/CmsSubjectProductRelationExample.java": [
 178,
 238
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCategoryExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCategoryExample.java": [
 318,
 378
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCommentExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicCommentExample.java": [
 179,
 249,
 309,
@@ -78,7 +78,7 @@
 449,
 509
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/CmsTopicExample.java": [
 179,
 309,
 369,
@@ -89,7 +89,7 @@
 669,
 739
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCartItemExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCartItemExample.java": [
 180,
 240,
 300,
@@ -108,7 +108,7 @@
 1140,
 1210
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCompanyAddressExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/OmsCompanyAddressExample.java": [
 178,
 248,
 308,
@@ -117,7 +117,7 @@
 648,
 718
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderExample.java": [
 180,
 240,
 300,
@@ -161,7 +161,7 @@
 2810,
 2870
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderItemExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderItemExample.java": [
 179,
 239,
 309,
@@ -183,13 +183,13 @@
 1329,
 1389
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderOperateHistoryExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderOperateHistoryExample.java": [
 179,
 239,
 309,
 369
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnApplyExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnApplyExample.java": [
 180,
 240,
 300,
@@ -217,26 +217,26 @@
 1760,
 1820
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnReasonExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderReturnReasonExample.java": [
 309,
 369
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderSettingExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/OmsOrderSettingExample.java": [
 178,
 238,
 298,
 358,
 418
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumExample.java": [
 248,
 318,
 438
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumPicExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsAlbumPicExample.java": [
 178
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsBrandExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsBrandExample.java": [
 248,
 378,
 438,
@@ -244,7 +244,7 @@
 558,
 688
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentExample.java": [
 179,
 239,
 309,
@@ -257,31 +257,31 @@
 889,
 959
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentReplayExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsCommentReplayExample.java": [
 179,
 239,
 309,
 379,
 449
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsFeightTemplateExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsFeightTemplateExample.java": [
 249,
 309,
 369,
 429,
 489
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsMemberPriceExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsMemberPriceExample.java": [
 179,
 239,
 299,
 359
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeCategoryExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeCategoryExample.java": [
 248,
 308
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeExample.java": [
 178,
 308,
 368,
@@ -291,16 +291,16 @@
 678,
 738
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeValueExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductAttributeValueExample.java": [
 178,
 238,
 298
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryAttributeRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryAttributeRelationExample.java": [
 178,
 238
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductCategoryExample.java": [
 178,
 308,
 368,
@@ -309,7 +309,7 @@
 558,
 748
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductExample.java": [
 180,
 240,
 300,
@@ -342,18 +342,18 @@
 2380,
 2450
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductFullReductionExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductFullReductionExample.java": [
 179,
 239,
 299
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductLadderExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductLadderExample.java": [
 179,
 239,
 299,
 359
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductOperateLogExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductOperateLogExample.java": [
 180,
 240,
 300,
@@ -366,14 +366,14 @@
 720,
 790
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductVertifyRecordExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsProductVertifyRecordExample.java": [
 179,
 239,
 299,
 369,
 429
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/PmsSkuStockExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/PmsSkuStockExample.java": [
 179,
 239,
 309,
@@ -383,7 +383,7 @@
 679,
 739
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponExample.java": [
 310,
 370,
 430,
@@ -398,7 +398,7 @@
 1040,
 1170
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponHistoryExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponHistoryExample.java": [
 179,
 239,
 299,
@@ -410,26 +410,26 @@
 679,
 739
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductCategoryRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductCategoryRelationExample.java": [
 178,
 238,
 298,
 368
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsCouponProductRelationExample.java": [
 178,
 238,
 298,
 368
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionExample.java": [
 206,
 276,
 336,
 396,
 456
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionLogExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionLogExample.java": [
 179,
 239,
 299,
@@ -437,7 +437,7 @@
 439,
 499
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionProductRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionProductRelationExample.java": [
 179,
 239,
 299,
@@ -445,40 +445,40 @@
 419,
 479
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionSessionExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsFlashPromotionSessionExample.java": [
 276,
 336,
 396,
 456
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeAdvertiseExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeAdvertiseExample.java": [
 379,
 439,
 499,
 559,
 619
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeBrandExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeBrandExample.java": [
 178,
 238,
 308
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeNewProductExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeNewProductExample.java": [
 178,
 238,
 308
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendProductExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendProductExample.java": [
 178,
 238,
 308
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendSubjectExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/SmsHomeRecommendSubjectExample.java": [
 178,
 238,
 308
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminExample.java": [
 179,
 249,
 389,
@@ -487,21 +487,21 @@
 659,
 719
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminLoginLogExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminLoginLogExample.java": [
 179,
 239,
 369,
 439
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminPermissionRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminPermissionRelationExample.java": [
 178,
 238
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminRoleRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsAdminRoleRelationExample.java": [
 178,
 238
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsGrowthChangeHistoryExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsGrowthChangeHistoryExample.java": [
 179,
 239,
 299,
@@ -510,7 +510,7 @@
 489,
 559
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationChangeHistoryExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationChangeHistoryExample.java": [
 179,
 239,
 299,
@@ -519,13 +519,13 @@
 489,
 559
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationConsumeSettingExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsIntegrationConsumeSettingExample.java": [
 178,
 238,
 298,
 358
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberExample.java": [
 206,
 266,
 336,
@@ -542,7 +542,7 @@
 1246,
 1306
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLevelExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLevelExample.java": [
 249,
 309,
 369,
@@ -554,21 +554,21 @@
 729,
 789
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLoginLogExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberLoginLogExample.java": [
 179,
 239,
 439,
 499
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberMemberTagRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberMemberTagRelationExample.java": [
 178,
 238
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberProductCategoryRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberProductCategoryRelationExample.java": [
 178,
 238
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberReceiveAddressExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberReceiveAddressExample.java": [
 178,
 308,
 378,
@@ -577,14 +577,14 @@
 648,
 718
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberRuleSettingExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberRuleSettingExample.java": [
 179,
 239,
 299,
 359,
 419
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberStatisticsInfoExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberStatisticsInfoExample.java": [
 180,
 240,
 300,
@@ -601,56 +601,56 @@
 960,
 1020
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTagExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTagExample.java": [
 249,
 309
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTaskExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMemberTaskExample.java": [
 248,
 308
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMenuExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsMenuExample.java": [
 179,
 239,
 299,
 369,
 629
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsPermissionExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsPermissionExample.java": [
 309,
 579,
 639
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceCategoryExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceCategoryExample.java": [
 179
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsResourceExample.java": [
 179,
 379,
 449
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleExample.java": [
 249,
 319,
 379,
 439
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleMenuRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleMenuRelationExample.java": [
 178,
 238
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRolePermissionRelationExample.java": [
 178,
 238
 ],
-"com.macro.mall:mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelationExample.java": [
+"mall:mall-mbg/src/main/java/com/macro/mall/model/UmsRoleResourceRelationExample.java": [
 178,
 238
 ],
-"com.macro.mall:mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/AlipayServiceImpl.java": [
+"mall:mall-portal/src/main/java/com/macro/mall/portal/service/impl/AlipayServiceImpl.java": [
 54
 ],
-"com.macro.mall:mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java": [
+"mall:mall-search/src/main/java/com/macro/mall/search/service/impl/EsProductServiceImpl.java": [
 121,
 125
 ]

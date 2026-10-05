@@ -1,40 +1,40 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/PathMappings.java": [
+"eclipse-jetty:jetty-http/src/main/java/org/eclipse/jetty/http/pathmap/PathMappings.java": [
 204
 ],
-"org.eclipse.jetty:jetty-project:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/ConnectorServer.java": [
+"eclipse-jetty:jetty-jmx/src/main/java/org/eclipse/jetty/jmx/ConnectorServer.java": [
 173
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/LocalConnector.java": [
 359
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
 213
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/handler/ContextHandler.java": [
 938
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/AbstractSessionDataStore.java": [
 67,
 86,
 96,
 105
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/DatabaseAdaptor.java": [
 261
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/FileSessionDataStore.java": [
 136,
 252,
 603
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/JDBCSessionDataStore.java": [
 454,
 475,
 722,
 766
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionCache.java": [
 98,
 108,
 118,
@@ -45,19 +45,19 @@
 176,
 186
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMap.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataMap.java": [
 38,
 47,
 56,
 65
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStore.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStore.java": [
 70
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStoreFactory.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionDataStoreFactory.java": [
 26
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/session/SessionHandler.java": [
 942
 ]
 }

@@ -1,5 +1,5 @@
 {
-"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/service/RedisService.java": [
+"mall:mall-common/src/main/java/com/macro/mall/common/service/RedisService.java": [
 96,
 121,
 126,
@@ -7,7 +7,7 @@
 171,
 176
 ],
-"com.macro.mall:mall:mall-common/src/main/java/com/macro/mall/common/service/impl/RedisServiceImpl.java": [
+"mall:mall-common/src/main/java/com/macro/mall/common/service/impl/RedisServiceImpl.java": [
 103,
 128,
 133,

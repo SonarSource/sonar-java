@@ -1,0 +1,153 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/app/TomcatAccessLog.java": [
+49
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/component/ws/AppAction.java": [
+190,
+195,
+207
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/component/VisitorsCrawler.java": [
+161
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/formula/FormulaExecutorComponentVisitor.java": [
+66,
+68,
+100,
+149,
+150,
+163,
+164,
+173,
+173,
+185,
+185,
+220,
+220,
+222,
+222,
+223,
+235,
+235
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/issue/NewEffortCalculator.java": [
+110
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/metric/ReportMetricValidatorImpl.java": [
+37,
+46,
+57
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/qualitygate/ConditionEvaluator.java": [
+39,
+56,
+78,
+78,
+94,
+117,
+143
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CommentMeasuresStep.java": [
+57,
+95,
+105,
+172,
+173
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/ComplexityMeasuresStep.java": [
+53
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/CoverageMeasuresStep.java": [
+48
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/DuplicationMeasuresStep.java": [
+65
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LanguageDistributionMeasuresStep.java": [
+56
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/LoadMeasureComputersStep.java": [
+153,
+163
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/NewCoverageMeasuresStep.java": [
+65
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/SizeMeasuresStep.java": [
+57
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/UnitTestMeasuresStep.java": [
+55
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/IndexDefinitionHash.java": [
+46,
+68,
+77,
+78,
+86,
+86
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/StickyFacetBuilder.java": [
+65,
+83,
+87,
+91
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/IssuesFinderSort.java": [
+76,
+78
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/index/IssueIndex.java": [
+414,
+414,
+425,
+453,
+488,
+549
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/notification/IssueChangeNotification.java": [
+47,
+49
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/ChangelogAction.java": [
+132,
+134
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/issue/ws/SearchResponseLoader.java": [
+327
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/metric/DefaultMetricFinder.java": [
+90
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/db/migration/DatabaseMigrationExecutorServiceImpl.java": [
+32
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/plugins/ServerExtensionInstaller.java": [
+136,
+137
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/qualitygate/QualityGates.java": [
+164
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/index/RuleIndex.java": [
+546
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/startup/RegisterMetrics.java": [
+66,
+80,
+86,
+108,
+109,
+120,
+133
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/webhook/ws/WebhookDeliveriesAction.java": [
+94,
+115,
+117,
+135
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/webhook/ws/WebhookWsSupport.java": [
+34
+]
+}

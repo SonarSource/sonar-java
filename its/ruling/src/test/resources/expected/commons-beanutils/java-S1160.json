@@ -1,5 +1,5 @@
 {
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtils.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtils.java": [
 66,
 94,
 117,
@@ -15,7 +15,7 @@
 390,
 413
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/BeanUtilsBean.java": [
 168,
 229,
 325,
@@ -31,7 +31,7 @@
 802,
 860
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConstructorUtils.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/ConstructorUtils.java": [
 69,
 99,
 135,
@@ -39,10 +39,10 @@
 211,
 248
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaClass.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/DynaClass.java": [
 81
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/MethodUtils.java": [
 162,
 204,
 252,
@@ -56,7 +56,7 @@
 625,
 658
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtils.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtils.java": [
 127,
 153,
 185,
@@ -77,7 +77,7 @@
 784,
 815
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/PropertyUtilsBean.java": [
 265,
 358,
 412,
@@ -98,7 +98,7 @@
 1999,
 2027
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtils.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtils.java": [
 121,
 149,
 177,
@@ -116,7 +116,7 @@
 512,
 537
 ],
-"commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java": [
+"commons-beanutils:src/main/java/org/apache/commons/beanutils2/locale/LocaleBeanUtilsBean.java": [
 200,
 263,
 316,

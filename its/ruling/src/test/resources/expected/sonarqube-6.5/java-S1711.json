@@ -1,0 +1,11 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/ce/queue/CeTaskResult.java": [
+31
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/authentication/ws/AuthenticationWsAction.java": [
+25
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/webhook/WebhookPayloadFactory.java": [
+25
+]
+}

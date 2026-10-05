@@ -1,0 +1,22 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/source/HighlightingLineReader.java": [
+46
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/computation/task/projectanalysis/step/PersistProjectLinksStep.java": [
+55
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/projectlink/ws/CreateAction.java": [
+52,
+53,
+54
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/setting/ThreadLocalSettings.java": [
+57
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/setting/ws/SettingValidations.java": [
+66
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/ws/ServletRequest.java": [
+44
+]
+}

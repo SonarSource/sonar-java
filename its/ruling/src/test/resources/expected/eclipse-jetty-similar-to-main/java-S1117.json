@@ -1,21 +1,21 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnector.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ClientConnector.java": [
 209,
 230,
 233
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
+"eclipse-jetty:jetty-io/src/main/java/org/eclipse/jetty/io/ManagedSelector.java": [
 894
 ],
-"org.eclipse.jetty:jetty-project:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/MBeanContainerTest.java": [
+"eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/MBeanContainerTest.java": [
 78
 ],
-"org.eclipse.jetty:jetty-project:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/ObjectMBeanUtilTest.java": [
+"eclipse-jetty:jetty-jmx/src/test/java/org/eclipse/jetty/jmx/ObjectMBeanUtilTest.java": [
 75,
 94,
 190
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/HttpChannelListeners.java": [
 58,
 59,
 60,
@@ -32,7 +32,7 @@
 71,
 72
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
+"eclipse-jetty:jetty-server/src/main/java/org/eclipse/jetty/server/ShutdownMonitor.java": [
 265,
 272,
 334,

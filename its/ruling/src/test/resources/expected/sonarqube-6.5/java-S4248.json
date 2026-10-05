@@ -1,0 +1,35 @@
+{
+"sonarqube-6.5:src/main/java/org/sonar/server/component/ws/SuggestionsAction.java": [
+252
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/debt/DebtModelXMLExporter.java": [
+102
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/Facets.java": [
+118
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/es/textsearch/ComponentTextSearchQueryFactory.java": [
+95
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/measure/index/ProjectsTextSearchQueryFactory.java": [
+104
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/UrlSettings.java": [
+47
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/platform/web/WebPagesFilter.java": [
+79
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/projecttag/ws/SetAction.java": [
+109
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/rule/RuleCreator.java": [
+146
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/user/UserUpdater.java": [
+291
+],
+"sonarqube-6.5:src/main/java/org/sonar/server/util/MetricKeyValidator.java": [
+50
+]
+}

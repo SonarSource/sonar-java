@@ -1,10 +1,10 @@
 {
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java": [
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpCookieTest.java": [
 281,
 293,
 305
 ],
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java": [
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpFieldsTest.java": [
 81,
 280,
 366,
@@ -65,25 +65,25 @@
 580,
 581
 ],
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorServerTest.java": [
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpGeneratorServerTest.java": [
 162
 ],
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpParserTest.java": [
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpParserTest.java": [
 1383,
 1404,
 1425
 ],
-"org.eclipse.jetty:jetty-project:jetty-http/src/test/java/org/eclipse/jetty/http/HttpURITest.java": [
+"eclipse-jetty:jetty-http/src/test/java/org/eclipse/jetty/http/HttpURITest.java": [
 271,
 272
 ],
-"org.eclipse.jetty:jetty-project:jetty-io/src/test/java/org/eclipse/jetty/io/IOTest.java": [
+"eclipse-jetty:jetty-io/src/test/java/org/eclipse/jetty/io/IOTest.java": [
 69
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/HttpWriterTest.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/HttpWriterTest.java": [
 141
 ],
-"org.eclipse.jetty:jetty-project:jetty-server/src/test/java/org/eclipse/jetty/server/ResourceCacheTest.java": [
+"eclipse-jetty:jetty-server/src/test/java/org/eclipse/jetty/server/ResourceCacheTest.java": [
 129,
 130,
 131,
@@ -103,24 +103,24 @@
 359,
 360
 ],
-"org.eclipse.jetty:jetty-project:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerConfigurationTest.java": [
+"eclipse-jetty:jetty-slf4j-impl/src/test/java/org/eclipse/jetty/logging/JettyLoggerConfigurationTest.java": [
 46
 ],
-"org.eclipse.jetty:jetty-project:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorFactoryTest.java": [
+"eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorFactoryTest.java": [
 74,
 75,
 126,
 129
 ],
-"org.eclipse.jetty:jetty-project:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorTest.java": [
+"eclipse-jetty:jetty-util-ajax/src/test/java/org/eclipse/jetty/util/ajax/JSONPojoConvertorTest.java": [
 70,
 71
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java": [
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/BufferUtilTest.java": [
 208,
 229
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java": [
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/LazyListTest.java": [
 118,
 122,
 123,
@@ -252,14 +252,14 @@
 1903,
 1904
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/StringUtilTest.java": [
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/StringUtilTest.java": [
 89,
 90,
 91,
 99,
 103
 ],
-"org.eclipse.jetty:jetty-project:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ResourceCollectionTest.java": [
+"eclipse-jetty:jetty-util/src/test/java/org/eclipse/jetty/util/resource/ResourceCollectionTest.java": [
 186,
 187,
 188,
@@ -276,7 +276,7 @@
 236,
 237
 ],
-"org.eclipse.jetty:jetty-project:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java": [
+"eclipse-jetty:jetty-xml/src/test/java/org/eclipse/jetty/xml/XmlConfigurationTest.java": [
 167,
 168,
 169,
