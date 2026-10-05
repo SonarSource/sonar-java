@@ -190,6 +190,57 @@ class SQLInjection {
     javax.jdo.Query q = pm.newQuery(Test.class, id + " > query_id "); // Noncompliant
     q.setFilter("name == " + name); // Noncompliant
   }
+
+  private final String classNameField = getClass().getName();
+
+  void classNameDirectCalls(Statement statement) throws SQLException {
+    statement.execute("SELECT " + SQLInjection.class.getName()); // Compliant
+    statement.execute("SELECT " + SQLInjection.class.getSimpleName()); // Compliant
+    statement.execute("SELECT " + SQLInjection.class.getCanonicalName()); // Compliant
+    statement.execute("SELECT " + SQLInjection.class.getTypeName()); // Compliant
+    statement.execute("SELECT " + (SQLInjection.class.getName())); // Compliant
+  }
+
+  void classNameLocalAliases(Statement statement) throws SQLException {
+    String className = getClass().getName();
+    statement.execute("CREATE ALIAS IF NOT EXISTS FT_INIT FOR \"" + className + ".init\""); // Compliant
+
+    String alias = className;
+    statement.execute("SELECT " + alias); // Compliant
+    statement.execute("SELECT " + alias + "." + alias); // Compliant
+
+    String assignedOnce;
+    assignedOnce = SQLInjection.class.getSimpleName();
+    statement.execute("SELECT " + assignedOnce); // Compliant
+
+    String query = "SELECT " + className;
+    statement.execute(query); // Compliant
+
+    statement.execute(String.format("SELECT %s", className)); // Compliant
+    statement.execute("SELECT %s".formatted(SQLInjection.class.getTypeName())); // Compliant
+    classNameParameterFalsePositive(statement, className);
+  }
+
+  void classNameDynamicOperands(Statement statement, String input) throws SQLException {
+    statement.execute("SELECT " + SQLInjection.class.getName() + input); // Noncompliant
+    statement.execute(String.format("SELECT %s %s", SQLInjection.class.getName(), input)); // Noncompliant
+
+    String reassigned = getClass().getName();
+    reassigned = input;
+    statement.execute("SELECT " + reassigned); // Noncompliant
+
+    statement.execute("SELECT " + input); // Noncompliant
+  }
+
+  void classNameFieldFalsePositive(Statement statement) throws SQLException {
+    // Known FP: the field is initialized from Class#getName(), but local-variable backtracking does not resolve fields.
+    statement.execute("SELECT " + classNameField); // Noncompliant
+  }
+
+  void classNameParameterFalsePositive(Statement statement, String className) throws SQLException {
+    // Known FP: the caller passes Class#getName(), but local-variable backtracking does not resolve parameters.
+    statement.execute("SELECT " + className); // Noncompliant
+  }
 }
 
 

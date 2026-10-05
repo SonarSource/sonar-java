@@ -18,18 +18,23 @@ package org.sonar.java.checks;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.ExpressionUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.MethodMatchers;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -121,6 +126,12 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
     .withAnyParameters()
     .build();
 
+  private static final MethodMatchers CLASS_NAME_METHODS = MethodMatchers.create()
+    .ofTypes("java.lang.Class")
+    .names("getName", "getSimpleName", "getCanonicalName", "getTypeName")
+    .addWithoutParametersMatcher()
+    .build();
+
   private static final String MAIN_MESSAGE = "Make sure using a dynamically formatted SQL query is safe here.";
 
   @Override
@@ -210,7 +221,33 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isDynamicConcatenation(ExpressionTree arg) {
-    return arg.is(Tree.Kind.PLUS) && !arg.asConstant().isPresent();
+    return arg.is(Tree.Kind.PLUS) && hasDynamicConcatenationOperand(arg);
+  }
+
+  private static boolean hasDynamicConcatenationOperand(ExpressionTree arg) {
+    ExpressionTree expression = ExpressionUtils.skipParentheses(arg);
+    if (expression.asConstant().isPresent() || isSafeClassNameExpression(expression, new HashSet<>())) {
+      return false;
+    }
+    if (expression instanceof BinaryExpressionTree binaryExpression && expression.is(Tree.Kind.PLUS)) {
+      return hasDynamicConcatenationOperand(binaryExpression.leftOperand()) || hasDynamicConcatenationOperand(binaryExpression.rightOperand());
+    }
+    return true;
+  }
+
+  private static boolean isSafeClassNameExpression(ExpressionTree arg, Set<Symbol> visitedSymbols) {
+    ExpressionTree expression = ExpressionUtils.skipParentheses(arg);
+    if (expression instanceof MethodInvocationTree methodInvocation) {
+      return CLASS_NAME_METHODS.matches(methodInvocation);
+    }
+    if (expression instanceof IdentifierTree identifier) {
+      Symbol symbol = identifier.symbol();
+      if (symbol.isLocalVariable() && !symbol.isParameter() && visitedSymbols.add(symbol)) {
+        ExpressionTree singleWrite = ExpressionsHelper.getSingleWriteUsage(symbol);
+        return singleWrite != null && isSafeClassNameExpression(singleWrite, visitedSymbols);
+      }
+    }
+    return false;
   }
 
   private static boolean isDynamicFormat(Tree tree) {
@@ -229,7 +266,8 @@ public class SQLInjectionCheck extends IssuableSubscriptionVisitor {
       // `format` has a variant with Locale as the first argument - we do not need to check that parameter.
       boolean isFirstLocaleArgument = firstArg && type.is("java.util.Locale");
       // Primitives will not lead to SQL injection, so the code is compliant.
-      if (!isFirstLocaleArgument && !type.isUnknown() && !type.isPrimitive() && !type.isPrimitiveWrapper() && arg.asConstant().isEmpty()) {
+      if (!isFirstLocaleArgument && !type.isUnknown() && !type.isPrimitive() && !type.isPrimitiveWrapper()
+        && arg.asConstant().isEmpty() && !isSafeClassNameExpression(arg, new HashSet<>())) {
         return true;
       }
       firstArg = false;
