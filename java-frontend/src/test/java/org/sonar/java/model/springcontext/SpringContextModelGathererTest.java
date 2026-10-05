@@ -63,7 +63,7 @@ class SpringContextModelGathererTest {
   @Test
   void gathering_time_is_reported() {
     var telemetry = new DefaultTelemetry();
-    scanFile(SIMPLE_CLASS, new SampleGatherer(telemetry), CLASSPATH);
+    scanFile(SIMPLE_CLASS, new SampleGatherer(new SpringContextGatheringModel(), telemetry), CLASSPATH);
     assertThat(model.getTypeToBeansIndex().getNamesForType("com.example.MyService", "", Set.of())).containsExactly("myServiceBean");
     assertThat(telemetry.toMap().get(GATHERING_TIME_KEY)).matches("\\d+");
   }
@@ -71,14 +71,14 @@ class SpringContextModelGathererTest {
   @Test
   void every_phase_of_a_parsed_file_is_measured() {
     var telemetry = new DefaultTelemetry();
-    scanFile(SIMPLE_CLASS, new SampleGatherer(telemetry, new IncrementingNanoTime(ONE_MILLISECOND_IN_NANOS)), CLASSPATH);
+    scanFile(SIMPLE_CLASS, new SampleGatherer(new SpringContextGatheringModel(), telemetry, new IncrementingNanoTime(ONE_MILLISECOND_IN_NANOS)), CLASSPATH);
     assertThat(telemetry.toMap()).containsEntry(GATHERING_TIME_KEY, String.valueOf(PHASES_OF_A_PARSED_FILE));
   }
 
   @Test
   void restoring_a_file_from_the_cache_is_measured() {
     var telemetry = new DefaultTelemetry();
-    var gatherer = new SampleGatherer(telemetry, new IncrementingNanoTime(ONE_MILLISECOND_IN_NANOS));
+    var gatherer = new SampleGatherer(new SpringContextGatheringModel(), telemetry, new IncrementingNanoTime(ONE_MILLISECOND_IN_NANOS));
     gatherer.scanWithoutParsing(mock(InputFileScannerContext.class));
     bridgeFor(gatherer, CLASSPATH).endOfAnalysis();
     assertThat(telemetry.toMap()).containsEntry(GATHERING_TIME_KEY, "2");
@@ -91,7 +91,7 @@ class SpringContextModelGathererTest {
   @Test
   void sub_millisecond_phases_are_summed_before_being_converted_to_millis() {
     var telemetry = new DefaultTelemetry();
-    scanFile(SIMPLE_CLASS, new SampleGatherer(telemetry, new IncrementingNanoTime(SUB_MILLISECOND_IN_NANOS)), CLASSPATH);
+    scanFile(SIMPLE_CLASS, new SampleGatherer(new SpringContextGatheringModel(), telemetry, new IncrementingNanoTime(SUB_MILLISECOND_IN_NANOS)), CLASSPATH);
     assertThat(telemetry.toMap()).containsEntry(GATHERING_TIME_KEY, "1");
   }
 
@@ -100,12 +100,12 @@ class SpringContextModelGathererTest {
   @ParameterizedTest
   @ValueSource(strings = {"spring-context", "spring-beans", "spring-boot-starter", "spring-boot-starter-web"})
   void isCompatibleWithDependencies_true_when_spring_dependency_is_present(String dependency) {
-    assertThat(new SampleGatherer(new NoOpTelemetry()).isCompatibleWithDependencies(finderFor(dependency))).isTrue();
+    assertThat(new SampleGatherer(new SpringContextGatheringModel(), new NoOpTelemetry()).isCompatibleWithDependencies(finderFor(dependency))).isTrue();
   }
 
   @Test
   void isCompatibleWithDependencies_false_when_no_spring_dependency_is_present() {
-    assertThat(new SampleGatherer(new NoOpTelemetry()).isCompatibleWithDependencies(finderFor())).isFalse();
+    assertThat(new SampleGatherer(new SpringContextGatheringModel(), new NoOpTelemetry()).isCompatibleWithDependencies(finderFor())).isFalse();
   }
 
   // ---- Helpers --------------------------------------------------------------
@@ -136,12 +136,12 @@ class SpringContextModelGathererTest {
 
   static class SampleGatherer extends SpringContextModelGatherer {
 
-    SampleGatherer(Telemetry telemetry) {
-      super(telemetry);
+    SampleGatherer(SpringContextGatheringModel springContextGatheringModel, Telemetry telemetry) {
+      super(springContextGatheringModel, telemetry);
     }
 
-    SampleGatherer(Telemetry telemetry, LongSupplier nanoTime) {
-      super(telemetry, nanoTime);
+    SampleGatherer(SpringContextGatheringModel springContextGatheringModel, Telemetry telemetry, LongSupplier nanoTime) {
+      super(springContextGatheringModel, telemetry, nanoTime);
     }
 
     @Override
