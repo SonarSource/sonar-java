@@ -63,7 +63,7 @@ public class JavaTestSuite {
   static {
     OrchestratorRuleBuilder orchestratorBuilder = OrchestratorRule.builderEnv()
       .useDefaultAdminCredentialsForBuilds(true)
-      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "LATEST_RELEASE"))
+      .setSonarVersion(System.getProperty("sonar.runtimeVersion", "DEV"))
       .setEdition(com.sonar.orchestrator.container.Edition.ENTERPRISE_LW)
       .activateLicense()
       .addPlugin(JAVA_PLUGIN_LOCATION)
