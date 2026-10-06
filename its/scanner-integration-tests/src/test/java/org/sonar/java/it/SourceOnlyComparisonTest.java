@@ -85,6 +85,19 @@ class SourceOnlyComparisonTest {
   }
 
   @Test
+  void allocates_numbered_runs_without_overwriting_previous_results(@TempDir Path directory) throws IOException {
+    Path first = SourceOnlyComparison.createRunDirectory(directory);
+    Files.writeString(first.resolve("report.md"), "previous results");
+    assertThat(first.getFileName().toString()).isEqualTo("run-001");
+    assertThat(SourceOnlyComparison.createRunDirectory(directory).getFileName().toString()).isEqualTo("run-002");
+
+    Files.createDirectory(directory.resolve("run-005"));
+    Files.writeString(directory.resolve("README.md"), "unrelated file");
+    assertThat(SourceOnlyComparison.createRunDirectory(directory).getFileName().toString()).isEqualTo("run-006");
+    assertThat(Files.readString(first.resolve("report.md"))).isEqualTo("previous results");
+  }
+
+  @Test
   void writes_a_json_diff_and_markdown_report(@TempDir Path directory) throws IOException {
     var lost = finding("java:S1116", "src/Example.java", 3, "lost");
     var comparison = SourceOnlyComparison.compare(run(List.of(lost)), run(List.of()), false, List.of());

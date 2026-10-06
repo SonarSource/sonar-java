@@ -40,6 +40,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.io.TempDir;
@@ -52,7 +53,7 @@ class NoCompilationComparisonTest {
 
   private static final Map<String, String> CANDIDATE_PROPERTIES = Map.of();
   private static final String SOURCE_ROOT = "sonar-xml-plugin/src/main/java";
-  private static final Path REPORT_DIRECTORY = Path.of("target/no-compilation-comparison");
+  private static Path reportDirectory;
   private static final List<String> TELEMETRY_KEYS = List.of(
     "java.analysis.main.success.size_chars",
     "java.analysis.main.success.type_error_count",
@@ -61,6 +62,13 @@ class NoCompilationComparisonTest {
 
   @TempDir
   Path workspace;
+
+  @BeforeAll
+  static void createResultsDirectory() throws IOException {
+    reportDirectory = SourceOnlyComparison.createRunDirectory(repositoryRoot()
+      .resolve("its/scanner-integration-tests/src/test/java/org/sonar/java/it/results"));
+    System.out.println("Source-only analysis results: " + reportDirectory);
+  }
 
   @Test
   void scanner_accepts_sources_without_binaries_or_libraries() throws IOException {
@@ -71,7 +79,7 @@ class NoCompilationComparisonTest {
 
     var context = serverContext(List.of(activeRule(repositoryRoot(), "S1116")));
     var result = scan(context, project, ".", "smoke", Map.of(), List.of("Example.java", "Other.java"),
-      REPORT_DIRECTORY.resolve("smoke"));
+      reportDirectory.resolve("smoke"));
 
     assertThat(result.success()).as("Source-only smoke scan: %s", result.error()).isTrue();
     assertThat(result.findings()).hasSize(1);
@@ -109,14 +117,14 @@ class NoCompilationComparisonTest {
     }
     assertThat(rules).isNotEmpty();
     var context = serverContext(rules);
-    var current = scan(context, currentProject, SOURCE_ROOT, "current", Map.of(), expectedFiles, REPORT_DIRECTORY);
-    var candidate = scan(context, candidateProject, SOURCE_ROOT, "candidate", CANDIDATE_PROPERTIES, expectedFiles, REPORT_DIRECTORY);
+    var current = scan(context, currentProject, SOURCE_ROOT, "current", Map.of(), expectedFiles, reportDirectory);
+    var candidate = scan(context, candidateProject, SOURCE_ROOT, "candidate", CANDIDATE_PROPERTIES, expectedFiles, reportDirectory);
     var comparison = SourceOnlyComparison.compare(current, candidate, CANDIDATE_PROPERTIES.isEmpty(),
       rules.stream().map(rule -> rule.ruleKey().toString()).toList());
-    SourceOnlyComparison.write(REPORT_DIRECTORY, comparison);
+    SourceOnlyComparison.write(reportDirectory, comparison);
     System.out.printf("Source-only comparison: current=%d findings (%d ms), candidate=%d findings (%d ms). Report: %s%n",
       current.findings().size(), current.scanMillis(), candidate.findings().size(), candidate.scanMillis(),
-      REPORT_DIRECTORY.resolve("report.md").toAbsolutePath());
+      reportDirectory.resolve("report.md"));
 
     assertThat(current.success()).as("Current scan: %s", current.error()).isTrue();
     assertThat(candidate.success()).as("Candidate scan: %s", candidate.error()).isTrue();
